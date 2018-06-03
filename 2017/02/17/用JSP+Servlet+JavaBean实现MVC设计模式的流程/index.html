@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="google-site-verification" content="Z1De3vrLeDV0zQkSKDV0IlHnujNBKcoYsS9BdR4JEIg" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="设计模式,MVC,SSH," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="设计模式ServletJSPMVCWeb前端时间学习了 MVC 模式，现在来谈谈自己对MVC的认识：MVC是三个单词的缩写：M，Model（模型）；V,View( 视图 )，C，Control（控制）。MVC模式的目的就是实现Web系统的职能分工，  Model层：实现系统的业务逻辑，即javaBean部分 View层：负责与用户交互，即在界面上展示数据对象给用户，即html，jsp Contro">
+<meta name="keywords" content="设计模式,MVC,SSH">
+<meta property="og:type" content="article">
+<meta property="og:title" content="用JSP+Servlet+JavaBean实现MVC设计模式的流程">
+<meta property="og:url" content="http://hongyitong.github.io/2017/02/17/用JSP+Servlet+JavaBean实现MVC设计模式的流程/index.html">
+<meta property="og:site_name" content="忆桐之家的博客">
+<meta property="og:description" content="设计模式ServletJSPMVCWeb前端时间学习了 MVC 模式，现在来谈谈自己对MVC的认识：MVC是三个单词的缩写：M，Model（模型）；V,View( 视图 )，C，Control（控制）。MVC模式的目的就是实现Web系统的职能分工，  Model层：实现系统的业务逻辑，即javaBean部分 View层：负责与用户交互，即在界面上展示数据对象给用户，即html，jsp Contro">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-07-12T02:11:25.216Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="用JSP+Servlet+JavaBean实现MVC设计模式的流程">
+<meta name="twitter:description" content="设计模式ServletJSPMVCWeb前端时间学习了 MVC 模式，现在来谈谈自己对MVC的认识：MVC是三个单词的缩写：M，Model（模型）；V,View( 视图 )，C，Control（控制）。MVC模式的目的就是实现Web系统的职能分工，  Model层：实现系统的业务逻辑，即javaBean部分 View层：负责与用户交互，即在界面上展示数据对象给用户，即html，jsp Contro">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://hongyitong.github.io/2017/02/17/用JSP+Servlet+JavaBean实现MVC设计模式的流程/"/>
+
+
+
+
+
+  <title>用JSP+Servlet+JavaBean实现MVC设计模式的流程 | 忆桐之家的博客</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">忆桐之家的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Rayman&Tony</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            公益404
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2017/02/17/用JSP+Servlet+JavaBean实现MVC设计模式的流程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Rayman.hung">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="忆桐之家的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">用JSP+Servlet+JavaBean实现MVC设计模式的流程</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-02-17T00:00:00+08:00">
+                2017-02-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/技术相关/" itemprop="url" rel="index">
+                    <span itemprop="name">技术相关</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>设计模式ServletJSPMVCWeb<br>前端时间学习了 MVC 模式，现在来谈谈自己对MVC的认识：<br>MVC是三个单词的缩写：M，Model（模型）；V,View( 视图 )，C，Control（控制）。<br>MVC模式的目的就是实现Web系统的职能分工，</p>
+<ul>
+<li>Model层：实现系统的业务逻辑，即javaBean部分</li>
+<li>View层：负责与用户交互，即在界面上展示数据对象给用户，即html，jsp</li>
+<li>Control层：Model与View之间沟通的桥梁，它可以分派用户的请求并选择恰当的视图以用于显示，同时它也可以解释用户的输入并将它们映射为模型层可执行的操作，当然就是Servlet的职责了 <a id="more"></a></li>
+</ul>
+<p>下面我们用MVC设计模式来实现 简单的用户登录过程</p>
+<h1 id="1、控制器Servlet的实现"><a href="#1、控制器Servlet的实现" class="headerlink" title="1、控制器Servlet的实现"></a>1、控制器Servlet的实现</h1><p>系统中只有一个servlet即ControlServlet,所有页面发起的以”  *.do  “的请求，都被web.xml配置给ControlServlet进行处理，在ControlServlet中根据‘ * ’的字符串(即解析用户请求的路径)，调用ActionFactory生成的制定Action对象，在将处理后的URL转发给用户。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> cn.netjava.servlet;  </span><br><span class="line">  </span><br><span class="line"><span class="keyword">import</span> java.io.IOException;  </span><br><span class="line"><span class="keyword">import</span> javax.servlet.ServletException;  </span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServlet;  </span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletRequest;  </span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletResponse;  </span><br><span class="line">  </span><br><span class="line"><span class="keyword">import</span> cn.netjava.action.Action;  </span><br><span class="line"><span class="keyword">import</span> cn.netjava.action.ActionFactory;  </span><br><span class="line">  </span><br><span class="line"><span class="comment">/** </span></span><br><span class="line"><span class="comment"> * Servlet implementation class ControlServlet </span></span><br><span class="line"><span class="comment"> */</span>  </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ControlServlet</span> <span class="keyword">extends</span> <span class="title">HttpServlet</span> </span>&#123;  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">service</span><span class="params">(HttpServletRequest request, HttpServletResponse response)</span> <span class="keyword">throws</span> ServletException, IOException </span>&#123;  </span><br><span class="line">        <span class="comment">//得到当前Servlet的请求路径  </span></span><br><span class="line">        String pathName =request.getServletPath();  </span><br><span class="line">        <span class="comment">// request.getContextPath();得到项目名字  </span></span><br><span class="line">        System.out.println(<span class="string">"pathName:"</span>+pathName);  </span><br><span class="line">        <span class="comment">//得到请求的Action名字  </span></span><br><span class="line">        <span class="keyword">int</span> index = pathName.indexOf(<span class="string">"."</span>);  </span><br><span class="line">        String ActionName = pathName.substring(<span class="number">1</span>, index);  </span><br><span class="line">        System.out.println(ActionName);  </span><br><span class="line">        <span class="comment">//获取运行时参数  </span></span><br><span class="line">        String ActionClassName = <span class="keyword">this</span>.getInitParameter(ActionName);  </span><br><span class="line">        <span class="comment">//得到Action对象  </span></span><br><span class="line">        Action action = ActionFactory.getActionFactory().getAction(ActionClassName);  </span><br><span class="line">        <span class="comment">//执行Action的execute得到要返回的URL路径  </span></span><br><span class="line">        String url = action.execute(request, response);  </span><br><span class="line">        <span class="keyword">if</span>(url==<span class="keyword">null</span>)&#123;  </span><br><span class="line">            request.getRequestDispatcher(<span class="string">"error.jsp"</span>).forward(request, response);     </span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;  </span><br><span class="line">            request.getRequestDispatcher(url).forward(request, response);  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h1 id="2、Action对象工厂类实现："><a href="#2、Action对象工厂类实现：" class="headerlink" title="2、Action对象工厂类实现："></a>2、Action对象工厂类实现：</h1><p>ActionFactory是一个单实例类（整个系统只需要使用其一个对象），它只提供一个Action对象，通过getAction（String ActionClassName） 的方法调用创建一个Action对象。这个方法在Control中被调用。代码如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> cn.netjava.action;  </span><br><span class="line"><span class="comment">/** </span></span><br><span class="line"><span class="comment"> * 根据Action名字，创建Action对象 </span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> Administrator </span></span><br><span class="line"><span class="comment"> * </span></span><br><span class="line"><span class="comment"> */</span>  </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ActionFactory</span> </span>&#123;  </span><br><span class="line">  </span><br><span class="line">    <span class="comment">//单例模式：不需要创建对象  </span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">ActionFactory</span><span class="params">()</span></span>&#123;  </span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="comment">//单实例访问方法，得到ActionFactory对象  </span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ActionFactory <span class="title">getActionFactory</span><span class="params">()</span></span>&#123;  </span><br><span class="line">        <span class="keyword">if</span>(af == <span class="keyword">null</span>)&#123;  </span><br><span class="line">            af = <span class="keyword">new</span> ActionFactory();  </span><br><span class="line">        &#125;  </span><br><span class="line">        <span class="keyword">return</span> af;  </span><br><span class="line">    &#125;  </span><br><span class="line">    <span class="comment">/** </span></span><br><span class="line"><span class="comment">     * 根据具体的Action类名字创建Action对象 </span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> ActionClassName ：具体的Action类全名 </span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span>：Action类型对象 </span></span><br><span class="line"><span class="comment">     */</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> Action <span class="title">getAction</span><span class="params">(String ActionClassName)</span></span>&#123;  </span><br><span class="line">        Action action = <span class="keyword">null</span>;  </span><br><span class="line">        <span class="keyword">try</span>&#123;  </span><br><span class="line">            action = (Action) Class.forName(ActionClassName).newInstance();  </span><br><span class="line">        &#125;<span class="keyword">catch</span>(Exception e)&#123;  </span><br><span class="line">            e.printStackTrace();  </span><br><span class="line">        &#125;  </span><br><span class="line">        <span class="keyword">return</span> action;  </span><br><span class="line">    &#125;  </span><br><span class="line">      </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> ActionFactory af;  </span><br><span class="line">      </span><br><span class="line">      </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h1 id="3、Action接口类定义："><a href="#3、Action接口类定义：" class="headerlink" title="3、Action接口类定义："></a>3、Action接口类定义：</h1><p>所有的事件处理（即Action）类都必须实现这个接口<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> cn.netjava.action;  </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Action</span> </span>&#123;  </span><br><span class="line">    <span class="comment">/** </span></span><br><span class="line"><span class="comment">     * 所有的具体Action实现这个接口 </span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> request 请求对象 </span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> response 应答对象 </span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> ：结果页面 </span></span><br><span class="line"><span class="comment">     */</span>  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">execute</span><span class="params">(javax.servlet.http.HttpServletRequest request,javax.servlet.http.HttpServletResponse response)</span></span>;  </span><br><span class="line">      </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h1 id="4、web-xml中配置请求发送给控制器Servlet"><a href="#4、web-xml中配置请求发送给控制器Servlet" class="headerlink" title="4、web.xml中配置请求发送给控制器Servlet"></a>4、web.xml中配置请求发送给控制器Servlet</h1><p>最后，我们只需要在wex.xml中对MVC结构的配置：<br>视图页面中的请求都是以&lt;动作名字&gt;.do结尾，当这个请求到达web服务器后，会被服务器转向给控制器处理，控制器在根据解析出的动作名，调用对应的Action对象，处理结果，并输出结果页面，所以web.xml中必须有如下配置：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">&lt;servlet&gt;  </span><br><span class="line">    &lt;servlet-name&gt;controlServlet&lt;/servlet-name&gt;  </span><br><span class="line">    &lt;servlet-<span class="class"><span class="keyword">class</span>&gt;<span class="title">cn</span>.<span class="title">netjava</span>.<span class="title">servlet</span>.<span class="title">ControlServlet</span>&lt;/<span class="title">servlet</span>-<span class="title">class</span>&gt;  </span></span><br><span class="line"><span class="class">    &lt;<span class="title">init</span>-<span class="title">param</span>&gt;  </span></span><br><span class="line"><span class="class">        &lt;<span class="title">param</span>-<span class="title">name</span>&gt;<span class="title">loginAction</span>&lt;/<span class="title">param</span>-<span class="title">name</span>&gt;  </span></span><br><span class="line"><span class="class">        &lt;<span class="title">param</span>-<span class="title">value</span>&gt;<span class="title">cn</span>.<span class="title">netjava</span>.<span class="title">action</span>.<span class="title">LoginAction</span>&lt;/<span class="title">param</span>-<span class="title">value</span>&gt;  </span></span><br><span class="line"><span class="class">    &lt;/<span class="title">init</span>-<span class="title">param</span>&gt;  </span></span><br><span class="line"><span class="class">  &lt;/<span class="title">servlet</span>&gt;  </span></span><br><span class="line"><span class="class">  &lt;<span class="title">servlet</span>-<span class="title">mapping</span>&gt;  </span></span><br><span class="line"><span class="class">    &lt;<span class="title">servlet</span>-<span class="title">name</span>&gt;<span class="title">controlServlet</span>&lt;/<span class="title">servlet</span>-<span class="title">name</span>&gt;  </span></span><br><span class="line"><span class="class">    &lt;<span class="title">url</span>-<span class="title">pattern</span>&gt;*.<span class="title">do</span>&lt;/<span class="title">url</span>-<span class="title">pattern</span>&gt;  </span></span><br><span class="line"><span class="class"># 4、具体的<span class="title">Action</span>类实现（即对登录动作进行处理的类）</span></span><br><span class="line"><span class="class">``` <span class="title">java</span></span></span><br><span class="line"><span class="class"><span class="title">package</span> <span class="title">cn</span>.<span class="title">netjava</span>.<span class="title">action</span></span>;  </span><br><span class="line">  </span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletRequest;  </span><br><span class="line"><span class="keyword">import</span> javax.servlet.http.HttpServletResponse;  </span><br><span class="line">  </span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LoginAction</span> <span class="keyword">implements</span> <span class="title">Action</span> </span>&#123;  </span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">execute</span><span class="params">(HttpServletRequest request,  </span></span></span><br><span class="line"><span class="function"><span class="params">            HttpServletResponse response)</span> </span>&#123;  </span><br><span class="line">        <span class="comment">// 得到用户名和密码  </span></span><br><span class="line">        String userName = request.getParameter(<span class="string">"userName"</span>);  </span><br><span class="line">        String userPwd = request.getParameter(<span class="string">"userPwd"</span>);  </span><br><span class="line">        <span class="keyword">if</span> (userName.equals(<span class="string">"netjava"</span>) &amp;&amp; userPwd.equals(<span class="string">"netjava"</span>)) &#123;  </span><br><span class="line">            request.setAttribute(<span class="string">"userName"</span>, userName);  </span><br><span class="line">            <span class="keyword">return</span> <span class="string">"main.jsp"</span>;  </span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;  </span><br><span class="line">            <span class="keyword">return</span> <span class="string">"login.jsp"</span>;  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p> 如果登录成功，跳转到 main.jsp页面，否则，返回login,jsp页面</p>
+<p>以下是main.jsp和login.jsp页面：<br>main.jsp<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&lt;%@ page language=<span class="string">"java"</span> contentType=<span class="string">"text/html; charset=utf-8"</span>  </span><br><span class="line">    pageEncoding=<span class="string">"utf-8"</span>%&gt;  </span><br><span class="line">&lt;!DOCTYPE html PUBLIC <span class="string">"-//W3C//DTD HTML 4.01 Transitional//EN"</span> <span class="string">"http://www.w3.org/TR/html4/loose.dtd"</span>&gt;  </span><br><span class="line">&lt;html&gt;  </span><br><span class="line">&lt;head&gt;  </span><br><span class="line">&lt;meta http-equiv=<span class="string">"Content-Type"</span> content=<span class="string">"text/html; charset=utf-8"</span>&gt;  </span><br><span class="line">&lt;title&gt;Insert title here&lt;/title&gt;  </span><br><span class="line">&lt;/head&gt;  </span><br><span class="line">&lt;body&gt;  </span><br><span class="line">&lt;h1 style="color:red"&gt;&lt;%=request.getAttribute("userName") %&gt;登录成功&lt;/h1&gt;  </span><br><span class="line">&lt;/body&gt;  </span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure></p>
+<p> login.jsp</p>
+<pre><code class="lang-java">&lt;%@ page language=&quot;java&quot; contentType=&quot;text/html; charset=utf-8&quot;  
+    pageEncoding=&quot;utf-8&quot;%&gt;  
+&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD HTML 4.01 Transitional//EN&quot; &quot;http://www.w3.org/TR/html4/loose.dtd&quot;&gt;  
+&lt;html&gt;  
+&lt;head&gt;  
+&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=utf-8&quot;&gt;  
+&lt;title&gt;用户登录&lt;/title&gt;  
+&lt;/head&gt;  
+&lt;body&gt;  
+&lt;form action=&quot;loginAction.do&quot; method=&quot;post&quot;&gt;  
+    用户名：&lt;input type=&quot;text&quot; name=&quot;userName&quot; id=&quot;userName&quot;&gt;&lt;br&gt;  
+    密码：&lt;input type=&quot;password&quot; name=&quot;userPwd&quot; id=&quot;userPwd&quot;&gt;&lt;br&gt;  
+    &lt;input type=&quot;submit&quot; value=&quot;登录&quot;/&gt;  
+&lt;/form&gt;  
+&lt;/body&gt;  
+&lt;/html&gt;
+</code></pre>
+<p> 最后做个总结吧：以前我们与服务器进行交互，可能jsp页面和servlet中都将html和java代码参杂在一起，这会导致系统的系统维护困难、分工不清；例如在加有jsp代码段的网页中，程序员与美工之间的配合就非常困难！MVC结构的系统会从根本上强制我们将web系统中的数据对象、业务逻辑、用户界面三者分离，使得程序员（Java开发人员）集中精力于业务逻辑，界面程序员（HTML和JSP开发人员）集中精力于表现形式上。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/设计模式/" rel="tag"># 设计模式</a>
+          
+            <a href="/tags/MVC/" rel="tag"># MVC</a>
+          
+            <a href="/tags/SSH/" rel="tag"># SSH</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/02/17/Facade外观模式/" rel="next" title="Facade外观模式">
+                <i class="fa fa-chevron-left"></i> Facade外观模式
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/02/17/jsp+servlet+javabean实现ssh的mvc模式/" rel="prev" title="jsp+servlet+javabean实现ssh的mvc模式">
+                jsp+servlet+javabean实现ssh的mvc模式 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Rayman.hung</p>
+              <p class="site-description motion-element" itemprop="description">技术分享、读书心得、亲子时刻</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">801</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">769</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/hongyitong" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://blog.sina.com.cn/yitonghong" target="_blank" title="忆桐之家">
+                      
+                        <i class="fa fa-fw fa-globe"></i>忆桐之家</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://douban.com/people/2780741" target="_blank" title="豆瓣">
+                      
+                        <i class="fa fa-fw fa-globe"></i>豆瓣</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://www.zhihu.com/people/rayman-36" target="_blank" title="知乎">
+                      
+                        <i class="fa fa-fw fa-globe"></i>知乎</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://www.liaoxuefeng.com/" target="_blank" title="廖雪峰的官方网站">
+                      
+                        <i class="fa fa-fw fa-globe"></i>廖雪峰的官方网站</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://www.vaikan.com/" target="_blank" title="外刊IT评论">
+                      
+                        <i class="fa fa-fw fa-globe"></i>外刊IT评论</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.google.com/" title="Google" target="_blank">Google</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.hupu.com/" title="Hupu" target="_blank">Hupu</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1、控制器Servlet的实现"><span class="nav-number">1.</span> <span class="nav-text">1、控制器Servlet的实现</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2、Action对象工厂类实现："><span class="nav-number">2.</span> <span class="nav-text">2、Action对象工厂类实现：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3、Action接口类定义："><span class="nav-number">3.</span> <span class="nav-text">3、Action接口类定义：</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4、web-xml中配置请求发送给控制器Servlet"><span class="nav-number">4.</span> <span class="nav-text">4、web.xml中配置请求发送给控制器Servlet</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="google-site-verification" content="Z1De3vrLeDV0zQkSKDV0IlHnujNBKcoYsS9BdR4JEIg" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="OpenID,OAuth,第三方登录," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="OpenID 和 OAuth 的区别及第三方登录的安全隐患分析 不知道什么时候开始，我们已经习惯了点击“用XX帐号登录”或者 “Login with XX” 来访问网站，但是大多数人可能都不知道这背后涉及的事有多复杂。 OpenID 和OAuth 完全是为了两种不同的需求而生OpenID 的目标是为了帮助网站确认一个用户的身份 OAuth 的目标是为了授权第三方在可控范围下访问用户资源">
+<meta name="keywords" content="OpenID,OAuth,第三方登录">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OpenID 和 OAuth 的区别及第三方登录的安全隐患分析">
+<meta property="og:url" content="http://hongyitong.github.io/2017/08/21/OpenID 和 OAuth 的区别及第三方登录的安全隐患分析/index.html">
+<meta property="og:site_name" content="忆桐之家的博客">
+<meta property="og:description" content="OpenID 和 OAuth 的区别及第三方登录的安全隐患分析 不知道什么时候开始，我们已经习惯了点击“用XX帐号登录”或者 “Login with XX” 来访问网站，但是大多数人可能都不知道这背后涉及的事有多复杂。 OpenID 和OAuth 完全是为了两种不同的需求而生OpenID 的目标是为了帮助网站确认一个用户的身份 OAuth 的目标是为了授权第三方在可控范围下访问用户资源">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-09-05T06:27:50.444Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="OpenID 和 OAuth 的区别及第三方登录的安全隐患分析">
+<meta name="twitter:description" content="OpenID 和 OAuth 的区别及第三方登录的安全隐患分析 不知道什么时候开始，我们已经习惯了点击“用XX帐号登录”或者 “Login with XX” 来访问网站，但是大多数人可能都不知道这背后涉及的事有多复杂。 OpenID 和OAuth 完全是为了两种不同的需求而生OpenID 的目标是为了帮助网站确认一个用户的身份 OAuth 的目标是为了授权第三方在可控范围下访问用户资源">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://hongyitong.github.io/2017/08/21/OpenID 和 OAuth 的区别及第三方登录的安全隐患分析/"/>
+
+
+
+
+
+  <title>OpenID 和 OAuth 的区别及第三方登录的安全隐患分析 | 忆桐之家的博客</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">忆桐之家的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Rayman&Tony</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            公益404
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2017/08/21/OpenID 和 OAuth 的区别及第三方登录的安全隐患分析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Rayman.hung">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="忆桐之家的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">OpenID 和 OAuth 的区别及第三方登录的安全隐患分析</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-21T00:00:00+08:00">
+                2017-08-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/技术相关/" itemprop="url" rel="index">
+                    <span itemprop="name">技术相关</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>OpenID 和 OAuth 的区别及第三方登录的安全隐患分析</p>
+<p>不知道什么时候开始，我们已经习惯了点击“用XX帐号登录”或者 “Login with XX” 来访问网站，但是大多数人可能都不知道这背后涉及的事有多复杂。</p>
+<p><strong>OpenID 和OAuth 完全是为了两种不同的需求而生<br>OpenID 的目标是为了帮助网站确认一个用户的身份 OAuth 的目标是为了授权第三方在可控范围下访问用户资源</strong><br><a id="more"></a></p>
+<h1 id="OpenID-是怎么认证用户的？"><a href="#OpenID-是怎么认证用户的？" class="headerlink" title="OpenID 是怎么认证用户的？"></a>OpenID 是怎么认证用户的？</h1><p>一个网站如果想要接入 OpenID 认证是非常简单的，不需要创建应用，不需要 App Key ，不需要 Secret ，只需要将用户导向 OpenID Provider 的 Entry 并带上 Callback ，用户只要同意提供信息，你就可以拿到这个用户的“唯一标识”。</p>
+<p>请注意这里我使用了“唯一标识”这种说法，因为对于网站来说，OpenID Provider 提供的既不是用户的 UID ，也不是用户的 E-Mail ，比如 Google 在默认情况下提供的就是一个几十位长的字符串，这个字符串是随机生成的，第三方网站无法从中获得用户的任何私人信息。这么说可能很抽象，举个例子：</p>
+<p>比如我用 Google 的 OpenID 服务登录 example.com ， example.com 先把我导向 Google 的授权页面，我使用 Google 帐号 test@gmail.com 登录并同意后，页面跳回 example.com ， example.com 拿到了我的“唯一标识”，这个唯一标识可能是 cd5f2126c2b2f97ca2d446e52c6ff4baea56fd4bcfcea30afcaaf6b73bcb04a1 ， example.com 从这个字符串里无法获得任何 test@gmail.com 的个人信息（甚至连邮箱地址也不知道）， example.com 只知道以后只要使用谷歌登录并返回 cd5f2126c2b2f97ca2d446e52c6ff4baea56fd4bcfcea30afcaaf6b73bcb04a1 这个标识符，那就是我在登录。</p>
+<p>显而易见，OpenID 是专为登录认证而生，它使用简单，门槛很低，但是如果你想在认证过程中获得用户的其他信息（比如 E-Mail ）就得多做一步了。</p>
+<h1 id="如何在-OpenID-认证的过程中获得用户的部分信息？"><a href="#如何在-OpenID-认证的过程中获得用户的部分信息？" class="headerlink" title="如何在 OpenID 认证的过程中获得用户的部分信息？"></a>如何在 OpenID 认证的过程中获得用户的部分信息？</h1><p>传统的 OpenID 是做不到这一点的，你只能拿到“唯一标识”。不过新版的 OpenID 引入了 “ OpenID attribute exchange” 这个概念，这样第三方可以在用户的许可范围内获得用户的部分具体信息。</p>
+<p>还是上面的例子，如果 example.com 告诉 Google ，我想知道这个用户的 E-Mail 地址，谷歌就会在授权页面告诉用户：“example.com 想要你的 E-Mail 地址”，这时如果用户点击同意， example.com 就能在回调请求中拿到 test@gmail.com 这个地址。</p>
+<p>对于网站能拿到的信息，不同 Provider 有不同的规定，一般来说包括</p>
+<p>aim, blog, country, dob (date of birth), email, fullname, gender, icq, image, jabber, language, msn, nickname, phone, postcode, skype, timezone, website, yahoo</p>
+<p>等等。</p>
+<h1 id="那么，OAuth-又是怎么认证用户的？"><a href="#那么，OAuth-又是怎么认证用户的？" class="headerlink" title="那么，OAuth 又是怎么认证用户的？"></a>那么，OAuth 又是怎么认证用户的？</h1><p>与 OpenID 相比，网站想接入 OAuth 要稍微麻烦点，网站需要先创建应用，拿到 Key 和 Secret ，才能接入 Provider 。</p>
+<p>OAuth 的授权过程并不是身份认证的过程，这一点需要特别清楚，网站走完OAuth 流程并拿到用户的授权 token 后还需要通过 token 调用相应的用户信息接口才能获得“唯一标识”，举个例子：</p>
+<p>我想通过新浪微博登录 example.com ， example.com 要先把我 redirect 到新浪微博的授权页面，我通过微博帐号登录并授权后，页面跳回 example.com ， example.com 拿到我的访问 token 后还要再调用一个接口来获得我的新浪会员 UID ，这个 UID 就是新浪用户的“唯一标识”了。</p>
+<p>可以看出，OAuth 相对于 OpenID 最大的区别就是，网站实际上是拿到了你的帐户访问权限继而确认你的身份，这是一个安全隐患，因为网站在拿到你的“唯一标识”的同时还拿到了一把你的账户的 “临时钥匙”。至于网站会不会拿这把钥匙“干坏事”，这个只有站长心里清楚。同时 OAuth 还比 OpenID 多了几个额外的请求步骤，登录所费时间一定是长于 OpenID 的。</p>
+<p>大多数的网民是没有这种意识的，他们对“通过XX登录”的认证过程中的提示早已视而不见：</p>
+<p> Weibo Login Prompt</p>
+<p>有多少人真正注意过左边的文字？</p>
+<p> Douban Login Prompt</p>
+<p>豆瓣写的更清楚，XXX应用“希望操作你在豆瓣上的数据”而不是“希望使用你的豆瓣账号来登录XXX”</p>
+<h1 id="国内外主要服务商认证方式对比"><a href="#国内外主要服务商认证方式对比" class="headerlink" title="国内外主要服务商认证方式对比"></a>国内外主要服务商认证方式对比</h1><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>提供商</th>
+<th>认证方式</th>
+<th>认证后网站获得的权限</th>
+<th>安全程度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Google</td>
+<td>OpenID + OAuth</td>
+<td>如果使用OpenID，网站无法获得任何额外权限（包括获得你的Google账户名称），如果使用OAuth，网站须明确说明需要访问哪些服务的权限并经过用户逐项同意</td>
+<td>高</td>
+</tr>
+<tr>
+<td>Facebook</td>
+<td>OAuth</td>
+<td>默认授权情况下只能读取你的公开信息（不包含E-Mail地址），如果网站需要更高级权限需要明确声明并经过用户逐项同意</td>
+<td>高</td>
+</tr>
+<tr>
+<td>QQ空间</td>
+<td>OAuth</td>
+<td>默认授权情况下只能读取你的公开信息（不包含QQ号），如果网站需要更高级权限需要明确声明并经过用户逐项同意</td>
+<td>高</td>
+</tr>
+<tr>
+<td>新浪微博</td>
+<td>OAuth</td>
+<td>默认授权情况下可以获得你的所有信息（私信及身份证号、姓名等除外），并可以你的身份操作绝大多数微博功能</td>
+<td>低</td>
+</tr>
+<tr>
+<td>Windows Live</td>
+<td>OAuth</td>
+<td>默认授权情况下只能读取你的“唯一标识”，如果网站需要更高级权限需要明确声明并经过用户逐项同意，默认情况下基本类似于OpenID</td>
+<td>高</td>
+</tr>
+<tr>
+<td>腾讯微博</td>
+<td>OpenID + OAuth</td>
+<td>如果使用OpenID，网站无法获得任何额外权限，如果使用OAuth，默认会获得用户所有操作的权限，除非应用明确声明只需要部分权限    使用OpenID时， 高使用OAuth时，</td>
+<td>中</td>
+</tr>
+<tr>
+<td>搜狐微博</td>
+<td>OAuth</td>
+<td>默认授权情况下可以获得你的绝大多数信息，并可以你的身份操作绝大多数微博功能</td>
+<td>低</td>
+</tr>
+<tr>
+<td>网易微博</td>
+<td>OAuth</td>
+<td>默认授权情况下可以获得你的绝大多数信息，并可以你的身份操作绝大多数微博功能</td>
+<td>低</td>
+</tr>
+<tr>
+<td>百度</td>
+<td>OAuth</td>
+<td>默认授权情况下只能读取你的公开信息（UID、百度帐户名），如果网站需要更高级权限需要明确声明并经过用户逐项同意</td>
+<td>高</td>
+</tr>
+<tr>
+<td>人人</td>
+<td>OAuth</td>
+<td>默认授权情况下只能读取你的公开信息（UID、好友关系等），如果网站需要更高级权限需要明确声明并经过用户逐项同意</td>
+<td>高</td>
+</tr>
+<tr>
+<td>开心网</td>
+<td>OAuth</td>
+<td>默认授权情况下只能读取你的公开信息，如果网站需要更高级权限需要明确声明并经过用户逐项同意</td>
+<td>高</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>总体来说，国外的网站都比较正规，第三方网站几乎无法获得任何私人信息，而国内网站对个人信息的保护水平高低不齐，某些网站甚至没有任何保护，新浪微博等网站的“第三方接入”，用一句话来说，不管你敢不敢用，我反正是不敢用。</p>
+<p>原文： <a href="https://www.idndx.com/2012/04/23/openid-vs-oauth-and-the-security-risk-of-oauth-login/" target="_blank" rel="noopener">https://www.idndx.com/2012/04/23/openid-vs-oauth-and-the-security-risk-of-oauth-login/</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/OpenID/" rel="tag"># OpenID</a>
+          
+            <a href="/tags/OAuth/" rel="tag"># OAuth</a>
+          
+            <a href="/tags/第三方登录/" rel="tag"># 第三方登录</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/08/21/深入浅出Active Directory系列/" rel="next" title="深入浅出Active Directory系列">
+                <i class="fa fa-chevron-left"></i> 深入浅出Active Directory系列
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/08/21/LDAP和Active Directory有什么区别/" rel="prev" title="LDAP和Active Directory有什么区别">
+                LDAP和Active Directory有什么区别 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Rayman.hung</p>
+              <p class="site-description motion-element" itemprop="description">技术分享、读书心得、亲子时刻</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">801</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">769</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/hongyitong" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://blog.sina.com.cn/yitonghong" target="_blank" title="忆桐之家">
+                      
+                        <i class="fa fa-fw fa-globe"></i>忆桐之家</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://douban.com/people/2780741" target="_blank" title="豆瓣">
+                      
+                        <i class="fa fa-fw fa-globe"></i>豆瓣</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://www.zhihu.com/people/rayman-36" target="_blank" title="知乎">
+                      
+                        <i class="fa fa-fw fa-globe"></i>知乎</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://www.liaoxuefeng.com/" target="_blank" title="廖雪峰的官方网站">
+                      
+                        <i class="fa fa-fw fa-globe"></i>廖雪峰的官方网站</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://www.vaikan.com/" target="_blank" title="外刊IT评论">
+                      
+                        <i class="fa fa-fw fa-globe"></i>外刊IT评论</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.google.com/" title="Google" target="_blank">Google</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.hupu.com/" title="Hupu" target="_blank">Hupu</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#OpenID-是怎么认证用户的？"><span class="nav-number">1.</span> <span class="nav-text">OpenID 是怎么认证用户的？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#如何在-OpenID-认证的过程中获得用户的部分信息？"><span class="nav-number">2.</span> <span class="nav-text">如何在 OpenID 认证的过程中获得用户的部分信息？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#那么，OAuth-又是怎么认证用户的？"><span class="nav-number">3.</span> <span class="nav-text">那么，OAuth 又是怎么认证用户的？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#国内外主要服务商认证方式对比"><span class="nav-number">4.</span> <span class="nav-text">国内外主要服务商认证方式对比</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

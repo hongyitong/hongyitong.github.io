@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="google-site-verification" content="Z1De3vrLeDV0zQkSKDV0IlHnujNBKcoYsS9BdR4JEIg" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="方案,问题,表示层," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="《Struts2技术内幕：深入解析Struts架构设计与实现原理》第2章固本清源—Web开发浅谈，本章讨论的话题是非常重要的，因为任何细节都无法脱离基本概念而存在。如果我们要探寻Struts2的细节，就必须了解Struts2作为一个框架存在的基本意义。本节为大家介绍表示层的困惑。">
+<meta name="keywords" content="方案,问题,表示层">
+<meta property="og:type" content="article">
+<meta property="og:title" content="表示层的困惑">
+<meta property="og:url" content="http://hongyitong.github.io/2017/03/18/表示层的困惑/index.html">
+<meta property="og:site_name" content="忆桐之家的博客">
+<meta property="og:description" content="《Struts2技术内幕：深入解析Struts架构设计与实现原理》第2章固本清源—Web开发浅谈，本章讨论的话题是非常重要的，因为任何细节都无法脱离基本概念而存在。如果我们要探寻Struts2的细节，就必须了解Struts2作为一个框架存在的基本意义。本节为大家介绍表示层的困惑。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-07-12T06:59:34.352Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="表示层的困惑">
+<meta name="twitter:description" content="《Struts2技术内幕：深入解析Struts架构设计与实现原理》第2章固本清源—Web开发浅谈，本章讨论的话题是非常重要的，因为任何细节都无法脱离基本概念而存在。如果我们要探寻Struts2的细节，就必须了解Struts2作为一个框架存在的基本意义。本节为大家介绍表示层的困惑。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://hongyitong.github.io/2017/03/18/表示层的困惑/"/>
+
+
+
+
+
+  <title>表示层的困惑 | 忆桐之家的博客</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">忆桐之家的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Rayman&Tony</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            公益404
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2017/03/18/表示层的困惑/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Rayman.hung">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="忆桐之家的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">表示层的困惑</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-18T14:34:00+08:00">
+                2017-03-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/技术相关/" itemprop="url" rel="index">
+                    <span itemprop="name">技术相关</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>《Struts2技术内幕：深入解析Struts架构设计与实现原理》第2章固本清源—Web开发浅谈，本章讨论的话题是非常重要的，因为任何细节都无法脱离基本概念而存在。如果我们要探寻Struts2的细节，就必须了解Struts2作为一个框架存在的基本意义。本节为大家介绍表示层的困惑。<br><a id="more"></a><br>除了上述这3段源代码外，我们还需要建立起JSP页面中的form请求与Servlet类的响应之间的关系。这一关系，是在web.xml中维护的，如代码清单2-9所示。<br>代码清单2-9　web.xml<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;servlet&gt; </span><br><span class="line"> &lt;servlet-name&gt;Register&lt;/servlet-name&gt; </span><br><span class="line"> &lt;servlet-<span class="class"><span class="keyword">class</span>&gt;<span class="title">example</span>.<span class="title">RegistrationServlet</span>&lt;/<span class="title">servlet</span>-<span class="title">class</span>&gt; </span></span><br><span class="line"><span class="class">&lt;/<span class="title">servlet</span>&gt; </span></span><br><span class="line"><span class="class">&lt;<span class="title">servlet</span>-<span class="title">mapping</span>&gt; </span></span><br><span class="line"><span class="class"> &lt;<span class="title">servlet</span>-<span class="title">name</span>&gt;<span class="title">Register</span>&lt;/<span class="title">servlet</span>-<span class="title">name</span>&gt; </span></span><br><span class="line"><span class="class"> &lt;<span class="title">url</span>-<span class="title">pattern</span>&gt;/<span class="title">struts2_example</span>/<span class="title">registration</span>&lt;/<span class="title">url</span>-<span class="title">pattern</span>&gt; </span></span><br><span class="line"><span class="class">&lt;/<span class="title">servlet</span>-<span class="title">mapping</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>我们来看看上面的这4段代码是如何构成MVC的雏形的。</p>
+<ul>
+<li>Model（数据模型）—User.java</li>
+<li>View（对外交互）—registration.jsp</li>
+<li>Control（程序执行和控制）—RegistrationServlet.java</li>
+</ul>
+<p>URL Mapping（请求转化）—web.xml<br>我们可以看到MVC的实现似乎并不复杂。在不借助额外的框架帮助的前提下，只要基本知晓JSP和Servlet标准（它们是使用Java进行Web开发的规范和标准），任何程序员都可以像模像样地实现MVC模式，因为从原理上讲，MVC只是一个概念，我们只需要把这个概念中的各个元素赋予相应的程序实现即可。<br>不过程序终究是一个动态的执行过程。一旦程序开始运行，上面的这些程序实现就会开始遭遇种种困境。这些困境主要来源于两个方面：其一，出于程序自身的可读性和可维护性考虑，需要通过重构来解决程序的复杂性困境。其二，出于业务扩展的需求，需要通过框架级别的功能增强来解决可扩展性困境。</p>
+<h1 id="问题1-当浏览器发送一个Http请求，Web容器是如何接收这个请求并指定相应的Java类来执行业务逻辑并返回处理结果的？"><a href="#问题1-当浏览器发送一个Http请求，Web容器是如何接收这个请求并指定相应的Java类来执行业务逻辑并返回处理结果的？" class="headerlink" title="问题1　当浏览器发送一个Http请求，Web容器是如何接收这个请求并指定相应的Java类来执行业务逻辑并返回处理结果的？"></a>问题1　当浏览器发送一个Http请求，Web容器是如何接收这个请求并指定相应的Java类来执行业务逻辑并返回处理结果的？</h1><p>这个问题是使用Java进行Web开发的核心问题之一，我们将这个问题简称为URL Mapping问题。这个问题的本质实际上来源于Http协议与Java程序之间的匹配和交互。Web开发经过了多年的发展，这一核心的哲学问题也经历了多次重大变革，有的崇尚由繁至简，有的则从形式多样化入手。<br>在上面的例子中，我们可以看到使用web.xml来表达URL Mapping关系遇到的困境：当系统变大，这种配置上的重复操作会让web.xml变得越来越大而难以维护。不仅如此，web.xml的配置也无法为URL Mapping建立起合适的规则引擎。<br>由此，解决URL Mapping问题的核心在于建立一套由Http协议中的URL表达式到Java世界中类对象的规则匹配引擎。额外的，这种规则匹配最好比较灵活而简单又不失必要的可维护性。</p>
+<h1 id="问题2-Web应用是典型的“请求-响应”模式的应用，数据是如何顺利流转于浏览器和Java世界之间的？面对Http协议与Java世界数据形式的不匹配性，我们如何能够在流转时做到数据类型的自动转化？"><a href="#问题2-Web应用是典型的“请求-响应”模式的应用，数据是如何顺利流转于浏览器和Java世界之间的？面对Http协议与Java世界数据形式的不匹配性，我们如何能够在流转时做到数据类型的自动转化？" class="headerlink" title="问题2　Web应用是典型的“请求-响应”模式的应用，数据是如何顺利流转于浏览器和Java世界之间的？面对Http协议与Java世界数据形式的不匹配性，我们如何能够在流转时做到数据类型的自动转化？"></a>问题2　Web应用是典型的“请求-响应”模式的应用，数据是如何顺利流转于浏览器和Java世界之间的？面对Http协议与Java世界数据形式的不匹配性，我们如何能够在流转时做到数据类型的自动转化？</h1><p>这个问题伴随着问题1而来，数据请求与数据返回相当于是基于“请求-响应”模式的Web程序的输入和输出。数据的本质是存储于其中的信息，只不过数据在不同的地方有不同的表现形式。例如，在浏览器中，数据总是以字符串形式展现出来，表现出“弱类型”的特征；在Java世界，数据则体现为一个个结构化的Java对象，表现出“强类型”的特征。于是，就需要有一个工具能够帮助我们解决在数据流转时的数据形式的相互转化。<br>在上面的例子中，我们可以看到RegistrationServlet中，我们编写了额外的代码，把页面上传递过来的日期值转化为Java中的Date对象。在参数的数量和Java对象越来越复杂的情况下，这种额外的代码就会变成一种灾难，甚至成为我们开发的主要瓶颈之一。<br>解决数据流转问题的方案是使用表达式引擎。将表达式引擎插入到程序逻辑执行之前，我们就能从复杂的对象转化中解放出来，从而进一步简化开发流程。</p>
+<h1 id="问题3-Web容器是一个典型的多线程环境，针对每个Http请求，Web容器的线程池会分配一个特定的线程进行处理。那么如何保证在多线程环境下，处理请求的Java类是线程安全的对象？如何保证数据的流转和访问都是线程安全的？"><a href="#问题3-Web容器是一个典型的多线程环境，针对每个Http请求，Web容器的线程池会分配一个特定的线程进行处理。那么如何保证在多线程环境下，处理请求的Java类是线程安全的对象？如何保证数据的流转和访问都是线程安全的？" class="headerlink" title="问题3　Web容器是一个典型的多线程环境，针对每个Http请求，Web容器的线程池会分配一个特定的线程进行处理。那么如何保证在多线程环境下，处理请求的Java类是线程安全的对象？如何保证数据的流转和访问都是线程安全的？"></a>问题3　Web容器是一个典型的多线程环境，针对每个Http请求，Web容器的线程池会分配一个特定的线程进行处理。那么如何保证在多线程环境下，处理请求的Java类是线程安全的对象？如何保证数据的流转和访问都是线程安全的？</h1><p>这个问题与问题1一样，也是Web开发中的核心问题之一，因为它涉及Web开发中最为底层的处理机制问题。在上面的例子中，我们使用的是基于Servlet标准的方式进行编程，扩展Servlet用于处理Http请求。然而恰恰就是这种编程模型，是一种非线程安全的编程模型，因为Servlet对象是一个非线程安全的对象。也就是说，如果我们在doPost方法中访问RegistrationServlet中所定义的局部变量，就会产生线程安全问题（第4章会重点介绍线程安全问题产生的来龙去脉）。<br>传统的表示层框架对于这个问题的处理方式是采用规避问题的方式。既然Servlet对象不是一个线程安全的对象，那么我们就干脆禁止在Servlet对象的方法中访问Servlet对象的内部变量。这种鸵鸟算法固然是一种有效的方案，但它却不是一种合理的方案。最致命的一点是，它是一种非语法检查级别的禁止，因此也就无法从根本上杜绝程序员犯这样的错误。<br>另外一种解决方案就是在整个请求周期中引入ThreadLocal模式，通过ThreadLocal模式的使用，将整个过程的对象访问都线程安全化，彻底解决多线程环境下的数据访问问题（有关ThreadLocal模式的方方面面，我们在后续章节中会详细介绍）。ThreadLocal模式的引入对于Web层框架的影响是深远并且颠覆性的，因为它为框架摆脱Web容器的依赖铺平了道路，意味着我们可以通过合理的设计，在脱离Servlet等Web容器元素的环境中进行编程。</p>
+<h1 id="问题4-Controller层作为MVC的核心控制器，如何能够在最大程度上支持功能点上的扩展？"><a href="#问题4-Controller层作为MVC的核心控制器，如何能够在最大程度上支持功能点上的扩展？" class="headerlink" title="问题4　Controller层作为MVC的核心控制器，如何能够在最大程度上支持功能点上的扩展？"></a>问题4　Controller层作为MVC的核心控制器，如何能够在最大程度上支持功能点上的扩展？</h1><p>问题4来源于我们对程序本身的自然属性（可读性和可扩展性）的需求。这一内在需求实际上也驱动着我们着手在整个MVC的构架级别设计更为成熟有效的自扩展方案。<br>从一个更加宏观的角度来帮助我们理解这个问题，我们来举一个制药工厂生产药品的例子。一个工厂在进行批量生产时，总是会引入“生产线”的概念。生产线能够把整个制药过程划分成若干道工序，当原材料经过每一道工序，最终就会成为一个可出厂销售的药品。某一天，由于市场推广的原因，需要改变药品的包装，那么我们对这条生产线的要求就是它能够改变“包装”这道工序的流程，更改成新的包装。<br>在上面的例子中，我们可以看到并没有一个“生产线”的概念。这种情况下，我们日后对于逻辑功能的扩展就变得困难重重。虽然我们发现，RegistrationServlet或许和其他所有的Servlet有着非常类似的执行步骤：接收参数、进行类型转换、调用业务逻辑接口执行逻辑、返回处理结果。然而我们却缺乏一条可以任意配置调度的生产线将这个过程规范起来。<br>解决这个问题从直观上来讲似乎很容易：没有生产线，我们建一条生产线就行了。而事实上，“造轮子”实在是一件费时费力的事情，因为我们要考虑的方面实在太多。这时我们就不得不借鉴许多前辈的经验了，寻找某些事件定义的框架，遵循框架的定义规范来进行编程将是我们解决这个问题的主要途径。</p>
+<h1 id="问题5-View层的表现形式总是多种多样的，随着Web开发技术的不断发展，MVC如何在框架级别提供一种完全透明的方式来应对不同的视图表现形式？"><a href="#问题5-View层的表现形式总是多种多样的，随着Web开发技术的不断发展，MVC如何在框架级别提供一种完全透明的方式来应对不同的视图表现形式？" class="headerlink" title="问题5　View层的表现形式总是多种多样的，随着Web开发技术的不断发展，MVC如何在框架级别提供一种完全透明的方式来应对不同的视图表现形式？"></a>问题5　View层的表现形式总是多种多样的，随着Web开发技术的不断发展，MVC如何在框架级别提供一种完全透明的方式来应对不同的视图表现形式？</h1><p>这一问题是基于View（视图）技术的不断发展，造成传统的基于HTML的视图已经不能满足所有的需求而提出的。当今，越来越多新的视图技术被用于Web开发中，例如，模板技术、JSON数据流、Stream数据流、Flash展现等等。<br>在上面的例子中，我们可以看到负责视图层跳转的RegistrationServlet是通过硬编码方式完成程序执行跳转的。这种方式不但无法支持多种新的视图技术，同时也无法使我们从复杂的视图跳转的硬编码中释放出来。<br>解决这个问题的最有效途径是把不同的视图技术进行分类，针对不同的分类封装不同的视图跳转逻辑，而最重要的一步是将这两者与之前我们所提到的生产线有机结合起来。</p>
+<h1 id="问题6-MVC模式虽然很直观地为我们规定了表示层的各种元素，但是如何通过某种机制把这些元素有机整合在一起，从而成为一个整体呢？"><a href="#问题6-MVC模式虽然很直观地为我们规定了表示层的各种元素，但是如何通过某种机制把这些元素有机整合在一起，从而成为一个整体呢？" class="headerlink" title="问题6　MVC模式虽然很直观地为我们规定了表示层的各种元素，但是如何通过某种机制把这些元素有机整合在一起，从而成为一个整体呢？"></a>问题6　MVC模式虽然很直观地为我们规定了表示层的各种元素，但是如何通过某种机制把这些元素有机整合在一起，从而成为一个整体呢？</h1><p>这个问题非常宏观，却是我们不得不去面对的一个问题。MVC虽然在概念上被规定下来，在实现上却需要一个完整的机制来把这些元素都容纳在一起。通常情况下，我们往往把这种机制称之为配置元素。配置元素是构成程序的重要组成部分，它把各种形式的程序通过某种配置规则联系在一起。之前我们提到的URL Mapping实际上也属于配置规则的一种，视图的跳转也是配置规则的一种。只有当这种配置规则被建立起来，MVC模式才能真正运作起来。<br>这一系列配置元素在框架内部往往被定义成统一的可以被框架识别的数据结构并在系统初始化的时候进行缓存。而这些被缓存了的对象，也成为主程序的控制流在MVC框架中各个元素之间进行流转的依据。<br>如果从元素的表现形式上来看配置元素和控制流的关系，我们实际上可以看到整合过程的两个层面：数据结构和流程控制。所谓的框架，我们也只是在这两个层面上做文章，一方面规定好这些配置元素的定义，另一方面指定程序运转的流程，从而控制和整合散落在各处的表示层元素。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/方案/" rel="tag"># 方案</a>
+          
+            <a href="/tags/问题/" rel="tag"># 问题</a>
+          
+            <a href="/tags/表示层/" rel="tag"># 表示层</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/03/17/java反射机制基础详解/" rel="next" title="java反射机制基础详解">
+                <i class="fa fa-chevron-left"></i> java反射机制基础详解
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/03/20/《Struts2技术内幕：深入解析Struts架构设计与实现原理》读书笔记/" rel="prev" title="《Struts2技术内幕：深入解析Struts架构设计与实现原理》读书笔记">
+                《Struts2技术内幕：深入解析Struts架构设计与实现原理》读书笔记 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Rayman.hung</p>
+              <p class="site-description motion-element" itemprop="description">技术分享、读书心得、亲子时刻</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">801</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">769</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/hongyitong" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://blog.sina.com.cn/yitonghong" target="_blank" title="忆桐之家">
+                      
+                        <i class="fa fa-fw fa-globe"></i>忆桐之家</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://douban.com/people/2780741" target="_blank" title="豆瓣">
+                      
+                        <i class="fa fa-fw fa-globe"></i>豆瓣</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://www.zhihu.com/people/rayman-36" target="_blank" title="知乎">
+                      
+                        <i class="fa fa-fw fa-globe"></i>知乎</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://www.liaoxuefeng.com/" target="_blank" title="廖雪峰的官方网站">
+                      
+                        <i class="fa fa-fw fa-globe"></i>廖雪峰的官方网站</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://www.vaikan.com/" target="_blank" title="外刊IT评论">
+                      
+                        <i class="fa fa-fw fa-globe"></i>外刊IT评论</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.google.com/" title="Google" target="_blank">Google</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.hupu.com/" title="Hupu" target="_blank">Hupu</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#问题1-当浏览器发送一个Http请求，Web容器是如何接收这个请求并指定相应的Java类来执行业务逻辑并返回处理结果的？"><span class="nav-number">1.</span> <span class="nav-text">问题1　当浏览器发送一个Http请求，Web容器是如何接收这个请求并指定相应的Java类来执行业务逻辑并返回处理结果的？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#问题2-Web应用是典型的“请求-响应”模式的应用，数据是如何顺利流转于浏览器和Java世界之间的？面对Http协议与Java世界数据形式的不匹配性，我们如何能够在流转时做到数据类型的自动转化？"><span class="nav-number">2.</span> <span class="nav-text">问题2　Web应用是典型的“请求-响应”模式的应用，数据是如何顺利流转于浏览器和Java世界之间的？面对Http协议与Java世界数据形式的不匹配性，我们如何能够在流转时做到数据类型的自动转化？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#问题3-Web容器是一个典型的多线程环境，针对每个Http请求，Web容器的线程池会分配一个特定的线程进行处理。那么如何保证在多线程环境下，处理请求的Java类是线程安全的对象？如何保证数据的流转和访问都是线程安全的？"><span class="nav-number">3.</span> <span class="nav-text">问题3　Web容器是一个典型的多线程环境，针对每个Http请求，Web容器的线程池会分配一个特定的线程进行处理。那么如何保证在多线程环境下，处理请求的Java类是线程安全的对象？如何保证数据的流转和访问都是线程安全的？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#问题4-Controller层作为MVC的核心控制器，如何能够在最大程度上支持功能点上的扩展？"><span class="nav-number">4.</span> <span class="nav-text">问题4　Controller层作为MVC的核心控制器，如何能够在最大程度上支持功能点上的扩展？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#问题5-View层的表现形式总是多种多样的，随着Web开发技术的不断发展，MVC如何在框架级别提供一种完全透明的方式来应对不同的视图表现形式？"><span class="nav-number">5.</span> <span class="nav-text">问题5　View层的表现形式总是多种多样的，随着Web开发技术的不断发展，MVC如何在框架级别提供一种完全透明的方式来应对不同的视图表现形式？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#问题6-MVC模式虽然很直观地为我们规定了表示层的各种元素，但是如何通过某种机制把这些元素有机整合在一起，从而成为一个整体呢？"><span class="nav-number">6.</span> <span class="nav-text">问题6　MVC模式虽然很直观地为我们规定了表示层的各种元素，但是如何通过某种机制把这些元素有机整合在一起，从而成为一个整体呢？</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

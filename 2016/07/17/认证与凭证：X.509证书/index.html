@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="google-site-verification" content="Z1De3vrLeDV0zQkSKDV0IlHnujNBKcoYsS9BdR4JEIg" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="其它," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="转自：http://www.cnblogs.com/artech/archive/2011/05/23/authentication_022.html认证与凭证：X.509证书在《上篇》中，我们谈到了常用的认证方式：用户名/密码认证和Windows认证。在下篇中，我们着重来介绍另外一种重要的凭证类型：X.509证书，以及针对X.509证书的认证方式。不过为了让读者能够真正地全面地了解X.509证书">
+<meta name="keywords" content="其它">
+<meta property="og:type" content="article">
+<meta property="og:title" content="认证与凭证：X.509证书">
+<meta property="og:url" content="http://hongyitong.github.io/2016/07/17/认证与凭证：X.509证书/index.html">
+<meta property="og:site_name" content="忆桐之家的博客">
+<meta property="og:description" content="转自：http://www.cnblogs.com/artech/archive/2011/05/23/authentication_022.html认证与凭证：X.509证书在《上篇》中，我们谈到了常用的认证方式：用户名/密码认证和Windows认证。在下篇中，我们着重来介绍另外一种重要的凭证类型：X.509证书，以及针对X.509证书的认证方式。不过为了让读者能够真正地全面地了解X.509证书">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://hongyitong.github.io/img/数字签名1.png">
+<meta property="og:image" content="http://hongyitong.github.io/img/数字签名2.png">
+<meta property="og:image" content="http://hongyitong.github.io/img/数字签名3.png">
+<meta property="og:updated_time" content="2017-07-12T02:01:22.725Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="认证与凭证：X.509证书">
+<meta name="twitter:description" content="转自：http://www.cnblogs.com/artech/archive/2011/05/23/authentication_022.html认证与凭证：X.509证书在《上篇》中，我们谈到了常用的认证方式：用户名/密码认证和Windows认证。在下篇中，我们着重来介绍另外一种重要的凭证类型：X.509证书，以及针对X.509证书的认证方式。不过为了让读者能够真正地全面地了解X.509证书">
+<meta name="twitter:image" content="http://hongyitong.github.io/img/数字签名1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://hongyitong.github.io/2016/07/17/认证与凭证：X.509证书/"/>
+
+
+
+
+
+  <title>认证与凭证：X.509证书 | 忆桐之家的博客</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">忆桐之家的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Rayman&Tony</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            公益404
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2016/07/17/认证与凭证：X.509证书/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Rayman.hung">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="忆桐之家的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">认证与凭证：X.509证书</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-07-17T00:00:00+08:00">
+                2016-07-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/技术相关/" itemprop="url" rel="index">
+                    <span itemprop="name">技术相关</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>转自：<a href="http://www.cnblogs.com/artech/archive/2011/05/23/authentication_022.html" target="_blank" rel="noopener">http://www.cnblogs.com/artech/archive/2011/05/23/authentication_022.html</a><br>认证与凭证：X.509证书<br>在《上篇》中，我们谈到了常用的认证方式：用户名/密码认证和Windows认证。在下篇中，我们着重来介绍另外一种重要的凭证类型：X.509证书，以及针对X.509证书的认证方式。不过为了让读者能够真正地全面地了解X.509证书，我们需要先了解一些关于非对称密码学的背景知识。</p>
+<p>目录<br>一、非对称密码学（Asymmetric Cryptography）<br>    消息加密（Encryption）<br>    数字签名（Digital Signature）<br>二、数字证书<br>    数字证书的颁发机制<br>    创建数字证书<br>三、通过凭证三个属性来分析X.509证书<br><a id="more"></a> </p>
+<h1 id="一、-非对称密码学（Asymmetric-Cryptography）"><a href="#一、-非对称密码学（Asymmetric-Cryptography）" class="headerlink" title="一、 非对称密码学（Asymmetric Cryptography）"></a>一、 非对称密码学（Asymmetric Cryptography）</h1><p>按照维基百科的定义，密码学（Cryptography）一种关于信息隐藏（Hiding Information）的研究或者实践。当代密码学是一种跨学科的研究，涉及的学科主要包括数学、计算机科学和工程学。站在消息交换的角度，密码学就是帮助我们实现对整个消息或者对消息的某个部分进行数字签名和加密的理论和方法。</p>
+<p>数字签名和加密依赖于相应的加密算法（Cryptographic Algorithm），从数学的角度来讲，加密算法是就是将被加密的数据和密钥作为自变量，将加密后的数据作为因变量的函数。与加密相对的操作是解密。按照加密和解密采用的密钥是否相同，我们将加密算法分为对称加密算法和非对称加密算法。前者采用相同的密钥进行加密和解密，后者则采用一组相互配对的密钥分别进行加密和解密。对于非对称加密，我们选择秘钥对中某一个密钥对消息进行加密，该密文只有通过另一个秘要方能解密。非对称密码学具有两个主要的应用：</p>
+<ul>
+<li>直接通过对消息进行加密解决机密性问题；</li>
+<li>通过数字签名实现身份认证和数据一致性的问题。</li>
+</ul>
+<h2 id="消息加密（Encryption）"><a href="#消息加密（Encryption）" class="headerlink" title="消息加密（Encryption）"></a>消息加密（Encryption）</h2><p>非对称加密依赖一组由公钥/私钥（Public Key /Private Key）组成的密钥对，所以采用非对称加密又被称为公钥加密（Public Key Cryptography）。具体来说，公钥和私钥均可以用于加密。如果密钥对中的其中一个用于加密，另一个则用于解密。公钥公诸于众，不具有隐私性，任何人均可以获取；而私钥专属于拥有该密钥对的实体，属于绝对隐私。</p>
+<p>对于消息交换来说，通过非对称的方式对消息进行加密是能够确保消息的机密性。具体的做法是：消息的发送方采用接收方的公钥进行加密，接收方通过自己的私钥进行解密。由于私钥仅供接收方所有，所有其他人不能对密文进行解密。</p>
+<h2 id="数字签名（Digital-Signature）"><a href="#数字签名（Digital-Signature）" class="headerlink" title="数字签名（Digital Signature）"></a>数字签名（Digital Signature）</h2><p>我们所说的数字签名实际上包括两项主要的工作，签名（Signing）和检验（Verification），前者创建一个数字签名，后者验证签名的有效性。接下来，我们来简单介绍一下在消息交换场景下的签名和检验是如何实现的。</p>
+<p><img src="/img/数字签名1.png" alt=""></p>
+<p>签名的过程其实很简单，整个流程如上图所示。整个流程包括两个步骤：首先，发送方首先采用某种算法对整个消息的内容实施哈希计算，得到一个哈希码。然后，发送使用自己的私钥对该哈希码就行加密，加密后得到的密文就是数字签名。该数字签名最终会连同发送方密钥对中的公钥（该公钥一般会内嵌于一个数字证书中）附加到原消息上一并发予接收方。</p>
+<p>这三项被接收方接收之后，它就可以借助这个数字签名验证发送方的真实身份和消息的完整性，这个过程被称为数字签名的验证。整个数字签名检验流程如下图所示。首先，原消息被提取出来，通过相同的哈希算法得到一个哈希码。然后，数字签名被提取出来，采用相同的算法利用公钥对数字签名进行解密，得到生成数字签名的那个哈希码。两个哈希码进行比较，如果一致则可以证明数字签名的有效性以及消息本身的完整性。</p>
+<p><img src="/img/数字签名2.png" alt=""></p>
+<p>采用非对称密码学对消息加密解决的是消息的机密性问题，而数字签名的作用则体现在如下三个方面：</p>
+<ul>
+<li>身份认证（Authentication）：数字证书可以帮助我们验证消息发送源的真实身份，因为数字签名的内容是由一个私钥决定的，发送方只有通过专署于他的密钥对中的私钥生成数字签名，采用通过对方利用公钥实施的数字签名检验。而私钥是属于拥有者的私密信息，不对外公开的。对数字证书的检验实际上就确认消息的发送源是否是私钥的真正拥有者。</li>
+<li>防止抵赖（Non-repudiation）：防止抵赖在这里的代表对于接收到的经过数字签名的消息，如果接收方采用某个实体的公钥对数字签名检验成功，那么这个实体就是消息的发送方，不容对方抵赖。原因很简单，能够通过公钥对某个数字签名成功检验，证明生成该数字签名使用的是正确的私钥。</li>
+<li>消息一致性（Integrity）：而数字签名确实可以确保整个消息内容的一致性的，因为最初被用于私钥加密的哈希码是针对整个消息的内容进行哈希计算获得的。消息的内容一旦出现任何的改变，最终对数字签名的检验都将失败。<br>在上面介绍数字签名的流程时，我们说发送方的公钥会连同生成的数字签名会附加到消息中，一并传送给接收方，以辅助接收方对发送进行身份验证。实际上，这个公钥在一般情况下是通过数字证书的形式进行传递的。数字证实在这里作为发送方的凭证，现在我们就来简单介绍一下数字证书。</li>
+</ul>
+<h1 id="二、数字证书"><a href="#二、数字证书" class="headerlink" title="二、数字证书"></a>二、数字证书</h1><p>证书，又称数字证书（Digital Certificate）或者公钥证书（Public Key Certificate），是一种数字签名的声明，它将公钥的值绑定到持有对应私钥的个人、设备或服务的标识。由于大多数普通用途的证书基于 X.509 V3 证书标准，所以我们有将其称为X.509证书。X.509证书广泛地被应用于加密（Encryption）和数字签名（Digital Signature），以提供认证的实现和确保数据的一致性（Integrity）和机密性（Confidentiality）。</p>
+<p>站在公钥密码学的角度来讲，X.509证书就是一个将某个密钥对中的公钥与某个主题（Subject）进行绑定的文件。具体来讲，和公钥进行绑定的不仅仅包括相应主题的可辨别名称（DN：Distinguished Name），可以包括主题相关的其它可选名称，比如Email地址、DNS名称等。</p>
+<p>下面的代码片断体现了一个X.509证书的大体结构。其中包括版本号（V3）、序列号（7829）、签名算法（md5WithRSAEncryption）、颁发者（CN=Root Agency）、有效日期（April ‎07, ‎2011 3:37:45 PM到January ‎01, ‎2040 7:59:59 AM）、主题信息（CN = www.artech.com）、公钥（00:b4:31:98:… 52:7e:41:8f）和公钥算法（rsaEncryption）以及颁发者的数字签名（93:5f:8f:5f:… b5:22:68:9f）。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"> 1: Certificate:</span><br><span class="line"> 2:    Data:</span><br><span class="line"> 3:        Version: V3</span><br><span class="line"> 4:        Serial Number: 7829 (0x1e95)</span><br><span class="line"> 5:        Signature Algorithm: md5WithRSAEncryption</span><br><span class="line"> 6:        Issuer: CN=Root Agency</span><br><span class="line"> 7:        Validity   </span><br><span class="line"> 8:            Not Before: ‎Thursday, ‎April ‎07, ‎2011 3:37:45 PM</span><br><span class="line"> 9:            Not After : ‎Sunday, ‎January ‎01, ‎2040 7:59:59 AM</span><br><span class="line">10:        Subject: CN = www.artech.com</span><br><span class="line">11:        Subject Public Key Info:</span><br><span class="line">12:            Public Key Algorithm: rsaEncryption</span><br><span class="line">13:            RSA Public Key: (1024 bit)</span><br><span class="line">14:                Modulus (1024 bit):</span><br><span class="line">15:                    00:b4:31:98:... 52:7e:41:8f</span><br><span class="line">16:                Exponent: 65537 (0x10001)</span><br><span class="line">17:    Signature Algorithm: md5WithRSAEncryption</span><br><span class="line">18:    93:5f:8f:5f: ... b5:22:68:9f</span><br></pre></td></tr></table></figure></p>
+<h2 id="数字证书的颁发机制"><a href="#数字证书的颁发机制" class="headerlink" title="数字证书的颁发机制"></a>数字证书的颁发机制</h2><p>数字证书在大部分场景中是作为证明某个实体身份的凭证被使用，而证书的主题部分的内容代表了该用户凭证所代表的身份。那么我们的第一个问题是，我们为什么要信任这个证书？</p>
+<p>我们可以通过与日常生活中使用的证书进行类比，进而加深对数字证书的理解。比如居民身份证就是一种典型的证书，它的一个重要的特征就是该证书是由官方认可的合法机构颁发，一般情况下身份证的办法机构就是户口所在地的公安机关。对于数字证书，尤其是用于商业用途的数字证书，也具有相应的官方办法机构，我们将这样的机构称之为认证权威机构（CA：Certification Authority，以下简称CA）。我们熟悉的CA包括VeriSign、Thawte（OpenSSL）等。证书的颁发机构体系是一个树形结构，每一个CA可以具有一到多个子CA，最上层的CA被称为根CA。</p>
+<p>在日常生活中，人们对居民身份证的普遍认可来源于对颁发机构，即户口所在地的公安机关的信任。这种基于对颁发机构认可的方式同样适合对数字证书。在一般情况下，认证方通过检验数字证书的CA的信任程度而作出对证书合法性的判断。不过，现在的问题是：居民身份证具有若干防伪标识帮助认证方鉴别真伪，对于数字证书来说，我们采用怎样的方式来判断它是不是伪造的呢？验证数字证书的有效性，需要防止以下两种情况：</p>
+<ul>
+<li>用户伪造一个证书以假冒与证书公钥绑定的那个身份，并且该证书具有一个我们普遍认可的CA；</li>
+<li>用户对CA颁发的证书进行篡改，改变公钥或者其他身份信息。这两个问题都可以通过数字签名技术来解决。</li>
+</ul>
+<p>从上面给出的数字证书我们知道，证书中不仅仅包括CA的基本信息，还包括一个数字签名和签名采用的算法。CA通过自己的私钥对证书的数据部分进行签名，并将此签名连同签名采用的算法置于证书之中。按照我们前面介绍的关于数字签名的原理，如果我们具有CA的公钥，我们不仅仅可以验证证书的CA，也能校验证书的内容是否被篡改。那么在对证书进行验证的时候，CA的公钥从何而来呢？</p>
+<p>实际上，CA的公钥也保存在一个数字证书之中，并被存储于一个受信任的证书存储之中。按照证书代表身份的不同，我们可以将其分为两种类型：CA证书（CA Certificate）和终端实体证书（End Entity Certificate），其中前者代表CA，后者代表接受CA证书的最终实体。实际上，CA证书和终端实体证书并没有本质的区别。除了最顶层的根CA，所有的CA证书颁发者是它的上一级CA，即上级的CA作为该CA证书的CA。CA的这种层级关系组成了一种信任链（Trust Chain）。</p>
+<p>为了存储数字证书，Windows中具有相应的证书存储区（Certificate stores）。根据目的或者信任范围的不同，不同的证书被存储于不同的存储区。关于证书存储，由于篇幅所限，我不会做过多的介绍，有兴趣的朋友可以查阅MSDN在线文档。对于证书存储管理，MMC为你提供一个可视化的管理工具，你也可以通过Certmgr.exe工具已命令行的方式来进行。</p>
+<p>在若干证书存储区中，有一个被称为“受信任的根证书颁发机构”(Trusted Root Certification Authorities)的存储区，它里面存储的所有CA证书代表所信任的证书颁发机构。在默认情况下，对于一个待验证的证书，如果基于该证书CA信任链上的任何一个CA在该存储区中存在一个证书，那么这个证书是合法的。</p>
+<h2 id="创建数字证书"><a href="#创建数字证书" class="headerlink" title="创建数字证书"></a>创建数字证书</h2><p>用户对数字证书的认可决定于对证书颁发机构的信任，所以证书颁发机构决定了数字证书的可用范围。由于官方认可的数字证书颁发机构，比如VeriSign、Thawte（OpenSSL），具有普遍的信任度，在大部分情况下是理想的选择。但是对于学习研究或者开发测试，我们没有必要去购买这些商用证书，采用利用一些工具以手工的方式创建证书。</p>
+<p>由于WCF的安全机制广泛使用到数字证实，我们很有必要学会手工创建数字证书。微软为我们提供了一个强大的创建数字证书的工具MakeCert.exe，我们可以借助这个工具采用命令行的方式创建我们需要的数字证书。MakeCert.exe具有很多命令行开关，限于篇幅的问题不可能对它们一一介绍，在这里仅仅对几个常用的开关作一下简单的介绍，有兴趣的读者可以查阅MSDN在线文档了解MakeCert.exe所有命令行开关的含义，对应的地址为<a href="http://msdn.microsoft.com/zh-cn/library/bfsktky3(v=vs.80).aspx。" target="_blank" rel="noopener">http://msdn.microsoft.com/zh-cn/library/bfsktky3(v=vs.80).aspx。</a></p>
+<p>-n x509name：指定主题的证书名称。最简单的方法是在双引号中指定此名称，并加上前缀CN=，例如，”CN=My Name”；<br>-pe：将所生成的私钥标记为可导出，这样可将私钥包括在证书中；<br>-sr location：数字证书的存储位置，具有两个可选值：CurrentUser（和LocalMachine。前者基于当前登录用户，后者基于本机；<br>-ss store：数字证书的存储区；<br>-sky keytype：指定主题的密钥类型，必须是 signature、exchange 或一个表示提供程序类型的整数。默认情况下，可传入1表示交换密钥，传入2表示签名密钥。<br>比如我通过下面的命令会创建一个主题名称为www.artech.com的数字证书，该证书具有交换密钥类型，并且包含私钥。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1: MakeCert -n &quot;CN=www.artech.com&quot; -pe -sr LocalMachine -ss My -sky exchange</span><br></pre></td></tr></table></figure></p>
+<p>一旦上面的命令成功执行，生成的证书会自动保存到基于本机的个人（Personal）存储区中。你可以通过MMC的证书管理单元（Snap-in）查看该证书, 关于如何通过MMC查看证书，可以参考这个地址：<a href="http://msdn.microsoft.com/zh-cn/library/ms788967.aspx。下图是证书MMC管理单元的截图，你可以看到我们创建的数字证书已经被存储到了我们在命令行中指定的存储区，颁发机构被默认设定为Root" target="_blank" rel="noopener">http://msdn.microsoft.com/zh-cn/library/ms788967.aspx。下图是证书MMC管理单元的截图，你可以看到我们创建的数字证书已经被存储到了我们在命令行中指定的存储区，颁发机构被默认设定为Root</a> Agency。</p>
+<p><img src="/img/数字签名3.png" alt=""></p>
+<h1 id="三、通过凭证三个属性来分析X-509证书"><a href="#三、通过凭证三个属性来分析X-509证书" class="headerlink" title="三、通过凭证三个属性来分析X.509证书"></a>三、通过凭证三个属性来分析X.509证书</h1><p>在上面中我们站在非对称密码学得角度对数字证书进行了相应的介绍，在这里我们从用户凭证的角度进一步地认识数字证书。我们照例采用用户凭证的三个属性来分析数字证书。</p>
+<ul>
+<li>凭证与申明的一致性：证书的申明反映在于公钥绑定的于主题相关的信息；<br>持有人对凭证的拥有性：在绝大部分的认证过程中，都需要被认证方提供的数字证书具有相应的私钥。私钥的私有性在某种程度上证明了数字证书持有者就是该证书的拥有者；</li>
+<li>证书的合法性：这可以通过颁发者对证书的数字签名来验证。<br>如果被认证方通过一个数字证书作为用户凭证，认证方一般采用信任链（Trust Chain）模式对其实施认证。在该模式下，认证方从数字证书的直接颁发机构向上追溯，如果具有任何一个颁发机构是受信任的，那么认证成功。不过，有时我们还是会采用其他的认证模式，比如严格比较证书主题信息甚至是序列号。</li>
+</ul>
+<p>对于WCF来说，不仅仅客户端可以将数字证书作为证明自己身份的凭证，提供给服务端对自己进行认证。也可以将服务和某个数字证书绑定起来，通过证书代表服务的身份，供客户端进行验证。总之，数字证书在WCF中具有十分广泛的应用。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/其它/" rel="tag"># 其它</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/07/17/SSL TLS协议运行机制的概述/" rel="next" title="SSL/TLS协议运行机制的概述">
+                <i class="fa fa-chevron-left"></i> SSL/TLS协议运行机制的概述
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/07/17/比喻/" rel="prev" title="比喻">
+                比喻 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Rayman.hung</p>
+              <p class="site-description motion-element" itemprop="description">技术分享、读书心得、亲子时刻</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">801</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">769</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/hongyitong" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://blog.sina.com.cn/yitonghong" target="_blank" title="忆桐之家">
+                      
+                        <i class="fa fa-fw fa-globe"></i>忆桐之家</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://douban.com/people/2780741" target="_blank" title="豆瓣">
+                      
+                        <i class="fa fa-fw fa-globe"></i>豆瓣</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://www.zhihu.com/people/rayman-36" target="_blank" title="知乎">
+                      
+                        <i class="fa fa-fw fa-globe"></i>知乎</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://www.liaoxuefeng.com/" target="_blank" title="廖雪峰的官方网站">
+                      
+                        <i class="fa fa-fw fa-globe"></i>廖雪峰的官方网站</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://www.vaikan.com/" target="_blank" title="外刊IT评论">
+                      
+                        <i class="fa fa-fw fa-globe"></i>外刊IT评论</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.google.com/" title="Google" target="_blank">Google</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.hupu.com/" title="Hupu" target="_blank">Hupu</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#一、-非对称密码学（Asymmetric-Cryptography）"><span class="nav-number">1.</span> <span class="nav-text">一、 非对称密码学（Asymmetric Cryptography）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#消息加密（Encryption）"><span class="nav-number">1.1.</span> <span class="nav-text">消息加密（Encryption）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数字签名（Digital-Signature）"><span class="nav-number">1.2.</span> <span class="nav-text">数字签名（Digital Signature）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#二、数字证书"><span class="nav-number">2.</span> <span class="nav-text">二、数字证书</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#数字证书的颁发机制"><span class="nav-number">2.1.</span> <span class="nav-text">数字证书的颁发机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建数字证书"><span class="nav-number">2.2.</span> <span class="nav-text">创建数字证书</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#三、通过凭证三个属性来分析X-509证书"><span class="nav-number">3.</span> <span class="nav-text">三、通过凭证三个属性来分析X.509证书</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

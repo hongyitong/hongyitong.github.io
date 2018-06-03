@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="google-site-verification" content="Z1De3vrLeDV0zQkSKDV0IlHnujNBKcoYsS9BdR4JEIg" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="SSO,CAS,单点," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="1. CAS简介1.1.  What is CAS？CAS（Central Authentication Service） 是 Yale大学发起的一个企业级的、开源的项目，旨在为 Web 应用系统提供一种可靠的单点登录解决方法（属于Web SSO）。CAS开始于2001年， 并在 2004年 12月正式成为JA-SIG的一个项目。 1.2.  主要特性1、  开源的、多协议的SSO解决方案；Pro">
+<meta name="keywords" content="SSO,CAS,单点">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CAS实现SSO单点登录原理">
+<meta property="og:url" content="http://hongyitong.github.io/2017/01/12/CAS实现SSO单点登录原理/index.html">
+<meta property="og:site_name" content="忆桐之家的博客">
+<meta property="og:description" content="1. CAS简介1.1.  What is CAS？CAS（Central Authentication Service） 是 Yale大学发起的一个企业级的、开源的项目，旨在为 Web 应用系统提供一种可靠的单点登录解决方法（属于Web SSO）。CAS开始于2001年， 并在 2004年 12月正式成为JA-SIG的一个项目。 1.2.  主要特性1、  开源的、多协议的SSO解决方案；Pro">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://hongyitong.github.io/img/CAS1.jpg">
+<meta property="og:image" content="http://hongyitong.github.io/img/CAS2.gif">
+<meta property="og:image" content="http://hongyitong.github.io/img/CAS3.jpg">
+<meta property="og:image" content="http://hongyitong.github.io/img/CAS4.jpg">
+<meta property="og:updated_time" content="2017-07-12T06:45:09.034Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CAS实现SSO单点登录原理">
+<meta name="twitter:description" content="1. CAS简介1.1.  What is CAS？CAS（Central Authentication Service） 是 Yale大学发起的一个企业级的、开源的项目，旨在为 Web 应用系统提供一种可靠的单点登录解决方法（属于Web SSO）。CAS开始于2001年， 并在 2004年 12月正式成为JA-SIG的一个项目。 1.2.  主要特性1、  开源的、多协议的SSO解决方案；Pro">
+<meta name="twitter:image" content="http://hongyitong.github.io/img/CAS1.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://hongyitong.github.io/2017/01/12/CAS实现SSO单点登录原理/"/>
+
+
+
+
+
+  <title>CAS实现SSO单点登录原理 | 忆桐之家的博客</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">忆桐之家的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Rayman&Tony</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            公益404
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2017/01/12/CAS实现SSO单点登录原理/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Rayman.hung">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="忆桐之家的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">CAS实现SSO单点登录原理</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-01-12T13:34:00+08:00">
+                2017-01-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/技术相关/" itemprop="url" rel="index">
+                    <span itemprop="name">技术相关</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="1-CAS简介"><a href="#1-CAS简介" class="headerlink" title="1. CAS简介"></a>1. CAS简介</h1><h2 id="1-1-What-is-CAS？"><a href="#1-1-What-is-CAS？" class="headerlink" title="1.1.  What is CAS？"></a>1.1.  What is CAS？</h2><p>CAS（Central Authentication Service） 是 Yale大学发起的一个企业级的、开源的项目，旨在为 Web 应用系统提供一种可靠的单点登录解决方法（属于Web SSO）。<br>CAS开始于2001年， 并在 2004年 12月正式成为JA-SIG的一个项目。</p>
+<h2 id="1-2-主要特性"><a href="#1-2-主要特性" class="headerlink" title="1.2.  主要特性"></a>1.2.  主要特性</h2><p>1、  开源的、多协议的SSO解决方案；Protocols：Custom Protocol、CAS、OAuth、OpenID、RESTful API、SAML1.1、SAML2.0等。<br>2、  支持多种认证机制：Active Directory、JAAS、JDBC、LDAP、X.509 Certificates等；<br>3、  安全策略：使用票据（Ticket）来实现支持的认证协议；<br>4、  支持授权：可以决定哪些服务可以请求和验证服务票据（Service Ticket）；<br>5、  提供高可用性：通过把认证过的状态数据存储在TicketRegistry组件中，这些组件有很多支持分布式环境的实现，如：BerkleyDB、Default 、EhcacheTicketRegistry、JDBCTicketRegistry、JBOSS TreeCache、JpaTicketRegistry、MemcacheTicketRegistry等；<br>6、  支持多种客户端： Java、 .Net、 PHP、 Perl、 Apache, uPortal等。<br><a id="more"></a> </p>
+<h1 id="2-SSO单点登录原理"><a href="#2-SSO单点登录原理" class="headerlink" title="2. SSO单点登录原理"></a>2. SSO单点登录原理</h1><p>本文内容主要针对Web SSO。</p>
+<h2 id="2-1-什么是SSO"><a href="#2-1-什么是SSO" class="headerlink" title="2.1.  什么是SSO"></a>2.1.  什么是SSO</h2><p>单点登录（Single Sign-On ,简称SSO）是目前比较流行的服务于企业业务整合的解决方案之一，SSO 使得在多个应用系统中，用户只需要登录一次就可以访问所有相互信任的应用系统。</p>
+<h2 id="2-2-SSO原理"><a href="#2-2-SSO原理" class="headerlink" title="2.2.  SSO原理"></a>2.2.  SSO原理</h2><h3 id="2-2-1-SSO体系中的角色"><a href="#2-2-1-SSO体系中的角色" class="headerlink" title="2.2.1. SSO体系中的角色"></a>2.2.1. SSO体系中的角色</h3><p>一般SSO体系主要角色有三种：<br>1、 User（多个）<br>2、 Web应用（多个）<br>3、 SSO认证中心（1个）</p>
+<h3 id="2-2-2-SSO实现模式的原则"><a href="#2-2-2-SSO实现模式的原则" class="headerlink" title="2.2.2. SSO实现模式的原则"></a>2.2.2. SSO实现模式的原则</h3><p>SSO实现模式一般包括以下三个原则：<br>1、  所有的认证登录都在SSO认证中心进行；<br>2、  SSO认证中心通过一些方法来告诉 Web 应用当前访问用户究竟是不是已通过认证的用户；<br>3、  SSO 认证中心和所有的 Web 应用建立一种信任关系，也就是说web应用必须信任认证中心。（单点信任）</p>
+<h3 id="2-2-3-SSO主要实现方式"><a href="#2-2-3-SSO主要实现方式" class="headerlink" title="2.2.3. SSO主要实现方式"></a>2.2.3. SSO主要实现方式</h3><p>SSO的主要实现方式有：<br>1、  共享cookies<br>基于共享同域的cookie是Web刚开始阶段时使用的一种方式，它利用浏览同域名之间自动传递cookies机制，实现两个域名之间系统令牌传递问题；另外，关于跨域问题，虽然cookies本身不跨域，但可以利用它实现跨域的SSO。如：代理、暴露SSO令牌值等。<br>缺点：不灵活而且有不少安全隐患，已经被抛弃。<br>2、  Broker-based(基于经纪人)<br>这种技术的特点就是，有一个集中的认证和用户帐号管理的服务器。经纪人给被用于进一步请求的电子身份存取。中央数据库的使用减少了管理的代价，并为认证提供一个公共和独立的”第三方”。例如Kerberos、Sesame、IBM KryptoKnight（凭证库思想)等。Kerberos是由麻省理工大学发明的安全认证服务，已经被UNIX和Windows作为默认的安全认证服务集成进操作系统。<br>3、  Agent-based（基于代理人）<br>在这种解决方案中，有一个自动地为不同的应用程序认证用户身份的代理程序。这个代理程序需要设计有不同的功能。比如，它可以使用口令表或加密密钥来自动地将认证的负担从用户移开。代理人被放在服务器上面，在服务器的认证系统和客户端认证方法之间充当一个”翻译”。例如SSH等。<br><strong>4、  Token-based</strong><br>例如SecureID,WebID，现在被广泛使用的口令认证，比如FTP、邮件服务器的登录认证，这是一种简单易用的方式，实现一个口令在多种应用当中使用。<br>5、  基于网关<br>6、  基于SAML<br>SAML(Security Assertion Markup Language，安全断言标记语言）的出现大大简化了SSO，并被OASIS批准为SSO的执行标准。开源组织OpenSAML 实现了 SAML 规范。</p>
+<h1 id="3-CAS的基本原理"><a href="#3-CAS的基本原理" class="headerlink" title="3. CAS的基本原理"></a>3. CAS的基本原理</h1><h2 id="3-1-结构体系"><a href="#3-1-结构体系" class="headerlink" title="3.1. 结构体系"></a>3.1. 结构体系</h2><p>从结构体系看，CAS包括两部分：CAS Server和CAS Client。</p>
+<h3 id="3-1-1-CAS-Server"><a href="#3-1-1-CAS-Server" class="headerlink" title="3.1.1. CAS Server"></a>3.1.1. CAS Server</h3><p>CAS Server负责完成对用户的认证工作, 需要独立部署, CAS Server 会处理用户名 / 密码等凭证 (Credentials)。</p>
+<h3 id="3-1-2-CAS-Client"><a href="#3-1-2-CAS-Client" class="headerlink" title="3.1.2. CAS Client"></a>3.1.2. CAS Client</h3><p>负责处理对客户端受保护资源的访问请求，需要对请求方进行身份认证时，重定向到CAS Server进行认证。（原则上，客户端应用不再接受任何的用户名密码等 Credentials）。<br>CAS Client 与受保护的客户端应用部署在一起，以 Filter 方式保护受保护的资源。</p>
+<h2 id="3-2-CAS原理和协议"><a href="#3-2-CAS原理和协议" class="headerlink" title="3.2.  CAS原理和协议"></a>3.2.  CAS原理和协议</h2><h3 id="3-2-1-基础模式"><a href="#3-2-1-基础模式" class="headerlink" title="3.2.1. 基础模式"></a>3.2.1. 基础模式</h3><p>基础模式SSO访问流程主要有以下步骤：</p>
+<ol>
+<li>访问服务：SSO客户端发送请求访问应用系统提供的服务资源。</li>
+<li>定向认证：SSO客户端会重定向用户请求到SSO服务器。</li>
+<li>用户认证：用户身份认证。</li>
+<li><strong>发放票据：SSO服务器会产生一个随机的Service Ticket。</strong></li>
+<li>验证票据：SSO服务器验证票据Service Ticket的合法性，验证通过后，允许客户端访问服务。</li>
+<li>传输用户信息：SSO服务器验证票据通过后，传输用户认证结果信息给客户端。<br>下面是CAS 最基本的协议过程：<br>cas基础协议图<br>基础协议图<br><img src="/img/CAS1.jpg" alt=""><br>如上图：CAS Client 与受保护的客户端应用部署在一起，以Filter方式保护Web应用的受保护资源，过滤从客户端过来的每一个Web请求，同时，CAS Client 会分析HTTP请求中是否包含请求Service Ticket( ST上图中的Ticket) ，如果没有，则说明该用户是没有经过认证的；于是CAS Client 会重定向用户请求到 CAS Server（Step 2），并传递Service（要访问的目的资源地址）。 Step 3是用户认证过程，如果用户提供了正确的Credentials， CAS Server随机产生一个相当长度、唯一、不可伪造的Service Ticket，并缓存以待将来验证，并且重定向用户到Service 所在地址（附带刚才产生的Service Ticket ）, 并为客户端浏览器设置一个Ticket Granted Cookie（TGC）；CAS Client 在拿到Service和新产生的 Ticket过后，在Step 5和Step6中与CAS Server进行身份核实，以确保 Service Ticket 的合法性。<br>在该协议中，<strong>所有与CAS Server的交互均采用SSL协议，以确保ST和TGC的安全性</strong>。协议工作过程中会有2次重定向的过程。但是 CAS Client与CAS Server之间进行Ticket验证的过程对于用户是透明的（使用HttpsURLConnection）。<br>CAS请求认证时序图如下：<br><img src="/img/CAS2.gif" alt=""><br>cas认证时序图 </li>
+</ol>
+<h3 id="3-2-1-CAS-如何实现-SSO"><a href="#3-2-1-CAS-如何实现-SSO" class="headerlink" title="3.2.1. CAS 如何实现 SSO"></a>3.2.1. CAS 如何实现 SSO</h3><p>当用户访问另一个应用的服务再次被重定向到CAS Server的时候，CAS Server会主动获到这个TGC cookie，然后做下面的事情：<br>1) 如果User持有TGC且其还没失效，那么就走基础协议图的Step4，达到了 SSO 的效果；<br>2) 如果TGC失效，那么用户还是要重新认证 (走基础协议图的Step3)。</p>
+<h3 id="3-2-2-CAS代理模式"><a href="#3-2-2-CAS代理模式" class="headerlink" title="3.2.2. CAS代理模式"></a>3.2.2. CAS代理模式</h3><p>该模式形式为用户访问App1，App1又依赖于App2来获取一些信息，如：User —&gt;App1 —&gt;App2 。<br>这种情况下，假设App2也是需要对User进行身份验证才能访问，那么，为了不影响用户体验（过多的重定向导致User的IE窗口不停地闪动)，CAS引入了一种Proxy认证机制，即CAS Client可以代理用户去访问其它Web应用。<br>代理的前提是需要CAS Client拥有用户的身份信息(类似凭据)。之前我们提到的TGC是用户持有对自己身份信息的一种凭据，这里的PGT就是CAS Client端持有的对用户身份信息的一种凭据。凭借TGC，User可以免去输入密码以获取访问其它服务的Service Ticket，所以，这里凭借PGT，Web应用可以代理用户去实现后端的认证，而无需前端用户的参与。<br>下面为代理应用（helloService）获取PGT的过程：（注：PGTURL用于表示一个Proxy服务，是一个回调链接；PGT相当于代理证；PGTIOU为取代理证的钥匙，用来与PGT做关联关系；）<br><img src="/img/CAS3.jpg" alt=""><br>cas代理PGT获取<br>如上面的CAS Proxy图所示，CAS Client 在基础协议之上，在验证ST时提供了一个额外的PGT URL(而且是 SSL 的入口)给CAS Server，使得CAS Server可以通过PGT URL提供一个PGT给CAS Client。<br>CAS Client拿到了PGT(PGTIOU-85…..ti2td)，就可以通过PGT向后端Web应用进行认证。<br>下面是代理认证和提供服务的过程：<br><img src="/img/CAS4.jpg" alt=""><br>如上图所示，Proxy认证与普通的认证其实差别不大，Step1，2与基础模式的Step1,2几乎一样，唯一不同的是，Proxy模式用的是PGT而不是TGC，是Proxy Ticket（PT）而不是Service Ticket。</p>
+<h3 id="3-2-3-辅助说明"><a href="#3-2-3-辅助说明" class="headerlink" title="3.2.3. 辅助说明"></a>3.2.3. 辅助说明</h3><p>&nbsp;<font color="#4590a3" size="3px"><strong>CAS的SSO实现方式可简化理解为：1个Cookie和N个Session。CAS Server创建cookie，在所有应用认证时使用，各应用通过创建各自的Session来标识用户是否已登录。<br>用户在一个应用验证通过后，以后用户在同一浏览器里访问此应用时，客户端应用中的过滤器会在session里读取到用户信息，所以就不会去CAS Server认证。如果在此浏览器里访问别的web应用时，客户端应用中的过滤器在session里读取不到用户信息，就会去CAS Server的login接口认证，但这时CAS Server会读取到浏览器传来的cookie（TGC），所以CAS Server不会要求用户去登录页面登录，只是会根据service参数生成一个Ticket，然后再和web应用做一个验证ticket的交互而已。</strong></font><br><strong>个人注：Token是ticket的一种实现方式！</strong></p>
+<h2 id="3-3-术语解释"><a href="#3-3-术语解释" class="headerlink" title="3.3.  术语解释"></a>3.3.  术语解释</h2><p>CAS系统中设计了5中票据：TGC、ST、PGT、PGTIOU、PT。<br>Ø   Ticket-granting cookie(TGC)：存放用户身份认证凭证的cookie，在浏览器和CAS Server间通讯时使用，并且只能基于安全通道传输（Https），是CAS Server用来明确用户身份的凭证；<br>Ø  Service ticket(ST)：服务票据，服务的惟一标识码,由CAS Server发出（Http传送），通过客户端浏览器到达业务服务器端；一个特定的服务只能有一个惟一的ST；<br>Ø  Proxy-Granting ticket（PGT）：由CAS Server颁发给拥有ST凭证的服务，PGT绑定一个用户的特定服务，使其拥有向CAS Server申请，获得PT的能力；<br>Ø  Proxy-Granting Ticket I Owe You（PGTIOU）:作用是将通过凭证校验时的应答信息由CAS Server 返回给CAS Client，同时，与该PGTIOU对应的PGT将通过回调链接传给Web应用。Web应用负责维护PGTIOU与PGT之间映射关系的内容表；<br>Ø  Proxy Ticket (PT)：是应用程序代理用户身份对目标程序进行访问的凭证；</p>
+<p>其它说明如下：<br>Ø  Ticket Granting ticket(TGT)：票据授权票据，由KDC的AS发放。即获取这样一张票据后，以后申请各种其他服务票据(ST)便不必再向KDC提交身份认证信息(Credentials)；<br>Ø  Authentication service(AS) ————-认证用服务，索取Credentials，发放TGT；<br>Ø  Ticket-granting service (TGS) ————-票据授权服务，索取TGT，发放ST；<br>Ø  KDC( Key Distribution Center ) —————密钥发放中心；</p>
+<h1 id="4-CAS安全性"><a href="#4-CAS安全性" class="headerlink" title="4. CAS安全性"></a>4. CAS安全性</h1><p>CAS的安全性仅仅依赖于SSL。使用的是secure cookie。</p>
+<h2 id="4-1-TGC-PGT安全性"><a href="#4-1-TGC-PGT安全性" class="headerlink" title="4.1.  TGC/PGT安全性"></a>4.1.  TGC/PGT安全性</h2><p>对于一个 CAS 用户来说，最重要是要保护它的TGC，如果TGC不慎被CAS Server以外的实体获得，Hacker能够找到该TGC，然后冒充CAS用户访问所有授权资源。PGT的角色跟TGC是一样的。<br>从基础模式可以看出， TGC是CAS Server通过SSL方式发送给终端用户，因此，要截取TGC难度非常大，从而确保CAS的安全性。<br>TGT的存活周期默认为120分钟。</p>
+<h2 id="4-2-ST-PT安全性"><a href="#4-2-ST-PT安全性" class="headerlink" title="4.2.  ST/PT安全性"></a>4.2.  ST/PT安全性</h2><p>ST（Service Ticket）是通过Http传送的，因此网络中的其他人可以Sniffer到其他人的Ticket。CAS通过以下几方面来使ST变得更加安全（事实上都是可以配置的）：<br>1、  ST只能使用一次<br>CAS协议规定，无论 Service Ticket验证是否成功， CAS Server都会清除服务端缓存中的该Ticket，从而可以确保一个Service Ticket不被使用两次。<br>2、  ST在一段时间内失效<br>CAS规定ST只能存活一定的时间，然后CAS Server会让它失效。默认有效时间为5分钟。<br>3、  ST是基于随机数生成的<br>ST必须足够随机，如果ST生成规则被猜出，Hacker就等于绕过CAS认证，直接访问对应的服务。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/SSO/" rel="tag"># SSO</a>
+          
+            <a href="/tags/CAS/" rel="tag"># CAS</a>
+          
+            <a href="/tags/单点/" rel="tag"># 单点</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/01/12/mvc与三层结构区别/" rel="next" title="MVC与三层结构区别">
+                <i class="fa fa-chevron-left"></i> MVC与三层结构区别
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/01/12/基于 Token 的身份验证/" rel="prev" title="基于 Token 的身份验证">
+                基于 Token 的身份验证 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Rayman.hung</p>
+              <p class="site-description motion-element" itemprop="description">技术分享、读书心得、亲子时刻</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">801</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">769</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/hongyitong" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://blog.sina.com.cn/yitonghong" target="_blank" title="忆桐之家">
+                      
+                        <i class="fa fa-fw fa-globe"></i>忆桐之家</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://douban.com/people/2780741" target="_blank" title="豆瓣">
+                      
+                        <i class="fa fa-fw fa-globe"></i>豆瓣</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://www.zhihu.com/people/rayman-36" target="_blank" title="知乎">
+                      
+                        <i class="fa fa-fw fa-globe"></i>知乎</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://www.liaoxuefeng.com/" target="_blank" title="廖雪峰的官方网站">
+                      
+                        <i class="fa fa-fw fa-globe"></i>廖雪峰的官方网站</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://www.vaikan.com/" target="_blank" title="外刊IT评论">
+                      
+                        <i class="fa fa-fw fa-globe"></i>外刊IT评论</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.google.com/" title="Google" target="_blank">Google</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.hupu.com/" title="Hupu" target="_blank">Hupu</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-CAS简介"><span class="nav-number">1.</span> <span class="nav-text">1. CAS简介</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-What-is-CAS？"><span class="nav-number">1.1.</span> <span class="nav-text">1.1.  What is CAS？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-主要特性"><span class="nav-number">1.2.</span> <span class="nav-text">1.2.  主要特性</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-SSO单点登录原理"><span class="nav-number">2.</span> <span class="nav-text">2. SSO单点登录原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-什么是SSO"><span class="nav-number">2.1.</span> <span class="nav-text">2.1.  什么是SSO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-SSO原理"><span class="nav-number">2.2.</span> <span class="nav-text">2.2.  SSO原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-1-SSO体系中的角色"><span class="nav-number">2.2.1.</span> <span class="nav-text">2.2.1. SSO体系中的角色</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-2-SSO实现模式的原则"><span class="nav-number">2.2.2.</span> <span class="nav-text">2.2.2. SSO实现模式的原则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-3-SSO主要实现方式"><span class="nav-number">2.2.3.</span> <span class="nav-text">2.2.3. SSO主要实现方式</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-CAS的基本原理"><span class="nav-number">3.</span> <span class="nav-text">3. CAS的基本原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-结构体系"><span class="nav-number">3.1.</span> <span class="nav-text">3.1. 结构体系</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-1-CAS-Server"><span class="nav-number">3.1.1.</span> <span class="nav-text">3.1.1. CAS Server</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-2-CAS-Client"><span class="nav-number">3.1.2.</span> <span class="nav-text">3.1.2. CAS Client</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-CAS原理和协议"><span class="nav-number">3.2.</span> <span class="nav-text">3.2.  CAS原理和协议</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-1-基础模式"><span class="nav-number">3.2.1.</span> <span class="nav-text">3.2.1. 基础模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-1-CAS-如何实现-SSO"><span class="nav-number">3.2.2.</span> <span class="nav-text">3.2.1. CAS 如何实现 SSO</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-2-CAS代理模式"><span class="nav-number">3.2.3.</span> <span class="nav-text">3.2.2. CAS代理模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-3-辅助说明"><span class="nav-number">3.2.4.</span> <span class="nav-text">3.2.3. 辅助说明</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-术语解释"><span class="nav-number">3.3.</span> <span class="nav-text">3.3.  术语解释</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-CAS安全性"><span class="nav-number">4.</span> <span class="nav-text">4. CAS安全性</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-TGC-PGT安全性"><span class="nav-number">4.1.</span> <span class="nav-text">4.1.  TGC/PGT安全性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-ST-PT安全性"><span class="nav-number">4.2.</span> <span class="nav-text">4.2.  ST/PT安全性</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

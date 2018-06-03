@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="google-site-verification" content="Z1De3vrLeDV0zQkSKDV0IlHnujNBKcoYsS9BdR4JEIg" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="数据库," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="数据质量（Data Quality）是数据分析结论有效性和准确性的基础也是最重要的前提和保障。数据质量保证（Data Quality Assurance）是数据仓库架构中的重要环节，也是ETL的重要组成部分。">
+<meta name="keywords" content="数据库">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分析的前提—数据质量">
+<meta property="og:url" content="http://hongyitong.github.io/2016/09/05/分析的前提—数据质量/index.html">
+<meta property="og:site_name" content="忆桐之家的博客">
+<meta property="og:description" content="数据质量（Data Quality）是数据分析结论有效性和准确性的基础也是最重要的前提和保障。数据质量保证（Data Quality Assurance）是数据仓库架构中的重要环节，也是ETL的重要组成部分。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://hongyitong.github.io/img/箱形图.png">
+<meta property="og:image" content="http://hongyitong.github.io/img/数据质量四要素.png">
+<meta property="og:image" content="http://hongyitong.github.io/img/数据检查.png">
+<meta property="og:image" content="http://hongyitong.github.io/img/数据修正.png">
+<meta property="og:updated_time" content="2017-07-12T03:08:06.527Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="分析的前提—数据质量">
+<meta name="twitter:description" content="数据质量（Data Quality）是数据分析结论有效性和准确性的基础也是最重要的前提和保障。数据质量保证（Data Quality Assurance）是数据仓库架构中的重要环节，也是ETL的重要组成部分。">
+<meta name="twitter:image" content="http://hongyitong.github.io/img/箱形图.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://hongyitong.github.io/2016/09/05/分析的前提—数据质量/"/>
+
+
+
+
+
+  <title>分析的前提—数据质量 | 忆桐之家的博客</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">忆桐之家的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Rayman&Tony</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            公益404
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2016/09/05/分析的前提—数据质量/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Rayman.hung">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="忆桐之家的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">分析的前提—数据质量</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-09-05T00:00:00+08:00">
+                2016-09-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/技术相关/" itemprop="url" rel="index">
+                    <span itemprop="name">技术相关</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>　　<strong>数据质量（Data Quality）是数据分析结论有效性和准确性的基础也是最重要的前提和保障。数据质量保证（Data Quality Assurance）是数据仓库架构中的重要环节，也是ETL的重要组成部分</strong>。<a id="more"></a><br>　　我们通常通过数据清洗（Data cleansing）来过滤脏数据，保证底层数据的有效性和准确性，数据清洗一般是数据进入数据仓库的前置环节，一般来说数据一旦进入数据仓库，那么必须保证这些数据都是有效的，上层的统计聚合都会以这批数据作为基础数据集，上层不会再去做任何的校验和过滤，同时使用稳定的底层基础数据集也是为了保证所有上层的汇总和多维聚合的结果是严格一致的。但当前我们在构建数据仓库的时候一般不会把所有的数据清洗步骤放在入库之前，一般会把部分数据清洗的工作放在入库以后来执行，主要由于数据仓库对数据处理方面有自身的优势，部分的清洗工作在仓库中进行会更加的简单高效，而且只要数据清洗发生在数据的统计和聚合之前，我们仍然可以保证使用的是清洗之后保留在数据仓库的最终“干净”的基础数据。<br>　　前段时间刚好跟同事讨论数据质量保证的问题，之前做数据仓库相关工作的时候也接触过相关的内容，所以这里准备系统地整理一下。之前构建数据仓库基于Oracle，所以选择的是Oracle提供的数据仓库构建工具——OWB（Oracle Warehouse Builder），里面提供了比较完整的保证数据质量的操作流程，主要包括三块：</p>
+<ul>
+<li>Data Profiling</li>
+<li>Data Auditing</li>
+<li>Data Correcting</li>
+</ul>
+<h1 id="一、data-profiling"><a href="#一、data-profiling" class="headerlink" title="一、data-profiling"></a>一、data-profiling</h1><p>　　Data Profiling，其实目前还没找到非常恰当的翻译，Oracle里面用的是“数据概要分析”，但其实“Profiling”这个词用概要分析无法体现它的意境，看过美剧Criminal Minds（犯罪心理）的同学应该都知道FBI的犯罪行为分析小组（BAU）每集都会对罪犯做一个Criminal Profiling，以分析罪犯的身份背景、行为模式、心理状态等，所以Profiling更多的是一个剖析的过程。维基百科对Data Profiling的解释如下：<br>Data profiling is the process of examining the data available in an existing data source and collecting statistics and information about that data.<br>　　这里我们看到Data Profiling需要一个收集统计信息的过程（这也是犯罪心理中Garcia干的活），那么如何让获取数据的统计信息呢？<br>　　熟悉数据库的同学应该知道数据库会对每张表做Analyze，一方面是为了让优化器可以选择合适的执行计划，另一方面对于一些查询可以直接使用分析得到的统计信息返回结果，比如COUNT(*)。这个其实就是简单的Data Profiling，Oracle数据仓库构建工具OWB中提供的Data Profiling的统计信息更加全面，针对建立Data Profile的表中的每个字段都有完整的统计信息，包括：<br>　　记录数、最大值、最小值、最大长度、最小长度、唯一值个数、NULL值个数、平均数和中位数，另外OWB还提供了six-sigma值，取值1-6，越高数据质量越好，当six-sigma的值为7的时候可以认为数据质量近乎是完美的。同时针对字段的唯一值，统计信息中给出了每个唯一值的分布频率，这个对发现一些异常数据是非常有用的，后面会详细介绍。<br>　　看到上面这些Data Profile的统计信息，我们可能会联想到统计学上面的统计描述，统计学上会使用一些统计量来描述一些数据集或者样本集的特征，如果我们没有类似OWB的这类ETL工具，我们同样可以借助统计学的这些知识来对数据进行简单的Profiling，这里不得不提一个非常实用的图表工具——箱形图（Box plot），也叫箱线图、盒状图。我们可以尝试用箱形图来表现数据的分布特征：<br><img src="/img/箱形图.png" alt="" title="box-plot"></p>
+<p>　　箱线图有很多种表现形式，上面图中的是比较常见的一种箱线图。一般中间矩形箱的上下两边分别为数据集的上四分位数（75%，Q3）和下四分位数（25%，Q1），中间的横线代表数据集的中位数（50%，Media，Q2），同时有些箱线图会用“+”来表示数据集的均值。箱形的上下分别延伸出两条线，这两条线的末端（也叫“触须”）一般是距离箱形1.5个IQR（Q3-Q1，即箱形的长度），所以上端的触须应该是Q3+1.5IQR，下端的触须是Q1-1.5IQR；如果数据集的最小值大于Q1-1.5IQR，我们就会使用最小值替换Q1-1.5IQR作为下方延伸线末端，同样如果最大值小于Q3+1.5IQR，用最大值作为上方延伸线的末端，如果最大或者最小值超出了Q1-1.5IQR到Q3+1.5IQR这个范围，我们将这些超出的数据称为离群点（Outlier），在图中打印出来，即图中在上方触须之外的点。另外，有时候我们也会使用基于数据集的标准差σ，选择上下3σ的范围，或者使用置信水平为95%的置信区间来确定上下边界的末端值。<br>　　其实箱线图没有展现数据集的全貌，但通过对数据集几个关键统计量的图形化表现，可以让我们看清数据的整体分布和离散情况。</p>
+<p>　　既然我们通过Data profiling已经可以得到如上的数据统计信息，那么如何利用这些统计信息来审核数据的质量，发现数据可能存在的异常和问题，并对数据进行有效的修正，或者清洗，进而得到“干净”的数据，这些内容就放到下一篇文章吧。</p>
+<h1 id="二、Data-Auditing"><a href="#二、Data-Auditing" class="headerlink" title="二、Data Auditing"></a>二、Data Auditing</h1><p>　　前一篇文章介绍了数据质量的一些基本概念，数据质量控制作为数据仓库的基础环节，是保障上层数据应用的基础。数据质量保证主要包括数据概要分析（Data Profiling）、数据审核（Data Auditing）和数据修正（Data Correcting）三个部分，前一篇文章介绍了Data Profiling的相关内容，从Data Profiling的过程中获得了数据的概要统计信息，所以下面就要用这些数据统计信息来审核数据的质量，检查数据中是否存在脏数据，所以这一篇主要介绍数据审核（Data Auditing）的内容。<br>数据质量的基本要素</p>
+<h2 id="如何评估数据的质量"><a href="#如何评估数据的质量" class="headerlink" title="如何评估数据的质量"></a>如何评估数据的质量</h2><p>或者说怎么样的数据才是符合要求的数据？可以从4个方面去考虑，这4个方面共同构成了数据质量的4个基本要素。</p>
+<p><img src="/img/数据质量四要素.png" alt="" title="data-quality-elements"></p>
+<ol>
+<li><p>完整性<br>数据的记录和信息是否完整，是否存在缺失的情况。<br>数据的缺失主要有记录的缺失和记录中某个字段信息的缺失，两者都会造成统计结果的不准确，所以完整性是数据质量最基础的保障，而对完整性的评估相对比较容易。</p>
+</li>
+<li><p>一致性<br>数据的记录是否符合规范，是否与前后及其他数据集合保持统一。<br>数据的一致性主要包括数据记录的规范和数据逻辑的一致性。数据记录的规范主要是数据编码和格式的问题，比如网站的用户ID是15位的数字、商品ID是10位数字，商品包括20个类目、IP地址一定是用”.”分隔的4个0-255的数字组成，及一些定义的数据约束，比如完整性的非空约束、唯一值约束等；数据逻辑性主要是指标统计和计算的一致性，比如PV&gt;=UV，新用户比例在0-1之间等。数据的一致性审核是数据质量审核中比较重要也是比较复杂的一块。</p>
+</li>
+<li><p>准确性<br>数据中记录的信息和数据是否准确，是否存在异常或者错误的信息。<br>导致一致性问题的原因可能是数据记录的规则不一，但不一定存在错误；而准确性关注的是数据记录中存在的错误，比如字符型数据的乱码现象也应该归到准确性的考核范畴，另外就是异常的数值，异常大或者异常小的数值，不符合有效性要求的数值，如访问量Visits一定是整数、年龄一般在1-100之间、转化率一定是介于0到1的值等。对数据准确性的审核有时会遇到困难，因为对于没有明显异常的错误值我们很难发现。</p>
+</li>
+<li><p>及时性<br>数据从产生到可以查看的时间间隔，也叫数据的延时时长。<br>虽然说分析型数据的实时性要求并不是太高，但并不意味了就没有要求，分析师可以接受当天的数据要第二天才能查看，但如果数据要延时两三天才能出来，或者每周的数据分析报告要两周后才能出来，那么分析的结论可能已经失去时效性，分析师的工作只是徒劳；同时，某些实时分析和决策需要用到小时或者分钟级的数据，这些需求对数据的时效性要求极高。所以及时性也是数据质量的组成要素之一。</p>
+</li>
+</ol>
+<h2 id="data-auditing"><a href="#data-auditing" class="headerlink" title="data-auditing"></a>data-auditing</h2><p><img src="/img/数据检查.png" alt=""><br>　　基于数据质量的4个要素，可以对数据进行审核，以评估数据是否满足完整性、一致性、准确性和及时性这4方面的要求，其中数据的及时性主要跟数据的同步和处理过程的效率相关，更多的是通过监控ETL任务的方式来保证数据的及时性，所以这里的数据审核主要指的是评估数据的完整性、一致性和准确性。</p>
+<ol>
+<li><p>完整性<br>我们从Data Profiling得到的数据统计信息里面看看哪些可以用来审核数据的完整性。首先是记录的完整性，一般使用统计的记录数和唯一值个数。比如网站每天的日志记录数是相对恒定的，大概在1000万上下波动，如果某天的日志记录数下降到了只有100万，那很有可能记录缺失了；或者网站的访问记录应该在一天的24小时均有分布，如果某个整点完全没有用户访问记录，那么很有可能网站在当时出了问题或者那个时刻的日志记录传输出现了问题；再如统计访客的地域分布时，一般会包括全国的32个省份直辖市，如果统计的省份唯一值个数少于32，那么很有可能数据也存在缺失。<br><strong>完整性的另一方面，记录中某个字段的数据缺失，可以使用统计信息中的空值（NULL）的个数进行审核。如果某个字段的信息理论上必然存在，比如访问的页面地址、购买的商品ID等，那么这些字段的空值个数的统计就应该是0，这些字段我们可以使用非空（NOT NULL）约束来保证数据的完整性；对于某些允许空的字段，比如用户的cookie信息不一定存在（用户禁用cookie），但空值的占比基本恒定，比如cookie为空的用户比例通常在2%-3%，我们同样可以使用统计的空值个数来计算空值占比，如果空值的占比明显增大，很有可能这个字段的记录出现了问题，信息出现缺失。</strong></p>
+</li>
+<li><p>一致性<br>如果数据记录格式有标准的编码规则，那么对数据记录的一致性检验比较简单，只要验证所有的记录是否满足这个编码规则就可以，最简单的就是使用字段的长度、唯一值个数这些统计量。比如对用户ID的编码是15位数字，那么字段的最长和最短字符数都应该是15；或者商品ID是P开始后面跟10位数字，可以用同样的方法检验；如果字段必须保证唯一，那么字段的唯一值个数跟记录数应该是一致的，比如用户的注册邮箱；再如地域的省份直辖市一定是统一编码的，记录的一定是“上海”而不是“上海市”、“浙江”而不是“浙江省”，可以把这些唯一值映射到有效的32个省市的列表，如果无法映射，那么字段通不过一致性检验。<br>一致性中逻辑规则的验证相对比较复杂，很多时候指标的统计逻辑的一致性需要底层数据质量的保证，同时也要有非常规范和标准的统计逻辑的定义，所有指标的计算规则必须保证一致。我们经常犯的错误就是汇总数据和细分数据加起来的结果对不上，导致这个问题很有可能的原因就是数据在细分的时候把那些无法明确归到某个细分项的数据给排除了，比如在细分访问来源的时候，如果我们无法将某些非直接进入的来源明确地归到外部链接、搜索引擎、广告等这些既定的来源分类，但也不应该直接过滤掉这些数据，而应该给一个“未知来源”的分类，以保证根据来源细分之后的数据加起来还是可以与总体的数据保持一致。如果需要审核这些数据逻辑的一致性，我们可以建立一些“有效性规则”，比如A&gt;=B，如果C=B/A，那么C的值应该在[0,1]的范围内等，数据无法满足这些规则就无法通过一致性检验。</p>
+</li>
+<li><p>准确性<br><strong>数据的准确性可能存在于个别记录，也可能存在于整个数据集。如果整个数据集的某个字段的数据存在错误，比如常见的数量级的记录错误，这种错误很容易发现，利用Data Profiling的平均数和中位数也可以发现这类问题。当数据集中存在个别的异常值时，可以使用最大值和最小值的统计量去审核，或者使用箱线图也可以让异常记录一目了然。</strong><br>还有几个准确性的审核问题，字符乱码的问题或者字符被截断的问题，可以使用分布来发现这类问题，一般的数据记录基本符合正态分布或者类正态分布，那么那些占比异常小的数据项很可能存在问题，比如某个字符记录占总体的占比只有0.1%，而其他的占比都在3%以上，那么很有可能这个字符记录有异常，一些ETL工具的数据质量审核会标识出这类占比异常小的记录值。对于数值范围既定的数据，也可以有效性的限制，超过数据有效的值域定义数据记录就是错误的。<br>如果数据并没有显著异常，但仍然可能记录的值是错误的，只是这些值与正常的值比较接近而已，这类准确性检验最困难，一般只能与其他来源或者统计结果进行比对来发现问题，如果使用超过一套数据收集系统或者网站分析工具，那么通过不同数据来源的数据比对可以发现一些数据记录的准确性问题。</p>
+</li>
+</ol>
+<p>　　上面已经从Data Profiling的统计信息中，通过Data Auditing发现了数据质量上存在的一些问题，那么接下来就要针对这些问题对数据进行清洗和修正，也就是下一篇文章中要介绍的内容——Data Correcting，数据修正。</p>
+<h1 id="三、data-correcting"><a href="#三、data-correcting" class="headerlink" title="三、data-correcting"></a>三、data-correcting</h1><p><img src="/img/数据修正.png" alt=""><br>　　前面的两篇文章——分析的前提—数据质量1和分析的前提—数据质量2分别介绍了通过Data Profiling的方法获取数据的统计信息，并使用Data Auditing来评估数据是否存在质量问题，数据的质量问题可以通过完整性、准确性和一致性三个方面进行审核。这篇文章介绍最后一块内容——数据修正（Data Correcting）。</p>
+<p>　　数据审核帮助我们发现数据中存在的问题，而这些问题有时候可以利用一些方法就行修正，从而提升数据的整体质量，数据修正就是为了完成这个任务，可以从以下几个方面进行修正：</p>
+<h2 id="填补缺失值"><a href="#填补缺失值" class="headerlink" title="填补缺失值"></a>填补缺失值</h2><p>　　对于记录缺失的问题，最简单的办法就是数据回补。一般而言统计指标数据缺失可以从原始数据中重新统计获取，而原始数据缺失可以从抽取的数据源或者备份数据中回补。如果原始数据完全丢失，基本就回天无力了。<br>　　对于字段值的缺失，很多资料都会介绍使用一些统计学的方法进行修补，其实就是对缺失值的预测或者估计，一般会使用平均数、众数、前后值取平均等方法，或者使用回归分析的方法拟合指标的变化趋势后进行预测。这些方法在缺失值无法使用其他途径找回或者重新统计计算，并且在缺失值有变化规律可循的前提下都是可取的，当某天的指标值丢失时可以通过这类方法根据前几天的数据来预估该天的数值。但很多时候网站分析中如果底层的日志存在缺失值，我们很难预测具体的缺失值，因为访问的细节几乎是无迹可寻的，所以对于访问记录存在缺失值并且这些字段的缺失会明显影响一些统计指标的计算时，最简单的方法就是舍弃该记录，但这种直接过滤掉缺失记录的方法一些只会用于访问日志等不需要非常精确的数据上，如果是网站的运营、交易等这些需要保证完全计算准确的数据绝对是不能直接舍弃的，而且对于访问日志中缺失或者异常记录的过滤也需要基于对这类数据的统计基础上，一般的原则是不太重要的字段如果缺失或者异常的记录占比小于1%或者5‰的情况下可以选择过滤这些记录，如果占比比较高，需要进一步排查日志记录是否存在问题。</p>
+<h2 id="删除重复记录"><a href="#删除重复记录" class="headerlink" title="删除重复记录"></a>删除重复记录</h2><p>　　<strong>数据集里面某些字段的值必然是唯一的，比如按天统计的指标值中的日期字段，用户信息表的用户ID等，这些需要保证唯一的规则可以对数据库设置唯一约束，但我们在做ETL处理时，有时为了保证数据加载全过程可以不因为违反唯一约束而中断（有时Load的过程需要较长的时间或处理成本，ETL需要有容错能力以保证整个过程不被中断）会先忽略重复记录，待整个ETL过程结束后再对需要保证唯一的字段进行去重处理。<br>　　这些重复记录可以比对Data Profiling中数据统计信息的唯一值个数和记录总数是否一致进行审核，而进行修正的最简单办法就是重复记录仅保留一条，删除其他记录。这个需要根据现实情况，有时也可能使用把重复记录的统计量相加的方法进行去重。</strong></p>
+<h2 id="转化不一致记录"><a href="#转化不一致记录" class="headerlink" title="转化不一致记录"></a>转化不一致记录</h2><p>　　<font color="#4590a3" size="4px"><strong>数据的转化是数据仓库抽取数据过程中最常见的处理</strong>，因为数据仓库“集成性”的特征，需要把来自多个数据源的数据集中存入数据仓库，而不同数据源对某些含义相同的字段的编码规则会存在差异，比如用户ID，虽然是相同的用户，但可能A系统的ID是u1001，B系统是1001，C系统是100100，来源于这三套系统的用户ID就需要统一，比如我们将A数据源的u前缀去除，C系统ID除100后统一成B系统的编码方式一起导入数据库；即使是来源于同一套日志，也可能存在记录的不一致，比如之前遇到较早发布的产品版本记录的日志中移动操作系统是Android，而版本更新后记录改成了android，新老版本的日志打到了一起，于是也会涉及数据的转化，但这种记录的不一致性无疑会增加ETL的处理成本。</font><br>　　上面举例的转化规则是比较简单的，在数据仓库的ETL处理数据转化时可能会遇到一些很BT的规则，这个时候最关键的还是对数据源记录方式足够的熟悉，这样才能保证进入数据仓库的数据是一致的。最好的做法就是数据仓库的开发工程师与其他前台系统的开发人员能事先约定一套统一的数据记录和编码的方式，这样可以减少后期的协调沟通和转化处理成本。</p>
+<h2 id="处理异常数据"><a href="#处理异常数据" class="headerlink" title="处理异常数据"></a>处理异常数据</h2><p>　　异常数据大部分情况是很难修正的，比如字符编码等问题引起的乱码，字符被截断，异常的数值等，这些异常数据如果没有规律可循几乎不可能被还原，只能将其直接过滤。<br>　　有些数据异常则可以被还原，比如原字符中参杂了一些其他的无用字符，可以使用取子串的方法，用trim函数可以去掉字符串前后的空格等；字符被截断的情况如果可以使用截断后字符推导出原完整字符串，那么也可以被还原，比如移动操作系统的记录一般包括Symbian、Android、iPhone、BlackBerry等，如果某些记录的是And，那么可以被还原成Android，因为其他的移动操作系统被截断不可能出现And这种记录。数值记录中存在异常大或者异常小的值是可以分析是否数值单位差异引起的，比如克和千克差了1000倍，美元和人民币存在汇率的差异，时间记录可能存在时区的差异，百分比用的是小于1的小数还是已经乘了100等等，这些数值的异常可以通过转化进行处理，数值单位的差异也可以认为是数据的不一致性，或者是某些数值被错误的放大或缩小，比如数值后面被多加了几个0导致了数据的异常。</p>
+<p>　　最后，总结一下数据可修正的前提：1) 数据质量的问题可以通过Data Auditing的过程被审核出来；2) 数据的问题必须有迹可循，可以通过趋势进行预测或者可以通过一些规则进行转换还原。否者，对于异常数据只能直接进行删除丢弃，但进行数据过滤之前必须评估异常记录的比例，当占比过高时需要重新审核原始数据的记录方式是否存在问题。</p>
+<p>转自：<a href="http://webdataanalysis.net/data-collection-and-preprocessing/data-quality-1/" target="_blank" rel="noopener">http://webdataanalysis.net/data-collection-and-preprocessing/data-quality-1/</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/数据库/" rel="tag"># 数据库</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/09/05/mysql分区功能详细介绍/" rel="next" title="mysql分区功能详细介绍">
+                <i class="fa fa-chevron-left"></i> mysql分区功能详细介绍
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/09/05/Oracle中表空间、段、区、块及方案详解/" rel="prev" title="Oracle中表空间、段、区、块及方案详解">
+                Oracle中表空间、段、区、块及方案详解 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Rayman.hung</p>
+              <p class="site-description motion-element" itemprop="description">技术分享、读书心得、亲子时刻</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">801</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">769</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/hongyitong" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://blog.sina.com.cn/yitonghong" target="_blank" title="忆桐之家">
+                      
+                        <i class="fa fa-fw fa-globe"></i>忆桐之家</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://douban.com/people/2780741" target="_blank" title="豆瓣">
+                      
+                        <i class="fa fa-fw fa-globe"></i>豆瓣</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://www.zhihu.com/people/rayman-36" target="_blank" title="知乎">
+                      
+                        <i class="fa fa-fw fa-globe"></i>知乎</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://www.liaoxuefeng.com/" target="_blank" title="廖雪峰的官方网站">
+                      
+                        <i class="fa fa-fw fa-globe"></i>廖雪峰的官方网站</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://www.vaikan.com/" target="_blank" title="外刊IT评论">
+                      
+                        <i class="fa fa-fw fa-globe"></i>外刊IT评论</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.google.com/" title="Google" target="_blank">Google</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.hupu.com/" title="Hupu" target="_blank">Hupu</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#一、data-profiling"><span class="nav-number">1.</span> <span class="nav-text">一、data-profiling</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#二、Data-Auditing"><span class="nav-number">2.</span> <span class="nav-text">二、Data Auditing</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#如何评估数据的质量"><span class="nav-number">2.1.</span> <span class="nav-text">如何评估数据的质量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#data-auditing"><span class="nav-number">2.2.</span> <span class="nav-text">data-auditing</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#三、data-correcting"><span class="nav-number">3.</span> <span class="nav-text">三、data-correcting</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#填补缺失值"><span class="nav-number">3.1.</span> <span class="nav-text">填补缺失值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#删除重复记录"><span class="nav-number">3.2.</span> <span class="nav-text">删除重复记录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#转化不一致记录"><span class="nav-number">3.3.</span> <span class="nav-text">转化不一致记录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#处理异常数据"><span class="nav-number">3.4.</span> <span class="nav-text">处理异常数据</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

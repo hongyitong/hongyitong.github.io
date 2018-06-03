@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="google-site-verification" content="Z1De3vrLeDV0zQkSKDV0IlHnujNBKcoYsS9BdR4JEIg" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="java,tomcat,进程,假死," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="1 引言1.1 编写目的为了方便大家以后发现进程假死的时候能够正常的分析并且第一时间保留现场快照。 1.2编写背景最近服务器发现tomcat的应用会偶尔出现无法访问的情况。经过一段时间的观察最近又发现有台tomcat的应用出现了无法访问情况。简单描述下该台tomcat当时具体的表现：客户端请求没有响应，查看服务器端tomcat的进程是存活的，查看业务日志的时候发现日志停止没有任何最新的访问日志。连">
+<meta name="keywords" content="java,tomcat,进程,假死">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分析java进程假死情况">
+<meta property="og:url" content="http://hongyitong.github.io/2018/01/18/分析java进程假死情况/index.html">
+<meta property="og:site_name" content="忆桐之家的博客">
+<meta property="og:description" content="1 引言1.1 编写目的为了方便大家以后发现进程假死的时候能够正常的分析并且第一时间保留现场快照。 1.2编写背景最近服务器发现tomcat的应用会偶尔出现无法访问的情况。经过一段时间的观察最近又发现有台tomcat的应用出现了无法访问情况。简单描述下该台tomcat当时具体的表现：客户端请求没有响应，查看服务器端tomcat的进程是存活的，查看业务日志的时候发现日志停止没有任何最新的访问日志。连">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://hongyitong.github.io/img/进程假死1.jpg">
+<meta property="og:image" content="http://hongyitong.github.io/img/进程假死2.jpg">
+<meta property="og:image" content="http://hongyitong.github.io/img/进程假死3.jpg">
+<meta property="og:image" content="http://hongyitong.github.io/img/进程假死4.jpg">
+<meta property="og:image" content="http://hongyitong.github.io/img/进程假死5.jpg">
+<meta property="og:image" content="http://hongyitong.github.io/img/进程假死6.jpg">
+<meta property="og:updated_time" content="2018-01-18T09:40:17.353Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="分析java进程假死情况">
+<meta name="twitter:description" content="1 引言1.1 编写目的为了方便大家以后发现进程假死的时候能够正常的分析并且第一时间保留现场快照。 1.2编写背景最近服务器发现tomcat的应用会偶尔出现无法访问的情况。经过一段时间的观察最近又发现有台tomcat的应用出现了无法访问情况。简单描述下该台tomcat当时具体的表现：客户端请求没有响应，查看服务器端tomcat的进程是存活的，查看业务日志的时候发现日志停止没有任何最新的访问日志。连">
+<meta name="twitter:image" content="http://hongyitong.github.io/img/进程假死1.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://hongyitong.github.io/2018/01/18/分析java进程假死情况/"/>
+
+
+
+
+
+  <title>分析java进程假死情况 | 忆桐之家的博客</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">忆桐之家的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Rayman&Tony</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            公益404
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2018/01/18/分析java进程假死情况/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Rayman.hung">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="忆桐之家的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">分析java进程假死情况</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-18T00:00:00+08:00">
+                2018-01-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/技术相关/" itemprop="url" rel="index">
+                    <span itemprop="name">技术相关</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="1-引言"><a href="#1-引言" class="headerlink" title="1 引言"></a>1 引言</h1><h2 id="1-1-编写目的"><a href="#1-1-编写目的" class="headerlink" title="1.1 编写目的"></a>1.1 编写目的</h2><p>为了方便大家以后发现进程假死的时候能够正常的分析并且第一时间保留现场快照。</p>
+<h2 id="1-2编写背景"><a href="#1-2编写背景" class="headerlink" title="1.2编写背景"></a>1.2编写背景</h2><p>最近服务器发现tomcat的应用会偶尔出现无法访问的情况。经过一段时间的观察最近又发现有台tomcat的应用出现了无法访问情况。简单描述下该台tomcat当时具体的表现：客户端请求没有响应，查看服务器端tomcat的进程是存活的，查看业务日志的时候发现日志停止没有任何最新的访问日志。连tomcat下面的catalina.log也没有任何访问记录，基本断定该台tomcat已不能提供服务。</p>
+<h1 id="2-分析步骤"><a href="#2-分析步骤" class="headerlink" title="2 分析步骤"></a>2 分析步骤</h1><p>根据前面我描述的假死现象，我最先想到的是网络是否出现了问题，是不是有什么丢包严重的情况，于是我开始从请求的数据流程开始分析，由于我们业务的架构采用的是nginx+tomcat的集群配置，一个请求上来的流向可以用下图来简单的描述一下：<br><a id="more"></a><br><img src="/img/进程假死1.jpg" alt=""> </p>
+<h2 id="2-1检查nginx的网络情况"><a href="#2-1检查nginx的网络情况" class="headerlink" title="2.1检查nginx的网络情况"></a>2.1检查nginx的网络情况</h2><p>更改nginx的配置，让该台nginx请求只转到本机器的出现问题的tomcat应用上面，在access.log里看是否有网络请求，结果可以查看到当前所有的网络请求，也就是说可以排除是网络的问题。</p>
+<h2 id="2-2检查tomcat-的网络情况"><a href="#2-2检查tomcat-的网络情况" class="headerlink" title="2.2检查tomcat 的网络情况"></a>2.2检查tomcat 的网络情况</h2><p>分析业务配置的tomcat访问日志xxxx.log上是否有日志访问记录，经过查询该台tomcat应用日志完全没有任何访问记录，由于我们的部署是本机的nginx转到本机的tomcat应用，所以可以排除不是网络问题。到此基本可以断定网络没有问题，tomcat 本身出现了假死的情况。在tomcat的日志里有报过OutOfMemoryError的异常，所以可以肯定tomcat假死的原因是OOM</p>
+<h1 id="3-分析JVM内存溢出"><a href="#3-分析JVM内存溢出" class="headerlink" title="3 分析JVM内存溢出"></a>3 分析JVM内存溢出</h1><h2 id="3-1为什么会发生内存泄漏"><a href="#3-1为什么会发生内存泄漏" class="headerlink" title="3.1为什么会发生内存泄漏"></a>3.1为什么会发生内存泄漏</h2><p><strong>在我们学习Java的时候就知道它最为方便的地方就是我们不需要管理内存的分配和释放，一切由JVM自己来进行处理，当Java对象不再被应用时，等到堆内存不够用时JVM会进行GC处理，清除这些对象占用的堆内存空间，但是如果对象一直被应用，那么JVM是无法对其进行GC处理的，那么我们创建新的对象时，JVM就没有办法从堆中获取足够的内存分配给此对象，这时就会导致OOM。我们出现OOM原因，一般都是因为我们不断的往容器里存放对象，然而容器没有相应的大小限制或清除机制，这样就容易导致OOM。</strong></p>
+<h2 id="3-2快速定位问题"><a href="#3-2快速定位问题" class="headerlink" title="3.2快速定位问题"></a>3.2快速定位问题</h2><p>当我们的应用服务器占用了过多内存的时候，我们怎么样才能快速的定位问题呢？要想快速定位问题，首先我们必需获取服务器JVM某时刻的内存快照。Jdk里面提供了很多相应的命令比如：jstack,jstat,jmap,jps等等. 在出现问题后我们应该快速保留现场。</p>
+<h3 id="3-2-1-jstack"><a href="#3-2-1-jstack" class="headerlink" title="3.2.1 jstack"></a>3.2.1 jstack</h3><p>可以观察到jvm中当前所有线程的运行情况和线程当前状态.<br>sudo jstack -F 进程ID<br>输出内容如下：<br><img src="/img/进程假死2.jpg" alt=""><br>从上面的图我们可以看到tomcat进程里面没有死锁的情况，而且每个线程都处理等待的状态。这个时候我们可以telnet命令连上tomcat的端口查看tomcat进程是否有任务回应。这时发现tomcat没有任何回应可以证明tomcat应用已没有响应处理假死状态。</p>
+<h3 id="3-2-2-jstat"><a href="#3-2-2-jstat" class="headerlink" title="3.2.2 jstat"></a>3.2.2 jstat</h3><p>这是jdk命令中比较重要，也是相当实用的一个命令，可以观察到classloader，compiler，gc相关信息<br>具体参数如下：<br>-class：统计class loader行为信息<br>-compile：统计编译行为信息<br>-gc：统计jdk gc时heap信息<br>-gccapacity：统计不同的generations（包括新生区，老年区，permanent区）相应的heap容量情况<br>-gccause：统计gc的情况，（同-gcutil）和引起gc的事件<br>-gcnew：统计gc时，新生代的情况<br>-gcnewcapacity：统计gc时，新生代heap容量<br>-gcold：统计gc时，老年区的情况<br>-gcoldcapacity：统计gc时，老年区heap容量<br>-gcpermcapacity：统计gc时，permanent区heap容量<br>-gcutil：统计gc时，heap情况<br>-printcompilation：不知道干什么的，一直没用过。</p>
+<p>一般比较常用的几个参数是：<br>sudo jstat -class 2083 1000 10 （每隔1秒监控一次，一共做10次）</p>
+<p>查看当时的head情况<br>sudo jstat -gcutil  20683 2000<br><img src="/img/进程假死3.jpg" alt=""><br>注：该图不是出错截取</p>
+<p>出现时候截取的数据是gc已经完全没有处理了,因为没有加上full gc的日志所以不确定JVM GC 时间过长，导致应用暂停.</p>
+<h3 id="3-2-3获取内存快照"><a href="#3-2-3获取内存快照" class="headerlink" title="3.2.3获取内存快照"></a>3.2.3获取内存快照</h3><p>Jdk自带的jmap可以获取内在某一时刻的快照</p>
+<p>命令：jmap -dump:format=b,file=heap.bin <pid><br>file：保存路径及文件名<br>pid：进程编号（windows通过任务管理器查看，linux通过ps aux查看）<br>dump文件可以通过MemoryAnalyzer分析查看，网址：<a href="http://www.eclipse.org/mat/，可以查看dump时对象数量，内存占用，线程情况等。" target="_blank" rel="noopener">http://www.eclipse.org/mat/，可以查看dump时对象数量，内存占用，线程情况等。</a><br><img src="/img/进程假死4.jpg" alt=""><br>从上面的图可以看得出来对象没有内存溢出。<br><img src="/img/进程假死5.jpg" alt=""><br>从上图我们可以明确的看出此项目的HashMap内存使用率比较高，因为我们的系统都是返回Map的数据结构所以占用比较高的内存是正常情况。</pid></p>
+<h3 id="3-2-4观察运行中的jvm物理内存的占用情况"><a href="#3-2-4观察运行中的jvm物理内存的占用情况" class="headerlink" title="3.2.4观察运行中的jvm物理内存的占用情况"></a>3.2.4观察运行中的jvm物理内存的占用情况</h3><p>观察运行中的jvm物理内存的占用情况。我们也可以用jmap命令<br>参数如下：<br>-heap：打印jvm heap的情况<br>-histo：打印jvm heap的直方图。其输出信息包括类名，对象数量，对象占用大小。<br>-histo：live ：同上，但是只答应存活对象的情况<br>-permstat：打印permanent generation heap情况</p>
+<p>命令使用：<br>jmap -heap 2083<br>可以观察到New Generation（Eden Space，From Space，To Space）,tenured generation,Perm Generation的内存使用情况<br>输出内容：<br><img src="/img/进程假死6.jpg" alt=""><br>上图为tomcat应用出错前JVM的配置信息,可以明确的看到当时的信息:<br>MaxHeapSize堆内存大小为：3500M<br>MaxNewSize新生代内存大小：512M<br>PermSize永久代内存大小:192M<br>NewRatio设置年轻代（包括Eden和两个Survivor区）与年老代的比值（除去持久代）。设置为2，则年轻代与年老代所占比值为1：2，年轻代占整个堆栈的1/3<br>SurvivorRatio设置年轻代中Eden区与Survivor区的大小比值。设置为8，则两个Survivor区与一个Eden区的比值为2:8，一个Survivor区占整个年轻代的1/10</p>
+<p>在New Generation中，有一个叫Eden的空间，主要是用来存放新生的对象，还有两个Survivor Spaces（from,to）, 它们用来存放每次垃圾回收后存活下来的对象。在Old Generation中，主要存放应用程序中生命周期长的内存对象，还有个Permanent Generation，主要用来放JVM自己的反射对象，比如类对象和方法对象等。</p>
+<p>从上面的图可以看出来JVM的新生代设置太小，可以看出应用的新生代区完全占满了，无法再往新生代区增加新的对象此时的这些对象都处于活跃状态，所以不会被GC处理，但是tomcat应用还在继续产生新的对象，这样就会导致OOM的发生，这就是导致tomcat假死的原因.</p>
+<h1 id="4-Tomcat假死其它情况"><a href="#4-Tomcat假死其它情况" class="headerlink" title="4 Tomcat假死其它情况"></a>4 Tomcat假死其它情况</h1><p>以下是网上资料说的tomcat假的情况：<br>1、应用本身程序的问题，造成死锁。<br>2、load 太高，已经超出服务的极限<br>3、jvm GC 时间过长，导致应用暂停<br>因为出错项目里面没有打出GC的处理情况，所以不确定此原因是否也是我项目tomcat假死的原因之一。<br>4、大量tcp 连接 CLOSE_WAIT</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">netstat -n | awk &apos;/^tcp/ &#123;++S[$NF]&#125; END &#123;for(a in S) print a, S[a]&#125;&apos; </span><br><span class="line">TIME_WAIT 48</span><br><span class="line">CLOSE_WAIT 2228</span><br><span class="line">ESTABLISHED 86</span><br></pre></td></tr></table></figure>
+<p>常用的三个状态是：ESTABLISHED 表示正在通信，TIME_WAIT 表示主动关闭，CLOSE_WAIT 表示被动关</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/java/" rel="tag"># java</a>
+          
+            <a href="/tags/tomcat/" rel="tag"># tomcat</a>
+          
+            <a href="/tags/进程/" rel="tag"># 进程</a>
+          
+            <a href="/tags/假死/" rel="tag"># 假死</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/01/18/雪崩/" rel="next" title="雪崩">
+                <i class="fa fa-chevron-left"></i> 雪崩
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/01/19/《企业IT架构转型之道》读书心得/" rel="prev" title="《企业IT架构转型之道》读书心得">
+                《企业IT架构转型之道》读书心得 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Rayman.hung</p>
+              <p class="site-description motion-element" itemprop="description">技术分享、读书心得、亲子时刻</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">801</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">769</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/hongyitong" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://blog.sina.com.cn/yitonghong" target="_blank" title="忆桐之家">
+                      
+                        <i class="fa fa-fw fa-globe"></i>忆桐之家</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://douban.com/people/2780741" target="_blank" title="豆瓣">
+                      
+                        <i class="fa fa-fw fa-globe"></i>豆瓣</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://www.zhihu.com/people/rayman-36" target="_blank" title="知乎">
+                      
+                        <i class="fa fa-fw fa-globe"></i>知乎</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://www.liaoxuefeng.com/" target="_blank" title="廖雪峰的官方网站">
+                      
+                        <i class="fa fa-fw fa-globe"></i>廖雪峰的官方网站</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://www.vaikan.com/" target="_blank" title="外刊IT评论">
+                      
+                        <i class="fa fa-fw fa-globe"></i>外刊IT评论</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.google.com/" title="Google" target="_blank">Google</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.hupu.com/" title="Hupu" target="_blank">Hupu</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-引言"><span class="nav-number">1.</span> <span class="nav-text">1 引言</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-编写目的"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 编写目的</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2编写背景"><span class="nav-number">1.2.</span> <span class="nav-text">1.2编写背景</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-分析步骤"><span class="nav-number">2.</span> <span class="nav-text">2 分析步骤</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1检查nginx的网络情况"><span class="nav-number">2.1.</span> <span class="nav-text">2.1检查nginx的网络情况</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2检查tomcat-的网络情况"><span class="nav-number">2.2.</span> <span class="nav-text">2.2检查tomcat 的网络情况</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-分析JVM内存溢出"><span class="nav-number">3.</span> <span class="nav-text">3 分析JVM内存溢出</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1为什么会发生内存泄漏"><span class="nav-number">3.1.</span> <span class="nav-text">3.1为什么会发生内存泄漏</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2快速定位问题"><span class="nav-number">3.2.</span> <span class="nav-text">3.2快速定位问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-1-jstack"><span class="nav-number">3.2.1.</span> <span class="nav-text">3.2.1 jstack</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-2-jstat"><span class="nav-number">3.2.2.</span> <span class="nav-text">3.2.2 jstat</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-3获取内存快照"><span class="nav-number">3.2.3.</span> <span class="nav-text">3.2.3获取内存快照</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-4观察运行中的jvm物理内存的占用情况"><span class="nav-number">3.2.4.</span> <span class="nav-text">3.2.4观察运行中的jvm物理内存的占用情况</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Tomcat假死其它情况"><span class="nav-number">4.</span> <span class="nav-text">4 Tomcat假死其它情况</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

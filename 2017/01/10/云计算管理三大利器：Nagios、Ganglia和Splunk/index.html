@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="google-site-verification" content="Z1De3vrLeDV0zQkSKDV0IlHnujNBKcoYsS9BdR4JEIg" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="监控,故障分析,日志,Nagios,Ganglia,Splunk," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="综合利用Nagios、Ganglia和Splunk搭建起的云计算平台监控体系，具备错误报警、性能调优、问题追踪和自动生成运维报表的功能。有了这套系统，就可轻松管理Hadoop/HBase云计算平台。云计算早已不是停留在概念阶段了，各大公司都购买了大量的机器，开始正式的部署和运营。而动辄上百台的性能强劲的服务器，为运营管理带来了巨大的挑战。  如果没有方便的监控报警平台，对于管理员而言犹如噩梦，每天">
+<meta name="keywords" content="监控,故障分析,日志,Nagios,Ganglia,Splunk">
+<meta property="og:type" content="article">
+<meta property="og:title" content="云计算监控平台：Nagios、Ganglia和Splunk">
+<meta property="og:url" content="http://hongyitong.github.io/2017/01/10/云计算管理三大利器：Nagios、Ganglia和Splunk/index.html">
+<meta property="og:site_name" content="忆桐之家的博客">
+<meta property="og:description" content="综合利用Nagios、Ganglia和Splunk搭建起的云计算平台监控体系，具备错误报警、性能调优、问题追踪和自动生成运维报表的功能。有了这套系统，就可轻松管理Hadoop/HBase云计算平台。云计算早已不是停留在概念阶段了，各大公司都购买了大量的机器，开始正式的部署和运营。而动辄上百台的性能强劲的服务器，为运营管理带来了巨大的挑战。  如果没有方便的监控报警平台，对于管理员而言犹如噩梦，每天">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://hongyitong.github.io/img/监控1.jpeg">
+<meta property="og:image" content="http://hongyitong.github.io/img/监控2.jpeg">
+<meta property="og:image" content="http://hongyitong.github.io/img/监控3.jpeg">
+<meta property="og:image" content="http://hongyitong.github.io/img/监控4.jpeg">
+<meta property="og:image" content="http://hongyitong.github.io/img/监控5.jpeg">
+<meta property="og:image" content="http://hongyitong.github.io/img/监控6.jpeg">
+<meta property="og:updated_time" content="2017-07-12T04:34:56.135Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="云计算监控平台：Nagios、Ganglia和Splunk">
+<meta name="twitter:description" content="综合利用Nagios、Ganglia和Splunk搭建起的云计算平台监控体系，具备错误报警、性能调优、问题追踪和自动生成运维报表的功能。有了这套系统，就可轻松管理Hadoop/HBase云计算平台。云计算早已不是停留在概念阶段了，各大公司都购买了大量的机器，开始正式的部署和运营。而动辄上百台的性能强劲的服务器，为运营管理带来了巨大的挑战。  如果没有方便的监控报警平台，对于管理员而言犹如噩梦，每天">
+<meta name="twitter:image" content="http://hongyitong.github.io/img/监控1.jpeg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://hongyitong.github.io/2017/01/10/云计算管理三大利器：Nagios、Ganglia和Splunk/"/>
+
+
+
+
+
+  <title>云计算监控平台：Nagios、Ganglia和Splunk | 忆桐之家的博客</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">忆桐之家的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Rayman&Tony</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            公益404
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2017/01/10/云计算管理三大利器：Nagios、Ganglia和Splunk/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Rayman.hung">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="忆桐之家的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">云计算监控平台：Nagios、Ganglia和Splunk</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-01-10T00:00:00+08:00">
+                2017-01-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/技术相关/" itemprop="url" rel="index">
+                    <span itemprop="name">技术相关</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>综合利用Nagios、Ganglia和Splunk搭建起的<strong>云计算平台监控体系</strong>，具备错误报警、性能调优、问题追踪和自动生成运维报表的功能。有了这套系统，就可轻松管理Hadoop/HBase云计算平台。<br>云计算早已不是停留在概念阶段了，各大公司都购买了大量的机器，开始正式的部署和运营。而动辄上百台的性能强劲的服务器，为运营管理带来了巨大的挑战。</p>
+<ul>
+<li>如果没有方便的监控报警平台，对于管理员而言犹如噩梦，每天都将如救火队员一样，飞快地敲击键盘，用原始的Unix命令在多台机器中疲于奔命。</li>
+<li>如果没有好的日志管理平台，对于开发者Troubleshooting更是一件泪流满面的事情。<br>而如果你是运维团队的总负责人，简洁清晰的Report则非常重要。Stakeholder们动不动就可能问起系统的SLA、机器的利用率等诸多问题，毕竟，公司为此投入了巨大的资金和人力。<br>朋友们，当我们管理起公司寄予厚望的云计算平台时，当我们面对如此多充满挑战的实际问题时，该怎么办？<a id="more"></a>
+</li>
+</ul>
+<h1 id="一、概述"><a href="#一、概述" class="headerlink" title="一、概述"></a>一、概述</h1><p>我们在搭建趋势云计算平台时，遇到了很多的问题和挑战。开始搭建时，第一次来了那么多性能强劲的机器，我们在感到兴奋的同时，也不免有些顾虑。大家坐在一起讨论，问题就列了满满一白板。</p>
+<ul>
+<li>出了问题怎么办，有没有预警机制？</li>
+<li>有没有可视化的管理界面？</li>
+<li>管理平台需要自己开发吗？开发难度有多大？</li>
+<li>有没有开源的管理工具？</li>
+<li>那么多日志分布在各个机器上，有没有更有效的方法管理？</li>
+<li>能否生成好的报表？</li>
+<li>机器宕机，管理员能否收到短信通知？</li>
+<li>如何做性能调优？</li>
+<li>扩容升级时，能否给出依据？</li>
+</ul>
+<p>带着这些问题，我们开始了自己的云计算平台管理和运营之旅，一路走来，收获颇丰。现在基本上形成了如图1所示的一整套云计算平台监控体系。<br><img src="/img/监控1.jpeg" alt="" title="图1 云计算平台监控架构"><br>在这个系统中，我们综合利用了Nagios、Ganglia和Splunk，搭建起云计算平台监控体系，使其具备错误报警、性能调优、问题追踪和自动生成运维报表的功能。有了这套系统，我们终于能够轻松管理Hadoop/HBase云计算平台了。接下来将简单介绍它们的特点和功能。</p>
+<h1 id="二、Nagios：云计算平台的智能报警器"><a href="#二、Nagios：云计算平台的智能报警器" class="headerlink" title="二、Nagios：云计算平台的智能报警器"></a>二、Nagios：云计算平台的智能报警器</h1><p>总不能天天盯着机器看吧，因此我们首先关心的是机器的<strong>监控与报警</strong>。最理想的境界是：如果机器出故障了，我能第一时间处理；如果机器没有问题（最好永远没有问题），我能去喝茶、钓鱼和睡大觉。<br>发现机器有没有问题，对我们而言不是什么难事。写个脚本，Ping一下IP，Telnet每台机器的Service端口，如果增加了新机器就改改配置即可。但这样也太原始了吧，可视化效果差，不好维护，没有层次，不好管理，出不来报表，总不能老是用Excel人工写报表吧。有没有更好的方法呢？<br>有，你可以用Nagios。<br>Nagios是一个可运行在Linux/Unix平台之上的开源监视系统，可以用来监视系统运行状态和网络信息。Nagios可以监视所指定的本地或远程主机以及服务，同时提供异常通知功能。<br>Nagios可以提供以下几种监控功能。</p>
+<ul>
+<li>监控网络服务（SMTP、POP3、HTTP、NNTP、Ping等）。</li>
+<li>监控主机资源（处理器负荷、磁盘利用率等）。</li>
+<li>简单的插件设计使得用户可以方便地扩展自己服务的检测方法。</li>
+<li>并行服务检查机制。</li>
+<li>具备定义网络分层结构的能力，并使用“parent”主机定义来表达网络主机间的关系，这种关系可被用来发现和明晰主机宕机或不可达状态。</li>
+<li>当服务或主机问题产生与解决时将告警发送给联系人（通过电子邮件、短信、用户定义方式）。</li>
+<li>具备定义事件处理功能，可以在主机或服务的事件发生时获取更多问题定位。</li>
+<li>自动的日志回滚。</li>
+<li>可以支持并实现对主机的冗余监控。</li>
+<li>可选的Web界面用于查看当前的网络状态、通知和故障历史、日志文件等。</li>
+</ul>
+<p><strong>Nagios最好用的地方就是它将这些每天管理员做的工作自动化，你只需设定好要监听的端口即可，它会默默地工作，帮忙定时地去检测服务端口的状态，一旦发现问题，会及时发出报警。报警可以是电子邮件也可以是手机，从而使得管理员第一时间就能收到系统的状况。</strong><br>Nagios的报表功能也很强大。管理员可以很容易地得到每天、每周和每月的Service运行状况。<br><img src="/img/监控2.jpeg" alt="" title="图2 SPN 后台运行的所有Service的当前状态"><br>如图2所示，红色部分清楚地标注有问题的机器，点开链接，就可以得到有问题机器的情况。虽然在HBase中，几台Region Server宕机不会对整体服务产生大的影响，但多少会影响到系统的Performance。而且，如果某几台Region Server频繁宕机，对整个系统的稳定性也会产生不好的影响。有了Nagios，我们可以快速定位有问题的机器，及时地将一些机器移除出HBase系统，待调整好了再上线运行，以保证系统的稳定性。<br>现在，Nagios已经成为了很多公司必备的监控工具。只需要简单地配置，就可以实现强大的功能，将管理员从日常烦琐的工作中解放出来。<br>有了Nagios，哪怕就是管理上千台机器，也不会手忙脚乱，而是有一种统领千军、运筹帷幄的感觉。</p>
+<h1 id="三、Ganglia：看到云计算平台的方方面面"><a href="#三、Ganglia：看到云计算平台的方方面面" class="headerlink" title="三、Ganglia：看到云计算平台的方方面面"></a>三、Ganglia：看到云计算平台的方方面面</h1><p>Nagios的确不错，但你是不是真的可以喝茶、钓鱼、睡大觉呢？显然还不行。有了Nagios，你基本上可以做个优秀的救火队员，能在事发第一时间到达现场、处理事故。但如何防患于未然，真正做到运筹帷幄、游刃有余呢？<br>我们需要更加精确的数据，能够看到云计算平台的方方面面，能根据这些数据，做出性能调整、升级、扩容等的决策，从而保证Service能够满足不断增长的业务需求。<br>这时候，你需要Ganglia。<br>Ganglia是UC Berkeley发起的一个开源实时监视项目，用于测量数以千计的节点，为云计算系统提供系统静态数据以及重要的性能度量数据。Ganglia系统基本包含以下三大部分。<br>Gmond：Gmond运行在每台计算机上，它主要监控每台机器上收集和发送度量数据（如处理器速度、内存使用量等）。<br>Gmetad：Gmetad运行在Cluster的一台主机上，作为Web Server，或者用于与Web Server进行沟通。<br>Ganglia Web前端：Web前端用于显示Ganglia的Metrics图表。<br>Hadoop和HBase本身对于Ganglia的支持非常好。通过简单的配置，我们可以将Hadoop和HBase的一些关键参数以图表的形式展现在Ganglia的Web Console上。这些对于我们洞悉Hadoop和HBase的内部系统状态有很大的帮助。<br>在Hadoop的conf文件夹下面，找到hadoop-metrics.properties，配置好Ganglia的Server即可。这里要注意，Ganglia 3.0和Ganglia 3.1的区别，它们使用了不同的class。<br><figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">dfs.class=org.apache.hadoop.metrics.ganglia.GangliaContext31 </span><br><span class="line">dfs.period=10 </span><br><span class="line">dfs.servers=&#123;Ganglia_Server&#125;:8649</span><br></pre></td></tr></table></figure></p>
+<p>有了这些图表，Hadoop和HBase就不再是一个黑盒。无论是Hadoop的Namenode、Datanode，还是HBase的MasterServer、RegionServer任何时刻的情况，都会一目了然。由于图标的跨度可以是小时、天、月甚至是年，这样，就可以非常方便地定期生成周报、月报和年报。同时，根据图中Metrics的状况，我们可以通过调整参数、增加内存和硬盘、增加机器等的方法调整单个机器或者整个Service的性能。<br><img src="/img/监控3.jpeg" alt="" title="图3 Hadoop其中一个DataNode的Metrics"></p>
+<p>Nagios 最大的问题在于不能洞悉到Service内部的状况。像Hadoop、HBase这样的分布式系统，一个节点的故障并不等于整个Service的故障，影响的只是Service的性能。所以，在测定Service的SLA时，我们不能以某一台机器的故障作为Service故障的评判标准。比如在我们的HBase SLA的设定上，我们定义了HBase Service完全不能工作的评判标准如下。</p>
+<ul>
+<li>Master Server 联系不上。</li>
+<li>所有RegionServer 都无法联系上。</li>
+<li>-ROOT- 表无法访问。</li>
+<li>.META. 表无法访问。</li>
+</ul>
+<p><img src="/img/监控4.jpeg" alt="" title="图4 Ganglia对Hadoop/HBase使用情况的监测"></p>
+<p>那么，我们就可以根据这个规则定义SLA，通过定期调用HBaseAdmin相应API ，将测试的结果发给Ganglia。采用同样的方法，我们还可以自定义一些规则，监视HBase Master、Zookeeper等的情况。<br>通过这些方法，我们完全能够针对Hadoop/HBase使用的实际情况，做出Service级别而不是机器级别的监控系统并生成报表。<br>此外，Ganglia还可以通过Server反馈回来的Load信息，给出各个机器的Load情况，给我们做升级和扩容提供依据。<br>如图5所示，Ganglia分别会用不同颜色，标注出当前时刻的机器Load分布情况。如果Load过重，就应该检查机器的具体使用情况。<br><img src="/img/监控5.jpeg" alt="" title="图5 HBase Cluster Load Metrics"></p>
+<p>Ganglia的安装配置，可以参考这里。</p>
+<h1 id="四、Splunk：像查Google一样查日志"><a href="#四、Splunk：像查Google一样查日志" class="headerlink" title="四、Splunk：像查Google一样查日志"></a>四、Splunk：像查Google一样查日志</h1><p>有了Nagios和Ganglia，算是成功了一大半。作为一名优秀的管理员，我们需要具备一定的Troubleshooting能力，对一些常见的问题能给出解决方案。那么，对日志的分析就必不可少。<br>但Hadoop/HBase的日志分布在各个机器上面，而日志之间关联性强。Client端的错误有可能是Region Server引起，而Region Server的错误有可能是Zookeeper导致。有没有一个统一的日志管理平台呢？<br>众里寻它千百度，蓦然回首，我们找到了Splunk——日志界的Google。<br>很遗憾，Splunk不是开源的，但它的免费版本提供每天500MB日志索引。如果数据量较小，通过定义好Log的级别，基本上也能满足需求。但对于数据量较大的公司，就有些捉襟见肘。<br>Splunk支持AdHoc的日志搜索，而且可以与Nagios配合使用。比如Nagios报警某台RegionServer端口不可达，我们收到Notification后，登录Splunk，直接搜索shutdown和host名称，找到RegionServer退出的日志。点击详细信息，分析日志，就能快速定位问题。如图6所示。<br><img src="/img/监控6.jpeg" alt="" title="图6 Splunk与Nagios配合使用进行日志搜索"></p>
+<p>对Hadoop和HBase有了进一步了解后，我们可以利用Splunk实时检测日志中的关键字，定义关键字规则，如监控“shutdown”、“quit”、“ERROR”、“Zookeeper Session Expired”等，一旦出现，利用Splunk的Notification功能，发出邮件通知管理员，管理员通过Splunk定位问题，就可以在系统真正出现问题之前，对系统进行调整，防患于未然。<br>具体Splunk的设置，可以参考这里。</p>
+<h1 id="五、总结"><a href="#五、总结" class="headerlink" title="五、总结"></a>五、总结</h1><p>搭建一套云计算平台，强大的监控管理系统是必不可少的。当然，任何工具都不是万能的，在实际维护过程中，我们也发现，Nagios和Splunk经常出现误报，如果规则定义得不好，大量的警报邮件如潮水一样涌来，反而掩盖了真正的问题。可以说，在云计算平台的运维管理上，没有一劳永逸的事情，随着规模的不断增大和应用的不断多样化，需要大家不断地实践和总结。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/监控/" rel="tag"># 监控</a>
+          
+            <a href="/tags/故障分析/" rel="tag"># 故障分析</a>
+          
+            <a href="/tags/日志/" rel="tag"># 日志</a>
+          
+            <a href="/tags/Nagios/" rel="tag"># Nagios</a>
+          
+            <a href="/tags/Ganglia/" rel="tag"># Ganglia</a>
+          
+            <a href="/tags/Splunk/" rel="tag"># Splunk</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/01/10/ModSecurity/" rel="next" title="ModSecurity">
+                <i class="fa fa-chevron-left"></i> ModSecurity
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/01/10/理解Linux系统负荷[转]/" rel="prev" title="理解Linux系统负荷[转]">
+                理解Linux系统负荷[转] <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Rayman.hung</p>
+              <p class="site-description motion-element" itemprop="description">技术分享、读书心得、亲子时刻</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">801</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">769</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/hongyitong" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://blog.sina.com.cn/yitonghong" target="_blank" title="忆桐之家">
+                      
+                        <i class="fa fa-fw fa-globe"></i>忆桐之家</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://douban.com/people/2780741" target="_blank" title="豆瓣">
+                      
+                        <i class="fa fa-fw fa-globe"></i>豆瓣</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://www.zhihu.com/people/rayman-36" target="_blank" title="知乎">
+                      
+                        <i class="fa fa-fw fa-globe"></i>知乎</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://www.liaoxuefeng.com/" target="_blank" title="廖雪峰的官方网站">
+                      
+                        <i class="fa fa-fw fa-globe"></i>廖雪峰的官方网站</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://www.vaikan.com/" target="_blank" title="外刊IT评论">
+                      
+                        <i class="fa fa-fw fa-globe"></i>外刊IT评论</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.google.com/" title="Google" target="_blank">Google</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.hupu.com/" title="Hupu" target="_blank">Hupu</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#一、概述"><span class="nav-number">1.</span> <span class="nav-text">一、概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#二、Nagios：云计算平台的智能报警器"><span class="nav-number">2.</span> <span class="nav-text">二、Nagios：云计算平台的智能报警器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#三、Ganglia：看到云计算平台的方方面面"><span class="nav-number">3.</span> <span class="nav-text">三、Ganglia：看到云计算平台的方方面面</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#四、Splunk：像查Google一样查日志"><span class="nav-number">4.</span> <span class="nav-text">四、Splunk：像查Google一样查日志</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#五、总结"><span class="nav-number">5.</span> <span class="nav-text">五、总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
