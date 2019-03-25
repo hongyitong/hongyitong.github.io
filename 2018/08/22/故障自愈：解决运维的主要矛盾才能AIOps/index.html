@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="google-site-verification" content="Z1De3vrLeDV0zQkSKDV0IlHnujNBKcoYsS9BdR4JEIg" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="运维,故障自愈,AIOps," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="以产品设计理念剖析企业建设故障自动化处理方案的思路人工处理告警，一直是运维心中的痛。大年初一拜年、结婚、和老婆孩子外出过周末等美好时光，作为运维的你，好像一直心系IT系统，保持与笔记本的安全距离。为什么这么多年过去了，还是这么苦逼，不是说运维行业转 AIOps了，我竟然还在手工处理告警，我该怎么办？今天就和大家聊聊实现故障自愈要攻克的3个问题，以及献上开箱即用的方案。 1. 故障自愈的基本流程自动">
+<meta name="keywords" content="运维,故障自愈,AIOps">
+<meta property="og:type" content="article">
+<meta property="og:title" content="故障自愈：解决运维的主要矛盾才能AIOps">
+<meta property="og:url" content="http://hongyitong.github.io/2018/08/22/故障自愈：解决运维的主要矛盾才能AIOps/index.html">
+<meta property="og:site_name" content="忆桐之家的博客">
+<meta property="og:description" content="以产品设计理念剖析企业建设故障自动化处理方案的思路人工处理告警，一直是运维心中的痛。大年初一拜年、结婚、和老婆孩子外出过周末等美好时光，作为运维的你，好像一直心系IT系统，保持与笔记本的安全距离。为什么这么多年过去了，还是这么苦逼，不是说运维行业转 AIOps了，我竟然还在手工处理告警，我该怎么办？今天就和大家聊聊实现故障自愈要攻克的3个问题，以及献上开箱即用的方案。 1. 故障自愈的基本流程自动">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://hongyitong.github.io/img/AIOps1.jpeg">
+<meta property="og:image" content="http://hongyitong.github.io/img/AIOps2.jpeg">
+<meta property="og:image" content="http://hongyitong.github.io/img/AIOps3.jpeg">
+<meta property="og:image" content="http://hongyitong.github.io/img/AIOps4.jpg">
+<meta property="og:image" content="http://hongyitong.github.io/img/AIOps5.jpg">
+<meta property="og:image" content="http://hongyitong.github.io/img/AIOps6.jpg">
+<meta property="og:image" content="http://hongyitong.github.io/img/AIOps7.jpg">
+<meta property="og:image" content="http://hongyitong.github.io/img/AIOps8.jpg">
+<meta property="og:image" content="http://hongyitong.github.io/img/AIOps9.jpg">
+<meta property="og:image" content="http://hongyitong.github.io/img/AIOps10.jpg">
+<meta property="og:image" content="http://hongyitong.github.io/img/AIOps11.jpg">
+<meta property="og:image" content="http://hongyitong.github.io/img/AIOps12.jpg">
+<meta property="og:updated_time" content="2018-08-22T13:16:59.734Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="故障自愈：解决运维的主要矛盾才能AIOps">
+<meta name="twitter:description" content="以产品设计理念剖析企业建设故障自动化处理方案的思路人工处理告警，一直是运维心中的痛。大年初一拜年、结婚、和老婆孩子外出过周末等美好时光，作为运维的你，好像一直心系IT系统，保持与笔记本的安全距离。为什么这么多年过去了，还是这么苦逼，不是说运维行业转 AIOps了，我竟然还在手工处理告警，我该怎么办？今天就和大家聊聊实现故障自愈要攻克的3个问题，以及献上开箱即用的方案。 1. 故障自愈的基本流程自动">
+<meta name="twitter:image" content="http://hongyitong.github.io/img/AIOps1.jpeg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://hongyitong.github.io/2018/08/22/故障自愈：解决运维的主要矛盾才能AIOps/"/>
+
+
+
+
+
+  <title>故障自愈：解决运维的主要矛盾才能AIOps | 忆桐之家的博客</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">忆桐之家的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Rayman&Tony</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/404.html" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-question-circle"></i> <br />
+            
+            公益404
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2018/08/22/故障自愈：解决运维的主要矛盾才能AIOps/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Rayman.hung">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="忆桐之家的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">故障自愈：解决运维的主要矛盾才能AIOps</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-22T00:00:00+08:00">
+                2018-08-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/技术相关/" itemprop="url" rel="index">
+                    <span itemprop="name">技术相关</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>以产品设计理念剖析企业建设故障自动化处理方案的思路<br>人工处理告警，一直是运维心中的痛。大年初一拜年、结婚、和老婆孩子外出过周末等美好时光，作为运维的你，好像一直心系IT系统，保持与笔记本的安全距离。<br>为什么这么多年过去了，还是这么苦逼，不是说运维行业转 AIOps了，我竟然还在手工处理告警，我该怎么办？<br>今天就和大家聊聊实现故障自愈要攻克的3个问题，以及献上开箱即用的方案。</p>
+<h1 id="1-故障自愈的基本流程"><a href="#1-故障自愈的基本流程" class="headerlink" title="1. 故障自愈的基本流程"></a>1. 故障自愈的基本流程</h1><p>自动化的要点是什么？把人的经验抽象、固化为程序处理，工业（第3次工业革命）或互联网都是如此。<br>举个例子，磁盘出现告警，运维首先想到的是登陆服务器清理磁盘。<a id="more"></a><br><img src="/img/AIOps1.jpeg" alt="" title=" "><br>（人工处理告警的流程）</p>
+<p>接下来，我们拆解背后的逻辑。</p>
+<h2 id="1-1-抽象告警处理流程"><a href="#1-1-抽象告警处理流程" class="headerlink" title="1.1 抽象告警处理流程"></a>1.1 抽象告警处理流程</h2><p>1) 拉取磁盘告警<br>2) 编写磁盘清理的脚本或作业任务<br>3) 设计模块：把拉取到的磁盘告警，与调用脚本的模块串起来</p>
+<p>（故障自愈流程 简化版V1）<br><img src="/img/AIOps2.jpeg" alt="" title=" "></p>
+<h2 id="1-2-通过CMDB做资源清洗"><a href="#1-2-通过CMDB做资源清洗" class="headerlink" title="1.2 通过CMDB做资源清洗"></a>1.2 通过CMDB做资源清洗</h2><p>不同模块的磁盘清理方案不一样，如何解决呢？<br>这时需要引入<strong>CMDB（设备、人、业务的映射关系）</strong>，通过CMDB把IP 清洗为 模块，这样就解决了接入层 和 逻辑层、存储层的告警使用对应的磁盘清理方案。<br>（故障自愈流程 简化版V2）<br><img src="/img/AIOps3.jpeg" alt="" title=" "></p>
+<h2 id="1-3-对接企业内部网关"><a href="#1-3-对接企业内部网关" class="headerlink" title="1.3 对接企业内部网关"></a>1.3 对接企业内部网关</h2><p>故障自愈可能会处理失败，这时需要通知用户。故障自愈的处理方式除了调用作业外，还可能需要调用企业内部的网关，比如服务器重启、申请服务器等。<br>使用PaaS层的ESB是一种解决思路，通过ESB封装企业内部网关，解决权限校验、频率控制、访问统计、路由分发以及自助接入等功能，不要直接调用裸接口了。<br><img src="/img/AIOps4.jpg" alt="" title=" "><br>（故障自愈的通知方案）</p>
+<p>经过这一轮的探索，故障自愈的架构就是下面这个样子。<br><img src="/img/AIOps5.jpg" alt="" title=" "><br>（故障自愈的流程）</p>
+<h2 id="1-4-对接企业内部监控产品"><a href="#1-4-对接企业内部监控产品" class="headerlink" title="1.4 对接企业内部监控产品"></a>1.4 对接企业内部监控产品</h2><p>等等，好像还没说如何对接企业内部的监控产品，以Zabbix为例。<br><img src="/img/AIOps6.jpg" alt="" title=" "></p>
+<p>《当Zabbix遇见故障自愈》介绍了拉取Zabbix告警的方案，通过 ActionScript 调用脚本，把 Zabbix 告警推送至自愈的告警拉取模块。<br>推送（或叫回调）可以保证告警拉取的实时性。<br><img src="/img/AIOps7.jpg" alt="" title=" "><br>（Zabbix推送告警示例）<br><img src="/img/AIOps8.jpg" alt="" title=" "><br>（Zabbix调用推送告警的脚本）</p>
+<p>对接Zabbix 的落地案例可以参考陈亮撰写的<a href="https://mp.weixin.qq.com/s?__biz=MjM5NTcxMTE2Nw==&amp;mid=2653116228&amp;idx=2&amp;sn=49b71d78ef309950f28d9929e58185f1&amp;scene=21#wechat_redirect" target="_blank" rel="noopener">那些年我们想做的无人值守</a> </p>
+<h1 id="2-故障自愈的两面性"><a href="#2-故障自愈的两面性" class="headerlink" title="2. 故障自愈的两面性"></a>2. 故障自愈的两面性</h1><p>故障自动处理就像一把刀，有其两面性。<br>因为要确保告警的真实性，一旦把假告警也自动处理了，就很悲催了…<br>举个例子。网络波动，批量出现PING告警。实际上服务器运行正常，这时你把服务器都重启了，那就GG了。<br>如何解决呢？分析事物的规律。<br>批量出现告警，那可以在告警拉取模块后面，增加一个收敛模块。<br>比如，在X时间内出现Y个告警，打电话给运维审批。<br>X时间内同一主机出现使用相同套餐的告警，则收敛时间窗口中后面的告警则跳过，比如同时收到进程告警 和 端口告警，就不用拉2次进程了。<br>还有就是，原有监控系统没有收敛能力，那么可以借用这个功能来做告警汇总，因为收敛逻辑一样，只是收敛的处理方式有差异。<br><img src="/img/AIOps9.jpg" alt="" title=" "></p>
+<h1 id="3-复杂告警的处理方案-组合套餐"><a href="#3-复杂告警的处理方案-组合套餐" class="headerlink" title="3. 复杂告警的处理方案 - 组合套餐"></a>3. 复杂告警的处理方案 - 组合套餐</h1><p>上面提到的技术方案是用来处理逻辑简单的告警，那么故障替换这种复杂的场景如何解决呢？<br>举个例子，A模块是重要模块，出现PING不可达告警，首先要校验A模块是否真的故障，如果真的故障，接下来是从资源池中获取备机 … 故障替换等等，期间每个环节都有可能出错，那就要考虑异常分支的场景。<br>树结构可以解决该问题，二叉树足以满足大部分场景（成功、失败两种分支）。<br><img src="/img/AIOps10.jpg" alt="" title=" "><br>( 组合套餐的示例)<br>上面这张图，是一个自愈处理方案，可以称之为组合套餐。<br>这里同时引入了原子的概念，通过组装原子来满足各种需求场景， 和资源编排说的是同一个理儿。<br>注：如果你想使用三叉树，其实可以把组合套餐也作为一个原子套餐（节点）。</p>
+<h1 id="4-故障自愈的技术架构"><a href="#4-故障自愈的技术架构" class="headerlink" title="4. 故障自愈的技术架构"></a>4. 故障自愈的技术架构</h1><p>经过前面对故障自愈的基本流程、故障自愈的两面性、复杂的故障处理方案的层层梳理，我们有了一张故障自愈的技术架构图。<br><img src="/img/AIOps11.jpg" alt="" title=" "><br>相信这次以经行业验证的故障自愈做技术剖析，能对大家建设企业内部的故障自动处理方案提供参考思路。</p>
+<h1 id="5-收尾"><a href="#5-收尾" class="headerlink" title="5. 收尾"></a>5. 收尾</h1><p>当 AIOps大行其道的时候，我们需要克制，优先解决主要矛盾，而不是构建高大上的空中楼阁。<br>如同产品路线图，优先解决可用性，接下来是体验，最后才是可扩展性和生态，依次落地。<br><img src="/img/AIOps12.jpg" alt="" title=" "><br>（产品需求模型 by 腾讯8分钟产品课）<br>最后，希望广大的运维兄弟姐妹能尽早脱离原始运维的苦海，抓住行业发展趋势，掌握核心技术，在变革中实现自身价值！</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/运维/" rel="tag"># 运维</a>
+          
+            <a href="/tags/故障自愈/" rel="tag"># 故障自愈</a>
+          
+            <a href="/tags/AIOps/" rel="tag"># AIOps</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/08/22/SNAT、DNAT/" rel="next" title="SNAT、DNAT">
+                <i class="fa fa-chevron-left"></i> SNAT、DNAT
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/08/25/QPS和TPS理解，区别和计算方法/" rel="prev" title="QPS和TPS理解，区别和计算方法">
+                QPS和TPS理解，区别和计算方法 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Rayman.hung</p>
+              <p class="site-description motion-element" itemprop="description">技术分享、读书心得、亲子时刻</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">861</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">923</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/hongyitong" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://blog.sina.com.cn/yitonghong" target="_blank" title="忆桐之家">
+                      
+                        <i class="fa fa-fw fa-globe"></i>忆桐之家</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://douban.com/people/2780741" target="_blank" title="豆瓣">
+                      
+                        <i class="fa fa-fw fa-globe"></i>豆瓣</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://www.zhihu.com/people/rayman-36" target="_blank" title="知乎">
+                      
+                        <i class="fa fa-fw fa-globe"></i>知乎</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://www.liaoxuefeng.com/" target="_blank" title="廖雪峰的官方网站">
+                      
+                        <i class="fa fa-fw fa-globe"></i>廖雪峰的官方网站</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="http://www.vaikan.com/" target="_blank" title="外刊IT评论">
+                      
+                        <i class="fa fa-fw fa-globe"></i>外刊IT评论</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.google.com/" title="Google" target="_blank">Google</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.hupu.com/" title="Hupu" target="_blank">Hupu</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-故障自愈的基本流程"><span class="nav-number">1.</span> <span class="nav-text">1. 故障自愈的基本流程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-抽象告警处理流程"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 抽象告警处理流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-通过CMDB做资源清洗"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 通过CMDB做资源清洗</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-对接企业内部网关"><span class="nav-number">1.3.</span> <span class="nav-text">1.3 对接企业内部网关</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-4-对接企业内部监控产品"><span class="nav-number">1.4.</span> <span class="nav-text">1.4 对接企业内部监控产品</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-故障自愈的两面性"><span class="nav-number">2.</span> <span class="nav-text">2. 故障自愈的两面性</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-复杂告警的处理方案-组合套餐"><span class="nav-number">3.</span> <span class="nav-text">3. 复杂告警的处理方案 - 组合套餐</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-故障自愈的技术架构"><span class="nav-number">4.</span> <span class="nav-text">4. 故障自愈的技术架构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-收尾"><span class="nav-number">5.</span> <span class="nav-text">5. 收尾</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
