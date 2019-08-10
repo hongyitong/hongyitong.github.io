@@ -334,7 +334,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2018/08/28/Homekit是什么？在智能家居中有何应用/">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2018/08/28/TPS、并发、响应时间详解/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Rayman.hung">
@@ -353,7 +353,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/08/28/Homekit是什么？在智能家居中有何应用/" itemprop="url">Homekit是什么？在智能家居中有何应用</a></h1>
+                <a class="post-title-link" href="/2018/08/28/TPS、并发、响应时间详解/" itemprop="url">TPS、并发、响应时间详解</a></h1>
         
 
         <div class="post-meta">
@@ -426,11 +426,10 @@
 
       
         
-          <p><img src="/img/Homekit1.jpg" alt="" title=" "></p>
-<h1 id="Homekit是什么？"><a href="#Homekit是什么？" class="headerlink" title="Homekit是什么？"></a>Homekit是什么？</h1><p>HomeKit，是苹果2014年发布的智能家居平台。2015年5月15日，苹果宣布，首批支持其HomeKit平台的智能家居设备在6月上市。<br>2016年6月13日，苹果开发者大会WWDC在旧金山召开，会议宣布建筑商开始支持HomeKit。而在不久前举行的2018 WWDC大会上，苹果在新发布的iOS 12和tvOS 12中，赋予了HomeKit一项重要功能——支持第三方遥控器。如今经过4年多的开发和建设，HomeKit平台在家庭自动化市场中终于要站稳脚跟了。<br>
+          <h1 id="一、TPS举例"><a href="#一、TPS举例" class="headerlink" title="一、TPS举例"></a>一、TPS举例</h1><p>例子：一个高速路有10个入口，每个入口每秒钟只能进1辆车<br>1、请问1秒钟最多能进几辆车？<br>   TPS=10<br>2、每辆车需要多长时间进行响应？<br>   reponse time = 1<br>3、改成20辆车，每秒能进几辆？每辆车的响应时间是多长？<br>   TPS = 10，reponse time = 1  (10个为一等份，分成两等份，平均tps (10/1+10/2)/2=7.5 平均响应时间(2+1)/2=1.5<br>4、入口扩展到20个，每秒能进几辆？每辆车的响应时间是多长？<br>   TPS = 20，reponse time = 1<br>5、看看，现在TPS变了，响应时间没变，TPS和响应时间有关系吗？<br>  木有关系<br>6、如何理解？<br>  TPS和响应时间在理想状态下都是额定值(联想运行一个压力测试场景来考虑)，把入口看成线程池，如果有20个入口，并发数只有10的时候，TPS就是10，而响应时间始终是1，说明并发数不够，需要增加并发数达到TPS的峰值。<br>7、同样是20个入口，如果并发数变成100的话，TPS和响应时间会怎么样呢？<br>  并发数到100的时候，就会出现堵车，堵车了平均每个车过去的时间就长了，把100个车按照20一份分成5份，第5份的等待时间就是最长的，从等待开始到这个车进去，实际花费了5秒，那100辆车都过去的响应时间就是（5+4+3+2+1）/5=3，平均的TPS就是（20/1+20/2+20/3+20/4+20/5)/5=9.13（我怎么感觉应该是100/（5+4+3+2+1）=6.67 完成的事务总数/完成事务数的时间，使用该方法计算出来的tps会稍微小些,可以乘以1.5倍作为当前tps）<br>8、由此可知，TPS和响应时间宏观上是倒数关系，但是两者实际上木有直接的关系的，在上例中，系统只存在20个线程，100的并发就会造成线程的等待，引起平均响应时间从1秒增加到3秒，TPS从20下降到9，TPS和响应时间都是单独计算出来的，并不是互相算出来的！<br>9、同样可知，在并发量保持不变的情况下，提高TPS的手段有几种？<br>  A、增加线程池的数量（入口）B、降低每辆车入关的时间（也就是提高单个线程的处理效率）<br>10、从TPS和response time的定义查看这2者的区别？<br>  TPS = 在场景或者灰化步骤运行的每一秒钟中，每个事务通过、失败以及停止的次数<br>  <strong>也就是说，TPS = 总的通过、失败的事务总数/整个场景的运行时间；<br>  reponse time = 每个事务完成实际需要的时间/事务处理数目<br>  因此，这2个东西压根就是木有关系的！</strong><br>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2018/08/28/Homekit是什么？在智能家居中有何应用/#more" rel="contents">
+            <a class="btn" href="/2018/08/28/TPS、并发、响应时间详解/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -577,6 +576,153 @@
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2018/08/28/吞吐率、吞吐量、TPS、性能测试/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2018/08/28/Homekit是什么？在智能家居中有何应用/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Rayman.hung">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="忆桐之家的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/08/28/Homekit是什么？在智能家居中有何应用/" itemprop="url">Homekit是什么？在智能家居中有何应用</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-28T00:00:00+08:00">
+                2018-08-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/技术相关/" itemprop="url" rel="index">
+                    <span itemprop="name">技术相关</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p><img src="/img/Homekit1.jpg" alt="" title=" "></p>
+<h1 id="Homekit是什么？"><a href="#Homekit是什么？" class="headerlink" title="Homekit是什么？"></a>Homekit是什么？</h1><p>HomeKit，是苹果2014年发布的智能家居平台。2015年5月15日，苹果宣布，首批支持其HomeKit平台的智能家居设备在6月上市。<br>2016年6月13日，苹果开发者大会WWDC在旧金山召开，会议宣布建筑商开始支持HomeKit。而在不久前举行的2018 WWDC大会上，苹果在新发布的iOS 12和tvOS 12中，赋予了HomeKit一项重要功能——支持第三方遥控器。如今经过4年多的开发和建设，HomeKit平台在家庭自动化市场中终于要站稳脚跟了。<br>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/08/28/Homekit是什么？在智能家居中有何应用/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -920,7 +1066,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2018/08/22/NSX网络虚拟化/">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2018/08/22/SNAT、DNAT/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Rayman.hung">
@@ -939,7 +1085,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/08/22/NSX网络虚拟化/" itemprop="url">NSX网络虚拟化</a></h1>
+                <a class="post-title-link" href="/2018/08/22/SNAT、DNAT/" itemprop="url">SNAT、DNAT</a></h1>
         
 
         <div class="post-meta">
@@ -1012,14 +1158,15 @@
 
       
         
-          <p>VMware NSX is the company’s network virtualization and security platform for the software-defined data center (SDDC).<br>传统的数据中心都是用物理网络来分隔不同的业务系统，这就需要管理员预先规划好数据中心的网络拓扑结构，划分好 VLAN，以确保各个业务系统之间是相互隔离的；并且在防火墙上配置上百条规则，针对每一个应用关闭不需要的网络端口，以降低黑客攻击的风险。这是一个费时费力的工作，一旦某个业务系统需要增加一些新的功能，或者不同的业务系统之间需要互相访问，就需要对数据中心内的网络做出相应的调整，这个过程不但费时，而且需要非常小心，避免任何一个错误的配置而导致网络中断。<br>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/08/22/NSX网络虚拟化/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
+          
+            <ol>
+<li><p>SNAT<br>场景：云上的vm主机用户作为客户端访问外网服务器<br>vm(client)—-&gt;SNAT(将数据包中的内网源IP转换为外网IP)—-&gt;Internet(服务器）—-&gt;SNAT(将数据包内的目的IP转换为内网IP)—-&gt;vm(client)</p>
+</li>
+<li><p>DNAT<br>场景：云上的VM主机作为服务器端为外网提供服务<br>Internet(client用户)—-&gt;DNAT(将数据包中的目的公网IP转换为目的内网IP)—-&gt;VM(server)—-&gt;DNAT(将数据包中的源内网IP转换为外网IP)—-&gt;Internet(client用户)</p>
+</li>
+</ol>
+
+          
         
       
     </div>
@@ -1213,7 +1360,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2018/08/22/SNAT、DNAT/">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2018/08/22/NSX网络虚拟化/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Rayman.hung">
@@ -1232,7 +1379,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/08/22/SNAT、DNAT/" itemprop="url">SNAT、DNAT</a></h1>
+                <a class="post-title-link" href="/2018/08/22/NSX网络虚拟化/" itemprop="url">NSX网络虚拟化</a></h1>
         
 
         <div class="post-meta">
@@ -1305,15 +1452,14 @@
 
       
         
-          
-            <ol>
-<li><p>SNAT<br>场景：云上的vm主机用户作为客户端访问外网服务器<br>vm(client)—-&gt;SNAT(将数据包中的内网源IP转换为外网IP)—-&gt;Internet(服务器）—-&gt;SNAT(将数据包内的目的IP转换为内网IP)—-&gt;vm(client)</p>
-</li>
-<li><p>DNAT<br>场景：云上的VM主机作为服务器端为外网提供服务<br>Internet(client用户)—-&gt;DNAT(将数据包中的目的公网IP转换为目的内网IP)—-&gt;VM(server)—-&gt;DNAT(将数据包中的源内网IP转换为外网IP)—-&gt;Internet(client用户)</p>
-</li>
-</ol>
-
-          
+          <p>VMware NSX is the company’s network virtualization and security platform for the software-defined data center (SDDC).<br>传统的数据中心都是用物理网络来分隔不同的业务系统，这就需要管理员预先规划好数据中心的网络拓扑结构，划分好 VLAN，以确保各个业务系统之间是相互隔离的；并且在防火墙上配置上百条规则，针对每一个应用关闭不需要的网络端口，以降低黑客攻击的风险。这是一个费时费力的工作，一旦某个业务系统需要增加一些新的功能，或者不同的业务系统之间需要互相访问，就需要对数据中心内的网络做出相应的调整，这个过程不但费时，而且需要非常小心，避免任何一个错误的配置而导致网络中断。<br>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2018/08/22/NSX网络虚拟化/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
         
       
     </div>
@@ -1639,161 +1785,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2018/08/16/特色小镇-物联网技术交流/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Rayman.hung">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="忆桐之家的博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/08/16/特色小镇-物联网技术交流/" itemprop="url">特色小镇-物联网技术交流</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-08-16T00:00:00+08:00">
-                2018-08-16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/技术相关/" itemprop="url" rel="index">
-                    <span itemprop="name">技术相关</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <ul>
-<li>易居·克而瑞</li>
-<li>云湾信息    云易智</li>
-<li>祈福在上BIM</li>
-<li>合景唐亮   保利芯智慧姚向明总   美地置业朱春晨总</li>
-<li><strong>富力：互联网来整合，寻找新的运营模式；  互联网化；</strong></li>
-<li>智慧社区方案；数据收集</li>
-<li>全国特色小镇  2500多个（浙江、山东、云南最多）</li>
-<li>PPP融资模式</li>
-<li>有产业资源的地产商有优势；或者地产+产业公司强强联合；
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/08/16/特色小镇-物联网技术交流/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1844,7 +1835,7 @@
               
                 <a href="/archives">
               
-                  <span class="site-state-item-count">877</span>
+                  <span class="site-state-item-count">878</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1866,7 +1857,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">961</span>
+                  <span class="site-state-item-count">962</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
