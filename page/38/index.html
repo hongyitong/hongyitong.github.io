@@ -775,7 +775,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2016/12/16/分表分库（数据库性能调优） /">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2016/12/16/SOA、MQ的开源方案/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Rayman.hung">
@@ -794,7 +794,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2016/12/16/分表分库（数据库性能调优） /" itemprop="url">数据库Sharding的基本思想和切分策略（分库分表）</a></h1>
+                <a class="post-title-link" href="/2016/12/16/SOA、MQ的开源方案/" itemprop="url">SOA、MQ的开源方案</a></h1>
         
 
         <div class="post-meta">
@@ -867,11 +867,153 @@
 
       
         
-          <p>本文着重介绍sharding的基本思想和理论上的切分策略，关于<strong>更加细致的实施策略和参考事例请参考另一篇博文：数据库分库分表(sharding)系列(一) 拆分实施策略和示例演示</strong> </p>
-<h1 id="一、基本思想"><a href="#一、基本思想" class="headerlink" title="一、基本思想"></a>一、基本思想</h1><p>Sharding的基本思想就要把一个数据库切分成多个部分放到不同的数据库(server)上，从而缓解单一数据库的性能问题。不太严格的讲，对于海量数据的数据库，如果是因为表多而数据多，这时候适合使用垂直切分，即把关系紧密（比如同一模块）的表切分出来放在一个server上。如果表并不多，但每张表的数据非常多，这时候适合水平切分，即把表的数据按某种规则（<strong>比如按ID散列</strong>）切分到多个数据库(server)上。当然，现实中更多是这两种情况混杂在一起，这时候需要根据实际情况做出选择，也可能会综合使用垂直与水平切分，从而将原有数据库切分成类似矩阵一样可以无限扩充的数据库(server)阵列。下面分别详细地介绍一下垂直切分和水平切分.<br>
+          
+            <p>SOA：<br>开源的做的比较好的，大公司的服务框架有：dubbox和Motan<br>dubbo最先是阿里开源，当当改造为dubbox，使用面最广<br>Motan是微博的开源</p>
+<p>MQ：<br>Apache ActiveMQ和RabbitMQ用的比较多 </p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2016/12/16/读写分离/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Rayman.hung">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="忆桐之家的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2016/12/16/读写分离/" itemprop="url">读写分离（数据库性能调优）</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-12-16T00:00:00+08:00">
+                2016-12-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/技术相关/" itemprop="url" rel="index">
+                    <span itemprop="name">技术相关</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>对于读大于写并且数据量增加不是很明显的数据库，<strong>推荐采用读写分离+缓存的模式</strong>，试想一下一个用户注册、修改用户信息、记录用户登录时间、记录用户登录IP、修改登录密码，这些是写操作。但是以上这些操作次数都是很小的，所以整个数据库的写压力是很小的。唯一一个比较大的就是记录用户登录时间、记录用户登录IP这类信息，只要把这些经常变动的信息排除在外，那么写操作可以忽略不计。所以读写分离首要解决的就是经常变化的数据的拆分，<strong>比如：用户登录时间、记录用户登录IP。这类信息可以单独独立出来，记录在持久化类的缓存中（可靠性要求并不高，登陆时间、IP丢了就丢了，下次来了就又来了）</strong><br>以oracle为例，主库负责写数据、读数据。读库仅负责读数据。每次有写库操作，同步更新cache，每次读取先读cache再读DB。写库就一个，读库可以有多个，<strong>采用dataguard来负责主库和多个读库的数据同步。</strong><br>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2016/12/16/分表分库（数据库性能调优） /#more" rel="contents">
+            <a class="btn" href="/2016/12/16/读写分离/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1068,7 +1210,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2016/12/16/读写分离/">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2016/12/16/分表分库（数据库性能调优） /">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Rayman.hung">
@@ -1087,7 +1229,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2016/12/16/读写分离/" itemprop="url">读写分离（数据库性能调优）</a></h1>
+                <a class="post-title-link" href="/2016/12/16/分表分库（数据库性能调优） /" itemprop="url">数据库Sharding的基本思想和切分策略（分库分表）</a></h1>
         
 
         <div class="post-meta">
@@ -1160,157 +1302,15 @@
 
       
         
-          <p>对于读大于写并且数据量增加不是很明显的数据库，<strong>推荐采用读写分离+缓存的模式</strong>，试想一下一个用户注册、修改用户信息、记录用户登录时间、记录用户登录IP、修改登录密码，这些是写操作。但是以上这些操作次数都是很小的，所以整个数据库的写压力是很小的。唯一一个比较大的就是记录用户登录时间、记录用户登录IP这类信息，只要把这些经常变动的信息排除在外，那么写操作可以忽略不计。所以读写分离首要解决的就是经常变化的数据的拆分，<strong>比如：用户登录时间、记录用户登录IP。这类信息可以单独独立出来，记录在持久化类的缓存中（可靠性要求并不高，登陆时间、IP丢了就丢了，下次来了就又来了）</strong><br>以oracle为例，主库负责写数据、读数据。读库仅负责读数据。每次有写库操作，同步更新cache，每次读取先读cache再读DB。写库就一个，读库可以有多个，<strong>采用dataguard来负责主库和多个读库的数据同步。</strong><br>
+          <p>本文着重介绍sharding的基本思想和理论上的切分策略，关于<strong>更加细致的实施策略和参考事例请参考另一篇博文：数据库分库分表(sharding)系列(一) 拆分实施策略和示例演示</strong> </p>
+<h1 id="一、基本思想"><a href="#一、基本思想" class="headerlink" title="一、基本思想"></a>一、基本思想</h1><p>Sharding的基本思想就要把一个数据库切分成多个部分放到不同的数据库(server)上，从而缓解单一数据库的性能问题。不太严格的讲，对于海量数据的数据库，如果是因为表多而数据多，这时候适合使用垂直切分，即把关系紧密（比如同一模块）的表切分出来放在一个server上。如果表并不多，但每张表的数据非常多，这时候适合水平切分，即把表的数据按某种规则（<strong>比如按ID散列</strong>）切分到多个数据库(server)上。当然，现实中更多是这两种情况混杂在一起，这时候需要根据实际情况做出选择，也可能会综合使用垂直与水平切分，从而将原有数据库切分成类似矩阵一样可以无限扩充的数据库(server)阵列。下面分别详细地介绍一下垂直切分和水平切分.<br>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2016/12/16/读写分离/#more" rel="contents">
+            <a class="btn" href="/2016/12/16/分表分库（数据库性能调优） /#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
           <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2016/12/16/SOA、MQ的开源方案/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Rayman.hung">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="忆桐之家的博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2016/12/16/SOA、MQ的开源方案/" itemprop="url">SOA、MQ的开源方案</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-12-16T00:00:00+08:00">
-                2016-12-16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/技术相关/" itemprop="url" rel="index">
-                    <span itemprop="name">技术相关</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>SOA：<br>开源的做的比较好的，大公司的服务框架有：dubbox和Motan<br>dubbo最先是阿里开源，当当改造为dubbox，使用面最广<br>Motan是微博的开源</p>
-<p>MQ：<br>Apache ActiveMQ和RabbitMQ用的比较多 </p>
-
-          
         
       
     </div>
@@ -1650,7 +1650,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2016/12/15/消息队列/">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2016/12/15/服务化演进过程之技术演进/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Rayman.hung">
@@ -1669,7 +1669,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2016/12/15/消息队列/" itemprop="url">消息队列</a></h1>
+                <a class="post-title-link" href="/2016/12/15/服务化演进过程之技术演进/" itemprop="url">服务化演进过程之技术演进（性能提升之路）</a></h1>
         
 
         <div class="post-meta">
@@ -1742,12 +1742,11 @@
 
       
         
-          <h1 id="一、消息队列MQ基础"><a href="#一、消息队列MQ基础" class="headerlink" title="一、消息队列MQ基础"></a>一、消息队列MQ基础</h1><p>在服务化架构中，消息队列的作用时不可替代的。服务化架构的异步通信、流量消峰、跨语言调用、通知协调等等很多功能都会用到消息队列。<br>在选用MQ时，要考虑一下我们的需求和MQ自身功能是否匹配，超前的使用有时候并不能给我们带来相应的好处，反而可能会成为使用的障碍。<br>消息队列有点对点（point to point， queue）与发布订阅（publish/subscribe)等方式。</p>
-<h2 id="1、MQ核心组成"><a href="#1、MQ核心组成" class="headerlink" title="1、MQ核心组成"></a>1、MQ核心组成</h2><p>Sender（Producer App）——Message Queue——Receiver（Consumer App）</p>
-<h2 id="2、MQ-vs-SOA"><a href="#2、MQ-vs-SOA" class="headerlink" title="2、MQ vs SOA"></a>2、MQ vs SOA</h2><p>消息队列的出现意于完成系统间的消息通信，协调系统调用间调用。这跟SOA类似。但<strong>不同于SOA面向服务的直接调用，消息队列的通信不是直接调用关系，系统间通信主要通过消息发送</strong>，接收方接收消息，进行处理，完成与发送方的调用处理。<br>
+          <h1 id="1、WebServer、数据库、文件从单一到分离"><a href="#1、WebServer、数据库、文件从单一到分离" class="headerlink" title="1、WebServer、数据库、文件从单一到分离"></a>1、WebServer、数据库、文件从单一到分离</h1><p>此时的ORM工具、事务控制手段、简化CRUD是重要的关注点。职责分离，针对需求不同对服务器进行不同的配置（或采购），对应将依赖程度较高。</p>
+<h1 id="2、页面缓存、数据缓存"><a href="#2、页面缓存、数据缓存" class="headerlink" title="2、页面缓存、数据缓存"></a>2、页面缓存、数据缓存</h1><p>为了提高响应速度和避免不必要的请求，增加了页面缓存；为了应对有限的I/O资源，增加了数据缓存。在对数据修改时，同时修改缓存内容。<br>随着数据越来越多，缓存也逐渐变成了分布式（Memcached、Redis等等），对于分布式缓存的使用主要存在几种情况：<br>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2016/12/15/消息队列/#more" rel="contents">
+            <a class="btn" href="/2016/12/15/服务化演进过程之技术演进/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>

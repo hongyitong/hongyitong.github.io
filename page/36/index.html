@@ -334,152 +334,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2017/01/05/LSM树/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Rayman.hung">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="忆桐之家的博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/01/05/LSM树/" itemprop="url">LSM树</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-01-05T00:00:00+08:00">
-                2017-01-05
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/技术相关/" itemprop="url" rel="index">
-                    <span itemprop="name">技术相关</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>讲LSM树之前，需要提下三种基本的存储引擎，这样才能清楚LSM树的由来：</p>
-<h3 id="1、哈希存储引擎"><a href="#1、哈希存储引擎" class="headerlink" title="1、哈希存储引擎"></a>1、哈希存储引擎</h3><p>是哈希表的持久化实现，支持增、删、改以及随机读取操作，<strong>但不支持顺序扫描</strong>，对应的存储系统为key-value存储系统。对于key-value的插入以及查询，哈希表的复杂度都是O(1)，明显比树的操作O(n)快,如果不需要有序的遍历数据，哈希表就是your Mr.Right</p>
-<h3 id="2、B树存储引擎"><a href="#2、B树存储引擎" class="headerlink" title="2、B树存储引擎"></a>2、B树存储引擎</h3><p>是B树的持久化实现，不仅支持单条记录的增、删、读、改操作，<strong>还支持顺序扫描（B+树的叶子节点之间的指针），对应的存储系统就是关系数据库（Mysql等）。</strong></p>
-<h3 id="3、LSM树（Log-Structured-Merge-Tree）存储引擎"><a href="#3、LSM树（Log-Structured-Merge-Tree）存储引擎" class="headerlink" title="3、LSM树（Log-Structured Merge Tree）存储引擎"></a>3、LSM树（Log-Structured Merge Tree）存储引擎</h3><p>和B树存储引擎一样，同样支持增、删、读、改、顺序扫描操作。<strong>而且通过批量存储技术规避磁盘随机写入问题。当然凡事有利有弊，LSM树和B+树相比，LSM树牺牲了部分读性能，用来大幅提高写性能。</strong><br>通过以上的分析，应该知道LSM树的由来了，<strong>LSM树的设计思想非常朴素：将对数据的修改增量保持在内存中，达到指定的大小限制后将这些修改操作批量写入磁盘，不过读取的时候稍微麻烦，需要合并磁盘中历史数据和内存中最近修改操作，所以写入性能大大提升，读取时可能需要先看是否命中内存，否则需要访问较多的磁盘文件。极端的说，基于LSM树实现的HBase的写性能比Mysql高了一个数量级，读性能低了一个数量级。</strong><br>LSM树原理把一棵大树拆分成N棵小树，它首先写入内存中，随着小树越来越大，内存中的小树会flush到磁盘中，磁盘中的树定期可以做merge操作，合并成一棵大树，以优化读性能。</p>
-<h3 id="4、HBase存储的设计主要思想"><a href="#4、HBase存储的设计主要思想" class="headerlink" title="4、HBase存储的设计主要思想"></a>4、HBase存储的设计主要思想</h3><p>因为小树先写到内存中，<strong>为了防止内存数据丢失，写内存的同时需要暂时持久化到磁盘，对应了HBase的MemStore和HLog</strong><br>MemStore上的树达到一定大小之后，需要flush到HRegion磁盘中（一般是Hadoop DataNode），这样MemStore就变成了DataNode上的磁盘文件StoreFile，定期HRegionServer对DataNode的数据做merge操作，彻底删除无效空间，多棵小树在这个时机合并成大树，来增强读性能。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2017/01/05/索引原理及B树索引/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -626,6 +480,152 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2017/01/05/LSM树/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Rayman.hung">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="忆桐之家的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/01/05/LSM树/" itemprop="url">LSM树</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-01-05T00:00:00+08:00">
+                2017-01-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/技术相关/" itemprop="url" rel="index">
+                    <span itemprop="name">技术相关</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>讲LSM树之前，需要提下三种基本的存储引擎，这样才能清楚LSM树的由来：</p>
+<h3 id="1、哈希存储引擎"><a href="#1、哈希存储引擎" class="headerlink" title="1、哈希存储引擎"></a>1、哈希存储引擎</h3><p>是哈希表的持久化实现，支持增、删、改以及随机读取操作，<strong>但不支持顺序扫描</strong>，对应的存储系统为key-value存储系统。对于key-value的插入以及查询，哈希表的复杂度都是O(1)，明显比树的操作O(n)快,如果不需要有序的遍历数据，哈希表就是your Mr.Right</p>
+<h3 id="2、B树存储引擎"><a href="#2、B树存储引擎" class="headerlink" title="2、B树存储引擎"></a>2、B树存储引擎</h3><p>是B树的持久化实现，不仅支持单条记录的增、删、读、改操作，<strong>还支持顺序扫描（B+树的叶子节点之间的指针），对应的存储系统就是关系数据库（Mysql等）。</strong></p>
+<h3 id="3、LSM树（Log-Structured-Merge-Tree）存储引擎"><a href="#3、LSM树（Log-Structured-Merge-Tree）存储引擎" class="headerlink" title="3、LSM树（Log-Structured Merge Tree）存储引擎"></a>3、LSM树（Log-Structured Merge Tree）存储引擎</h3><p>和B树存储引擎一样，同样支持增、删、读、改、顺序扫描操作。<strong>而且通过批量存储技术规避磁盘随机写入问题。当然凡事有利有弊，LSM树和B+树相比，LSM树牺牲了部分读性能，用来大幅提高写性能。</strong><br>通过以上的分析，应该知道LSM树的由来了，<strong>LSM树的设计思想非常朴素：将对数据的修改增量保持在内存中，达到指定的大小限制后将这些修改操作批量写入磁盘，不过读取的时候稍微麻烦，需要合并磁盘中历史数据和内存中最近修改操作，所以写入性能大大提升，读取时可能需要先看是否命中内存，否则需要访问较多的磁盘文件。极端的说，基于LSM树实现的HBase的写性能比Mysql高了一个数量级，读性能低了一个数量级。</strong><br>LSM树原理把一棵大树拆分成N棵小树，它首先写入内存中，随着小树越来越大，内存中的小树会flush到磁盘中，磁盘中的树定期可以做merge操作，合并成一棵大树，以优化读性能。</p>
+<h3 id="4、HBase存储的设计主要思想"><a href="#4、HBase存储的设计主要思想" class="headerlink" title="4、HBase存储的设计主要思想"></a>4、HBase存储的设计主要思想</h3><p>因为小树先写到内存中，<strong>为了防止内存数据丢失，写内存的同时需要暂时持久化到磁盘，对应了HBase的MemStore和HLog</strong><br>MemStore上的树达到一定大小之后，需要flush到HRegion磁盘中（一般是Hadoop DataNode），这样MemStore就变成了DataNode上的磁盘文件StoreFile，定期HRegionServer对DataNode的数据做merge操作，彻底删除无效空间，多棵小树在这个时机合并成大树，来增强读性能。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2017/01/05/进程、线程的区别/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -723,301 +723,6 @@
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2017/01/05/进程、线程的区别/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2017/01/04/常用的算法的时间复杂度和空间复杂度/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Rayman.hung">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="忆桐之家的博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/01/04/常用的算法的时间复杂度和空间复杂度/" itemprop="url">常用的算法的时间复杂度和空间复杂度</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-01-04T00:00:00+08:00">
-                2017-01-04
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/技术相关/" itemprop="url" rel="index">
-                    <span itemprop="name">技术相关</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>另外的参考资料可以点击：<a href="http://blog.csdn.net/zolalad/article/details/11848739" target="_blank" rel="noopener">算法的时间复杂度和空间复杂度-总结</a></p>
-<h1 id="排序法"><a href="#排序法" class="headerlink" title="排序法"></a>排序法</h1><p><img src="/img/算法复杂度.png" alt=""></p>
-<h1 id="1、时间复杂度"><a href="#1、时间复杂度" class="headerlink" title="1、时间复杂度"></a>1、时间复杂度</h1><h2 id="（1）时间频度"><a href="#（1）时间频度" class="headerlink" title="（1）时间频度"></a>（1）时间频度</h2><p>一个算法执行所耗费的时间，从理论上是不能算出来的，必须上机运行测试才能知道。但我们不可能也没有必要对每个算法都上机测试，只需知道哪个算法花费的时间多，哪个算法花费的时间少就可以了。并且一个算法花费的时间与算法中语句的执行次数成正比例，哪个算法中语句执行次数多，它花费时间就多。一个算法中的语句执行次数称为语句频度或时间频度。记为T(n)。<br>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2017/01/04/常用的算法的时间复杂度和空间复杂度/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2017/01/04/内存数据库/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Rayman.hung">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="忆桐之家的博客">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/01/04/内存数据库/" itemprop="url">内存数据库</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-01-04T00:00:00+08:00">
-                2017-01-04
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/技术相关/" itemprop="url" rel="index">
-                    <span itemprop="name">技术相关</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h3 id="1-您在工作过程中是否使用过内存数据库？您对内存数据库有哪些使用心得和印象？"><a href="#1-您在工作过程中是否使用过内存数据库？您对内存数据库有哪些使用心得和印象？" class="headerlink" title="1.您在工作过程中是否使用过内存数据库？您对内存数据库有哪些使用心得和印象？"></a>1.您在工作过程中是否使用过内存数据库？您对内存数据库有哪些使用心得和印象？</h3><p>答：有了解过SAP HANA，还没有使用过。不过未来应该是趋势了，迟早用得上。</p>
-<h3 id="2-SAP-HANA和OracleTimesTen是内存数据库的两大巨头，您认为它们各自都有哪些优缺点，两者哪个更胜一筹？"><a href="#2-SAP-HANA和OracleTimesTen是内存数据库的两大巨头，您认为它们各自都有哪些优缺点，两者哪个更胜一筹？" class="headerlink" title="2.SAP HANA和OracleTimesTen是内存数据库的两大巨头，您认为它们各自都有哪些优缺点，两者哪个更胜一筹？"></a>2.SAP HANA和OracleTimesTen是内存数据库的两大巨头，您认为它们各自都有哪些优缺点，两者哪个更胜一筹？</h3><p>TimesTen优势<br>　　·能够和Oracle后台数据库做无缝集成，数据可以在TimesTen和Oracle直接双向流动，可以做到实时;<br>　　·TimesTen可以做成多节点并行提供服务的模式，数据在多个TimesTen之间直接实现实时或者非实时的传输， 进一步提高了系统的扩展性和可靠性;<br>　　·符合RDBMS标准的独立内存数据库服务;<br>　　·支持SQL92;<br>　　·支持 ODBC &amp; JDBC;<br>　　·高性能;<br>　　·可以作为Oracle数据库的前端Cache，目前不支持其他数据库;<br>　　·支持本地的高速访问和网络访问方式可靠性高。支持完整日志，支持镜像复制功能。<br>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2017/01/04/内存数据库/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1216,7 +921,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2017/01/04/数据取对数的意义/">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2017/01/04/JSON与XML的区别比较/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Rayman.hung">
@@ -1235,7 +940,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2017/01/04/数据取对数的意义/" itemprop="url">数据取对数的意义</a></h1>
+                <a class="post-title-link" href="/2017/01/04/JSON与XML的区别比较/" itemprop="url">JSON与XML的区别比较</a></h1>
         
 
         <div class="post-meta">
@@ -1270,8 +975,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/文史数理/" itemprop="url" rel="index">
-                    <span itemprop="name">文史数理</span>
+                  <a href="/categories/技术相关/" itemprop="url" rel="index">
+                    <span itemprop="name">技术相关</span>
                   </a>
                 </span>
 
@@ -1308,10 +1013,158 @@
 
       
         
-          <p>平时在一些数据处理中(特别是统计学中)，经常会把原始数据取对数后进一步处理。<br>之所以这样做是基于对数函数在其定义域内是单调增函数，取对数后不会改变数据的相对关系，取对数作用主要有：<br><strong>1. 缩小数据的绝对数值，方便计算。</strong><br>例如，每个数据项的值都很大，许多这样的值进行计算可能对超过常用数据类型的取值范围，这时取对数，就把数值缩小了，例如TF-IDF计算时，由于在大规模语料库中，很多词的频率是非常大的数字。<br><strong>2. 取对数后，可以将乘法计算转换称加法计算。</strong>
+          <h1 id="1-定义介绍"><a href="#1-定义介绍" class="headerlink" title="1.定义介绍"></a>1.定义介绍</h1><h2 id="1-XML定义"><a href="#1-XML定义" class="headerlink" title="(1).XML定义"></a>(1).XML定义</h2><p>扩展标记语言 (Extensible Markup Language, XML) ，用于标记电子文件使其具有结构性的标记语言，可以用来标记数据、定义数据类型，是一种允许用户对自己的标记语言进行定义的源语言。 XML使用DTD(document type definition)文档类型定义来组织数据;格式统一，跨平台和语言，早已成为业界公认的标准。<br>XML是标准通用标记语言 (SGML) 的子集，非常适合 Web 传输。XML 提供统一的方法来描述和交换独立于应用程序或供应商的结构化数据。</p>
+<h2 id="2-JSON定义"><a href="#2-JSON定义" class="headerlink" title="(2).JSON定义"></a>(2).JSON定义</h2><p>JSON(JavaScript Object Notation)一种轻量级的数据交换格式，具有良好的可读和便于快速编写的特性。可在不同平台之间进行数据交换。JSON采用兼容性很高的、完全独立于语言文本格式，同时也具备类似于C语言的习惯(包括C, C++, C#, Java, JavaScript, Perl, Python等)体系的行为。这些特性使JSON成为理想的数据交换语言。<br>JSON基于JavaScript Programming Language , Standard ECMA-262 3rd Edition - December 1999 的一个子集。<br>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/01/04/数据取对数的意义/#more" rel="contents">
+            <a class="btn" href="/2017/01/04/JSON与XML的区别比较/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2017/01/04/内存数据库/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Rayman.hung">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="忆桐之家的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/01/04/内存数据库/" itemprop="url">内存数据库</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-01-04T00:00:00+08:00">
+                2017-01-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/技术相关/" itemprop="url" rel="index">
+                    <span itemprop="name">技术相关</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h3 id="1-您在工作过程中是否使用过内存数据库？您对内存数据库有哪些使用心得和印象？"><a href="#1-您在工作过程中是否使用过内存数据库？您对内存数据库有哪些使用心得和印象？" class="headerlink" title="1.您在工作过程中是否使用过内存数据库？您对内存数据库有哪些使用心得和印象？"></a>1.您在工作过程中是否使用过内存数据库？您对内存数据库有哪些使用心得和印象？</h3><p>答：有了解过SAP HANA，还没有使用过。不过未来应该是趋势了，迟早用得上。</p>
+<h3 id="2-SAP-HANA和OracleTimesTen是内存数据库的两大巨头，您认为它们各自都有哪些优缺点，两者哪个更胜一筹？"><a href="#2-SAP-HANA和OracleTimesTen是内存数据库的两大巨头，您认为它们各自都有哪些优缺点，两者哪个更胜一筹？" class="headerlink" title="2.SAP HANA和OracleTimesTen是内存数据库的两大巨头，您认为它们各自都有哪些优缺点，两者哪个更胜一筹？"></a>2.SAP HANA和OracleTimesTen是内存数据库的两大巨头，您认为它们各自都有哪些优缺点，两者哪个更胜一筹？</h3><p>TimesTen优势<br>　　·能够和Oracle后台数据库做无缝集成，数据可以在TimesTen和Oracle直接双向流动，可以做到实时;<br>　　·TimesTen可以做成多节点并行提供服务的模式，数据在多个TimesTen之间直接实现实时或者非实时的传输， 进一步提高了系统的扩展性和可靠性;<br>　　·符合RDBMS标准的独立内存数据库服务;<br>　　·支持SQL92;<br>　　·支持 ODBC &amp; JDBC;<br>　　·高性能;<br>　　·可以作为Oracle数据库的前端Cache，目前不支持其他数据库;<br>　　·支持本地的高速访问和网络访问方式可靠性高。支持完整日志，支持镜像复制功能。<br>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/01/04/内存数据库/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1507,7 +1360,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2017/01/04/JSON与XML的区别比较/">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2017/01/04/常用的算法的时间复杂度和空间复杂度/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Rayman.hung">
@@ -1526,7 +1379,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2017/01/04/JSON与XML的区别比较/" itemprop="url">JSON与XML的区别比较</a></h1>
+                <a class="post-title-link" href="/2017/01/04/常用的算法的时间复杂度和空间复杂度/" itemprop="url">常用的算法的时间复杂度和空间复杂度</a></h1>
         
 
         <div class="post-meta">
@@ -1599,11 +1452,158 @@
 
       
         
-          <h1 id="1-定义介绍"><a href="#1-定义介绍" class="headerlink" title="1.定义介绍"></a>1.定义介绍</h1><h2 id="1-XML定义"><a href="#1-XML定义" class="headerlink" title="(1).XML定义"></a>(1).XML定义</h2><p>扩展标记语言 (Extensible Markup Language, XML) ，用于标记电子文件使其具有结构性的标记语言，可以用来标记数据、定义数据类型，是一种允许用户对自己的标记语言进行定义的源语言。 XML使用DTD(document type definition)文档类型定义来组织数据;格式统一，跨平台和语言，早已成为业界公认的标准。<br>XML是标准通用标记语言 (SGML) 的子集，非常适合 Web 传输。XML 提供统一的方法来描述和交换独立于应用程序或供应商的结构化数据。</p>
-<h2 id="2-JSON定义"><a href="#2-JSON定义" class="headerlink" title="(2).JSON定义"></a>(2).JSON定义</h2><p>JSON(JavaScript Object Notation)一种轻量级的数据交换格式，具有良好的可读和便于快速编写的特性。可在不同平台之间进行数据交换。JSON采用兼容性很高的、完全独立于语言文本格式，同时也具备类似于C语言的习惯(包括C, C++, C#, Java, JavaScript, Perl, Python等)体系的行为。这些特性使JSON成为理想的数据交换语言。<br>JSON基于JavaScript Programming Language , Standard ECMA-262 3rd Edition - December 1999 的一个子集。<br>
+          <p>另外的参考资料可以点击：<a href="http://blog.csdn.net/zolalad/article/details/11848739" target="_blank" rel="noopener">算法的时间复杂度和空间复杂度-总结</a></p>
+<h1 id="排序法"><a href="#排序法" class="headerlink" title="排序法"></a>排序法</h1><p><img src="/img/算法复杂度.png" alt=""></p>
+<h1 id="1、时间复杂度"><a href="#1、时间复杂度" class="headerlink" title="1、时间复杂度"></a>1、时间复杂度</h1><h2 id="（1）时间频度"><a href="#（1）时间频度" class="headerlink" title="（1）时间频度"></a>（1）时间频度</h2><p>一个算法执行所耗费的时间，从理论上是不能算出来的，必须上机运行测试才能知道。但我们不可能也没有必要对每个算法都上机测试，只需知道哪个算法花费的时间多，哪个算法花费的时间少就可以了。并且一个算法花费的时间与算法中语句的执行次数成正比例，哪个算法中语句执行次数多，它花费时间就多。一个算法中的语句执行次数称为语句频度或时间频度。记为T(n)。<br>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2017/01/04/JSON与XML的区别比较/#more" rel="contents">
+            <a class="btn" href="/2017/01/04/常用的算法的时间复杂度和空间复杂度/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2017/01/04/数据取对数的意义/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Rayman.hung">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="忆桐之家的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2017/01/04/数据取对数的意义/" itemprop="url">数据取对数的意义</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-01-04T00:00:00+08:00">
+                2017-01-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/文史数理/" itemprop="url" rel="index">
+                    <span itemprop="name">文史数理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>平时在一些数据处理中(特别是统计学中)，经常会把原始数据取对数后进一步处理。<br>之所以这样做是基于对数函数在其定义域内是单调增函数，取对数后不会改变数据的相对关系，取对数作用主要有：<br><strong>1. 缩小数据的绝对数值，方便计算。</strong><br>例如，每个数据项的值都很大，许多这样的值进行计算可能对超过常用数据类型的取值范围，这时取对数，就把数值缩小了，例如TF-IDF计算时，由于在大规模语料库中，很多词的频率是非常大的数字。<br><strong>2. 取对数后，可以将乘法计算转换称加法计算。</strong>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2017/01/04/数据取对数的意义/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
