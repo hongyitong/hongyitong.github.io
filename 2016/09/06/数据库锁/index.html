@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="一、概念 1、排它锁和共享锁 在数据库中有两种基本的锁类型：排它锁（Exclusive Locks，即X锁）和共享锁（Share Locks，即S锁）。 当数据对象被加上排它锁时，其他的事务不能对它读取和修改。 加了共享锁的数据对象可以被其他事务读取，但不能修改。 数据库利用这两种基本的锁类型来对数据库的事务进行并发控制。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据库锁">
+<meta property="og:url" content="http://hongyitong.github.io/2016/09/06/%E6%95%B0%E6%8D%AE%E5%BA%93%E9%94%81/index.html">
+<meta property="og:site_name" content="忆桐之家的博客">
+<meta property="og:description" content="一、概念 1、排它锁和共享锁 在数据库中有两种基本的锁类型：排它锁（Exclusive Locks，即X锁）和共享锁（Share Locks，即S锁）。 当数据对象被加上排它锁时，其他的事务不能对它读取和修改。 加了共享锁的数据对象可以被其他事务读取，但不能修改。 数据库利用这两种基本的锁类型来对数据库的事务进行并发控制。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/img/%E5%B9%BB%E8%AF%BB.png">
+<meta property="og:image" content="http://hongyitong.github.io/img/%E4%B8%8D%E5%8F%AF%E9%87%8D%E5%A4%8D%E8%AF%BB.png">
+<meta property="og:image" content="http://hongyitong.github.io/img/%E8%84%8F%E8%AF%BB.png">
+<meta property="article:published_time" content="2016-09-06T11:34:00.000Z">
+<meta property="article:modified_time" content="2017-07-12T06:52:45.000Z">
+<meta property="article:author" content="Rayman.hung">
+<meta property="article:tag" content="数据库">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hongyitong.github.io/img/%E5%B9%BB%E8%AF%BB.png">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2016/09/06/%E6%95%B0%E6%8D%AE%E5%BA%93%E9%94%81/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2016/09/06/%E6%95%B0%E6%8D%AE%E5%BA%93%E9%94%81/","path":"2016/09/06/数据库锁/","title":"数据库锁"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>数据库锁 | 忆桐之家的博客</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">忆桐之家的博客</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman&Tony</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li><li class="menu-item menu-item-tags"><a href="/tags" rel="section">标签</a></li><li class="menu-item menu-item-commonweal"><a href="/404.html" rel="section">公益 404</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E6%A6%82%E5%BF%B5"><span class="nav-number">1.</span> <span class="nav-text">一、概念</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%92%E5%AE%83%E9%94%81%E5%92%8C%E5%85%B1%E4%BA%AB%E9%94%81"><span class="nav-number">1.1.</span> <span class="nav-text">1、排它锁和共享锁</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E6%95%B0%E6%8D%AE%E5%BA%93%E8%84%8F%E8%AF%BB%E4%B8%8D%E5%8F%AF%E9%87%8D%E5%A4%8D%E8%AF%BB%E5%92%8C%E5%B9%BB%E8%AF%BB"><span class="nav-number">2.</span> <span class="nav-text">二、数据库脏读、不可重复读和幻读</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E5%A4%84%E7%90%86%E4%BB%A5%E4%B8%8A%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">3.</span> <span class="nav-text">三、处理以上隔离级别的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BE%E4%BE%8B%E8%AF%B4%E6%98%8E"><span class="nav-number">3.1.</span> <span class="nav-text">3、举例说明</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">4.</span> <span class="nav-text">四、参考资料</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%82%A3%E4%BB%80%E4%B9%88%E6%98%AF%E4%B9%90%E8%A7%82%E9%94%81%E4%BB%80%E4%B9%88%E6%98%AF%E6%82%B2%E8%A7%82%E9%94%81"><span class="nav-number">4.1.</span> <span class="nav-text">1、那什么是乐观锁，什么是悲观锁。</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E7%9A%84%E7%BD%91%E5%9D%80"><span class="nav-number">4.2.</span> <span class="nav-text">2、参考的网址</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、亲子时刻</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives">
+          <span class="site-state-item-count">941</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags">
+        <span class="site-state-item-count">1096</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/hongyitong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hongyitong" rel="noopener" target="_blank">GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://blog.sina.com.cn/yitonghong" title="忆桐之家 → http:&#x2F;&#x2F;blog.sina.com.cn&#x2F;yitonghong" rel="noopener" target="_blank">忆桐之家</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://douban.com/people/2780741" title="豆瓣 → http:&#x2F;&#x2F;douban.com&#x2F;people&#x2F;2780741" rel="noopener" target="_blank">豆瓣</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.zhihu.com/people/rayman-36" title="知乎 → http:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;rayman-36" rel="noopener" target="_blank">知乎</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.liaoxuefeng.com/" title="廖雪峰的官方网站 → http:&#x2F;&#x2F;www.liaoxuefeng.com&#x2F;" rel="noopener" target="_blank">廖雪峰的官方网站</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.vaikan.com/" title="外刊IT评论 → http:&#x2F;&#x2F;www.vaikan.com&#x2F;" rel="noopener" target="_blank">外刊IT评论</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2016/09/06/%E6%95%B0%E6%8D%AE%E5%BA%93%E9%94%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="忆桐之家的博客">
+      <meta itemprop="description" content="技术分享、读书心得、亲子时刻">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="数据库锁 | 忆桐之家的博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          数据库锁
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016-09-06 19:34:00" itemprop="dateCreated datePublished" datetime="2016-09-06T19:34:00+08:00">2016-09-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2017-07-12 14:52:45" itemprop="dateModified" datetime="2017-07-12T14:52:45+08:00">2017-07-12</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E6%9C%AF%E7%9B%B8%E5%85%B3/" itemprop="url" rel="index"><span itemprop="name">技术相关</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="一概念">一、概念</h1>
+<h2 id="排它锁和共享锁">1、排它锁和共享锁</h2>
+<p>在数据库中有两种基本的锁类型：排它锁（Exclusive
+Locks，即X锁）和共享锁（Share Locks，即S锁）。
+当数据对象被加上<strong>排它锁</strong>时，其他的事务不能对它读取和修改。
+加了<strong>共享锁</strong>的数据对象可以被其他事务读取，但不能修改。
+数据库利用这两种基本的锁类型来对数据库的事务进行并发控制。 <span id="more"></span>
+## 2、表级锁和行级锁
+DML锁的目的在于保证并发情况下的数据完整性，主要包括TM锁和TX锁，其中<strong>TM锁称为表级锁</strong>，<strong>TX锁称为事务锁或行级锁</strong>。
+当Oracle执行DML语句时，系统自动在所要操作的表上申请TM类型的锁。当TM锁获得后，系统再自动申请TX类型的锁，并将实际锁定的数据行的锁标志位进行置位。这样在事务加锁前检查TX锁相容性时就不用再逐行检查锁标志，而只需检查TM锁模式的相容性即可，大大提高了系统的效率。
+## 3、活锁和死锁
+<strong>活锁：</strong>当事务T1封锁数据R，事务T2请求数据R于是T2等待。T1释放了R上的封锁，系统首先批准了T3的请求，T2继续等待，之后系统批准了T4的请求……依此类推，T2可能永久等待。这种现象称为活锁。
+<strong>死锁：</strong>是指两个以上事务分别请求封锁对方已经封锁的数据，导致长期等待而无法继续进行下去的现象叫死锁。</p>
+<h1
+id="二数据库脏读不可重复读和幻读">二、数据库脏读、不可重复读和幻读</h1>
+<p>锁就是防止其他事务访问指定的资源的手段。锁是实现并发控制的主要方法，是多个用户能够同时操纵同一个数据库中的数据而不发生数据不一致现象的重要保障。
+一般来说，锁可以防止脏读、不可重复读和幻觉读。 ## 1、事务并发产生的问题
+<strong>1)脏读：</strong>一个事务读取到了另外一个事务没有提交的数据
+事务1：更新一条数据 -------------&gt;事务2：读取事务1更新的记录
+事务1：调用commit进行提交
+--此时事务2读取到的数据是保存在数据库内存中的数据，称为脏读。
+--读到的数据为脏数据</p>
+<p><strong>详细解释：</strong>
+脏读就是指:当一个事务正在访问数据，并且对数据进行了修改，而这种修改还没有提交到数据库中，
+这时，另外一个事务也访问这个数据，然后使用了这个数据。因为这个数据是还没有提交的数据，
+那么另外一个事务读到的这个数据是脏数据，依据脏数据所做的操作可能是不正确的。</p>
+<p><strong>2)不可重复读：</strong>在同一事务中，两次读取同一数据，得到内容不同
+事务1：查询一条记录 --------------&gt;事务2：更新事务1查询的记录
+--------------&gt;事务2：调用commit进行提交 事务1：再次查询上次的记录
+--此时事务1对同一数据查询了两次，可得到的内容不同，称为不可重复读</p>
+<p><strong>3)幻读：</strong>同一事务中，用同样的操作读取两次，得到的记录数不相同
+事务1：查询表中所有记录 --------------&gt;事务2：插入一条记录
+--------------&gt;事务2：调用commit进行提交 事务1：再次查询表中所有记录
+--此时事务1两次查询到的记录是不一样的，称为幻读
+<strong>详细解释：</strong>
+幻读是指当事务不是独立执行时发生的一种现象，例如第一个事务对一个表中的数据进行了修改，
+这种修改涉及到表中的全部数据行。同时，第二个事务也修改这个表中的数据，这种修改是向表
+中插入一行新数据。那么，以后就会发生操作第一个事务的用户发现表中还有没有修改的数据行，
+就好象发生了幻觉一样。</p>
+<h1 id="三处理以上隔离级别的问题">三、处理以上隔离级别的问题</h1>
+<p>采用如下方式： ## 1、事务隔离五种级别 - TRANSACTION_NONE 不使用事务。
+- TRANSACTIONREADUNCOMMITTED 允许脏读。 - TRANSACTIONREADCOMMITTED
+防止脏读，最常用的隔离级别,并且是大多数数据库的默认隔离级别 -
+TRANSACTIONREPEATABLEREAD 可以防止脏读和不可重复读， -
+TRANSACTION_SERIALIZABLE
+可以防止脏读，不可重复读取和幻读，（事务串行化）会降低数据库的效率</p>
+<p>以上的五个事务隔离级别都是在Connection接口中定义的静态常量，
+使用setTransactionIsolation(int level) 方法可以设置事务隔离级别。
+如:con.setTransactionIsolation(Connection.REPEATABLE_READ);
+<strong>注意：事务的隔离级别受到数据库的限制，不同的数据库支持的的隔离级别不一定相同</strong>
+## 2、具体原理 <strong>1）脏读：</strong>
+修改时加排他锁，直到事务提交后才释放，读取时加共享锁，读取完释放事务1读取数据时加上共享锁后（这
+样在事务1读取数据的过程中，其他事务就不会修改该数据），不允许任何事物操作该数据，只能读取，之后1如果有更新操作，那么会转换为排他锁，其他事务更
+无权参与进来读写，这样就防止了脏读问题。</p>
+<p>但是当事务1读取数据过程中，有可能其他事务也读取了该数据，读取完毕后共享锁释放，此时事务1修改数据，修改
+完毕提交事务，其他事务再次读取数据时候发现数据不一致，就会出现不可重复读问题，所以这样不能够避免不可重复读问题。</p>
+<p><strong>2)不可重复读：</strong>
+读取数据时加共享锁，写数据时加排他锁，都是事务提交才释放锁。读取时候不允许其他事物修改该数据，不管数据在事务过程中读取多少次，数据都是一致的，避免了不可重复读问题</p>
+<p><strong>3)幻读问题：</strong> 采用的是范围锁RangeS
+RangeS_S模式，锁定检索范围为只读，这样就避免了幻影读问题。</p>
+<h2 id="举例说明">3、举例说明</h2>
+<p>在这里有个描述范围锁的文章：
+当执行不同的隔离级别时，可能会发生各种各样不同的问题。下面对它们进行总结并举例说明：
+<strong>1）幻读 ：</strong>
+幻读发生在当两个完全相同的查询执行时，第二次查询所返回的结果集跟第一个查询不相同。
+发生的情况：没有范围锁。 例子： <img src="/img/幻读.png" />
+<strong>如何避免：实行序列化隔离模式，在任何一个低级别的隔离中都可能会发生。</strong></p>
+<p><strong>2）不可重复读：</strong>
+在基于锁的并行控制方法中，如果在执行select时不添加读锁，就会发生不可重复读问题。
+在多版本并行控制机制中，当一个遇到提交冲突的事务需要回退但却被释放时，会发生不可重复读问题。
+<img src="/img/不可重复读.png" />
+在上面这个例子中，事务2提交成功，它所做的修改已经可见。然而，事务1已经读取了一个其它的值。在序列化和可重复读的隔离级别中，数据库管理系统会返回旧值，即在被事务2修改之前的值。在提交读和未提交读隔离级别下，可能会返回被更新的值，这就是“不可重复读”。
+<strong>有两个策略可以防止这个问题的发生：</strong>
+推迟事务2的执行，直至事务1提交或者回退。这种策略在使用锁时应用。
+而在多版本并行控制中，事务2可以被先提交。而事务1，继续执行在旧版本的数据上。当事务1终于尝试提交时，数据库会检验它的结果是否和事务1、事务2顺序执行时一样。如果是，则事务1提交成功。如果不是，事务1会被回退。</p>
+<p><strong>3）脏读：</strong>
+脏读发生在一个事务A读取了被另一个事务B修改，但是还未提交的数据。假如B回退，则事务A读取的是无效的数据。这跟不可重复读类似，但是第二个事务不需要执行提交。
+<img src="/img/脏读.png" /></p>
+<h1 id="四参考资料">四、参考资料</h1>
+<h2
+id="那什么是乐观锁什么是悲观锁">1、那什么是乐观锁，什么是悲观锁。</h2>
+<p>悲观锁：需要使用数据库的锁机制，如数据库有表级排它锁，有行级排它锁。
+假定一切操作都可能发现并发冲突，所以采取悲观态度。通过加锁，屏蔽一切可能违反数据完整性的操作
+比方select * from table for update; 就是表锁， select * from table where
+x = 1 for update; 就是行锁。 当使用for
+update后，其它会话还是可以执行select操作，但无法执行select xx for
+update操作，只有当前会话commit后，其它for update操作才会被执行。
+典型例子可以参考quartz集群的锁机制：http://blog.itpub.net/11627468/viewspace-1764753/
+当然，此时也不可以update，update需要等select xx for update
+所在会话commit后才能执行。 注：mysql需要设置autocommit=0
+乐观锁：其实不是真实的去锁住记录不让访问，或者不让更新。
+假定操作很少发生冲突，一般对于读多写少的情况。只在提交操作时检查是否违反数据完整性。[1]
+乐观锁不能解决脏读的问题。
+可以通过版本号是否比上个版本号或者时间戳来实现。
+对于冲突检测后的处理，需要业务逻辑去处理。</p>
+<h2 id="参考的网址">2、参考的网址</h2>
+<p>以上悲观锁和乐内容参考:
+http://www.cnblogs.com/guyufei/archive/2011/01/10/1931632.html
+spring锁实现参数： http://blog.itpub.net/12158104/viewspace-374745
+关于隔离级别可以参考： http://blog.itpub.net/11627468/viewspace-1793036/
+关于数据库的锁可以参考：
+http://zhidao.baidu.com/link?url=zRnaslJ8INtEviT--BzrT2bMOqf4LJQzL-NQg2ECu6l-s-xPHi11bBlNjN2_zyNrwd9M0ZnbelQntmfYPB0ifq</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag"># 数据库</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/09/06/CDC%E6%A6%82%E5%BF%B5%E5%92%8C%E7%BB%84%E6%88%90/" rel="prev" title="CDC概念和组成">
+                  <i class="fa fa-chevron-left"></i> CDC概念和组成
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/09/07/%E3%80%8A%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93%E5%B7%A5%E5%85%B7%E7%AE%B1%EF%BC%9A%E7%BB%B4%E5%BA%A6%E5%BB%BA%E6%A8%A1%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97%E3%80%8B%E8%AF%BB%E4%B9%A6%E5%BF%83%E5%BE%97/" rel="next" title="《数据仓库工具箱：维度建模权威指南》读书心得">
+                  《数据仓库工具箱：维度建模权威指南》读书心得 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

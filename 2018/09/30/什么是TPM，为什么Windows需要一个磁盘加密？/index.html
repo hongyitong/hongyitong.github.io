@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="TPM Trusted Platform Module 受BitLocker磁盘加密通常需要Windows上的TPM。 微软的EFS加密不能使用TPM。 新的Windows 10和8.1“设备加密”功能还需要一个现代化的TPM，这就是为什么它只是在新的硬件功能。 但是什么是TPM？ TPM代表“可信平台模块”。 它是您的计算机主板上的一个芯片，有助于启用防篡改全磁盘加密，而不需要极长的密码。  究">
+<meta property="og:type" content="article">
+<meta property="og:title" content="什么是TPM，为什么Windows需要一个磁盘加密？">
+<meta property="og:url" content="http://hongyitong.github.io/2018/09/30/%E4%BB%80%E4%B9%88%E6%98%AFTPM%EF%BC%8C%E4%B8%BA%E4%BB%80%E4%B9%88Windows%E9%9C%80%E8%A6%81%E4%B8%80%E4%B8%AA%E7%A3%81%E7%9B%98%E5%8A%A0%E5%AF%86%EF%BC%9F/index.html">
+<meta property="og:site_name" content="忆桐之家的博客">
+<meta property="og:description" content="TPM Trusted Platform Module 受BitLocker磁盘加密通常需要Windows上的TPM。 微软的EFS加密不能使用TPM。 新的Windows 10和8.1“设备加密”功能还需要一个现代化的TPM，这就是为什么它只是在新的硬件功能。 但是什么是TPM？ TPM代表“可信平台模块”。 它是您的计算机主板上的一个芯片，有助于启用防篡改全磁盘加密，而不需要极长的密码。  究">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/img/TPM.png">
+<meta property="article:published_time" content="2018-09-29T16:00:00.000Z">
+<meta property="article:modified_time" content="2018-09-30T07:07:09.000Z">
+<meta property="article:author" content="Rayman.hung">
+<meta property="article:tag" content="磁盘加密">
+<meta property="article:tag" content="TPM">
+<meta property="article:tag" content="win10">
+<meta property="article:tag" content="BitLocker">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hongyitong.github.io/img/TPM.png">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2018/09/30/%E4%BB%80%E4%B9%88%E6%98%AFTPM%EF%BC%8C%E4%B8%BA%E4%BB%80%E4%B9%88Windows%E9%9C%80%E8%A6%81%E4%B8%80%E4%B8%AA%E7%A3%81%E7%9B%98%E5%8A%A0%E5%AF%86%EF%BC%9F/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2018/09/30/%E4%BB%80%E4%B9%88%E6%98%AFTPM%EF%BC%8C%E4%B8%BA%E4%BB%80%E4%B9%88Windows%E9%9C%80%E8%A6%81%E4%B8%80%E4%B8%AA%E7%A3%81%E7%9B%98%E5%8A%A0%E5%AF%86%EF%BC%9F/","path":"2018/09/30/什么是TPM，为什么Windows需要一个磁盘加密？/","title":"什么是TPM，为什么Windows需要一个磁盘加密？"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>什么是TPM，为什么Windows需要一个磁盘加密？ | 忆桐之家的博客</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">忆桐之家的博客</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman&Tony</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li><li class="menu-item menu-item-tags"><a href="/tags" rel="section">标签</a></li><li class="menu-item menu-item-commonweal"><a href="/404.html" rel="section">公益 404</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#tpm"><span class="nav-number">1.</span> <span class="nav-text">TPM</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%A9%B6%E7%AB%9F%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">2.</span> <span class="nav-text">究竟是什么？</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、亲子时刻</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives">
+          <span class="site-state-item-count">941</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags">
+        <span class="site-state-item-count">1096</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/hongyitong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hongyitong" rel="noopener" target="_blank">GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://blog.sina.com.cn/yitonghong" title="忆桐之家 → http:&#x2F;&#x2F;blog.sina.com.cn&#x2F;yitonghong" rel="noopener" target="_blank">忆桐之家</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://douban.com/people/2780741" title="豆瓣 → http:&#x2F;&#x2F;douban.com&#x2F;people&#x2F;2780741" rel="noopener" target="_blank">豆瓣</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.zhihu.com/people/rayman-36" title="知乎 → http:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;rayman-36" rel="noopener" target="_blank">知乎</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.liaoxuefeng.com/" title="廖雪峰的官方网站 → http:&#x2F;&#x2F;www.liaoxuefeng.com&#x2F;" rel="noopener" target="_blank">廖雪峰的官方网站</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.vaikan.com/" title="外刊IT评论 → http:&#x2F;&#x2F;www.vaikan.com&#x2F;" rel="noopener" target="_blank">外刊IT评论</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2018/09/30/%E4%BB%80%E4%B9%88%E6%98%AFTPM%EF%BC%8C%E4%B8%BA%E4%BB%80%E4%B9%88Windows%E9%9C%80%E8%A6%81%E4%B8%80%E4%B8%AA%E7%A3%81%E7%9B%98%E5%8A%A0%E5%AF%86%EF%BC%9F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="忆桐之家的博客">
+      <meta itemprop="description" content="技术分享、读书心得、亲子时刻">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="什么是TPM，为什么Windows需要一个磁盘加密？ | 忆桐之家的博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          什么是TPM，为什么Windows需要一个磁盘加密？
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2018-09-30 00:00:00 / 修改时间：15:07:09" itemprop="dateCreated datePublished" datetime="2018-09-30T00:00:00+08:00">2018-09-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E6%9C%AF%E7%9B%B8%E5%85%B3/" itemprop="url" rel="index"><span itemprop="name">技术相关</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="tpm">TPM</h1>
+<p>Trusted Platform Module 受BitLocker磁盘加密通常需要Windows上的TPM。
+微软的EFS加密不能使用TPM。 新的Windows
+10和8.1“设备加密”功能还需要一个现代化的TPM，这就是为什么它只是在新的硬件功能。
+但是什么是TPM？ <strong>TPM代表“可信平台模块”。
+它是您的计算机主板上的一个芯片，有助于启用防篡改全磁盘加密，而不需要极长的密码。</strong>
+<img src="/img/TPM.png" /></p>
+<h1 id="究竟是什么">究竟是什么？</h1>
+<p>TPM是一个芯片，它是计算机主板的一部分 -
+如果你买了一个现成的电脑，它被焊接到主板上。
+如果你建立你自己的电脑，你可以买一个作为一个附加模块，如果你的主板支持它。
+TPM生成加密密钥，将密钥的一部分保留给自己。
+因此，如果您在具有TPM的计算机上使用BitLocker加密或设备加密，则密钥的一部分存储在TPM本身中，而不是仅存储在磁盘上。
+这意味着攻击者不能只是从计算机中删除驱动器，并尝试访问其他文件的文件。
+该芯片提供基于硬件的身份验证和篡改检测，因此攻击者不能尝试删除芯片并将其放在另一个主板上，或篡改主板本身以试图绕过加密
+- 至少在理论上。 <span id="more"></span> # 加密，加密，加密
+对大多数人来说，这里最相关的用例是加密。
+现代版本的Windows透明地使用TPM。
+<strong>只需在装有“设备加密”的现代PC上使用Microsoft帐户登录，即可使用加密</strong>。启用BitLocker磁盘加密，Windows将使用TPM存储加密密钥。
+通常只需通过键入Windows登录密码即可访问加密的驱动器，但使用更长的加密密钥进行保护。
+该加密密钥部分存储在TPM中，因此实际上需要您的Windows登录密码和驱动器所在的计算机才能访问。
+这就是为什么BitLocker的“恢复密钥”相当长一点 -
+如果您将驱动器移动到另一台计算机，您需要更长的恢复密钥来访问您的数据。
+这是为什么较旧的Windows EFS加密技术不是很好的一个原因。
+它没有办法在TPM中存储加密密钥。
+这意味着它必须将其加密密钥存储在硬盘驱动器上，并使其安全性更低。
+BitLocker可以在没有TPM的驱动器上运行，但是Microsoft放弃了隐藏此选项以强调TPM对于安全性的重要性。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%A3%81%E7%9B%98%E5%8A%A0%E5%AF%86/" rel="tag"># 磁盘加密</a>
+              <a href="/tags/TPM/" rel="tag"># TPM</a>
+              <a href="/tags/win10/" rel="tag"># win10</a>
+              <a href="/tags/BitLocker/" rel="tag"># BitLocker</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/09/30/%E4%BC%81%E4%B8%9A%E5%AE%89%E5%85%A8%E5%BB%BA%E8%AE%BE%E4%B9%8B%E8%87%AA%E5%BB%BA%E5%87%86%E5%85%A5%E7%B3%BB%E7%BB%9F/" rel="prev" title="企业安全建设之自建准入系统">
+                  <i class="fa fa-chevron-left"></i> 企业安全建设之自建准入系统
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/09/30/%E4%B8%89%E6%AC%BE%E4%B8%BB%E6%B5%81%E9%9D%99%E6%80%81%E6%BA%90%E4%BB%A3%E7%A0%81%E5%AE%89%E5%85%A8%E6%A3%80%E6%B5%8B%E5%B7%A5%E5%85%B7%E6%AF%94%E8%BE%83/" rel="next" title="三款主流静态源代码安全检测工具比较">
+                  三款主流静态源代码安全检测工具比较 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

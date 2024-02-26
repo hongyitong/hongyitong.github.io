@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="1. 概述 随着网络的飞速发展，各种网络应用不断成熟，各种开发技术层出不穷，上网已经成为人们日常生活中的一个重要组成部分。在享受互联网带来的各种方便之处的同时，安全问题也变得越来越重要。黑客、病毒、木马等不断攻击着各种网站，如何保证网站的安全成为一个非常热门的话题。 根据IT研究与顾问咨询公司Gartner统计数据显示，75%的黑客攻击发生在应用层。而由NIST的统计显示92%的漏洞属于应用层而非">
+<meta property="og:type" content="article">
+<meta property="og:title" content="三款主流静态源代码安全检测工具比较">
+<meta property="og:url" content="http://hongyitong.github.io/2018/09/30/%E4%B8%89%E6%AC%BE%E4%B8%BB%E6%B5%81%E9%9D%99%E6%80%81%E6%BA%90%E4%BB%A3%E7%A0%81%E5%AE%89%E5%85%A8%E6%A3%80%E6%B5%8B%E5%B7%A5%E5%85%B7%E6%AF%94%E8%BE%83/index.html">
+<meta property="og:site_name" content="忆桐之家的博客">
+<meta property="og:description" content="1. 概述 随着网络的飞速发展，各种网络应用不断成熟，各种开发技术层出不穷，上网已经成为人们日常生活中的一个重要组成部分。在享受互联网带来的各种方便之处的同时，安全问题也变得越来越重要。黑客、病毒、木马等不断攻击着各种网站，如何保证网站的安全成为一个非常热门的话题。 根据IT研究与顾问咨询公司Gartner统计数据显示，75%的黑客攻击发生在应用层。而由NIST的统计显示92%的漏洞属于应用层而非">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-09-29T16:00:00.000Z">
+<meta property="article:modified_time" content="2018-09-30T06:24:43.000Z">
+<meta property="article:author" content="Rayman.hung">
+<meta property="article:tag" content="代码安全">
+<meta property="article:tag" content="黑盒">
+<meta property="article:tag" content="白盒">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2018/09/30/%E4%B8%89%E6%AC%BE%E4%B8%BB%E6%B5%81%E9%9D%99%E6%80%81%E6%BA%90%E4%BB%A3%E7%A0%81%E5%AE%89%E5%85%A8%E6%A3%80%E6%B5%8B%E5%B7%A5%E5%85%B7%E6%AF%94%E8%BE%83/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2018/09/30/%E4%B8%89%E6%AC%BE%E4%B8%BB%E6%B5%81%E9%9D%99%E6%80%81%E6%BA%90%E4%BB%A3%E7%A0%81%E5%AE%89%E5%85%A8%E6%A3%80%E6%B5%8B%E5%B7%A5%E5%85%B7%E6%AF%94%E8%BE%83/","path":"2018/09/30/三款主流静态源代码安全检测工具比较/","title":"三款主流静态源代码安全检测工具比较"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>三款主流静态源代码安全检测工具比较 | 忆桐之家的博客</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">忆桐之家的博客</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman&Tony</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li><li class="menu-item menu-item-tags"><a href="/tags" rel="section">标签</a></li><li class="menu-item menu-item-commonweal"><a href="/404.html" rel="section">公益 404</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">1. 概述</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#checkmarx-cxsuite"><span class="nav-number">1.1.</span> <span class="nav-text">2.2. Checkmarx CxSuite</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#armorize-codesecure"><span class="nav-number">1.2.</span> <span class="nav-text">2.3. Armorize CodeSecure</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AF%B9%E6%AF%94"><span class="nav-number">2.</span> <span class="nav-text">3. 对比</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">3.</span> <span class="nav-text">4. 总结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、亲子时刻</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives">
+          <span class="site-state-item-count">941</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags">
+        <span class="site-state-item-count">1096</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/hongyitong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hongyitong" rel="noopener" target="_blank">GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://blog.sina.com.cn/yitonghong" title="忆桐之家 → http:&#x2F;&#x2F;blog.sina.com.cn&#x2F;yitonghong" rel="noopener" target="_blank">忆桐之家</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://douban.com/people/2780741" title="豆瓣 → http:&#x2F;&#x2F;douban.com&#x2F;people&#x2F;2780741" rel="noopener" target="_blank">豆瓣</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.zhihu.com/people/rayman-36" title="知乎 → http:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;rayman-36" rel="noopener" target="_blank">知乎</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.liaoxuefeng.com/" title="廖雪峰的官方网站 → http:&#x2F;&#x2F;www.liaoxuefeng.com&#x2F;" rel="noopener" target="_blank">廖雪峰的官方网站</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.vaikan.com/" title="外刊IT评论 → http:&#x2F;&#x2F;www.vaikan.com&#x2F;" rel="noopener" target="_blank">外刊IT评论</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2018/09/30/%E4%B8%89%E6%AC%BE%E4%B8%BB%E6%B5%81%E9%9D%99%E6%80%81%E6%BA%90%E4%BB%A3%E7%A0%81%E5%AE%89%E5%85%A8%E6%A3%80%E6%B5%8B%E5%B7%A5%E5%85%B7%E6%AF%94%E8%BE%83/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="忆桐之家的博客">
+      <meta itemprop="description" content="技术分享、读书心得、亲子时刻">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="三款主流静态源代码安全检测工具比较 | 忆桐之家的博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          三款主流静态源代码安全检测工具比较
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2018-09-30 00:00:00 / 修改时间：14:24:43" itemprop="dateCreated datePublished" datetime="2018-09-30T00:00:00+08:00">2018-09-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E6%9C%AF%E7%9B%B8%E5%85%B3/" itemprop="url" rel="index"><span itemprop="name">技术相关</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="概述">1. 概述</h1>
+<p>随着网络的飞速发展，各种网络应用不断成熟，各种开发技术层出不穷，上网已经成为人们日常生活中的一个重要组成部分。在享受互联网带来的各种方便之处的同时，安全问题也变得越来越重要。黑客、病毒、木马等不断攻击着各种网站，如何保证网站的安全成为一个非常热门的话题。
+根据IT研究与顾问咨询公司Gartner统计数据显示，75%的黑客攻击发生在应用层。而由NIST的统计显示92%的漏洞属于应用层而非网络层。因此，应用软件的自身的安全问题是我们信息安全领域最为关心的问题，也是我们面临的一个新的领域，需要我们所有的在应用软件开发和管理的各个层面的成员共同的努力来完成。越来越多的安全产品厂商也已经在考虑关注软件开发的整个流程，将安全检测与监测融入需求分析、概要设计、详细设计、编码、测试等各个阶段以全面的保证应用安全。
+对于应用安全性的检测目前大多数是通过测试的方式来实现。测试大体上分为黑盒测试和白盒测试两种。黑盒测试一般使用的是渗透的方法，这种方法仍然带有明显的黑盒测试本身的不足，需要大量的测试用例来进行覆盖，且测试完成后仍无法保证软件是否仍然存在风险。现在白盒测试中源代码扫描越来越成为一种流行的技术，使用源代码扫描产品对软件进行代码扫描，一方面可以找出潜在的风险，从内对软件进行检测，提高代码的安全性，另一方面也可以进一步提高代码的质量。黑盒的渗透测试和白盒的源代码扫描内外结合，可以使得软件的安全性得到很大程度的提高。
+源代码分析技术由来已久，Colorado 大学的 Lloyd D. Fosdick 和 Leon J.
+Osterweil 1976 年的 9 月曾在 ACM Computing Surveys 上发表了著名的 Data
+Flow Analysis in Software
+Reliability，其中就提到了数据流分析、状态机系统、边界检测、数据类型验证、控制流分析等技术。随着计算机语言的不断演进，源代码分析的技术
+也在日趋完善，在不同的细分领域，出现了很多不错的源代码分析产品，如
+Klocwork Insight、Rational Software Analyzer 和 Coverity、Parasoft
+等公司的产品。而在静态源代码安全分析方面，Fortify 公司和 Ounce Labs
+公司的静态代码分析器都是非常不错的产品。对于源代码安全检测领域目前的供应商有很多，这里我们选择其中的三款具有代表性的进行对比，分别是
+Fortify公司的Fortify SCA，Security Innovation公司的Checkmarx
+Suite和Armorize公司的CodeSecure。 <span id="more"></span> # 2. 工具介绍 ## 2.1.
+Fortify SCA(Source Code Analysis) Fortify
+Software公司是一家总部位于美国硅谷，致力于提供应用软件安全开发工具和管理方案的厂商。Fortify为应用软件开发组织、安全审计人员和应用
+安全管理人员提供工具并确立最佳的应用软件安全实践和策略，帮助他们在软件开发生命周期中花最少的时间和成本去识别和修复软件源代码中的安全隐患。
+Fortify SCA是Fortify360产品套装中的一部分，它使用fortify公司特有的X-Tier
+Dataflow™ analysis技术去检测软件安全问题。</p>
+<p>优点：目前全球最大静态源代码检测厂商、支持语言最多
+缺点：价格昂贵、使用不方便</p>
+<h2 id="checkmarx-cxsuite">2.2. Checkmarx CxSuite</h2>
+<p>Checkmarx
+是以色列的一家高科技软件公司。它的产品CheckmarxCxSuite专门设计为识别、跟踪和修复软件源代码上的技术和逻辑方面的安全风险。首创了以查询语言定位代码安全问题，其采用独特的词汇分析技术和CxQL专利查询技术来扫描和分析源代码中的安全漏洞和弱点。
+优点：利用CxQL 查询语言自定义规则
+缺点：输出报告不够美观、语言支持种类不全面</p>
+<h2 id="armorize-codesecure">2.3. Armorize CodeSecure</h2>
+<p>阿码科技成立于2006年，总部设立于美国加州圣克拉拉市，研发中心位于台湾的南港软件工业园区。阿码科技提供全方位网络安全解决方案，捍卫企业免于受到黑客利用
+Web 应用程序的漏洞所发动的攻击。阿码科技
+CodeSecure可有效地协助企业与开发人员在软件开发过程及项目上线后找出 Web
+应用程序风险，并清楚交代风险的来龙去脉 (如何进入程序，如何造成问题)
+。CodeSecure内建语法剖析功能无需依赖编译环境，任何人员均可利用
+Web操作与集成开发环境双接口，找出存在信息安全问题的源代码，并提供修补建议进行调整。CodeSecure依托于自行开发的主机进行远程源代码检
+测，在保证速度稳定的同时方便用户进行Web远程操作。
+优点：Web结合硬件，速度快、独具特色的深度分析
+缺点：支持语言种类较少、价格不菲</p>
+<h1 id="对比">3. 对比</h1>
+<p>Fortify SCA简写为SCA，Checkmarx CxSuite简写为CxSuite，Armonize
+CodeSecure简写为CodeSecure。</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>SCA</th>
+<th>CxSuite</th>
+<th>CodeSecure</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>厂商</td>
+<td>Fortify Software</td>
+<td>Checkmarx</td>
+<td>阿码科技</td>
+</tr>
+<tr class="even">
+<td>支持语言</td>
+<td>Java,JSP,ASP.NET,C#,VB.NET,C,C++,COBOL,ColdFusion,Transact-SQL,PL/SQL,JavaScript/Ajax,Classic,ASP,VBScript,VB6,PHP</td>
+<td>JAVA、ASP.NET（C#、VB.NET）、JavaScript、Jscript、C/C++、APEX</td>
+<td>ASP.NET（C#、VB.NET）、ASP、JAVA、PHP</td>
+</tr>
+<tr class="odd">
+<td>风险种类</td>
+<td>400种</td>
+<td>300种</td>
+<td>参考CWE</td>
+</tr>
+<tr class="even">
+<td>风险类型参考来源</td>
+<td>CWE、OWASP</td>
+<td>CWE、OWASP</td>
+<td>CWE、OWASP</td>
+</tr>
+<tr class="odd">
+<td>漏报率</td>
+<td>最低</td>
+<td>低</td>
+<td>低</td>
+</tr>
+<tr class="even">
+<td>误报率</td>
+<td>稍高</td>
+<td>低</td>
+<td>低</td>
+</tr>
+<tr class="odd">
+<td>是否支持SaaS</td>
+<td>否</td>
+<td>否</td>
+<td>是</td>
+</tr>
+<tr class="even">
+<td>软硬件类型</td>
+<td>纯软件</td>
+<td>纯软件</td>
+<td>Web结合硬件设备</td>
+</tr>
+<tr class="odd">
+<td>运行平台</td>
+<td>无限制</td>
+<td>WindowsNET Framework 2.0</td>
+<td>无限制</td>
+</tr>
+<tr class="even">
+<td>运行速度</td>
+<td>取决于电脑配置速度不定</td>
+<td>取决于电脑配置速度不定</td>
+<td>由主机配置决定速度恒定</td>
+</tr>
+<tr class="odd">
+<td>报告格式</td>
+<td>PDF</td>
+<td>PDF、XML、CSV、HTML</td>
+<td>Web、PDF</td>
+</tr>
+<tr class="even">
+<td>报告内容</td>
+<td>完整按照风险级别不同分为多个文件</td>
+<td>核心内容完整扫描信息等缺失</td>
+<td>非常完整但修改建议放于最后</td>
+</tr>
+<tr class="odd">
+<td>报价</td>
+<td>100万/软件</td>
+<td>70万/软件</td>
+<td>100万/软硬件</td>
+</tr>
+<tr class="even">
+<td>性价比</td>
+<td>中</td>
+<td>高</td>
+<td>低</td>
+</tr>
+</tbody>
+</table>
+<p>从软件支持的源代码语言上来说，Fortify
+SCA（下文简称SCA）支持多达17种语言，Checkmarx
+CxSuite（下文简称CxSuite）其次，而Armonize
+CodeSecure（下文简称CodeSecure）在三款软件中支持的最少，仅仅支持几种最常见语言，不过这几种基本涵盖了绝大多数应用中使用的编程语言，基本上可以支持现在大多数应用的源代码扫描。</p>
+<p>从风险的分类来说，各个厂商都有其自己独特的分类方式和不同的种类数量，不过从实际应用中可以看出，总体上仍为OWASP公布的几类风险，如SQL注入、跨站脚本等，已经可以满足实际中开发人员和测试人员的需求，对于各个厂商不同的部分，一般来说主要的区别在于理解不同，看问题的角度不同，并无谁错谁对之原则性问题。</p>
+<p>从运行平台
+的角度，CodeSecure这个产品目前看来已经将SaaS的理念很好的融合进来，整个软件的操作界面为Web方式，用户可以通过网页进行操作，B/S
+的方式可以将操作系统的影响降到最低，只要有一台可以上网的电脑和浏览器，无论什么操作系统都可以使用CodeSecure远程进行源代码扫描，CodeSecure依托的是一台Armonize自行研制的主机，使用硬件设备的好处在于可以适用于多种场合，不会因为测试人员或是开发人员的电脑配置影响扫描速度，扫描的速度完全取决于主机的性能。而SCA和CxSuite主要还是单机软件，但目前也在不断地向SaaS的方向进行过渡，并且提供了相当全面的贯彻整个软件开发流程（SDLC）的解决方案与服务给用户。其中CxSuite这个产品标明了使用该软件的硬件配置，为Windows操作系统
+和.NET框架，这个产品目前应该为利用.NET框架进行开发，所以运行环境有一定的局限性。同时，SCA和CxSuite因为是单机软件，一方面在使用
+前需要安装，另一方面其运行速度取决于运行软件的电脑性能，对于使用该软件的电脑配置有一定的要求。</p>
+<p>三种产品都使用了各自的技术对于威胁进行检测，SCA使用的是已获得专利的X-Tier™数据流分析器，这三种产品中只有CxSuite声称可以达到零误报率，因为
+其对于风险的理解是风险必须在外形上呈现出来才被考虑为实际的风险，这种理解方式可以说是别出心裁，从代码安全的角度来说，检测的目的是为了发现问题并及时改正，同时要针对于最关键的问题进行改正，这也是这三款软件都包含TOP
+X的统计的目的，从这一点上讲，CxSuite的风险报告是非常谨慎的。SCA在以前的使用中发现有一定的误报率，不过换个角度想，误报相比漏报是可以容
+忍的，规则越严格，误报率就会相应的上升而漏报率就会相应的下降，源代码检测工具目前均为静态的进行代码的扫描，即所有的检测均是按照“规则”来进行，任
+何一款产品都不可能达到真正的零误报、零漏报。所以可以说SCA的规则检查稍显简单，CxSuite和CodeSecure的检查比较谨慎。</p>
+<p>而从漏报率上来看，谨慎的查找势必会导致漏报率的提升，这一点上SCA和CodeSecure只说明了低漏报率，而CxSuite内部包含了一种类似于C#称为
+CxQL的查询语言，支持使用这种语言进行查询，方便用户进行特定的查找。另两款软件使用的都是规则的方式，其本质上应该是相类似的，这一点上规则似乎更
+容易被用户接收，但是CxQL的方式确实增强了用户的操作性。</p>
+<p>从结果输出
+上来说，三款软件都支持多种输出方式，而作为报告PDF格式可以说是最书面的一种格式。在这一点上，三款软件输出格式略有不同。</p>
+<p>SCA报告构成如下：扫描概述、按风险的分类进行详细描述，包括每个风险的发现位置，代码上下文，风险源和风险输出，以及改进方法，各类风险描述之后是按照风险类别
+的所有风险的统计和按照风险等级的统计图表。SCA的每种类型的文件生成一个PDF文件，便于用户对于风险严重程度的不同采取不同的策略。</p>
+<p>CxSuite
+报告构成如下：风险按照不同分类方式的统计图、风险的数据统计情况、风险最高的文件TOP
+10、按照类别进行风险详述，包括风险的名称、描述、常见危害、在软件开发各阶段的相应处理方式、详细示例，列举每一个风险的传输路径和相应位置代码。</p>
+<p>CodeSecure
+报告构成如下：目录、重点精华，包括检测信息、弱点密度规范分布趋势、弱点最多的文件TOP
+5，弱点索引，弱点的详细信息，包括弱点的全程跟踪，最后是弱点信息及修改建议、所有的进入点。</p>
+<p>三款软件的
+报告中以SCA的最有特色，将不同级别的风险分文件显示对于程序员进行修改是极为方便的；CodeSecure的报告最为规范，整个文档包括目录，结构完
+整，唯一的不足是将风险的修改建议放在了最后，查阅有些不便；CxSuite的内容可以说是最概要的，只包含了风险的最关键内容，对于程序员来说应该是最
+简洁的。</p>
+<h1 id="总结">4. 总结</h1>
+<p>这三款静态源代码扫描工具都有其各自特色，SCA支持的语言多达17种，基本上涵盖了绝大多数的应用，具有相
+当广泛的适用性，但同时也使得其价格非常昂贵；CxSuite支持的语言包括常见Web应用的语言，适用范围基本上包括了大部分的应用，其使用独创的语言来自定义规则非常有特色，价格较之SCA有一定的优势；CodeSecure支持的语言较少，不过基本上可以适用于当前大多数的B/S结构应用，它是唯一
+的软硬件结合的产品，在免除用户安装步骤的同时将扫描运行于特定设备之上，有助于提高运行速度，也因为包括硬件的缘故，其价格不菲。</p>
+<p>SCA极广的适用性使其适用于横跨多种语言的开发和测试人员，CxSuite的较高性价比使其适于基于Web
+的开发人员和测试人员，CodeSecure稳定的速度和B/S的独特结构使得Web开发或测试的多人同时使用变得极为方便。</p>
+<p>随着应用的安全性越来越受到人们的重视，静态源代码扫描和动态扫描将逐渐融合，未来将会有更多更优秀的源代码扫描工具诞生，让我们拭目以待吧。</p>
+<p>附录A 其他静态源代码检测产品</p>
+<table>
+<thead>
+<tr class="header">
+<th>公司</th>
+<th>产品</th>
+<th>支持语言</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>art of defence</td>
+<td>Hypersource</td>
+<td>JAVA</td>
+</tr>
+<tr class="even">
+<td>Coverity</td>
+<td>Prevent</td>
+<td>JAVA .NET C/C++</td>
+</tr>
+<tr class="odd">
+<td>开源</td>
+<td>Flawfinder</td>
+<td>C/C++</td>
+</tr>
+<tr class="even">
+<td>Grammatech</td>
+<td>CodeSonar</td>
+<td>C/C++</td>
+</tr>
+<tr class="odd">
+<td>HP</td>
+<td>DevInspect</td>
+<td>JAVA</td>
+</tr>
+<tr class="even">
+<td>KlocWork</td>
+<td>Insight</td>
+<td>JAVA .NET C/C++，C#</td>
+</tr>
+<tr class="odd">
+<td>Ounce Labs</td>
+<td>Ounce 6</td>
+<td>JAVA .NET</td>
+</tr>
+<tr class="even">
+<td>Parasoft</td>
+<td>JTEST等</td>
+<td>JAVA .NET C/C++</td>
+</tr>
+<tr class="odd">
+<td>SofCheck</td>
+<td>Inspector for JAVA</td>
+<td>JAVA</td>
+</tr>
+<tr class="even">
+<td>University of Maryland</td>
+<td>FindBugs</td>
+<td>JAVA</td>
+</tr>
+<tr class="odd">
+<td>Veracode</td>
+<td>SecurityReview</td>
+<td>JAVA .NET</td>
+</tr>
+<tr class="even">
+<td>FindBug</td>
+<td>PMD／Lint4</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%89%E5%85%A8/" rel="tag"># 代码安全</a>
+              <a href="/tags/%E9%BB%91%E7%9B%92/" rel="tag"># 黑盒</a>
+              <a href="/tags/%E7%99%BD%E7%9B%92/" rel="tag"># 白盒</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/09/30/%E4%BB%80%E4%B9%88%E6%98%AFTPM%EF%BC%8C%E4%B8%BA%E4%BB%80%E4%B9%88Windows%E9%9C%80%E8%A6%81%E4%B8%80%E4%B8%AA%E7%A3%81%E7%9B%98%E5%8A%A0%E5%AF%86%EF%BC%9F/" rel="prev" title="什么是TPM，为什么Windows需要一个磁盘加密？">
+                  <i class="fa fa-chevron-left"></i> 什么是TPM，为什么Windows需要一个磁盘加密？
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/10/27/%E5%87%80%E6%8E%A8%E8%8D%90%E5%80%BC%EF%BC%88NPS%EF%BC%89/" rel="next" title="净推荐值（NPS）">
+                  净推荐值（NPS） <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

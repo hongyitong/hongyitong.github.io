@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="干了很久的项目都是使用SSH框架的，现在团队有位搞美工的美女突然想要搞java了，让我做下指导并打个基本的框架，需要使用最基本的架构，这样说来那SSH只能滚得远远的了； 最基本的架构也就jsp+servlet+javabean，但心里感觉还是不爽，搞这个不是纯属浪费时间啊。后来一想，对了我自己可以不用框架来设计出一个简单的mvc架构来实现框架带来的分层效果： 这里我就以登录为例子来讲解下，讲解的顺">
+<meta property="og:type" content="article">
+<meta property="og:title" content="jsp+servlet+javabean实现ssh的mvc模式">
+<meta property="og:url" content="http://hongyitong.github.io/2017/02/17/jsp+servlet+javabean%E5%AE%9E%E7%8E%B0ssh%E7%9A%84mvc%E6%A8%A1%E5%BC%8F/index.html">
+<meta property="og:site_name" content="忆桐之家的博客">
+<meta property="og:description" content="干了很久的项目都是使用SSH框架的，现在团队有位搞美工的美女突然想要搞java了，让我做下指导并打个基本的框架，需要使用最基本的架构，这样说来那SSH只能滚得远远的了； 最基本的架构也就jsp+servlet+javabean，但心里感觉还是不爽，搞这个不是纯属浪费时间啊。后来一想，对了我自己可以不用框架来设计出一个简单的mvc架构来实现框架带来的分层效果： 这里我就以登录为例子来讲解下，讲解的顺">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-02-16T16:00:00.000Z">
+<meta property="article:modified_time" content="2017-07-12T06:15:08.000Z">
+<meta property="article:author" content="Rayman.hung">
+<meta property="article:tag" content="MVC">
+<meta property="article:tag" content="SSH">
+<meta property="article:tag" content="javabean">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2017/02/17/jsp+servlet+javabean%E5%AE%9E%E7%8E%B0ssh%E7%9A%84mvc%E6%A8%A1%E5%BC%8F/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2017/02/17/jsp+servlet+javabean%E5%AE%9E%E7%8E%B0ssh%E7%9A%84mvc%E6%A8%A1%E5%BC%8F/","path":"2017/02/17/jsp+servlet+javabean实现ssh的mvc模式/","title":"jsp+servlet+javabean实现ssh的mvc模式"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>jsp+servlet+javabean实现ssh的mvc模式 | 忆桐之家的博客</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">忆桐之家的博客</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman&Tony</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li><li class="menu-item menu-item-tags"><a href="/tags" rel="section">标签</a></li><li class="menu-item menu-item-commonweal"><a href="/404.html" rel="section">公益 404</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-overview-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、亲子时刻</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives">
+          <span class="site-state-item-count">941</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags">
+        <span class="site-state-item-count">1096</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/hongyitong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hongyitong" rel="noopener" target="_blank">GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://blog.sina.com.cn/yitonghong" title="忆桐之家 → http:&#x2F;&#x2F;blog.sina.com.cn&#x2F;yitonghong" rel="noopener" target="_blank">忆桐之家</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://douban.com/people/2780741" title="豆瓣 → http:&#x2F;&#x2F;douban.com&#x2F;people&#x2F;2780741" rel="noopener" target="_blank">豆瓣</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.zhihu.com/people/rayman-36" title="知乎 → http:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;rayman-36" rel="noopener" target="_blank">知乎</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.liaoxuefeng.com/" title="廖雪峰的官方网站 → http:&#x2F;&#x2F;www.liaoxuefeng.com&#x2F;" rel="noopener" target="_blank">廖雪峰的官方网站</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.vaikan.com/" title="外刊IT评论 → http:&#x2F;&#x2F;www.vaikan.com&#x2F;" rel="noopener" target="_blank">外刊IT评论</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2017/02/17/jsp+servlet+javabean%E5%AE%9E%E7%8E%B0ssh%E7%9A%84mvc%E6%A8%A1%E5%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="忆桐之家的博客">
+      <meta itemprop="description" content="技术分享、读书心得、亲子时刻">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="jsp+servlet+javabean实现ssh的mvc模式 | 忆桐之家的博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          jsp+servlet+javabean实现ssh的mvc模式
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2017-02-17 00:00:00" itemprop="dateCreated datePublished" datetime="2017-02-17T00:00:00+08:00">2017-02-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2017-07-12 14:15:08" itemprop="dateModified" datetime="2017-07-12T14:15:08+08:00">2017-07-12</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E6%9C%AF%E7%9B%B8%E5%85%B3/" itemprop="url" rel="index"><span itemprop="name">技术相关</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        干了很久的项目都是使用SSH框架的，现在团队有位搞美工的美女突然想要搞java了，让我做下指导并打个基本的框架，需要使用最基本的架构，这样说来那SSH只能滚得远远的了；
+最基本的架构也就jsp+servlet+javabean，但心里感觉还是不爽，搞这个不是纯属浪费时间啊。后来一想，对了我自己可以不用框架来设计出一个简单的mvc架构来实现框架带来的分层效果：
+这里我就以登录为例子来讲解下，讲解的顺序为v---&gt;c----&gt;m <span id="more"></span>
+页面端:login.html ``` java &lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML
+4.01 Transitional//EN"&gt;
+<html>
+<head>
+<title>
+amdinLogin.html
+</title>
+</head>
+<body>
+<form action="../AdminLogin.action" method="post">
+<input type = "text" name = "username"/>
+<input type = "password" name = "password"/>
+<input type = "submit" name = "login" value = "注册"/>
+</form>
+</body>
+</html>
+<p>```</p>
+<p>配置文件web.xml
+<code>java     &lt;servlet&gt;            &lt;servlet-name&gt;controlServlet&lt;/servlet-name&gt;            &lt;servlet-class&gt;xidian.sl.equipment.Servlet.ControlServlet&lt;/servlet-class&gt; &lt;!-- 这里的配置与一般的servlet一样，但由于整个项目只会有一个servlet，所有的访问都将访问这个servlet，因此不同的访问只需要添加下面的参数即可--&gt;         &lt;init-param&gt;                          &lt;!-- 页面请求的地址--&gt;             &lt;param-name&gt;AdminLogin&lt;/param-name&gt;                            &lt;!-- 处理action的后台Action地址--&gt;             &lt;param-value&gt;xidian.sl.equipment.action.LoginAction&lt;/param-value&gt;            &lt;/init-param&gt;            &lt;init-param&gt;                &lt;param-name&gt;picListAction&lt;/param-name&gt;                &lt;param-value&gt;xidian.sl.equipment.action.PicListAction&lt;/param-value&gt;            &lt;/init-param&gt;         &lt;init-param&gt;                &lt;param-name&gt;newListAction&lt;/param-name&gt;                &lt;param-value&gt;xidian.sl.equipment.action.NewListAction&lt;/param-value&gt;            &lt;/init-param&gt;     &lt;/servlet&gt;        &lt;servlet-mapping&gt;            &lt;servlet-name&gt;controlServlet&lt;/servlet-name&gt;            &lt;url-pattern&gt;*.action&lt;/url-pattern&gt;        &lt;/servlet-mapping&gt;</code>
+充当控制层的servlet：xidian.sl.equipment.Servlet.ControlServlet（很重要）
+``` java package xidian.sl.equipment.Servlet;</p>
+<p>import java.io.IOException;</p>
+<p>import javax.servlet.ServletException; import
+javax.servlet.http.HttpServlet; import
+javax.servlet.http.HttpServletRequest; import
+javax.servlet.http.HttpServletResponse;</p>
+<p>import xidian.sl.equipment.action.interfaces.Action; import
+xidian.sl.equipment.actionfactory.ActionFactory;</p>
+<p>public class ControlServlet extends HttpServlet{ /** *
+任何请求都会到这个servlet中，这个servlet就是充当MVC模式中的C（控制层）
+*/ private static final long serialVersionUID = 1L;</p>
+<pre><code>@Override
+protected void doGet(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException &#123;
+    doPost(request, response);
+&#125;
+
+@Override
+protected void doPost(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException &#123;
+            /**
+             * 得到当前Servlet的请求路径   
+             * */
+            String pathName = request.getServletPath();
+            //System.out.println(&quot;pathName:&quot;+pathName);   
+            /**
+             * 得到请求的Action名字
+             * */ 
+            int index = pathName.indexOf(&quot;.&quot;);   
+            String ActionName = pathName.substring(1, index);   
+            //System.out.println(ActionName);   
+            /**
+             * 获取运行时参数
+             * */
+            String ActionClassName = this.getInitParameter(ActionName);   
+            //System.out.println(&quot;actionclassName &quot;+ ActionClassName);
+            /**
+             * 得到Action对象  
+             * */
+            Action action = ActionFactory.getActionFactory().getAction(ActionClassName); 
+            //System.out.println(&quot;action &quot;+action);
+            /**
+             * 执行Action的execute得到要返回的URL路径 
+             * */
+            String url = action.execute(request, response); 
+            if(url == null)&#123;   
+                request.getRequestDispatcher(&quot;error.jsp&quot;).forward(request, response);      
+            &#125;else&#123;   
+                request.getRequestDispatcher(url).forward(request, response);   
+            &#125;   
+&#125;</code></pre>
+<p>}```
+Action:面向接口编程，提供一个统一的Action接口，里面就一个方法execute()；模拟struts1.x</p>
+<p>``` java package xidian.sl.equipment.action.interfaces;</p>
+<p>import javax.servlet.http.HttpServletRequest; import
+javax.servlet.http.HttpServletResponse;</p>
+<p>public interface Action { /**<br />
+* 所有的具体Action实现这个接口<br />
+* <span class="citation" data-cites="param">@param</span> request
+请求对象<br />
+* <span class="citation" data-cites="param">@param</span> response
+应答对象<br />
+* <span class="citation" data-cites="return">@return</span>
+：结果页面<br />
+*/<br />
+public String execute(HttpServletRequest request, HttpServletResponse
+response);</p>
+<p>}<code>LoginAction:</code> java package
+xidian.sl.equipment.action;</p>
+<p>import javax.servlet.http.HttpServletRequest; import
+javax.servlet.http.HttpServletResponse;</p>
+<p>import xidian.sl.equipment.action.interfaces.Action; import
+xidian.sl.equipment.dao.impl.AdminDAOImpl; import
+xidian.sl.equipment.dao.interfaces.AdminDAO;</p>
+<p>public class LoginAction implements Action {</p>
+<pre><code>@Override
+public String execute(HttpServletRequest request,
+        HttpServletResponse response) &#123;
+         /**
+          * 从request中得到相应的值
+          * */  
+        String username = request.getParameter(&quot;username&quot;);  
+        String password = request.getParameter(&quot;password&quot;);
+        /**
+         * 实例化DAO层，但其实这样做还是不完美的，最好自己写一个依赖注入的类
+         * */
+        AdminDAO adminDAO = new AdminDAOImpl();
+        /**
+         * 返回查找后的二维数组
+         * */
+        String[][] data = adminDAO.findAdmin(username, password);
+        if(data == null|| (data != null&amp;&amp; data.length == 0))&#123;
+            //数组为空，表示无此账号存在
+            return &quot;admin/login.html&quot;;  
+        &#125; else &#123;  
+            return &quot;admin/index.html&quot;;  
+        &#125;  
+&#125;</code></pre>
+<p>}```
+在实现类LoginAction中实例化了AdminDAO进行持久化操作，这里为了方便起见是直接使用new进行实例化，但这样硬编码带来耦合，如需要改进可以参考模拟spring的ioc
+http://www.cnblogs.com/shenliang123/archive/2012/05/10/2494412.html
+讨论简单工厂模式时有简单的实现，大家可以进行改进使其更加完美</p>
+<p>AdminDAO: ``` java package xidian.sl.equipment.dao.interfaces;</p>
+<p>public interface AdminDAO { /** * 根据用户名与密码来查找相应用户 * */
+public String[][] findAdmin(String username, String password); }```
+AdminDAOImpl:</p>
+<p>``` java package xidian.sl.equipment.dao.impl;</p>
+<p>import xidian.sl.equipment.dao.interfaces.AdminDAO; import
+xidian.sl.equipment.util.DbConn;</p>
+<p>public class AdminDAOImpl implements AdminDAO{</p>
+<pre><code>@Override
+public String[][] findAdmin(String username, String password) &#123;
+    String sql = &quot;select * from admin as ad where ad.aId = &#39;&quot;+username+&quot;&#39; and ad.aPassword = &#39;&quot;+password+&quot;&#39;&quot;;
+    String[][] data = DbConn.query(sql);
+    return data;
+&#125;</code></pre>
+<p>}```
+该实现类中使用了已封装好的数据库操作类，详细见：http://www.cnblogs.com/shenliang123/archive/2012/05/10/2494874.html
+数据库的设计比较简单：只需要主键id, 用户账号：username,
+账号密码：password
+这样就基本实现了mvc的效果，你还可以根据项目的复杂程度向DAO与Action之间再插入一层Service</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/MVC/" rel="tag"># MVC</a>
+              <a href="/tags/SSH/" rel="tag"># SSH</a>
+              <a href="/tags/javabean/" rel="tag"># javabean</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2017/02/17/%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95%E6%A8%A1%E5%BC%8F/" rel="prev" title="工厂方法模式">
+                  <i class="fa fa-chevron-left"></i> 工厂方法模式
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2017/02/17/Facade%E5%A4%96%E8%A7%82%E6%A8%A1%E5%BC%8F/" rel="next" title="Facade外观模式">
+                  Facade外观模式 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

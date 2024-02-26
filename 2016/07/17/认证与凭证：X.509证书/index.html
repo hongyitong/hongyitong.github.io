@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="转自：http:&#x2F;&#x2F;www.cnblogs.com&#x2F;artech&#x2F;archive&#x2F;2011&#x2F;05&#x2F;23&#x2F;authentication_022.html 认证与凭证：X.509证书 在《上篇》中，我们谈到了常用的认证方式：用户名&#x2F;密码认证和Windows认证。在下篇中，我们着重来介绍另外一种重要的凭证类型：X.509证书，以及针对X.509证书的认证方式。不过为了让读者能够真正地全面地了解X.509">
+<meta property="og:type" content="article">
+<meta property="og:title" content="认证与凭证：X.509证书">
+<meta property="og:url" content="http://hongyitong.github.io/2016/07/17/%E8%AE%A4%E8%AF%81%E4%B8%8E%E5%87%AD%E8%AF%81%EF%BC%9AX.509%E8%AF%81%E4%B9%A6/index.html">
+<meta property="og:site_name" content="忆桐之家的博客">
+<meta property="og:description" content="转自：http:&#x2F;&#x2F;www.cnblogs.com&#x2F;artech&#x2F;archive&#x2F;2011&#x2F;05&#x2F;23&#x2F;authentication_022.html 认证与凭证：X.509证书 在《上篇》中，我们谈到了常用的认证方式：用户名&#x2F;密码认证和Windows认证。在下篇中，我们着重来介绍另外一种重要的凭证类型：X.509证书，以及针对X.509证书的认证方式。不过为了让读者能够真正地全面地了解X.509">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/img/%E6%95%B0%E5%AD%97%E7%AD%BE%E5%90%8D1.png">
+<meta property="og:image" content="http://hongyitong.github.io/img/%E6%95%B0%E5%AD%97%E7%AD%BE%E5%90%8D2.png">
+<meta property="og:image" content="http://hongyitong.github.io/img/%E6%95%B0%E5%AD%97%E7%AD%BE%E5%90%8D3.png">
+<meta property="article:published_time" content="2016-07-16T16:00:00.000Z">
+<meta property="article:modified_time" content="2017-07-12T02:01:22.000Z">
+<meta property="article:author" content="Rayman.hung">
+<meta property="article:tag" content="其它">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hongyitong.github.io/img/%E6%95%B0%E5%AD%97%E7%AD%BE%E5%90%8D1.png">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2016/07/17/%E8%AE%A4%E8%AF%81%E4%B8%8E%E5%87%AD%E8%AF%81%EF%BC%9AX.509%E8%AF%81%E4%B9%A6/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2016/07/17/%E8%AE%A4%E8%AF%81%E4%B8%8E%E5%87%AD%E8%AF%81%EF%BC%9AX.509%E8%AF%81%E4%B9%A6/","path":"2016/07/17/认证与凭证：X.509证书/","title":"认证与凭证：X.509证书"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>认证与凭证：X.509证书 | 忆桐之家的博客</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">忆桐之家的博客</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman&Tony</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li><li class="menu-item menu-item-tags"><a href="/tags" rel="section">标签</a></li><li class="menu-item menu-item-commonweal"><a href="/404.html" rel="section">公益 404</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80-%E9%9D%9E%E5%AF%B9%E7%A7%B0%E5%AF%86%E7%A0%81%E5%AD%A6asymmetric-cryptography"><span class="nav-number">1.</span> <span class="nav-text">一、
+非对称密码学（Asymmetric Cryptography）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%E5%8A%A0%E5%AF%86encryption"><span class="nav-number">1.1.</span> <span class="nav-text">消息加密（Encryption）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E5%AD%97%E7%AD%BE%E5%90%8Ddigital-signature"><span class="nav-number">1.2.</span> <span class="nav-text">数字签名（Digital Signature）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E6%95%B0%E5%AD%97%E8%AF%81%E4%B9%A6"><span class="nav-number">2.</span> <span class="nav-text">二、数字证书</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E6%95%B0%E5%AD%97%E8%AF%81%E4%B9%A6"><span class="nav-number">2.1.</span> <span class="nav-text">创建数字证书</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E9%80%9A%E8%BF%87%E5%87%AD%E8%AF%81%E4%B8%89%E4%B8%AA%E5%B1%9E%E6%80%A7%E6%9D%A5%E5%88%86%E6%9E%90x.509%E8%AF%81%E4%B9%A6"><span class="nav-number">3.</span> <span class="nav-text">三、通过凭证三个属性来分析X.509证书</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、亲子时刻</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives">
+          <span class="site-state-item-count">941</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags">
+        <span class="site-state-item-count">1096</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/hongyitong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hongyitong" rel="noopener" target="_blank">GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://blog.sina.com.cn/yitonghong" title="忆桐之家 → http:&#x2F;&#x2F;blog.sina.com.cn&#x2F;yitonghong" rel="noopener" target="_blank">忆桐之家</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://douban.com/people/2780741" title="豆瓣 → http:&#x2F;&#x2F;douban.com&#x2F;people&#x2F;2780741" rel="noopener" target="_blank">豆瓣</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.zhihu.com/people/rayman-36" title="知乎 → http:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;rayman-36" rel="noopener" target="_blank">知乎</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.liaoxuefeng.com/" title="廖雪峰的官方网站 → http:&#x2F;&#x2F;www.liaoxuefeng.com&#x2F;" rel="noopener" target="_blank">廖雪峰的官方网站</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.vaikan.com/" title="外刊IT评论 → http:&#x2F;&#x2F;www.vaikan.com&#x2F;" rel="noopener" target="_blank">外刊IT评论</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2016/07/17/%E8%AE%A4%E8%AF%81%E4%B8%8E%E5%87%AD%E8%AF%81%EF%BC%9AX.509%E8%AF%81%E4%B9%A6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="忆桐之家的博客">
+      <meta itemprop="description" content="技术分享、读书心得、亲子时刻">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="认证与凭证：X.509证书 | 忆桐之家的博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          认证与凭证：X.509证书
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016-07-17 00:00:00" itemprop="dateCreated datePublished" datetime="2016-07-17T00:00:00+08:00">2016-07-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2017-07-12 10:01:22" itemprop="dateModified" datetime="2017-07-12T10:01:22+08:00">2017-07-12</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E6%9C%AF%E7%9B%B8%E5%85%B3/" itemprop="url" rel="index"><span itemprop="name">技术相关</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>转自：http://www.cnblogs.com/artech/archive/2011/05/23/authentication_022.html
+认证与凭证：X.509证书
+在《上篇》中，我们谈到了常用的认证方式：用户名/密码认证和Windows认证。在下篇中，我们着重来介绍另外一种重要的凭证类型：X.509证书，以及针对X.509证书的认证方式。不过为了让读者能够真正地全面地了解X.509证书，我们需要先了解一些关于非对称密码学的背景知识。</p>
+<p>目录 一、非对称密码学（Asymmetric Cryptography）
+消息加密（Encryption） 数字签名（Digital Signature） 二、数字证书
+数字证书的颁发机制 创建数字证书 三、通过凭证三个属性来分析X.509证书
+<span id="more"></span></p>
+<h1 id="一-非对称密码学asymmetric-cryptography">一、
+非对称密码学（Asymmetric Cryptography）</h1>
+<p>按照维基百科的定义，密码学（Cryptography）一种关于信息隐藏（Hiding
+Information）的研究或者实践。当代密码学是一种跨学科的研究，涉及的学科主要包括数学、计算机科学和工程学。站在消息交换的角度，密码学就是帮助我们实现对整个消息或者对消息的某个部分进行数字签名和加密的理论和方法。</p>
+<p>数字签名和加密依赖于相应的加密算法（Cryptographic
+Algorithm），从数学的角度来讲，加密算法是就是将被加密的数据和密钥作为自变量，将加密后的数据作为因变量的函数。与加密相对的操作是解密。按照加密和解密采用的密钥是否相同，我们将加密算法分为对称加密算法和非对称加密算法。前者采用相同的密钥进行加密和解密，后者则采用一组相互配对的密钥分别进行加密和解密。对于非对称加密，我们选择秘钥对中某一个密钥对消息进行加密，该密文只有通过另一个秘要方能解密。非对称密码学具有两个主要的应用：</p>
+<ul>
+<li>直接通过对消息进行加密解决机密性问题；</li>
+<li>通过数字签名实现身份认证和数据一致性的问题。</li>
+</ul>
+<h2 id="消息加密encryption">消息加密（Encryption）</h2>
+<p>非对称加密依赖一组由公钥/私钥（Public Key /Private
+Key）组成的密钥对，所以采用非对称加密又被称为公钥加密（Public Key
+Cryptography）。具体来说，公钥和私钥均可以用于加密。如果密钥对中的其中一个用于加密，另一个则用于解密。公钥公诸于众，不具有隐私性，任何人均可以获取；而私钥专属于拥有该密钥对的实体，属于绝对隐私。</p>
+<p>对于消息交换来说，通过非对称的方式对消息进行加密是能够确保消息的机密性。具体的做法是：消息的发送方采用接收方的公钥进行加密，接收方通过自己的私钥进行解密。由于私钥仅供接收方所有，所有其他人不能对密文进行解密。</p>
+<h2 id="数字签名digital-signature">数字签名（Digital Signature）</h2>
+<p>我们所说的数字签名实际上包括两项主要的工作，签名（Signing）和检验（Verification），前者创建一个数字签名，后者验证签名的有效性。接下来，我们来简单介绍一下在消息交换场景下的签名和检验是如何实现的。</p>
+<p><img src="/img/数字签名1.png" /></p>
+<p>签名的过程其实很简单，整个流程如上图所示。整个流程包括两个步骤：首先，发送方首先采用某种算法对整个消息的内容实施哈希计算，得到一个哈希码。然后，发送使用自己的私钥对该哈希码就行加密，加密后得到的密文就是数字签名。该数字签名最终会连同发送方密钥对中的公钥（该公钥一般会内嵌于一个数字证书中）附加到原消息上一并发予接收方。</p>
+<p>这三项被接收方接收之后，它就可以借助这个数字签名验证发送方的真实身份和消息的完整性，这个过程被称为数字签名的验证。整个数字签名检验流程如下图所示。首先，原消息被提取出来，通过相同的哈希算法得到一个哈希码。然后，数字签名被提取出来，采用相同的算法利用公钥对数字签名进行解密，得到生成数字签名的那个哈希码。两个哈希码进行比较，如果一致则可以证明数字签名的有效性以及消息本身的完整性。</p>
+<p><img src="/img/数字签名2.png" /></p>
+<p>采用非对称密码学对消息加密解决的是消息的机密性问题，而数字签名的作用则体现在如下三个方面：</p>
+<ul>
+<li>身份认证（Authentication）：数字证书可以帮助我们验证消息发送源的真实身份，因为数字签名的内容是由一个私钥决定的，发送方只有通过专署于他的密钥对中的私钥生成数字签名，采用通过对方利用公钥实施的数字签名检验。而私钥是属于拥有者的私密信息，不对外公开的。对数字证书的检验实际上就确认消息的发送源是否是私钥的真正拥有者。</li>
+<li>防止抵赖（Non-repudiation）：防止抵赖在这里的代表对于接收到的经过数字签名的消息，如果接收方采用某个实体的公钥对数字签名检验成功，那么这个实体就是消息的发送方，不容对方抵赖。原因很简单，能够通过公钥对某个数字签名成功检验，证明生成该数字签名使用的是正确的私钥。</li>
+<li>消息一致性（Integrity）：而数字签名确实可以确保整个消息内容的一致性的，因为最初被用于私钥加密的哈希码是针对整个消息的内容进行哈希计算获得的。消息的内容一旦出现任何的改变，最终对数字签名的检验都将失败。
+在上面介绍数字签名的流程时，我们说发送方的公钥会连同生成的数字签名会附加到消息中，一并传送给接收方，以辅助接收方对发送进行身份验证。实际上，这个公钥在一般情况下是通过数字证书的形式进行传递的。数字证实在这里作为发送方的凭证，现在我们就来简单介绍一下数字证书。</li>
+</ul>
+<h1 id="二数字证书">二、数字证书</h1>
+<p>证书，又称数字证书（Digital Certificate）或者公钥证书（Public Key
+Certificate），是一种数字签名的声明，它将公钥的值绑定到持有对应私钥的个人、设备或服务的标识。由于大多数普通用途的证书基于
+X.509 V3
+证书标准，所以我们有将其称为X.509证书。X.509证书广泛地被应用于加密（Encryption）和数字签名（Digital
+Signature），以提供认证的实现和确保数据的一致性（Integrity）和机密性（Confidentiality）。</p>
+<p>站在公钥密码学的角度来讲，X.509证书就是一个将某个密钥对中的公钥与某个主题（Subject）进行绑定的文件。具体来讲，和公钥进行绑定的不仅仅包括相应主题的可辨别名称（DN：Distinguished
+Name），可以包括主题相关的其它可选名称，比如Email地址、DNS名称等。</p>
+<p>下面的代码片断体现了一个X.509证书的大体结构。其中包括版本号（V3）、序列号（7829）、签名算法（md5WithRSAEncryption）、颁发者（CN=Root
+Agency）、有效日期（April ‎07, ‎2011 3:37:45 PM到January ‎01, ‎2040 7:59:59
+AM）、主题信息（CN = www.artech.com）、公钥（00:b4:31:98:...
+52:7e:41:8f）和公钥算法（rsaEncryption）以及颁发者的数字签名（93:5f:8f:5f:...
+b5:22:68:9f）。
+`<code>1: Certificate:    2:    Data:    3:        Version: V3    4:        Serial Number: 7829 (0x1e95)    5:        Signature Algorithm: md5WithRSAEncryption    6:        Issuer: CN=Root Agency    7:        Validity       8:            Not Before: ‎Thursday, ‎April ‎07, ‎2011 3:37:45 PM    9:            Not After : ‎Sunday, ‎January ‎01, ‎2040 7:59:59 AM   10:        Subject: CN = www.artech.com   11:        Subject Public Key Info:   12:            Public Key Algorithm: rsaEncryption   13:            RSA Public Key: (1024 bit)   14:                Modulus (1024 bit):   15:                    00:b4:31:98:... 52:7e:41:8f   16:                Exponent: 65537 (0x10001)   17:    Signature Algorithm: md5WithRSAEncryption   18:    93:5f:8f:5f: ... b5:22:68:9f</code>
+## 数字证书的颁发机制
+数字证书在大部分场景中是作为证明某个实体身份的凭证被使用，而证书的主题部分的内容代表了该用户凭证所代表的身份。那么我们的第一个问题是，我们为什么要信任这个证书？</p>
+<p>我们可以通过与日常生活中使用的证书进行类比，进而加深对数字证书的理解。比如居民身份证就是一种典型的证书，它的一个重要的特征就是该证书是由官方认可的合法机构颁发，一般情况下身份证的办法机构就是户口所在地的公安机关。对于数字证书，尤其是用于商业用途的数字证书，也具有相应的官方办法机构，我们将这样的机构称之为认证权威机构（CA：Certification
+Authority，以下简称CA）。我们熟悉的CA包括VeriSign、Thawte（OpenSSL）等。证书的颁发机构体系是一个树形结构，每一个CA可以具有一到多个子CA，最上层的CA被称为根CA。</p>
+<p>在日常生活中，人们对居民身份证的普遍认可来源于对颁发机构，即户口所在地的公安机关的信任。这种基于对颁发机构认可的方式同样适合对数字证书。在一般情况下，认证方通过检验数字证书的CA的信任程度而作出对证书合法性的判断。不过，现在的问题是：居民身份证具有若干防伪标识帮助认证方鉴别真伪，对于数字证书来说，我们采用怎样的方式来判断它是不是伪造的呢？验证数字证书的有效性，需要防止以下两种情况：</p>
+<ul>
+<li>用户伪造一个证书以假冒与证书公钥绑定的那个身份，并且该证书具有一个我们普遍认可的CA；</li>
+<li>用户对CA颁发的证书进行篡改，改变公钥或者其他身份信息。这两个问题都可以通过数字签名技术来解决。</li>
+</ul>
+<p>从上面给出的数字证书我们知道，证书中不仅仅包括CA的基本信息，还包括一个数字签名和签名采用的算法。CA通过自己的私钥对证书的数据部分进行签名，并将此签名连同签名采用的算法置于证书之中。按照我们前面介绍的关于数字签名的原理，如果我们具有CA的公钥，我们不仅仅可以验证证书的CA，也能校验证书的内容是否被篡改。那么在对证书进行验证的时候，CA的公钥从何而来呢？</p>
+<p>实际上，CA的公钥也保存在一个数字证书之中，并被存储于一个受信任的证书存储之中。按照证书代表身份的不同，我们可以将其分为两种类型：CA证书（CA
+Certificate）和终端实体证书（End Entity
+Certificate），其中前者代表CA，后者代表接受CA证书的最终实体。实际上，CA证书和终端实体证书并没有本质的区别。除了最顶层的根CA，所有的CA证书颁发者是它的上一级CA，即上级的CA作为该CA证书的CA。CA的这种层级关系组成了一种信任链（Trust
+Chain）。</p>
+<p>为了存储数字证书，Windows中具有相应的证书存储区（Certificate
+stores）。根据目的或者信任范围的不同，不同的证书被存储于不同的存储区。关于证书存储，由于篇幅所限，我不会做过多的介绍，有兴趣的朋友可以查阅MSDN在线文档。对于证书存储管理，MMC为你提供一个可视化的管理工具，你也可以通过Certmgr.exe工具已命令行的方式来进行。</p>
+<p>在若干证书存储区中，有一个被称为“受信任的根证书颁发机构”(Trusted Root
+Certification
+Authorities)的存储区，它里面存储的所有CA证书代表所信任的证书颁发机构。在默认情况下，对于一个待验证的证书，如果基于该证书CA信任链上的任何一个CA在该存储区中存在一个证书，那么这个证书是合法的。</p>
+<h2 id="创建数字证书">创建数字证书</h2>
+<p>用户对数字证书的认可决定于对证书颁发机构的信任，所以证书颁发机构决定了数字证书的可用范围。由于官方认可的数字证书颁发机构，比如VeriSign、Thawte（OpenSSL），具有普遍的信任度，在大部分情况下是理想的选择。但是对于学习研究或者开发测试，我们没有必要去购买这些商用证书，采用利用一些工具以手工的方式创建证书。</p>
+<p>由于WCF的安全机制广泛使用到数字证实，我们很有必要学会手工创建数字证书。微软为我们提供了一个强大的创建数字证书的工具MakeCert.exe，我们可以借助这个工具采用命令行的方式创建我们需要的数字证书。MakeCert.exe具有很多命令行开关，限于篇幅的问题不可能对它们一一介绍，在这里仅仅对几个常用的开关作一下简单的介绍，有兴趣的读者可以查阅MSDN在线文档了解MakeCert.exe所有命令行开关的含义，对应的地址为http://msdn.microsoft.com/zh-cn/library/bfsktky3(v=vs.80).aspx。</p>
+<p>-n
+x509name：指定主题的证书名称。最简单的方法是在双引号中指定此名称，并加上前缀CN=，例如，"CN=My
+Name"； -pe：将所生成的私钥标记为可导出，这样可将私钥包括在证书中； -sr
+location：数字证书的存储位置，具有两个可选值：CurrentUser（和LocalMachine。前者基于当前登录用户，后者基于本机；
+-ss store：数字证书的存储区； -sky keytype：指定主题的密钥类型，必须是
+signature、exchange
+或一个表示提供程序类型的整数。默认情况下，可传入1表示交换密钥，传入2表示签名密钥。
+比如我通过下面的命令会创建一个主题名称为www.artech.com的数字证书，该证书具有交换密钥类型，并且包含私钥。
+<code>1: MakeCert -n "CN=www.artech.com" -pe -sr LocalMachine -ss My -sky exchange</code>
+一旦上面的命令成功执行，生成的证书会自动保存到基于本机的个人（Personal）存储区中。你可以通过MMC的证书管理单元（Snap-in）查看该证书,
+关于如何通过MMC查看证书，可以参考这个地址：http://msdn.microsoft.com/zh-cn/library/ms788967.aspx。下图是证书MMC管理单元的截图，你可以看到我们创建的数字证书已经被存储到了我们在命令行中指定的存储区，颁发机构被默认设定为Root
+Agency。</p>
+<p><img src="/img/数字签名3.png" /></p>
+<h1
+id="三通过凭证三个属性来分析x.509证书">三、通过凭证三个属性来分析X.509证书</h1>
+<p>在上面中我们站在非对称密码学得角度对数字证书进行了相应的介绍，在这里我们从用户凭证的角度进一步地认识数字证书。我们照例采用用户凭证的三个属性来分析数字证书。</p>
+<ul>
+<li>凭证与申明的一致性：证书的申明反映在于公钥绑定的于主题相关的信息；
+持有人对凭证的拥有性：在绝大部分的认证过程中，都需要被认证方提供的数字证书具有相应的私钥。私钥的私有性在某种程度上证明了数字证书持有者就是该证书的拥有者；</li>
+<li>证书的合法性：这可以通过颁发者对证书的数字签名来验证。
+如果被认证方通过一个数字证书作为用户凭证，认证方一般采用信任链（Trust
+Chain）模式对其实施认证。在该模式下，认证方从数字证书的直接颁发机构向上追溯，如果具有任何一个颁发机构是受信任的，那么认证成功。不过，有时我们还是会采用其他的认证模式，比如严格比较证书主题信息甚至是序列号。</li>
+</ul>
+<p>对于WCF来说，不仅仅客户端可以将数字证书作为证明自己身份的凭证，提供给服务端对自己进行认证。也可以将服务和某个数字证书绑定起来，通过证书代表服务的身份，供客户端进行验证。总之，数字证书在WCF中具有十分广泛的应用。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%85%B6%E5%AE%83/" rel="tag"># 其它</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/07/16/CRC%E5%8D%A1%E5%8F%8A%E5%85%B6%E5%BA%94%E7%94%A8/" rel="prev" title="CRC卡及其应用">
+                  <i class="fa fa-chevron-left"></i> CRC卡及其应用
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2016/07/17/%E6%AF%94%E5%96%BB/" rel="next" title="比喻">
+                  比喻 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

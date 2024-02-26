@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="域（Domain） 域 既是Windows网络系统的逻辑组织单元，也是Internet的逻辑组织单元，在Windows 2000系统中，域是安全边界。域管理员只能管理域的内部，除非其他的域显式地赋予他管理权限，他才能够访问或者管理其他的域。每个域都有自己的安全策略，以及它与其他域的安全信任关系。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="windows server中 森林、域树、域（AD）的区别与联系">
+<meta property="og:url" content="http://hongyitong.github.io/2017/08/21/windows%20server%E4%B8%AD%20%E6%A3%AE%E6%9E%97%E3%80%81%E5%9F%9F%E6%A0%91%E3%80%81%E5%9F%9F%EF%BC%88AD%EF%BC%89%E7%9A%84%E5%8C%BA%E5%88%AB%E4%B8%8E%E8%81%94%E7%B3%BB/index.html">
+<meta property="og:site_name" content="忆桐之家的博客">
+<meta property="og:description" content="域（Domain） 域 既是Windows网络系统的逻辑组织单元，也是Internet的逻辑组织单元，在Windows 2000系统中，域是安全边界。域管理员只能管理域的内部，除非其他的域显式地赋予他管理权限，他才能够访问或者管理其他的域。每个域都有自己的安全策略，以及它与其他域的安全信任关系。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/img/%E5%9F%9F%E4%B8%8E%E7%AB%99%E7%82%B9%E5%8C%BA%E5%88%AB.jpg">
+<meta property="article:published_time" content="2017-08-20T16:00:00.000Z">
+<meta property="article:modified_time" content="2017-09-05T06:27:44.000Z">
+<meta property="article:author" content="Rayman.hung">
+<meta property="article:tag" content="LDAP">
+<meta property="article:tag" content="活动目录">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hongyitong.github.io/img/%E5%9F%9F%E4%B8%8E%E7%AB%99%E7%82%B9%E5%8C%BA%E5%88%AB.jpg">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2017/08/21/windows%20server%E4%B8%AD%20%E6%A3%AE%E6%9E%97%E3%80%81%E5%9F%9F%E6%A0%91%E3%80%81%E5%9F%9F%EF%BC%88AD%EF%BC%89%E7%9A%84%E5%8C%BA%E5%88%AB%E4%B8%8E%E8%81%94%E7%B3%BB/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2017/08/21/windows%20server%E4%B8%AD%20%E6%A3%AE%E6%9E%97%E3%80%81%E5%9F%9F%E6%A0%91%E3%80%81%E5%9F%9F%EF%BC%88AD%EF%BC%89%E7%9A%84%E5%8C%BA%E5%88%AB%E4%B8%8E%E8%81%94%E7%B3%BB/","path":"2017/08/21/windows server中 森林、域树、域（AD）的区别与联系/","title":"windows server中 森林、域树、域（AD）的区别与联系"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>windows server中 森林、域树、域（AD）的区别与联系 | 忆桐之家的博客</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">忆桐之家的博客</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman&Tony</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li><li class="menu-item menu-item-tags"><a href="/tags" rel="section">标签</a></li><li class="menu-item menu-item-commonweal"><a href="/404.html" rel="section">公益 404</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%9Fdomain"><span class="nav-number">1.</span> <span class="nav-text">域（Domain）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A0%91"><span class="nav-number">2.</span> <span class="nav-text">树</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A3%AE%E6%9E%97"><span class="nav-number">3.</span> <span class="nav-text">森林</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8E%A5%E4%B8%8B%E6%9D%A5%E6%88%91%E4%BB%AC%E7%9C%8B%E4%B8%80%E4%B8%8Bad%E4%B8%8E%E7%AB%99%E7%82%B9%E4%B9%8B%E9%97%B4%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">4.</span> <span class="nav-text">接下来我们看一下AD与站点之间的关系</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、亲子时刻</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives">
+          <span class="site-state-item-count">941</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags">
+        <span class="site-state-item-count">1096</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/hongyitong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hongyitong" rel="noopener" target="_blank">GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://blog.sina.com.cn/yitonghong" title="忆桐之家 → http:&#x2F;&#x2F;blog.sina.com.cn&#x2F;yitonghong" rel="noopener" target="_blank">忆桐之家</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://douban.com/people/2780741" title="豆瓣 → http:&#x2F;&#x2F;douban.com&#x2F;people&#x2F;2780741" rel="noopener" target="_blank">豆瓣</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.zhihu.com/people/rayman-36" title="知乎 → http:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;rayman-36" rel="noopener" target="_blank">知乎</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.liaoxuefeng.com/" title="廖雪峰的官方网站 → http:&#x2F;&#x2F;www.liaoxuefeng.com&#x2F;" rel="noopener" target="_blank">廖雪峰的官方网站</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.vaikan.com/" title="外刊IT评论 → http:&#x2F;&#x2F;www.vaikan.com&#x2F;" rel="noopener" target="_blank">外刊IT评论</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2017/08/21/windows%20server%E4%B8%AD%20%E6%A3%AE%E6%9E%97%E3%80%81%E5%9F%9F%E6%A0%91%E3%80%81%E5%9F%9F%EF%BC%88AD%EF%BC%89%E7%9A%84%E5%8C%BA%E5%88%AB%E4%B8%8E%E8%81%94%E7%B3%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="忆桐之家的博客">
+      <meta itemprop="description" content="技术分享、读书心得、亲子时刻">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="windows server中 森林、域树、域（AD）的区别与联系 | 忆桐之家的博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          windows server中 森林、域树、域（AD）的区别与联系
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2017-08-21 00:00:00" itemprop="dateCreated datePublished" datetime="2017-08-21T00:00:00+08:00">2017-08-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2017-09-05 14:27:44" itemprop="dateModified" datetime="2017-09-05T14:27:44+08:00">2017-09-05</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E6%9C%AF%E7%9B%B8%E5%85%B3/" itemprop="url" rel="index"><span itemprop="name">技术相关</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="域domain">域（Domain）</h1>
+<p>域
+既是Windows网络系统的逻辑组织单元，也是Internet的逻辑组织单元，在Windows
+2000系统中，域是安全边界。域管理员只能管理域的内部，除非其他的域显式地赋予他管理权限，他才能够访问或者管理其他的域。每个域都有自己的安全策略，以及它与其他域的安全信任关系。<span id="more"></span>
+# OU(Organizational Unit) OU
+是一个容器对象，我们可以把域中的对象组织成逻辑组，所以OU纯粹是一个逻辑概念，它可以帮助我们简化管理工作。OU可以包含各种对象，比如用户账户、用户组、计算机、打印机，甚至可以包括其他的OU。所以我们可以利用OU把域中的对象形成一个完全逻辑上的层次结构，对于一个企业来讲，我们可以按部门把所有的用户和设备组成一个OU层次结构，也可以按地理位置形成层次结构，还可以按功能和权限分成多个OU层次结构。由于OU层次结构局限于域的内部，所以一个域中的OU层次结构与另一个域中的OU层次结构完全独立。</p>
+<h1 id="树">树</h1>
+<p>当多个域通过信任关系连接起来之后，所有的域共享公共的表结构(schema)
+、配置和全局目录(global catalog)，从而形成 域树
+。域树由多个域组成，这些域共享同一个表结构和配置，形成一个连续的名字空间。树中的域通过信任关系连接起来。活动目录包含一个或多个域树。</p>
+<h1 id="森林">森林</h1>
+<p>域森林
+是指一个或多个没有形成连续名字空间的域树。域林中的所有域树共享同一个表结构、配置和全局目录。域林中的所有域树通过Kerberos信任关系建立起来，所以每个域树都知道Kerberos信任关系，不同域树可以交叉引用其他域树中的对象。</p>
+<h1
+id="接下来我们看一下ad与站点之间的关系">接下来我们看一下AD与站点之间的关系</h1>
+<p>谈到Active Directory中的站点，很多Active
+Directory的初学者都会深感头疼，为什么呢？搞不清楚这个站点究竟是起什么作用。有很多同学都问过这样的问题，站点和域有什么区别？到底是域大还是站点大？有了域为什么还要有站点？本文将尝试为大家介绍站点的概念及设计初衷，让大家能够更好地理解站点，运用站点。
+域是共享用户账号，计算机账号及安全策略的一组计算机，这个定义是基于逻辑因素考虑的，只要用户和计算机在同一个Active
+Directory内，我们就认为他们都在域的安全边界之内。我们从域的定义中可以看到，域没有考虑网络速度等物理因素，无论计算机和域控制器之间是一个快速的物理连接还是一个慢速的物理连接，域都会一视同仁，完全把连接速度视若无物。但在实际的生产环境中我们就会发现如果不考虑网速这样的物理因素，我们会在管理域时遇到很多麻烦。我们通过一个例子加以说明，如下图所示，某域的域控制器分布在北京，上海两处，北京有A,B,C三台域控制器，上海有D,E,F三台域控制器。北京和上海的本地局域网都是千兆以太网，北京和上海之间是一条128K的专线。
+<img src="/img/域与站点区别.jpg" /></p>
+<p>现在我们要考虑这么一个问题，如果域控制器A更改了Active
+Directory，那么怎样才能用最有效率的方法把这个AD的变化复制到其他五个域控制器上呢？显然域控制器A应该先把更改复制到同一高速局域网内的B和C，然后再利用慢速的广域网链接复制到上海的一个域控制器上，例如复制到D，最后再由D复制到E和F。域控制器如果使用我们规划的这种复制拓扑，那当然好，在这种复制拓扑中数据只经过两地间的慢速链路传递了一次。但问题是域如果不考虑速度因素，未必能作出这种拓扑，万一KCC决定使用的复制拓扑是先从A到D，再从D到B，然后B到E，再E到C，最后从C到F，那我们就要崩溃了。这样的话六个域控制器之间的AD复制要沿着两地间的慢速链路走五次，无论如何都让我们无法接受！从这个例子中我们已经看到了速度因素的重要性，再顺着这个例子引申一下，用户每天登录到域进行身份验证，显然北京的用户应该登录到北京的域控制器，上海的用户应该登录到上海的域控制器，这样效率才会比较高，如果北京的用户每天都到上海的域控制器进行身份验证，显然不是一件好事。
+从上面的例子中我们发现，在日常的运维工作中是不能把速度因素透明处理的，我们必须考虑到计算机之间的连接速度！正是基于这种考虑，微软才引入了站点对计算机进行管理。站点的概念其实很简单，站点就是高速相连的一组计算机！从这个概念来看，站点强调了速度这个物理因素，域则是强调要共享Active
+Directory这个逻辑因素，把站点和域结合起来对计算机从物理和逻辑两个角度进行管理，是微软的一个很好的构思。值得一提的是，微软这种管理思路并非罕见，例如Exchange中也有管理组和路由组的概念，管理组和路由组其实类似于域和站点的关系，也是一个从逻辑角度进行管理，另一个从物理角度进行管理。
+有了站点帮助管理，我们处理前面提到的那个例子就容易多了，从站点的定义来看，由于北京和上海之间存在一条慢速链路，因此我们应该把北京的计算机放到一个站点内，把上海的计算机放到另一个站点内。这样的话，北京和上海的用户在登录时会优先选择本站点内的域控制器登录，KCC在规划复制拓扑时也会自动地优先考虑在本站点内的域控制器之间进行AD复制。更好的是，如果AD需要垮站点复制，AD内容还可以经过压缩后再进行复制，显然站点在设计时已经充分考虑到了对带宽的充分利用。</p>
+<p>本文出自 “神威新空间”
+博客，请务必保留此出处http://abool.blog.51cto.com/8355508/1563782</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/LDAP/" rel="tag"># LDAP</a>
+              <a href="/tags/%E6%B4%BB%E5%8A%A8%E7%9B%AE%E5%BD%95/" rel="tag"># 活动目录</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2017/08/21/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BAActive%20Directory%E7%B3%BB%E5%88%97/" rel="prev" title="深入浅出Active Directory系列">
+                  <i class="fa fa-chevron-left"></i> 深入浅出Active Directory系列
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2017/08/21/OpenID%20%E5%92%8C%20OAuth%20%E7%9A%84%E5%8C%BA%E5%88%AB%E5%8F%8A%E7%AC%AC%E4%B8%89%E6%96%B9%E7%99%BB%E5%BD%95%E7%9A%84%E5%AE%89%E5%85%A8%E9%9A%90%E6%82%A3%E5%88%86%E6%9E%90/" rel="next" title="OpenID 和 OAuth 的区别及第三方登录的安全隐患分析">
+                  OpenID 和 OAuth 的区别及第三方登录的安全隐患分析 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
