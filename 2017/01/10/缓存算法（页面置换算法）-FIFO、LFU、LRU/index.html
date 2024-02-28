@@ -20,12 +20,12 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="1.FIFO算法 FIFO（First in First out），先进先出。其实在操作系统的设计理念中很多地方都利用到了先进先出的思想，比如作业调度（先来先服务），为什么这个原则在很多地方都会用到呢？因为这个原则简单、且符合人们的惯性思维，具备公平性，并且实现起来简单，直接使用数据结构中的队列即可实现。 　　在FIFO Cache设计中，核心原则就是：如果一个数据最先进入缓存中，则应该最早淘汰掉">
+    <meta name="description" content="1.FIFO算法 　　FIFO（First in First out），先进先出。其实在操作系统的设计理念中很多地方都利用到了先进先出的思想，比如作业调度（先来先服务），为什么这个原则在很多地方都会用到呢？因为这个原则简单、且符合人们的惯性思维，具备公平性，并且实现起来简单，直接使用数据结构中的队列即可实现。 　　在FIFO Cache设计中，核心原则就是：如果一个数据最先进入缓存中，则应该最早淘">
 <meta property="og:type" content="article">
 <meta property="og:title" content="缓存算法（页面置换算法）-FIFO、LFU、LRU">
 <meta property="og:url" content="http://hongyitong.github.io/2017/01/10/%E7%BC%93%E5%AD%98%E7%AE%97%E6%B3%95%EF%BC%88%E9%A1%B5%E9%9D%A2%E7%BD%AE%E6%8D%A2%E7%AE%97%E6%B3%95%EF%BC%89-FIFO%E3%80%81LFU%E3%80%81LRU/index.html">
 <meta property="og:site_name" content="忆桐之家的博客">
-<meta property="og:description" content="1.FIFO算法 FIFO（First in First out），先进先出。其实在操作系统的设计理念中很多地方都利用到了先进先出的思想，比如作业调度（先来先服务），为什么这个原则在很多地方都会用到呢？因为这个原则简单、且符合人们的惯性思维，具备公平性，并且实现起来简单，直接使用数据结构中的队列即可实现。 　　在FIFO Cache设计中，核心原则就是：如果一个数据最先进入缓存中，则应该最早淘汰掉">
+<meta property="og:description" content="1.FIFO算法 　　FIFO（First in First out），先进先出。其实在操作系统的设计理念中很多地方都利用到了先进先出的思想，比如作业调度（先来先服务），为什么这个原则在很多地方都会用到呢？因为这个原则简单、且符合人们的惯性思维，具备公平性，并且实现起来简单，直接使用数据结构中的队列即可实现。 　　在FIFO Cache设计中，核心原则就是：如果一个数据最先进入缓存中，则应该最早淘">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2017-01-09T16:00:00.000Z">
 <meta property="article:modified_time" content="2017-07-12T02:07:27.000Z">
@@ -151,7 +151,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">1.FIFO算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">2.LFU算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">3.</span> <span class="nav-text">3.LRU算法</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#fifo%E7%AE%97%E6%B3%95"><span class="nav-number">1.</span> <span class="nav-text">1.FIFO算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#lfu%E7%AE%97%E6%B3%95"><span class="nav-number">2.</span> <span class="nav-text">2.LFU算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#lru%E7%AE%97%E6%B3%95"><span class="nav-number">3.</span> <span class="nav-text">3.LRU算法</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -292,35 +292,36 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h1>1.FIFO算法</h1>
-<p><strong>FIFO（First in First out），先进先出</strong>。其实在操作系统的设计理念中很多地方都利用到了先进先出的思想，比如作业调度（先来先服务），为什么这个原则在很多地方都会用到呢？因为这个原则简单、且符合人们的惯性思维，具备公平性，并且实现起来简单，直接使用数据结构中的队列即可实现。<br>
-　　在FIFO Cache设计中，<strong>核心原则就是：如果一个数据最先进入缓存中，则应该最早淘汰掉</strong>。也就是说，当缓存满的时候，应当把最先进入缓存的数据给淘汰掉。在FIFO Cache中应该支持以下操作;</p>
-<span id="more"></span>
-<p>get(key)：如果Cache中存在该key，则返回对应的value值，否则，返回-1；<br>
-　　set(key,value)：如果Cache中存在该key，则重置value值；如果不存在该key，则将该key插入到到Cache中，若Cache已满，则淘汰最早进入Cache的数据。<br>
-　　举个例子：假如Cache大小为3，访问数据序列为set(1,1),set(2,2),set(3,3),set(4,4),get(2),set(5,5)<br>
-　　则Cache中的数据变化为：<br>
-　　(1,1)                           set(1,1)<br>
-　　(1,1) (2,2)                     set(2,2)<br>
-　　(1,1) (2,2) (3,3)               set(3,3)<br>
-　　(2,2) (3,3) (4,4)               set(4,4)<br>
-　　(2,2) (3,3) (4,4)               get(2)<br>
-　　(3,3) (4,4) (5,5)               set(5,5)<br>
-　　那么利用什么数据结构来实现呢？<br>
-　　下面提供一种实现思路：<br>
+        <h1 id="fifo算法">1.FIFO算法</h1>
+<p>　　<strong>FIFO（First in First
+out），先进先出</strong>。其实在操作系统的设计理念中很多地方都利用到了先进先出的思想，比如作业调度（先来先服务），为什么这个原则在很多地方都会用到呢？因为这个原则简单、且符合人们的惯性思维，具备公平性，并且实现起来简单，直接使用数据结构中的队列即可实现。
+　　在FIFO
+Cache设计中，<strong>核心原则就是：如果一个数据最先进入缓存中，则应该最早淘汰掉</strong>。也就是说，当缓存满的时候，应当把最先进入缓存的数据给淘汰掉。在FIFO
+Cache中应该支持以下操作; <span id="more"></span>
+　　get(key)：如果Cache中存在该key，则返回对应的value值，否则，返回-1；
+　　set(key,value)：如果Cache中存在该key，则重置value值；如果不存在该key，则将该key插入到到Cache中，若Cache已满，则淘汰最早进入Cache的数据。
+　　举个例子：假如Cache大小为3，访问数据序列为set(1,1),set(2,2),set(3,3),set(4,4),get(2),set(5,5)
+　　则Cache中的数据变化为： 　　(1,1) set(1,1) 　　(1,1) (2,2) set(2,2)
+　　(1,1) (2,2) (3,3) set(3,3) 　　(2,2) (3,3) (4,4) set(4,4) 　　(2,2)
+(3,3) (4,4) get(2) 　　(3,3) (4,4) (5,5) set(5,5)
+　　那么利用什么数据结构来实现呢？ 　　下面提供一种实现思路：
 　　利用一个双向链表保存数据，当来了新的数据之后便添加到链表末尾，如果Cache存满数据，则把链表头部数据删除，然后把新的数据添加到链表末尾。在访问数据的时候，如果在Cache中存在该数据的话，则返回对应的value值；否则返回-1。如果想提高访问效率，可以利用hashmap来保存每个key在链表中对应的位置。</p>
-<h1>2.LFU算法</h1>
-<p><strong>LFU（Least Frequently Used）最近最少使用算法</strong>。<strong>它是基于“如果一个数据在最近一段时间内使用次数很少，那么在将来一段时间内被使用的可能性也很小”的思路。</strong><br>
-　　注意LFU和LRU算法的不同之处，LRU的淘汰规则是基于访问时间，而LFU是基于访问次数的。举个简单的例子：<br>
-　　假设缓存大小为3，数据访问序列为set(2,2),set(1,1),get(2),get(1),get(2),set(3,3),set(4,4)，<br>
-　　则在set(4,4)时对于LFU算法应该淘汰(3,3)，而LRU应该淘汰(1,1)。<br>
-　　那么LFU Cache应该支持的操作为：<br>
-　　get(key)：如果Cache中存在该key，则返回对应的value值，否则，返回-1；<br>
-　　set(key,value)：如果Cache中存在该key，则重置value值；如果不存在该key，则将该key插入到到Cache中，若Cache已满，则淘汰最少访问的数据。<br>
-　　为了能够淘汰最少使用的数据，因此LFU算法最简单的一种设计思路就是 利用一个数组存储 数据项，用hashmap存储每个数据项在数组中对应的位置，然后为每个数据项设计一个访问频次，当数据项被命中时，访问频次自增，在淘汰的时候淘汰访问频次最少的数据。这样一来的话，在插入数据和访问数据的时候都能达到O(1)的时间复杂度，在淘汰数据的时候，通过选择算法得到应该淘汰的数据项在数组中的索引，并将该索引位置的内容替换为新来的数据内容即可，这样的话，淘汰数据的操作时间复杂度为O(n)。<br>
-　　另外还有一种实现思路就是利用 小顶堆+hashmap，小顶堆插入、删除操作都能达到O(logn)时间复杂度，因此效率相比第一种实现方法更加高效。</p>
-<h1>3.LRU算法</h1>
-<p>LRU算法的原理以及实现在前一篇博文中已经谈到，在此不进行赘述：</p>
+<h1 id="lfu算法">2.LFU算法</h1>
+<p>　　<strong>LFU（Least Frequently
+Used）最近最少使用算法</strong>。<strong>它是基于“如果一个数据在最近一段时间内使用次数很少，那么在将来一段时间内被使用的可能性也很小”的思路。</strong>
+　　注意LFU和LRU算法的不同之处，LRU的淘汰规则是基于访问时间，而LFU是基于访问次数的。举个简单的例子：
+　　假设缓存大小为3，数据访问序列为set(2,2),set(1,1),get(2),get(1),get(2),set(3,3),set(4,4)，
+　　则在set(4,4)时对于LFU算法应该淘汰(3,3)，而LRU应该淘汰(1,1)。
+　　那么LFU Cache应该支持的操作为：
+　　get(key)：如果Cache中存在该key，则返回对应的value值，否则，返回-1；
+　　set(key,value)：如果Cache中存在该key，则重置value值；如果不存在该key，则将该key插入到到Cache中，若Cache已满，则淘汰最少访问的数据。
+　　为了能够淘汰最少使用的数据，因此LFU算法最简单的一种设计思路就是
+利用一个数组存储
+数据项，用hashmap存储每个数据项在数组中对应的位置，然后为每个数据项设计一个访问频次，当数据项被命中时，访问频次自增，在淘汰的时候淘汰访问频次最少的数据。这样一来的话，在插入数据和访问数据的时候都能达到O(1)的时间复杂度，在淘汰数据的时候，通过选择算法得到应该淘汰的数据项在数组中的索引，并将该索引位置的内容替换为新来的数据内容即可，这样的话，淘汰数据的操作时间复杂度为O(n)。
+　　另外还有一种实现思路就是利用
+小顶堆+hashmap，小顶堆插入、删除操作都能达到O(logn)时间复杂度，因此效率相比第一种实现方法更加高效。</p>
+<h1 id="lru算法">3.LRU算法</h1>
+<p>　　LRU算法的原理以及实现在前一篇博文中已经谈到，在此不进行赘述：</p>
 
     </div>
 

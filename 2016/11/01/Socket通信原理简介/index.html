@@ -20,16 +20,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="何谓socket 计算机，顾名思义即是用来做计算。因而也需要输入和输出，输入需要计算的条件，输出计算结果。这些输入输出可以抽象为I&#x2F;O（input output）。 Unix的计算机处理IO是通过文件的抽象。计算机不同的进程之间也有输入输出，也就是通信。因此这这个通信也是通过文件的抽象文件描述符来进行。 在同一台计算机，进程之间可以这样通信，如果是不同的计算机呢？**网络上不同的计算机，也可以通信">
+    <meta name="description" content="何谓socket 计算机，顾名思义即是用来做计算。因而也需要输入和输出，输入需要计算的条件，输出计算结果。这些输入输出可以抽象为I&#x2F;O（input output）。 Unix的计算机处理IO是通过文件的抽象。计算机不同的进程之间也有输入输出，也就是通信。因此这这个通信也是通过文件的抽象文件描述符来进行。 在同一台计算机，进程之间可以这样通信，如果是不同的计算机呢？网络上不同的计算机，也可以通信，那">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Socket通信原理简介(转)">
 <meta property="og:url" content="http://hongyitong.github.io/2016/11/01/Socket%E9%80%9A%E4%BF%A1%E5%8E%9F%E7%90%86%E7%AE%80%E4%BB%8B/index.html">
 <meta property="og:site_name" content="忆桐之家的博客">
-<meta property="og:description" content="何谓socket 计算机，顾名思义即是用来做计算。因而也需要输入和输出，输入需要计算的条件，输出计算结果。这些输入输出可以抽象为I&#x2F;O（input output）。 Unix的计算机处理IO是通过文件的抽象。计算机不同的进程之间也有输入输出，也就是通信。因此这这个通信也是通过文件的抽象文件描述符来进行。 在同一台计算机，进程之间可以这样通信，如果是不同的计算机呢？**网络上不同的计算机，也可以通信">
+<meta property="og:description" content="何谓socket 计算机，顾名思义即是用来做计算。因而也需要输入和输出，输入需要计算的条件，输出计算结果。这些输入输出可以抽象为I&#x2F;O（input output）。 Unix的计算机处理IO是通过文件的抽象。计算机不同的进程之间也有输入输出，也就是通信。因此这这个通信也是通过文件的抽象文件描述符来进行。 在同一台计算机，进程之间可以这样通信，如果是不同的计算机呢？网络上不同的计算机，也可以通信，那">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://hongyitong.github.io/img/socket.png">
 <meta property="og:image" content="http://hongyitong.github.io/img/socket1.png">
-<meta property="og:image" content="http://hongyitong.github.io/img/tcp.png">
 <meta property="article:published_time" content="2016-11-01T06:38:00.000Z">
 <meta property="article:modified_time" content="2017-07-12T06:44:20.000Z">
 <meta property="article:author" content="Rayman.hung">
@@ -152,7 +151,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">何谓socket</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">服务器通信</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">3.</span> <span class="nav-text">TCP 三次握手</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%95%E8%B0%93socket"><span class="nav-number">1.</span> <span class="nav-text">何谓socket</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%80%9A%E4%BF%A1"><span class="nav-number">2.</span> <span class="nav-text">服务器通信</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#tcp-%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B"><span class="nav-number">3.</span> <span class="nav-text">TCP 三次握手</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -293,38 +292,30 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h1>何谓socket</h1>
-<p>计算机，顾名思义即是用来做计算。因而也需要输入和输出，输入需要计算的条件，输出计算结果。这些输入输出可以抽象为I/O（input output）。<br>
+        <h1 id="何谓socket">何谓socket</h1>
+<p>计算机，顾名思义即是用来做计算。因而也需要输入和输出，输入需要计算的条件，输出计算结果。这些输入输出可以抽象为I/O（input
+output）。
 Unix的计算机处理IO是通过文件的抽象。计算机不同的进程之间也有输入输出，也就是通信。因此这这个通信也是通过文件的抽象文件描述符来进行。</p>
-<p>在同一台计算机，进程之间可以这样通信，如果是不同的计算机呢？**网络上不同的计算机，也可以通信，那么就得使用网络套接字（socket）。socket就是在不同计算机之间进行通信的一个抽象。他工作于TCP/IP协议中应用层和传输层之间的一个抽象。**如下图：</p>
-<span id="more"></span>
-<p><img src="/img/socket.png" alt=""></p>
-<h1>服务器通信</h1>
-<p>socket保证了不同计算机之间的通信，也就是网络通信。对于网站，通信模型是客户端服务器之间的通信。两个端都建立一个socket对象，然后通过socket对象对数据进行传输。通常服务器处于一个无线循环，等待客户端连接：<br>
-<img src="/img/socket1.png" alt=""></p>
-<h1>TCP 三次握手</h1>
-<p>传说的TCP三次握手又是如何体现的呢？什么是三次握手呢?</p>
-<ul>
-<li>第一握：首先客户端发送一个syn，请求连接，</li>
-<li>第二握：服务器收到之后确认，并发送一个 syn ack应答</li>
-<li>第三握：客户端接收到服务器发来的应答之后再给服务器发送建立连接的确定。</li>
-</ul>
-<p>用下面的比喻就是<br>
-C：约么？<br>
-S：约<br>
-C：好的<br>
-约会<br>
-这样就建立了一个TCP连接会话。如果是要断开连接，大致过程是：<br>
-<img src="/img/tcp.png" alt=""></p>
-<p>上图也很清晰的表明了三次握手的socket具体过程。</p>
-<ul>
-<li>客户端socket对象connect调用之后进行阻塞，此过程发送了一个syn。</li>
-<li>服务器内核完成三次握手，即发送syn和ack应答。</li>
-<li>客户端socket对象收到服务端发送的应答之后，再发送一个ack给服务器，并返回connect调用，建立连接。</li>
-<li>服务器socket对象接受客户端最后一次握手确定ack建立连接。</li>
-<li>此时服务端调用accept，则从连接队列中将之前建立的连接取出返回。</li>
-<li>至此，客户端和服务器的socket通信连接建立完成，剩下的就是两个端的连接对象收发数据，从而完成网络通信。</li>
-</ul>
+<p>在同一台计算机，进程之间可以这样通信，如果是不同的计算机呢？<strong>网络上不同的计算机，也可以通信，那么就得使用网络套接字（socket）。socket就是在不同计算机之间进行通信的一个抽象。他工作于TCP/IP协议中应用层和传输层之间的一个抽象。</strong>如下图：
+<span id="more"></span> <img src="/img/socket.png" /></p>
+<h1 id="服务器通信">服务器通信</h1>
+<p>socket保证了不同计算机之间的通信，也就是网络通信。对于网站，通信模型是客户端服务器之间的通信。两个端都建立一个socket对象，然后通过socket对象对数据进行传输。通常服务器处于一个无线循环，等待客户端连接：
+<img src="/img/socket1.png" /></p>
+<h1 id="tcp-三次握手">TCP 三次握手</h1>
+<p>传说的TCP三次握手又是如何体现的呢？什么是三次握手呢? -
+第一握：首先客户端发送一个syn，请求连接， -
+第二握：服务器收到之后确认，并发送一个 syn ack应答 -
+第三握：客户端接收到服务器发来的应答之后再给服务器发送建立连接的确定。</p>
+<p>用下面的比喻就是 C：约么？ S：约 C：好的 约会
+这样就建立了一个TCP连接会话。如果是要断开连接，大致过程是： <img
+src="/img/tcp.png" /></p>
+<p>上图也很清晰的表明了三次握手的socket具体过程。 -
+客户端socket对象connect调用之后进行阻塞，此过程发送了一个syn。 -
+服务器内核完成三次握手，即发送syn和ack应答。 -
+客户端socket对象收到服务端发送的应答之后，再发送一个ack给服务器，并返回connect调用，建立连接。
+- 服务器socket对象接受客户端最后一次握手确定ack建立连接。 -
+此时服务端调用accept，则从连接队列中将之前建立的连接取出返回。 -
+至此，客户端和服务器的socket通信连接建立完成，剩下的就是两个端的连接对象收发数据，从而完成网络通信。</p>
 
     </div>
 

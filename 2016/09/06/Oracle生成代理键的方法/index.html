@@ -20,12 +20,12 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="这里代理键指使用非business column作为主键字段的情况，通常就是我们想给每条记录添加的ID。 一．MSSqlServer的代理键  最简单的方法是使用自增字段，这样就不必在代码中处理自增字段。 缺点：用过的值删除后不会很难再被使用 采用最大值表的方法保存所有代理键的最大值。可以将处理算法放在服务器端的存储过程中，也可以采用客户端算法生成代理键，但这都就需要在代码中明确给代理键字段赋值。">
+    <meta name="description" content="这里代理键指使用非business column作为主键字段的情况，通常就是我们想给每条记录添加的ID。 # 一．MSSqlServer的代理键 1. 最简单的方法是使用自增字段，这样就不必在代码中处理自增字段。 缺点：用过的值删除后不会很难再被使用 2. 采用最大值表的方法保存所有代理键的最大值。可以将处理算法放在服务器端的存储过程中，也可以采用客户端算法生成代理键，但这都就需要在代码中明确给代">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Oracle生成代理键的方法">
 <meta property="og:url" content="http://hongyitong.github.io/2016/09/06/Oracle%E7%94%9F%E6%88%90%E4%BB%A3%E7%90%86%E9%94%AE%E7%9A%84%E6%96%B9%E6%B3%95/index.html">
 <meta property="og:site_name" content="忆桐之家的博客">
-<meta property="og:description" content="这里代理键指使用非business column作为主键字段的情况，通常就是我们想给每条记录添加的ID。 一．MSSqlServer的代理键  最简单的方法是使用自增字段，这样就不必在代码中处理自增字段。 缺点：用过的值删除后不会很难再被使用 采用最大值表的方法保存所有代理键的最大值。可以将处理算法放在服务器端的存储过程中，也可以采用客户端算法生成代理键，但这都就需要在代码中明确给代理键字段赋值。">
+<meta property="og:description" content="这里代理键指使用非business column作为主键字段的情况，通常就是我们想给每条记录添加的ID。 # 一．MSSqlServer的代理键 1. 最简单的方法是使用自增字段，这样就不必在代码中处理自增字段。 缺点：用过的值删除后不会很难再被使用 2. 采用最大值表的方法保存所有代理键的最大值。可以将处理算法放在服务器端的存储过程中，也可以采用客户端算法生成代理键，但这都就需要在代码中明确给代">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2016-09-05T16:00:00.000Z">
 <meta property="article:modified_time" content="2017-07-12T06:19:53.000Z">
@@ -148,7 +148,9 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">一．MSSqlServer的代理键</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">二．Oracle的代理键</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-Oracle%E4%B8%AD%E6%B2%A1%E6%9C%89%E8%87%AA%E5%A2%9E%E5%AD%97%E6%AE%B5%EF%BC%8C%E6%89%80%E4%BB%A5%E4%B8%8D%E7%AE%A1%E9%87%87%E5%8F%96%E4%BB%80%E4%B9%88%E6%96%B9%E6%B3%95%EF%BC%8C%E9%83%BD%E5%85%8D%E4%B8%8D%E4%BA%86%E8%A6%81%E6%98%8E%E7%A1%AE%E5%A4%84%E7%90%86%E4%BB%A3%E7%90%86%E9%94%AE%E5%AD%97%E6%AE%B5%E3%80%82%E6%9C%80%E6%8E%A5%E8%BF%91MSSqlServer%E8%87%AA%E5%A2%9E%E5%AD%97%E6%AE%B5%E7%9A%84%E6%96%B9%E6%B3%95%E6%AD%A5%E9%AA%A4%E5%A6%82%E4%B8%8B%EF%BC%9A"><span class="nav-number">2.1.</span> <span class="nav-text">1. Oracle中没有自增字段，所以不管采取什么方法，都免不了要明确处理代理键字段。最接近MSSqlServer自增字段的方法步骤如下：</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8Coracle%E7%9A%84%E4%BB%A3%E7%90%86%E9%94%AE"><span class="nav-number">1.</span> <span class="nav-text">二．Oracle的代理键</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#oracle%E4%B8%AD%E6%B2%A1%E6%9C%89%E8%87%AA%E5%A2%9E%E5%AD%97%E6%AE%B5%E6%89%80%E4%BB%A5%E4%B8%8D%E7%AE%A1%E9%87%87%E5%8F%96%E4%BB%80%E4%B9%88%E6%96%B9%E6%B3%95%E9%83%BD%E5%85%8D%E4%B8%8D%E4%BA%86%E8%A6%81%E6%98%8E%E7%A1%AE%E5%A4%84%E7%90%86%E4%BB%A3%E7%90%86%E9%94%AE%E5%AD%97%E6%AE%B5%E6%9C%80%E6%8E%A5%E8%BF%91mssqlserver%E8%87%AA%E5%A2%9E%E5%AD%97%E6%AE%B5%E7%9A%84%E6%96%B9%E6%B3%95%E6%AD%A5%E9%AA%A4%E5%A6%82%E4%B8%8B"><span class="nav-number">1.1.</span> <span class="nav-text">1.
+Oracle中没有自增字段，所以不管采取什么方法，都免不了要明确处理代理键字段。最接近MSSqlServer自增字段的方法步骤如下：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AA%E4%BD%BF%E7%94%A8%E8%A7%A6%E5%8F%91%E5%99%A8%E7%94%9F%E6%88%90%E4%BB%A3%E7%90%86%E9%94%AE"><span class="nav-number">1.2.</span> <span class="nav-text">2. 只使用触发器生成代理键</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#b.-%E4%B8%BA%E8%A1%A8%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E8%A7%A6%E5%8F%91%E5%99%A8"><span class="nav-number">1.2.1.</span> <span class="nav-text">b. 为表创建一个触发器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E5%AE%8C%E5%96%84%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-number">1.3.</span> <span class="nav-text">3. 最完善的方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#c.-%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E5%BA%8F%E5%88%97%E7%94%A8%E4%BA%8E%E4%B8%BA%E4%BB%BB%E6%84%8F%E8%A1%A8%E7%9A%84%E6%96%B0%E5%A2%9E%E8%A1%8C%E6%8F%90%E4%BE%9B%E4%B8%B4%E6%97%B6%E7%9A%84%E9%94%AE%E5%80%BC"><span class="nav-number">1.3.1.</span> <span class="nav-text">c.
+创建一个序列，用于为任意表的新增行提供临时的键值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#d.-%E4%B8%BA%E6%AF%8F%E4%B8%AA%E8%A1%A8%E5%88%9B%E5%BB%BA%E4%B8%A4%E4%B8%AA%E8%A7%A6%E5%8F%91%E5%99%A8"><span class="nav-number">1.3.2.</span> <span class="nav-text">d. 为每个表创建两个触发器</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89oracle%E6%96%B9%E6%B3%95%E8%AF%B4%E6%98%8E%E5%92%8C%E9%80%89%E6%8B%A9"><span class="nav-number">2.</span> <span class="nav-text">三．Oracle方法说明和选择</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -289,176 +291,92 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <p>这里代理键指使用非business column作为主键字段的情况，通常就是我们想给每条记录添加的ID。</p>
-<h1>一．MSSqlServer的代理键</h1>
-<ol>
-<li><strong>最简单的方法是使用自增字段，这样就不必在代码中处理自增字段。</strong><br>
-缺点：用过的值删除后不会很难再被使用</li>
-<li>采用最大值表的方法保存所有代理键的最大值。可以将处理算法放在服务器端的存储过程中，也可以采用客户端算法生成代理键，但这都就需要在代码中明确给代理键字段赋值。采用这种方法还要注意防止同时读写代理键候选值。</li>
-</ol>
-<h1>二．Oracle的代理键</h1>
-<h2 id="1-Oracle中没有自增字段，所以不管采取什么方法，都免不了要明确处理代理键字段。最接近MSSqlServer自增字段的方法步骤如下：">1. Oracle中没有自增字段，所以不管采取什么方法，都免不了要明确处理代理键字段。最接近MSSqlServer自增字段的方法步骤如下：</h2>
+        <p>这里代理键指使用非business
+column作为主键字段的情况，通常就是我们想给每条记录添加的ID。 #
+一．MSSqlServer的代理键 1.
+<strong>最简单的方法是使用自增字段，这样就不必在代码中处理自增字段。</strong>
+缺点：用过的值删除后不会很难再被使用 2.
+采用最大值表的方法保存所有代理键的最大值。可以将处理算法放在服务器端的存储过程中，也可以采用客户端算法生成代理键，但这都就需要在代码中明确给代理键字段赋值。采用这种方法还要注意防止同时读写代理键候选值。</p>
+<h1 id="二oracle的代理键">二．Oracle的代理键</h1>
+<h2
+id="oracle中没有自增字段所以不管采取什么方法都免不了要明确处理代理键字段最接近mssqlserver自增字段的方法步骤如下">1.
+Oracle中没有自增字段，所以不管采取什么方法，都免不了要明确处理代理键字段。最接近MSSqlServer自增字段的方法步骤如下：</h2>
 <span id="more"></span>
-<p>a. 针对表创建一个序列 se_tablename_idcolname<br>
-b. 为表创建一个触发器</p>
-<pre><code class="language-SQL">Create Or Replace Trigger tg_tablename_idcolname         
-Before          Insert         ON tablename
-Referencing New AS New Old AS Old         
-For Each Row
-Declare                  
-nTmpID number(10,0);
-Begin                
-   Select se_tablename_idcolname.NEXTVAL into nTmpID from dual; 
-  :new.idcolname:=nTmpID;
-End;```
-
-这种方法的**缺点**是：
-需要为每个表创建一个对应的序列和一个对应的触发器。
-
-**序列：**
+<ol type="a">
+<li>针对表创建一个序列 se_tablename_idcolname</li>
+<li>为表创建一个触发器
+<code>SQL Create Or Replace Trigger tg_tablename_idcolname          Before          Insert         ON tablename Referencing New AS New Old AS Old          For Each Row Declare                   nTmpID number(10,0); Begin                    Select se_tablename_idcolname.NEXTVAL into nTmpID from dual;    :new.idcolname:=nTmpID; End;</code></li>
+</ol>
+<p>这种方法的<strong>缺点</strong>是：
+需要为每个表创建一个对应的序列和一个对应的触发器。</p>
+<p><strong>序列：</strong>
 虽然一个序列可以为多个表提供值但这样会使数值增加速度以及达到最大值的速度成倍增长。因此还是需要为每个表创建一个序列。
 序列值会在生成过程中产生漏洞，同样用过的值删除后也不难再被使用。
-**触发器：**
+<strong>触发器：</strong>
 上面的触发器如果不被disable，则无法由序列以外的其它途径指定代理键值，而事实上当从其它数据库复制已存在的数据或通过后台管理工具手工输入记录的时候，我们是不希望序列来提供值的。
 为了解决触发器的这一问题，可以稍加改进，将触发器代码改为
-``` SQL
-Begin                
-if :new.idcolname is null then        
-Select se_tablename_idcolname.NEXTVAL into nTmpID from dual; 
-:new.idcolname:=nTmpID;        
-end if;
-End;```
-这样，就可以在记录的代理键已指定的情况下不在由触发器/序列提供值了。
-
-
-## 2. 只使用触发器生成代理键
-上面的方法中需要为每个表创建一个对应的序列和一个对应的触发器，这显然比较麻烦，我们可以采用下面的方法进行改进。
-### a. 创建一个存储过程，用于计算指定表的可用键值（如果有漏洞则返回最小的一个，否则返回最大值的下一个值）。该过程只需要创建一个，就可以被所有表的触发器调用。
-``` SQl
-PROCEDURE SP_FINDIDHOLE(        sTable IN varchar2,    sIDColName IN varchar2,        nIDHole Out Number,        nMin IN Number:=1)
-IS
-/*function:查找ID字段中的空缺数，如果没有就返回最大值加1.从指定的最小值开始查找，忽略比指定的最小值还小的ID值。algorithm：对半查找法/插值法*/   
-l_min               Number(38); 
-   l_max               Number(38);   
-actual_count        Number(38);   
-expected_count      Number(38);  
-  half                Number(38);   
-sDynSql varchar(1000);
-begin   
-sDynSql:='select max('||sIDColName||'),min('||sIDColName||'),count('||sIDColName||') From '||sTable||' Where '||sIDColName||'&gt;='||To_Char(nMin);   
-execute immediate sDynSql into l_max,l_min,actual_count;    
-    l_min:=nMin;   
-expected_count := l_max - l_min + 1; 
-   if expected_count = actual_count then   
-     nIDHole:=l_max+1;    
-    return; 
-   end if;    
-    while l_max - l_min &gt;= 1 loop   
-     -- try lower half of range    
-      half := trunc(expected_count/2);    
-    expected_count := expected_count - half;   
-        sDynSql:='select count('||sIDColName||') From '||sTable||' Where '||sIDColName||' 
-        between '||To_Char(l_min)||' and '||To_Char(l_max - half);            
-        execute immediate sDynSql into actual_count;    
-    exit when actual_count = 0;    
-    if actual_count = expected_count then   
-         -- missing value must be in upper half       
-     l_min := l_min + half;     
-   else         
-   l_max := l_max - half;  
-      end if;  
-  end loop;   
-nIDHole:=l_min;
-END; -- Procedure```
-
-### b. 为表创建一个触发器
-``` SQL
-Create Or Replace Trigger tg_tablename_idcolname 
-        Before          Insert         ON tablename
-Referencing New AS New Old AS Old 
-        For Each RowDeclare          
-        nTmpID number(10,0);
-Begin                
-if :new.idcolname is null then        
-         sp_FindIDHole(' tablename ',' idcolname ',:new.idcolname);
-end if;
-End;```
-
-这种方法**优点**是：
-只需要为每个表创建一个触发器
+<code>SQL Begin                 if :new.idcolname is null then         Select se_tablename_idcolname.NEXTVAL into nTmpID from dual;  :new.idcolname:=nTmpID;         end if; End;</code>
+这样，就可以在记录的代理键已指定的情况下不在由触发器/序列提供值了。</p>
+<h2 id="只使用触发器生成代理键">2. 只使用触发器生成代理键</h2>
+<p>上面的方法中需要为每个表创建一个对应的序列和一个对应的触发器，这显然比较麻烦，我们可以采用下面的方法进行改进。
+### a.
+创建一个存储过程，用于计算指定表的可用键值（如果有漏洞则返回最小的一个，否则返回最大值的下一个值）。该过程只需要创建一个，就可以被所有表的触发器调用。
+<code>SQl PROCEDURE SP_FINDIDHOLE(        sTable IN varchar2,    sIDColName IN varchar2,        nIDHole Out Number,        nMin IN Number:=1) IS /*function:查找ID字段中的空缺数，如果没有就返回最大值加1.从指定的最小值开始查找，忽略比指定的最小值还小的ID值。algorithm：对半查找法/插值法*/    l_min               Number(38);     l_max               Number(38);    actual_count        Number(38);    expected_count      Number(38);     half                Number(38);    sDynSql varchar(1000); begin    sDynSql:='select max('||sIDColName||'),min('||sIDColName||'),count('||sIDColName||') From '||sTable||' Where '||sIDColName||'&gt;='||To_Char(nMin);    execute immediate sDynSql into l_max,l_min,actual_count;         l_min:=nMin;    expected_count := l_max - l_min + 1;     if expected_count = actual_count then         nIDHole:=l_max+1;         return;     end if;         while l_max - l_min &gt;= 1 loop         -- try lower half of range           half := trunc(expected_count/2);         expected_count := expected_count - half;            sDynSql:='select count('||sIDColName||') From '||sTable||' Where '||sIDColName||'          between '||To_Char(l_min)||' and '||To_Char(l_max - half);                     execute immediate sDynSql into actual_count;         exit when actual_count = 0;         if actual_count = expected_count then             -- missing value must be in upper half             l_min := l_min + half;         else             l_max := l_max - half;         end if;     end loop;    nIDHole:=l_min; END; -- Procedure</code></p>
+<h3 id="b.-为表创建一个触发器">b. 为表创建一个触发器</h3>
+<p><code>SQL Create Or Replace Trigger tg_tablename_idcolname          Before          Insert         ON tablename Referencing New AS New Old AS Old          For Each RowDeclare                   nTmpID number(10,0); Begin                 if :new.idcolname is null then                  sp_FindIDHole(' tablename ',' idcolname ',:new.idcolname); end if; End;</code></p>
+<p>这种方法<strong>优点</strong>是： 只需要为每个表创建一个触发器
 各个表的触发器调用同一存储过程，触发器中代码少。
 存储过程每次先查找表中的键值漏洞以供使用，可以减少表中的键值漏洞，删除后的键值将被重复使用。
-这种方法**缺点**是：
-如果不指定键值，则只能用于使用Insert Into Values进行单行插入时生成键值，如果使用了Insert Into Select插入，则会出现错误：ora-04091表正在修改中，函数/过程/触发器不能读取。这是因为Insert Into Select执行过程可能涉及多条记录，而每条记录引起触发器调用的存储过程又要读取该表数据。
-
-## 3. 最完善的方法
-上面的方法都有一定的局限性，下面的方法通用性较强，局限小
-### a. 创建一个存储过程（用于查找漏洞，同上）
-### b. 创建一个存储过程（用于替换临时键值）
-``` SQL
-PROCEDURE SP_SETNEWROWID(        sTable IN varchar2,    sIDColName IN varchar2)IS
-/*function: 为临时标识的新行替换代理键值*/
-nNewID number;
-nMin number(10,0);
-nMax number(10,0);
-i number(10,0);
-Begin        
-Execute Immediate 'Select Min('||sIDColName||'),Max('||sIDColName||') From '||sTable||' 
-Where '||sIDColName||'&lt;=-10' Into nMin,nMax;
-        if nMin is null then
-                return;        
-end if;        
-i:=nMax;        
-while i&gt;=nMin Loop        
-        if i&lt;=-10 then        
-                sp_FindIDHole(sTable,sIDColName,nNewID);                        
-                Execute Immediate 'Update '||sTable||' Set '||sIDColName||'='||To_Char(nNewID)||' Where '||sIDColName||'='||To_Char(i);
-         end if;        
-        i:=i-1;        
-end loop;
-End;```
-
-### c. 创建一个序列，用于为任意表的新增行提供临时的键值
-``` SQL
-CREATE SEQUENCE se_multiinsert_newrow_tmpid  INCREMENT BY -1  START WITH -10  MINVALUE -9999999999  MAXVALUE -10  CYCLE  NOORDER  CACHE 20```
-
-### d. 为每个表创建两个触发器
-i. 行触发器（用于给每个新增的行赋一个临时的键值以标识所有新增行）
-``` SQL
-Create Or Replace Trigger tg_tablename_idcolname 
-        Before          Insert         ON tablename
-Referencing New AS New Old AS Old         
-For Each Row
-Declare                  
-nTmpID number(10,0);
-Begin        
-if :new.idcolname is null then
-                Select se_MultiInsert_NewRow_TmpID.NEXTVAL into nTmpID from dual;                
-:new.idcolname:=nTmpID;
-
-end if;
-End;```
-
-ii. 表触发器（用于在Insert语句执行后，对每个带有临时键值的新增行依次赋予由存储过程计算出的最终的键值）
-``` SQL
-Create Or Replace Trigger tg_tablename_idcolname_A 
-        After          Insert         ON tablename
-Referencing New AS New Old AS Old
-Begin        sp_SetNewRowID(' tablename ',' idcolname ');End;```
-这种方法的**优点**：
-可以通用于所有插入记录的情况。
-这种方法的**缺点**：
-需要为每个表创建两个触发器
-触发器的执行可能使数据库性能下降（但总体消耗原本就是必须的）
-
-# 三．Oracle方法说明和选择
-1. 方法的选择：
-a) 如果确认在不指定键值的情况下，只使用Insert Into Values向表中插入记录，则可以对该表采用第2种方法。（如果指定了键值，触发器实际上不起作用，因此可以一次插入多条记录，例如通过导入进行插入记录）
-b) 如果在不指定键值的情况下，有可能使用Insert Into Select向表中插入记录，则应该采用第3种方法。
-c) 如果表的键值要求不能重复使用（删除的不能再重用），则应该采用第1种方法。如果不介意多表共用一个序列，可以只创建一个序列以尽量减少工作量。
-2. 方法说明
-a) 以上方法中的示例代码，均默认键值为正数，因此采用－10以下的负数来临时标识新增行。如果需要负数作为键值，应对相关代码进行适当修改。主要涉及的是sp_FindIDHole中的查找范围的确定和排除，se_MultiInsert_NewRow_TmpID的生成值范围。
-b) 以上通用的对象（如存储过程和序列）可用于多个表，如果多个表的情况不同，可将表按情况分组，每组采用一个方法，使用一套通用对象。个别的表也可以个别处理。</code></pre>
+这种方法<strong>缺点</strong>是： 如果不指定键值，则只能用于使用Insert
+Into Values进行单行插入时生成键值，如果使用了Insert Into
+Select插入，则会出现错误：ora-04091表正在修改中，函数/过程/触发器不能读取。这是因为Insert
+Into
+Select执行过程可能涉及多条记录，而每条记录引起触发器调用的存储过程又要读取该表数据。</p>
+<h2 id="最完善的方法">3. 最完善的方法</h2>
+<p>上面的方法都有一定的局限性，下面的方法通用性较强，局限小 ### a.
+创建一个存储过程（用于查找漏洞，同上） ### b.
+创建一个存储过程（用于替换临时键值）
+<code>SQL PROCEDURE SP_SETNEWROWID(        sTable IN varchar2,    sIDColName IN varchar2)IS /*function: 为临时标识的新行替换代理键值*/ nNewID number; nMin number(10,0); nMax number(10,0); i number(10,0); Begin         Execute Immediate 'Select Min('||sIDColName||'),Max('||sIDColName||') From '||sTable||'  Where '||sIDColName||'&lt;=-10' Into nMin,nMax;         if nMin is null then                 return;         end if;         i:=nMax;         while i&gt;=nMin Loop                 if i&lt;=-10 then                         sp_FindIDHole(sTable,sIDColName,nNewID);                                         Execute Immediate 'Update '||sTable||' Set '||sIDColName||'='||To_Char(nNewID)||' Where '||sIDColName||'='||To_Char(i);          end if;                 i:=i-1;         end loop; End;</code></p>
+<h3 id="c.-创建一个序列用于为任意表的新增行提供临时的键值">c.
+创建一个序列，用于为任意表的新增行提供临时的键值</h3>
+<p><code>SQL CREATE SEQUENCE se_multiinsert_newrow_tmpid  INCREMENT BY -1  START WITH -10  MINVALUE -9999999999  MAXVALUE -10  CYCLE  NOORDER  CACHE 20</code></p>
+<h3 id="d.-为每个表创建两个触发器">d. 为每个表创建两个触发器</h3>
+<ol type="i">
+<li>行触发器（用于给每个新增的行赋一个临时的键值以标识所有新增行） ```
+SQL Create Or Replace Trigger tg_tablename_idcolname Before Insert ON
+tablename Referencing New AS New Old AS Old<br />
+For Each Row Declare<br />
+nTmpID number(10,0); Begin<br />
+if :new.idcolname is null then Select
+se_MultiInsert_NewRow_TmpID.NEXTVAL into nTmpID from dual;<br />
+:new.idcolname:=nTmpID;</li>
+</ol>
+<p>end if; End;```</p>
+<ol start="2" type="i">
+<li>表触发器（用于在Insert语句执行后，对每个带有临时键值的新增行依次赋予由存储过程计算出的最终的键值）
+<code>SQL Create Or Replace Trigger tg_tablename_idcolname_A          After          Insert         ON tablename Referencing New AS New Old AS Old Begin        sp_SetNewRowID(' tablename ',' idcolname ');End;</code>
+这种方法的<strong>优点</strong>： 可以通用于所有插入记录的情况。
+这种方法的<strong>缺点</strong>： 需要为每个表创建两个触发器
+触发器的执行可能使数据库性能下降（但总体消耗原本就是必须的）</li>
+</ol>
+<h1 id="三oracle方法说明和选择">三．Oracle方法说明和选择</h1>
+<ol type="1">
+<li>方法的选择：</li>
+</ol>
+<ol type="a">
+<li>如果确认在不指定键值的情况下，只使用Insert Into
+Values向表中插入记录，则可以对该表采用第2种方法。（如果指定了键值，触发器实际上不起作用，因此可以一次插入多条记录，例如通过导入进行插入记录）</li>
+<li>如果在不指定键值的情况下，有可能使用Insert Into
+Select向表中插入记录，则应该采用第3种方法。</li>
+<li>如果表的键值要求不能重复使用（删除的不能再重用），则应该采用第1种方法。如果不介意多表共用一个序列，可以只创建一个序列以尽量减少工作量。</li>
+</ol>
+<ol start="2" type="1">
+<li>方法说明</li>
+</ol>
+<ol type="a">
+<li>以上方法中的示例代码，均默认键值为正数，因此采用－10以下的负数来临时标识新增行。如果需要负数作为键值，应对相关代码进行适当修改。主要涉及的是sp_FindIDHole中的查找范围的确定和排除，se_MultiInsert_NewRow_TmpID的生成值范围。</li>
+<li>以上通用的对象（如存储过程和序列）可用于多个表，如果多个表的情况不同，可将表按情况分组，每组采用一个方法，使用一套通用对象。个别的表也可以个别处理。</li>
+</ol>
 
     </div>
 

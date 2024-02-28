@@ -290,202 +290,150 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <p>干了很久的项目都是使用SSH框架的，现在团队有位搞美工的美女突然想要搞java了，让我做下指导并打个基本的框架，需要使用最基本的架构，这样说来那SSH只能滚得远远的了；<br>
-最基本的架构也就jsp+servlet+javabean，但心里感觉还是不爽，搞这个不是纯属浪费时间啊。后来一想，对了我自己可以不用框架来设计出一个简单的mvc架构来实现框架带来的分层效果：<br>
-这里我就以登录为例子来讲解下，讲解的顺序为v—&gt;c----&gt;m</p>
-<span id="more"></span>
-<p>页面端:login.html</p>
-<pre><code class="language-java">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.01 Transitional//EN&quot;&gt;
-&lt;html&gt;
-  &lt;head&gt;
-    &lt;title&gt;amdinLogin.html&lt;/title&gt;
-  &lt;/head&gt;
-  
-  &lt;body&gt;
-       &lt;form action=&quot;../AdminLogin.action&quot; method=&quot;post&quot;&gt;
-           &lt;input type = &quot;text&quot; name = &quot;username&quot;/&gt;
-           &lt;input type = &quot;password&quot; name = &quot;password&quot;/&gt;
-           &lt;input type = &quot;submit&quot; name = &quot;login&quot; value = &quot;注册&quot;/&gt;
-       &lt;/form&gt;
-  &lt;/body&gt;
-&lt;/html&gt;```
-
-配置文件web.xml
-``` java
-    &lt;servlet&gt;   
-        &lt;servlet-name&gt;controlServlet&lt;/servlet-name&gt;   
-        &lt;servlet-class&gt;xidian.sl.equipment.Servlet.ControlServlet&lt;/servlet-class&gt;
-&lt;!-- 这里的配置与一般的servlet一样，但由于整个项目只会有一个servlet，所有的访问都将访问这个servlet，因此不同的访问只需要添加下面的参数即可--&gt;
-        &lt;init-param&gt;
-                         &lt;!-- 页面请求的地址--&gt;
-            &lt;param-name&gt;AdminLogin&lt;/param-name&gt;  
-                         &lt;!-- 处理action的后台Action地址--&gt;
-            &lt;param-value&gt;xidian.sl.equipment.action.LoginAction&lt;/param-value&gt;   
-        &lt;/init-param&gt;
-           &lt;init-param&gt;   
-            &lt;param-name&gt;picListAction&lt;/param-name&gt;   
-            &lt;param-value&gt;xidian.sl.equipment.action.PicListAction&lt;/param-value&gt;   
-        &lt;/init-param&gt;
-        &lt;init-param&gt;   
-            &lt;param-name&gt;newListAction&lt;/param-name&gt;   
-            &lt;param-value&gt;xidian.sl.equipment.action.NewListAction&lt;/param-value&gt;   
-        &lt;/init-param&gt;
-    &lt;/servlet&gt;   
-    &lt;servlet-mapping&gt;   
-        &lt;servlet-name&gt;controlServlet&lt;/servlet-name&gt;   
-        &lt;url-pattern&gt;*.action&lt;/url-pattern&gt;   
-    &lt;/servlet-mapping&gt; ```
+        干了很久的项目都是使用SSH框架的，现在团队有位搞美工的美女突然想要搞java了，让我做下指导并打个基本的框架，需要使用最基本的架构，这样说来那SSH只能滚得远远的了；
+最基本的架构也就jsp+servlet+javabean，但心里感觉还是不爽，搞这个不是纯属浪费时间啊。后来一想，对了我自己可以不用框架来设计出一个简单的mvc架构来实现框架带来的分层效果：
+这里我就以登录为例子来讲解下，讲解的顺序为v---&gt;c----&gt;m <span id="more"></span>
+页面端:login.html ``` java &lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML
+4.01 Transitional//EN"&gt;
+<html>
+<head>
+<title>
+amdinLogin.html
+</title>
+</head>
+<body>
+<form action="../AdminLogin.action" method="post">
+<input type = "text" name = "username"/>
+<input type = "password" name = "password"/>
+<input type = "submit" name = "login" value = "注册"/>
+</form>
+</body>
+</html>
+<p>```</p>
+<p>配置文件web.xml
+<code>java     &lt;servlet&gt;            &lt;servlet-name&gt;controlServlet&lt;/servlet-name&gt;            &lt;servlet-class&gt;xidian.sl.equipment.Servlet.ControlServlet&lt;/servlet-class&gt; &lt;!-- 这里的配置与一般的servlet一样，但由于整个项目只会有一个servlet，所有的访问都将访问这个servlet，因此不同的访问只需要添加下面的参数即可--&gt;         &lt;init-param&gt;                          &lt;!-- 页面请求的地址--&gt;             &lt;param-name&gt;AdminLogin&lt;/param-name&gt;                            &lt;!-- 处理action的后台Action地址--&gt;             &lt;param-value&gt;xidian.sl.equipment.action.LoginAction&lt;/param-value&gt;            &lt;/init-param&gt;            &lt;init-param&gt;                &lt;param-name&gt;picListAction&lt;/param-name&gt;                &lt;param-value&gt;xidian.sl.equipment.action.PicListAction&lt;/param-value&gt;            &lt;/init-param&gt;         &lt;init-param&gt;                &lt;param-name&gt;newListAction&lt;/param-name&gt;                &lt;param-value&gt;xidian.sl.equipment.action.NewListAction&lt;/param-value&gt;            &lt;/init-param&gt;     &lt;/servlet&gt;        &lt;servlet-mapping&gt;            &lt;servlet-name&gt;controlServlet&lt;/servlet-name&gt;            &lt;url-pattern&gt;*.action&lt;/url-pattern&gt;        &lt;/servlet-mapping&gt;</code>
 充当控制层的servlet：xidian.sl.equipment.Servlet.ControlServlet（很重要）
-``` java
-package xidian.sl.equipment.Servlet;
+``` java package xidian.sl.equipment.Servlet;</p>
+<p>import java.io.IOException;</p>
+<p>import javax.servlet.ServletException; import
+javax.servlet.http.HttpServlet; import
+javax.servlet.http.HttpServletRequest; import
+javax.servlet.http.HttpServletResponse;</p>
+<p>import xidian.sl.equipment.action.interfaces.Action; import
+xidian.sl.equipment.actionfactory.ActionFactory;</p>
+<p>public class ControlServlet extends HttpServlet{ /** *
+任何请求都会到这个servlet中，这个servlet就是充当MVC模式中的C（控制层）
+*/ private static final long serialVersionUID = 1L;</p>
+<pre><code>@Override
+protected void doGet(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException &#123;
+    doPost(request, response);
+&#125;
 
-import java.io.IOException;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import xidian.sl.equipment.action.interfaces.Action;
-import xidian.sl.equipment.actionfactory.ActionFactory;
-
-public class ControlServlet extends HttpServlet&#123;
-    /**
-     * 任何请求都会到这个servlet中，这个servlet就是充当MVC模式中的C（控制层）
-     */
-    private static final long serialVersionUID = 1L;
-
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException &#123;
-        doPost(request, response);
-    &#125;
-
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException &#123;
-                /**
-                 * 得到当前Servlet的请求路径   
-                 * */
-                String pathName = request.getServletPath();
-                //System.out.println(&quot;pathName:&quot;+pathName);   
-                /**
-                 * 得到请求的Action名字
-                 * */ 
-                int index = pathName.indexOf(&quot;.&quot;);   
-                String ActionName = pathName.substring(1, index);   
-                //System.out.println(ActionName);   
-                /**
-                 * 获取运行时参数
-                 * */
-                String ActionClassName = this.getInitParameter(ActionName);   
-                //System.out.println(&quot;actionclassName &quot;+ ActionClassName);
-                /**
-                 * 得到Action对象  
-                 * */
-                Action action = ActionFactory.getActionFactory().getAction(ActionClassName); 
-                //System.out.println(&quot;action &quot;+action);
-                /**
-                 * 执行Action的execute得到要返回的URL路径 
-                 * */
-                String url = action.execute(request, response); 
-                if(url == null)&#123;   
-                    request.getRequestDispatcher(&quot;error.jsp&quot;).forward(request, response);      
-                &#125;else&#123;   
-                    request.getRequestDispatcher(url).forward(request, response);   
-                &#125;   
-    &#125;
-&#125;```
-Action:面向接口编程，提供一个统一的Action接口，里面就一个方法execute()；模拟struts1.x
-
-``` java
-package xidian.sl.equipment.action.interfaces;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-public interface Action &#123;
-    /**  
-     * 所有的具体Action实现这个接口  
-     * @param request 请求对象  
-     * @param response 应答对象  
-     * @return ：结果页面  
-     */  
-    public String execute(HttpServletRequest request, HttpServletResponse response);   
-
-&#125;```
-LoginAction:
-``` java
-package xidian.sl.equipment.action;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import xidian.sl.equipment.action.interfaces.Action;
-import xidian.sl.equipment.dao.impl.AdminDAOImpl;
-import xidian.sl.equipment.dao.interfaces.AdminDAO;
-
-public class LoginAction implements Action &#123;
-
-    @Override
-    public String execute(HttpServletRequest request,
-            HttpServletResponse response) &#123;
-             /**
-              * 从request中得到相应的值
-              * */  
-            String username = request.getParameter(&quot;username&quot;);  
-            String password = request.getParameter(&quot;password&quot;);
+@Override
+protected void doPost(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException &#123;
             /**
-             * 实例化DAO层，但其实这样做还是不完美的，最好自己写一个依赖注入的类
+             * 得到当前Servlet的请求路径   
              * */
-            AdminDAO adminDAO = new AdminDAOImpl();
+            String pathName = request.getServletPath();
+            //System.out.println(&quot;pathName:&quot;+pathName);   
             /**
-             * 返回查找后的二维数组
+             * 得到请求的Action名字
+             * */ 
+            int index = pathName.indexOf(&quot;.&quot;);   
+            String ActionName = pathName.substring(1, index);   
+            //System.out.println(ActionName);   
+            /**
+             * 获取运行时参数
              * */
-            String[][] data = adminDAO.findAdmin(username, password);
-            if(data == null|| (data != null&amp;&amp; data.length == 0))&#123;
-                //数组为空，表示无此账号存在
-                return &quot;admin/login.html&quot;;  
-            &#125; else &#123;  
-                return &quot;admin/index.html&quot;;  
-            &#125;  
-    &#125;
-
-&#125;```
+            String ActionClassName = this.getInitParameter(ActionName);   
+            //System.out.println(&quot;actionclassName &quot;+ ActionClassName);
+            /**
+             * 得到Action对象  
+             * */
+            Action action = ActionFactory.getActionFactory().getAction(ActionClassName); 
+            //System.out.println(&quot;action &quot;+action);
+            /**
+             * 执行Action的execute得到要返回的URL路径 
+             * */
+            String url = action.execute(request, response); 
+            if(url == null)&#123;   
+                request.getRequestDispatcher(&quot;error.jsp&quot;).forward(request, response);      
+            &#125;else&#123;   
+                request.getRequestDispatcher(url).forward(request, response);   
+            &#125;   
+&#125;</code></pre>
+<p>}```
+Action:面向接口编程，提供一个统一的Action接口，里面就一个方法execute()；模拟struts1.x</p>
+<p>``` java package xidian.sl.equipment.action.interfaces;</p>
+<p>import javax.servlet.http.HttpServletRequest; import
+javax.servlet.http.HttpServletResponse;</p>
+<p>public interface Action { /**<br />
+* 所有的具体Action实现这个接口<br />
+* <span class="citation" data-cites="param">@param</span> request
+请求对象<br />
+* <span class="citation" data-cites="param">@param</span> response
+应答对象<br />
+* <span class="citation" data-cites="return">@return</span>
+：结果页面<br />
+*/<br />
+public String execute(HttpServletRequest request, HttpServletResponse
+response);</p>
+<p>}<code>LoginAction:</code> java package
+xidian.sl.equipment.action;</p>
+<p>import javax.servlet.http.HttpServletRequest; import
+javax.servlet.http.HttpServletResponse;</p>
+<p>import xidian.sl.equipment.action.interfaces.Action; import
+xidian.sl.equipment.dao.impl.AdminDAOImpl; import
+xidian.sl.equipment.dao.interfaces.AdminDAO;</p>
+<p>public class LoginAction implements Action {</p>
+<pre><code>@Override
+public String execute(HttpServletRequest request,
+        HttpServletResponse response) &#123;
+         /**
+          * 从request中得到相应的值
+          * */  
+        String username = request.getParameter(&quot;username&quot;);  
+        String password = request.getParameter(&quot;password&quot;);
+        /**
+         * 实例化DAO层，但其实这样做还是不完美的，最好自己写一个依赖注入的类
+         * */
+        AdminDAO adminDAO = new AdminDAOImpl();
+        /**
+         * 返回查找后的二维数组
+         * */
+        String[][] data = adminDAO.findAdmin(username, password);
+        if(data == null|| (data != null&amp;&amp; data.length == 0))&#123;
+            //数组为空，表示无此账号存在
+            return &quot;admin/login.html&quot;;  
+        &#125; else &#123;  
+            return &quot;admin/index.html&quot;;  
+        &#125;  
+&#125;</code></pre>
+<p>}```
 在实现类LoginAction中实例化了AdminDAO进行持久化操作，这里为了方便起见是直接使用new进行实例化，但这样硬编码带来耦合，如需要改进可以参考模拟spring的ioc
-http://www.cnblogs.com/shenliang123/archive/2012/05/10/2494412.html 讨论简单工厂模式时有简单的实现，大家可以进行改进使其更加完美
-
-AdminDAO:
-``` java 
-package xidian.sl.equipment.dao.interfaces;
-
-public interface AdminDAO &#123;
-    /**
-     * 根据用户名与密码来查找相应用户
-     * */
-    public String[][] findAdmin(String username, String password);
-&#125;```
-AdminDAOImpl:
-
-``` java 
-package xidian.sl.equipment.dao.impl;
-
-import xidian.sl.equipment.dao.interfaces.AdminDAO;
-import xidian.sl.equipment.util.DbConn;
-
-public class AdminDAOImpl implements AdminDAO&#123;
-
-    @Override
-    public String[][] findAdmin(String username, String password) &#123;
-        String sql = &quot;select * from admin as ad where ad.aId = '&quot;+username+&quot;' and ad.aPassword = '&quot;+password+&quot;'&quot;;
-        String[][] data = DbConn.query(sql);
-        return data;
-    &#125;
-
-&#125;```
+http://www.cnblogs.com/shenliang123/archive/2012/05/10/2494412.html
+讨论简单工厂模式时有简单的实现，大家可以进行改进使其更加完美</p>
+<p>AdminDAO: ``` java package xidian.sl.equipment.dao.interfaces;</p>
+<p>public interface AdminDAO { /** * 根据用户名与密码来查找相应用户 * */
+public String[][] findAdmin(String username, String password); }```
+AdminDAOImpl:</p>
+<p>``` java package xidian.sl.equipment.dao.impl;</p>
+<p>import xidian.sl.equipment.dao.interfaces.AdminDAO; import
+xidian.sl.equipment.util.DbConn;</p>
+<p>public class AdminDAOImpl implements AdminDAO{</p>
+<pre><code>@Override
+public String[][] findAdmin(String username, String password) &#123;
+    String sql = &quot;select * from admin as ad where ad.aId = &#39;&quot;+username+&quot;&#39; and ad.aPassword = &#39;&quot;+password+&quot;&#39;&quot;;
+    String[][] data = DbConn.query(sql);
+    return data;
+&#125;</code></pre>
+<p>}```
 该实现类中使用了已封装好的数据库操作类，详细见：http://www.cnblogs.com/shenliang123/archive/2012/05/10/2494874.html
-数据库的设计比较简单：只需要主键id, 用户账号：username, 账号密码：password
-这样就基本实现了mvc的效果，你还可以根据项目的复杂程度向DAO与Action之间再插入一层Service</code></pre>
+数据库的设计比较简单：只需要主键id, 用户账号：username,
+账号密码：password
+这样就基本实现了mvc的效果，你还可以根据项目的复杂程度向DAO与Action之间再插入一层Service</p>
 
     </div>
 

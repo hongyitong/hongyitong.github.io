@@ -292,106 +292,74 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <p>Facade外观模式，是一种结构型模式，它主要解决的问题是：组件的客户和组件中各种复杂的子系统有了过多的耦合，随着外部客户程序和各子系统的演化，这种过多的耦合面临很多变化的挑战。在这里我想举一个例子：比如，现在有一辆汽车，我们（客户程序）要启动它，那我们就要发动引擎（子系统1），使四个车轮（子系统2）转动。但是实际中我们并不需要用手推动车轮使其转动，我们踩下油门，此时汽车再根据一些其他的操作使车轮转动。油门就好比系统给我们留下的接口，不论汽车是以何种方式转动车轮，车轮变化成什么牌子的，我们要开走汽车所要做的还是踩下油门。<br>
-GoF《设计模式》中说道：<strong>为子系统中的一组接口提供一个一致的界面，Facade模式定义了一个高层接口，这个接口使得这一子系统更加容易使用。</strong><span id="more"></span><br>
-Façade外观模式的结构大概是这样的：<br>
-<img src="/img/%E5%A4%96%E8%A7%82%E6%A8%A1%E5%BC%8F.jpg" alt=""><br>
-这个图是我对Facade模式的理解，如果大家觉得有什么不对的地方欢迎给我指出。<br>
-我就上面说的那个情形写一下实现代码，首先我们要实现三个子系统（Wheel、Engine、Body）：</p>
-<pre><code class="language-java">    internal class Engine
+        <p>Facade外观模式，是一种结构型模式，它主要解决的问题是：组件的客户和组件中各种复杂的子系统有了过多的耦合，随着外部客户程序和各子系统的演化，这种过多的耦合面临很多变化的挑战。在这里我想举一个例子：比如，现在有一辆汽车，我们（客户程序）要启动它，那我们就要发动引擎（子系统1），使四个车轮（子系统2）转动。但是实际中我们并不需要用手推动车轮使其转动，我们踩下油门，此时汽车再根据一些其他的操作使车轮转动。油门就好比系统给我们留下的接口，不论汽车是以何种方式转动车轮，车轮变化成什么牌子的，我们要开走汽车所要做的还是踩下油门。
+GoF《设计模式》中说道：<strong>为子系统中的一组接口提供一个一致的界面，Facade模式定义了一个高层接口，这个接口使得这一子系统更加容易使用。</strong><span id="more"></span>
+Façade外观模式的结构大概是这样的： <img src="/img/外观模式.jpg" />
+这个图是我对Facade模式的理解，如果大家觉得有什么不对的地方欢迎给我指出。
+我就上面说的那个情形写一下实现代码，首先我们要实现三个子系统（Wheel、Engine、Body）：
+``` java internal class Engine { public string EngineWork() { return
+"BMW's Engine is Working"; }</p>
+<pre><code>    public string EngineStop()
     &#123;
-        public string EngineWork()
+        return &quot;BMW&#39;s Engine is stoped&quot;;
+    &#125;
+&#125;
+
+internal class Wheel
+&#123;
+    public string WheelCircumrotate()
+    &#123;
+        return &quot;BMW&#39;s Wheel is Circumrotating&quot;;
+    &#125;
+
+    public string WheelStop()
+    &#123;
+        return &quot;BMW&#39;s Wheel is stoped&quot;;
+    &#125;
+&#125;
+
+internal class Body
+&#123;
+    public Wheel[] wheels = new Wheel[4];
+    public Engine engine = new Engine();
+    public Body()
+    &#123;
+        for (int i = 0; i &lt; wheels.Length; i++)
         &#123;
-            return &quot;BMW's Engine is Working&quot;;
-        &#125;
- 
-        public string EngineStop()
-        &#123;
-            return &quot;BMW's Engine is stoped&quot;;
+            wheels[i] = new Wheel();
         &#125;
     &#125;
- 
-    internal class Wheel
+&#125;```</code></pre>
+<p>然后，我们再来实现汽车的Facade ``` java class CarFacade { Body body =
+new Body();</p>
+<pre><code>    public void Run()
     &#123;
-        public string WheelCircumrotate()
+        Console.WriteLine(body.engine.EngineWork());
+        for(int i = 0; i &lt; body.wheels.Length; i++)
         &#123;
-            return &quot;BMW's Wheel is Circumrotating&quot;;
-        &#125;
- 
-        public string WheelStop()
-        &#123;
-            return &quot;BMW's Wheel is stoped&quot;;
+            Console.WriteLine(body.wheels[i].WheelCircumrotate());
         &#125;
     &#125;
-   
-    internal class Body
+
+    public void Stop()
     &#123;
-        public Wheel[] wheels = new Wheel[4];
-        public Engine engine = new Engine();
-        public Body()
+        Console.WriteLine(body.engine.EngineStop());
+        for (int i = 0; i &lt; body.wheels.Length; i++)
         &#123;
-            for (int i = 0; i &lt; wheels.Length; i++)
-            &#123;
-                wheels[i] = new Wheel();
-            &#125;
+            Console.WriteLine(body.wheels[i].WheelStop());
         &#125;
-	&#125;```
- 
-然后，我们再来实现汽车的Facade
-``` java 
-class CarFacade
-&#123;
-        Body body = new Body();
- 
-        public void Run()
-        &#123;
-            Console.WriteLine(body.engine.EngineWork());
-            for(int i = 0; i &lt; body.wheels.Length; i++)
-            &#123;
-                Console.WriteLine(body.wheels[i].WheelCircumrotate());
-            &#125;
-        &#125;
- 
-        public void Stop()
-        &#123;
-            Console.WriteLine(body.engine.EngineStop());
-            for (int i = 0; i &lt; body.wheels.Length; i++)
-            &#123;
-                Console.WriteLine(body.wheels[i].WheelStop());
-            &#125;
-        &#125;
-&#125;```
- 
-现在我们来使用客户端程序验证一下，代码如下：
-``` java
-class Program
-&#123;
-        static void Main(string[] args)
-        &#123;
-            CarFacade car = new CarFacade();
-            car.Run();
-            car.Stop();
-            Console.Read();
-        &#125;
-&#125;```
-      
-执行结果如下；
-BMW's Engine is Working
-BMW's Wheel is Circumrotating
-BMW's Wheel is Circumrotating
-BMW's Wheel is Circumrotating
-BMW's Wheel is Circumrotating
-BMW's Engine is stoped
-BMW's Wheel is stoped
-BMW's Wheel is stoped
-BMW's Wheel is stoped
-BMW's Wheel is stoped
- 
-正如上面所说：客户端代码（Program）不需要关心子系统，它只需要关心CarFacade所留下来的和外部交互的接口，而子系统是在CarFacade中聚合。
- 
-Façade模式的几个要点：
+    &#125;</code></pre>
+<p>}```</p>
+<p>现在我们来使用客户端程序验证一下，代码如下：
+<code>java class Program &#123;         static void Main(string[] args)         &#123;             CarFacade car = new CarFacade();             car.Run();             car.Stop();             Console.Read();         &#125; &#125;</code></p>
+<p>执行结果如下； BMW's Engine is Working BMW's Wheel is Circumrotating
+BMW's Wheel is Circumrotating BMW's Wheel is Circumrotating BMW's Wheel
+is Circumrotating BMW's Engine is stoped BMW's Wheel is stoped BMW's
+Wheel is stoped BMW's Wheel is stoped BMW's Wheel is stoped</p>
+<p>正如上面所说：客户端代码（Program）不需要关心子系统，它只需要关心CarFacade所留下来的和外部交互的接口，而子系统是在CarFacade中聚合。</p>
+<p>Façade模式的几个要点：
 1、从客户程序的角度看，Facade模式不仅简化了整个组件系统的接口，同时对于组件内部与外部客户程序来说，从某种程度上也达到了一种“解耦”的效果——内部子系统的任何变化不会影响到Facade接口的变化。
-2、Facade设计模式更注重从架构的层次去看整个系统，而不是单个类的层次。Facade很多时候更是一种架构设计模式。</code></pre>
+2、Facade设计模式更注重从架构的层次去看整个系统，而不是单个类的层次。Facade很多时候更是一种架构设计模式。</p>
 
     </div>
 

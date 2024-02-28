@@ -278,74 +278,58 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <p>具体的代码请阅读全文。</p>
-<span id="more"></span>
-<pre><code class="language-javascript">public class WorkQueue &#123;
-	private final int nThreads;// 线程池的大小
-	private final PoolWorker[] threads;// 用数组实现线程池
-	private final LinkedList queue;// 任务队列
-	public WorkQueue(int nThreads) &#123;
-		this.nThreads = nThreads;
-		queue = new LinkedList();
-		threads = new PoolWorker[nThreads]; 
-		for (int i = 0; i &lt; nThreads; i++) &#123;
-			threads[i] = new PoolWorker();
-			threads[i].start();// 启动所有工作线程
-		&#125;
-	&#125;
-
-	public void execute(Runnable r) &#123;// 执行任务
-		synchronized (queue) &#123;
-			queue.addLast(r);
-			queue.notify();
-		&#125;
-	&#125;
-
-	private class PoolWorker extends Thread &#123;// 工作线程类
-		public void run() &#123;
-			Runnable r;
-			while (true) &#123;
-				synchronized (queue) &#123;
-					while (queue.isEmpty()) &#123;
-						// 如果任务队列中没有任务，等待
-						try &#123;
-							queue.wait();
-						&#125; catch (InterruptedException ignored) &#123;
-						&#125;
-					&#125;
-					r = (Runnable) queue.removeFirst();
-					// 有任务时，取出任务
-				&#125;
-				try &#123;
-					r.run();// 执行任务
-				&#125; catch (RuntimeException e) &#123;
-					// You might want to log something here
-				&#125;
-			&#125;
-		&#125;
-	&#125;
-
-	public static void main(String args[]) &#123;
-		WorkQueue wq = new WorkQueue(10);// 10个工作线程
-		Mytask r[] = new Mytask[20];// 20个任务
-
-		for (int i = 0; i &lt; 20; i++) &#123;
-			r[i] = new Mytask();
-			wq.execute(r[i]);
-		&#125;
-	&#125;
+        <p>具体的代码请阅读全文。 <span id="more"></span> ``` javascript public class
+WorkQueue { private final int nThreads;// 线程池的大小 private final
+PoolWorker[] threads;// 用数组实现线程池 private final LinkedList
+queue;// 任务队列 public WorkQueue(int nThreads) { this.nThreads =
+nThreads; queue = new LinkedList(); threads = new PoolWorker[nThreads];
+for (int i = 0; i &lt; nThreads; i++) { threads[i] = new PoolWorker();
+threads[i].start();// 启动所有工作线程 } }</p>
+<pre><code>public void execute(Runnable r) &#123;// 执行任务
+    synchronized (queue) &#123;
+        queue.addLast(r);
+        queue.notify();
+    &#125;
 &#125;
 
-class Mytask implements Runnable &#123;// 任务接口
-	public void run() &#123;
-		String name = Thread.currentThread().getName();
-		try &#123;
-			Thread.sleep(100);// 模拟任务执行的时间
-		&#125; catch (InterruptedException e) &#123;
-		&#125;
-		System.out.println(name + &quot; executed OK&quot;);
-	&#125;
-&#125;```</code></pre>
+private class PoolWorker extends Thread &#123;// 工作线程类
+    public void run() &#123;
+        Runnable r;
+        while (true) &#123;
+            synchronized (queue) &#123;
+                while (queue.isEmpty()) &#123;
+                    // 如果任务队列中没有任务，等待
+                    try &#123;
+                        queue.wait();
+                    &#125; catch (InterruptedException ignored) &#123;
+                    &#125;
+                &#125;
+                r = (Runnable) queue.removeFirst();
+                // 有任务时，取出任务
+            &#125;
+            try &#123;
+                r.run();// 执行任务
+            &#125; catch (RuntimeException e) &#123;
+                // You might want to log something here
+            &#125;
+        &#125;
+    &#125;
+&#125;
+
+public static void main(String args[]) &#123;
+    WorkQueue wq = new WorkQueue(10);// 10个工作线程
+    Mytask r[] = new Mytask[20];// 20个任务
+
+    for (int i = 0; i &lt; 20; i++) &#123;
+        r[i] = new Mytask();
+        wq.execute(r[i]);
+    &#125;
+&#125;</code></pre>
+<p>}</p>
+<p>class Mytask implements Runnable {// 任务接口 public void run() {
+String name = Thread.currentThread().getName(); try {
+Thread.sleep(100);// 模拟任务执行的时间 } catch (InterruptedException e)
+{ } System.out.println(name + " executed OK"); } }```</p>
 
     </div>
 
