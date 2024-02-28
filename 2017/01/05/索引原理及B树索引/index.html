@@ -20,17 +20,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="一、索引的原理 **说白了，索引问题就是一个查找问题。**数据库索引，是数据库管理系统中一个排序的数据结构，以协助快速查询、更新数据库表中数据。**索引的实现通常使用B树及其变种B+树。**在数据之外，数据库系统还维护着满足特定查找算法的数据结构，这些数据结构以某种方式引用（指向）数据，这样就可以在这些数据结构上实现高级查找算法。这种数据结构，就是索引。 为表设置索引要付出代价的：一是增加了数据">
+    <meta name="description" content="一、索引的原理 说白了，索引问题就是一个查找问题。数据库索引，是数据库管理系统中一个排序的数据结构，以协助快速查询、更新数据库表中数据。索引的实现通常使用B树及其变种B+树。在数据之外，数据库系统还维护着满足特定查找算法的数据结构，这些数据结构以某种方式引用（指向）数据，这样就可以在这些数据结构上实现高级查找算法。这种数据结构，就是索引。 为表设置索引要付出代价的：一是增加了数据库的存储空间，二是">
 <meta property="og:type" content="article">
 <meta property="og:title" content="索引原理及B树索引">
 <meta property="og:url" content="http://hongyitong.github.io/2017/01/05/%E7%B4%A2%E5%BC%95%E5%8E%9F%E7%90%86%E5%8F%8AB%E6%A0%91%E7%B4%A2%E5%BC%95/index.html">
 <meta property="og:site_name" content="忆桐之家的博客">
-<meta property="og:description" content="一、索引的原理 **说白了，索引问题就是一个查找问题。**数据库索引，是数据库管理系统中一个排序的数据结构，以协助快速查询、更新数据库表中数据。**索引的实现通常使用B树及其变种B+树。**在数据之外，数据库系统还维护着满足特定查找算法的数据结构，这些数据结构以某种方式引用（指向）数据，这样就可以在这些数据结构上实现高级查找算法。这种数据结构，就是索引。 为表设置索引要付出代价的：一是增加了数据">
+<meta property="og:description" content="一、索引的原理 说白了，索引问题就是一个查找问题。数据库索引，是数据库管理系统中一个排序的数据结构，以协助快速查询、更新数据库表中数据。索引的实现通常使用B树及其变种B+树。在数据之外，数据库系统还维护着满足特定查找算法的数据结构，这些数据结构以某种方式引用（指向）数据，这样就可以在这些数据结构上实现高级查找算法。这种数据结构，就是索引。 为表设置索引要付出代价的：一是增加了数据库的存储空间，二是">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://hongyitong.github.io/img/%E7%B4%A2%E5%BC%95.png">
 <meta property="og:image" content="http://hongyitong.github.io/img/%E8%81%9A%E9%9B%86%E7%B4%A2%E5%BC%95.png">
-<meta property="og:image" content="http://hongyitong.github.io/img/B-%E6%A0%91.png">
-<meta property="og:image" content="http://hongyitong.github.io/img/B+%E6%A0%911.png">
 <meta property="og:image" content="http://hongyitong.github.io/img/B+%E6%A0%912.png">
 <meta property="og:image" content="http://hongyitong.github.io/img/B-B+%E6%A0%91.png">
 <meta property="og:image" content="http://hongyitong.github.io/img/B+%E6%A0%91.png">
@@ -159,7 +157,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80-%E7%B4%A2%E5%BC%95%E7%9A%84%E5%8E%9F%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text"> 一、索引的原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C-%E7%B4%A2%E5%BC%95%E7%9A%84%E4%BC%98%E5%8A%A3%E6%80%A7"><span class="nav-number">2.</span> <span class="nav-text"> 二、索引的优劣性</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89-%E7%B4%A2%E5%BC%95%E7%9A%84%E5%8E%9F%E5%88%99"><span class="nav-number">3.</span> <span class="nav-text"> 三、索引的原则</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B-%E7%B4%A2%E5%BC%95%E7%9A%84%E5%88%86%E7%B1%BB"><span class="nav-number">4.</span> <span class="nav-text"> 四、索引的分类</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%94%AF%E4%B8%80%E7%B4%A2%E5%BC%95"><span class="nav-number">4.1.</span> <span class="nav-text"> 1、唯一索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E4%B8%BB%E9%94%AE%E7%B4%A2%E5%BC%95"><span class="nav-number">4.2.</span> <span class="nav-text"> 2、主键索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E8%81%9A%E9%9B%86%E7%B4%A2%E5%BC%95"><span class="nav-number">4.3.</span> <span class="nav-text"> 3、聚集索引</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94-%E7%B4%A2%E5%BC%95%E7%9A%84%E6%95%88%E7%8E%87"><span class="nav-number">5.</span> <span class="nav-text"> 五、索引的效率</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-b-tree"><span class="nav-number">5.1.</span> <span class="nav-text"> 1、B Tree</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-btree"><span class="nav-number">5.2.</span> <span class="nav-text"> 2、B+Tree</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-b-%E6%A0%91%E5%92%8Cb%E6%A0%91%E7%9A%84%E6%AF%94%E8%BE%83"><span class="nav-number">5.3.</span> <span class="nav-text"> 2、B-树和B+树的比较</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AD-b-%E6%A0%91%E5%92%8Cb%E6%A0%91%E7%9A%84%E6%95%88%E7%8E%87%E5%88%86%E6%9E%90"><span class="nav-number">6.</span> <span class="nav-text"> 六、B-树和B+树的效率分析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%B1%80%E9%83%A8%E6%80%A7%E5%8E%9F%E7%90%86%E4%B8%8E%E7%A3%81%E7%9B%98%E9%A2%84%E8%AF%BB"><span class="nav-number">6.1.</span> <span class="nav-text"> 1、局部性原理与磁盘预读</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-b%E6%A0%91%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90"><span class="nav-number">6.2.</span> <span class="nav-text"> 2、B+树性能分析</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E7%B4%A2%E5%BC%95%E7%9A%84%E5%8E%9F%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">一、索引的原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E7%B4%A2%E5%BC%95%E7%9A%84%E5%8E%9F%E5%88%99"><span class="nav-number">2.</span> <span class="nav-text">三、索引的原则</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E7%B4%A2%E5%BC%95%E7%9A%84%E5%88%86%E7%B1%BB"><span class="nav-number">3.</span> <span class="nav-text">四、索引的分类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E7%B4%A2%E5%BC%95%E7%9A%84%E6%95%88%E7%8E%87"><span class="nav-number">4.</span> <span class="nav-text">五、索引的效率</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#b-tree"><span class="nav-number">4.1.</span> <span class="nav-text">1、B Tree</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#btree"><span class="nav-number">4.2.</span> <span class="nav-text">2、B+Tree</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#b-%E6%A0%91%E5%92%8Cb%E6%A0%91%E7%9A%84%E6%AF%94%E8%BE%83"><span class="nav-number">4.3.</span> <span class="nav-text">2、B-树和B+树的比较</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%ADb-%E6%A0%91%E5%92%8Cb%E6%A0%91%E7%9A%84%E6%95%88%E7%8E%87%E5%88%86%E6%9E%90"><span class="nav-number">5.</span> <span class="nav-text">六、B-树和B+树的效率分析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B1%80%E9%83%A8%E6%80%A7%E5%8E%9F%E7%90%86%E4%B8%8E%E7%A3%81%E7%9B%98%E9%A2%84%E8%AF%BB"><span class="nav-number">5.1.</span> <span class="nav-text">1、局部性原理与磁盘预读</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#b%E6%A0%91%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90"><span class="nav-number">5.2.</span> <span class="nav-text">2、B+树性能分析</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -300,114 +298,113 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h1 id="一-索引的原理"><a class="markdownIt-Anchor" href="#一-索引的原理"></a> 一、索引的原理</h1>
-<p>**说白了，索引问题就是一个查找问题。**数据库索引，是数据库管理系统中一个排序的数据结构，以协助快速查询、更新数据库表中数据。**索引的实现通常使用B树及其变种B+树。**在数据之外，数据库系统还维护着满足特定查找算法的数据结构，这些数据结构以某种方式引用（指向）数据，这样就可以在这些数据结构上实现高级查找算法。这种数据结构，就是索引。<br />
-<strong>为表设置索引要付出代价的：一是增加了数据库的存储空间，二是在插入和修改数据时要花费较多的时间(因为索引也要随之变动)。</strong><br />
-<img src="/img/%E7%B4%A2%E5%BC%95.png" alt="" /><br />
-上图展示了一种可能的索引方式。左边是数据表，一共有两列七条记录，最左边的是数据记录的物理地址（注意逻辑上相邻的记录在磁盘上也并不是一定物理相邻的）。为了加快Col2的查找，可以维护一个右边所示的二叉查找树，每个节点分别包含索引键值和一个指向对应数据记录物理地址的指针，这样就可以运用二叉查找在O($$\log _{2}n$$)的复杂度内获取到相应数据。</p>
-<span id="more"></span>
-<h1 id="二-索引的优劣性"><a class="markdownIt-Anchor" href="#二-索引的优劣性"></a> 二、索引的优劣性</h1>
-<p>创建索引可以<strong>大大提高系统的性能。</strong></p>
-<ul>
-<li>第一，通过创建唯一性索引，可以保证数据库表中每一行数据的唯一性。</li>
-<li>第二，可以大大加快数据的检索速度，这也是创建索引的最主要的原因。</li>
-<li>第三，可以加速表和表之间的连接，特别是在实现数据的参考完整性方面特别有意义。</li>
-<li>第四，在使用分组和排序子句进行数据检索时，同样可以显著减少查询中分组和排序的时间。</li>
-<li>第五，通过使用索引，可以在查询的过程中，使用优化隐藏器，提高系统的性能。</li>
-</ul>
-<p>也许会有人要问：增加索引有如此多的优点，为什么不对表中的每一个列创建一个索引呢？因为，增加索引也有许多<strong>不利的方面</strong>。</p>
-<ul>
-<li>第一，创建索引和维护索引要耗费时间，这种时间随着数据量的增加而增加。</li>
-<li>第二，索引需要占物理空间，除了数据表占数据空间之外，每一个索引还要占一定的物理空间，如果要建立聚簇索引，那么需要的空间就会更大。</li>
-<li>第三，当对表中的数据进行增加、删除和修改的时候，索引也要动态的维护，这样就降低了数据的维护速度。</li>
-</ul>
-<h1 id="三-索引的原则"><a class="markdownIt-Anchor" href="#三-索引的原则"></a> 三、索引的原则</h1>
-<p>索引是建立在数据库表中的某些列的上面。在创建索引的时候，应该考虑在哪些列上可以创建索引，在哪些列上不能创建索引。<br />
-<strong>一般来说，应该在这些列上创建索引：</strong></p>
-<ul>
-<li>在经常需要搜索的列上，可以加快搜索的速度；</li>
-<li>在作为主键的列上，强制该列的唯一性和组织表中数据的排列结构；</li>
-<li>在经常用在连接的列上，这些列主要是一些外键，可以加快连接的速度；</li>
-<li>在经常需要根据范围进行搜索的列上创建索引，因为索引已经排序，其指定的范围是连续的；</li>
-<li>在经常需要排序的列上创建索引，因为索引已经排序，这样查询可以利用索引的排序，加快排序查询时间；</li>
-<li>在经常使用在WHERE子句中的列上面创建索引，加快条件的判断速度。</li>
-</ul>
-<p>同样，对于有些列不应该创建索引。<br />
-<strong>一般来说，不应该创建索引的的这些列具有下列特点：</strong></p>
-<ul>
-<li>第一，对于那些在查询中很少使用或者参考的列不应该创建索引。这是因为，既然这些列很少使用到，因此有索引或者无索引，并不能提高查询速度。相反，由于增加了索引，反而降低了系统的维护速度和增大了空间需求。</li>
-<li>第二，对于那些只有很少数据值的列也不应该增加索引。这是因为，由于这些列的取值很少，例如人事表的性别列，在查询的结果中，结果集的数据行占了表中数据行的很大比例，即需要在表中搜索的数据行的比例很大。增加索引，并不能明显加快检索速度。</li>
-<li>第三，对于那些定义为text, image和bit数据类型的列不应该增加索引。这是因为，这些列的数据量要么相当大，要么取值很少。</li>
-<li>第四，当修改性能远远大于检索性能时，不应该创建索引。这是因为，修改性能和检索性能是互相矛盾的。当增加索引时，会提高检索性能，但是会降低修改性能。当减少索引时，会提高修改性能，降低检索性能。因此，当修改性能远远大于检索性能时，不应该创建索引。</li>
-</ul>
-<h1 id="四-索引的分类"><a class="markdownIt-Anchor" href="#四-索引的分类"></a> 四、索引的分类</h1>
-<p>根据数据库的功能，可以在数据库设计器中创建三种索引：唯一索引、主键索引和聚集索引。</p>
-<h2 id="1-唯一索引"><a class="markdownIt-Anchor" href="#1-唯一索引"></a> 1、唯一索引</h2>
-<p>唯一索引是不允许其中任何两行具有相同索引值的索引。<br />
-当现有数据中存在重复的键值时，大多数数据库不允许将新创建的唯一索引与表一起保存。数据库还可能防止添加将在表中创建重复键值的新数据。例如，如果在employee表中职员的姓(lname)上创建了唯一索引，则任何两个员工都不能同姓。</p>
-<h2 id="2-主键索引"><a class="markdownIt-Anchor" href="#2-主键索引"></a> 2、主键索引</h2>
-<p>数据库表经常有一列或列组合，其值唯一标识表中的每一行。该列称为表的主键。<br />
-在数据库关系图中为表定义主键将自动创建主键索引，主键索引是唯一索引的特定类型。该索引要求主键中的每个值都唯一。当在查询中使用主键索引时，它还允许对数据的快速访问。</p>
-<h2 id="3-聚集索引"><a class="markdownIt-Anchor" href="#3-聚集索引"></a> 3、聚集索引</h2>
-<p>在聚集索引中，表中行的物理顺序与键值的逻辑（索引）顺序相同。一个表只能包含一个聚集索引。<br />
-如果某索引不是聚集索引，则表中行的物理顺序与键值的逻辑顺序不匹配。与非聚集索引相比，聚集索引通常提供更快的数据访问速度。<br />
-聚集索引对于任意给定的表而言是唯一的，一个表只能有一个聚集索引。不一定非要有聚集索引。聚集索引特殊的方面是：聚集索引的叶级是实际的数据-也就是说，数据重新排序，按照和聚集索引排序条件声明的相同物理顺序存储。<strong>这意味着，一旦到达索引的叶级，就到达了数据。而非聚集索引，到达了叶级只是找到了数据的引用。</strong><br />
-<img src="/img/%E8%81%9A%E9%9B%86%E7%B4%A2%E5%BC%95.png" alt="" /></p>
-<h1 id="五-索引的效率"><a class="markdownIt-Anchor" href="#五-索引的效率"></a> 五、索引的效率</h1>
+        <h1 id="一索引的原理">一、索引的原理</h1>
+<p><strong>说白了，索引问题就是一个查找问题。</strong>数据库索引，是数据库管理系统中一个排序的数据结构，以协助快速查询、更新数据库表中数据。<strong>索引的实现通常使用B树及其变种B+树。</strong>在数据之外，数据库系统还维护着满足特定查找算法的数据结构，这些数据结构以某种方式引用（指向）数据，这样就可以在这些数据结构上实现高级查找算法。这种数据结构，就是索引。
+<strong>为表设置索引要付出代价的：一是增加了数据库的存储空间，二是在插入和修改数据时要花费较多的时间(因为索引也要随之变动)。</strong>
+<img src="/img/索引.png" />
+上图展示了一种可能的索引方式。左边是数据表，一共有两列七条记录，最左边的是数据记录的物理地址（注意逻辑上相邻的记录在磁盘上也并不是一定物理相邻的）。为了加快Col2的查找，可以维护一个右边所示的二叉查找树，每个节点分别包含索引键值和一个指向对应数据记录物理地址的指针，这样就可以运用二叉查找在O(<span
+class="math display">\[\log _{2}n\]</span>)的复杂度内获取到相应数据。
+<span id="more"></span> # 二、索引的优劣性
+创建索引可以<strong>大大提高系统的性能。</strong> -
+第一，通过创建唯一性索引，可以保证数据库表中每一行数据的唯一性。 -
+第二，可以大大加快数据的检索速度，这也是创建索引的最主要的原因。 -
+第三，可以加速表和表之间的连接，特别是在实现数据的参考完整性方面特别有意义。
+-
+第四，在使用分组和排序子句进行数据检索时，同样可以显著减少查询中分组和排序的时间。
+-
+第五，通过使用索引，可以在查询的过程中，使用优化隐藏器，提高系统的性能。</p>
+<p>也许会有人要问：增加索引有如此多的优点，为什么不对表中的每一个列创建一个索引呢？因为，增加索引也有许多<strong>不利的方面</strong>。
+- 第一，创建索引和维护索引要耗费时间，这种时间随着数据量的增加而增加。 -
+第二，索引需要占物理空间，除了数据表占数据空间之外，每一个索引还要占一定的物理空间，如果要建立聚簇索引，那么需要的空间就会更大。
+-
+第三，当对表中的数据进行增加、删除和修改的时候，索引也要动态的维护，这样就降低了数据的维护速度。</p>
+<h1 id="三索引的原则">三、索引的原则</h1>
+<p>索引是建立在数据库表中的某些列的上面。在创建索引的时候，应该考虑在哪些列上可以创建索引，在哪些列上不能创建索引。
+<strong>一般来说，应该在这些列上创建索引：</strong> -
+在经常需要搜索的列上，可以加快搜索的速度； -
+在作为主键的列上，强制该列的唯一性和组织表中数据的排列结构； -
+在经常用在连接的列上，这些列主要是一些外键，可以加快连接的速度； -
+在经常需要根据范围进行搜索的列上创建索引，因为索引已经排序，其指定的范围是连续的；
+-
+在经常需要排序的列上创建索引，因为索引已经排序，这样查询可以利用索引的排序，加快排序查询时间；
+- 在经常使用在WHERE子句中的列上面创建索引，加快条件的判断速度。</p>
+<p>同样，对于有些列不应该创建索引。
+<strong>一般来说，不应该创建索引的的这些列具有下列特点：</strong> -
+第一，对于那些在查询中很少使用或者参考的列不应该创建索引。这是因为，既然这些列很少使用到，因此有索引或者无索引，并不能提高查询速度。相反，由于增加了索引，反而降低了系统的维护速度和增大了空间需求。
+-
+第二，对于那些只有很少数据值的列也不应该增加索引。这是因为，由于这些列的取值很少，例如人事表的性别列，在查询的结果中，结果集的数据行占了表中数据行的很大比例，即需要在表中搜索的数据行的比例很大。增加索引，并不能明显加快检索速度。
+- 第三，对于那些定义为text,
+image和bit数据类型的列不应该增加索引。这是因为，这些列的数据量要么相当大，要么取值很少。
+-
+第四，当修改性能远远大于检索性能时，不应该创建索引。这是因为，修改性能和检索性能是互相矛盾的。当增加索引时，会提高检索性能，但是会降低修改性能。当减少索引时，会提高修改性能，降低检索性能。因此，当修改性能远远大于检索性能时，不应该创建索引。</p>
+<h1 id="四索引的分类">四、索引的分类</h1>
+<p>根据数据库的功能，可以在数据库设计器中创建三种索引：唯一索引、主键索引和聚集索引。
+## 1、唯一索引 唯一索引是不允许其中任何两行具有相同索引值的索引。
+当现有数据中存在重复的键值时，大多数数据库不允许将新创建的唯一索引与表一起保存。数据库还可能防止添加将在表中创建重复键值的新数据。例如，如果在employee表中职员的姓(lname)上创建了唯一索引，则任何两个员工都不能同姓。
+## 2、主键索引
+数据库表经常有一列或列组合，其值唯一标识表中的每一行。该列称为表的主键。
+在数据库关系图中为表定义主键将自动创建主键索引，主键索引是唯一索引的特定类型。该索引要求主键中的每个值都唯一。当在查询中使用主键索引时，它还允许对数据的快速访问。
+## 3、聚集索引
+在聚集索引中，表中行的物理顺序与键值的逻辑（索引）顺序相同。一个表只能包含一个聚集索引。
+如果某索引不是聚集索引，则表中行的物理顺序与键值的逻辑顺序不匹配。与非聚集索引相比，聚集索引通常提供更快的数据访问速度。
+聚集索引对于任意给定的表而言是唯一的，一个表只能有一个聚集索引。不一定非要有聚集索引。聚集索引特殊的方面是：聚集索引的叶级是实际的数据-也就是说，数据重新排序，按照和聚集索引排序条件声明的相同物理顺序存储。<strong>这意味着，一旦到达索引的叶级，就到达了数据。而非聚集索引，到达了叶级只是找到了数据的引用。</strong>
+<img src="/img/聚集索引.png" /></p>
+<h1 id="五索引的效率">五、索引的效率</h1>
 <p><strong>一般来说，索引本身也很大，不可能全部存储在内存中，因此索引往往以索引文件的形式存储的磁盘上。这样的话，索引查找过程中就要产生磁盘I/O消耗，相对于内存存取，I/O存取的消耗要高几个数量级，所以评价一个数据结构作为索引的优劣最重要的指标就是在查找过程中磁盘I/O操作次数的渐进复杂度。换句话说，索引的结构组织要尽量减少查找过程中磁盘I/O的存取次数。</strong></p>
-<h2 id="1-b-tree"><a class="markdownIt-Anchor" href="#1-b-tree"></a> 1、B Tree</h2>
-<p>B树（Balance Tree）又叫做B- 树（其实B-是由B-tree翻译过来，所以B-树和B树是一个概念） ，它就是一种平衡多路查找树。下图就是一个典型的B树：<br />
-<img src="/img/B-%E6%A0%91.png" alt="" /><br />
-从上图中我们可以大致看到B树的一些特点，为了更好的描述B树，我们定义记录为一个二元组[key, data]，key为记录的键值，data表示其它数据（上图中只有key，没有画出data数据 ）。下面是对B树的一个详细定义：</p>
-<ol>
-<li>有一个根节点，根节点只有一个记录和两个孩子或者根节点为空；</li>
-<li>每个节点记录中的key和指针相互间隔，指针指向孩子节点；</li>
-<li>d是表示树的宽度，除叶子节点之外，其它每个节点有[d/2,d-1]条记录，并且些记录中的key都是从左到右按大小排列的，有[d/2+1,d]个孩子；</li>
-<li>在一个节点中，第n个子树中的所有key，小于这个节点中第n个key，大于第n-1个key，比如上图中B节点的第2个子节点E中的所有key都小于B中的第2个key 9，大于第1个key 3;</li>
-<li>所有的叶子节点必须在同一层次，也就是它们具有相同的深度；<br />
-由于B-Tree的特性，在B-Tree中按key检索数据的算法非常直观：首先从根节点进行二分查找，如果找到则返回对应节点的data，否则对相应区间的指针指向的节点递归进行查找，直到找到节点或找到null指针，前者查找成功，后者查找失败。</li>
-</ol>
-<p>关于B-Tree有一系列有趣的性质，例如一个度为d的B-Tree，设其索引N个key，则其树高h的上限为$$\log _{d}(N/2)$$，检索一个key，其查找节点个数的渐进复杂度为O($$\log _{d}((N+1)/2)$$)。从这点可以看出，B-Tree是一个非常有效率的索引数据结构。</p>
+<h2 id="b-tree">1、B Tree</h2>
+<p>B树（Balance Tree）又叫做B-
+树（其实B-是由B-tree翻译过来，所以B-树和B树是一个概念）
+，它就是一种平衡多路查找树。下图就是一个典型的B树： <img
+src="/img/B-树.png" />
+从上图中我们可以大致看到B树的一些特点，为了更好的描述B树，我们定义记录为一个二元组[key,
+data]，key为记录的键值，data表示其它数据（上图中只有key，没有画出data数据
+）。下面是对B树的一个详细定义： 1.
+有一个根节点，根节点只有一个记录和两个孩子或者根节点为空； 2.
+每个节点记录中的key和指针相互间隔，指针指向孩子节点； 3.
+d是表示树的宽度，除叶子节点之外，其它每个节点有[d/2,d-1]条记录，并且些记录中的key都是从左到右按大小排列的，有[d/2+1,d]个孩子；
+4.
+在一个节点中，第n个子树中的所有key，小于这个节点中第n个key，大于第n-1个key，比如上图中B节点的第2个子节点E中的所有key都小于B中的第2个key
+9，大于第1个key 3; 5.
+所有的叶子节点必须在同一层次，也就是它们具有相同的深度；
+由于B-Tree的特性，在B-Tree中按key检索数据的算法非常直观：首先从根节点进行二分查找，如果找到则返回对应节点的data，否则对相应区间的指针指向的节点递归进行查找，直到找到节点或找到null指针，前者查找成功，后者查找失败。</p>
+<p>关于B-Tree有一系列有趣的性质，例如一个度为d的B-Tree，设其索引N个key，则其树高h的上限为<span
+class="math display">\[\log
+_{d}(N/2)\]</span>，检索一个key，其查找节点个数的渐进复杂度为O(<span
+class="math display">\[\log
+_{d}((N+1)/2)\]</span>)。从这点可以看出，B-Tree是一个非常有效率的索引数据结构。</p>
 <p>另外，由于插入删除新的数据记录会破坏B-Tree的性质，因此在插入删除时，需要对树进行一个分裂、合并、转移等操作以保持B-Tree性质，本文不打算完整讨论B-Tree这些内容，因为已经有许多资料详细说明了B-Tree的数学性质及插入删除算法，有兴趣的朋友可以查阅其它文献进行详细研究。</p>
-<h2 id="2-btree"><a class="markdownIt-Anchor" href="#2-btree"></a> 2、B+Tree</h2>
-<p>其实B-Tree有许多变种，其中最常见的是B+Tree，比如MySQL就普遍使用B+Tree实现其索引结构。B-Tree相比，B+Tree有以下不同点：</p>
-<ul>
-<li>每个节点的指针上限为2d而不是2d+1；</li>
-<li>内节点不存储data，只存储key；</li>
-<li>叶子节点不存储指针；</li>
-<li>下面是一个简单的B+Tree示意。<br />
-<img src="/img/B+%E6%A0%911.png" alt="" /><br />
-由于并不是所有节点都具有相同的域，因此B+Tree中叶节点和内节点一般大小不同。这点与B-Tree不同，虽然B-Tree中不同节点存放的key和指针可能数量不一致，但是每个节点的域和上限是一致的，所以在实现中B-Tree往往对每个节点申请同等大小的空间。一般来说，B+Tree比B-Tree更适合实现外存储索引结构，具体原因与外存储器原理及计算机存取原理有关，将在下面讨论。</li>
-</ul>
-<p><strong>带有顺序访问指针的B+Tree：一般在数据库系统或文件系统中使用的B+Tree结构都在经典B+Tree的基础上进行了优化，增加了顺序访问指针。</strong><br />
-<img src="/img/B+%E6%A0%912.png" alt="" /><br />
+<h2 id="btree">2、B+Tree</h2>
+<p>其实B-Tree有许多变种，其中最常见的是B+Tree，比如MySQL就普遍使用B+Tree实现其索引结构。B-Tree相比，B+Tree有以下不同点：
+- 每个节点的指针上限为2d而不是2d+1； - 内节点不存储data，只存储key； -
+叶子节点不存储指针； - 下面是一个简单的B+Tree示意。 <img
+src="/img/B+树1.png" />
+由于并不是所有节点都具有相同的域，因此B+Tree中叶节点和内节点一般大小不同。这点与B-Tree不同，虽然B-Tree中不同节点存放的key和指针可能数量不一致，但是每个节点的域和上限是一致的，所以在实现中B-Tree往往对每个节点申请同等大小的空间。一般来说，B+Tree比B-Tree更适合实现外存储索引结构，具体原因与外存储器原理及计算机存取原理有关，将在下面讨论。</p>
+<p><strong>带有顺序访问指针的B+Tree：一般在数据库系统或文件系统中使用的B+Tree结构都在经典B+Tree的基础上进行了优化，增加了顺序访问指针。</strong>
+<img src="/img/B+树2.png" />
 如图所示，在B+Tree的每个叶子节点增加一个指向相邻叶子节点的指针，就形成了带有顺序访问指针的B+Tree。做这个优化的目的是为了提高区间访问的性能，例如图4中如果要查询key为从18到49的所有数据记录，当找到18后，只需顺着节点和指针顺序遍历就可以一次性访问到所有数据节点，极大提到了区间查询效率。</p>
-<h2 id="2-b-树和b树的比较"><a class="markdownIt-Anchor" href="#2-b-树和b树的比较"></a> 2、B-树和B+树的比较</h2>
-<p><img src="/img/B-B+%E6%A0%91.png" alt="" /><br />
-如图所示，<strong>区别有以下两点：</strong></p>
-<ol>
-<li><strong>B+树中只有叶子节点会带有指向记录的指针（ROWID），而B树则所有节点都带有，在内部节点出现的索引项不会再出现在叶子节点中。</strong></li>
-<li><strong>B+树中所有叶子节点都是通过指针连接在一起，而B树不会。</strong></li>
-</ol>
-<p><strong>B+树的优点：</strong></p>
-<ol>
-<li>非叶子节点不会带上ROWID，这样，一个块中可以容纳更多的索引项，一是可以降低树的高度。二是一个内部节点可以定位更多的叶子节点。</li>
-<li>叶子节点之间通过指针来连接，范围扫描将十分简单，而对于B树来说，则需要在叶子节点和内部节点不停的往返移动。</li>
-</ol>
-<p><strong>B树的优点：</strong></p>
-<ul>
-<li>对于在内部节点的数据，可直接得到，不必根据叶子节点来定位。</li>
-</ul>
-<h1 id="六-b-树和b树的效率分析"><a class="markdownIt-Anchor" href="#六-b-树和b树的效率分析"></a> 六、B-树和B+树的效率分析</h1>
-<h2 id="1-局部性原理与磁盘预读"><a class="markdownIt-Anchor" href="#1-局部性原理与磁盘预读"></a> 1、局部性原理与磁盘预读</h2>
-<p>由于存储介质的特性，磁盘本身存取就比主存慢很多，再加上机械运动耗费，磁盘的存取速度往往是主存的几百分分之一，因此为了提高效率，要尽量减少磁盘I/O。为了达到这个目的，磁盘往往不是严格按需读取，而是每次都会预读，即使只需要一个字节，磁盘也会从这个位置开始，顺序向后读取一定长度的数据放入内存。<strong>这样做的理论依据是计算机科学中著名的局部性原理：当一个数据被用到时，其附近的数据也通常会马上被使用。程序运行期间所需要的数据通常比较集中。</strong><br />
+<h2 id="b-树和b树的比较">2、B-树和B+树的比较</h2>
+<p><img src="/img/B-B+树.png" />
+如图所示，<strong>区别有以下两点：</strong> 1.
+<strong>B+树中只有叶子节点会带有指向记录的指针（ROWID），而B树则所有节点都带有，在内部节点出现的索引项不会再出现在叶子节点中。</strong>
+2.
+<strong>B+树中所有叶子节点都是通过指针连接在一起，而B树不会。</strong></p>
+<p><strong>B+树的优点：</strong> 1.
+非叶子节点不会带上ROWID，这样，一个块中可以容纳更多的索引项，一是可以降低树的高度。二是一个内部节点可以定位更多的叶子节点。
+2.
+叶子节点之间通过指针来连接，范围扫描将十分简单，而对于B树来说，则需要在叶子节点和内部节点不停的往返移动。</p>
+<p><strong>B树的优点：</strong> -
+对于在内部节点的数据，可直接得到，不必根据叶子节点来定位。</p>
+<h1 id="六b-树和b树的效率分析">六、B-树和B+树的效率分析</h1>
+<h2 id="局部性原理与磁盘预读">1、局部性原理与磁盘预读</h2>
+<p>由于存储介质的特性，磁盘本身存取就比主存慢很多，再加上机械运动耗费，磁盘的存取速度往往是主存的几百分分之一，因此为了提高效率，要尽量减少磁盘I/O。为了达到这个目的，磁盘往往不是严格按需读取，而是每次都会预读，即使只需要一个字节，磁盘也会从这个位置开始，顺序向后读取一定长度的数据放入内存。<strong>这样做的理论依据是计算机科学中著名的局部性原理：当一个数据被用到时，其附近的数据也通常会马上被使用。程序运行期间所需要的数据通常比较集中。</strong>
 由于磁盘顺序读取的效率很高（不需要寻道时间，只需很少的旋转时间），因此对于具有局部性的程序来说，预读可以提高I/O效率。预读的长度一般为页（page）的整倍数。页是计算机管理存储器的逻辑块，硬件及操作系统往往将主存和磁盘存储区分割为连续的大小相等的块，每个存储块称为一页（在许多操作系统中，页得大小通常为4k），主存和磁盘以页为单位交换数据。当程序要读取的数据不在主存中时，会触发一个缺页异常，此时系统会向磁盘发出读盘信号，磁盘会找到数据的起始位置并向后连续读取一页或几页载入内存中，然后异常返回，程序继续运行。</p>
-<h2 id="2-b树性能分析"><a class="markdownIt-Anchor" href="#2-b树性能分析"></a> 2、B+树性能分析</h2>
-<p>从上面介绍我们知道，B树的搜索复杂度为O(h)=O($$\log _{d}N$$)，所以树的出度d越大，深度h就越小，I/O的次数就越少。B+Tree恰恰可以增加出度d的宽度，因为每个节点大小为一个页大小，所以出度的上限取决于节点内key和data的大小：<br />
-dmax=floor(pagesize/(keysize+datasize+pointsize))//floor表示向下取整<br />
+<h2 id="b树性能分析">2、B+树性能分析</h2>
+<p>从上面介绍我们知道，B树的搜索复杂度为O(h)=O(<span
+class="math display">\[\log
+_{d}N\]</span>)，所以树的出度d越大，深度h就越小，I/O的次数就越少。B+Tree恰恰可以增加出度d的宽度，因为每个节点大小为一个页大小，所以出度的上限取决于节点内key和data的大小：
+dmax=floor(pagesize/(keysize+datasize+pointsize))//floor表示向下取整
 由于B+Tree内节点去掉了data域，因此可以拥有更大的出度，从而拥有更好的性能。</p>
-<p><strong>B+树查找过程</strong><br />
-<img src="/img/B+%E6%A0%91.png" alt="" /><br />
+<p><strong>B+树查找过程</strong> <img src="/img/B+树.png" />
 B-树和B+树查找过程基本一致。如上图所示，如果要查找数据项29，那么首先会把磁盘块1由磁盘加载到内存，此时发生一次IO，在内存中用二分查找确定29在17和35之间，锁定磁盘块1的P2指针，内存时间因为非常短（相比磁盘的IO）可以忽略不计，通过磁盘块1的P2指针的磁盘地址把磁盘块3由磁盘加载到内存，发生第二次IO，29在26和30之间，锁定磁盘块3的P2指针，通过指针加载磁盘块8到内存，发生第三次IO，同时内存中做二分查找找到29，结束查询，总计三次IO。真实的情况是，3层的b+树可以表示上百万的数据，如果上百万的数据查找只需要三次IO，性能提高将是巨大的，如果没有索引，每个数据项都要发生一次IO，那么总共需要百万次的IO，显然成本非常非常高。</p>
 
     </div>

@@ -27,10 +27,7 @@
 <meta property="og:site_name" content="忆桐之家的博客">
 <meta property="og:description" content="VMware NSX is the company’s network virtualization and security platform for the software-defined data center (SDDC). 传统的数据中心都是用物理网络来分隔不同的业务系统，这就需要管理员预先规划好数据中心的网络拓扑结构，划分好 VLAN，以确保各个业务系统之间是相互隔离的；并且在防火墙">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://hongyitong.github.io/img/NSX1.png">
 <meta property="og:image" content="http://hongyitong.github.io/img/NSX2.png">
-<meta property="og:image" content="http://hongyitong.github.io/img/NSX3.png">
-<meta property="og:image" content="http://hongyitong.github.io/img/NSX4.png">
 <meta property="article:published_time" content="2018-08-21T16:00:00.000Z">
 <meta property="article:modified_time" content="2018-08-22T12:53:22.000Z">
 <meta property="article:author" content="Rayman.hung">
@@ -38,7 +35,7 @@
 <meta property="article:tag" content="VMvare">
 <meta property="article:tag" content="网络虚拟化">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://hongyitong.github.io/img/NSX1.png">
+<meta name="twitter:image" content="http://hongyitong.github.io/img/NSX2.png">
 
 
 <link rel="canonical" href="http://hongyitong.github.io/2018/08/22/NSX%E7%BD%91%E7%BB%9C%E8%99%9A%E6%8B%9F%E5%8C%96/">
@@ -289,23 +286,44 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <p>VMware NSX is the company’s network virtualization and security platform for the software-defined data center (SDDC).<br />
-传统的数据中心都是用物理网络来分隔不同的业务系统，这就需要管理员预先规划好数据中心的网络拓扑结构，划分好 VLAN，以确保各个业务系统之间是相互隔离的；并且在防火墙上配置上百条规则，针对每一个应用关闭不需要的网络端口，以降低黑客攻击的风险。这是一个费时费力的工作，一旦某个业务系统需要增加一些新的功能，或者不同的业务系统之间需要互相访问，就需要对数据中心内的网络做出相应的调整，这个过程不但费时，而且需要非常小心，避免任何一个错误的配置而导致网络中断。</p>
-<span id="more"></span>
-<p><img src="/img/NSX1.png" alt="" title=" 传统数据中心：各个业务系统在硬件上相互隔离" /><br />
-在基于 vSphere 的软件定义数据中心中，各个虚机的网络都连接在 Hypervisor 所提供的一个虚拟交换机上，这个交换机是横跨整个 vSphere 集群的各个物理服务器的，所以称之为分布式交换机 (Distributed Switch)。所有虚机的网络通讯都是通过这个虚拟交换机来实现的，分布式交换机负责把数据包通过底层的物理网络转发到应该去的目的地。既然所有的网络通讯都是由虚拟交换机软件来实现的，我们自然可以通过软件来实现更多的网络功能，这个软件就是 VMware NSX，来自于 VMware 2012 年收购的 Nicia。<br />
-<img src="/img/NSX2.png" alt="" title="网络虚拟化的实现原理 " /><br />
-NSX 为虚机提供了虚拟化的网络，把虚机和物理网络相隔离，做到了网络服务与具体的物理网络设备无关，使得用户在网络设备的选择和采购上有着更大的灵活性。NSX 在虚拟网络上可以提供几乎所有的网络服务，如：路由器、负载均衡、防火墙等。除了这些常规的功能，NSX 还能够提供一些传统物理网络无法实现或实现代价很高的功能：<br />
-**东西向防火墙：**通常我们把数据中心内部的网络流量称之为东西向流量，数据中心内部和外部的流量称之为南北向流量。数据中心一般只在对外的网络边界上设置防火墙，因为原则上认为入侵风险来自于外部，数据中心内部是相对安全的。如果使用硬件防火墙的话，就需要在所有的业务系统之间设置防火墙，且不说这是一笔很大的硬件投资，就是防火墙规则的设置和维护也是一个巨大的工作量，所以没有数据中心会这么做。但是 NSX 可以很容易地通过软件实现这一功能，把来自于数据中心内部的入侵风险降到最低，即使黑客能够攻陷某一个应用，他也无法访问到数据中心内部其他的系统。<br />
-**网络微分段：**传统的物理网络是用物理网段或 VLAN 来隔离不同网络的，而且只能隔离到物理服务器（同一服务器上的虚机之间还是没有隔离的），当需要对网段进行调整时，需要调整物理网络或 VLAN，这可不是一件轻松的工作。微分段 (Micro-segmentation) 是通过分布式防火墙实现的功能，每个虚机都有一台防火墙，自然可以很轻松地隔离微分段之外的虚机。<br />
-<img src="/img/NSX3.png" alt="" title=" 软件定义数据中心：各个业务系统在 NSX 虚拟网络平台上相互隔离，但共用同一个物理网络" /></p>
-<p>NSX 所提供的虚拟化网络平台不再要求各业务系统的网络物理隔离，只需要标准化的交换机或路由器把整个数据中心联成一张大网，NSX 会在虚拟网络层上根据业务需求提供隔离（使用微分段技术）。数据中心网络的规划和管理大大简化，既可以降低网络设备的采购成本，也可以有效降低网络的运营管理成本。<br />
-在 NSX 虚拟网络上，传统网络中由硬件提供的路由 (RT – Routing) 、交换 (SW – Switching)、负载均衡 (LB – Load Balancing) 和防火墙 (FW – FireWall) 功能都改由软件来实现了，具有更大的灵活性。<br />
-<img src="/img/NSX4.png" alt="" title=" " /><br />
-NSX 主要有三大应用场景：</p>
-<p>**数据中心网络安全：**如上所述，分布式软件防火墙和微分段大大简化了数据中心的网络安全管理，相比物理网络环境能够实现更高等级的安全防护。<br />
-**IT 自动化：**虚拟网络的功能都是由软件来实现的，所以能够使用命令来动态地创建网络设备，调整网络配置和安全策略参数，实现数据中心的 IT 自动化。<br />
-**业务持续性：**虚机的网络环境都是由虚拟网络所提供的，当发生故障转移 (failover) 时，虚机不用改变包括 IP 地址在内的任何网络参数，NSX 会负责把虚机所依赖的整个虚拟网络环境以及对应的网络安全策略迁移到新的服务器上运行，从而保证业务的持续性。</p>
+        <p>VMware NSX is the company’s network virtualization and security
+platform for the software-defined data center (SDDC).
+传统的数据中心都是用物理网络来分隔不同的业务系统，这就需要管理员预先规划好数据中心的网络拓扑结构，划分好
+VLAN，以确保各个业务系统之间是相互隔离的；并且在防火墙上配置上百条规则，针对每一个应用关闭不需要的网络端口，以降低黑客攻击的风险。这是一个费时费力的工作，一旦某个业务系统需要增加一些新的功能，或者不同的业务系统之间需要互相访问，就需要对数据中心内的网络做出相应的调整，这个过程不但费时，而且需要非常小心，避免任何一个错误的配置而导致网络中断。
+<span id="more"></span> ![](/img/NSX1.png "
+传统数据中心：各个业务系统在硬件上相互隔离") 在基于 vSphere
+的软件定义数据中心中，各个虚机的网络都连接在 Hypervisor
+所提供的一个虚拟交换机上，这个交换机是横跨整个 vSphere
+集群的各个物理服务器的，所以称之为分布式交换机 (Distributed
+Switch)。所有虚机的网络通讯都是通过这个虚拟交换机来实现的，分布式交换机负责把数据包通过底层的物理网络转发到应该去的目的地。既然所有的网络通讯都是由虚拟交换机软件来实现的，我们自然可以通过软件来实现更多的网络功能，这个软件就是
+VMware NSX，来自于 VMware 2012 年收购的 Nicia。 <img src="/img/NSX2.png"
+title="网络虚拟化的实现原理" /> NSX
+为虚机提供了虚拟化的网络，把虚机和物理网络相隔离，做到了网络服务与具体的物理网络设备无关，使得用户在网络设备的选择和采购上有着更大的灵活性。NSX
+在虚拟网络上可以提供几乎所有的网络服务，如：路由器、负载均衡、防火墙等。除了这些常规的功能，NSX
+还能够提供一些传统物理网络无法实现或实现代价很高的功能：
+<strong>东西向防火墙：</strong>通常我们把数据中心内部的网络流量称之为东西向流量，数据中心内部和外部的流量称之为南北向流量。数据中心一般只在对外的网络边界上设置防火墙，因为原则上认为入侵风险来自于外部，数据中心内部是相对安全的。如果使用硬件防火墙的话，就需要在所有的业务系统之间设置防火墙，且不说这是一笔很大的硬件投资，就是防火墙规则的设置和维护也是一个巨大的工作量，所以没有数据中心会这么做。但是
+NSX
+可以很容易地通过软件实现这一功能，把来自于数据中心内部的入侵风险降到最低，即使黑客能够攻陷某一个应用，他也无法访问到数据中心内部其他的系统。
+<strong>网络微分段：</strong>传统的物理网络是用物理网段或 VLAN
+来隔离不同网络的，而且只能隔离到物理服务器（同一服务器上的虚机之间还是没有隔离的），当需要对网段进行调整时，需要调整物理网络或
+VLAN，这可不是一件轻松的工作。微分段 (Micro-segmentation)
+是通过分布式防火墙实现的功能，每个虚机都有一台防火墙，自然可以很轻松地隔离微分段之外的虚机。
+![](/img/NSX3.png " 软件定义数据中心：各个业务系统在 NSX
+虚拟网络平台上相互隔离，但共用同一个物理网络")</p>
+<p>NSX
+所提供的虚拟化网络平台不再要求各业务系统的网络物理隔离，只需要标准化的交换机或路由器把整个数据中心联成一张大网，NSX
+会在虚拟网络层上根据业务需求提供隔离（使用微分段技术）。数据中心网络的规划和管理大大简化，既可以降低网络设备的采购成本，也可以有效降低网络的运营管理成本。
+在 NSX 虚拟网络上，传统网络中由硬件提供的路由 (RT – Routing) 、交换 (SW
+– Switching)、负载均衡 (LB – Load Balancing) 和防火墙 (FW – FireWall)
+功能都改由软件来实现了，具有更大的灵活性。 ![](/img/NSX4.png " ") NSX
+主要有三大应用场景：</p>
+<p><strong>数据中心网络安全：</strong>如上所述，分布式软件防火墙和微分段大大简化了数据中心的网络安全管理，相比物理网络环境能够实现更高等级的安全防护。
+<strong>IT
+自动化：</strong>虚拟网络的功能都是由软件来实现的，所以能够使用命令来动态地创建网络设备，调整网络配置和安全策略参数，实现数据中心的
+IT 自动化。
+<strong>业务持续性：</strong>虚机的网络环境都是由虚拟网络所提供的，当发生故障转移
+(failover) 时，虚机不用改变包括 IP 地址在内的任何网络参数，NSX
+会负责把虚机所依赖的整个虚拟网络环境以及对应的网络安全策略迁移到新的服务器上运行，从而保证业务的持续性。</p>
 
     </div>
 
