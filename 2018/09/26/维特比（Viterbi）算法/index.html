@@ -20,19 +20,22 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="Viterbi算法实际上是最优路径算法的一种。我们首先思考一下，如果让你设计算法寻找最优路径，你该怎么做？ # 穷举法 我把所有可能路径都计算一遍，最优路径自然就出来了。 缺点：计算量太大。 # A*算法 我每一步只走最好走的路。 优点：计算快，而且这种贪心或者说启发式的算法，通常情况下，效果还是不错的。 缺点：“九阴白骨爪”比“九阴真经”速成，然而要是一开始就练“九阴白骨爪”，多半成不了绝顶高手">
+    <meta name="description" content="Viterbi算法实际上是最优路径算法的一种。我们首先思考一下，如果让你设计算法寻找最优路径，你该怎么做？  穷举法 我把所有可能路径都计算一遍，最优路径自然就出来了。 缺点：计算量太大。  A*算法 我每一步只走最好走的路。 优点：计算快，而且这种贪心或者说启发式的算法，通常情况下，效果还是不错的。 缺点：“九阴白骨爪”比“九阴真经”速成，然而要是一开始就练“九阴白骨爪”，多半成不了绝顶高手（最">
 <meta property="og:type" content="article">
 <meta property="og:title" content="维特比（Viterbi）算法">
 <meta property="og:url" content="http://hongyitong.github.io/2018/09/26/%E7%BB%B4%E7%89%B9%E6%AF%94%EF%BC%88Viterbi%EF%BC%89%E7%AE%97%E6%B3%95/index.html">
 <meta property="og:site_name" content="忆桐之家的博客">
-<meta property="og:description" content="Viterbi算法实际上是最优路径算法的一种。我们首先思考一下，如果让你设计算法寻找最优路径，你该怎么做？ # 穷举法 我把所有可能路径都计算一遍，最优路径自然就出来了。 缺点：计算量太大。 # A*算法 我每一步只走最好走的路。 优点：计算快，而且这种贪心或者说启发式的算法，通常情况下，效果还是不错的。 缺点：“九阴白骨爪”比“九阴真经”速成，然而要是一开始就练“九阴白骨爪”，多半成不了绝顶高手">
+<meta property="og:description" content="Viterbi算法实际上是最优路径算法的一种。我们首先思考一下，如果让你设计算法寻找最优路径，你该怎么做？  穷举法 我把所有可能路径都计算一遍，最优路径自然就出来了。 缺点：计算量太大。  A*算法 我每一步只走最好走的路。 优点：计算快，而且这种贪心或者说启发式的算法，通常情况下，效果还是不错的。 缺点：“九阴白骨爪”比“九阴真经”速成，然而要是一开始就练“九阴白骨爪”，多半成不了绝顶高手（最">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/img/viterbi%E7%AE%97%E6%B3%951.jpg">
+<meta property="og:image" content="http://hongyitong.github.io/img/viterbi%E7%AE%97%E6%B3%952.gif">
 <meta property="article:published_time" content="2018-09-25T16:00:00.000Z">
 <meta property="article:modified_time" content="2018-09-28T01:41:36.000Z">
 <meta property="article:author" content="Rayman.hung">
 <meta property="article:tag" content="最佳路径">
 <meta property="article:tag" content="维特比">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hongyitong.github.io/img/viterbi%E7%AE%97%E6%B3%951.jpg">
 
 
 <link rel="canonical" href="http://hongyitong.github.io/2018/09/26/%E7%BB%B4%E7%89%B9%E6%AF%94%EF%BC%88Viterbi%EF%BC%89%E7%AE%97%E6%B3%95/">
@@ -149,7 +152,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#beam-search"><span class="nav-number">1.</span> <span class="nav-text">beam search</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%A9%B7%E4%B8%BE%E6%B3%95"><span class="nav-number">1.</span> <span class="nav-text"> 穷举法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#a%E7%AE%97%E6%B3%95"><span class="nav-number">2.</span> <span class="nav-text"> A*算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#beam-search"><span class="nav-number">3.</span> <span class="nav-text"> beam search</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#viterbi%E7%AE%97%E6%B3%95"><span class="nav-number">4.</span> <span class="nav-text"> Viterbi算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#beam-search%E4%B8%8Eviterbi%E7%AE%97%E6%B3%95"><span class="nav-number">5.</span> <span class="nav-text"> Beam Search与Viterbi算法</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -173,7 +176,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags">
-        <span class="site-state-item-count">1098</span>
+        <span class="site-state-item-count">1096</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -290,24 +293,25 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <p>Viterbi算法实际上是最优路径算法的一种。我们首先思考一下，如果让你设计算法寻找最优路径，你该怎么做？
-# 穷举法 我把所有可能路径都计算一遍，最优路径自然就出来了。
-缺点：计算量太大。 # A*算法 我每一步只走最好走的路。
-优点：计算快，而且这种贪心或者说启发式的算法，通常情况下，效果还是不错的。
+        <p>Viterbi算法实际上是最优路径算法的一种。我们首先思考一下，如果让你设计算法寻找最优路径，你该怎么做？</p>
+<h1 id="穷举法"><a class="markdownIt-Anchor" href="#穷举法"></a> 穷举法</h1>
+<p>我把所有可能路径都计算一遍，最优路径自然就出来了。<br />
+缺点：计算量太大。</p>
+<h1 id="a算法"><a class="markdownIt-Anchor" href="#a算法"></a> A*算法</h1>
+<p>我每一步只走最好走的路。<br />
+优点：计算快，而且这种贪心或者说启发式的算法，通常情况下，效果还是不错的。<br />
 缺点：“九阴白骨爪”比“九阴真经”速成，然而要是一开始就练“九阴白骨爪”，多半成不了绝顶高手（最优解）。</p>
-<h1 id="beam-search">beam search</h1>
-<p>我每一步只走最好走的前N条路。这里的N也叫Beam Width。 <span id="more"></span> <img
-src="/img/viterbi算法1.jpg" /> 上图是一个Beam Width为2的Beam
-Search的剪枝示意图。每一层只保留2个最优的分支，其余分支都被剪掉了。显然，Beam
-Width越大，找到最优解的概率越大，相应的计算复杂度也越大。因此，设置合适的Beam
-Width是一个工程中需要trade off的事情。 # Viterbi算法 <img
-src="/img/viterbi算法2.gif" />
-上图是Viterbi算法的动画图。简单来说就是：从开始状态之后每走一步，就记录下<strong>到达该状态的所有路径的概率最大值</strong>，然后以此最大值为基准继续向后推进。显然，如果这个最大值都不能使该状态成为最大似然状态路径上的结点的话，那些小于它的概率值（以及对应的路径）就更没有可能了。
-<strong>不要和A*算法搞混了，虽然Viterbi算法反向确定路径的步骤和A*算法类似，但正向单步计算，还是把所有情况都算了的。因此，A*算法比Viterbi算法快的多。</strong>
-# Beam Search与Viterbi算法 Beam
-Search与Viterbi算法虽然都是解空间的剪枝算法，但它们的思路是不同的。Beam
-Search是对状态迁移的路径进行剪枝，而Viterbi算法是合并不同路径到达同一状态的概率值，用最大值作为对该状态的充分估计值，从而在后续计算中，忽略历史信息（这种以偏概全也就是所谓的Markov性），以达到剪枝的目的。从状态转移图的角度来说，Beam
-Search是空间剪枝，而Viterbi算法是时间剪枝。</p>
+<h1 id="beam-search"><a class="markdownIt-Anchor" href="#beam-search"></a> beam search</h1>
+<p>我每一步只走最好走的前N条路。这里的N也叫Beam Width。</p>
+<span id="more"></span>
+<p><img src="/img/viterbi%E7%AE%97%E6%B3%951.jpg" alt="" /><br />
+上图是一个Beam Width为2的Beam Search的剪枝示意图。每一层只保留2个最优的分支，其余分支都被剪掉了。显然，Beam Width越大，找到最优解的概率越大，相应的计算复杂度也越大。因此，设置合适的Beam Width是一个工程中需要trade off的事情。</p>
+<h1 id="viterbi算法"><a class="markdownIt-Anchor" href="#viterbi算法"></a> Viterbi算法</h1>
+<p><img src="/img/viterbi%E7%AE%97%E6%B3%952.gif" alt="" /><br />
+上图是Viterbi算法的动画图。简单来说就是：从开始状态之后每走一步，就记录下<strong>到达该状态的所有路径的概率最大值</strong>，然后以此最大值为基准继续向后推进。显然，如果这个最大值都不能使该状态成为最大似然状态路径上的结点的话，那些小于它的概率值（以及对应的路径）就更没有可能了。<br />
+<strong>不要和A*算法搞混了，虽然Viterbi算法反向确定路径的步骤和A*算法类似，但正向单步计算，还是把所有情况都算了的。因此，A*算法比Viterbi算法快的多。</strong></p>
+<h1 id="beam-search与viterbi算法"><a class="markdownIt-Anchor" href="#beam-search与viterbi算法"></a> Beam Search与Viterbi算法</h1>
+<p>Beam Search与Viterbi算法虽然都是解空间的剪枝算法，但它们的思路是不同的。Beam Search是对状态迁移的路径进行剪枝，而Viterbi算法是合并不同路径到达同一状态的概率值，用最大值作为对该状态的充分估计值，从而在后续计算中，忽略历史信息（这种以偏概全也就是所谓的Markov性），以达到剪枝的目的。从状态转移图的角度来说，Beam Search是空间剪枝，而Viterbi算法是时间剪枝。</p>
 
     </div>
 

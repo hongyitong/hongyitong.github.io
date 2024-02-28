@@ -171,7 +171,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags">
-        <span class="site-state-item-count">1098</span>
+        <span class="site-state-item-count">1096</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -288,36 +288,55 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <p>转自：https://www.pureweber.com/article/recursive-power-4/
-递归的力量（四）：递归效率
-前几天我们在讨论递归的过程中发现，递归在解决某些问题的时候使得我们思考的方式得以简化，代码也更加精炼，容易阅读。那么既然递归有这么多的优点，我们是不是什么问题都要用递归来解决呢？难道递归就没有缺点吗？今天我们就来讨论一下递归的不足之处。
-<strong>我们知道，递归调用实际上是函数自己在调用自己，而函数的调用开销是很大的，系统要为每次函数调用分配存储空间，并将调用点压栈予以记录。而在函数调用结束后，还要释放空间，弹栈恢复断点。所以说，函数调用不仅浪费空间，还浪费时间。</strong>
-这样，我们发现，同一个问题，如果递归解决方案的复杂度不明显优于其它解决方案的话，那么使用递归是不划算的。因为它的很多时间浪费在对函数调用的处理上。在C++中引入了内联函的概念，其实就是为了避免简单函数内部语句的执行时间小于函数调用的时间而造成效率降低的情况出现。在这里也是一个道理，如果过多的时间用于了函数调用的处理，那么效率显然高不起来。<span id="more"></span>
-举例来说，对于求阶乘的函数来说，其迭代算法的时间复杂度为O(n)：
-<code>c++ int fact(n)&#123;      int i;      int r = 1;      for(i = 1; i &lt;= n; i++)&#123;           r *= i;      &#125;      return r; &#125;</code>
-而其递归函数的时间复杂度也是O(n)：
-<code>c++ int fact_r(n)&#123;     if(n == 0)          return 1;     else          return n * f(n - 1); &#125;</code>
-但是递归算法要进行n次函数调用，而迭代算法则只需要进行n次迭代而已。其效率上的差异是很显著的。</p>
-<p>我们再来看看之前我们讨论的费波纳契数列问题。</p>
-<p>我们当时使用的是简单的用定义来求 fib(n)，也就是使用公式 fib(n) =
-fib(n-1) +
-fib(n-2)。这样的想法是很容易想到的，可是仔细分析一下我们发现，当调用fib(n-1)的时候，还要调用fib(n-2)，也就是说fib(n-2)调用了两次，同样的道理，调用f(n-2)时f(n-3)也调用了两次，而这些冗余的调用是完全没有必要的。可以计算这个算法的复杂度是指数级的。</p>
-<p>那么计算费波纳契数列是否有更好的递归算法呢？
-当然有。让我们来观察一下费波纳契数列的前几项：</p>
-<p>1, 1, 2, 3, 5, 8, 13, 21, 34, 55 ...
-注意到没有，如果我们去掉前面一项，得到的数列依然满足f(n) = f(n-1) –
-f(n-2),
-(n&gt;2)，而我们得到的数列是以1，2开头的。很容易发现这个数列的第n-1项就是原数列的第n项。怎么样，知道我们该怎么设计算法了吧？我们可以写这样的一个函数，它接受三个参数，前两个是数列的开头两项，第三个是我们想求的以前两个参数开头的数列的第几项。</p>
-<p>int fib_i(int a, int b, int n);
-在函数内部我们先检查n的值，如果n为3则我们只需返回a+b即可，这是简单情境。如果n&gt;3，那么我们就调用f(b,
-a+b,
-n-1)，这样我们就缩小了问题的规模（从求第n项变成求第n-1项）。好了，最终代码如下：
-<code>c++ int fib_i(int a, int b , int n)&#123;     if(n == 3)          return a+b;     else          return fib_i(b, a+b, n-1); &#125;</code>
-这样得到的算法复杂度是 O(n)
-的。已经是线性的了。它的效率已经可以与迭代算法的效率相比了，但由于还是要反复的进行函数调用，还是不够经济。</p>
-<p>由以上分析我们可以看到，递归在处理问题时要反复调用函数，这增大了它的空间和时间开销，所以在使用迭代可以很容易解决的问题中，使用递归虽然可以简化思维过程，但效率上并不合算。效率和开销问题是递归最大的缺点。</p>
-<p>虽然有这样的缺点，但是递归的力量仍然是巨大而不可忽视的，因为有些问题使用迭代算法是很难甚至无法解决的（比如汉诺塔问题）。这时递归的作用就显示出来了。</p>
-<p>递归的效率问题暂时讨论到这里。</p>
+        <p>转自：<a target="_blank" rel="noopener" href="https://www.pureweber.com/article/recursive-power-4/">https://www.pureweber.com/article/recursive-power-4/</a><br />
+递归的力量（四）：递归效率<br />
+前几天我们在讨论递归的过程中发现，递归在解决某些问题的时候使得我们思考的方式得以简化，代码也更加精炼，容易阅读。那么既然递归有这么多的优点，我们是不是什么问题都要用递归来解决呢？难道递归就没有缺点吗？今天我们就来讨论一下递归的不足之处。<br />
+<strong>我们知道，递归调用实际上是函数自己在调用自己，而函数的调用开销是很大的，系统要为每次函数调用分配存储空间，并将调用点压栈予以记录。而在函数调用结束后，还要释放空间，弹栈恢复断点。所以说，函数调用不仅浪费空间，还浪费时间。</strong><br />
+这样，我们发现，同一个问题，如果递归解决方案的复杂度不明显优于其它解决方案的话，那么使用递归是不划算的。因为它的很多时间浪费在对函数调用的处理上。在C++中引入了内联函的概念，其实就是为了避免简单函数内部语句的执行时间小于函数调用的时间而造成效率降低的情况出现。在这里也是一个道理，如果过多的时间用于了函数调用的处理，那么效率显然高不起来。<span id="more"></span><br />
+举例来说，对于求阶乘的函数来说，其迭代算法的时间复杂度为O(n)：</p>
+<pre class="highlight"><code class="c++"><span class="function"><span class="type">int</span> <span class="title">fact</span><span class="params">(n)</span></span>&#123;
+     <span class="type">int</span> i;
+     <span class="type">int</span> r = <span class="number">1</span>;
+     <span class="keyword">for</span>(i = <span class="number">1</span>; i &lt;= n; i++)&#123;
+          r *= i;
+     &#125;
+     <span class="keyword">return</span> r;
+&#125;```
+而其递归函数的时间复杂度也是<span class="built_in">O</span>(n)：
+``` c++
+<span class="function"><span class="type">int</span> <span class="title">fact_r</span><span class="params">(n)</span></span>&#123;
+    <span class="keyword">if</span>(n == <span class="number">0</span>)
+         <span class="keyword">return</span> <span class="number">1</span>;
+    <span class="keyword">else</span>
+         <span class="keyword">return</span> n * <span class="built_in">f</span>(n - <span class="number">1</span>);
+&#125;```
+但是递归算法要进行n次函数调用，而迭代算法则只需要进行n次迭代而已。其效率上的差异是很显著的。
+
+我们再来看看之前我们讨论的费波纳契数列问题。
+
+我们当时使用的是简单的用定义来求 <span class="built_in">fib</span>(n)，也就是使用公式 <span class="built_in">fib</span>(n) = <span class="built_in">fib</span>(n<span class="number">-1</span>) + <span class="built_in">fib</span>(n<span class="number">-2</span>)。这样的想法是很容易想到的，可是仔细分析一下我们发现，当调用<span class="built_in">fib</span>(n<span class="number">-1</span>)的时候，还要调用<span class="built_in">fib</span>(n<span class="number">-2</span>)，也就是说<span class="built_in">fib</span>(n<span class="number">-2</span>)调用了两次，同样的道理，调用<span class="built_in">f</span>(n<span class="number">-2</span>)时<span class="built_in">f</span>(n<span class="number">-3</span>)也调用了两次，而这些冗余的调用是完全没有必要的。可以计算这个算法的复杂度是指数级的。
+
+那么计算费波纳契数列是否有更好的递归算法呢？ 当然有。让我们来观察一下费波纳契数列的前几项：
+
+<span class="number">1</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">5</span>, <span class="number">8</span>, <span class="number">13</span>, <span class="number">21</span>, <span class="number">34</span>, <span class="number">55</span> ...
+注意到没有，如果我们去掉前面一项，得到的数列依然满足<span class="built_in">f</span>(n) = <span class="built_in">f</span>(n<span class="number">-1</span>) – <span class="built_in">f</span>(n<span class="number">-2</span>), (n&gt;<span class="number">2</span>)，而我们得到的数列是以<span class="number">1</span>，<span class="number">2</span>开头的。很容易发现这个数列的第n<span class="number">-1</span>项就是原数列的第n项。怎么样，知道我们该怎么设计算法了吧？我们可以写这样的一个函数，它接受三个参数，前两个是数列的开头两项，第三个是我们想求的以前两个参数开头的数列的第几项。
+
+<span class="type">int</span> <span class="built_in">fib_i</span>(<span class="type">int</span> a, <span class="type">int</span> b, <span class="type">int</span> n);
+在函数内部我们先检查n的值，如果n为<span class="number">3</span>则我们只需返回a+b即可，这是简单情境。如果n&gt;<span class="number">3</span>，那么我们就调用<span class="built_in">f</span>(b, a+b, n<span class="number">-1</span>)，这样我们就缩小了问题的规模（从求第n项变成求第n<span class="number">-1</span>项）。好了，最终代码如下：
+``` c++
+<span class="function"><span class="type">int</span> <span class="title">fib_i</span><span class="params">(<span class="type">int</span> a, <span class="type">int</span> b , <span class="type">int</span> n)</span></span>&#123;
+    <span class="keyword">if</span>(n == <span class="number">3</span>)
+         <span class="keyword">return</span> a+b;
+    <span class="keyword">else</span>
+         <span class="keyword">return</span> <span class="built_in">fib_i</span>(b, a+b, n<span class="number">-1</span>);
+&#125;```
+这样得到的算法复杂度是 <span class="built_in">O</span>(n) 的。已经是线性的了。它的效率已经可以与迭代算法的效率相比了，但由于还是要反复的进行函数调用，还是不够经济。
+
+由以上分析我们可以看到，递归在处理问题时要反复调用函数，这增大了它的空间和时间开销，所以在使用迭代可以很容易解决的问题中，使用递归虽然可以简化思维过程，但效率上并不合算。效率和开销问题是递归最大的缺点。
+
+虽然有这样的缺点，但是递归的力量仍然是巨大而不可忽视的，因为有些问题使用迭代算法是很难甚至无法解决的（比如汉诺塔问题）。这时递归的作用就显示出来了。
+
+递归的效率问题暂时讨论到这里。</code></pre>
 
     </div>
 

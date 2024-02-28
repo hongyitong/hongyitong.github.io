@@ -20,12 +20,12 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="1. 背景   对于一个正在运行的系统，可能会碰到各种各样的问题，如依赖的应用宕机、程序bug、负载过高等问题，当遇到问题的时候，我们应该第一时间远程登录到服务器上，找到相关的日志进行分析或者查看对应的监控指标，以找到问题的根源。 2.系统问题分析   不同的业务的日志都不同，因此本文中不对特定的业务日志进行分析，而从Linux系统的常用命令的角度来排查问题。">
+    <meta name="description" content="1. 背景 对于一个正在运行的系统，可能会碰到各种各样的问题，如依赖的应用宕机、程序bug、负载过高等问题，当遇到问题的时候，我们应该第一时间远程登录到服务器上，找到相关的日志进行分析或者查看对应的监控指标，以找到问题的根源。  2.系统问题分析 不同的业务的日志都不同，因此本文中不对特定的业务日志进行分析，而从Linux系统的常用命令的角度来排查问题。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="系统稳定性---监控指标">
 <meta property="og:url" content="http://hongyitong.github.io/2017/08/22/%E7%B3%BB%E7%BB%9F%E7%A8%B3%E5%AE%9A%E6%80%A7---%E7%9B%91%E6%8E%A7%E6%8C%87%E6%A0%87/index.html">
 <meta property="og:site_name" content="忆桐之家的博客">
-<meta property="og:description" content="1. 背景   对于一个正在运行的系统，可能会碰到各种各样的问题，如依赖的应用宕机、程序bug、负载过高等问题，当遇到问题的时候，我们应该第一时间远程登录到服务器上，找到相关的日志进行分析或者查看对应的监控指标，以找到问题的根源。 2.系统问题分析   不同的业务的日志都不同，因此本文中不对特定的业务日志进行分析，而从Linux系统的常用命令的角度来排查问题。">
+<meta property="og:description" content="1. 背景 对于一个正在运行的系统，可能会碰到各种各样的问题，如依赖的应用宕机、程序bug、负载过高等问题，当遇到问题的时候，我们应该第一时间远程登录到服务器上，找到相关的日志进行分析或者查看对应的监控指标，以找到问题的根源。  2.系统问题分析 不同的业务的日志都不同，因此本文中不对特定的业务日志进行分析，而从Linux系统的常用命令的角度来排查问题。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2017-08-21T16:00:00.000Z">
 <meta property="article:modified_time" content="2017-09-05T06:28:03.000Z">
@@ -150,7 +150,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">1. 背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B3%BB%E7%BB%9F%E9%97%AE%E9%A2%98%E5%88%86%E6%9E%90"><span class="nav-number">2.</span> <span class="nav-text">2.系统问题分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#load"><span class="nav-number">2.0.1.</span> <span class="nav-text">2.1.1 load</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#cpu%E5%88%A9%E7%94%A8%E7%8E%87"><span class="nav-number">2.0.2.</span> <span class="nav-text">2.1.2 CPU利用率</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%89%B9%E5%AE%9A%E7%9A%84%E8%BF%9B%E7%A8%8B"><span class="nav-number">2.0.3.</span> <span class="nav-text">2.1.3 特定的进程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A3%81%E7%9B%98%E4%BD%BF%E7%94%A8%E6%83%85%E5%86%B5"><span class="nav-number">2.0.4.</span> <span class="nav-text">2.1.4 磁盘使用情况</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BD%91%E7%BB%9Ctraffic"><span class="nav-number">2.0.5.</span> <span class="nav-text">2.1.5 网络traffic</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A3%81%E7%9B%98io"><span class="nav-number">2.0.6.</span> <span class="nav-text">2.1.6 磁盘I&#x2F;O</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E4%BD%BF%E7%94%A8"><span class="nav-number">2.0.7.</span> <span class="nav-text">2.1.7 内存使用</span></a></li></ol></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E8%83%8C%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text"> 1. 背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2%E7%B3%BB%E7%BB%9F%E9%97%AE%E9%A2%98%E5%88%86%E6%9E%90"><span class="nav-number">2.</span> <span class="nav-text"> 2.系统问题分析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#21-%E6%8C%87%E6%A0%87%E7%9B%91%E6%8E%A7"><span class="nav-number">2.1.</span> <span class="nav-text"> 2.1 指标监控</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#211-load"><span class="nav-number">2.1.1.</span> <span class="nav-text"> 2.1.1 load</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#212-cpu%E5%88%A9%E7%94%A8%E7%8E%87"><span class="nav-number">2.1.2.</span> <span class="nav-text"> 2.1.2 CPU利用率</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#213-%E7%89%B9%E5%AE%9A%E7%9A%84%E8%BF%9B%E7%A8%8B"><span class="nav-number">2.1.3.</span> <span class="nav-text"> 2.1.3 特定的进程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#214-%E7%A3%81%E7%9B%98%E4%BD%BF%E7%94%A8%E6%83%85%E5%86%B5"><span class="nav-number">2.1.4.</span> <span class="nav-text"> 2.1.4 磁盘使用情况</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#215-%E7%BD%91%E7%BB%9Ctraffic"><span class="nav-number">2.1.5.</span> <span class="nav-text"> 2.1.5 网络traffic</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#216-%E7%A3%81%E7%9B%98io"><span class="nav-number">2.1.6.</span> <span class="nav-text"> 2.1.6 磁盘I&#x2F;O</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#217-%E5%86%85%E5%AD%98%E4%BD%BF%E7%94%A8"><span class="nav-number">2.1.7.</span> <span class="nav-text"> 2.1.7 内存使用</span></a></li></ol></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -174,7 +174,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags">
-        <span class="site-state-item-count">1098</span>
+        <span class="site-state-item-count">1096</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -291,37 +291,30 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h1 id="背景">1. 背景</h1>
-<p>  对于一个正在运行的系统，可能会碰到各种各样的问题，如依赖的应用宕机、程序bug、负载过高等问题，当遇到问题的时候，我们应该第一时间远程登录到服务器上，找到相关的日志进行分析或者查看对应的监控指标，以找到问题的根源。</p>
-<h1 id="系统问题分析">2.系统问题分析</h1>
-<p>  不同的业务的日志都不同，因此本文中不对特定的业务日志进行分析，而从Linux系统的常用命令的角度来排查问题。
-<span id="more"></span> ## 2.1 指标监控
-  系统运行的繁忙程度、健康程度，反应在一系列的运行期指标上，不管是CPU负载过高、磁盘I/O过于频繁、或者内存使用过多，导致频繁的FGC，或者qps过高，都会导致系统的服务质量下降，因此当对应的指标超过假定的阈值的时候，开发或者运维人员必须接入进行处理。</p>
-<h3 id="load">2.1.1 load</h3>
-<p>  在linux系统中，可以通过uptime来查看当前系统的load值，那么什么是load呢?系统的load被定义为特定时间间隔内运行队列中的平均线程数，一般来说只要每个cpu当前的活动线程数不超过3，那么就是安全的。</p>
-<h3 id="cpu利用率">2.1.2 CPU利用率</h3>
-<p>  可以通过top | grep
-Cpu即可以获取当前cpu的消耗情况，我们需要重点关注的几个指标包括us，sy,wa,st,us代表CPU执行用户程序所占用的时间，通过情况下希望us的占用比越高越好。sy代表的是系统时间，表示CPU在内核态所花费的时间，如果sy的占用比过高，那么意味着系统在某些地方设计不够合理，比如频繁的切换用户态和系统态。而对于计算密集型的应用us一定会偏高，wa代表的是等待时间，表示CPU在等待I/O所花费的时间，系统一般不应该花费大量的时间来等待，如果wa过高，则代表的是系统设计有不合理的地方，例如我们的程序中有大量的对磁盘的读写，因为磁盘的性能问题，wa会过高。st代表的是丢失时间，是在硬件虚拟化后操作系统新增的一行，表示被强制等待虚拟CPU的时间，st越高意味着当前虚拟机与该宿主机上的别的虚拟机竞争较为频繁，一般大于5%就需要联系运维人员进行调整了。</p>
-<h3 id="特定的进程">2.1.3 特定的进程</h3>
-<p>  可以通过top -p 来查看特定的进程的消耗情况。而top -Hp
-则看出该进程中最耗cpu的应用是哪一个</p>
-<h3 id="磁盘使用情况">2.1.4 磁盘使用情况</h3>
-<p>  磁盘剩余情况也是一个非常重要的指标，如果磁盘没有足够的剩余空间，那么正常的日志写入和系统I/O都将无法正常进行。通过df
--h既可以看到各个分区的占用情况。
-  如果需要查看特定的目录下占用内存情况，使用du 命令，du –max-depth 1 -h
-/home/long。</p>
-<h3 id="网络traffic">2.1.5 网络traffic</h3>
-<p>  一般情况下，网络应用而言，网络traffic也值得关注。通过sar -n DEV 1 1
-可以看到系统的网络状况。-n代表的是汇报网络状况，而DEV则表示查看的是各个网卡的网络流量，而第一个1代表额是每秒抽样1次，第二个1代表的是总共取样1次，展示的结果中lo代表的是本机回环网络，而eth0代表的是网卡，而rxpck/s代表的是每秒接收的数据包数量，txpck/s代表的是每秒发送的数据包数量，rxKB/s每秒接收的数据量，txKB/s代表的是每秒发送的数据量，rxcmp/s代表的是每秒接收的压缩包的数量，txcmp/s代表的是每秒发送的压缩包的数量，rxmcst/s代表的是每秒收到的广播包的数量。下面的Average代表的是多次取样的平均值。</p>
-<h3 id="磁盘io">2.1.6 磁盘I/O</h3>
-<p>  通过磁盘I/O情况的查看我们可以看出来IO的繁忙情况，IO繁忙情况也在一定程度上反映了系统的负载情况，容易成为应用的瓶颈，通过iostat
--d
--x可以查看IO情况，Device代表的是设备名称，tps代表的是每秒处理的IO请求数量，KB_read/s代表的是每秒从设备读取的数据量，KB_wrtn/s代表的是每秒写入设备的数据量，KB_read代表的是读取的数据总量，KB_wrtn代表的是写入的数据总量。</p>
-<h3 id="内存使用">2.1.7 内存使用</h3>
-<p>  使用free
--m可以看出来内存使用情况，需要关注的指标包括total、used、free指标，free+buffers+cached代表的是可用内存大小，如果可用内存过小会导致FGC从而影响系统的响应
+        <h1 id="1-背景"><a class="markdownIt-Anchor" href="#1-背景"></a> 1. 背景</h1>
+<p>对于一个正在运行的系统，可能会碰到各种各样的问题，如依赖的应用宕机、程序bug、负载过高等问题，当遇到问题的时候，我们应该第一时间远程登录到服务器上，找到相关的日志进行分析或者查看对应的监控指标，以找到问题的根源。</p>
+<h1 id="2系统问题分析"><a class="markdownIt-Anchor" href="#2系统问题分析"></a> 2.系统问题分析</h1>
+<p>不同的业务的日志都不同，因此本文中不对特定的业务日志进行分析，而从Linux系统的常用命令的角度来排查问题。</p>
+<span id="more"></span>
+<h2 id="21-指标监控"><a class="markdownIt-Anchor" href="#21-指标监控"></a> 2.1 指标监控</h2>
+<p>系统运行的繁忙程度、健康程度，反应在一系列的运行期指标上，不管是CPU负载过高、磁盘I/O过于频繁、或者内存使用过多，导致频繁的FGC，或者qps过高，都会导致系统的服务质量下降，因此当对应的指标超过假定的阈值的时候，开发或者运维人员必须接入进行处理。</p>
+<h3 id="211-load"><a class="markdownIt-Anchor" href="#211-load"></a> 2.1.1 load</h3>
+<p>在linux系统中，可以通过uptime来查看当前系统的load值，那么什么是load呢?系统的load被定义为特定时间间隔内运行队列中的平均线程数，一般来说只要每个cpu当前的活动线程数不超过3，那么就是安全的。</p>
+<h3 id="212-cpu利用率"><a class="markdownIt-Anchor" href="#212-cpu利用率"></a> 2.1.2 CPU利用率</h3>
+<p>可以通过top | grep Cpu即可以获取当前cpu的消耗情况，我们需要重点关注的几个指标包括us，sy,wa,st,us代表CPU执行用户程序所占用的时间，通过情况下希望us的占用比越高越好。sy代表的是系统时间，表示CPU在内核态所花费的时间，如果sy的占用比过高，那么意味着系统在某些地方设计不够合理，比如频繁的切换用户态和系统态。而对于计算密集型的应用us一定会偏高，wa代表的是等待时间，表示CPU在等待I/O所花费的时间，系统一般不应该花费大量的时间来等待，如果wa过高，则代表的是系统设计有不合理的地方，例如我们的程序中有大量的对磁盘的读写，因为磁盘的性能问题，wa会过高。st代表的是丢失时间，是在硬件虚拟化后操作系统新增的一行，表示被强制等待虚拟CPU的时间，st越高意味着当前虚拟机与该宿主机上的别的虚拟机竞争较为频繁，一般大于5%就需要联系运维人员进行调整了。</p>
+<h3 id="213-特定的进程"><a class="markdownIt-Anchor" href="#213-特定的进程"></a> 2.1.3 特定的进程</h3>
+<p>可以通过top -p 来查看特定的进程的消耗情况。而top -Hp 则看出该进程中最耗cpu的应用是哪一个</p>
+<h3 id="214-磁盘使用情况"><a class="markdownIt-Anchor" href="#214-磁盘使用情况"></a> 2.1.4 磁盘使用情况</h3>
+<p>磁盘剩余情况也是一个非常重要的指标，如果磁盘没有足够的剩余空间，那么正常的日志写入和系统I/O都将无法正常进行。通过df -h既可以看到各个分区的占用情况。<br />
+  如果需要查看特定的目录下占用内存情况，使用du 命令，du –max-depth 1 -h /home/long。</p>
+<h3 id="215-网络traffic"><a class="markdownIt-Anchor" href="#215-网络traffic"></a> 2.1.5 网络traffic</h3>
+<p>一般情况下，网络应用而言，网络traffic也值得关注。通过sar -n DEV 1 1 可以看到系统的网络状况。-n代表的是汇报网络状况，而DEV则表示查看的是各个网卡的网络流量，而第一个1代表额是每秒抽样1次，第二个1代表的是总共取样1次，展示的结果中lo代表的是本机回环网络，而eth0代表的是网卡，而rxpck/s代表的是每秒接收的数据包数量，txpck/s代表的是每秒发送的数据包数量，rxKB/s每秒接收的数据量，txKB/s代表的是每秒发送的数据量，rxcmp/s代表的是每秒接收的压缩包的数量，txcmp/s代表的是每秒发送的压缩包的数量，rxmcst/s代表的是每秒收到的广播包的数量。下面的Average代表的是多次取样的平均值。</p>
+<h3 id="216-磁盘io"><a class="markdownIt-Anchor" href="#216-磁盘io"></a> 2.1.6 磁盘I/O</h3>
+<p>通过磁盘I/O情况的查看我们可以看出来IO的繁忙情况，IO繁忙情况也在一定程度上反映了系统的负载情况，容易成为应用的瓶颈，通过iostat -d -x可以查看IO情况，Device代表的是设备名称，tps代表的是每秒处理的IO请求数量，KB_read/s代表的是每秒从设备读取的数据量，KB_wrtn/s代表的是每秒写入设备的数据量，KB_read代表的是读取的数据总量，KB_wrtn代表的是写入的数据总量。</p>
+<h3 id="217-内存使用"><a class="markdownIt-Anchor" href="#217-内存使用"></a> 2.1.7 内存使用</h3>
+<p>使用free -m可以看出来内存使用情况，需要关注的指标包括total、used、free指标，free+buffers+cached代表的是可用内存大小，如果可用内存过小会导致FGC从而影响系统的响应<br />
   而对于应用来说虚拟内存swap的使用，如果swap使用过高，说明需要调用大量内存到磁盘的切换，影响系统的性能，通过vmstat我们可看出虚拟内存的使用情况，si列代表的是每秒从磁盘交换到内存的数据量，so代表的是每秒从内存交换到磁盘的数据量，内存密集型应用si和so指标会上升。</p>
-<p>  上文我们分析应用服务器的监控指标，我们可以根据上面的指标对比我们应用平常的指标数据，如果发现异常，那么就需要根据特定的指标来分析异常的原因，从而尽快地定位问题并解决问题。</p>
+<p>上文我们分析应用服务器的监控指标，我们可以根据上面的指标对比我们应用平常的指标数据，如果发现异常，那么就需要根据特定的指标来分析异常的原因，从而尽快地定位问题并解决问题。</p>
 
     </div>
 

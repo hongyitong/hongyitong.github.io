@@ -170,7 +170,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags">
-        <span class="site-state-item-count">1098</span>
+        <span class="site-state-item-count">1096</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -278,58 +278,74 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <p>具体的代码请阅读全文。 <span id="more"></span> ``` javascript public class
-WorkQueue { private final int nThreads;// 线程池的大小 private final
-PoolWorker[] threads;// 用数组实现线程池 private final LinkedList
-queue;// 任务队列 public WorkQueue(int nThreads) { this.nThreads =
-nThreads; queue = new LinkedList(); threads = new PoolWorker[nThreads];
-for (int i = 0; i &lt; nThreads; i++) { threads[i] = new PoolWorker();
-threads[i].start();// 启动所有工作线程 } }</p>
-<pre><code>public void execute(Runnable r) &#123;// 执行任务
-    synchronized (queue) &#123;
-        queue.addLast(r);
-        queue.notify();
-    &#125;
+        <p>具体的代码请阅读全文。</p>
+<span id="more"></span>
+<pre class="highlight"><code class="javascript">public <span class="keyword">class</span> <span class="title class_">WorkQueue</span> &#123;
+	private final int nThreads;<span class="comment">// 线程池的大小</span>
+	private final <span class="title class_">PoolWorker</span>[] threads;<span class="comment">// 用数组实现线程池</span>
+	private final <span class="title class_">LinkedList</span> queue;<span class="comment">// 任务队列</span>
+	public <span class="title class_">WorkQueue</span>(int nThreads) &#123;
+		<span class="variable language_">this</span>.<span class="property">nThreads</span> = nThreads;
+		queue = <span class="keyword">new</span> <span class="title class_">LinkedList</span>();
+		threads = <span class="keyword">new</span> <span class="title class_">PoolWorker</span>[nThreads]; 
+		<span class="keyword">for</span> (int i = <span class="number">0</span>; i &lt; nThreads; i++) &#123;
+			threads[i] = <span class="keyword">new</span> <span class="title class_">PoolWorker</span>();
+			threads[i].<span class="title function_">start</span>();<span class="comment">// 启动所有工作线程</span>
+		&#125;
+	&#125;
+
+	public <span class="keyword">void</span> <span class="title function_">execute</span>(<span class="params">Runnable r</span>) &#123;<span class="comment">// 执行任务</span>
+		synchronized (queue) &#123;
+			queue.<span class="title function_">addLast</span>(r);
+			queue.<span class="title function_">notify</span>();
+		&#125;
+	&#125;
+
+	private <span class="keyword">class</span> <span class="title class_">PoolWorker</span> <span class="keyword">extends</span> <span class="title class_ inherited__">Thread</span> &#123;<span class="comment">// 工作线程类</span>
+		public <span class="keyword">void</span> <span class="title function_">run</span>(<span class="params"></span>) &#123;
+			<span class="title class_">Runnable</span> r;
+			<span class="keyword">while</span> (<span class="literal">true</span>) &#123;
+				synchronized (queue) &#123;
+					<span class="keyword">while</span> (queue.<span class="title function_">isEmpty</span>()) &#123;
+						<span class="comment">// 如果任务队列中没有任务，等待</span>
+						<span class="keyword">try</span> &#123;
+							queue.<span class="title function_">wait</span>();
+						&#125; <span class="keyword">catch</span> (<span class="title class_">InterruptedException</span> ignored) &#123;
+						&#125;
+					&#125;
+					r = (<span class="title class_">Runnable</span>) queue.<span class="title function_">removeFirst</span>();
+					<span class="comment">// 有任务时，取出任务</span>
+				&#125;
+				<span class="keyword">try</span> &#123;
+					r.<span class="title function_">run</span>();<span class="comment">// 执行任务</span>
+				&#125; <span class="keyword">catch</span> (<span class="title class_">RuntimeException</span> e) &#123;
+					<span class="comment">// You might want to log something here</span>
+				&#125;
+			&#125;
+		&#125;
+	&#125;
+
+	public <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span>(<span class="params"><span class="built_in">String</span> args[]</span>) &#123;
+		<span class="title class_">WorkQueue</span> wq = <span class="keyword">new</span> <span class="title class_">WorkQueue</span>(<span class="number">10</span>);<span class="comment">// 10个工作线程</span>
+		<span class="title class_">Mytask</span> r[] = <span class="keyword">new</span> <span class="title class_">Mytask</span>[<span class="number">20</span>];<span class="comment">// 20个任务</span>
+
+		<span class="keyword">for</span> (int i = <span class="number">0</span>; i &lt; <span class="number">20</span>; i++) &#123;
+			r[i] = <span class="keyword">new</span> <span class="title class_">Mytask</span>();
+			wq.<span class="title function_">execute</span>(r[i]);
+		&#125;
+	&#125;
 &#125;
 
-private class PoolWorker extends Thread &#123;// 工作线程类
-    public void run() &#123;
-        Runnable r;
-        while (true) &#123;
-            synchronized (queue) &#123;
-                while (queue.isEmpty()) &#123;
-                    // 如果任务队列中没有任务，等待
-                    try &#123;
-                        queue.wait();
-                    &#125; catch (InterruptedException ignored) &#123;
-                    &#125;
-                &#125;
-                r = (Runnable) queue.removeFirst();
-                // 有任务时，取出任务
-            &#125;
-            try &#123;
-                r.run();// 执行任务
-            &#125; catch (RuntimeException e) &#123;
-                // You might want to log something here
-            &#125;
-        &#125;
-    &#125;
-&#125;
-
-public static void main(String args[]) &#123;
-    WorkQueue wq = new WorkQueue(10);// 10个工作线程
-    Mytask r[] = new Mytask[20];// 20个任务
-
-    for (int i = 0; i &lt; 20; i++) &#123;
-        r[i] = new Mytask();
-        wq.execute(r[i]);
-    &#125;
-&#125;</code></pre>
-<p>}</p>
-<p>class Mytask implements Runnable {// 任务接口 public void run() {
-String name = Thread.currentThread().getName(); try {
-Thread.sleep(100);// 模拟任务执行的时间 } catch (InterruptedException e)
-{ } System.out.println(name + " executed OK"); } }```</p>
+<span class="keyword">class</span> <span class="title class_">Mytask</span> implements <span class="title class_">Runnable</span> &#123;<span class="comment">// 任务接口</span>
+	public <span class="keyword">void</span> <span class="title function_">run</span>(<span class="params"></span>) &#123;
+		<span class="title class_">String</span> name = <span class="title class_">Thread</span>.<span class="title function_">currentThread</span>().<span class="title function_">getName</span>();
+		<span class="keyword">try</span> &#123;
+			<span class="title class_">Thread</span>.<span class="title function_">sleep</span>(<span class="number">100</span>);<span class="comment">// 模拟任务执行的时间</span>
+		&#125; <span class="keyword">catch</span> (<span class="title class_">InterruptedException</span> e) &#123;
+		&#125;
+		<span class="title class_">System</span>.<span class="property">out</span>.<span class="title function_">println</span>(name + <span class="string">&quot; executed OK&quot;</span>);
+	&#125;
+&#125;<span class="string">``</span><span class="string">`</span></code></pre>
 
     </div>
 

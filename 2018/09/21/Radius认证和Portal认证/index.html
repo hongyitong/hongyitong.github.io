@@ -27,6 +27,7 @@
 <meta property="og:site_name" content="忆桐之家的博客">
 <meta property="og:description" content="关于radius认证和portal认证服务器的一点问题，因为最近接触到这方面的配置有一点疑惑，现在把我理解的说下，麻烦各位大神看看理解的对不 首先，我最主要的问题是关于portal认证时，需要有radius认证服务器和portal认证服务器同时存在，我不理解的就是radius服务器就是拿来验证用户名和密码的，那么portal服务器是用来做什么的？ 首先说最简单的情况，只有radius认证的情况：">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/img/Radius1.png">
 <meta property="og:image" content="http://hongyitong.github.io/img/Radius2.png">
 <meta property="article:published_time" content="2018-09-20T16:00:00.000Z">
 <meta property="article:modified_time" content="2018-09-25T09:24:27.000Z">
@@ -35,7 +36,7 @@
 <meta property="article:tag" content="Radius">
 <meta property="article:tag" content="Portal">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://hongyitong.github.io/img/Radius2.png">
+<meta name="twitter:image" content="http://hongyitong.github.io/img/Radius1.png">
 
 
 <link rel="canonical" href="http://hongyitong.github.io/2018/09/21/Radius%E8%AE%A4%E8%AF%81%E5%92%8CPortal%E8%AE%A4%E8%AF%81/">
@@ -139,7 +140,7 @@
 
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -152,6 +153,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%84%E7%BD%91%E9%9C%80%E6%B1%82"><span class="nav-number">1.</span> <span class="nav-text"> 组网需求</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -175,7 +177,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags">
-        <span class="site-state-item-count">1098</span>
+        <span class="site-state-item-count">1096</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -292,30 +294,26 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <p>关于radius认证和portal认证服务器的一点问题，因为最近接触到这方面的配置有一点疑惑，现在把我理解的说下，麻烦各位大神看看理解的对不
-首先，我最主要的问题是关于portal认证时，需要有radius认证服务器和portal认证服务器同时存在，我不理解的就是radius服务器就是拿来验证用户名和密码的，那么portal服务器是用来做什么的？
-首先说最简单的情况，只有radius认证的情况： <img
-src="/img/Radius1.png" /> 这个时候用户名发送用户名和密码到radius
-client，在radius client上会有相应的配置，配置和radius
-server上相同的密钥，这样保证在传输用户名和密码时对用户名和密码进行加密，可能还有对radius
-client进行认证的功能吧，这里就不多说了 <span id="more"></span></p>
-<p>然后是有无线portal认证的情况，如图 <img src="/img/Radius2.png" />
-（这个是参照3510H安全配置中05portal配置153页的实例进行说明的） #
-组网需求 在本地转发模式下，对通过无线接入的用户采用直接认证方式。 •
-无线客户端通过手工配置或 DHCP 获取的一个公网IP
-地址进行认证，在通过Portal 认证前，只能访问Portal Web
-服务器；在通过Portal 认证后，可以使用此IP 地址访问非受限互联网资源。 •
-采用一台 Portal 服务器承担Portal 认证服务器和Portal Web 服务器的职责。 •
-采用 RADIUS 服务器作为认证/计费服务器。</p>
-<p>这个时候用户连接上AP以后，首先被重定向到portal
-server页面，输入用户名和密码这些都是直接发送到portal
-server上的，同时在AC上也配置了如下命令： portal server newpt
-[AC-portal-server-newpt] ip 192.168.0.111 key simple portal
-[AC-portal-server-newpt] port 50100 [AC-portal-server-newpt] quit</p>
-<p>这里我理解的是，用户名和密码发送到radius
-server上，然后需要发送到AC上，再发送给radius
-server进行认证，这里配置的portal server
-newpt目的就是把用户名和密码发送给AC时进行相应的加密，然后到了AC上以后，AC上也有对应的AAA配置，然后就像上面那个例子一样发送给radius，不知道这样理解对不对，请知道的告诉下，谢谢</p>
+        <p>关于radius认证和portal认证服务器的一点问题，因为最近接触到这方面的配置有一点疑惑，现在把我理解的说下，麻烦各位大神看看理解的对不<br />
+首先，我最主要的问题是关于portal认证时，需要有radius认证服务器和portal认证服务器同时存在，我不理解的就是radius服务器就是拿来验证用户名和密码的，那么portal服务器是用来做什么的？<br />
+首先说最简单的情况，只有radius认证的情况：<br />
+<img src="/img/Radius1.png" alt="" /><br />
+这个时候用户名发送用户名和密码到radius client，在radius client上会有相应的配置，配置和radius server上相同的密钥，这样保证在传输用户名和密码时对用户名和密码进行加密，可能还有对radius client进行认证的功能吧，这里就不多说了</p>
+<span id="more"></span>
+<p>然后是有无线portal认证的情况，如图<br />
+<img src="/img/Radius2.png" alt="" /><br />
+（这个是参照3510H安全配置中05portal配置153页的实例进行说明的）</p>
+<h1 id="组网需求"><a class="markdownIt-Anchor" href="#组网需求"></a> 组网需求</h1>
+<p>在本地转发模式下，对通过无线接入的用户采用直接认证方式。<br />
+• 无线客户端通过手工配置或 DHCP 获取的一个公网IP 地址进行认证，在通过Portal 认证前，只能访问Portal Web 服务器；在通过Portal 认证后，可以使用此IP 地址访问非受限互联网资源。<br />
+• 采用一台 Portal 服务器承担Portal 认证服务器和Portal Web 服务器的职责。<br />
+• 采用 RADIUS 服务器作为认证/计费服务器。</p>
+<p>这个时候用户连接上AP以后，首先被重定向到portal server页面，输入用户名和密码这些都是直接发送到portal server上的，同时在AC上也配置了如下命令：<br />
+portal server newpt<br />
+[AC-portal-server-newpt] ip 192.168.0.111 key simple portal<br />
+[AC-portal-server-newpt] port 50100<br />
+[AC-portal-server-newpt] quit</p>
+<p>这里我理解的是，用户名和密码发送到radius server上，然后需要发送到AC上，再发送给radius server进行认证，这里配置的portal server newpt目的就是把用户名和密码发送给AC时进行相应的加密，然后到了AC上以后，AC上也有对应的AAA配置，然后就像上面那个例子一样发送给radius，不知道这样理解对不对，请知道的告诉下，谢谢</p>
 
     </div>
 

@@ -20,15 +20,16 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="1.lun LUN的全称是Logical Unit Number，也就是逻辑单元号，其主要作用是为了给相连的服务器分配 逻辑单元号(LUN)。磁盘阵列上的硬盘组成RAID组后，通常连接磁盘阵列的服务器并不能直接访问RAID组，而是要再划分为逻辑单元才能分配给服务器。这是因为SCSI总线上可挂接的设备数量是有限的，一般为8个或者16个，我们可以用Target ID(也有称为SCSI ID的)来描述这">
+    <meta name="description" content="1.lun LUN的全称是Logical Unit Number，也就是逻辑单元号，其主要作用是为了给相连的服务器分配 逻辑单元号(LUN)。磁盘阵列上的硬盘组成RAID组后，通常连接磁盘阵列的服务器并不能直接访问RAID组，而是要再划分为逻辑单元才能分配给服务器。这是因为SCSI总线上可挂接的设备数量是有限的，一般为8个或者16个，我们可以用Target ID(也有称为SCSI ID的)来描述">
 <meta property="og:type" content="article">
 <meta property="og:title" content="存储基本概念（lun,volume,HBA,DAS,NAS,SAN,iSCSI,IPSAN)">
 <meta property="og:url" content="http://hongyitong.github.io/2018/09/20/%E5%AD%98%E5%82%A8%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5%EF%BC%88lun,volume,HBA,DAS,NAS,SAN,iSCSI,IPSAN)/index.html">
 <meta property="og:site_name" content="忆桐之家的博客">
-<meta property="og:description" content="1.lun LUN的全称是Logical Unit Number，也就是逻辑单元号，其主要作用是为了给相连的服务器分配 逻辑单元号(LUN)。磁盘阵列上的硬盘组成RAID组后，通常连接磁盘阵列的服务器并不能直接访问RAID组，而是要再划分为逻辑单元才能分配给服务器。这是因为SCSI总线上可挂接的设备数量是有限的，一般为8个或者16个，我们可以用Target ID(也有称为SCSI ID的)来描述这">
+<meta property="og:description" content="1.lun LUN的全称是Logical Unit Number，也就是逻辑单元号，其主要作用是为了给相连的服务器分配 逻辑单元号(LUN)。磁盘阵列上的硬盘组成RAID组后，通常连接磁盘阵列的服务器并不能直接访问RAID组，而是要再划分为逻辑单元才能分配给服务器。这是因为SCSI总线上可挂接的设备数量是有限的，一般为8个或者16个，我们可以用Target ID(也有称为SCSI ID的)来描述">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://hongyitong.github.io/img/%E5%AD%98%E5%82%A81.jpg">
 <meta property="og:image" content="http://hongyitong.github.io/img/%E5%AD%98%E5%82%A82.jpg">
+<meta property="og:image" content="http://hongyitong.github.io/img/%E5%AD%98%E5%82%A83.jpg">
 <meta property="og:image" content="http://hongyitong.github.io/img/%E5%AD%98%E5%82%A84.png">
 <meta property="article:published_time" content="2018-09-19T16:00:00.000Z">
 <meta property="article:modified_time" content="2018-09-25T12:23:58.000Z">
@@ -154,7 +155,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#lun"><span class="nav-number">1.</span> <span class="nav-text">1.lun</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#a%E6%80%BB%E7%BA%BF%E9%80%82%E9%85%8D%E5%99%A8%E6%98%AF%E4%B8%AA%E4%BB%80%E4%B9%88%E4%B8%9C%E8%A5%BF%E5%91%A2"><span class="nav-number">1.1.</span> <span class="nav-text">a、总线适配器是个什么东西呢？ </span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#b%E5%B8%B8%E8%A7%81%E7%9A%84hba%E6%9C%89%E5%93%AA%E4%BA%9B%E5%91%A2"><span class="nav-number">1.2.</span> <span class="nav-text">b、常见的HBA有哪些呢？ </span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#nas"><span class="nav-number">2.</span> <span class="nav-text">5.NAS</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E6%9E%90%E6%AF%94%E8%BE%83%E7%BC%96%E8%BE%91"><span class="nav-number">3.</span> <span class="nav-text">分析比较编辑</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%97%AE%E9%A2%98"><span class="nav-number">3.1.</span> <span class="nav-text">问题：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95"><span class="nav-number">3.2.</span> <span class="nav-text">解决办法：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%AD%98%E5%82%A8%E7%BD%91%E7%BB%9C%E7%9A%84%E5%A5%BD%E5%A4%84"><span class="nav-number">3.3.</span> <span class="nav-text">使用存储网络的好处：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFnas%E5%92%8Csan%E7%9A%84%E6%A0%B9%E6%9C%AC%E4%B8%8D%E5%90%8C%E7%82%B9"><span class="nav-number">3.4.</span> <span class="nav-text">什么是NAS和SAN的根本不同点？</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#iscsi"><span class="nav-number">4.</span> <span class="nav-text">7.iSCSI</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8Eiscsi%E6%8A%80%E6%9C%AF%E7%9A%84ip-san%E5%BA%94%E7%94%A8"><span class="nav-number">5.</span> <span class="nav-text">8.基于iSCSI技术的IP SAN应用  </span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1lun"><span class="nav-number">1.</span> <span class="nav-text"> 1.lun</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2volume"><span class="nav-number">2.</span> <span class="nav-text"> 2.volume</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3hba"><span class="nav-number">3.</span> <span class="nav-text"> 3.HBA</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#a-%E6%80%BB%E7%BA%BF%E9%80%82%E9%85%8D%E5%99%A8%E6%98%AF%E4%B8%AA%E4%BB%80%E4%B9%88%E4%B8%9C%E8%A5%BF%E5%91%A2"><span class="nav-number">3.1.</span> <span class="nav-text"> a、总线适配器是个什么东西呢？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#b-%E5%B8%B8%E8%A7%81%E7%9A%84hba%E6%9C%89%E5%93%AA%E4%BA%9B%E5%91%A2"><span class="nav-number">3.2.</span> <span class="nav-text"> b、常见的HBA有哪些呢？</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4das"><span class="nav-number">4.</span> <span class="nav-text"> 4.DAS</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5nas"><span class="nav-number">5.</span> <span class="nav-text"> 5.NAS</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6san"><span class="nav-number">6.</span> <span class="nav-text"> 6.SAN</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E6%9E%90%E6%AF%94%E8%BE%83%E7%BC%96%E8%BE%91"><span class="nav-number">7.</span> <span class="nav-text"> 分析比较编辑</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%97%AE%E9%A2%98"><span class="nav-number">7.1.</span> <span class="nav-text"> 问题：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95"><span class="nav-number">7.2.</span> <span class="nav-text"> 解决办法：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%AD%98%E5%82%A8%E7%BD%91%E7%BB%9C%E7%9A%84%E5%A5%BD%E5%A4%84"><span class="nav-number">7.3.</span> <span class="nav-text"> 使用存储网络的好处：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFnas%E5%92%8Csan%E7%9A%84%E6%A0%B9%E6%9C%AC%E4%B8%8D%E5%90%8C%E7%82%B9"><span class="nav-number">7.4.</span> <span class="nav-text"> 什么是NAS和SAN的根本不同点？</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#7iscsi"><span class="nav-number">8.</span> <span class="nav-text"> 7.iSCSI</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#8%E5%9F%BA%E4%BA%8Eiscsi%E6%8A%80%E6%9C%AF%E7%9A%84ip-san%E5%BA%94%E7%94%A8"><span class="nav-number">9.</span> <span class="nav-text"> 8.基于iSCSI技术的IP SAN应用</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -178,7 +179,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags">
-        <span class="site-state-item-count">1098</span>
+        <span class="site-state-item-count">1096</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -295,106 +296,70 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h1 id="lun">1.lun</h1>
-<p>LUN的全称是Logical Unit
-Number，也就是逻辑单元号，其主要作用是为了给相连的服务器分配 <font color="#FF0000" size = "3px">逻辑单元号(LUN)</font>。磁盘阵列上的硬盘组成RAID组后，通常连接磁盘阵列的服务器并不能直接访问RAID组，而是要再划分为逻辑单元才能分配给服务器。这是因为SCSI总线上可挂接的设备数量是有限的，一般为8个或者16个，我们可以用Target
-ID(也有称为SCSI
-ID的)来描述这些设备，设备只要一加入系统，就有一个代号，在区别设备的时候,只要说几号几号就可以了。而实际上需要用来描述的对象，是远远超过该数字的，于是引进了LUN的概念，也就是说LUN
-ID的作用就是扩充了Target ID。每个Target下都可以有多个LUN
-Device，通常简称LUN
-Device为LUN，这样就可以说每个设备的描述就由原来的Target x变成Target x
-LUN
-y了。LUN就是我们为了使用和描述更多设备及对象而引进的一个方法而已，一点也没什么特别的地方。
-LUN
-ID不等于某个设备，只是个号码而已，不代表任何实体属性，在我们的实际环境里，我们碰到的LUN可能是磁盘空间，可能是磁带机，或者是media
-changer等等。<span id="more"></span>
-LUN的神秘之处(相对于一些新手来说)在于，它很多时候不是什么可见的实体，而是一些虚拟的对象。比如一个阵列柜，主机那边看作是一个Target
-Device，那为了某些特殊需要，我们要将磁盘阵列柜的磁盘空间划分成若干个小的单元给主机来用，于是就产生了一些什么逻辑驱动器的说法，也就是比Target
-Device级别更低的逻辑对象，我们习惯于把这些更小的磁盘资源称之为LUN0、LUN1、LUN2…什么的。而操作系统的机制使然，操作系统识别的最小存储对象级别就是LUN
-Device，这是一个逻辑对象，所以很多时候被称为Logical
-Device。服务器识别到的最小的存储资源，就是LUN级别的。主机的HBA
-卡看到的存储上的存储资源就靠主要两个东西来定位，一个就是存储系统的控制器(Target)，一个就是LUN
-ID，这个LUN是由存储的控制系统给定的，是存储系统的某部分存储资源。一旦服务器与LUN连接上，就可以通过当前的网络接口将数据传输到磁盘阵列上。
-# 2.volume LUN是对存储设备而言的，volume是对主机而言的。
-怎么去理解呢？选择存储设备上的多个硬盘形成一个RAID组，再在RAID组的基础上创建一个或多个LUN（一般创建一个LUN）。许多厂商的存储设备只支持一个RAID组上创一个LUN。此时LUN相对于存储设备是一个逻辑设备。当网络中的主机连接到存储设备时，就可以识别到存储设备上逻辑设备LUN，此时LUN相对于主机来讲就是一个“物理硬盘”，与C盘D盘所在IDC或SCSI硬盘的性属是相同的。在该“物理硬盘”上创建一个或多个分区，再创建文件系统，才可以得到一个VOLUME。此时VOLUME相对于主机是一个逻辑设备。
-从容量大小方面比较VOLUME，分区、LUN、RAID的关系如下： <strong>VOLUME =
-分区 ≤ 主机设备管理器中的磁盘 = LUN ≤ RAID ≤
-存储设备中硬盘的总容量。</strong>
-上述只是针对一般情况，VOLUME也只是针对主机来讲。个别厂商对LUN和VOLUME定义与普通厂商的定义不同，甚至会起一些奇怪的名称，这些名称即使是存储行业的资深人士也不一定全明白。不过只要你能分清楚其实质就行。
-# 3.HBA  HBA，即主机总线适配器英文“Host Bus
-Adapter”缩写。是一个在服务器和存储装置间提供输入/输出(I/O)处理和物理连接的电路板或集成电路适配器。因为HBA减轻了主处理器在数据存储和检索任务的负担，它能够提高服务器的性能。一个HBA和与之相连的磁盘子系统有时一起被称作一个磁盘通道。</p>
-<h2 id="a总线适配器是个什么东西呢">a、总线适配器是个什么东西呢？ </h2>
-<p>我们首先要了解一下主机的结构，一台计算机内部多半由两条总线串起来(当然实际情况会有不同，这里只讨论常见的，简单的情况)，一条总线叫系统总线，一条叫I/O总线。系统总线上接了CPU，Memory，cache什么的，I/O总线上接的就是外围设备，现如今最常见的就是PCI总线了。这两条总线之间用桥接的芯片或者说电路连接起来。举个形象的例子，就好比一个城市里，有两条主干道，一条属于行政区，一条属于商业区，中间有个环岛，将两条主干道连接到了一起，系统总线就好比行政区里的主干道，而I/O总线就好比商业区的主干道。系统总线和I/O总线的带宽的单位都是以Gbyte来记，但是显而易见的是，行政区的主干道和商业区的主干道相比的话，前者肯定更“核心”，更宽，更顺畅，设计的要求也高。 我们知道，在向公仆部门要求服务的时候，是要有一些接口的部门和程序的，而桥接芯片的作用就是连接和协调两条总线的工作的。 虽然I/O总线的速度和系统总线的带宽相比要低很多，但是好歹也是以G来计量的，而我们知道外围设备的速度，往往只有几百兆，甚至几十k而已，怎么协调工作呢？好比卖煎饼果子摊子不能直接戳到城市主干道上，怎么办？好办，在主干道边上开个2000平米的小吃城，把摊子都收进去好了。那么主机总线适配器的作用也就是这个，我们就是要把外设组织起来，连接到I/O总线上去！HBA就是指Host和I/O
-BUS直接的一个适配器，也好比一个水管工常说的“双通”。 </p>
-<h2 id="b常见的hba有哪些呢">b、常见的HBA有哪些呢？ </h2>
-<p>比如显卡，网卡，scsi卡，1394卡等等。我要拿出来说的就是FCHBA和ATA&amp;IDE。我们通常说的什么Emulex的LP9002，什么Qlogic的QLA2340都是FCHBA卡，就是将Fibre
-Channel的设备和IO总线连接起来的适配器。ATA也是一种适配器技术，我们PC主板上的ATA接口，就是一个磁盘适配器的对外接口，要强调的就是，ATA说的是适配器技术，IDE是说得存储外设技术，比如我们可以说IDE硬盘，IDE光驱，说ATA接口，但是说IDE接口，ATA硬盘就不时那么合适了，虽然很多情况下，大家都习惯把他们混在一起说。 描述HBA的时候，有几个主要的规范要说一下 
-   &gt;
-一个承上，就是说，HBA和IOBUS怎么连，我们经常说的PCI接口卡，就是指这个HBA卡是要插在PCI
-BUS上的PCI
-slot上的，但是现在的计算机上，不仅仅只有PCI总线而已，大家碰到的时候留意。 
-   &gt;一个启下，就是说HBA要和外设怎么连，这样的规范就很多了。    
-&gt;再说HBA本身，比如带宽，比如运行机制(protocol等)，独立处理能力等等 
-Tips：有时候我们看到的一块卡，看到的实际是一个物理的卡，有的时候实际上是多个Adapter，好比一家机构，挂多个牌子，有的时候，一块卡有两条通道，好比一家公司，有两套人马。
-# 4.DAS DAS（Direct Attached
-Storage—直接连接存储），是指将存储设备通过SCSI接口或光纤通道直接连接到服务器上。
-直连式存储依赖服务器主机操作系统进行数据的IO读写和存储维护管理，数据备份和恢复要求占用服务器主机资源（包括CPU、系统IO等），数据流需要回流主机再到服务器连接着的磁带机（库），数据备份通常占用服务器主机资源20-30%，因此许多企业用户的日常数据备份常常在深夜或业务系统不繁忙时进行，以免影响正常业务系统的运行。直连式存储的数据量越大，备份和恢复的时间就越长，对服务器硬件的依赖性和影响就越大。
-直连式存储与服务器主机之间的连接通道通常采用SCSI连接，带宽为10MB/s、20MB/s、40MB/s、80MB/s等，随着服务器CPU的处理能力越来越强，存储硬盘空间越来越大，阵列的硬盘数量越来越多，SCSI通道将会成为IO瓶颈；服务器主机SCSI
-ID资源有限，能够建立的SCSI通道连接有限。
+        <h1 id="1lun"><a class="markdownIt-Anchor" href="#1lun"></a> 1.lun</h1>
+<p>LUN的全称是Logical Unit Number，也就是逻辑单元号，其主要作用是为了给相连的服务器分配 <font color="#FF0000" size = "3px">逻辑单元号(LUN)</font>。磁盘阵列上的硬盘组成RAID组后，通常连接磁盘阵列的服务器并不能直接访问RAID组，而是要再划分为逻辑单元才能分配给服务器。这是因为SCSI总线上可挂接的设备数量是有限的，一般为8个或者16个，我们可以用Target ID(也有称为SCSI ID的)来描述这些设备，设备只要一加入系统，就有一个代号，在区别设备的时候,只要说几号几号就可以了。而实际上需要用来描述的对象，是远远超过该数字的，于是引进了LUN的概念，也就是说LUN ID的作用就是扩充了Target ID。每个Target下都可以有多个LUN Device，通常简称LUN Device为LUN，这样就可以说每个设备的描述就由原来的Target x变成Target x LUN y了。LUN就是我们为了使用和描述更多设备及对象而引进的一个方法而已，一点也没什么特别的地方。<br />
+LUN ID不等于某个设备，只是个号码而已，不代表任何实体属性，在我们的实际环境里，我们碰到的LUN可能是磁盘空间，可能是磁带机，或者是media changer等等。<span id="more"></span><br />
+LUN的神秘之处(相对于一些新手来说)在于，它很多时候不是什么可见的实体，而是一些虚拟的对象。比如一个阵列柜，主机那边看作是一个Target Device，那为了某些特殊需要，我们要将磁盘阵列柜的磁盘空间划分成若干个小的单元给主机来用，于是就产生了一些什么逻辑驱动器的说法，也就是比Target Device级别更低的逻辑对象，我们习惯于把这些更小的磁盘资源称之为LUN0、LUN1、LUN2…什么的。而操作系统的机制使然，操作系统识别的最小存储对象级别就是LUN Device，这是一个逻辑对象，所以很多时候被称为Logical Device。服务器识别到的最小的存储资源，就是LUN级别的。主机的HBA 卡看到的存储上的存储资源就靠主要两个东西来定位，一个就是存储系统的控制器(Target)，一个就是LUN ID，这个LUN是由存储的控制系统给定的，是存储系统的某部分存储资源。一旦服务器与LUN连接上，就可以通过当前的网络接口将数据传输到磁盘阵列上。</p>
+<h1 id="2volume"><a class="markdownIt-Anchor" href="#2volume"></a> 2.volume</h1>
+<p>LUN是对存储设备而言的，volume是对主机而言的。<br />
+怎么去理解呢？选择存储设备上的多个硬盘形成一个RAID组，再在RAID组的基础上创建一个或多个LUN（一般创建一个LUN）。许多厂商的存储设备只支持一个RAID组上创一个LUN。此时LUN相对于存储设备是一个逻辑设备。当网络中的主机连接到存储设备时，就可以识别到存储设备上逻辑设备LUN，此时LUN相对于主机来讲就是一个“物理硬盘”，与C盘D盘所在IDC或SCSI硬盘的性属是相同的。在该“物理硬盘”上创建一个或多个分区，再创建文件系统，才可以得到一个VOLUME。此时VOLUME相对于主机是一个逻辑设备。<br />
+从容量大小方面比较VOLUME，分区、LUN、RAID的关系如下：<br />
+<strong>VOLUME = 分区 ≤ 主机设备管理器中的磁盘 = LUN ≤ RAID ≤ 存储设备中硬盘的总容量。</strong><br />
+上述只是针对一般情况，VOLUME也只是针对主机来讲。个别厂商对LUN和VOLUME定义与普通厂商的定义不同，甚至会起一些奇怪的名称，这些名称即使是存储行业的资深人士也不一定全明白。不过只要你能分清楚其实质就行。</p>
+<h1 id="3hba"><a class="markdownIt-Anchor" href="#3hba"></a> 3.HBA</h1>
+<p>HBA，即主机总线适配器英文“Host Bus Adapter”缩写。是一个在服务器和存储装置间提供输入/输出(I/O)处理和物理连接的电路板或集成电路适配器。因为HBA减轻了主处理器在数据存储和检索任务的负担，它能够提高服务器的性能。一个HBA和与之相连的磁盘子系统有时一起被称作一个磁盘通道。</p>
+<h2 id="a-总线适配器是个什么东西呢"><a class="markdownIt-Anchor" href="#a-总线适配器是个什么东西呢"></a> a、总线适配器是个什么东西呢？</h2>
+<p>我们首先要了解一下主机的结构，一台计算机内部多半由两条总线串起来(当然实际情况会有不同，这里只讨论常见的，简单的情况)，一条总线叫系统总线，一条叫I/O总线。系统总线上接了CPU，Memory，cache什么的，I/O总线上接的就是外围设备，现如今最常见的就是PCI总线了。这两条总线之间用桥接的芯片或者说电路连接起来。举个形象的例子，就好比一个城市里，有两条主干道，一条属于行政区，一条属于商业区，中间有个环岛，将两条主干道连接到了一起，系统总线就好比行政区里的主干道，而I/O总线就好比商业区的主干道。系统总线和I/O总线的带宽的单位都是以Gbyte来记，但是显而易见的是，行政区的主干道和商业区的主干道相比的话，前者肯定更“核心”，更宽，更顺畅，设计的要求也高。 我们知道，在向公仆部门要求服务的时候，是要有一些接口的部门和程序的，而桥接芯片的作用就是连接和协调两条总线的工作的。 虽然I/O总线的速度和系统总线的带宽相比要低很多，但是好歹也是以G来计量的，而我们知道外围设备的速度，往往只有几百兆，甚至几十k而已，怎么协调工作呢？好比卖煎饼果子摊子不能直接戳到城市主干道上，怎么办？好办，在主干道边上开个2000平米的小吃城，把摊子都收进去好了。那么主机总线适配器的作用也就是这个，我们就是要把外设组织起来，连接到I/O总线上去！HBA就是指Host和I/O BUS直接的一个适配器，也好比一个水管工常说的“双通”。</p>
+<h2 id="b-常见的hba有哪些呢"><a class="markdownIt-Anchor" href="#b-常见的hba有哪些呢"></a> b、常见的HBA有哪些呢？</h2>
+<p>比如显卡，网卡，scsi卡，1394卡等等。我要拿出来说的就是FCHBA和ATA&amp;IDE。我们通常说的什么Emulex的LP9002，什么Qlogic的QLA2340都是FCHBA卡，就是将Fibre Channel的设备和IO总线连接起来的适配器。ATA也是一种适配器技术，我们PC主板上的ATA接口，就是一个磁盘适配器的对外接口，要强调的就是，ATA说的是适配器技术，IDE是说得存储外设技术，比如我们可以说IDE硬盘，IDE光驱，说ATA接口，但是说IDE接口，ATA硬盘就不时那么合适了，虽然很多情况下，大家都习惯把他们混在一起说。 描述HBA的时候，有几个主要的规范要说一下 <br />
+   &gt; 一个承上，就是说，HBA和IOBUS怎么连，我们经常说的PCI接口卡，就是指这个HBA卡是要插在PCI BUS上的PCI slot上的，但是现在的计算机上，不仅仅只有PCI总线而已，大家碰到的时候留意。 <br />
+   &gt;一个启下，就是说HBA要和外设怎么连，这样的规范就很多了。 <br />
+   &gt;再说HBA本身，比如带宽，比如运行机制(protocol等)，独立处理能力等等 <br />
+Tips：有时候我们看到的一块卡，看到的实际是一个物理的卡，有的时候实际上是多个Adapter，好比一家机构，挂多个牌子，有的时候，一块卡有两条通道，好比一家公司，有两套人马。</p>
+<h1 id="4das"><a class="markdownIt-Anchor" href="#4das"></a> 4.DAS</h1>
+<p>DAS（Direct Attached Storage—直接连接存储），是指将存储设备通过SCSI接口或光纤通道直接连接到服务器上。<br />
+直连式存储依赖服务器主机操作系统进行数据的IO读写和存储维护管理，数据备份和恢复要求占用服务器主机资源（包括CPU、系统IO等），数据流需要回流主机再到服务器连接着的磁带机（库），数据备份通常占用服务器主机资源20-30%，因此许多企业用户的日常数据备份常常在深夜或业务系统不繁忙时进行，以免影响正常业务系统的运行。直连式存储的数据量越大，备份和恢复的时间就越长，对服务器硬件的依赖性和影响就越大。<br />
+直连式存储与服务器主机之间的连接通道通常采用SCSI连接，带宽为10MB/s、20MB/s、40MB/s、80MB/s等，随着服务器CPU的处理能力越来越强，存储硬盘空间越来越大，阵列的硬盘数量越来越多，SCSI通道将会成为IO瓶颈；服务器主机SCSI ID资源有限，能够建立的SCSI通道连接有限。<br />
 无论直连式存储还是服务器主机的扩展，从一台服务器扩展为多台服务器组成的群集(Cluster)，或存储阵列容量的扩展，都会造成业务系统的停机，从而给企业带来经济损失，对于银行、电信、传媒等行业7×24小时服务的关键业务系统，这是不可接受的。并且直连式存储或服务器主机的升级扩展，只能由原设备厂商提供，往往受原设备厂商限制。</p>
-<h1 id="nas">5.NAS</h1>
-<p>NAS（Network Attached
-Storage—网络附加存储），即将存储设备通过标准的网络拓扑结构（例如以太网），连接到一群计算机上。NAS是部件级的存储方法，它的重点在于帮助工作组和部门级机构解决迅速增加存储容量的需求。需要共享文件的工程小组就是典型的例子。
-NAS没有解决与文件服务器相关的一个关键性问题，即备份过程中的带宽消耗。与将备份数据流从LAN中转移出去的存储区域网（SAN）不同，NAS仍使用网络进行备份和恢复。NAS的一个缺点是它将存储事务由并行SCSI连接转移到了网络上。这就是说LAN除了必须处理正常的最终用户传输流外，还必须处理包括备份操作的存储磁盘请求。
-随着IP网络技术的发展，网络接入存储（NAS）技术发生质的飞跃。早期80年代末到90年代初的10Mbps带宽，网络接入存储作为文件服务器存储，性能受带宽影响；后来快速以太网（100Mbps）、VLAN虚网、Trunk(Ethernet
-Channel)
-以太网通道的出现，网络接入存储的读写性能得到改善；1998年千兆以太网（1000Mbps）的出现和投入商用，为网络接入存储（NAS）带来质的变化和市场广泛认可。由于网络接入存储采用TCP/IP网络进行数据交换，TCP/IP是IT业界的标准协议，不同厂商的产品（服务器、交换机、NAS存储）只要满足协议标准就能够实现互连互通，无兼容性的要求；并且2002年万兆以太网（10000Mbps）的出现和投入商用，存储网络带宽将大大提高NAS存储的性能。NAS需求旺盛已经成为事实。首先NAS几乎继承了磁盘列阵的所有优点，可以将设备通过标准的网络拓扑结构连接，摆脱了服务器和异构化构架的桎梏；其次，在企业数据量飞速膨胀中，SAN、大型磁带库、磁盘柜等产品虽然都是很好的存储解决方案，但他们那高贵的身份和复杂的操作是资金和技术实力有限的中小企业无论如何也不能接受的。NAS正是满足这种需求的产品，在解决足够的存储和扩展空间的同时，还提供极高的性价比。因此，无论是从适用性还是TCO的角度来说，NAS自然成为多数企业，尤其是大中小企业的最佳选择。
-# 6.SAN SAN（存储区域网络）采用光纤通道（Fibre Channel
-，简称FC）技术，通过光纤通道交换机连接存储阵列和服务器主机，建立专用于数据存储的区域网络。SAN经过十多年历史的发展，已经相当成熟，成为业界的事实标准（但各个厂商的光纤交换技术不完全相同，其服务器和SAN存储有兼容性的要求）。SAN解决方案是从基本功能剥离出存储功能，所以运行备份操作就无需考虑它们对网络总体性能的影响。</p>
-<h1 id="分析比较编辑">分析比较编辑</h1>
+<h1 id="5nas"><a class="markdownIt-Anchor" href="#5nas"></a> 5.NAS</h1>
+<p>NAS（Network Attached Storage—网络附加存储），即将存储设备通过标准的网络拓扑结构（例如以太网），连接到一群计算机上。NAS是部件级的存储方法，它的重点在于帮助工作组和部门级机构解决迅速增加存储容量的需求。需要共享文件的工程小组就是典型的例子。<br />
+NAS没有解决与文件服务器相关的一个关键性问题，即备份过程中的带宽消耗。与将备份数据流从LAN中转移出去的存储区域网（SAN）不同，NAS仍使用网络进行备份和恢复。NAS的一个缺点是它将存储事务由并行SCSI连接转移到了网络上。这就是说LAN除了必须处理正常的最终用户传输流外，还必须处理包括备份操作的存储磁盘请求。<br />
+随着IP网络技术的发展，网络接入存储（NAS）技术发生质的飞跃。早期80年代末到90年代初的10Mbps带宽，网络接入存储作为文件服务器存储，性能受带宽影响；后来快速以太网（100Mbps）、VLAN虚网、Trunk(Ethernet Channel) 以太网通道的出现，网络接入存储的读写性能得到改善；1998年千兆以太网（1000Mbps）的出现和投入商用，为网络接入存储（NAS）带来质的变化和市场广泛认可。由于网络接入存储采用TCP/IP网络进行数据交换，TCP/IP是IT业界的标准协议，不同厂商的产品（服务器、交换机、NAS存储）只要满足协议标准就能够实现互连互通，无兼容性的要求；并且2002年万兆以太网（10000Mbps）的出现和投入商用，存储网络带宽将大大提高NAS存储的性能。NAS需求旺盛已经成为事实。首先NAS几乎继承了磁盘列阵的所有优点，可以将设备通过标准的网络拓扑结构连接，摆脱了服务器和异构化构架的桎梏；其次，在企业数据量飞速膨胀中，SAN、大型磁带库、磁盘柜等产品虽然都是很好的存储解决方案，但他们那高贵的身份和复杂的操作是资金和技术实力有限的中小企业无论如何也不能接受的。NAS正是满足这种需求的产品，在解决足够的存储和扩展空间的同时，还提供极高的性价比。因此，无论是从适用性还是TCO的角度来说，NAS自然成为多数企业，尤其是大中小企业的最佳选择。</p>
+<h1 id="6san"><a class="markdownIt-Anchor" href="#6san"></a> 6.SAN</h1>
+<p>SAN（存储区域网络）采用光纤通道（Fibre Channel ，简称FC）技术，通过光纤通道交换机连接存储阵列和服务器主机，建立专用于数据存储的区域网络。SAN经过十多年历史的发展，已经相当成熟，成为业界的事实标准（但各个厂商的光纤交换技术不完全相同，其服务器和SAN存储有兼容性的要求）。SAN解决方案是从基本功能剥离出存储功能，所以运行备份操作就无需考虑它们对网络总体性能的影响。</p>
+<h1 id="分析比较编辑"><a class="markdownIt-Anchor" href="#分析比较编辑"></a> 分析比较编辑</h1>
 <p>针对I/O是整个网络系统效率低下的瓶颈问题，专家们提出了许多种解决办法。其中抓住症结并经过实践检验为最有效的办法是：将数据从通用的应用服务器中分离出来以简化存储管理。</p>
-<h2 id="问题">问题：</h2>
-<p><img src="/img/存储1.jpg" />
+<h2 id="问题"><a class="markdownIt-Anchor" href="#问题"></a> 问题：</h2>
+<p><img src="/img/%E5%AD%98%E5%82%A81.jpg" alt="" /><br />
 由上图可知原来存在的问题：每个新的应用服务器都要有它自己的存储器。这样造成数据处理复杂，随着应用服务器的不断增加，网络系统效率会急剧下降。</p>
-<h2 id="解决办法">解决办法：</h2>
-<p><img src="/img/存储2.jpg" />
-从上可看出：将存储器从应用服务器中分离出来，进行集中管理。这就是所说的存储网络（Storage
+<h2 id="解决办法"><a class="markdownIt-Anchor" href="#解决办法"></a> 解决办法：</h2>
+<p><img src="/img/%E5%AD%98%E5%82%A82.jpg" alt="" /><br />
+从上可看出：将存储器从应用服务器中分离出来，进行集中管理。这就是所说的存储网络（Storage<br />
 Networks）。</p>
-<h2 id="使用存储网络的好处">使用存储网络的好处：</h2>
+<h2 id="使用存储网络的好处"><a class="markdownIt-Anchor" href="#使用存储网络的好处"></a> 使用存储网络的好处：</h2>
 <ul>
 <li>统一性：形散神不散，在逻辑上是完全一体的。</li>
 <li>实现数据集中管理，因为它们才是企业真正的命脉。</li>
 <li>容易扩充，即收缩性很强。</li>
 <li>具有容错功能，整个网络无单点故障。</li>
-<li>专家们针对这一办法又采取了两种不同的实现手段，即NAS（Network
-Attached Storage）网络接入存储和SAN(Storage Area Networks)存储区域网络。
-NAS：用户通过TCP/IP协议访问数据，采用业界标准文件共享协议如：NFS、HTTP、CIFS实现共享。
+<li>专家们针对这一办法又采取了两种不同的实现手段，即NAS（Network Attached Storage）网络接入存储和SAN(Storage Area Networks)存储区域网络。<br />
+NAS：用户通过TCP/IP协议访问数据，采用业界标准文件共享协议如：NFS、HTTP、CIFS实现共享。<br />
 SAN：通过专用光纤通道交换机访问数据，采用SCSI、FC-AL接口。</li>
 </ul>
-<h2 id="什么是nas和san的根本不同点">什么是NAS和SAN的根本不同点？</h2>
-<p>NAS和SAN最本质的不同就是文件管理系统在哪里。如图： <img
-src="/img/存储3.jpg" />
+<h2 id="什么是nas和san的根本不同点"><a class="markdownIt-Anchor" href="#什么是nas和san的根本不同点"></a> 什么是NAS和SAN的根本不同点？</h2>
+<p>NAS和SAN最本质的不同就是文件管理系统在哪里。如图：<br />
+<img src="/img/%E5%AD%98%E5%82%A83.jpg" alt="" /><br />
 由上图可以看出，SAN结构中，文件管理系统（FS）还是分别在每一个应用服务器上；而NAS则是每个应用服务器通过网络共享协议（如：NFS、CIFS）使用同一个文件管理系统。换句话说：NAS和SAN存储系统的区别是NAS有自己的文件系统管理。</p>
 <p>NAS是将目光集中在应用、用户和文件以及它们共享的数据上。SAN是将目光集中在磁盘、磁带以及联接它们的可靠的基础结构。将来从桌面系统到数据集中管理到存储设备的全面解决方案将是NAS加SAN。</p>
-<h1 id="iscsi">7.iSCSI</h1>
-<p>iSCSI技术最重要的贡献在于其对传统技术的继承和发展上：其一，SCSI（Small
-Computer Systems
-Interface，小型计算机系统接口）技术是被磁盘、磁带等设备广泛采用的存储标准，从1986年诞生起到现在仍然保持着良好的发展势头；其二，沿用TCP/IP协议，TCP/IP在网络方面是最通用、最成熟的协议，且IP网络的基础建设非常完善。这两点为iSCSI的无限扩展提供了夯实的基础。
-iSCSI协议定义了在TCP/IP网络发送、接收block（数据块）级的存储数据的规则和方法。发送端将SCSI命令和数据封装到TCP/IP包中再通过网络转发，接收端收到TCP/IP包之后，将其还原为SCSI命令和数据并执行，完成之后将返回的SCSI命令和数据再封装到TCP/IP包中再传送回发送端。而整个过程在用户看来，使用远端的存储设备就象访问本地的SCSI设备一样简单。支持iSCSI技术的服务器和存储设备能够直接连接到现有的IP交换机和路由器上，因此iSCSI技术具有易于安装、成本低廉、不受地理限制、良好的互操作性、管理方便等优势。早在2001年上半年，IBM就推出了IP
-Storage
-200i，是市场上公认的第一款基于iSCSI协议的产品，这款产品的出现，对于身处信息爆炸时代却无法承担光纤通道SAN环境高成本的中小型用户来说，具有巨大的吸引力</p>
-<h1 id="基于iscsi技术的ip-san应用">8.基于iSCSI技术的IP SAN应用  </h1>
-<p><img src="/img/存储4.png" /> 图一 基于iSCSI技术的IP SAN 
-图一为比较简单的IP
-SAN结构图。例子中使用千兆以太网交换机搭建网络环境，由iSCSI
-initiator如文件服务器、iSCSI
-target如磁盘阵列及磁带库组成。在这里引入两个概念：initiator和target。Initiator即典型的主机系统，发出读、写数据请求；target即磁盘阵列之类的存储资源，响应客户端的请求。这两个概念也就是上文提到的发送端及接受端。图中使用iSCSI
-HBA（Host Bus Adapter，主机总线适配卡）连接服务器和交换机，iSCSI
-HBA包括网卡的功能，还需要支持OSI网络协议堆栈以实现协议转换的功能。在IP
-SAN中还可以将基于iSCSI技术的磁带库直接连接到交换机上，通过存储管理软件实现简单、快速的数据备份。 
-由图一可以看出，基于iSCSI技术，利用现有的IP网络搭建IP
-SAN是极其简单的，且无须对现有IT员工进行培训即可掌握存储网络的管理。可能有用户会有疑问：基于1Gb的IP网络搭建IP
-SAN，性能到底如何？据某iSCSI技术开发人员说，数据传输速率在110-120MB/s左右，如果是全双工模式的交换机，可以达到200MB/s左右，相比光纤通道190MB/s（全双工360MB/s）的传输速率还是有差距，但光纤通道的高成本也是众所周知的。而在实际应用中，80-90MB/s的数据传输速率还是能够满足要求，因此iSCSI技术的应用环境提供了更好的性价比，从而会从传统SAN中分得一杯羹。</p>
+<h1 id="7iscsi"><a class="markdownIt-Anchor" href="#7iscsi"></a> 7.iSCSI</h1>
+<p>iSCSI技术最重要的贡献在于其对传统技术的继承和发展上：其一，SCSI（Small Computer Systems Interface，小型计算机系统接口）技术是被磁盘、磁带等设备广泛采用的存储标准，从1986年诞生起到现在仍然保持着良好的发展势头；其二，沿用TCP/IP协议，TCP/IP在网络方面是最通用、最成熟的协议，且IP网络的基础建设非常完善。这两点为iSCSI的无限扩展提供了夯实的基础。<br />
+iSCSI协议定义了在TCP/IP网络发送、接收block（数据块）级的存储数据的规则和方法。发送端将SCSI命令和数据封装到TCP/IP包中再通过网络转发，接收端收到TCP/IP包之后，将其还原为SCSI命令和数据并执行，完成之后将返回的SCSI命令和数据再封装到TCP/IP包中再传送回发送端。而整个过程在用户看来，使用远端的存储设备就象访问本地的SCSI设备一样简单。支持iSCSI技术的服务器和存储设备能够直接连接到现有的IP交换机和路由器上，因此iSCSI技术具有易于安装、成本低廉、不受地理限制、良好的互操作性、管理方便等优势。早在2001年上半年，IBM就推出了IP<br />
+Storage 200i，是市场上公认的第一款基于iSCSI协议的产品，这款产品的出现，对于身处信息爆炸时代却无法承担光纤通道SAN环境高成本的中小型用户来说，具有巨大的吸引力</p>
+<h1 id="8基于iscsi技术的ip-san应用"><a class="markdownIt-Anchor" href="#8基于iscsi技术的ip-san应用"></a> 8.基于iSCSI技术的IP SAN应用</h1>
+<p><img src="/img/%E5%AD%98%E5%82%A84.png" alt="" /><br />
+图一 基于iSCSI技术的IP SAN <br />
+图一为比较简单的IP SAN结构图。例子中使用千兆以太网交换机搭建网络环境，由iSCSI initiator如文件服务器、iSCSI target如磁盘阵列及磁带库组成。在这里引入两个概念：initiator和target。Initiator即典型的主机系统，发出读、写数据请求；target即磁盘阵列之类的存储资源，响应客户端的请求。这两个概念也就是上文提到的发送端及接受端。图中使用iSCSI HBA（Host Bus Adapter，主机总线适配卡）连接服务器和交换机，iSCSI HBA包括网卡的功能，还需要支持OSI网络协议堆栈以实现协议转换的功能。在IP SAN中还可以将基于iSCSI技术的磁带库直接连接到交换机上，通过存储管理软件实现简单、快速的数据备份。 <br />
+由图一可以看出，基于iSCSI技术，利用现有的IP网络搭建IP SAN是极其简单的，且无须对现有IT员工进行培训即可掌握存储网络的管理。可能有用户会有疑问：基于1Gb的IP网络搭建IP SAN，性能到底如何？据某iSCSI技术开发人员说，数据传输速率在110-120MB/s左右，如果是全双工模式的交换机，可以达到200MB/s左右，相比光纤通道190MB/s（全双工360MB/s）的传输速率还是有差距，但光纤通道的高成本也是众所周知的。而在实际应用中，80-90MB/s的数据传输速率还是能够满足要求，因此iSCSI技术的应用环境提供了更好的性价比，从而会从传统SAN中分得一杯羹。</p>
 
     </div>
 
