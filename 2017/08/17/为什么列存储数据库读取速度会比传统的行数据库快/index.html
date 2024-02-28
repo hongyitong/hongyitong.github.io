@@ -27,7 +27,9 @@
 <meta property="og:site_name" content="忆桐之家的博客">
 <meta property="og:description" content="为什么列存储数据库读取速度会比传统的行数据库快？ 所谓的快只是针对于进行olap操作而言 我们知道，数据在存储中的基本单位为页，这也是进行数据读取时候基本单位，一次读取就是一次IO操作 以sql server为例，一个数据页大小为8K，数据页中存储的是数据，数据是连续存储的">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/img/%E5%88%97%E6%95%B0%E6%8D%AE%E5%BA%931.jpg">
 <meta property="og:image" content="http://hongyitong.github.io/img/%E5%88%97%E6%95%B0%E6%8D%AE%E5%BA%932.jpg">
+<meta property="og:image" content="http://hongyitong.github.io/img/%E5%88%97%E6%95%B0%E6%8D%AE%E5%BA%933.jpg">
 <meta property="og:image" content="http://hongyitong.github.io/img/%E5%88%97%E6%95%B0%E6%8D%AE%E5%BA%934.jpg">
 <meta property="article:published_time" content="2017-08-16T16:00:00.000Z">
 <meta property="article:modified_time" content="2017-09-05T06:27:24.000Z">
@@ -36,7 +38,7 @@
 <meta property="article:tag" content="列数据库">
 <meta property="article:tag" content="NoSQL">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://hongyitong.github.io/img/%E5%88%97%E6%95%B0%E6%8D%AE%E5%BA%932.jpg">
+<meta name="twitter:image" content="http://hongyitong.github.io/img/%E5%88%97%E6%95%B0%E6%8D%AE%E5%BA%931.jpg">
 
 
 <link rel="canonical" href="http://hongyitong.github.io/2017/08/17/%E4%B8%BA%E4%BB%80%E4%B9%88%E5%88%97%E5%AD%98%E5%82%A8%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AF%BB%E5%8F%96%E9%80%9F%E5%BA%A6%E4%BC%9A%E6%AF%94%E4%BC%A0%E7%BB%9F%E7%9A%84%E8%A1%8C%E6%95%B0%E6%8D%AE%E5%BA%93%E5%BF%AB/">
@@ -294,27 +296,29 @@
     
     <div class="post-body" itemprop="articleBody">
         <p>为什么列存储数据库读取速度会比传统的行数据库快？</p>
-<p>所谓的快只是针对于进行olap操作而言
-我们知道，数据在存储中的基本单位为页，这也是进行数据读取时候基本单位，一次读取就是一次IO操作
-以sql
-server为例，一个数据页大小为8K，数据页中存储的是数据，数据是连续存储的<span id="more"></span></p>
-<p>那么我假设如下的4*4表格为一个数据页 <img
-src="/img/列数据库1.jpg" /></p>
-<p>再假设，有这样一个表格 字段1 字段2 字段1的值为
-col1value1,col1value2..... 字段2的值为col2value1,col2value2......
-再假设一个excel的单元格为一个存储单位，数据总量占了2个页，那么以行方式存储大概就这样的
-<img src="/img/列数据库2.jpg" /> 以列方式存储则是这样的 <img
-src="/img/列数据库3.jpg" /> 这时，如果我需要执行如下查询(oltp典型查询)
-select 字段1,字段2 from table where 字段1='col1value1'
+<p>所谓的快只是针对于进行olap操作而言<br>
+我们知道，数据在存储中的基本单位为页，这也是进行数据读取时候基本单位，一次读取就是一次IO操作<br>
+以sql server为例，一个数据页大小为8K，数据页中存储的是数据，数据是连续存储的<span id="more"></span></p>
+<p>那么我假设如下的4*4表格为一个数据页<br>
+<img src="/img/%E5%88%97%E6%95%B0%E6%8D%AE%E5%BA%931.jpg" alt=""></p>
+<p>再假设，有这样一个表格 字段1 字段2<br>
+字段1的值为 col1value1,col1value2…<br>
+字段2的值为col2value1,col2value2…<br>
+再假设一个excel的单元格为一个存储单位，数据总量占了2个页，那么以行方式存储大概就这样的<br>
+<img src="/img/%E5%88%97%E6%95%B0%E6%8D%AE%E5%BA%932.jpg" alt=""><br>
+以列方式存储则是这样的<br>
+<img src="/img/%E5%88%97%E6%95%B0%E6%8D%AE%E5%BA%933.jpg" alt=""><br>
+这时，如果我需要执行如下查询(oltp典型查询)<br>
+select 字段1,字段2 from table where 字段1=‘col1value1’<br>
 以行方式查询（在有适当的索引情况下)，那么，执行一次以上查询，只需要扫描一次page1就可以了</p>
-<p>以列方式查询，需要投其扫描page1
-和page2共2次，分别取得字段1，字段2的单行值 OK，我们换成olap的典型查询
-select avg(字段2) from table
---（注意，这里假设字段2为一个整型数据，而且无where条件限制，即需要扫描全部数据）
-对于行存储，这个查询需要两次IO将全部数据放入内存后，进行页间数据的跳读（类随机读取)
-对于列存储，只需要一次IO将page2放入内存后进行连续读取，如果字段2还有多页的话，也都是进行的物理连续读取
-也就是说，在进行olap操作时候，不仅是减小了IO次数，而且把随机读取变为了连续读取以下为网上随便找的一张SSD性能测试图，注意seq（连续）和4k（随机）之间的性能区别
-<img src="/img/列数据库4.jpg" /></p>
+<p>以列方式查询，需要投其扫描page1 和page2共2次，分别取得字段1，字段2的单行值<br>
+OK，我们换成olap的典型查询<br>
+select avg(字段2) from table<br>
+–（注意，这里假设字段2为一个整型数据，而且无where条件限制，即需要扫描全部数据）<br>
+对于行存储，这个查询需要两次IO将全部数据放入内存后，进行页间数据的跳读（类随机读取)<br>
+对于列存储，只需要一次IO将page2放入内存后进行连续读取，如果字段2还有多页的话，也都是进行的物理连续读取<br>
+也就是说，在进行olap操作时候，不仅是减小了IO次数，而且把随机读取变为了连续读取以下为网上随便找的一张SSD性能测试图，注意seq（连续）和4k（随机）之间的性能区别<br>
+<img src="/img/%E5%88%97%E6%95%B0%E6%8D%AE%E5%BA%934.jpg" alt=""></p>
 
     </div>
 

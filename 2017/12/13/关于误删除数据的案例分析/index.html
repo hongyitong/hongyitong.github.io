@@ -20,12 +20,12 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="公司案例 # 背景 两个系统的接口，在同步插入数据的时候需要删除对应项目的历史数据。 场景 新接口通过测试上线之后，发现所有项目的数据都没有了。 处理过程 1、怀疑是新的接口导致。但是开发工程师声称删除的语句是加了where条件的，只会删除对应项目的历史数据； 2、找一台测试机，用Sql server Profiler重现接口的过程，发现有很多delete语句误删了其它项目的数据； 分析 原来wh">
+    <meta name="description" content="公司案例 背景 两个系统的接口，在同步插入数据的时候需要删除对应项目的历史数据。 场景 新接口通过测试上线之后，发现所有项目的数据都没有了。 处理过程 1、怀疑是新的接口导致。但是开发工程师声称删除的语句是加了where条件的，只会删除对应项目的历史数据； 2、找一台测试机，用Sql server Profiler重现接口的过程，发现有很多delete语句误删了其它项目的数据； 分析 原来wher">
 <meta property="og:type" content="article">
 <meta property="og:title" content="关于误删除数据的案例分析">
 <meta property="og:url" content="http://hongyitong.github.io/2017/12/13/%E5%85%B3%E4%BA%8E%E8%AF%AF%E5%88%A0%E9%99%A4%E6%95%B0%E6%8D%AE%E7%9A%84%E6%A1%88%E4%BE%8B%E5%88%86%E6%9E%90/index.html">
 <meta property="og:site_name" content="忆桐之家的博客">
-<meta property="og:description" content="公司案例 # 背景 两个系统的接口，在同步插入数据的时候需要删除对应项目的历史数据。 场景 新接口通过测试上线之后，发现所有项目的数据都没有了。 处理过程 1、怀疑是新的接口导致。但是开发工程师声称删除的语句是加了where条件的，只会删除对应项目的历史数据； 2、找一台测试机，用Sql server Profiler重现接口的过程，发现有很多delete语句误删了其它项目的数据； 分析 原来wh">
+<meta property="og:description" content="公司案例 背景 两个系统的接口，在同步插入数据的时候需要删除对应项目的历史数据。 场景 新接口通过测试上线之后，发现所有项目的数据都没有了。 处理过程 1、怀疑是新的接口导致。但是开发工程师声称删除的语句是加了where条件的，只会删除对应项目的历史数据； 2、找一台测试机，用Sql server Profiler重现接口的过程，发现有很多delete语句误删了其它项目的数据； 分析 原来wher">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2017-12-12T16:00:00.000Z">
 <meta property="article:modified_time" content="2017-12-13T01:29:00.000Z">
@@ -151,7 +151,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9C%BA%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">场景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A4%84%E7%90%86%E8%BF%87%E7%A8%8B"><span class="nav-number">2.</span> <span class="nav-text">处理过程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E6%9E%90"><span class="nav-number">3.</span> <span class="nav-text">分析</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%8D%E6%80%9D"><span class="nav-number">4.</span> <span class="nav-text">反思</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%80%9A%E8%BF%87%E6%B5%8B%E8%AF%95%E7%9A%84%E5%B7%A5%E5%85%B7%E8%BF%98%E4%BC%9A%E5%87%BA%E9%97%AE%E9%A2%98"><span class="nav-number">4.1.</span> <span class="nav-text">1、为什么通过测试的工具还会出问题？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E9%81%BF%E5%85%8D%E8%BF%99%E4%B8%AA%E9%97%AE%E9%A2%98%E7%9A%84%E9%87%8D%E7%8E%B0"><span class="nav-number">4.2.</span> <span class="nav-text">2、如何避免这个问题的重现</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%8F%E9%AA%8C%E4%B9%8B%E8%B0%88"><span class="nav-number">5.</span> <span class="nav-text">经验之谈</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">场景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">3.</span> <span class="nav-text">处理过程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">4.</span> <span class="nav-text">分析</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">5.</span> <span class="nav-text">反思</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1%E3%80%81%E4%B8%BA%E4%BB%80%E4%B9%88%E9%80%9A%E8%BF%87%E6%B5%8B%E8%AF%95%E7%9A%84%E5%B7%A5%E5%85%B7%E8%BF%98%E4%BC%9A%E5%87%BA%E9%97%AE%E9%A2%98%EF%BC%9F"><span class="nav-number">5.1.</span> <span class="nav-text">1、为什么通过测试的工具还会出问题？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2%E3%80%81%E5%A6%82%E4%BD%95%E9%81%BF%E5%85%8D%E8%BF%99%E4%B8%AA%E9%97%AE%E9%A2%98%E7%9A%84%E9%87%8D%E7%8E%B0"><span class="nav-number">5.2.</span> <span class="nav-text">2、如何避免这个问题的重现</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">6.</span> <span class="nav-text">经验之谈</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -286,41 +286,43 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <p>公司案例 # 背景
-两个系统的接口，在同步插入数据的时候需要删除对应项目的历史数据。</p>
-<h1 id="场景">场景</h1>
+        <p>公司案例</p>
+<h1>背景</h1>
+<p>两个系统的接口，在同步插入数据的时候需要删除对应项目的历史数据。</p>
+<h1>场景</h1>
 <p>新接口通过测试上线之后，发现所有项目的数据都没有了。</p>
-<h1 id="处理过程">处理过程</h1>
-<p>1、怀疑是新的接口导致。但是开发工程师声称删除的语句是加了where条件的，只会删除对应项目的历史数据；
-2、找一台测试机，用Sql server
-Profiler重现接口的过程，发现有很多delete语句误删了其它项目的数据；</p>
-<h1 id="分析">分析</h1>
-<p>原来where语句里面太多条件，有一个or条件没有括号，导致变成所有的项目了。
-<span id="more"></span></p>
-<h1 id="反思">反思</h1>
-<h2
-id="为什么通过测试的工具还会出问题">1、为什么通过测试的工具还会出问题？</h2>
+<h1>处理过程</h1>
+<p>1、怀疑是新的接口导致。但是开发工程师声称删除的语句是加了where条件的，只会删除对应项目的历史数据；<br>
+2、找一台测试机，用Sql server Profiler重现接口的过程，发现有很多delete语句误删了其它项目的数据；</p>
+<h1>分析</h1>
+<p>原来where语句里面太多条件，有一个or条件没有括号，导致变成所有的项目了。</p>
+<span id="more"></span>
+<h1>反思</h1>
+<h2 id="1、为什么通过测试的工具还会出问题？">1、为什么通过测试的工具还会出问题？</h2>
 <p>在测试的过程当中，测试人员同步一个项目，然后检查这个项目的数据同步成功了，就测试通过，没有考虑过这个工具有删除别的项目数据的风险；</p>
-<h2 id="如何避免这个问题的重现">2、如何避免这个问题的重现</h2>
-<p>1）测试过程对于有delete
-update的语句，需要单独测试这一部分（单元测试的概念），而不只是看结果；
-2）开发的过程中，要养成好的开发习惯，例如 &gt;
-在sql中删除数据库中记录我们会使用到delete命令，这样如果不小心给删除了很难恢复了，总结一些删除数据但是不在数据库删除的方法。
-方法一 我常用的做法，就是在数据库中加一个删除标识字段， 如: isdel=1
-这样就代码删除的字段了 方法二 直接限制mysql删除 启动MySQL的时候加上参数
--U -U, --safe-updates Only allow UPDATE and DELETE that uses keys.
-防止执行delete的时候没带有条件语句，如果没加上where则语句不执行。
+<h2 id="2、如何避免这个问题的重现">2、如何避免这个问题的重现</h2>
+<p>1）测试过程对于有delete update的语句，需要单独测试这一部分（单元测试的概念），而不只是看结果；<br>
+2）开发的过程中，要养成好的开发习惯，例如</p>
+<blockquote>
+<p>在sql中删除数据库中记录我们会使用到delete命令，这样如果不小心给删除了很难恢复了，总结一些删除数据但是不在数据库删除的方法。<br>
+方法一<br>
+我常用的做法，就是在数据库中加一个删除标识字段，<br>
+如: isdel=1 这样就代码删除的字段了<br>
+方法二<br>
+直接限制mysql删除<br>
+启动MySQL的时候加上参数 -U<br>
+-U, --safe-updates Only allow UPDATE and DELETE that uses keys.<br>
+防止执行delete的时候没带有条件语句，如果没加上where则语句不执行。<br>
 MySQL防止delete命令删除数据</p>
-<h1 id="经验之谈">经验之谈</h1>
-<p>偶尔要做 DB 维护，这是一点点经验。
-不要走神。不听歌，不聊天，不吃东西，不喝饮料，头脑清醒，知道自己在做什么，要做什么。
-写出步骤。连接到哪个数据库，ip是什么，运行什么命令，先做什么，后做什么，出了问题怎么roll
-back，我知道你都懂，但要写出来，不要相信自己的记忆。
-在测试环境验证。拿来写好的步骤，在测试环境中跑一遍，一半以上的可能会发现问题，然后再修改步骤，不要直接在产品环境中跑。
-<strong>delete 和 update 前，先查询，用同样的 where 语句
-select，至少知道有多少记录会被影响到。</strong> drop 和 truncate
-之前，检查三遍，连接的是不是正确的数据库。
-一次只连接一个DB，不要开几个窗口，有的连测试，有的连产品，或早或晚，你会出错。
+</blockquote>
+<h1>经验之谈</h1>
+<p>偶尔要做 DB 维护，这是一点点经验。<br>
+不要走神。不听歌，不聊天，不吃东西，不喝饮料，头脑清醒，知道自己在做什么，要做什么。<br>
+写出步骤。连接到哪个数据库，ip是什么，运行什么命令，先做什么，后做什么，出了问题怎么roll back，我知道你都懂，但要写出来，不要相信自己的记忆。<br>
+在测试环境验证。拿来写好的步骤，在测试环境中跑一遍，一半以上的可能会发现问题，然后再修改步骤，不要直接在产品环境中跑。<br>
+<strong>delete 和 update 前，先查询，用同样的 where 语句 select，至少知道有多少记录会被影响到。</strong><br>
+drop 和 truncate 之前，检查三遍，连接的是不是正确的数据库。<br>
+一次只连接一个DB，不要开几个窗口，有的连测试，有的连产品，或早或晚，你会出错。<br>
 <strong>备份，备份，备份。</strong></p>
 
     </div>

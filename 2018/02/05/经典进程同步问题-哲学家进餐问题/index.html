@@ -153,7 +153,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E6%8F%8F%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">问题描述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E5%88%86%E6%9E%90"><span class="nav-number">2.</span> <span class="nav-text">问题分析</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%AF%E8%83%BD%E5%AF%BC%E8%87%B4%E6%AD%BB%E9%94%81%E7%9A%84%E6%96%B9%E6%A1%88"><span class="nav-number">3.</span> <span class="nav-text">可能导致死锁的方案</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%B0%E5%BD%95%E5%9E%8B%E4%BF%A1%E5%8F%B7%E9%87%8F%E5%AE%9E%E7%8E%B0"><span class="nav-number">4.</span> <span class="nav-text">记录型信号量实现</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#and%E5%9E%8B%E4%BF%A1%E5%8F%B7%E9%87%8F%E5%AE%9E%E7%8E%B0"><span class="nav-number">5.</span> <span class="nav-text">AND型信号量实现</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">问题描述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">问题分析</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">3.</span> <span class="nav-text">可能导致死锁的方案</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -295,34 +295,83 @@
     
     <div class="post-body" itemprop="articleBody">
         <p>经典进程同步问题-哲学家进餐问题</p>
-<h1 id="问题描述">问题描述</h1>
-<p>一张圆桌上坐着5名哲学家，每两个哲学家之间的桌上摆一根筷子，桌子的中间是一碗米饭。哲学家们倾注毕生精力用于思考和进餐，哲学家在思考时，并不影响他人。只有当哲学家饥饿的时候，才试图拿起左、
-右两根筷子（一根一根地拿起）。如果筷子已在他人手上，则需等待。饥饿的哲学家只有同时拿到了两根筷子才可以开始进餐，当进餐完毕后，放下筷子继续思考。
-<img src="/img/哲学家进餐.jpg" /></p>
-<h1 id="问题分析">问题分析</h1>
+<h1>问题描述</h1>
+<p>一张圆桌上坐着5名哲学家，每两个哲学家之间的桌上摆一根筷子，桌子的中间是一碗米饭。哲学家们倾注毕生精力用于思考和进餐，哲学家在思考时，并不影响他人。只有当哲学家饥饿的时候，才试图拿起左、 右两根筷子（一根一根地拿起）。如果筷子已在他人手上，则需等待。饥饿的哲学家只有同时拿到了两根筷子才可以开始进餐，当进餐完毕后，放下筷子继续思考。<br>
+<img src="/img/%E5%93%B2%E5%AD%A6%E5%AE%B6%E8%BF%9B%E9%A4%90.jpg" alt=""></p>
+<h1>问题分析</h1>
 <ul>
-<li>关系分析。5名哲学家与左右邻居对其中间筷子的访问是互斥关系。
-<span id="more"></span></li>
+<li>关系分析。5名哲学家与左右邻居对其中间筷子的访问是互斥关系。</li>
+</ul>
+<span id="more"></span>
+<ul>
 <li>整理思路。显然这里有五个进程。本题的关键是如何让一个哲学家拿到左右两个筷子而不造成死锁或者饥饿现象。解决的方案有以下几种
 <ul>
 <li>至多允许四位哲学家同时去拿左边的筷子，保证至少一位哲学家可以拿到两只筷子，并在使用完毕后，释放两只筷子。</li>
 <li>仅当哲学家的左右筷子均可用时，才允许他拿起筷子进餐。</li>
 <li>规定奇数哲学家先拿左边筷子，偶数哲学家先拿右边筷子，1，2哲学家竞争1号筷子，3，4哲学家竞争3号筷子。进而，所有哲学家先竞争奇数筷子，再竞争偶数筷子。</li>
-</ul></li>
-<li>信号量设置。定义互斥信号量数组chopstick[5] = {1, 1, 1, 1,
-1}用于对5个筷子的互斥访问。对哲学家按顺序从0～4编号，哲学家i左边的筷子的编号为i，哲学家右边的筷子的编号为(i+l)%5。</li>
 </ul>
-<h1 id="可能导致死锁的方案">可能导致死锁的方案</h1>
-<p><code>txt semaphore chopstick[5] = &#123;1,1,1,1,1&#125;; //定义信号量数组chopstick[5],并初始化 Pi()&#123;  //i号哲学家的进程     do&#123;         P (chopstick[i] ) ; //取左边筷子         P (chopstick[(i+1) %5] ) ；  //取右边篌子         eat;  //进餐         V(chopstick[i]) ; //放回左边筷子         V(chopstick[(i+l)%5]);  //放回右边筷子         think;  //思考     &#125; while (1); &#125;</code>
-当所有哲学家都只拿到左边的筷子时，将出现死锁的情况。</p>
-<h1 id="记录型信号量实现">记录型信号量实现</h1>
-<p>在思路整理中的三种方案中，我们选取第二种方案（仅当哲学家的左右筷子均可用时，才允许他拿起筷子进餐），用记录型信号量进行实现。</p>
-<p><code>txt semaphore chopstick[5] = &#123;1,1,1,1,1&#125;; //初始化信号量 semaphore mutex=l;  //设置取筷子的信号量 Pi()&#123; //i号哲学家的进程     do&#123;         P (mutex) ; //在取筷子前获得互斥量         P (chopstick [i]) ; //取左边筷子         P (chopstick[ (i+1) %5]) ;  //取右边筷子         V (mutex) ; //释放取筷子的信号量         eat;  //进餐         V(chopstick[i] ) ;  //放回左边筷子         V(chopstick[ (i+l)%5]) ;  //放回右边筷子         think;  // 思考     &#125;while(1); &#125;</code></p>
-<p>以上程序，当某进程不能顺利申请到两只筷子时，没有将mutex释放，也就意味着其他进程都无法再申请筷子了。因此，还可以对P操作进行优化，当申请筷子不成功时，先将mutex设置为1。等到所等待的筷子可用时，再将mutex设置为0，申请此筷子。</p>
-<p><code>txt  void S_P(chopstick[i], mutex)&#123;      if(chopstick[i] &lt;= 0)//申请不到该资源时，释放互斥锁          v(mutex);      while(chopstick[i] &lt;= 0 ) ;//所申请的资源出现      p(mutex);//加上互斥锁      p(chopstick[i]);  &#125;</code></p>
-<h1 id="and型信号量实现">AND型信号量实现</h1>
-<p><code>txt semaphore chopstick[5] = &#123;1,1,1,1,1&#125;; //初始化信号量  Pi()&#123; //i号哲学家的进程      do&#123;          AND_P (chopstick [i], chopstick[ (i+1) %5]) ; //同时取左右筷子          eat;  //进餐          AND_V(chopstick [i], chopstick[ (i+1) %5]) ;  //同时放回左右筷子          think; // 思考      &#125;while(1);  &#125;</code></p>
-<p>作者：okbrochure 链接：https://www.jianshu.com/p/4e9ab59d2169</p>
+</li>
+<li>信号量设置。定义互斥信号量数组chopstick[5] = {1, 1, 1, 1, 1}用于对5个筷子的互斥访问。对哲学家按顺序从0～4编号，哲学家i左边的筷子的编号为i，哲学家右边的筷子的编号为(i+l)%5。</li>
+</ul>
+<h1>可能导致死锁的方案</h1>
+<pre><code class="language-txt">semaphore chopstick[5] = &#123;1,1,1,1,1&#125;; //定义信号量数组chopstick[5],并初始化
+Pi()&#123;  //i号哲学家的进程
+    do&#123;
+        P (chopstick[i] ) ; //取左边筷子
+        P (chopstick[(i+1) %5] ) ；  //取右边篌子
+        eat;  //进餐
+        V(chopstick[i]) ; //放回左边筷子
+        V(chopstick[(i+l)%5]);  //放回右边筷子
+        think;  //思考
+    &#125; while (1);
+&#125;```
+当所有哲学家都只拿到左边的筷子时，将出现死锁的情况。
+
+# 记录型信号量实现
+在思路整理中的三种方案中，我们选取第二种方案（仅当哲学家的左右筷子均可用时，才允许他拿起筷子进餐），用记录型信号量进行实现。
+
+``` txt
+semaphore chopstick[5] = &#123;1,1,1,1,1&#125;; //初始化信号量
+semaphore mutex=l;  //设置取筷子的信号量
+Pi()&#123; //i号哲学家的进程
+    do&#123;
+        P (mutex) ; //在取筷子前获得互斥量
+        P (chopstick [i]) ; //取左边筷子
+        P (chopstick[ (i+1) %5]) ;  //取右边筷子
+        V (mutex) ; //释放取筷子的信号量
+        eat;  //进餐
+        V(chopstick[i] ) ;  //放回左边筷子
+        V(chopstick[ (i+l)%5]) ;  //放回右边筷子
+        think;  // 思考
+    &#125;while(1);
+&#125;```
+
+以上程序，当某进程不能顺利申请到两只筷子时，没有将mutex释放，也就意味着其他进程都无法再申请筷子了。因此，还可以对P操作进行优化，当申请筷子不成功时，先将mutex设置为1。等到所等待的筷子可用时，再将mutex设置为0，申请此筷子。
+
+``` txt
+ void S_P(chopstick[i], mutex)&#123;
+     if(chopstick[i] &lt;= 0)//申请不到该资源时，释放互斥锁
+         v(mutex);
+     while(chopstick[i] &lt;= 0 ) ;//所申请的资源出现
+     p(mutex);//加上互斥锁
+     p(chopstick[i]);
+ &#125;```
+
+# AND型信号量实现
+``` txt
+semaphore chopstick[5] = &#123;1,1,1,1,1&#125;; //初始化信号量
+ Pi()&#123; //i号哲学家的进程
+     do&#123;
+         AND_P (chopstick [i], chopstick[ (i+1) %5]) ; //同时取左右筷子
+         eat;  //进餐
+         AND_V(chopstick [i], chopstick[ (i+1) %5]) ;  //同时放回左右筷子
+         think; // 思考
+     &#125;while(1);
+ &#125;```
+
+作者：okbrochure
+链接：https://www.jianshu.com/p/4e9ab59d2169
+</code></pre>
 
     </div>
 

