@@ -20,12 +20,12 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="Cache 和 Buffer 都是缓存，主要区别是什么？ cache 是为了弥补高速设备和低速设备的鸿沟而引入的中间层，最终起到加快访问速度的作用。 而 buffer 的主要目的进行流量整形，把突发的大数量较小规模的 I&#x2F;O 整理成平稳的小数量较大规模的 I&#x2F;O，以减少响应次数（比如从网上下电影，你不能下一点点数据就写一下硬盘，而是积攒一定量的数据以后一整块一起写，不然硬盘都要被你玩坏了）。 1、">
+    <meta name="description" content="Cache 和 Buffer 都是缓存，主要区别是什么？ cache 是为了弥补高速设备和低速设备的鸿沟而引入的中间层，最终起到加快访问速度的作用。而 buffer 的主要目的进行流量整形，把突发的大数量较小规模的 I&#x2F;O 整理成平稳的小数量较大规模的 I&#x2F;O，以减少响应次数（比如从网上下电影，你不能下一点点数据就写一下硬盘，而是积攒一定量的数据以后一整块一起写，不然硬盘都要被你玩坏了）。 1、B">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Cache 和 Buffer的区别">
 <meta property="og:url" content="http://hongyitong.github.io/2018/02/05/Cache%20%E5%92%8C%20Buffer%E7%9A%84%E5%8C%BA%E5%88%AB/index.html">
 <meta property="og:site_name" content="忆桐之家的博客">
-<meta property="og:description" content="Cache 和 Buffer 都是缓存，主要区别是什么？ cache 是为了弥补高速设备和低速设备的鸿沟而引入的中间层，最终起到加快访问速度的作用。 而 buffer 的主要目的进行流量整形，把突发的大数量较小规模的 I&#x2F;O 整理成平稳的小数量较大规模的 I&#x2F;O，以减少响应次数（比如从网上下电影，你不能下一点点数据就写一下硬盘，而是积攒一定量的数据以后一整块一起写，不然硬盘都要被你玩坏了）。 1、">
+<meta property="og:description" content="Cache 和 Buffer 都是缓存，主要区别是什么？ cache 是为了弥补高速设备和低速设备的鸿沟而引入的中间层，最终起到加快访问速度的作用。而 buffer 的主要目的进行流量整形，把突发的大数量较小规模的 I&#x2F;O 整理成平稳的小数量较大规模的 I&#x2F;O，以减少响应次数（比如从网上下电影，你不能下一点点数据就写一下硬盘，而是积攒一定量的数据以后一整块一起写，不然硬盘都要被你玩坏了）。 1、B">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2018-02-04T16:00:00.000Z">
 <meta property="article:modified_time" content="2018-02-08T01:32:40.000Z">
@@ -292,18 +292,9 @@
     
     <div class="post-body" itemprop="articleBody">
         <p>Cache 和 Buffer 都是缓存，主要区别是什么？</p>
-<p>cache
-是为了弥补高速设备和低速设备的鸿沟而引入的中间层，最终起到<strong>加快访问速度</strong>的作用。
-而 buffer 的主要目的进行流量整形，把突发的大数量较小规模的 I/O
-整理成平稳的小数量较大规模的
-I/O，以<strong>减少响应次数</strong>（比如从网上下电影，你不能下一点点数据就写一下硬盘，而是积攒一定量的数据以后一整块一起写，不然硬盘都要被你玩坏了）。</p>
-<p>1、Buffer（缓冲区）是系统两端处理速度平衡（从长时间尺度上看）时使用的。它的引入是为了减小短期内突发I/O的影响，起到流量整形的作用。比如生产者——消费者问题，他们产生和消耗资源的速度大体接近，加一个buffer可以抵消掉资源刚产生/消耗时的突然变化。
-2、Cache（缓存）则是系统两端处理速度不匹配时的一种折衷策略。因为CPU和memory之间的速度差异越来越大，所以人们充分利用数据的局部性（locality）特征，通过使用存储系统分级（memory
-hierarchy）的策略来减小这种差异带来的影响。
-3、假定以后存储器访问变得跟CPU做计算一样快，cache就可以消失，但是buffer依然存在。比如从网络上下载东西，瞬时速率可能会有较大变化，但从长期来看却是稳定的，这样就能通过引入一个buffer使得OS接收数据的速率更稳定，进一步减少对磁盘的伤害。
-4、TLB（Translation Lookaside
-Buffer，翻译后备缓冲器）名字起错了，其实它是一个cache. <span id="more"></span></p>
-<p>Buffer和Cache的区别 buffer与cache操作的对象就不一样。</p>
+<p>cache 是为了弥补高速设备和低速设备的鸿沟而引入的中间层，最终起到<strong>加快访问速度</strong>的作用。<br>而 buffer 的主要目的进行流量整形，把突发的大数量较小规模的 I/O 整理成平稳的小数量较大规模的 I/O，以<strong>减少响应次数</strong>（比如从网上下电影，你不能下一点点数据就写一下硬盘，而是积攒一定量的数据以后一整块一起写，不然硬盘都要被你玩坏了）。</p>
+<p>1、Buffer（缓冲区）是系统两端处理速度平衡（从长时间尺度上看）时使用的。它的引入是为了减小短期内突发I/O的影响，起到流量整形的作用。比如生产者——消费者问题，他们产生和消耗资源的速度大体接近，加一个buffer可以抵消掉资源刚产生/消耗时的突然变化。<br>2、Cache（缓存）则是系统两端处理速度不匹配时的一种折衷策略。因为CPU和memory之间的速度差异越来越大，所以人们充分利用数据的局部性（locality）特征，通过使用存储系统分级（memory hierarchy）的策略来减小这种差异带来的影响。<br>3、假定以后存储器访问变得跟CPU做计算一样快，cache就可以消失，但是buffer依然存在。比如从网络上下载东西，瞬时速率可能会有较大变化，但从长期来看却是稳定的，这样就能通过引入一个buffer使得OS接收数据的速率更稳定，进一步减少对磁盘的伤害。<br>4、TLB（Translation Lookaside Buffer，翻译后备缓冲器）名字起错了，其实它是一个cache.<br><span id="more"></span></p>
+<p>Buffer和Cache的区别<br>buffer与cache操作的对象就不一样。</p>
 <p>buffer（缓冲）是为了提高内存和硬盘（或其他I/0设备）之间的数据交换的速度而设计的。</p>
 <p>cache（缓存）是为了提高cpu和内存之间的数据交换速度而设计，也就是平常见到的一级缓存、二级缓存、三级缓存。</p>
 <p>cpu在执行程序所用的指令和读数据都是针对内存的，也就是从内存中取得的。由于内存读写速度慢，为了提高cpu和内存之间数据交换的速度，在cpu和内存之间增加了cache，它的速度比内存快，但是造价高，又由于在cpu内不能集成太多集成电路，所以一般cache比较小，以后intel等公司为了进一步提高速度，又增加了二级cache，甚至三级cache，它是根据程序的局部性原理而设计的，就是cpu执行的指令和访问的数据往往在集中的某一块，所以把这块内容放入cache后，cpu就不用在访问内存了，这就提高了访问速度。当然若cache中没有cpu所需要的内容，还是要访问内存的。</p>
@@ -331,13 +322,13 @@ Buffer，翻译后备缓冲器）名字起错了，其实它是一个cache. <spa
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2018/02/05/DAS%E3%80%81NAS%E5%92%8CSAN%E7%89%B9%E7%82%B9%E5%92%8C%E5%8C%BA%E5%88%AB%E6%98%AF%E4%BB%80%E4%B9%88/" rel="prev" title="DAS、NAS和SAN特点和区别是什么">
-                  <i class="fa fa-chevron-left"></i> DAS、NAS和SAN特点和区别是什么
+                <a href="/2018/02/05/Cookie%E5%92%8CSession%E8%AF%A6%E8%A7%A3/" rel="prev" title="Cookie和Session详解">
+                  <i class="fa fa-chevron-left"></i> Cookie和Session详解
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2018/02/06/%E3%80%8A%E6%9E%B6%E6%9E%84%E5%8D%B3%E6%9C%AA%E6%9D%A5%E3%80%8B%E8%AF%BB%E4%B9%A6%E5%BF%83%E5%BE%97/" rel="next" title="《架构即未来》读书心得">
-                  《架构即未来》读书心得 <i class="fa fa-chevron-right"></i>
+                <a href="/2018/02/05/DAS%E3%80%81NAS%E5%92%8CSAN%E7%89%B9%E7%82%B9%E5%92%8C%E5%8C%BA%E5%88%AB%E6%98%AF%E4%BB%80%E4%B9%88/" rel="next" title="DAS、NAS和SAN特点和区别是什么">
+                  DAS、NAS和SAN特点和区别是什么 <i class="fa fa-chevron-right"></i>
                 </a>
             </div>
           </div>

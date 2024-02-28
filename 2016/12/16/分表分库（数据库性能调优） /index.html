@@ -20,13 +20,14 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="本文着重介绍sharding的基本思想和理论上的切分策略，关于更加细致的实施策略和参考事例请参考另一篇博文：数据库分库分表(sharding)系列(一) 拆分实施策略和示例演示 # 一、基本思想 Sharding的基本思想就要把一个数据库切分成多个部分放到不同的数据库(server)上，从而缓解单一数据库的性能问题。不太严格的讲，对于海量数据的数据库，如果是因为表多而数据多，这时候适合使用垂直切分">
+    <meta name="description" content="本文着重介绍sharding的基本思想和理论上的切分策略，关于更加细致的实施策略和参考事例请参考另一篇博文：数据库分库分表(sharding)系列(一) 拆分实施策略和示例演示  一、基本思想Sharding的基本思想就要把一个数据库切分成多个部分放到不同的数据库(server)上，从而缓解单一数据库的性能问题。不太严格的讲，对于海量数据的数据库，如果是因为表多而数据多，这时候适合使用垂直切分，即">
 <meta property="og:type" content="article">
 <meta property="og:title" content="数据库Sharding的基本思想和切分策略（分库分表）">
 <meta property="og:url" content="http://hongyitong.github.io/2016/12/16/%E5%88%86%E8%A1%A8%E5%88%86%E5%BA%93%EF%BC%88%E6%95%B0%E6%8D%AE%E5%BA%93%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98%EF%BC%89%20/index.html">
 <meta property="og:site_name" content="忆桐之家的博客">
-<meta property="og:description" content="本文着重介绍sharding的基本思想和理论上的切分策略，关于更加细致的实施策略和参考事例请参考另一篇博文：数据库分库分表(sharding)系列(一) 拆分实施策略和示例演示 # 一、基本思想 Sharding的基本思想就要把一个数据库切分成多个部分放到不同的数据库(server)上，从而缓解单一数据库的性能问题。不太严格的讲，对于海量数据的数据库，如果是因为表多而数据多，这时候适合使用垂直切分">
+<meta property="og:description" content="本文着重介绍sharding的基本思想和理论上的切分策略，关于更加细致的实施策略和参考事例请参考另一篇博文：数据库分库分表(sharding)系列(一) 拆分实施策略和示例演示  一、基本思想Sharding的基本思想就要把一个数据库切分成多个部分放到不同的数据库(server)上，从而缓解单一数据库的性能问题。不太严格的讲，对于海量数据的数据库，如果是因为表多而数据多，这时候适合使用垂直切分，即">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/img/%E5%88%86%E5%BA%93.png">
 <meta property="og:image" content="http://hongyitong.github.io/img/%E5%88%86%E8%A1%A8.png">
 <meta property="og:image" content="http://hongyitong.github.io/img/%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8.png">
 <meta property="og:image" content="http://hongyitong.github.io/img/sharding%E5%AE%9E%E7%8E%B0.png">
@@ -38,7 +39,7 @@
 <meta property="article:tag" content="分表分库">
 <meta property="article:tag" content="性能调优">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://hongyitong.github.io/img/%E5%88%86%E8%A1%A8.png">
+<meta name="twitter:image" content="http://hongyitong.github.io/img/%E5%88%86%E5%BA%93.png">
 
 
 <link rel="canonical" href="http://hongyitong.github.io/2016/12/16/%E5%88%86%E8%A1%A8%E5%88%86%E5%BA%93%EF%BC%88%E6%95%B0%E6%8D%AE%E5%BA%93%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98%EF%BC%89%20/">
@@ -155,10 +156,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E5%88%87%E5%88%86%E7%AD%96%E7%95%A5"><span class="nav-number">1.</span> <span class="nav-text">二、切分策略</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E5%88%87%E5%88%86%E9%9C%80%E8%A6%81%E5%85%B3%E6%B3%A8%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">2.</span> <span class="nav-text">三、切分需要关注的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8B%E5%8A%A1%E9%97%AE%E9%A2%98"><span class="nav-number">2.1.</span> <span class="nav-text">1.事务问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B7%A8%E8%8A%82%E7%82%B9%E7%9A%84countorder-bygroup-by%E4%BB%A5%E5%8F%8A%E8%81%9A%E5%90%88%E5%87%BD%E6%95%B0%E9%97%AE%E9%A2%98"><span class="nav-number">2.2.</span> <span class="nav-text">3.跨节点的count,order
-by,group by以及聚合函数问题</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E5%85%B6%E5%AE%83%E7%9F%A5%E8%AF%86%E7%82%B9"><span class="nav-number">3.</span> <span class="nav-text">四、其它知识点</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E%E5%9E%82%E7%9B%B4%E5%88%87%E5%88%86vertical-sharding%E7%9A%84%E7%B2%92%E5%BA%A6"><span class="nav-number">3.1.</span> <span class="nav-text">1、关于垂直切分Vertical
-Sharding的粒度</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E5%B1%80%E4%B8%BB%E9%94%AE%E7%94%9F%E6%88%90%E7%AD%96%E7%95%A5"><span class="nav-number">3.2.</span> <span class="nav-text">2、全局主键生成策略</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E%E4%BD%BF%E7%94%A8%E6%A1%86%E6%9E%B6%E8%BF%98%E6%98%AF%E8%87%AA%E4%B8%BB%E5%BC%80%E5%8F%91%E4%BB%A5%E5%8F%8Asharding%E5%AE%9E%E7%8E%B0%E5%B1%82%E9%9D%A2%E7%9A%84%E8%80%83%E9%87%8F"><span class="nav-number">3.3.</span> <span class="nav-text">3、
-关于使用框架还是自主开发以及sharding实现层面的考量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%9A%E6%95%B0%E6%8D%AE%E6%BA%90%E7%9A%84%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1"><span class="nav-number">3.4.</span> <span class="nav-text">4、多数据源的事务处理（分布式事务）</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%9F%BA%E6%9C%AC%E6%80%9D%E6%83%B3"><span class="nav-number">1.</span> <span class="nav-text">一、基本思想</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%88%87%E5%88%86%E7%AD%96%E7%95%A5"><span class="nav-number">2.</span> <span class="nav-text">二、切分策略</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%88%87%E5%88%86%E9%9C%80%E8%A6%81%E5%85%B3%E6%B3%A8%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">3.</span> <span class="nav-text">三、切分需要关注的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E4%BA%8B%E5%8A%A1%E9%97%AE%E9%A2%98"><span class="nav-number">3.1.</span> <span class="nav-text">1.事务问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E8%B7%A8%E8%8A%82%E7%82%B9Join%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">3.2.</span> <span class="nav-text">2.跨节点Join的问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E8%B7%A8%E8%8A%82%E7%82%B9%E7%9A%84count-order-by-group-by%E4%BB%A5%E5%8F%8A%E8%81%9A%E5%90%88%E5%87%BD%E6%95%B0%E9%97%AE%E9%A2%98"><span class="nav-number">3.3.</span> <span class="nav-text">3.跨节点的count,order by,group by以及聚合函数问题</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E5%85%B6%E5%AE%83%E7%9F%A5%E8%AF%86%E7%82%B9"><span class="nav-number">4.</span> <span class="nav-text">四、其它知识点</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1%E3%80%81%E5%85%B3%E4%BA%8E%E5%9E%82%E7%9B%B4%E5%88%87%E5%88%86Vertical-Sharding%E7%9A%84%E7%B2%92%E5%BA%A6"><span class="nav-number">4.1.</span> <span class="nav-text">1、关于垂直切分Vertical Sharding的粒度</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2%E3%80%81%E5%85%A8%E5%B1%80%E4%B8%BB%E9%94%AE%E7%94%9F%E6%88%90%E7%AD%96%E7%95%A5"><span class="nav-number">4.2.</span> <span class="nav-text">2、全局主键生成策略</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3%E3%80%81-%E5%85%B3%E4%BA%8E%E4%BD%BF%E7%94%A8%E6%A1%86%E6%9E%B6%E8%BF%98%E6%98%AF%E8%87%AA%E4%B8%BB%E5%BC%80%E5%8F%91%E4%BB%A5%E5%8F%8Asharding%E5%AE%9E%E7%8E%B0%E5%B1%82%E9%9D%A2%E7%9A%84%E8%80%83%E9%87%8F"><span class="nav-number">4.3.</span> <span class="nav-text">3、 关于使用框架还是自主开发以及sharding实现层面的考量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4%E3%80%81%E5%A4%9A%E6%95%B0%E6%8D%AE%E6%BA%90%E7%9A%84%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%EF%BC%88%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1%EF%BC%89"><span class="nav-number">4.4.</span> <span class="nav-text">4、多数据源的事务处理（分布式事务）</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -299,89 +297,27 @@ Sharding的粒度</span></a></li><li class="nav-item nav-level-2"><a class="nav-
     
     
     <div class="post-body" itemprop="articleBody">
-        <p>本文着重介绍sharding的基本思想和理论上的切分策略，关于<strong>更加细致的实施策略和参考事例请参考另一篇博文：数据库分库分表(sharding)系列(一)
-拆分实施策略和示例演示</strong> # 一、基本思想
-Sharding的基本思想就要把一个数据库切分成多个部分放到不同的数据库(server)上，从而缓解单一数据库的性能问题。不太严格的讲，对于海量数据的数据库，如果是因为表多而数据多，这时候适合使用垂直切分，即把关系紧密（比如同一模块）的表切分出来放在一个server上。如果表并不多，但每张表的数据非常多，这时候适合水平切分，即把表的数据按某种规则（<strong>比如按ID散列</strong>）切分到多个数据库(server)上。当然，现实中更多是这两种情况混杂在一起，这时候需要根据实际情况做出选择，也可能会综合使用垂直与水平切分，从而将原有数据库切分成类似矩阵一样可以无限扩充的数据库(server)阵列。下面分别详细地介绍一下垂直切分和水平切分.
-<span id="more"></span>
-垂直切分的最大特点就是规则简单，实施也更为方便，尤其适合各业务之间的耦合度非
-常低，相互影响很小，业务逻辑非常清晰的系统。在这种系统中，可以很容易做到将不同业
-务模块所使用的表分拆到不同的数据库中。根据不同的表来进行拆分，对应用程序的影响也
-更小，拆分规则也会比较简单清晰。（这也就是所谓的”share nothing”）。 <img
-src="/img/分库.png" />
-水平切分于垂直切分相比，相对来说稍微复杂一些。因为要将同一个表中的不同数据拆
-分到不同的数据库中，对于应用程序来说，拆分规则本身就较根据表名来拆分更为复杂，后
-期的数据维护也会更为复杂一些。 <img src="/img/分表.png" />
-让我们从普遍的情况来考虑数据的切分：一方面，一个库的所有表通常不可能由某一张表全部串联起来，这句话暗含的意思是，水平切分几乎都是针对一小搓一小搓（实际上就是垂直切分出来的块）关系紧密的表进行的，而不可能是针对所有表进行的。另一方面，一些负载非常高的系统，即使仅仅只是单个表都无法通过单台数据库主机来承担其负载，这意味着单单是垂直切分也不能完全解决问明。因此多数系统会将垂直切分和水平切分联合使用，先对系统做垂直切分，再针对每一小搓表的情况选择性地做水平切分。从而将整个数据库切分成一个分布式矩阵。
-<img src="/img/分库分表.png" /></p>
-<h1 id="二切分策略">二、切分策略</h1>
-<p>如前面所提到的，切分是按先垂直切分再水平切分的步骤进行的。垂直切分的结果正好为水平切分做好了铺垫。垂直切分的思路就是分析表间的聚合关系，把关系紧密的表放在一起。多数情况下可能是同一个模块，或者是同一“聚集”。这里的“聚集”正是领域驱动设计里所说的聚集。在垂直切分出的表聚集内，找出“根元素”（这里的“根元素”就是领域驱动设计里的“聚合根”），按“根元素”进行水平切分，也就是从“根元素”开始，把所有和它直接与间接关联的数据放入一个shard里。这样出现跨shard关联的可能性就非常的小。应用程序就不必打断既有的表间关联。比如：对于社交网站，几乎所有数据最终都会关联到某个用户上，基于用户进行切分就是最好的选择。再比如论坛系统，用户和论坛两个模块应该在垂直切分时被分在了两个shard里，对于论坛模块来说，Forum显然是聚合根，因此按Forum进行水平切分，把Forum里所有的帖子和回帖都随Forum放在一个shard里是很自然的。</p>
+        <p>本文着重介绍sharding的基本思想和理论上的切分策略，关于<strong>更加细致的实施策略和参考事例请参考另一篇博文：数据库分库分表(sharding)系列(一) 拆分实施策略和示例演示</strong> </p>
+<h1 id="一、基本思想"><a href="#一、基本思想" class="headerlink" title="一、基本思想"></a>一、基本思想</h1><p>Sharding的基本思想就要把一个数据库切分成多个部分放到不同的数据库(server)上，从而缓解单一数据库的性能问题。不太严格的讲，对于海量数据的数据库，如果是因为表多而数据多，这时候适合使用垂直切分，即把关系紧密（比如同一模块）的表切分出来放在一个server上。如果表并不多，但每张表的数据非常多，这时候适合水平切分，即把表的数据按某种规则（<strong>比如按ID散列</strong>）切分到多个数据库(server)上。当然，现实中更多是这两种情况混杂在一起，这时候需要根据实际情况做出选择，也可能会综合使用垂直与水平切分，从而将原有数据库切分成类似矩阵一样可以无限扩充的数据库(server)阵列。下面分别详细地介绍一下垂直切分和水平切分.<br><span id="more"></span><br>垂直切分的最大特点就是规则简单，实施也更为方便，尤其适合各业务之间的耦合度非<br>常低，相互影响很小，业务逻辑非常清晰的系统。在这种系统中，可以很容易做到将不同业<br>务模块所使用的表分拆到不同的数据库中。根据不同的表来进行拆分，对应用程序的影响也<br>更小，拆分规则也会比较简单清晰。（这也就是所谓的”share nothing”）。<br><img src="/img/分库.png" alt=""><br>水平切分于垂直切分相比，相对来说稍微复杂一些。因为要将同一个表中的不同数据拆<br>分到不同的数据库中，对于应用程序来说，拆分规则本身就较根据表名来拆分更为复杂，后<br>期的数据维护也会更为复杂一些。<br><img src="/img/分表.png" alt=""><br>让我们从普遍的情况来考虑数据的切分：一方面，一个库的所有表通常不可能由某一张表全部串联起来，这句话暗含的意思是，水平切分几乎都是针对一小搓一小搓（实际上就是垂直切分出来的块）关系紧密的表进行的，而不可能是针对所有表进行的。另一方面，一些负载非常高的系统，即使仅仅只是单个表都无法通过单台数据库主机来承担其负载，这意味着单单是垂直切分也不能完全解决问明。因此多数系统会将垂直切分和水平切分联合使用，先对系统做垂直切分，再针对每一小搓表的情况选择性地做水平切分。从而将整个数据库切分成一个分布式矩阵。<br><img src="/img/分库分表.png" alt=""></p>
+<h1 id="二、切分策略"><a href="#二、切分策略" class="headerlink" title="二、切分策略"></a>二、切分策略</h1><p>如前面所提到的，切分是按先垂直切分再水平切分的步骤进行的。垂直切分的结果正好为水平切分做好了铺垫。垂直切分的思路就是分析表间的聚合关系，把关系紧密的表放在一起。多数情况下可能是同一个模块，或者是同一“聚集”。这里的“聚集”正是领域驱动设计里所说的聚集。在垂直切分出的表聚集内，找出“根元素”（这里的“根元素”就是领域驱动设计里的“聚合根”），按“根元素”进行水平切分，也就是从“根元素”开始，把所有和它直接与间接关联的数据放入一个shard里。这样出现跨shard关联的可能性就非常的小。应用程序就不必打断既有的表间关联。比如：对于社交网站，几乎所有数据最终都会关联到某个用户上，基于用户进行切分就是最好的选择。再比如论坛系统，用户和论坛两个模块应该在垂直切分时被分在了两个shard里，对于论坛模块来说，Forum显然是聚合根，因此按Forum进行水平切分，把Forum里所有的帖子和回帖都随Forum放在一个shard里是很自然的。</p>
 <p><strong>对于共享数据数据，如果是只读的字典表，每个shard里维护一份应该是一个不错的选择，这样不必打断关联关系。如果是一般数据间的跨节点的关联，就必须打断。</strong></p>
-<p>需要特别说明的是：当同时进行垂直和水平切分时，切分策略会发生一些微妙的变化。比如：在只考虑垂直切分的时候，被划分到一起的表之间可以保持任意的关联关系，因此你可以按“功能模块”划分表格，但是一旦引入水平切分之后，表间关联关系就会受到很大的制约，通常只能允许一个主表（以该表ID进行散列的表）和其多个次表之间保留关联关系，也就是说：当同时进行垂直和水平切分时，在垂直方向上的切分将不再以“功能模块”进行划分，而是需要更加细粒度的垂直切分，而这个粒度与领域驱动设计中的“聚合”概念不谋而合，甚至可以说是完全一致，每个shard的主表正是一个聚合中的聚合根！这样切分下来你会发现数据库分被切分地过于分散了（shard的数量会比较多，但是shard里的表却不多），为了避免管理过多的数据源，充分利用每一个数据库服务器的资源，可以考虑将业务上相近，并且具有相近数据增长速率（主表数据量在同一数量级上）的两个或多个shard放到同一个数据源里，每个shard依然是独立的，它们有各自的主表，并使用各自主表ID进行散列，不同的只是它们的散列取模（即节点数量）必需是一致的。（
-本文着重介绍sharding的基本思想和理论上的切分策略，关于更加细致的实施策略和参考事例请参考我的另一篇博文：数据库分库分表(sharding)系列(一)
-拆分实施策略和示例演示 ）</p>
-<h1 id="三切分需要关注的问题">三、切分需要关注的问题</h1>
-<h2 id="事务问题">1.事务问题</h2>
-<p>解决事务问题目前有两种可行的方案：分布式事务和通过应用程序与数据库共同控制实现事务下面对两套方案进行一个简单的对比。
-<strong>方案一：使用分布式事务</strong> 优点：交由数据库管理，简单有效
-缺点：性能代价高，特别是shard越来越多时
-<strong>方案二：由应用程序和数据库共同控制</strong>
-原理：将一个跨多个数据库的分布式事务分拆成多个仅处于单个数据库上面的小事务，并通过应用程序来总控各个小事务。
-优点：性能上有优势
-缺点：需要应用程序在事务控制上做灵活设计。如果使用了spring的事务管理，改动起来会面临一定的困难。
-## 2.跨节点Join的问题
-只要是进行切分，跨节点Join的问题是不可避免的。但是良好的设计和切分却可以减少此类情况的发生。解决这一问题的普遍做法是分两次查询实现。在第一次查询的结果集中找出关联数据的id,根据这些id发起第二次请求得到关联数据。</p>
-<h2
-id="跨节点的countorder-bygroup-by以及聚合函数问题">3.跨节点的count,order
-by,group by以及聚合函数问题</h2>
-<p>这些是一类问题，因为它们都需要基于全部数据集合进行计算。多数的代理都不会自动处理合并工作。解决方案：与解决跨节点join问题的类似，分别在各个节点上得到结果后在应用程序端进行合并。和join不同的是每个结点的查询可以并行执行，因此很多时候它的速度要比单一大表快很多。但如果结果集很大，对应用程序内存的消耗是一个问题。</p>
-<p>参考资料： 《MySQL性能调优与架构设计》</p>
-<h1 id="四其它知识点">四、其它知识点</h1>
-<h2 id="关于垂直切分vertical-sharding的粒度">1、关于垂直切分Vertical
-Sharding的粒度</h2>
-<p>垂直切分的粒度指的是在做垂直切分时允许几级的关联表放在一个shard里．这个问题对应用程序和sharding实现有着很大的影响．
-关联打断地越多，则受影响的join操作越多，应用程序为此做出的妥协就越大，但单表的路由会越简单，与业务的关联性会越小，就越容易使用统一机制处理．在此方向上的极端方案是：打断所有连接，每张表都配有路由规则，可以使用统一机制或框架自动处理．比如amoeba这样的框架，它的路由能且仅能通过SQL的特征（比如某个表的id）进行路由．</p>
+<p>需要特别说明的是：当同时进行垂直和水平切分时，切分策略会发生一些微妙的变化。比如：在只考虑垂直切分的时候，被划分到一起的表之间可以保持任意的关联关系，因此你可以按“功能模块”划分表格，但是一旦引入水平切分之后，表间关联关系就会受到很大的制约，通常只能允许一个主表（以该表ID进行散列的表）和其多个次表之间保留关联关系，也就是说：当同时进行垂直和水平切分时，在垂直方向上的切分将不再以“功能模块”进行划分，而是需要更加细粒度的垂直切分，而这个粒度与领域驱动设计中的“聚合”概念不谋而合，甚至可以说是完全一致，每个shard的主表正是一个聚合中的聚合根！这样切分下来你会发现数据库分被切分地过于分散了（shard的数量会比较多，但是shard里的表却不多），为了避免管理过多的数据源，充分利用每一个数据库服务器的资源，可以考虑将业务上相近，并且具有相近数据增长速率（主表数据量在同一数量级上）的两个或多个shard放到同一个数据源里，每个shard依然是独立的，它们有各自的主表，并使用各自主表ID进行散列，不同的只是它们的散列取模（即节点数量）必需是一致的。（<br>本文着重介绍sharding的基本思想和理论上的切分策略，关于更加细致的实施策略和参考事例请参考我的另一篇博文：数据库分库分表(sharding)系列(一) 拆分实施策略和示例演示<br>）</p>
+<h1 id="三、切分需要关注的问题"><a href="#三、切分需要关注的问题" class="headerlink" title="三、切分需要关注的问题"></a>三、切分需要关注的问题</h1><h2 id="1-事务问题"><a href="#1-事务问题" class="headerlink" title="1.事务问题"></a>1.事务问题</h2><p>解决事务问题目前有两种可行的方案：分布式事务和通过应用程序与数据库共同控制实现事务下面对两套方案进行一个简单的对比。<br><strong>方案一：使用分布式事务</strong><br>优点：交由数据库管理，简单有效<br>缺点：性能代价高，特别是shard越来越多时<br><strong>方案二：由应用程序和数据库共同控制</strong><br>原理：将一个跨多个数据库的分布式事务分拆成多个仅处于单个数据库上面的小事务，并通过应用程序来总控各个小事务。<br>优点：性能上有优势<br>缺点：需要应用程序在事务控制上做灵活设计。如果使用了spring的事务管理，改动起来会面临一定的困难。</p>
+<h2 id="2-跨节点Join的问题"><a href="#2-跨节点Join的问题" class="headerlink" title="2.跨节点Join的问题"></a>2.跨节点Join的问题</h2><p>只要是进行切分，跨节点Join的问题是不可避免的。但是良好的设计和切分却可以减少此类情况的发生。解决这一问题的普遍做法是分两次查询实现。在第一次查询的结果集中找出关联数据的id,根据这些id发起第二次请求得到关联数据。</p>
+<h2 id="3-跨节点的count-order-by-group-by以及聚合函数问题"><a href="#3-跨节点的count-order-by-group-by以及聚合函数问题" class="headerlink" title="3.跨节点的count,order by,group by以及聚合函数问题"></a>3.跨节点的count,order by,group by以及聚合函数问题</h2><p>这些是一类问题，因为它们都需要基于全部数据集合进行计算。多数的代理都不会自动处理合并工作。解决方案：与解决跨节点join问题的类似，分别在各个节点上得到结果后在应用程序端进行合并。和join不同的是每个结点的查询可以并行执行，因此很多时候它的速度要比单一大表快很多。但如果结果集很大，对应用程序内存的消耗是一个问题。</p>
+<p>参考资料：<br>《MySQL性能调优与架构设计》</p>
+<h1 id="四、其它知识点"><a href="#四、其它知识点" class="headerlink" title="四、其它知识点"></a>四、其它知识点</h1><h2 id="1、关于垂直切分Vertical-Sharding的粒度"><a href="#1、关于垂直切分Vertical-Sharding的粒度" class="headerlink" title="1、关于垂直切分Vertical Sharding的粒度"></a>1、关于垂直切分Vertical Sharding的粒度</h2><p>垂直切分的粒度指的是在做垂直切分时允许几级的关联表放在一个shard里．这个问题对应用程序和sharding实现有着很大的影响．<br>关联打断地越多，则受影响的join操作越多，应用程序为此做出的妥协就越大，但单表的路由会越简单，与业务的关联性会越小，就越容易使用统一机制处理．在此方向上的极端方案是：打断所有连接，每张表都配有路由规则，可以使用统一机制或框架自动处理．比如amoeba这样的框架，它的路由能且仅能通过SQL的特征（比如某个表的id）进行路由．</p>
 <p>反之，若关联打断地越少，则join操作的受到的限制就小，应用程序需要做出的妥协就越小，但是表的路由就会变复杂，与业务的关联性就越大，就越难使用统一机制处理，需要针对每个数据请求单独实现路由．在此方向上的极端方案是：所有表都在一个shard里，也就是没有垂直切分，这样就没有关联被打断．当然这是非常极端的，除非整个数据库很简单，表的数量很少．</p>
-<p>实际的粒度掌控需要结合“业务紧密程度”和“表格数据量”两个因素综合考虑，一般来说：
-若划归到一起的表格关系紧密，且数据量并不大，增速也非常缓慢，则适宜放在一个shard里，不需要再进行水平切分;
-若划归到一起的表格数据量巨大且增速迅猛，则势必要在垂直切分的基础上再进行水平切分，水平切分就意味着原单一shard会被细分成多个更小的shard，每一个shard存在一个主表（即会以该表ID进行散列的表）和多个相之相关的关联表。
-总之，垂直切分的粒度在两个相反的方向上呈现优势与劣势并存并相互博弈的局面．架构师需要做的是结合项目的实际情况在两者之间取得收益最大化的平衡．</p>
-<h2 id="全局主键生成策略">2、全局主键生成策略</h2>
-<p>flickr使用的一种主键生成测策略。
-flickr这一方案的整体思想是：建立两台以上的数据库ID生成服务器，每个服务器都有一张记录各表当前ID的Sequence表，但是Sequence中ID增长的步长是服务器的数量，起始值依次错开，这样相当于把ID的生成散列到了每个服务器节点上。例如：如果我们设置两台数据库ID生成服务器，那么就让一台的Sequence表的ID起始值为1,每次增长步长为2,另一台的Sequence表的ID起始值为2,每次增长步长也为2，那么结果就是奇数的ID都将从第一台服务器上生成，偶数的ID都从第二台服务器上生成，这样就将生成ID的压力均匀分散到两台服务器上，同时配合应用程序的控制，当一个服务器失效后，系统能自动切换到另一个服务器上获取ID，从而保证了系统的容错。</p>
-<h2 id="关于使用框架还是自主开发以及sharding实现层面的考量">3、
-关于使用框架还是自主开发以及sharding实现层面的考量</h2>
-<p><img src="/img/sharding实现.png" />
-<strong>在应用服务器与数据库之间加入一个代理方式：</strong>
-应用程序向数据发出的数据请求会先通过代理，代理会根据<strong>配置的路由规则</strong>，对SQL进行解析后路由到目标shard，因为这种方案对应用程序完全透明，通用性好，所以成为了很多sharding产品的选择。在这方面较为知名的产品是mysql官方的代理工具：Mysql
-Proxy和一款国人开发的产品:amoeba。mysql
-proxy本身并没有实现任何sharding逻辑，它只是作为一种面向mysql数据库的代理，给开发人员提供了一个嵌入sharding逻辑的场所，它使用lua作为编程语言，这对很多团队来说是需要考虑的一个问题。amoeba则是专门实现读写分离与sharding的代理产品，它使用非常简单，不使用任何编程语言，只需要通过xml进行配置。不过amoeba不支持事务(从应用程序发出的包含事务信息的请求到达amoeba时，事务信息会被抹去，因此，即使是单点数据访问也不会有事务存在)一直是个硬伤。当然，这要看产品的定位和设计理念，我们只能说对于那些对事务要求非常高的系统，amoeba是不适合的。</p>
-<h2
-id="多数据源的事务处理分布式事务">4、多数据源的事务处理（分布式事务）</h2>
-<p>系统经sharding改造之后，原来单一的数据库会演变成多个数据库，如何确保多数据源同时操作的原子性和一致性是不得不考虑的一个问题。总体上看，目前对于一个分布式系统的事务处理有三种方式：<strong>分布式事务、基于Best
-Efforts 1PC模式的事务以及事务补偿机制。</strong>
-分布式事务，最严格的事务实现，但性能是个大问题;Best Efforts
-1PC模式，性能与事务可靠性的平衡，支持系统水平伸缩，大多数情况下是最合适的选择;事务补偿机制，只能适用于对事务性要求不高，允许数据“最终一致”即可的系统，牺牲实时一致性，获得最大的性能回报。
-<img src="/img/两阶段提交.png" title="两阶段提交" />
-注：不像两阶段提交那样复杂，一阶段提交非常直白，就是从应用程序向数据库发出提交请求到数据库完成提交或回滚之后将结果返回给应用程序的过程。一阶段提交不需要“协调者”角色，各结点之间不存在协调操作，因此其事务执行时间比两阶段提交要短，但是提交的“危险期”是每一个事务的实际提交时间，相比于两阶段提交，一阶段提交出现在“不一致”的概率就变大了。
-1）分布式事务 优势： -
-基于两阶段提交，最大限度地保证了跨数据库操作的“原子性”，是分布式系统下最严格的事务实现方式。
--
-实现简单，工作量小。由于多数应用服务器以及一些独立的分布式事务协调器做了大量的封装工作，使得项目中引入分布式事务的难度和工作量基本上可以忽略不计。
-劣势：
-系统“水平”伸缩的死敌。基于两阶段提交的分布式事务在提交事务时需要在多个节点之间进行协调,最大限度地推后了提交事务的时间点，客观上延长了事务的执行时间，这会导致事务在访问共享资源时发生冲突和死锁的概率增高，随着数据库节点的增多，这种趋势会越来越严重，从而成为系统在数据库层面上水平伸缩的"枷锁"，
-这是很多Sharding系统不采用分布式事务的主要原因。</p>
-<p>2）基于Best Efforts 1PC模式的事务
-与分布式事务采用的两阶段提交不同，Best Efforts
-1PC模式采用的是一阶段端提交，牺牲了事务在某些特殊情况(当机、网络中断等)下的安全性，却获得了良好的性能，特别是消除了对水平伸缩的桎酷。Distributed
-transactions in Spring, with and without XA一文对Best Efforts
-1PC模式进行了详细的说明，该文提供的Demo代码更是直接给出了在Spring环境下实现一阶段提交的多数据源事务管理示例。不过需要注意的是，原示例是基于spring
-3.0之前的版本，如果你使用spring
-3.0+,会得到如下错误：java.lang.IllegalStateException: Cannot activate
-transaction synchronization - already active，如果使用spring
-3.0+，你需要参考spring-data-neo4j的实现。鉴于Best Efforts
-1PC模式的性能优势，以及相对简单的实现方式，它被大多数的sharding框架和项目采用。</p>
-<p>3）事务补偿机制
-对于那些对性能要求很高，但对一致性要求并不高的系统，往往并不苛求系统的实时一致性，只要在一个允许的时间周期内达到最终一致性即可，这使得事务补偿机制成为一种可行的方案。事务补偿机制最初被提出是在“长事务”的处理中，但是对于分布式系统确保一致性也有很好的参考意义。笼统地讲，与事务在执行中发生错误后立即回滚的方式不同，事务补偿是一种事后检查并补救的措施，它只期望在一个容许时间周期内得到最终一致的结果就可以了。事务补偿的实现与系统业务紧密相关，并没有一种标准的处理方式。一些常见的实现方式有：对数据进行对帐检查;基于日志进行比对;定期同标准数据来源进行同步，等等。</p>
+<p>实际的粒度掌控需要结合“业务紧密程度”和“表格数据量”两个因素综合考虑，一般来说：<br>若划归到一起的表格关系紧密，且数据量并不大，增速也非常缓慢，则适宜放在一个shard里，不需要再进行水平切分;<br>若划归到一起的表格数据量巨大且增速迅猛，则势必要在垂直切分的基础上再进行水平切分，水平切分就意味着原单一shard会被细分成多个更小的shard，每一个shard存在一个主表（即会以该表ID进行散列的表）和多个相之相关的关联表。<br>总之，垂直切分的粒度在两个相反的方向上呈现优势与劣势并存并相互博弈的局面．架构师需要做的是结合项目的实际情况在两者之间取得收益最大化的平衡．</p>
+<h2 id="2、全局主键生成策略"><a href="#2、全局主键生成策略" class="headerlink" title="2、全局主键生成策略"></a>2、全局主键生成策略</h2><p>flickr使用的一种主键生成测策略。<br>flickr这一方案的整体思想是：建立两台以上的数据库ID生成服务器，每个服务器都有一张记录各表当前ID的Sequence表，但是Sequence中ID增长的步长是服务器的数量，起始值依次错开，这样相当于把ID的生成散列到了每个服务器节点上。例如：如果我们设置两台数据库ID生成服务器，那么就让一台的Sequence表的ID起始值为1,每次增长步长为2,另一台的Sequence表的ID起始值为2,每次增长步长也为2，那么结果就是奇数的ID都将从第一台服务器上生成，偶数的ID都从第二台服务器上生成，这样就将生成ID的压力均匀分散到两台服务器上，同时配合应用程序的控制，当一个服务器失效后，系统能自动切换到另一个服务器上获取ID，从而保证了系统的容错。</p>
+<h2 id="3、-关于使用框架还是自主开发以及sharding实现层面的考量"><a href="#3、-关于使用框架还是自主开发以及sharding实现层面的考量" class="headerlink" title="3、 关于使用框架还是自主开发以及sharding实现层面的考量"></a>3、 关于使用框架还是自主开发以及sharding实现层面的考量</h2><p><img src="/img/sharding实现.png" alt=""><br><strong>在应用服务器与数据库之间加入一个代理方式：</strong><br>应用程序向数据发出的数据请求会先通过代理，代理会根据<strong>配置的路由规则</strong>，对SQL进行解析后路由到目标shard，因为这种方案对应用程序完全透明，通用性好，所以成为了很多sharding产品的选择。在这方面较为知名的产品是mysql官方的代理工具：Mysql Proxy和一款国人开发的产品:amoeba。mysql proxy本身并没有实现任何sharding逻辑，它只是作为一种面向mysql数据库的代理，给开发人员提供了一个嵌入sharding逻辑的场所，它使用lua作为编程语言，这对很多团队来说是需要考虑的一个问题。amoeba则是专门实现读写分离与sharding的代理产品，它使用非常简单，不使用任何编程语言，只需要通过xml进行配置。不过amoeba不支持事务(从应用程序发出的包含事务信息的请求到达amoeba时，事务信息会被抹去，因此，即使是单点数据访问也不会有事务存在)一直是个硬伤。当然，这要看产品的定位和设计理念，我们只能说对于那些对事务要求非常高的系统，amoeba是不适合的。</p>
+<h2 id="4、多数据源的事务处理（分布式事务）"><a href="#4、多数据源的事务处理（分布式事务）" class="headerlink" title="4、多数据源的事务处理（分布式事务）"></a>4、多数据源的事务处理（分布式事务）</h2><p>系统经sharding改造之后，原来单一的数据库会演变成多个数据库，如何确保多数据源同时操作的原子性和一致性是不得不考虑的一个问题。总体上看，目前对于一个分布式系统的事务处理有三种方式：<strong>分布式事务、基于Best Efforts 1PC模式的事务以及事务补偿机制。</strong><br>分布式事务，最严格的事务实现，但性能是个大问题;Best Efforts 1PC模式，性能与事务可靠性的平衡，支持系统水平伸缩，大多数情况下是最合适的选择;事务补偿机制，只能适用于对事务性要求不高，允许数据“最终一致”即可的系统，牺牲实时一致性，获得最大的性能回报。<br><img src="/img/两阶段提交.png" alt="" title="两阶段提交"><br>注：不像两阶段提交那样复杂，一阶段提交非常直白，就是从应用程序向数据库发出提交请求到数据库完成提交或回滚之后将结果返回给应用程序的过程。一阶段提交不需要“协调者”角色，各结点之间不存在协调操作，因此其事务执行时间比两阶段提交要短，但是提交的“危险期”是每一个事务的实际提交时间，相比于两阶段提交，一阶段提交出现在“不一致”的概率就变大了。<br>1）分布式事务<br>优势：</p>
+<ul>
+<li>基于两阶段提交，最大限度地保证了跨数据库操作的“原子性”，是分布式系统下最严格的事务实现方式。</li>
+<li>实现简单，工作量小。由于多数应用服务器以及一些独立的分布式事务协调器做了大量的封装工作，使得项目中引入分布式事务的难度和工作量基本上可以忽略不计。<br>劣势：<br>系统“水平”伸缩的死敌。基于两阶段提交的分布式事务在提交事务时需要在多个节点之间进行协调,最大限度地推后了提交事务的时间点，客观上延长了事务的执行时间，这会导致事务在访问共享资源时发生冲突和死锁的概率增高，随着数据库节点的增多，这种趋势会越来越严重，从而成为系统在数据库层面上水平伸缩的”枷锁”， 这是很多Sharding系统不采用分布式事务的主要原因。</li>
+</ul>
+<p>2）基于Best Efforts 1PC模式的事务<br>与分布式事务采用的两阶段提交不同，Best Efforts 1PC模式采用的是一阶段端提交，牺牲了事务在某些特殊情况(当机、网络中断等)下的安全性，却获得了良好的性能，特别是消除了对水平伸缩的桎酷。Distributed transactions in Spring, with and without XA一文对Best Efforts 1PC模式进行了详细的说明，该文提供的Demo代码更是直接给出了在Spring环境下实现一阶段提交的多数据源事务管理示例。不过需要注意的是，原示例是基于spring 3.0之前的版本，如果你使用spring 3.0+,会得到如下错误：java.lang.IllegalStateException: Cannot activate transaction synchronization - already active，如果使用spring 3.0+，你需要参考spring-data-neo4j的实现。鉴于Best Efforts 1PC模式的性能优势，以及相对简单的实现方式，它被大多数的sharding框架和项目采用。</p>
+<p>3）事务补偿机制<br>对于那些对性能要求很高，但对一致性要求并不高的系统，往往并不苛求系统的实时一致性，只要在一个允许的时间周期内达到最终一致性即可，这使得事务补偿机制成为一种可行的方案。事务补偿机制最初被提出是在“长事务”的处理中，但是对于分布式系统确保一致性也有很好的参考意义。笼统地讲，与事务在执行中发生错误后立即回滚的方式不同，事务补偿是一种事后检查并补救的措施，它只期望在一个容许时间周期内得到最终一致的结果就可以了。事务补偿的实现与系统业务紧密相关，并没有一种标准的处理方式。一些常见的实现方式有：对数据进行对帐检查;基于日志进行比对;定期同标准数据来源进行同步，等等。</p>
 
     </div>
 

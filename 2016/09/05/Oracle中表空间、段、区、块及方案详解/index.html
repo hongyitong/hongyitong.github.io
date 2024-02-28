@@ -29,6 +29,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://hongyitong.github.io/img/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%AD%98%E5%82%A8%E6%80%BB%E5%9B%BE.png">
 <meta property="og:image" content="http://hongyitong.github.io/img/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%89%A9%E7%90%86%E7%BB%93%E6%9E%84.png">
+<meta property="og:image" content="http://hongyitong.github.io/img/%E6%95%B0%E6%8D%AE%E5%BA%93%E9%80%BB%E8%BE%91%E7%BB%93%E6%9E%84.png">
 <meta property="article:published_time" content="2016-09-04T16:00:00.000Z">
 <meta property="article:modified_time" content="2017-07-12T06:21:11.000Z">
 <meta property="article:author" content="Rayman.hung">
@@ -153,7 +154,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9D%97"><span class="nav-number">1.</span> <span class="nav-text">块</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8C%BA"><span class="nav-number">2.</span> <span class="nav-text">区</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%AE%B5"><span class="nav-number">3.</span> <span class="nav-text">段</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%A1%A8%E7%A9%BA%E9%97%B4"><span class="nav-number">4.</span> <span class="nav-text">表空间</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%B9%E6%A1%88schema"><span class="nav-number">5.</span> <span class="nav-text">方案（schema）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#oracle%E4%B8%AD%E5%AD%98%E5%82%A8%E7%9A%84%E5%B1%82%E6%AC%A1%E7%BB%93%E6%9E%84%E6%80%BB%E7%BB%93"><span class="nav-number">6.</span> <span class="nav-text">oracle中存储的层次结构总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E7%89%A9%E7%90%86%E7%BB%84%E4%BB%B6"><span class="nav-number">7.</span> <span class="nav-text">数据库的物理组件</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9D%97"><span class="nav-number">1.</span> <span class="nav-text">块</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8C%BA"><span class="nav-number">2.</span> <span class="nav-text">区</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%AE%B5"><span class="nav-number">3.</span> <span class="nav-text">段</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%A1%A8%E7%A9%BA%E9%97%B4"><span class="nav-number">4.</span> <span class="nav-text">表空间</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%B9%E6%A1%88%EF%BC%88schema%EF%BC%89"><span class="nav-number">5.</span> <span class="nav-text">方案（schema）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#oracle%E4%B8%AD%E5%AD%98%E5%82%A8%E7%9A%84%E5%B1%82%E6%AC%A1%E7%BB%93%E6%9E%84%E6%80%BB%E7%BB%93"><span class="nav-number">6.</span> <span class="nav-text">oracle中存储的层次结构总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E7%89%A9%E7%90%86%E7%BB%84%E4%BB%B6"><span class="nav-number">7.</span> <span class="nav-text">数据库的物理组件</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -294,53 +295,26 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <p>oracle中的表空间(tablespace)、方案(schema)、段(segment)、区(extent)、块(block)详解
-<img src="/img/数据库存储总图.png" title="数据库存储总图" /><span id="more"></span>
-<img src="/img/数据库物理结构.png" title="数据库物理结构" /> <img
-src="/img/数据库逻辑结构.png" title="数据库逻辑结构" /></p>
-<p>数据文件和日志文件是数据库中最重要的文件。它们是数据存储的地方。每个数据库至少有一个与之相关的数据文件，通常情况下不只一个，有很多。数据在数据文件中是如何组织的？要了解这些内容我们首先必须理解什么是表空间（tablespace）、段（segment）、区（extent）、块（block），这些都是oracle数据库在数据文件中组织数据的基本单元。现在我们来理解这些概念。
-&gt; 补充资料：逻辑存储结构 (1).块(Data
-Block)：数据库数据存放在数据块中，一个数据块对应特定磁盘上字节数。块是数据库最小的逻辑存储单元。
-(2).区(Extend)：由一系列<strong>连续的块</strong>组成的，其分配是单一分配的。<strong>区也是系统分配空间和回收空间的基本单位。</strong>
-(3).段(Segment)：表空间中特定类型的逻辑单位，由一个或多个区构成。包括数据段(Data
-Segment)、回滚段(Rollback Segment)、临时段(Temporary
-Segment)和索引段(Index Segment)
-(4).表空间：逻辑磁盘空间，由数据文件组成，是最大的逻辑存储单元。</p>
-<h1 id="块">块</h1>
-<p>块是数据存储的物理单位，也是数据文件中最基础的单位，数据直接存储在块上。是oracle空间分配的最小单位。oracle中的块大小常见的有三种，2KB、4KB、8KB。块的大小在数据库创建时就已经固定下来，数据库中每个块的大小都是相同的，而且所有的块都有相同的格式，由“块头＋表目录＋行目录＋空闲空间＋数据空间”组成。块头包含着块类型（比如是表块、还是索引块）的信息、磁盘上块的位置等信息。表目录（table
-directory），如果有的话，包含着此块中存储各行的表的信息（如果一个块中存有多个表中的数据）。行目录（row
-directory）包含着数据行的描述信息，它是一个指针数组，指示了每一行在数据块中的物理位置。块头、表目录、行目录统称为块开销（block
-overhead），是oracle原来统计、管理块本身的。剩下的两部分很简单，已经存有数据的就是数据空间，暂时没存的就是空闲空间。</p>
-<h1 id="区">区</h1>
-<p>区又叫盘区，是数据文件中一个连续的分配空间，它比块要大，由块组成。有些对象分配空间时可能至少需要两个盘区，比如回滚段，而这两个盘区不一定要求相连。区的大小从一个块到2GB不等</p>
-<h1 id="段">段</h1>
-<p>段是oracle数据库中的分配单位，对象如表、索引等都是以段为单位进行分配。当创建一个表时将创建一个表段，创建一个索引时就创建一个索引段。每一个消耗存储空间的对象最终被存储到一个单一的段中。有回滚段、临时段、聚簇段、索引段等。
-段(SEGMENT)存在于表空间中，是包含于表空间中的一种指定类型的逻辑存储结构，段由一组区组成。按照段中所存储数据的特性以及为优化系统性能的需要，将段分成4类，即数据段、索引段、回退段、临时段。例如，对于每个表，Oracle都分配一个或多个区以构成该表的数据段；而对于每个索引，Oracle则分配一个或多个区以构成索引段。</p>
-<h1 id="表空间">表空间</h1>
-<p>表空间是一个逻辑容器，它和数据文件关联起来，一个表空间至少有一个数据文件与之关联。一个表空间可以有多个段，一个段只能属于一个表空间。</p>
-<h1 id="方案schema">方案（schema）</h1>
-<p>方案（schema）又叫模式，是比表空间小一级的逻辑概念，它也是一个逻辑容器。多个用户可能共用一个表空间，那如何区分开每一个用户？那么在表空间中对每个用户都有一个对应的方案，用于保存单个用户的信息。</p>
-<h1 id="oracle中存储的层次结构总结">oracle中存储的层次结构总结</h1>
-<ol type="1">
-<li>数据库由一个或多个表空间组成</li>
-<li>表空间由一个或多个数据文件组成，一个表空间包含多个段</li>
-<li>段由一个或多个区组成</li>
-<li>区是数据文件中一个连续的分配空间，由一个或多个块组成</li>
-<li>块是数据库中最小、最基本的单位，是数据库使用的最小的I/O单元</li>
+        <p>oracle中的表空间(tablespace)、方案(schema)、段(segment)、区(extent)、块(block)详解<br><img src="/img/数据库存储总图.png" alt="" title="数据库存储总图"><span id="more"></span><br><img src="/img/数据库物理结构.png" alt="" title="数据库物理结构"><br><img src="/img/数据库逻辑结构.png" alt="" title="数据库逻辑结构"></p>
+<p>数据文件和日志文件是数据库中最重要的文件。它们是数据存储的地方。每个数据库至少有一个与之相关的数据文件，通常情况下不只一个，有很多。数据在数据文件中是如何组织的？要了解这些内容我们首先必须理解什么是表空间（tablespace）、段（segment）、区（extent）、块（block），这些都是oracle数据库在数据文件中组织数据的基本单元。现在我们来理解这些概念。 </p>
+<blockquote>
+<p>补充资料：逻辑存储结构<br>   (1).块(Data Block)：数据库数据存放在数据块中，一个数据块对应特定磁盘上字节数。块是数据库最小的逻辑存储单元。<br>   (2).区(Extend)：由一系列<strong>连续的块</strong>组成的，其分配是单一分配的。<strong>区也是系统分配空间和回收空间的基本单位。</strong><br>   (3).段(Segment)：表空间中特定类型的逻辑单位，由一个或多个区构成。包括数据段(Data Segment)、回滚段(Rollback Segment)、临时段(Temporary Segment)和索引段(Index Segment)<br>   (4).表空间：逻辑磁盘空间，由数据文件组成，是最大的逻辑存储单元。 </p>
+</blockquote>
+<h1 id="块"><a href="#块" class="headerlink" title="块"></a>块</h1><p>块是数据存储的物理单位，也是数据文件中最基础的单位，数据直接存储在块上。是oracle空间分配的最小单位。oracle中的块大小常见的有三种，2KB、4KB、8KB。块的大小在数据库创建时就已经固定下来，数据库中每个块的大小都是相同的，而且所有的块都有相同的格式，由“块头＋表目录＋行目录＋空闲空间＋数据空间”组成。块头包含着块类型（比如是表块、还是索引块）的信息、磁盘上块的位置等信息。表目录（table directory），如果有的话，包含着此块中存储各行的表的信息（如果一个块中存有多个表中的数据）。行目录（row directory）包含着数据行的描述信息，它是一个指针数组，指示了每一行在数据块中的物理位置。块头、表目录、行目录统称为块开销（block overhead），是oracle原来统计、管理块本身的。剩下的两部分很简单，已经存有数据的就是数据空间，暂时没存的就是空闲空间。 </p>
+<h1 id="区"><a href="#区" class="headerlink" title="区"></a>区</h1><p>区又叫盘区，是数据文件中一个连续的分配空间，它比块要大，由块组成。有些对象分配空间时可能至少需要两个盘区，比如回滚段，而这两个盘区不一定要求相连。区的大小从一个块到2GB不等 </p>
+<h1 id="段"><a href="#段" class="headerlink" title="段"></a>段</h1><p>段是oracle数据库中的分配单位，对象如表、索引等都是以段为单位进行分配。当创建一个表时将创建一个表段，创建一个索引时就创建一个索引段。每一个消耗存储空间的对象最终被存储到一个单一的段中。有回滚段、临时段、聚簇段、索引段等。<br>段(SEGMENT)存在于表空间中，是包含于表空间中的一种指定类型的逻辑存储结构，段由一组区组成。按照段中所存储数据的特性以及为优化系统性能的需要，将段分成4类，即数据段、索引段、回退段、临时段。例如，对于每个表，Oracle都分配一个或多个区以构成该表的数据段；而对于每个索引，Oracle则分配一个或多个区以构成索引段。</p>
+<h1 id="表空间"><a href="#表空间" class="headerlink" title="表空间"></a>表空间</h1><p>表空间是一个逻辑容器，它和数据文件关联起来，一个表空间至少有一个数据文件与之关联。一个表空间可以有多个段，一个段只能属于一个表空间。 </p>
+<h1 id="方案（schema）"><a href="#方案（schema）" class="headerlink" title="方案（schema）"></a>方案（schema）</h1><p>方案（schema）又叫模式，是比表空间小一级的逻辑概念，它也是一个逻辑容器。多个用户可能共用一个表空间，那如何区分开每一个用户？那么在表空间中对每个用户都有一个对应的方案，用于保存单个用户的信息。 </p>
+<h1 id="oracle中存储的层次结构总结"><a href="#oracle中存储的层次结构总结" class="headerlink" title="oracle中存储的层次结构总结"></a>oracle中存储的层次结构总结</h1><ol>
+<li>数据库由一个或多个表空间组成 </li>
+<li>表空间由一个或多个数据文件组成，一个表空间包含多个段 </li>
+<li>段由一个或多个区组成 </li>
+<li>区是数据文件中一个连续的分配空间，由一个或多个块组成 </li>
+<li>块是数据库中最小、最基本的单位，是数据库使用的最小的I/O单元 </li>
 <li>每个用户都有一个对应的方案</li>
 </ol>
-<p><font color="#4590a3" size = "4px"><strong>要注意，数据表段区块的概念集合，很容易与schema的结构相混淆。schema是一个组织概念，是来自于经典数据库理论范畴。在oracle中，Schema就是一个组织概念，一个user对应的就是一个schema。schema是逻辑对象的集合组织，同表空间等概念不是一个层面的。</strong></font>在一个schema里，是可以将对象建立在任何数据表空间内的，只有一个默认表空间的概念default
-tablespace。指定默认表空间是在创建用户的时候指定的。</p>
-<h1 id="数据库的物理组件">数据库的物理组件</h1>
-<p>数据库的物理组件是指从物理角度分析数据库的组成，也就是Oracle数据库创建后使用的操作系统物理文件。Oracle数据库的物理文件可分为3类，即数据文件、日志文件和控制文件。
-数据文件(<em>.DBF) 数据文件(Data
-File)是用于存储数据库数据的文件。如表、索引数据等都存储在数据文件中。每个Oracle数据库有一个或多个物理数据文件。一个数据文件只能与一个数据库关联。数据文件以可检索的格式存储数据，这些数据可以通过SQL语句进行访问。
-日志文件(</em>.LOG) 日志文件(Redo Log
-File)用于记录对数据库进行的修改信息，对数据库所作的全部修改都被记录在日志中，修改信息包括用户对数据的修改和管理员对数据库结构的修改。日志文件主要用于在数据库出现故障时实施数据库恢复。
-控制文件(*.CTL) 控制文件(Control
-Files)是记录数据库物理结构的二进制文件。该文件包含维护和验证数据库完整性的必要信息。每个Oracle数据库都含有一个控制文件，它包含下列信息。
-数据库名称和数据库唯一标识 当前日志顺序号 有关检查点的信息
-数据文件和日志文件的路径和名称 数据库创建时间</p>
+<p><font color="#4590a3" size = "4px"><strong>要注意，数据表段区块的概念集合，很容易与schema的结构相混淆。schema是一个组织概念，是来自于经典数据库理论范畴。在oracle中，Schema就是一个组织概念，一个user对应的就是一个schema。schema是逻辑对象的集合组织，同表空间等概念不是一个层面的。</strong></font>在一个schema里，是可以将对象建立在任何数据表空间内的，只有一个默认表空间的概念default tablespace。指定默认表空间是在创建用户的时候指定的。</p>
+<h1 id="数据库的物理组件"><a href="#数据库的物理组件" class="headerlink" title="数据库的物理组件"></a>数据库的物理组件</h1><p>数据库的物理组件是指从物理角度分析数据库的组成，也就是Oracle数据库创建后使用的操作系统物理文件。Oracle数据库的物理文件可分为3类，即数据文件、日志文件和控制文件。<br>数据文件(<em>.DBF)<br>数据文件(Data File)是用于存储数据库数据的文件。如表、索引数据等都存储在数据文件中。每个Oracle数据库有一个或多个物理数据文件。一个数据文件只能与一个数据库关联。数据文件以可检索的格式存储数据，这些数据可以通过SQL语句进行访问。<br>日志文件(</em>.LOG)<br>日志文件(Redo Log File)用于记录对数据库进行的修改信息，对数据库所作的全部修改都被记录在日志中，修改信息包括用户对数据的修改和管理员对数据库结构的修改。日志文件主要用于在数据库出现故障时实施数据库恢复。<br>控制文件(*.CTL)<br>控制文件(Control Files)是记录数据库物理结构的二进制文件。该文件包含维护和验证数据库完整性的必要信息。每个Oracle数据库都含有一个控制文件，它包含下列信息。<br>数据库名称和数据库唯一标识<br>当前日志顺序号<br>有关检查点的信息<br>数据文件和日志文件的路径和名称<br>数据库创建时间</p>
 
     </div>
 

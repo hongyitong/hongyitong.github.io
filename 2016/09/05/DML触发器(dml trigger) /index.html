@@ -20,12 +20,12 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="Oracle DML触发器实现功能： 很多时候我们或者客户有如下需求： 在A.B表上添加触发器. 触发事件：UPDATE,DELETE,INSERT 后触发；对表的每一行触发器执行一次；记录用户名，操作类型，操作时间，修改或删除前的数据，新增的数据。">
+    <meta name="description" content="Oracle DML触发器实现功能：很多时候我们或者客户有如下需求：在A.B表上添加触发器.触发事件：UPDATE,DELETE,INSERT 后触发；对表的每一行触发器执行一次；记录用户名，操作类型，操作时间，修改或删除前的数据，新增的数据。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="DML触发器(dml trigger)">
 <meta property="og:url" content="http://hongyitong.github.io/2016/09/05/DML%E8%A7%A6%E5%8F%91%E5%99%A8(dml%20trigger)%20/index.html">
 <meta property="og:site_name" content="忆桐之家的博客">
-<meta property="og:description" content="Oracle DML触发器实现功能： 很多时候我们或者客户有如下需求： 在A.B表上添加触发器. 触发事件：UPDATE,DELETE,INSERT 后触发；对表的每一行触发器执行一次；记录用户名，操作类型，操作时间，修改或删除前的数据，新增的数据。">
+<meta property="og:description" content="Oracle DML触发器实现功能：很多时候我们或者客户有如下需求：在A.B表上添加触发器.触发事件：UPDATE,DELETE,INSERT 后触发；对表的每一行触发器执行一次；记录用户名，操作类型，操作时间，修改或删除前的数据，新增的数据。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2016-09-04T16:00:00.000Z">
 <meta property="article:modified_time" content="2017-07-12T06:04:05.000Z">
@@ -148,7 +148,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E8%A7%A6%E5%8F%91%E5%99%A8"><span class="nav-number">1.</span> <span class="nav-text">2、创建触发器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E5%AE%8C%E6%88%90%E5%90%8E%E6%9F%A5%E7%9C%8Btrigger%E7%8A%B6%E6%80%81"><span class="nav-number">2.</span> <span class="nav-text">3、创建完成后查看trigger状态：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A2%9E%E5%88%A0%E6%94%B9%E6%B5%8B%E8%AF%95"><span class="nav-number">3.</span> <span class="nav-text">4、增删改测试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E6%97%A5%E5%BF%97%E8%A1%A8%E5%AF%B9%E5%BA%94%E6%98%AF%E5%90%A6%E6%9C%89%E8%AE%B0%E5%BD%95"><span class="nav-number">4.</span> <span class="nav-text">5、查看日志表对应是否有记录。</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1%E3%80%81%E5%88%9B%E5%BB%BA%E6%97%A5%E5%BF%97%E8%A1%A8%E5%B9%B6%E5%A2%9E%E5%8A%A0%E5%AE%A1%E8%AE%A1%E5%88%97"><span class="nav-number">1.</span> <span class="nav-text">1、创建日志表并增加审计列</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2%E3%80%81%E5%88%9B%E5%BB%BA%E8%A7%A6%E5%8F%91%E5%99%A8"><span class="nav-number">2.</span> <span class="nav-text">2、创建触发器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3%E3%80%81%E5%88%9B%E5%BB%BA%E5%AE%8C%E6%88%90%E5%90%8E%E6%9F%A5%E7%9C%8Btrigger%E7%8A%B6%E6%80%81%EF%BC%9A"><span class="nav-number">3.</span> <span class="nav-text">3、创建完成后查看trigger状态：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4%E3%80%81%E5%A2%9E%E5%88%A0%E6%94%B9%E6%B5%8B%E8%AF%95"><span class="nav-number">4.</span> <span class="nav-text">4、增删改测试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5%E3%80%81%E6%9F%A5%E7%9C%8B%E6%97%A5%E5%BF%97%E8%A1%A8%E5%AF%B9%E5%BA%94%E6%98%AF%E5%90%A6%E6%9C%89%E8%AE%B0%E5%BD%95%E3%80%82"><span class="nav-number">5.</span> <span class="nav-text">5、查看日志表对应是否有记录。</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -289,48 +289,117 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <p><strong>Oracle DML触发器实现功能：</strong>
-很多时候我们或者客户有如下需求： 在A.B表上添加触发器.
-触发事件：UPDATE,DELETE,INSERT
-后触发；对表的每一行触发器执行一次；记录用户名，操作类型，操作时间，修改或删除前的数据，新增的数据。<span id="more"></span>
-/<em> ①、确认该表没有失效的触发器以及没有已经存在重复的日志表名
-②、创建对应表的触发器日志表，并添加 记录用户名，操作类型，操作时间等列
-③、修改trigger里对日志表插入的内容创建trigger
-④、查看触发器状态，使其enable ⑤、测试触发器是否可用或者报错 </em>/ ##
-1、创建日志表并增加审计列 ``` SQL CREATE TABLE TEST.TEST1_LOG AS SELECT
-* FROM TEST.TEST1 WHERE 1 = 0;</p>
-<p>ALTER TABLE TEST.TEST1_LOG ADD t_operator VARCHAR2 (100);</p>
-<p>ALTER TABLE TEST.TEST1_LOG ADD t_action VARCHAR2 (100);</p>
-<p>ALTER TABLE TEST.TEST1_LOG ADD t_date date;</p>
-<p>ALTER TABLE TEST.TEST1_LOG ADD t_remark VARCHAR2 (100);```</p>
-<h2 id="创建触发器">2、创建触发器</h2>
-<p><code>SQL CREATE OR REPLACE TRIGGER TEST.TRG_TEST1</code>
-《《《《《注意这里最好提起查是否有之前的重复trigger名，避免误replace ```
-SQL AFTER INSERT OR DELETE OR UPDATE ON TEST.TEST1 FOR EACH ROW DECLARE
-v_havenew BOOLEAN := FALSE; v_haveold BOOLEAN := FALSE; v_action
-VARCHAR2 (32); BEGIN IF INSERTING THEN v_havenew := TRUE; v_action :=
-'INSERT'; END IF;</p>
-<p>IF UPDATING THEN v_havenew := TRUE; v_action := 'UPDATE'; v_haveold
-:= TRUE; END IF;</p>
-<p>IF DELETING THEN v_action := 'DELETE'; v_haveold := TRUE; END IF;</p>
-<p>IF TRUE = v_haveold THEN INSERT INTO TEST.TEST1_LOG (id,<br />
------/<em>注意这里insert日志表的列要参照日志的列补充上，我这里的测试表只有id一个列</em>/
-t_operator, t_action, t_date, t_remark) VALUES (:old.id, USER, v_action,
-SYSDATE, 'old'); END IF;</p>
-<p>IF TRUE = v_havenew THEN INSERT INTO TEST.TEST1_LOG (id,
------/<em>注意这里insert日志表的列要参照日志的列补充上，我这里的测试表只有id一个列</em>/
-t_operator, t_action, t_date, t_remark) VALUES ( :new.id, USER,
-v_action, SYSDATE, 'new'); END IF; EXCEPTION WHEN OTHERS THEN NULL; END
-TRG_TEST1;```</p>
-<h2 id="创建完成后查看trigger状态">3、创建完成后查看trigger状态：</h2>
-<p><code>SQL select trigger_name, status from dba_triggers where owner = 'TEST' and trigger_name = 'TRG_TEST1';  TRIGGER_NA STATUS ---------- ------------------------ TRG_TEST1  ENABLED</code>
-《《《《《《enable 如果不是enable手工enable如下
-<code>SQL ALTER TRIGGER "TEST"."TRG_TEST1" ENABLE;</code></p>
-<h2 id="增删改测试">4、增删改测试</h2>
-<p><code>SQL SQL&gt; update TEST.test1 set id=5 where id=2; 1 row updated. SQL&gt; commit; Commit complete. --------------------------------------------------------- SQL&gt; delete from TEST.test1 where id=8; 1 row deleted. SQL&gt; commit; Commit complete. ----------------------------------------------------- SQL&gt;  insert into TEST.test1 values(10); 1 row created. SQL&gt; commit; Commit complete.</code></p>
-<h2 id="查看日志表对应是否有记录">5、查看日志表对应是否有记录。</h2>
-<p><code>SQL select * from  TEST.TEST1_LOG order by t_date desc;</code></p>
-<p>转自：http://blog.itpub.net/31043804/viewspace-2119546/</p>
+        <p><strong>Oracle DML触发器实现功能：</strong><br>很多时候我们或者客户有如下需求：<br>在A.B表上添加触发器.<br>触发事件：UPDATE,DELETE,INSERT 后触发；对表的每一行触发器执行一次；记录用户名，操作类型，操作时间，修改或删除前的数据，新增的数据。<span id="more"></span><br>/<em><br>①、确认该表没有失效的触发器以及没有已经存在重复的日志表名<br>②、创建对应表的触发器日志表，并添加 记录用户名，操作类型，操作时间等列<br>③、修改trigger里对日志表插入的内容创建trigger<br>④、查看触发器状态，使其enable<br>⑤、测试触发器是否可用或者报错
+</em>/</p>
+<h2 id="1、创建日志表并增加审计列"><a href="#1、创建日志表并增加审计列" class="headerlink" title="1、创建日志表并增加审计列"></a>1、创建日志表并增加审计列</h2><pre><code class="lang-SQL">CREATE TABLE TEST.TEST1_LOG
+AS
+   SELECT *
+     FROM TEST.TEST1
+    WHERE 1 = 0;
+
+ALTER TABLE TEST.TEST1_LOG
+   ADD t_operator VARCHAR2 (100);
+
+ALTER TABLE TEST.TEST1_LOG
+   ADD t_action VARCHAR2 (100);
+
+ALTER TABLE TEST.TEST1_LOG
+   ADD t_date date;
+
+ALTER TABLE TEST.TEST1_LOG
+   ADD t_remark VARCHAR2 (100);
+</code></pre>
+<h2 id="2、创建触发器"><a href="#2、创建触发器" class="headerlink" title="2、创建触发器"></a>2、创建触发器</h2><pre><code class="lang-SQL">CREATE OR REPLACE TRIGGER TEST.TRG_TEST1
+</code></pre>
+<p>《《《《《注意这里最好提起查是否有之前的重复trigger名，避免误replace</p>
+<pre><code class="lang-SQL">AFTER INSERT OR DELETE OR UPDATE
+   ON TEST.TEST1
+   FOR EACH ROW
+DECLARE
+   v_havenew   BOOLEAN := FALSE;
+   v_haveold   BOOLEAN := FALSE;
+   v_action    VARCHAR2 (32);
+BEGIN
+   IF INSERTING 
+   THEN
+      v_havenew := TRUE;
+      v_action := &#39;INSERT&#39;;
+   END IF;
+
+   IF UPDATING
+   THEN
+      v_havenew := TRUE;
+      v_action := &#39;UPDATE&#39;;
+      v_haveold := TRUE;
+   END IF;
+
+   IF DELETING
+   THEN
+      v_action := &#39;DELETE&#39;;
+      v_haveold := TRUE;
+   END IF;
+
+   IF TRUE = v_haveold
+   THEN
+      INSERT INTO TEST.TEST1_LOG (id,      
+      -----/*注意这里insert日志表的列要参照日志的列补充上，我这里的测试表只有id一个列*/
+                                         t_operator,
+                                         t_action,
+                                         t_date,
+                                         t_remark)
+           VALUES (:old.id,
+                   USER,
+                   v_action,
+                   SYSDATE,
+                   &#39;old&#39;);
+   END IF;
+
+   IF TRUE = v_havenew
+   THEN
+      INSERT INTO TEST.TEST1_LOG (id, 
+      -----/*注意这里insert日志表的列要参照日志的列补充上，我这里的测试表只有id一个列*/
+                                         t_operator,
+                                         t_action,
+                                         t_date,
+                                         t_remark)
+           VALUES ( :new.id,
+                   USER,
+                   v_action,
+                   SYSDATE,
+                   &#39;new&#39;);
+   END IF;
+EXCEPTION
+   WHEN OTHERS
+   THEN
+      NULL;
+END TRG_TEST1;
+</code></pre>
+<h2 id="3、创建完成后查看trigger状态："><a href="#3、创建完成后查看trigger状态：" class="headerlink" title="3、创建完成后查看trigger状态："></a>3、创建完成后查看trigger状态：</h2><pre><code class="lang-SQL">select trigger_name, status from dba_triggers where owner = &#39;TEST&#39; and trigger_name = &#39;TRG_TEST1&#39;; 
+TRIGGER_NA STATUS
+---------- ------------------------
+TRG_TEST1  ENABLED
+</code></pre>
+<p>《《《《《《enable  如果不是enable手工enable如下</p>
+<pre><code class="lang-SQL">ALTER TRIGGER &quot;TEST&quot;.&quot;TRG_TEST1&quot; ENABLE;
+</code></pre>
+<h2 id="4、增删改测试"><a href="#4、增删改测试" class="headerlink" title="4、增删改测试"></a>4、增删改测试</h2><pre><code class="lang-SQL">SQL&gt; update TEST.test1 set id=5 where id=2;
+1 row updated.
+SQL&gt; commit;
+Commit complete.
+---------------------------------------------------------
+SQL&gt; delete from TEST.test1 where id=8;
+1 row deleted.
+SQL&gt; commit;
+Commit complete.
+-----------------------------------------------------
+SQL&gt;  insert into TEST.test1 values(10);
+1 row created.
+SQL&gt; commit;
+Commit complete.
+</code></pre>
+<h2 id="5、查看日志表对应是否有记录。"><a href="#5、查看日志表对应是否有记录。" class="headerlink" title="5、查看日志表对应是否有记录。"></a>5、查看日志表对应是否有记录。</h2><pre><code class="lang-SQL">select * from  TEST.TEST1_LOG order by t_date desc;
+</code></pre>
+<p>转自：<a target="_blank" rel="noopener" href="http://blog.itpub.net/31043804/viewspace-2119546/">http://blog.itpub.net/31043804/viewspace-2119546/</a></p>
 
     </div>
 

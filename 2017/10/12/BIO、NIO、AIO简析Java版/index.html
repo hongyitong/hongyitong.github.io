@@ -20,12 +20,12 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="关于BIO、NIO、AIO的讨论一直存在，有时候也很容易让人混淆，就我的理解，给出一个解释： BIO、NIO、AIO，本身的描述都是在Java语言的基础上的。 # 从编程语言层面 BIO、NIO、AIO 以Java的角度，理解，linux c里也有AIO的概念(库)，这些概念不知道什么原因被炒火起来，这里只从Java角度入手。 - BIO，同步阻塞式IO，简单理解：一个连接一个线程 - NIO，同">
+    <meta name="description" content="关于BIO、NIO、AIO的讨论一直存在，有时候也很容易让人混淆，就我的理解，给出一个解释：BIO、NIO、AIO，本身的描述都是在Java语言的基础上的。 从编程语言层面BIO、NIO、AIO 以Java的角度，理解，linux c里也有AIO的概念(库)，这些概念不知道什么原因被炒火起来，这里只从Java角度入手。  BIO，同步阻塞式IO，简单理解：一个连接一个线程 NIO，同步非阻塞IO，">
 <meta property="og:type" content="article">
 <meta property="og:title" content="BIO、NIO、AIO简析Java版">
 <meta property="og:url" content="http://hongyitong.github.io/2017/10/12/BIO%E3%80%81NIO%E3%80%81AIO%E7%AE%80%E6%9E%90Java%E7%89%88/index.html">
 <meta property="og:site_name" content="忆桐之家的博客">
-<meta property="og:description" content="关于BIO、NIO、AIO的讨论一直存在，有时候也很容易让人混淆，就我的理解，给出一个解释： BIO、NIO、AIO，本身的描述都是在Java语言的基础上的。 # 从编程语言层面 BIO、NIO、AIO 以Java的角度，理解，linux c里也有AIO的概念(库)，这些概念不知道什么原因被炒火起来，这里只从Java角度入手。 - BIO，同步阻塞式IO，简单理解：一个连接一个线程 - NIO，同">
+<meta property="og:description" content="关于BIO、NIO、AIO的讨论一直存在，有时候也很容易让人混淆，就我的理解，给出一个解释：BIO、NIO、AIO，本身的描述都是在Java语言的基础上的。 从编程语言层面BIO、NIO、AIO 以Java的角度，理解，linux c里也有AIO的概念(库)，这些概念不知道什么原因被炒火起来，这里只从Java角度入手。  BIO，同步阻塞式IO，简单理解：一个连接一个线程 NIO，同步非阻塞IO，">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2017-10-11T16:00:00.000Z">
 <meta property="article:modified_time" content="2017-10-12T06:54:27.000Z">
@@ -150,7 +150,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#bio"><span class="nav-number">1.</span> <span class="nav-text">BIO</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#nio"><span class="nav-number">2.</span> <span class="nav-text">NIO</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#aio"><span class="nav-number">3.</span> <span class="nav-text">AIO</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%8E%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80%E5%B1%82%E9%9D%A2"><span class="nav-number">1.</span> <span class="nav-text">从编程语言层面</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#BIO"><span class="nav-number">2.</span> <span class="nav-text">BIO</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#NIO"><span class="nav-number">3.</span> <span class="nav-text">NIO</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#AIO"><span class="nav-number">4.</span> <span class="nav-text">AIO</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -285,32 +285,21 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <p>关于BIO、NIO、AIO的讨论一直存在，有时候也很容易让人混淆，就我的理解，给出一个解释：
-BIO、NIO、AIO，本身的描述都是在Java语言的基础上的。 # 从编程语言层面
-BIO、NIO、AIO 以Java的角度，理解，linux
-c里也有AIO的概念(库)，这些概念不知道什么原因被炒火起来，这里只从Java角度入手。
-- BIO，同步阻塞式IO，简单理解：一个连接一个线程 -
-NIO，同步非阻塞IO，简单理解：一个请求一个线程 -
-AIO，异步非阻塞IO，简单理解：一个有效请求一个线程 <span id="more"></span></p>
-<h1 id="bio">BIO</h1>
-<p>在JDK1.4之前，用Java编写网络请求，都是建立一个ServerSocket，然后，客户端建立Socket时就会询问是否有线程可以处理，如果没有，要么等待，要么被拒绝。即：一个连接，要求Server对应一个处理线程。</p>
-<h1 id="nio">NIO</h1>
-<p>在Java里的由来，在JDK1.4及以后版本中提供了一套API来专门操作非阻塞I/O，我们可以在java.nio包及其子包中找到相关的类和接口。由于这套API是JDK新提供的I/O
-API，因此，也叫New
-I/O，这就是包名nio的由来。这套API由三个主要的部分组成：缓冲区（Buffers）、通道（Channels）和非阻塞I/O的核心类组成。在理解NIO的时候，需要区分，说的是New
-I/O还是非阻塞IO,New
-I/O是Java的包，NIO是非阻塞IO概念。这里讲的是后面一种。</p>
-<p>NIO本身是基于事件驱动思想来完成的，其主要想解决的是BIO的大并发问题：
-在使用同步I/O的网络应用中，如果要同时处理多个客户端请求，或是在客户端要同时和多个服务器进行通讯，就必须使用多线程来处理。也就是说，将每一个客户端请求分配给一个线程来单独处理。这样做虽然可以达到我们的要求，但同时又会带来另外一个问题。由于每创建一个线程，就要为这个线程分配一定的内存空间（也叫工作存储器），而且操作系统本身也对线程的总数有一定的限制。如果客户端的请求过多，服务端程序可能会因为不堪重负而拒绝客户端的请求，甚至服务器可能会因此而瘫痪。</p>
-<p>NIO基于Reactor，当socket有流可读或可写入socket时，操作系统会相应的通知引用程序进行处理，应用再将流读取到缓冲区或写入操作系统。
-也就是说，这个时候，已经不是一个连接就要对应一个处理线程了，而是有效的请求，对应一个线程，当连接没有数据时，是没有工作线程来处理的。</p>
-<h1 id="aio">AIO</h1>
-<p>与NIO不同，当进行读写操作时，只须直接调用API的read或write方法即可。这两种方法均为异步的，对于读操作而言，当有流可读取时，操作系统会将可读的流传入read方法的缓冲区，并通知应用程序；对于写操作而言，当操作系统将write方法传递的流写入完毕时，操作系统主动通知应用程序。</p>
+        <p>关于BIO、NIO、AIO的讨论一直存在，有时候也很容易让人混淆，就我的理解，给出一个解释：<br>BIO、NIO、AIO，本身的描述都是在Java语言的基础上的。</p>
+<h1 id="从编程语言层面"><a href="#从编程语言层面" class="headerlink" title="从编程语言层面"></a>从编程语言层面</h1><p>BIO、NIO、AIO 以Java的角度，理解，linux c里也有AIO的概念(库)，这些概念不知道什么原因被炒火起来，这里只从Java角度入手。</p>
+<ul>
+<li>BIO，同步阻塞式IO，简单理解：一个连接一个线程</li>
+<li>NIO，同步非阻塞IO，简单理解：一个请求一个线程</li>
+<li>AIO，异步非阻塞IO，简单理解：一个有效请求一个线程<span id="more"></span>
+</li>
+</ul>
+<h1 id="BIO"><a href="#BIO" class="headerlink" title="BIO"></a>BIO</h1><p>在JDK1.4之前，用Java编写网络请求，都是建立一个ServerSocket，然后，客户端建立Socket时就会询问是否有线程可以处理，如果没有，要么等待，要么被拒绝。即：一个连接，要求Server对应一个处理线程。</p>
+<h1 id="NIO"><a href="#NIO" class="headerlink" title="NIO"></a>NIO</h1><p>在Java里的由来，在JDK1.4及以后版本中提供了一套API来专门操作非阻塞I/O，我们可以在java.nio包及其子包中找到相关的类和接口。由于这套API是JDK新提供的I/O API，因此，也叫New I/O，这就是包名nio的由来。这套API由三个主要的部分组成：缓冲区（Buffers）、通道（Channels）和非阻塞I/O的核心类组成。在理解NIO的时候，需要区分，说的是New I/O还是非阻塞IO,New I/O是Java的包，NIO是非阻塞IO概念。这里讲的是后面一种。</p>
+<p>NIO本身是基于事件驱动思想来完成的，其主要想解决的是BIO的大并发问题： 在使用同步I/O的网络应用中，如果要同时处理多个客户端请求，或是在客户端要同时和多个服务器进行通讯，就必须使用多线程来处理。也就是说，将每一个客户端请求分配给一个线程来单独处理。这样做虽然可以达到我们的要求，但同时又会带来另外一个问题。由于每创建一个线程，就要为这个线程分配一定的内存空间（也叫工作存储器），而且操作系统本身也对线程的总数有一定的限制。如果客户端的请求过多，服务端程序可能会因为不堪重负而拒绝客户端的请求，甚至服务器可能会因此而瘫痪。</p>
+<p>NIO基于Reactor，当socket有流可读或可写入socket时，操作系统会相应的通知引用程序进行处理，应用再将流读取到缓冲区或写入操作系统。<br>也就是说，这个时候，已经不是一个连接就要对应一个处理线程了，而是有效的请求，对应一个线程，当连接没有数据时，是没有工作线程来处理的。</p>
+<h1 id="AIO"><a href="#AIO" class="headerlink" title="AIO"></a>AIO</h1><p>与NIO不同，当进行读写操作时，只须直接调用API的read或write方法即可。这两种方法均为异步的，对于读操作而言，当有流可读取时，操作系统会将可读的流传入read方法的缓冲区，并通知应用程序；对于写操作而言，当操作系统将write方法传递的流写入完毕时，操作系统主动通知应用程序。</p>
 <p>即可以理解为，read/write方法都是异步的，完成后会主动调用回调函数。</p>
-<p>在JDK1.7中，这部分内容被称作NIO.2，主要在java.nio.channels包下增加了下面四个异步通道：
-AsynchronousSocketChannel AsynchronousServerSocketChannel
-AsynchronousFileChannel AsynchronousDatagramChannel
-其中的read/write方法，会返回一个带回调函数的对象，当执行完读取/写入操作后，直接调用回调函数。</p>
+<p>在JDK1.7中，这部分内容被称作NIO.2，主要在java.nio.channels包下增加了下面四个异步通道：<br>AsynchronousSocketChannel<br>AsynchronousServerSocketChannel<br>AsynchronousFileChannel<br>AsynchronousDatagramChannel<br>其中的read/write方法，会返回一个带回调函数的对象，当执行完读取/写入操作后，直接调用回调函数。</p>
 
     </div>
 
@@ -329,13 +318,13 @@ AsynchronousFileChannel AsynchronousDatagramChannel
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2017/10/12/%E5%8D%A0%E4%BD%8D%E7%AC%A6/" rel="prev" title="占位符">
-                  <i class="fa fa-chevron-left"></i> 占位符
+                <a href="/2017/10/12/AOP-%E9%9D%A2%E5%90%91%E5%88%87%E9%9D%A2%E7%BC%96%E7%A8%8B/" rel="prev" title="AOP-面向切面编程">
+                  <i class="fa fa-chevron-left"></i> AOP-面向切面编程
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2017/10/12/AOP-%E9%9D%A2%E5%90%91%E5%88%87%E9%9D%A2%E7%BC%96%E7%A8%8B/" rel="next" title="AOP-面向切面编程">
-                  AOP-面向切面编程 <i class="fa fa-chevron-right"></i>
+                <a href="/2017/10/13/%E3%80%8A%E5%88%86%E5%B8%83%E5%BC%8F%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E3%80%8B%E8%AF%BB%E4%B9%A6%E5%BF%83%E5%BE%97/" rel="next" title="《分布式服务架构》读书心得">
+                  《分布式服务架构》读书心得 <i class="fa fa-chevron-right"></i>
                 </a>
             </div>
           </div>

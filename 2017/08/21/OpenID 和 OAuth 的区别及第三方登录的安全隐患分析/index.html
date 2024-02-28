@@ -20,12 +20,12 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="OpenID 和 OAuth 的区别及第三方登录的安全隐患分析 不知道什么时候开始，我们已经习惯了点击“用XX帐号登录”或者 &quot;Login with XX&quot; 来访问网站，但是大多数人可能都不知道这背后涉及的事有多复杂。 OpenID 和OAuth 完全是为了两种不同的需求而生 OpenID 的目标是为了帮助网站确认一个用户的身份 OAuth 的目标是为了授权第三方在可控范围下访问用户资源">
+    <meta name="description" content="OpenID 和 OAuth 的区别及第三方登录的安全隐患分析 不知道什么时候开始，我们已经习惯了点击“用XX帐号登录”或者 “Login with XX” 来访问网站，但是大多数人可能都不知道这背后涉及的事有多复杂。 OpenID 和OAuth 完全是为了两种不同的需求而生OpenID 的目标是为了帮助网站确认一个用户的身份 OAuth 的目标是为了授权第三方在可控范围下访问用户资源">
 <meta property="og:type" content="article">
 <meta property="og:title" content="OpenID 和 OAuth 的区别及第三方登录的安全隐患分析">
 <meta property="og:url" content="http://hongyitong.github.io/2017/08/21/OpenID%20%E5%92%8C%20OAuth%20%E7%9A%84%E5%8C%BA%E5%88%AB%E5%8F%8A%E7%AC%AC%E4%B8%89%E6%96%B9%E7%99%BB%E5%BD%95%E7%9A%84%E5%AE%89%E5%85%A8%E9%9A%90%E6%82%A3%E5%88%86%E6%9E%90/index.html">
 <meta property="og:site_name" content="忆桐之家的博客">
-<meta property="og:description" content="OpenID 和 OAuth 的区别及第三方登录的安全隐患分析 不知道什么时候开始，我们已经习惯了点击“用XX帐号登录”或者 &quot;Login with XX&quot; 来访问网站，但是大多数人可能都不知道这背后涉及的事有多复杂。 OpenID 和OAuth 完全是为了两种不同的需求而生 OpenID 的目标是为了帮助网站确认一个用户的身份 OAuth 的目标是为了授权第三方在可控范围下访问用户资源">
+<meta property="og:description" content="OpenID 和 OAuth 的区别及第三方登录的安全隐患分析 不知道什么时候开始，我们已经习惯了点击“用XX帐号登录”或者 “Login with XX” 来访问网站，但是大多数人可能都不知道这背后涉及的事有多复杂。 OpenID 和OAuth 完全是为了两种不同的需求而生OpenID 的目标是为了帮助网站确认一个用户的身份 OAuth 的目标是为了授权第三方在可控范围下访问用户资源">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2017-08-20T16:00:00.000Z">
 <meta property="article:modified_time" content="2017-09-05T06:27:50.000Z">
@@ -150,9 +150,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#openid-%E6%98%AF%E6%80%8E%E4%B9%88%E8%AE%A4%E8%AF%81%E7%94%A8%E6%88%B7%E7%9A%84"><span class="nav-number">1.</span> <span class="nav-text">OpenID 是怎么认证用户的？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%9C%A8-openid-%E8%AE%A4%E8%AF%81%E7%9A%84%E8%BF%87%E7%A8%8B%E4%B8%AD%E8%8E%B7%E5%BE%97%E7%94%A8%E6%88%B7%E7%9A%84%E9%83%A8%E5%88%86%E4%BF%A1%E6%81%AF"><span class="nav-number">2.</span> <span class="nav-text">如何在 OpenID
-认证的过程中获得用户的部分信息？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%82%A3%E4%B9%88oauth-%E5%8F%88%E6%98%AF%E6%80%8E%E4%B9%88%E8%AE%A4%E8%AF%81%E7%94%A8%E6%88%B7%E7%9A%84"><span class="nav-number">3.</span> <span class="nav-text">那么，OAuth
-又是怎么认证用户的？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%BD%E5%86%85%E5%A4%96%E4%B8%BB%E8%A6%81%E6%9C%8D%E5%8A%A1%E5%95%86%E8%AE%A4%E8%AF%81%E6%96%B9%E5%BC%8F%E5%AF%B9%E6%AF%94"><span class="nav-number">4.</span> <span class="nav-text">国内外主要服务商认证方式对比</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#OpenID-%E6%98%AF%E6%80%8E%E4%B9%88%E8%AE%A4%E8%AF%81%E7%94%A8%E6%88%B7%E7%9A%84%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">OpenID 是怎么认证用户的？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%9C%A8-OpenID-%E8%AE%A4%E8%AF%81%E7%9A%84%E8%BF%87%E7%A8%8B%E4%B8%AD%E8%8E%B7%E5%BE%97%E7%94%A8%E6%88%B7%E7%9A%84%E9%83%A8%E5%88%86%E4%BF%A1%E6%81%AF%EF%BC%9F"><span class="nav-number">2.</span> <span class="nav-text">如何在 OpenID 认证的过程中获得用户的部分信息？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%82%A3%E4%B9%88%EF%BC%8COAuth-%E5%8F%88%E6%98%AF%E6%80%8E%E4%B9%88%E8%AE%A4%E8%AF%81%E7%94%A8%E6%88%B7%E7%9A%84%EF%BC%9F"><span class="nav-number">3.</span> <span class="nav-text">那么，OAuth 又是怎么认证用户的？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%BD%E5%86%85%E5%A4%96%E4%B8%BB%E8%A6%81%E6%9C%8D%E5%8A%A1%E5%95%86%E8%AE%A4%E8%AF%81%E6%96%B9%E5%BC%8F%E5%AF%B9%E6%AF%94"><span class="nav-number">4.</span> <span class="nav-text">国内外主要服务商认证方式对比</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -294,79 +292,30 @@
     
     <div class="post-body" itemprop="articleBody">
         <p>OpenID 和 OAuth 的区别及第三方登录的安全隐患分析</p>
-<p>不知道什么时候开始，我们已经习惯了点击“用XX帐号登录”或者 "Login with
-XX" 来访问网站，但是大多数人可能都不知道这背后涉及的事有多复杂。</p>
-<p><strong>OpenID 和OAuth 完全是为了两种不同的需求而生 OpenID
-的目标是为了帮助网站确认一个用户的身份 OAuth
-的目标是为了授权第三方在可控范围下访问用户资源</strong> <span id="more"></span></p>
-<h1 id="openid-是怎么认证用户的">OpenID 是怎么认证用户的？</h1>
-<p>一个网站如果想要接入 OpenID 认证是非常简单的，不需要创建应用，不需要
-App Key ，不需要 Secret ，只需要将用户导向 OpenID Provider 的 Entry
-并带上 Callback
-，用户只要同意提供信息，你就可以拿到这个用户的“唯一标识”。</p>
-<p>请注意这里我使用了“唯一标识”这种说法，因为对于网站来说，OpenID
-Provider 提供的既不是用户的 UID ，也不是用户的 E-Mail ，比如 Google
-在默认情况下提供的就是一个几十位长的字符串，这个字符串是随机生成的，第三方网站无法从中获得用户的任何私人信息。这么说可能很抽象，举个例子：</p>
-<p>比如我用 Google 的 OpenID 服务登录 example.com ， example.com
-先把我导向 Google 的授权页面，我使用 Google 帐号 test@gmail.com
-登录并同意后，页面跳回 example.com ， example.com
-拿到了我的“唯一标识”，这个唯一标识可能是
-cd5f2126c2b2f97ca2d446e52c6ff4baea56fd4bcfcea30afcaaf6b73bcb04a1 ，
-example.com 从这个字符串里无法获得任何 test@gmail.com
-的个人信息（甚至连邮箱地址也不知道）， example.com
-只知道以后只要使用谷歌登录并返回
-cd5f2126c2b2f97ca2d446e52c6ff4baea56fd4bcfcea30afcaaf6b73bcb04a1
-这个标识符，那就是我在登录。</p>
-<p>显而易见，OpenID
-是专为登录认证而生，它使用简单，门槛很低，但是如果你想在认证过程中获得用户的其他信息（比如
-E-Mail ）就得多做一步了。</p>
-<h1 id="如何在-openid-认证的过程中获得用户的部分信息">如何在 OpenID
-认证的过程中获得用户的部分信息？</h1>
-<p>传统的 OpenID 是做不到这一点的，你只能拿到“唯一标识”。不过新版的
-OpenID 引入了 " OpenID attribute exchange"
-这个概念，这样第三方可以在用户的许可范围内获得用户的部分具体信息。</p>
-<p>还是上面的例子，如果 example.com 告诉 Google ，我想知道这个用户的
-E-Mail 地址，谷歌就会在授权页面告诉用户：“example.com 想要你的 E-Mail
-地址”，这时如果用户点击同意， example.com 就能在回调请求中拿到
-test@gmail.com 这个地址。</p>
+<p>不知道什么时候开始，我们已经习惯了点击“用XX帐号登录”或者 “Login with XX” 来访问网站，但是大多数人可能都不知道这背后涉及的事有多复杂。</p>
+<p><strong>OpenID 和OAuth 完全是为了两种不同的需求而生<br>OpenID 的目标是为了帮助网站确认一个用户的身份 OAuth 的目标是为了授权第三方在可控范围下访问用户资源</strong><br><span id="more"></span></p>
+<h1 id="OpenID-是怎么认证用户的？"><a href="#OpenID-是怎么认证用户的？" class="headerlink" title="OpenID 是怎么认证用户的？"></a>OpenID 是怎么认证用户的？</h1><p>一个网站如果想要接入 OpenID 认证是非常简单的，不需要创建应用，不需要 App Key ，不需要 Secret ，只需要将用户导向 OpenID Provider 的 Entry 并带上 Callback ，用户只要同意提供信息，你就可以拿到这个用户的“唯一标识”。</p>
+<p>请注意这里我使用了“唯一标识”这种说法，因为对于网站来说，OpenID Provider 提供的既不是用户的 UID ，也不是用户的 E-Mail ，比如 Google 在默认情况下提供的就是一个几十位长的字符串，这个字符串是随机生成的，第三方网站无法从中获得用户的任何私人信息。这么说可能很抽象，举个例子：</p>
+<p>比如我用 Google 的 OpenID 服务登录 example.com ， example.com 先把我导向 Google 的授权页面，我使用 Google 帐号 test@gmail.com 登录并同意后，页面跳回 example.com ， example.com 拿到了我的“唯一标识”，这个唯一标识可能是 cd5f2126c2b2f97ca2d446e52c6ff4baea56fd4bcfcea30afcaaf6b73bcb04a1 ， example.com 从这个字符串里无法获得任何 test@gmail.com 的个人信息（甚至连邮箱地址也不知道）， example.com 只知道以后只要使用谷歌登录并返回 cd5f2126c2b2f97ca2d446e52c6ff4baea56fd4bcfcea30afcaaf6b73bcb04a1 这个标识符，那就是我在登录。</p>
+<p>显而易见，OpenID 是专为登录认证而生，它使用简单，门槛很低，但是如果你想在认证过程中获得用户的其他信息（比如 E-Mail ）就得多做一步了。</p>
+<h1 id="如何在-OpenID-认证的过程中获得用户的部分信息？"><a href="#如何在-OpenID-认证的过程中获得用户的部分信息？" class="headerlink" title="如何在 OpenID 认证的过程中获得用户的部分信息？"></a>如何在 OpenID 认证的过程中获得用户的部分信息？</h1><p>传统的 OpenID 是做不到这一点的，你只能拿到“唯一标识”。不过新版的 OpenID 引入了 “ OpenID attribute exchange” 这个概念，这样第三方可以在用户的许可范围内获得用户的部分具体信息。</p>
+<p>还是上面的例子，如果 example.com 告诉 Google ，我想知道这个用户的 E-Mail 地址，谷歌就会在授权页面告诉用户：“example.com 想要你的 E-Mail 地址”，这时如果用户点击同意， example.com 就能在回调请求中拿到 test@gmail.com 这个地址。</p>
 <p>对于网站能拿到的信息，不同 Provider 有不同的规定，一般来说包括</p>
-<p>aim, blog, country, dob (date of birth), email, fullname, gender,
-icq, image, jabber, language, msn, nickname, phone, postcode, skype,
-timezone, website, yahoo</p>
+<p>aim, blog, country, dob (date of birth), email, fullname, gender, icq, image, jabber, language, msn, nickname, phone, postcode, skype, timezone, website, yahoo</p>
 <p>等等。</p>
-<h1 id="那么oauth-又是怎么认证用户的">那么，OAuth
-又是怎么认证用户的？</h1>
-<p>与 OpenID 相比，网站想接入 OAuth
-要稍微麻烦点，网站需要先创建应用，拿到 Key 和 Secret ，才能接入 Provider
-。</p>
-<p>OAuth
-的授权过程并不是身份认证的过程，这一点需要特别清楚，网站走完OAuth
-流程并拿到用户的授权 token 后还需要通过 token
-调用相应的用户信息接口才能获得“唯一标识”，举个例子：</p>
-<p>我想通过新浪微博登录 example.com ， example.com 要先把我 redirect
-到新浪微博的授权页面，我通过微博帐号登录并授权后，页面跳回 example.com
-， example.com 拿到我的访问 token 后还要再调用一个接口来获得我的新浪会员
-UID ，这个 UID 就是新浪用户的“唯一标识”了。</p>
-<p>可以看出，OAuth 相对于 OpenID
-最大的区别就是，网站实际上是拿到了你的帐户访问权限继而确认你的身份，这是一个安全隐患，因为网站在拿到你的“唯一标识”的同时还拿到了一把你的账户的
-“临时钥匙”。至于网站会不会拿这把钥匙“干坏事”，这个只有站长心里清楚。同时
-OAuth 还比 OpenID 多了几个额外的请求步骤，登录所费时间一定是长于 OpenID
-的。</p>
+<h1 id="那么，OAuth-又是怎么认证用户的？"><a href="#那么，OAuth-又是怎么认证用户的？" class="headerlink" title="那么，OAuth 又是怎么认证用户的？"></a>那么，OAuth 又是怎么认证用户的？</h1><p>与 OpenID 相比，网站想接入 OAuth 要稍微麻烦点，网站需要先创建应用，拿到 Key 和 Secret ，才能接入 Provider 。</p>
+<p>OAuth 的授权过程并不是身份认证的过程，这一点需要特别清楚，网站走完OAuth 流程并拿到用户的授权 token 后还需要通过 token 调用相应的用户信息接口才能获得“唯一标识”，举个例子：</p>
+<p>我想通过新浪微博登录 example.com ， example.com 要先把我 redirect 到新浪微博的授权页面，我通过微博帐号登录并授权后，页面跳回 example.com ， example.com 拿到我的访问 token 后还要再调用一个接口来获得我的新浪会员 UID ，这个 UID 就是新浪用户的“唯一标识”了。</p>
+<p>可以看出，OAuth 相对于 OpenID 最大的区别就是，网站实际上是拿到了你的帐户访问权限继而确认你的身份，这是一个安全隐患，因为网站在拿到你的“唯一标识”的同时还拿到了一把你的账户的 “临时钥匙”。至于网站会不会拿这把钥匙“干坏事”，这个只有站长心里清楚。同时 OAuth 还比 OpenID 多了几个额外的请求步骤，登录所费时间一定是长于 OpenID 的。</p>
 <p>大多数的网民是没有这种意识的，他们对“通过XX登录”的认证过程中的提示早已视而不见：</p>
-<p>Weibo Login Prompt</p>
+<p> Weibo Login Prompt</p>
 <p>有多少人真正注意过左边的文字？</p>
-<p>Douban Login Prompt</p>
+<p> Douban Login Prompt</p>
 <p>豆瓣写的更清楚，XXX应用“希望操作你在豆瓣上的数据”而不是“希望使用你的豆瓣账号来登录XXX”</p>
-<h1 id="国内外主要服务商认证方式对比">国内外主要服务商认证方式对比</h1>
+<h1 id="国内外主要服务商认证方式对比"><a href="#国内外主要服务商认证方式对比" class="headerlink" title="国内外主要服务商认证方式对比"></a>国内外主要服务商认证方式对比</h1><div class="table-container">
 <table>
-<colgroup>
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-</colgroup>
 <thead>
-<tr class="header">
+<tr>
 <th>提供商</th>
 <th>认证方式</th>
 <th>认证后网站获得的权限</th>
@@ -374,68 +323,67 @@ OAuth 还比 OpenID 多了几个额外的请求步骤，登录所费时间一定
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>Google</td>
 <td>OpenID + OAuth</td>
 <td>如果使用OpenID，网站无法获得任何额外权限（包括获得你的Google账户名称），如果使用OAuth，网站须明确说明需要访问哪些服务的权限并经过用户逐项同意</td>
 <td>高</td>
 </tr>
-<tr class="even">
+<tr>
 <td>Facebook</td>
 <td>OAuth</td>
 <td>默认授权情况下只能读取你的公开信息（不包含E-Mail地址），如果网站需要更高级权限需要明确声明并经过用户逐项同意</td>
 <td>高</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>QQ空间</td>
 <td>OAuth</td>
 <td>默认授权情况下只能读取你的公开信息（不包含QQ号），如果网站需要更高级权限需要明确声明并经过用户逐项同意</td>
 <td>高</td>
 </tr>
-<tr class="even">
+<tr>
 <td>新浪微博</td>
 <td>OAuth</td>
 <td>默认授权情况下可以获得你的所有信息（私信及身份证号、姓名等除外），并可以你的身份操作绝大多数微博功能</td>
 <td>低</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>Windows Live</td>
 <td>OAuth</td>
 <td>默认授权情况下只能读取你的“唯一标识”，如果网站需要更高级权限需要明确声明并经过用户逐项同意，默认情况下基本类似于OpenID</td>
 <td>高</td>
 </tr>
-<tr class="even">
+<tr>
 <td>腾讯微博</td>
 <td>OpenID + OAuth</td>
-<td>如果使用OpenID，网站无法获得任何额外权限，如果使用OAuth，默认会获得用户所有操作的权限，除非应用明确声明只需要部分权限
-使用OpenID时， 高使用OAuth时，</td>
+<td>如果使用OpenID，网站无法获得任何额外权限，如果使用OAuth，默认会获得用户所有操作的权限，除非应用明确声明只需要部分权限    使用OpenID时， 高使用OAuth时，</td>
 <td>中</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>搜狐微博</td>
 <td>OAuth</td>
 <td>默认授权情况下可以获得你的绝大多数信息，并可以你的身份操作绝大多数微博功能</td>
 <td>低</td>
 </tr>
-<tr class="even">
+<tr>
 <td>网易微博</td>
 <td>OAuth</td>
 <td>默认授权情况下可以获得你的绝大多数信息，并可以你的身份操作绝大多数微博功能</td>
 <td>低</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>百度</td>
 <td>OAuth</td>
 <td>默认授权情况下只能读取你的公开信息（UID、百度帐户名），如果网站需要更高级权限需要明确声明并经过用户逐项同意</td>
 <td>高</td>
 </tr>
-<tr class="even">
+<tr>
 <td>人人</td>
 <td>OAuth</td>
 <td>默认授权情况下只能读取你的公开信息（UID、好友关系等），如果网站需要更高级权限需要明确声明并经过用户逐项同意</td>
 <td>高</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>开心网</td>
 <td>OAuth</td>
 <td>默认授权情况下只能读取你的公开信息，如果网站需要更高级权限需要明确声明并经过用户逐项同意</td>
@@ -443,10 +391,9 @@ OAuth 还比 OpenID 多了几个额外的请求步骤，登录所费时间一定
 </tr>
 </tbody>
 </table>
-<h1 id="总结">总结</h1>
-<p>总体来说，国外的网站都比较正规，第三方网站几乎无法获得任何私人信息，而国内网站对个人信息的保护水平高低不齐，某些网站甚至没有任何保护，新浪微博等网站的“第三方接入”，用一句话来说，不管你敢不敢用，我反正是不敢用。</p>
-<p>原文：
-https://www.idndx.com/2012/04/23/openid-vs-oauth-and-the-security-risk-of-oauth-login/</p>
+</div>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>总体来说，国外的网站都比较正规，第三方网站几乎无法获得任何私人信息，而国内网站对个人信息的保护水平高低不齐，某些网站甚至没有任何保护，新浪微博等网站的“第三方接入”，用一句话来说，不管你敢不敢用，我反正是不敢用。</p>
+<p>原文： <a target="_blank" rel="noopener" href="https://www.idndx.com/2012/04/23/openid-vs-oauth-and-the-security-risk-of-oauth-login/">https://www.idndx.com/2012/04/23/openid-vs-oauth-and-the-security-risk-of-oauth-login/</a></p>
 
     </div>
 

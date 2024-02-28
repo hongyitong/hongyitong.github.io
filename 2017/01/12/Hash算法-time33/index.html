@@ -290,24 +290,35 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <p><a
-target="_blank" rel="noopener" href="http://blog.csdn.net/v_JULY_v/article/details/6256463">散列表的应用</a></p>
-<p>涉及到数据查找比对，首先考虑到使用HashSet。HashSet最大的好处就是实现查找时间复杂度为O（1）。使用HashSet需要解决一个重要问题：冲突问题。对比研究了网上一些字符串哈希函数，发现几乎所有的流行的HashMap都采用了DJB
-Hash
-Function，俗称“Times33”算法。Times33的算法很简单，就是对字符串逐字符迭代乘以33，见下面算法原型:hash(i)=33*hash(i-1)+str[i]
-<code>c++ uint32_t time33(char const *str, int len)  &#123;          unsigned long  hash = 0;          for (int i = 0; i &lt; len; i++) &#123;              hash = hash *33 + (unsigned long) str[i];          &#125;          return hash;  &#125;</code>
-把乘法操作换成位操作(Java版)
-<code>java public String time33(String skey) &#123;         if (skey == null) return null;         int hash = 5381;         for (int i = 0, len = skey.length(); i &lt; len; ++i) &#123;             int cc = skey.charAt(i);             hash += (hash &lt;&lt; 5) + cc;         &#125;         hash &amp;= 0x7fffffff;         return String.valueOf(hash);     &#125;</code>
+        <p><a target="_blank" rel="noopener" href="http://blog.csdn.net/v_JULY_v/article/details/6256463">散列表的应用</a></p>
+<p>涉及到数据查找比对，首先考虑到使用HashSet。HashSet最大的好处就是实现查找时间复杂度为O（1）。使用HashSet需要解决一个重要问题：冲突问题。对比研究了网上一些字符串哈希函数，发现几乎所有的流行的HashMap都采用了DJB Hash Function，俗称“Times33”算法。Times33的算法很简单，就是对字符串逐字符迭代乘以33，见下面算法原型:hash(i)=33*hash(i-1)+str[i]</p>
+<pre><code class="lang-c++">uint32_t time33(char const *str, int len) 
+&#123; 
+        unsigned long  hash = 0; 
+        for (int i = 0; i &lt; len; i++) &#123; 
+            hash = hash *33 + (unsigned long) str[i]; 
+        &#125; 
+        return hash; 
+&#125;
+</code></pre>
+<p>把乘法操作换成位操作(Java版)</p>
+<pre><code class="lang-java">public String time33(String skey) &#123;
+        if (skey == null) return null;
+        int hash = 5381;
+        for (int i = 0, len = skey.length(); i &lt; len; ++i) &#123;
+            int cc = skey.charAt(i);
+            hash += (hash &lt;&lt; 5) + cc;
+        &#125;
+        hash &amp;= 0x7fffffff;
+        return String.valueOf(hash);
+    &#125;
+</code></pre>
 <span id="more"></span>
-<strong>Time33在效率和随机性两方面上俱佳</strong>。对于一个Hash函数，评价其优劣的标准应为随机性，即对任意一组标本，进入Hash表每一个单元（cell）之概率的平均程度，因为这个概率越平均，数据在表中的分布就越平均，表的空间利用率就越高。</p>
-<p><strong>为什么初始值是5381？</strong>5381（001 010 100 000
-101），据说hash后的分布更好一些。</p>
-<p><strong>如何实现乘除运算和位运算之间的转化： </strong> a&lt;&lt;n
-在数值上等同于 a<em>2^n a&gt;&gt;n 在数值上等同于 a/2^n 比如 a</em>33
-(33=2^5+1)用位运算可以写成 ((a&lt;&lt;5)+a)</p>
-<p><strong>其它倍数</strong> Ngix使用的是 time31 Tokyo Cabinet使用的是
-time37 <strong>Bob在他的文章说，小写英文词汇适合33,
-大小写混合使用65。time33比较适合的是英文词汇的hash.</strong></p>
+<p><strong>Time33在效率和随机性两方面上俱佳</strong>。对于一个Hash函数，评价其优劣的标准应为随机性，即对任意一组标本，进入Hash表每一个单元（cell）之概率的平均程度，因为这个概率越平均，数据在表中的分布就越平均，表的空间利用率就越高。</p>
+<p><strong>为什么初始值是5381？</strong>5381（001 010 100 000 101），据说hash后的分布更好一些。</p>
+<p><strong>如何实现乘除运算和位运算之间的转化： </strong><br>a&lt;<n  在数值上等同于 a*2^n 
+a>&gt;n  在数值上等同于 a/2^n<br>比如 a*33 (33=2^5+1)用位运算可以写成 ((a&lt;&lt;5)+a) </p>
+<p><strong>其它倍数</strong><br>Ngix使用的是 time31<br>Tokyo Cabinet使用的是 time37<br><strong>Bob在他的文章说，小写英文词汇适合33, 大小写混合使用65。time33比较适合的是英文词汇的hash.</strong></p>
 
     </div>
 
