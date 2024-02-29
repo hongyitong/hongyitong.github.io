@@ -20,12 +20,12 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="讲LSM树之前，需要提下三种基本的存储引擎，这样才能清楚LSM树的由来： 1、哈希存储引擎是哈希表的持久化实现，支持增、删、改以及随机读取操作，但不支持顺序扫描，对应的存储系统为key-value存储系统。对于key-value的插入以及查询，哈希表的复杂度都是O(1)，明显比树的操作O(n)快,如果不需要有序的遍历数据，哈希表就是your Mr.Right 2、B树存储引擎是B树的持久化实现，不">
+    <meta name="description" content="讲LSM树之前，需要提下三种基本的存储引擎，这样才能清楚LSM树的由来： ### 1、哈希存储引擎 是哈希表的持久化实现，支持增、删、改以及随机读取操作，但不支持顺序扫描，对应的存储系统为key-value存储系统。对于key-value的插入以及查询，哈希表的复杂度都是O(1)，明显比树的操作O(n)快,如果不需要有序的遍历数据，哈希表就是your Mr.Right ### 2、B树存储引擎 是">
 <meta property="og:type" content="article">
 <meta property="og:title" content="LSM树">
 <meta property="og:url" content="http://hongyitong.github.io/2017/01/05/LSM%E6%A0%91/index.html">
 <meta property="og:site_name" content="忆桐之家的博客">
-<meta property="og:description" content="讲LSM树之前，需要提下三种基本的存储引擎，这样才能清楚LSM树的由来： 1、哈希存储引擎是哈希表的持久化实现，支持增、删、改以及随机读取操作，但不支持顺序扫描，对应的存储系统为key-value存储系统。对于key-value的插入以及查询，哈希表的复杂度都是O(1)，明显比树的操作O(n)快,如果不需要有序的遍历数据，哈希表就是your Mr.Right 2、B树存储引擎是B树的持久化实现，不">
+<meta property="og:description" content="讲LSM树之前，需要提下三种基本的存储引擎，这样才能清楚LSM树的由来： ### 1、哈希存储引擎 是哈希表的持久化实现，支持增、删、改以及随机读取操作，但不支持顺序扫描，对应的存储系统为key-value存储系统。对于key-value的插入以及查询，哈希表的复杂度都是O(1)，明显比树的操作O(n)快,如果不需要有序的遍历数据，哈希表就是your Mr.Right ### 2、B树存储引擎 是">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2017-01-04T16:00:00.000Z">
 <meta property="article:modified_time" content="2017-07-12T06:14:37.000Z">
@@ -137,7 +137,7 @@
 
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+    <div class="sidebar-inner sidebar-overview-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -150,7 +150,6 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81%E5%93%88%E5%B8%8C%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E"><span class="nav-number">1.</span> <span class="nav-text">1、哈希存储引擎</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81B%E6%A0%91%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E"><span class="nav-number">2.</span> <span class="nav-text">2、B树存储引擎</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E3%80%81LSM%E6%A0%91%EF%BC%88Log-Structured-Merge-Tree%EF%BC%89%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E"><span class="nav-number">3.</span> <span class="nav-text">3、LSM树（Log-Structured Merge Tree）存储引擎</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4%E3%80%81HBase%E5%AD%98%E5%82%A8%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B8%BB%E8%A6%81%E6%80%9D%E6%83%B3"><span class="nav-number">4.</span> <span class="nav-text">4、HBase存储的设计主要思想</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -291,11 +290,19 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <p>讲LSM树之前，需要提下三种基本的存储引擎，这样才能清楚LSM树的由来：</p>
-<h3 id="1、哈希存储引擎"><a href="#1、哈希存储引擎" class="headerlink" title="1、哈希存储引擎"></a>1、哈希存储引擎</h3><p>是哈希表的持久化实现，支持增、删、改以及随机读取操作，<strong>但不支持顺序扫描</strong>，对应的存储系统为key-value存储系统。对于key-value的插入以及查询，哈希表的复杂度都是O(1)，明显比树的操作O(n)快,如果不需要有序的遍历数据，哈希表就是your Mr.Right</p>
-<h3 id="2、B树存储引擎"><a href="#2、B树存储引擎" class="headerlink" title="2、B树存储引擎"></a>2、B树存储引擎</h3><p>是B树的持久化实现，不仅支持单条记录的增、删、读、改操作，<strong>还支持顺序扫描（B+树的叶子节点之间的指针），对应的存储系统就是关系数据库（Mysql等）。</strong></p>
-<h3 id="3、LSM树（Log-Structured-Merge-Tree）存储引擎"><a href="#3、LSM树（Log-Structured-Merge-Tree）存储引擎" class="headerlink" title="3、LSM树（Log-Structured Merge Tree）存储引擎"></a>3、LSM树（Log-Structured Merge Tree）存储引擎</h3><p>和B树存储引擎一样，同样支持增、删、读、改、顺序扫描操作。<strong>而且通过批量存储技术规避磁盘随机写入问题。当然凡事有利有弊，LSM树和B+树相比，LSM树牺牲了部分读性能，用来大幅提高写性能。</strong><br>通过以上的分析，应该知道LSM树的由来了，<strong>LSM树的设计思想非常朴素：将对数据的修改增量保持在内存中，达到指定的大小限制后将这些修改操作批量写入磁盘，不过读取的时候稍微麻烦，需要合并磁盘中历史数据和内存中最近修改操作，所以写入性能大大提升，读取时可能需要先看是否命中内存，否则需要访问较多的磁盘文件。极端的说，基于LSM树实现的HBase的写性能比Mysql高了一个数量级，读性能低了一个数量级。</strong><br>LSM树原理把一棵大树拆分成N棵小树，它首先写入内存中，随着小树越来越大，内存中的小树会flush到磁盘中，磁盘中的树定期可以做merge操作，合并成一棵大树，以优化读性能。</p>
-<h3 id="4、HBase存储的设计主要思想"><a href="#4、HBase存储的设计主要思想" class="headerlink" title="4、HBase存储的设计主要思想"></a>4、HBase存储的设计主要思想</h3><p>因为小树先写到内存中，<strong>为了防止内存数据丢失，写内存的同时需要暂时持久化到磁盘，对应了HBase的MemStore和HLog</strong><br>MemStore上的树达到一定大小之后，需要flush到HRegion磁盘中（一般是Hadoop DataNode），这样MemStore就变成了DataNode上的磁盘文件StoreFile，定期HRegionServer对DataNode的数据做merge操作，彻底删除无效空间，多棵小树在这个时机合并成大树，来增强读性能。</p>
+        <p>讲LSM树之前，需要提下三种基本的存储引擎，这样才能清楚LSM树的由来：
+### 1、哈希存储引擎<br />
+是哈希表的持久化实现，支持增、删、改以及随机读取操作，<strong>但不支持顺序扫描</strong>，对应的存储系统为key-value存储系统。对于key-value的插入以及查询，哈希表的复杂度都是O(1)，明显比树的操作O(n)快,如果不需要有序的遍历数据，哈希表就是your
+Mr.Right ### 2、B树存储引擎
+是B树的持久化实现，不仅支持单条记录的增、删、读、改操作，<strong>还支持顺序扫描（B+树的叶子节点之间的指针），对应的存储系统就是关系数据库（Mysql等）。</strong>
+### 3、LSM树（Log-Structured Merge Tree）存储引擎
+和B树存储引擎一样，同样支持增、删、读、改、顺序扫描操作。<strong>而且通过批量存储技术规避磁盘随机写入问题。当然凡事有利有弊，LSM树和B+树相比，LSM树牺牲了部分读性能，用来大幅提高写性能。</strong>
+通过以上的分析，应该知道LSM树的由来了，<strong>LSM树的设计思想非常朴素：将对数据的修改增量保持在内存中，达到指定的大小限制后将这些修改操作批量写入磁盘，不过读取的时候稍微麻烦，需要合并磁盘中历史数据和内存中最近修改操作，所以写入性能大大提升，读取时可能需要先看是否命中内存，否则需要访问较多的磁盘文件。极端的说，基于LSM树实现的HBase的写性能比Mysql高了一个数量级，读性能低了一个数量级。</strong>
+LSM树原理把一棵大树拆分成N棵小树，它首先写入内存中，随着小树越来越大，内存中的小树会flush到磁盘中，磁盘中的树定期可以做merge操作，合并成一棵大树，以优化读性能。
+### 4、HBase存储的设计主要思想
+因为小树先写到内存中，<strong>为了防止内存数据丢失，写内存的同时需要暂时持久化到磁盘，对应了HBase的MemStore和HLog</strong>
+MemStore上的树达到一定大小之后，需要flush到HRegion磁盘中（一般是Hadoop
+DataNode），这样MemStore就变成了DataNode上的磁盘文件StoreFile，定期HRegionServer对DataNode的数据做merge操作，彻底删除无效空间，多棵小树在这个时机合并成大树，来增强读性能。</p>
 
     </div>
 

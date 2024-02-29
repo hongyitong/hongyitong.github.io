@@ -20,12 +20,12 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="1、WebServer、数据库、文件从单一到分离此时的ORM工具、事务控制手段、简化CRUD是重要的关注点。职责分离，针对需求不同对服务器进行不同的配置（或采购），对应将依赖程度较高。 2、页面缓存、数据缓存为了提高响应速度和避免不必要的请求，增加了页面缓存；为了应对有限的I&#x2F;O资源，增加了数据缓存。在对数据修改时，同时修改缓存内容。随着数据越来越多，缓存也逐渐变成了分布式（Memcached、R">
+    <meta name="description" content="1、WebServer、数据库、文件从单一到分离 此时的ORM工具、事务控制手段、简化CRUD是重要的关注点。职责分离，针对需求不同对服务器进行不同的配置（或采购），对应将依赖程度较高。 # 2、页面缓存、数据缓存 为了提高响应速度和避免不必要的请求，增加了页面缓存；为了应对有限的I&#x2F;O资源，增加了数据缓存。在对数据修改时，同时修改缓存内容。 随着数据越来越多，缓存也逐渐变成了分布式（Memcac">
 <meta property="og:type" content="article">
 <meta property="og:title" content="服务化演进过程之技术演进（性能提升之路）">
 <meta property="og:url" content="http://hongyitong.github.io/2016/12/15/%E6%9C%8D%E5%8A%A1%E5%8C%96%E6%BC%94%E8%BF%9B%E8%BF%87%E7%A8%8B%E4%B9%8B%E6%8A%80%E6%9C%AF%E6%BC%94%E8%BF%9B/index.html">
 <meta property="og:site_name" content="忆桐之家的博客">
-<meta property="og:description" content="1、WebServer、数据库、文件从单一到分离此时的ORM工具、事务控制手段、简化CRUD是重要的关注点。职责分离，针对需求不同对服务器进行不同的配置（或采购），对应将依赖程度较高。 2、页面缓存、数据缓存为了提高响应速度和避免不必要的请求，增加了页面缓存；为了应对有限的I&#x2F;O资源，增加了数据缓存。在对数据修改时，同时修改缓存内容。随着数据越来越多，缓存也逐渐变成了分布式（Memcached、R">
+<meta property="og:description" content="1、WebServer、数据库、文件从单一到分离 此时的ORM工具、事务控制手段、简化CRUD是重要的关注点。职责分离，针对需求不同对服务器进行不同的配置（或采购），对应将依赖程度较高。 # 2、页面缓存、数据缓存 为了提高响应速度和避免不必要的请求，增加了页面缓存；为了应对有限的I&#x2F;O资源，增加了数据缓存。在对数据修改时，同时修改缓存内容。 随着数据越来越多，缓存也逐渐变成了分布式（Memcac">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2016-12-14T16:00:00.000Z">
 <meta property="article:modified_time" content="2017-07-12T02:38:21.000Z">
@@ -148,7 +148,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1%E3%80%81WebServer%E3%80%81%E6%95%B0%E6%8D%AE%E5%BA%93%E3%80%81%E6%96%87%E4%BB%B6%E4%BB%8E%E5%8D%95%E4%B8%80%E5%88%B0%E5%88%86%E7%A6%BB"><span class="nav-number">1.</span> <span class="nav-text">1、WebServer、数据库、文件从单一到分离</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2%E3%80%81%E9%A1%B5%E9%9D%A2%E7%BC%93%E5%AD%98%E3%80%81%E6%95%B0%E6%8D%AE%E7%BC%93%E5%AD%98"><span class="nav-number">2.</span> <span class="nav-text">2、页面缓存、数据缓存</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3%E3%80%81WebServer%E9%9B%86%E7%BE%A4"><span class="nav-number">3.</span> <span class="nav-text">3、WebServer集群</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4%E3%80%81%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8%E4%B8%8E%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB"><span class="nav-number">4.</span> <span class="nav-text">4、分库分表与读写分离</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5%E3%80%81NoSQL%E4%B8%8E%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E"><span class="nav-number">5.</span> <span class="nav-text">5、NoSQL与搜索引擎</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#webserver%E6%95%B0%E6%8D%AE%E5%BA%93%E6%96%87%E4%BB%B6%E4%BB%8E%E5%8D%95%E4%B8%80%E5%88%B0%E5%88%86%E7%A6%BB"><span class="nav-number">1.</span> <span class="nav-text">1、WebServer、数据库、文件从单一到分离</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -289,11 +289,37 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h1 id="1、WebServer、数据库、文件从单一到分离"><a href="#1、WebServer、数据库、文件从单一到分离" class="headerlink" title="1、WebServer、数据库、文件从单一到分离"></a>1、WebServer、数据库、文件从单一到分离</h1><p>此时的ORM工具、事务控制手段、简化CRUD是重要的关注点。职责分离，针对需求不同对服务器进行不同的配置（或采购），对应将依赖程度较高。</p>
-<h1 id="2、页面缓存、数据缓存"><a href="#2、页面缓存、数据缓存" class="headerlink" title="2、页面缓存、数据缓存"></a>2、页面缓存、数据缓存</h1><p>为了提高响应速度和避免不必要的请求，增加了页面缓存；为了应对有限的I/O资源，增加了数据缓存。在对数据修改时，同时修改缓存内容。<br>随着数据越来越多，缓存也逐渐变成了分布式（Memcached、Redis等等），对于分布式缓存的使用主要存在几种情况：<br><span id="more"></span><br>1）每台缓存Server存储部分数据（按Hash、取余、一致性Hash进行key的分配）；<br>2）缓存可以分主备模式（优势时down掉一台机器不会影响key分布，劣势是会存在脏数据以及是否需要双写及双写的损耗）；<br>3）缓存是否需要持久化（即保证缓存服务重启后数据仍然存在），这对控制型的缓存数据尤为重要；<br>4）缓存数据Key的规则，需要确保在数据结构变化时，程序不会读到脏数据；<br>5）对于缓存数据的超时时间，可设置全局默认值，特殊情况特殊处理（需要与Key规则结合设定）。</p>
-<h1 id="3、WebServer集群"><a href="#3、WebServer集群" class="headerlink" title="3、WebServer集群"></a>3、WebServer集群</h1><p>随着WebServer的增加，就需要进行负载均衡及状态信息同步（主要是用户的登录信息），这就需要在架构上对信息同步进行支持（比如将登陆信息放在缓存中或者通过Cookie判断）。</p>
-<h1 id="4、分库分表与读写分离"><a href="#4、分库分表与读写分离" class="headerlink" title="4、分库分表与读写分离"></a>4、分库分表与读写分离</h1><p>分库分表、读写分离都需要架构的支持，无论是在代码的数据访问层处理还是单独的数据库中间层。<br>在处理分库分表、读写分离时，最好要做到对开发人员的透明。此时需要制定通用的规则、规范（针对特殊情况需要有相应的处理方案）以保证开发人员的快速开发与程序的正确运行。<br>分库分表规则的设定一定要参考业务，不同的业务类型分库分表的规则也不尽相同。以人为中心的业务和以地区为中心的业务，其规则一定不同。规则的设置一定 要在架构中支持，避免通过业务代码控制。在架构中支持的规则，一定要通过配置方式实现，便于修改及管理（关于配置管理的内容以后单独说明）。</p>
-<h1 id="5、NoSQL与搜索引擎"><a href="#5、NoSQL与搜索引擎" class="headerlink" title="5、NoSQL与搜索引擎"></a>5、NoSQL与搜索引擎</h1><p>关系型数据库存储结构简单、查询速度慢，先天不适合处理复杂类型数据。NoSQL（Not Only SQL）的诞生在一定程度上缓解了这种紧张的局面（为什么是一定程度呢？）。<br>下面是关于NoSQL的一些简单说明，用以解释为什么会使用NoSQL。<br>NoSQL数据库主要分为四类：键-值存储数据库（如Redis）、列存储数据库（如HBase）、文档数据库（如MongoDB）、图形数据库（如 Neo4J）。每种数据库的特点、适用场景有所不同，具体内容可查找相关文档查看。<strong>NoSQL因为去掉了关系数据库的关系型特性，所以非常容易扩展。</strong><br>一般MySQL使用的是Query Cache，当表更新后Cache就会失效，Cache性能不高。而NoSQL的Cache是记录级的，粒度更细、性能更高。另外NoSQL无须事先创建 字段，可随意存储自定义数据格式，这也是其广泛应用的一个原因。NoSQL也有其不利的一面，历史短暂、在稳定性上与关系数据库（MySQL）比还是稍有 逊色。<br>搜索引擎的出现大幅度的提高站内搜索速度，提升了用户体验，尤其是各种中文分词插件/工具的出现，让站内中文搜索结果的准确性大幅度提高，同时也缩短了用户在查找内容时的时间。</p>
+        <h1
+id="webserver数据库文件从单一到分离">1、WebServer、数据库、文件从单一到分离</h1>
+<p>此时的ORM工具、事务控制手段、简化CRUD是重要的关注点。职责分离，针对需求不同对服务器进行不同的配置（或采购），对应将依赖程度较高。
+# 2、页面缓存、数据缓存
+为了提高响应速度和避免不必要的请求，增加了页面缓存；为了应对有限的I/O资源，增加了数据缓存。在对数据修改时，同时修改缓存内容。
+随着数据越来越多，缓存也逐渐变成了分布式（Memcached、Redis等等），对于分布式缓存的使用主要存在几种情况：
+<span id="more"></span>
+1）每台缓存Server存储部分数据（按Hash、取余、一致性Hash进行key的分配）；
+2）缓存可以分主备模式（优势时down掉一台机器不会影响key分布，劣势是会存在脏数据以及是否需要双写及双写的损耗）；
+3）缓存是否需要持久化（即保证缓存服务重启后数据仍然存在），这对控制型的缓存数据尤为重要；
+4）缓存数据Key的规则，需要确保在数据结构变化时，程序不会读到脏数据；
+5）对于缓存数据的超时时间，可设置全局默认值，特殊情况特殊处理（需要与Key规则结合设定）。
+# 3、WebServer集群
+随着WebServer的增加，就需要进行负载均衡及状态信息同步（主要是用户的登录信息），这就需要在架构上对信息同步进行支持（比如将登陆信息放在缓存中或者通过Cookie判断）。
+# 4、分库分表与读写分离
+分库分表、读写分离都需要架构的支持，无论是在代码的数据访问层处理还是单独的数据库中间层。
+在处理分库分表、读写分离时，最好要做到对开发人员的透明。此时需要制定通用的规则、规范（针对特殊情况需要有相应的处理方案）以保证开发人员的快速开发与程序的正确运行。
+分库分表规则的设定一定要参考业务，不同的业务类型分库分表的规则也不尽相同。以人为中心的业务和以地区为中心的业务，其规则一定不同。规则的设置一定
+要在架构中支持，避免通过业务代码控制。在架构中支持的规则，一定要通过配置方式实现，便于修改及管理（关于配置管理的内容以后单独说明）。
+# 5、NoSQL与搜索引擎
+关系型数据库存储结构简单、查询速度慢，先天不适合处理复杂类型数据。NoSQL（Not
+Only
+SQL）的诞生在一定程度上缓解了这种紧张的局面（为什么是一定程度呢？）。
+下面是关于NoSQL的一些简单说明，用以解释为什么会使用NoSQL。
+NoSQL数据库主要分为四类：键-值存储数据库（如Redis）、列存储数据库（如HBase）、文档数据库（如MongoDB）、图形数据库（如
+Neo4J）。每种数据库的特点、适用场景有所不同，具体内容可查找相关文档查看。<strong>NoSQL因为去掉了关系数据库的关系型特性，所以非常容易扩展。</strong>
+一般MySQL使用的是Query
+Cache，当表更新后Cache就会失效，Cache性能不高。而NoSQL的Cache是记录级的，粒度更细、性能更高。另外NoSQL无须事先创建
+字段，可随意存储自定义数据格式，这也是其广泛应用的一个原因。NoSQL也有其不利的一面，历史短暂、在稳定性上与关系数据库（MySQL）比还是稍有
+逊色。
+搜索引擎的出现大幅度的提高站内搜索速度，提升了用户体验，尤其是各种中文分词插件/工具的出现，让站内中文搜索结果的准确性大幅度提高，同时也缩短了用户在查找内容时的时间。</p>
 
     </div>
 

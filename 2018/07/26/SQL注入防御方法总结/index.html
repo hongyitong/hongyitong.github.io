@@ -20,12 +20,12 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="永远不相信用户的输入。需要对用户的输入进行处理，只允许输入合法的值，其它值一概过滤掉。 SQL 注入是一类危害极大的攻击形式。虽然危害很大，但是防御却远远没有XSS那么困难。SQL 注入可以参见：https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;SQL_injectionSQL 注入漏洞存在的原因，就是拼接 SQL 参数。也就是将用于输入的查询参数，直接拼接在 SQL 语句中，导致了SQ">
+    <meta name="description" content="永远不相信用户的输入。需要对用户的输入进行处理，只允许输入合法的值，其它值一概过滤掉。 SQL 注入是一类危害极大的攻击形式。虽然危害很大，但是防御却远远没有XSS那么困难。 SQL 注入可以参见：https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;SQL_injection SQL 注入漏洞存在的原因，就是拼接 SQL 参数。也就是将用于输入的查询参数，直接拼接在 SQL 语句中，导致了">
 <meta property="og:type" content="article">
 <meta property="og:title" content="SQL注入防御方法总结">
 <meta property="og:url" content="http://hongyitong.github.io/2018/07/26/SQL%E6%B3%A8%E5%85%A5%E9%98%B2%E5%BE%A1%E6%96%B9%E6%B3%95%E6%80%BB%E7%BB%93/index.html">
 <meta property="og:site_name" content="忆桐之家的博客">
-<meta property="og:description" content="永远不相信用户的输入。需要对用户的输入进行处理，只允许输入合法的值，其它值一概过滤掉。 SQL 注入是一类危害极大的攻击形式。虽然危害很大，但是防御却远远没有XSS那么困难。SQL 注入可以参见：https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;SQL_injectionSQL 注入漏洞存在的原因，就是拼接 SQL 参数。也就是将用于输入的查询参数，直接拼接在 SQL 语句中，导致了SQ">
+<meta property="og:description" content="永远不相信用户的输入。需要对用户的输入进行处理，只允许输入合法的值，其它值一概过滤掉。 SQL 注入是一类危害极大的攻击形式。虽然危害很大，但是防御却远远没有XSS那么困难。 SQL 注入可以参见：https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;SQL_injection SQL 注入漏洞存在的原因，就是拼接 SQL 参数。也就是将用于输入的查询参数，直接拼接在 SQL 语句中，导致了">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2018-07-25T16:00:00.000Z">
 <meta property="article:modified_time" content="2018-08-04T00:44:53.000Z">
@@ -152,7 +152,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E6%BC%94%E7%A4%BA%E4%B8%8B%E7%BB%8F%E5%85%B8%E7%9A%84SQL%E6%B3%A8%E5%85%A5"><span class="nav-number">1.</span> <span class="nav-text">1. 演示下经典的SQL注入</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-sql-%E6%B3%A8%E5%85%A5%E7%9A%84%E5%8E%9F%E5%9B%A0"><span class="nav-number">2.</span> <span class="nav-text">2. sql 注入的原因</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-sql%E6%B3%A8%E5%85%A5%E7%9A%84%E9%98%B2%E5%BE%A1"><span class="nav-number">3.</span> <span class="nav-text">3. sql注入的防御</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A1%86%E6%9E%B6%E7%9A%84%E8%83%BD%E5%8A%9B"><span class="nav-number">4.</span> <span class="nav-text">框架的能力</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#sql-%E6%B3%A8%E5%85%A5%E7%9A%84%E5%8E%9F%E5%9B%A0"><span class="nav-number">1.</span> <span class="nav-text">2. sql 注入的原因</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#sql%E6%B3%A8%E5%85%A5%E7%9A%84%E9%98%B2%E5%BE%A1"><span class="nav-number">2.</span> <span class="nav-text">3. sql注入的防御</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A1%86%E6%9E%B6%E7%9A%84%E8%83%BD%E5%8A%9B"><span class="nav-number">3.</span> <span class="nav-text">框架的能力</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -294,13 +294,58 @@
     
     <div class="post-body" itemprop="articleBody">
         <p><strong>永远不相信用户的输入。需要对用户的输入进行处理，只允许输入合法的值，其它值一概过滤掉。</strong></p>
-<p>SQL 注入是一类危害极大的攻击形式。虽然危害很大，但是防御却远远没有XSS那么困难。<br>SQL 注入可以参见：<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/SQL_injection">https://en.wikipedia.org/wiki/SQL_injection</a><br><strong>SQL 注入漏洞存在的原因，就是拼接 SQL 参数。也就是将用于输入的查询参数，直接拼接在 SQL 语句中，导致了SQL 注入漏洞。</strong></p>
-<h1 id="1-演示下经典的SQL注入"><a href="#1-演示下经典的SQL注入" class="headerlink" title="1. 演示下经典的SQL注入"></a>1. 演示下经典的SQL注入</h1><p>我们看到：select id,no from user where id=2;<br>如果该语句是通过sql字符串拼接得到的，比如： String sql = “select id,no from user where id=” + id;<br>其中的 id 是一个用户输入的参数，那么，如果用户输入的是 2， 那么上面看到查到了一条数据，如果用户输入的是 2 or 1=1 进行sql注入攻击,<br>那么看到，上面的语句(select id,no from user where id=2 or 1=1;)将user表中的所有记录都查出来了。<br>这就是典型的sql注入。<br><span id="more"></span><br>再看一列：<br>我们看到通过 sql 注入能够直接将表 sqlinject 删除掉！可见其危害！</p>
-<h1 id="2-sql-注入的原因"><a href="#2-sql-注入的原因" class="headerlink" title="2. sql 注入的原因"></a>2. sql 注入的原因</h1><p><strong>sql注入的原因，表面上说是因为 拼接字符串，构成sql语句，没有使用 sql语句预编译，绑定变量。<br>但是更深层次的原因是，将用户输入的字符串，当成了 “sql语句” 来执行。</strong><br>比如上面的 String sql = “select id,no from user where id=” + id;<br>我们希望用户输入的 id 的值，仅仅作为一个字符串字面值，传入数据库执行，但是当输入了： 2 or 1=1 时，其中的 or 1=1 并没有作为 where id= 的字面值，而是作为了 sql语句 来执行的。所以其本质是将用户的输入的数据，作为了命令来执行。</p>
-<h1 id="3-sql注入的防御"><a href="#3-sql注入的防御" class="headerlink" title="3. sql注入的防御"></a>3. sql注入的防御</h1><p>1&gt; 基本上大家都知道 <strong>采用sql语句预编译和绑定变量，是防御sql注入的最佳方法。</strong>但是其中的深层次原因就不见得都理解了。<br>        String sql = “select id, no from user where id=?”;<br>        PreparedStatement ps = conn.prepareStatement(sql);<br>        ps.setInt(1, id);<br>        ps.executeQuery();<br>如上所示，就是典型的采用 sql语句预编译和绑定变量 。为什么这样就可以防止sql 注入呢？<br>其原因就是：采用了PreparedStatement，就会将sql语句：”select id, no from user where id=?” 预先编译好，也就是SQL引擎会预先进行语法分析，产生语法树，生成执行计划，也就是说，后面你输入的参数，无论你输入的是什么，都不会影响该sql语句的 语法结构了，因为语法分析已经完成了，而语法分析主要是分析sql命令，比如 select ,from ,where ,and, or ,order by 等等。所以即使你后面输入了这些sql命令，也不会被当成sql命令来执行了，因为这些sql命令的执行， 必须先的通过语法分析，生成执行计划，既然语法分析已经完成，已经预编译过了，那么后面输入的参数，是绝对不可能作为sql命令来执行的，只会被当做字符串字面值参数。所以sql语句预编译可以防御sql注入。</p>
-<p>2&gt; <strong>但是不是所有场景都能够采用 sql语句预编译，有一些场景必须的采用 字符串拼接的方式，此时，我们严格检查参数的数据类型，还有可以使用一些安全函数，来方式sql注入。</strong><br>比如 String sql = “select id,no from user where id=” + id;</p>
-<p><strong>在接收到用户输入的参数时，我们就严格检查 id，只能是int型。复杂情况可以使用正则表达式来判断。这样也是可以防止sql注入的。</strong><br>安全函数的使用，比如：<br>        MySQLCodec codec = new MySQLCodec(Mode.STANDARD);<br>        name = ESAPI.encoder().encodeForSQL(codec, name);<br>        String sql = “select id,no from user where name=” + name;<br>ESAPI.encoder().encodeForSQL(codec, name)<br>该函数会将 name 中包含的一些特殊字符进行编码，这样 sql 引擎就不会将name中的字符串当成sql命令来进行语法分析了。</p>
-<h1 id="框架的能力"><a href="#框架的能力" class="headerlink" title="框架的能力"></a>框架的能力</h1><p>实际项目中，一般我们都是采用各种的框架，比如ibatis, hibernate,mybatis等等。他们一般也默认就是sql预编译的。对于ibatis/mybatis，如果使用的是 #{name}形式的，那么就是sql预编译，使用 ${name} 就不是sql预编译的。</p>
+<p>SQL
+注入是一类危害极大的攻击形式。虽然危害很大，但是防御却远远没有XSS那么困难。
+SQL 注入可以参见：https://en.wikipedia.org/wiki/SQL_injection
+<strong>SQL 注入漏洞存在的原因，就是拼接 SQL
+参数。也就是将用于输入的查询参数，直接拼接在 SQL 语句中，导致了SQL
+注入漏洞。</strong> # 1. 演示下经典的SQL注入 我们看到：select id,no from
+user where id=2; 如果该语句是通过sql字符串拼接得到的，比如： String sql
+= "select id,no from user where id=" + id; 其中的 id
+是一个用户输入的参数，那么，如果用户输入的是 2，
+那么上面看到查到了一条数据，如果用户输入的是 2 or 1=1 进行sql注入攻击,
+那么看到，上面的语句(select id,no from user where id=2 or
+1=1;)将user表中的所有记录都查出来了。 这就是典型的sql注入。 <span id="more"></span>
+再看一列： 我们看到通过 sql 注入能够直接将表 sqlinject
+删除掉！可见其危害！</p>
+<h1 id="sql-注入的原因">2. sql 注入的原因</h1>
+<p><strong>sql注入的原因，表面上说是因为
+拼接字符串，构成sql语句，没有使用 sql语句预编译，绑定变量。
+但是更深层次的原因是，将用户输入的字符串，当成了 “sql语句”
+来执行。</strong> 比如上面的 String sql = "select id,no from user where
+id=" + id; 我们希望用户输入的 id
+的值，仅仅作为一个字符串字面值，传入数据库执行，但是当输入了： 2 or 1=1
+时，其中的 or 1=1 并没有作为 where id= 的字面值，而是作为了 sql语句
+来执行的。所以其本质是将用户的输入的数据，作为了命令来执行。</p>
+<h1 id="sql注入的防御">3. sql注入的防御</h1>
+<p>1&gt; 基本上大家都知道
+<strong>采用sql语句预编译和绑定变量，是防御sql注入的最佳方法。</strong>但是其中的深层次原因就不见得都理解了。
+String sql = "select id, no from user where id=?"; PreparedStatement ps
+= conn.prepareStatement(sql); ps.setInt(1, id); ps.executeQuery();
+如上所示，就是典型的采用 sql语句预编译和绑定变量
+。为什么这样就可以防止sql 注入呢？
+其原因就是：采用了PreparedStatement，就会将sql语句："select id, no from
+user where id=?"
+预先编译好，也就是SQL引擎会预先进行语法分析，产生语法树，生成执行计划，也就是说，后面你输入的参数，无论你输入的是什么，都不会影响该sql语句的
+语法结构了，因为语法分析已经完成了，而语法分析主要是分析sql命令，比如
+select ,from ,where ,and, or ,order by
+等等。所以即使你后面输入了这些sql命令，也不会被当成sql命令来执行了，因为这些sql命令的执行，
+必须先的通过语法分析，生成执行计划，既然语法分析已经完成，已经预编译过了，那么后面输入的参数，是绝对不可能作为sql命令来执行的，只会被当做字符串字面值参数。所以sql语句预编译可以防御sql注入。</p>
+<p>2&gt; <strong>但是不是所有场景都能够采用
+sql语句预编译，有一些场景必须的采用
+字符串拼接的方式，此时，我们严格检查参数的数据类型，还有可以使用一些安全函数，来方式sql注入。</strong>
+比如 String sql = "select id,no from user where id=" + id;</p>
+<p><strong>在接收到用户输入的参数时，我们就严格检查
+id，只能是int型。复杂情况可以使用正则表达式来判断。这样也是可以防止sql注入的。</strong>
+安全函数的使用，比如： MySQLCodec codec = new MySQLCodec(Mode.STANDARD);
+name = ESAPI.encoder().encodeForSQL(codec, name); String sql = "select
+id,no from user where name=" + name; ESAPI.encoder().encodeForSQL(codec,
+name) 该函数会将 name 中包含的一些特殊字符进行编码，这样 sql
+引擎就不会将name中的字符串当成sql命令来进行语法分析了。</p>
+<h1 id="框架的能力">框架的能力</h1>
+<p>实际项目中，一般我们都是采用各种的框架，比如ibatis,
+hibernate,mybatis等等。他们一般也默认就是sql预编译的。对于ibatis/mybatis，如果使用的是
+#{name}形式的，那么就是sql预编译，使用 ${name} 就不是sql预编译的。</p>
 
     </div>
 

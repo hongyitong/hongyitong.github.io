@@ -20,12 +20,12 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="1.什么是Java的反射？要让Java程序能够运行，就得让Java类被Java虚拟机加载。Java类如果不被Java虚拟机加载就不能正常运行。正常情况下，我们运行的所有的程序在编译期时候就已经把那个类被加载了。Java的反射机制是在编译时并不确定是哪个类被加载了，而是在程序运行的时候才加载、探知、自审。使用的是在编译期并不知道的类。这样的编译特点就是java反射。 2.Java反射的作用？假如有两">
+    <meta name="description" content="1.什么是Java的反射？ 要让Java程序能够运行，就得让Java类被Java虚拟机加载。Java类如果不被Java虚拟机加载就不能正常运行。正常情况下，我们运行的所有的程序在编译期时候就已经把那个类被加载了。 Java的反射机制是在编译时并不确定是哪个类被加载了，而是在程序运行的时候才加载、探知、自审。使用的是在编译期并不知道的类。这样的编译特点就是java反射。 2.Java反射的作用？ 假">
 <meta property="og:type" content="article">
 <meta property="og:title" content="java反射机制基础详解">
 <meta property="og:url" content="http://hongyitong.github.io/2017/03/17/java%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6%E5%9F%BA%E7%A1%80%E8%AF%A6%E8%A7%A3/index.html">
 <meta property="og:site_name" content="忆桐之家的博客">
-<meta property="og:description" content="1.什么是Java的反射？要让Java程序能够运行，就得让Java类被Java虚拟机加载。Java类如果不被Java虚拟机加载就不能正常运行。正常情况下，我们运行的所有的程序在编译期时候就已经把那个类被加载了。Java的反射机制是在编译时并不确定是哪个类被加载了，而是在程序运行的时候才加载、探知、自审。使用的是在编译期并不知道的类。这样的编译特点就是java反射。 2.Java反射的作用？假如有两">
+<meta property="og:description" content="1.什么是Java的反射？ 要让Java程序能够运行，就得让Java类被Java虚拟机加载。Java类如果不被Java虚拟机加载就不能正常运行。正常情况下，我们运行的所有的程序在编译期时候就已经把那个类被加载了。 Java的反射机制是在编译时并不确定是哪个类被加载了，而是在程序运行的时候才加载、探知、自审。使用的是在编译期并不知道的类。这样的编译特点就是java反射。 2.Java反射的作用？ 假">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2017-03-17T05:34:00.000Z">
 <meta property="article:modified_time" content="2017-07-12T06:44:36.000Z">
@@ -150,7 +150,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E4%BB%80%E4%B9%88%E6%98%AFJava%E7%9A%84%E5%8F%8D%E5%B0%84%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">1.什么是Java的反射？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Java%E5%8F%8D%E5%B0%84%E7%9A%84%E4%BD%9C%E7%94%A8%EF%BC%9F"><span class="nav-number">2.</span> <span class="nav-text">2.Java反射的作用？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-Class%E7%B1%BB"><span class="nav-number">3.</span> <span class="nav-text">3.Class类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-%E5%8F%8D%E5%B0%84API"><span class="nav-number">4.</span> <span class="nav-text">4.反射API</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%9F%E8%83%BD"><span class="nav-number">4.1.</span> <span class="nav-text">功能</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%82%A3%E4%B9%88%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8%E5%8F%8D%E5%B0%84API%E5%9C%A8%E8%BF%90%E8%A1%8C%E7%9A%84%E6%97%B6%E5%80%99%E7%9F%A5%E9%81%93%E4%B8%80%E4%B8%AA%E7%B1%BB%E7%9A%84%E4%BF%A1%E6%81%AF%E5%91%A2%EF%BC%9F"><span class="nav-number">5.</span> <span class="nav-text">那么如何利用反射API在运行的时候知道一个类的信息呢？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93-%E4%BD%BF%E7%94%A8%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6%E7%9A%84%E6%AD%A5%E9%AA%A4"><span class="nav-number">6.</span> <span class="nav-text">总结: 使用反射机制的步骤</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F-Singleton"><span class="nav-number">7.</span> <span class="nav-text">单例模式(Singleton)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F%EF%BC%88Factory%EF%BC%89"><span class="nav-number">8.</span> <span class="nav-text">工厂模式（Factory）</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFjava%E7%9A%84%E5%8F%8D%E5%B0%84"><span class="nav-number">1.</span> <span class="nav-text">1.什么是Java的反射？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#java%E5%8F%8D%E5%B0%84%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="nav-number">2.</span> <span class="nav-text">2.Java反射的作用？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%82%A3%E4%B9%88%E5%A6%82%E4%BD%95%E5%88%A9%E7%94%A8%E5%8F%8D%E5%B0%84api%E5%9C%A8%E8%BF%90%E8%A1%8C%E7%9A%84%E6%97%B6%E5%80%99%E7%9F%A5%E9%81%93%E4%B8%80%E4%B8%AA%E7%B1%BB%E7%9A%84%E4%BF%A1%E6%81%AF%E5%91%A2"><span class="nav-number">3.</span> <span class="nav-text">那么如何利用反射API在运行的时候知道一个类的信息呢？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93-%E4%BD%BF%E7%94%A8%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6%E7%9A%84%E6%AD%A5%E9%AA%A4"><span class="nav-number">4.</span> <span class="nav-text">总结: 使用反射机制的步骤</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8Fsingleton"><span class="nav-number">5.</span> <span class="nav-text">单例模式(Singleton)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8Ffactory"><span class="nav-number">6.</span> <span class="nav-text">工厂模式（Factory）</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -291,332 +291,216 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h1 id="1-什么是Java的反射？"><a href="#1-什么是Java的反射？" class="headerlink" title="1.什么是Java的反射？"></a>1.什么是Java的反射？</h1><p>要让Java程序能够运行，就得让Java类被Java虚拟机加载。Java类如果不被Java虚拟机加载就不能正常运行。正常情况下，我们运行的所有的程序在编译期时候就已经把那个类被加载了。<br><strong>Java的反射机制是在编译时并不确定是哪个类被加载了，而是在程序运行的时候才加载、探知、自审。使用的是在编译期并不知道的类。这样的编译特点就是java反射。</strong></p>
-<h1 id="2-Java反射的作用？"><a href="#2-Java反射的作用？" class="headerlink" title="2.Java反射的作用？"></a>2.Java反射的作用？</h1><p>假如有两个程序员，一个程序员在写程序的时需要使用第二个程序员所写的类，但第二个程序员并没完成他所写的类。那么第一个程序员的代码是不能通过编译的。此时，利用Java反射的机制，就可以让第一个程序员在没有得到第二个程序员所写的类的时候，来完成自身代码的编译。<br>Java的反射机制它知道类的基本结构，这种对Java类结构探知的能力，我们称为Java类的“自审”。如eclipse中，一按点，编译工具就会自动的把该对象能够使用的所有的方法和属性全部都列出来，供用户进行选择。这就是利用了Java反射的原理，是对我们创建对象的探知、自审。<br><span id="more"></span></p>
-<h1 id="3-Class类"><a href="#3-Class类" class="headerlink" title="3.Class类"></a>3.Class类</h1><p>要正确使用Java反射机制就得使用java.lang.Class这个类。它是Java反射机制的起源。当一个类被加载以后，Java虚拟机就会自动产生一个Class对象。通过这个Class对象我们就能获得加载到虚拟机当中这个Class对象对应的方法、成员以及构造方法的声明和定义等信息。</p>
-<h1 id="4-反射API"><a href="#4-反射API" class="headerlink" title="4.反射API"></a>4.反射API</h1><p>反射API用于反应在当前Java虚拟机中的类、接口或者对象信息</p>
-<h2 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h2><p>1) 获取一个对象的类信息.<br>2) 获取一个类的访问修饰符、成员、方法、构造方法以及超类的信息.<br>3) 检获属于一个接口的常量和方法声明.<br>4) 创建一个直到程序运行期间才知道名字的类的实例.<br>5) 获取并设置一个对象的成员，这个成员的名字是在程序运行期间才知道.<br>检测一个在运行期间才知道名字的对象的方法<br>利用Java反射机制可以很灵活的对已经加载到Java虚拟机当中的类信息进行检测。这种检测在对运行的性能上会有些减弱，所以什么时候使用反射，要靠业务的需求、大小，以及经验的积累来决定。</p>
-<h1 id="那么如何利用反射API在运行的时候知道一个类的信息呢？"><a href="#那么如何利用反射API在运行的时候知道一个类的信息呢？" class="headerlink" title="那么如何利用反射API在运行的时候知道一个类的信息呢？"></a>那么如何利用反射API在运行的时候知道一个类的信息呢？</h1><p>代码示例：</p>
-<pre><code class="lang-java">package com.reflection.classForName;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import javax.swing.JOptionPane;
-
-/**
-  *本类用于测试反射API，利用用户输入类的全路径，
-  *找到该类所有的成员方法和成员属性
-  */
-
-public class ClassForName &#123;
-   /**
-    *构造方法
-    */
-   public ClassForName()&#123;
-      String classInfo=JOptionPane.showInputDialog(null,&quot;输入类全路径&quot;);//要求用户输入类的全路径
-      try &#123;
-         Class&lt;?&gt; cla=Class.forName(classInfo);//根据类的全路径进行类加载，返回该类的Class对象
-         Method[] method=cla.getDeclaredMethods();//利用得到的Class对象的自审，返回方法对象集合
-         System.out.println(&quot;forName:&quot;+cla);
-         for(Method me:method)&#123;//遍历该类方法的集合
-            System.out.println(&quot;方法有:&quot;+me.toString());//打印方法信息
-         &#125;
-         System.out.println(&quot;*****************************************************&quot;);
-         Field[] field=cla.getDeclaredFields();//利用得到的Class对象的自审，返回属性对象集合
-         for(Field me:field)&#123; //遍历该类属性的集合
-            System.out.println(&quot;属性有:&quot;+me.toString());//打印属性信息
-         &#125;
-      &#125; catch (ClassNotFoundException e) &#123;
-         e.printStackTrace();
-      &#125;
-   &#125;
-
-   public static void main(String[] args) &#123;
-      new ClassForName();
-   &#125;
-&#125;
-</code></pre>
-<p>运行的时候，我们输入java.lang.String，那么运行结果如下：<br>forName:class java.lang.String<br>方法有:public int java.lang.String.hashCode()<br>方法有:public boolean java.lang.String.equals(java.lang.Object)<br>方法有:public java.lang.String java.lang.String.toString()<br>方法有:public char java.lang.String.charAt(int)<br>方法有:private static void java.lang.String.checkBounds(byte[],int,int)<br>方法有:public int java.lang.String.codePointAt(int)<br>……………<br>通过和个例子我们看到，类的全路径是在程序运行的时候，由我们手动输入的。所以虚拟机事先并不知道所要加载类的信息，这就是利用反射机制来对用户输入的类全路径来对类自身的一个自审。从而探知该类所拥有的方法和属性。<br><strong>编译器联想原理: 通过上面代码，我们可以知道编译工具为什么能够一按点就能列出用户当前对象的属性和方法了。它是先获得用户输入对象的字符串，然后利用反射原理来对这样的类进行自审，从而列出该类的方法和属性。</strong></p>
-<h1 id="总结-使用反射机制的步骤"><a href="#总结-使用反射机制的步骤" class="headerlink" title="总结: 使用反射机制的步骤"></a>总结: 使用反射机制的步骤</h1><p>首先: 导入java.lang.relfect 包<br>然后: 遵循三个步曲：<br>（1）获得你想操作的类的 java.lang.Class 对象<br>（2）调用诸如 getDeclaredMethods 的方法<br>（3）使用反射API 来操作这些信息<br>获得Class对象的三种方法<br>已经得到一个类的实例，可以使用如下方式来得到Class对象：<br>Class c = 对象名.getClass();<br>例：TextField t = new TextField();<br>        Class c = t.getClass();<br>        Class s = c.getSuperclass();<br>如果在编译期知道类的名字，可以使用如下方法：<br>Class c = java.awt.Button.class;<br>或<br>        Class c = Integer.TYPE;<br>如果类名在编译期不知道, 但是在运行期可以获得, 可以使用下面的方法：<br>       Class c = Class.forName(str);<br>       注意:str是类的全路径</p>
-<p>Example:</p>
-<pre><code class="lang-java">package com.reflection.classForName;
-public class GetClassTest &#123;
-   public static void main(String[] args) throws InstantiationException, IllegalAccessException, NoSuchFieldException, SecurityException&#123;
-      System.out.println(&quot;测试开始&quot;);
-      GetClassTestObj gctObj = new GetClassTestObj();
-      Class&lt;? extends GetClassTestObj&gt; clazzClass = gctObj.getClass(); //同过反射机制得到类的对象
-         System.out.println(&quot;clazzClass:&quot;+clazzClass);
-      GetClassTestObj gctObj2 = (GetClassTestObj)clazzClass.newInstance(); //调用无参构造方法，创建一个对象
-      System.out.println(&quot;gctObj==gctOb2 :&quot;+(gctObj == gctObj2));
-      System.out.println(&quot;gctObj.getClass() == gctOb2.getClass() :&quot;+(gctObj.getClass() == gctObj2.getClass()));
-      gctObj2.print();
-
-//    Field[] field=clazzClass.getDeclaredFields();
-//    for(Field me : field)&#123;
-//       System.out.println(&quot;shu:&quot;+me);
-//    &#125;
-   &#125;
-&#125;
-
-
-
-package com.reflection.classForName;
-public class GetClassTestObj &#123;
-   static&#123;     //静态代码块，只执行一次
-      System.out.println(&quot;nihao&quot;);
-   &#125;
-   private String name = &quot;chen&quot;;
-   public String address = &quot;chengdu&quot;;
-   public void print()&#123;
-      System.out.println(&quot;name:&quot;+name+&quot; ,address:&quot;+address);
-   &#125;
-&#125;
-</code></pre>
+        <h1 id="什么是java的反射">1.什么是Java的反射？</h1>
+<p>要让Java程序能够运行，就得让Java类被Java虚拟机加载。Java类如果不被Java虚拟机加载就不能正常运行。正常情况下，我们运行的所有的程序在编译期时候就已经把那个类被加载了。
+<strong>Java的反射机制是在编译时并不确定是哪个类被加载了，而是在程序运行的时候才加载、探知、自审。使用的是在编译期并不知道的类。这样的编译特点就是java反射。</strong></p>
+<h1 id="java反射的作用">2.Java反射的作用？</h1>
+<p>假如有两个程序员，一个程序员在写程序的时需要使用第二个程序员所写的类，但第二个程序员并没完成他所写的类。那么第一个程序员的代码是不能通过编译的。此时，利用Java反射的机制，就可以让第一个程序员在没有得到第二个程序员所写的类的时候，来完成自身代码的编译。
+Java的反射机制它知道类的基本结构，这种对Java类结构探知的能力，我们称为Java类的“自审”。如eclipse中，一按点，编译工具就会自动的把该对象能够使用的所有的方法和属性全部都列出来，供用户进行选择。这就是利用了Java反射的原理，是对我们创建对象的探知、自审。
+<span id="more"></span> # 3.Class类
+要正确使用Java反射机制就得使用java.lang.Class这个类。它是Java反射机制的起源。当一个类被加载以后，Java虚拟机就会自动产生一个Class对象。通过这个Class对象我们就能获得加载到虚拟机当中这个Class对象对应的方法、成员以及构造方法的声明和定义等信息。
+# 4.反射API 反射API用于反应在当前Java虚拟机中的类、接口或者对象信息 ##
+功能 1) 获取一个对象的类信息. 2)
+获取一个类的访问修饰符、成员、方法、构造方法以及超类的信息. 3)
+检获属于一个接口的常量和方法声明. 4)
+创建一个直到程序运行期间才知道名字的类的实例. 5)
+获取并设置一个对象的成员，这个成员的名字是在程序运行期间才知道.
+检测一个在运行期间才知道名字的对象的方法
+利用Java反射机制可以很灵活的对已经加载到Java虚拟机当中的类信息进行检测。这种检测在对运行的性能上会有些减弱，所以什么时候使用反射，要靠业务的需求、大小，以及经验的积累来决定。</p>
+<h1
+id="那么如何利用反射api在运行的时候知道一个类的信息呢">那么如何利用反射API在运行的时候知道一个类的信息呢？</h1>
+<p>代码示例： ``` java package com.reflection.classForName; import
+java.lang.reflect.Field; import java.lang.reflect.Method; import
+javax.swing.JOptionPane;</p>
+<p>/** <em>本类用于测试反射API，利用用户输入类的全路径，
+</em>找到该类所有的成员方法和成员属性 */</p>
+<p>public class ClassForName { /<strong> <em>构造方法 </em>/ public
+ClassForName(){ String
+classInfo=JOptionPane.showInputDialog(null,"输入类全路径");//要求用户输入类的全路径
+try { Class&lt;?&gt;
+cla=Class.forName(classInfo);//根据类的全路径进行类加载，返回该类的Class对象
+Method[]
+method=cla.getDeclaredMethods();//利用得到的Class对象的自审，返回方法对象集合
+System.out.println("forName:"+cla); for(Method
+me:method){//遍历该类方法的集合
+System.out.println("方法有:"+me.toString());//打印方法信息 }
+System.out.println("</strong>***************************************************");
+Field[]
+field=cla.getDeclaredFields();//利用得到的Class对象的自审，返回属性对象集合
+for(Field me:field){ //遍历该类属性的集合
+System.out.println("属性有:"+me.toString());//打印属性信息 } } catch
+(ClassNotFoundException e) { e.printStackTrace(); } }</p>
+<p>public static void main(String[] args) { new ClassForName(); }
+}```</p>
+<p>运行的时候，我们输入java.lang.String，那么运行结果如下：
+forName:class java.lang.String 方法有:public int
+java.lang.String.hashCode() 方法有:public boolean
+java.lang.String.equals(java.lang.Object) 方法有:public java.lang.String
+java.lang.String.toString() 方法有:public char
+java.lang.String.charAt(int) 方法有:private static void
+java.lang.String.checkBounds(byte[],int,int) 方法有:public int
+java.lang.String.codePointAt(int) ……………
+通过和个例子我们看到，类的全路径是在程序运行的时候，由我们手动输入的。所以虚拟机事先并不知道所要加载类的信息，这就是利用反射机制来对用户输入的类全路径来对类自身的一个自审。从而探知该类所拥有的方法和属性。
+<strong>编译器联想原理:
+通过上面代码，我们可以知道编译工具为什么能够一按点就能列出用户当前对象的属性和方法了。它是先获得用户输入对象的字符串，然后利用反射原理来对这样的类进行自审，从而列出该类的方法和属性。</strong></p>
+<h1 id="总结-使用反射机制的步骤">总结: 使用反射机制的步骤</h1>
+<p>首先: 导入java.lang.relfect 包 然后: 遵循三个步曲：
+（1）获得你想操作的类的 java.lang.Class 对象 （2）调用诸如
+getDeclaredMethods 的方法 （3）使用反射API 来操作这些信息
+获得Class对象的三种方法
+已经得到一个类的实例，可以使用如下方式来得到Class对象： Class c =
+对象名.getClass(); 例：TextField t = new TextField(); Class c =
+t.getClass(); Class s = c.getSuperclass();
+如果在编译期知道类的名字，可以使用如下方法： Class c =
+java.awt.Button.class; 或 Class c = Integer.TYPE;
+如果类名在编译期不知道, 但是在运行期可以获得, 可以使用下面的方法： Class
+c = Class.forName(str); 注意:str是类的全路径</p>
+<p>Example: ``` java package com.reflection.classForName; public class
+GetClassTest { public static void main(String[] args) throws
+InstantiationException, IllegalAccessException, NoSuchFieldException,
+SecurityException{ System.out.println("测试开始"); GetClassTestObj
+gctObj = new GetClassTestObj(); Class&lt;? extends GetClassTestObj&gt;
+clazzClass = gctObj.getClass(); //同过反射机制得到类的对象
+System.out.println("clazzClass:"+clazzClass); GetClassTestObj gctObj2 =
+(GetClassTestObj)clazzClass.newInstance();
+//调用无参构造方法，创建一个对象 System.out.println("gctObj==gctOb2
+:"+(gctObj == gctObj2)); System.out.println("gctObj.getClass() ==
+gctOb2.getClass() :"+(gctObj.getClass() == gctObj2.getClass()));
+gctObj2.print();</p>
+<p>// Field[] field=clazzClass.getDeclaredFields(); // for(Field me :
+field){ // System.out.println("shu:"+me); // } } }</p>
+<p>package com.reflection.classForName; public class GetClassTestObj {
+static{ //静态代码块，只执行一次 System.out.println("nihao"); } private
+String name = "chen"; public String address = "chengdu"; public void
+print(){ System.out.println("name:"+name+" ,address:"+address); }
+}```</p>
 <p><strong>这样获得Class类对象的方法，其实是利用反射API把指定字符串的类加载到内存中，所以也叫类加载器加载方法。这样的话，它会把该类的静态方法和静态属性，以及静态代码全部加载到内存中。但这时候，对象还没有产生。所以为什么静态方法不能访问非静态属性和方法。因为静态方法和属性产生的时机在非静态属性和方法之前。</strong></p>
-<p>代码示例：<br>代码分析：<br>在进行 gctObj.getClass()的时候，实际上是对指定类进行类加载，这时候，会把静态属性、方法以及静态代码块都加载到内存中。所以这时候会打印出”静态代码块运行”。但这时候，对象却还没有产生。所以”构造方法运行”这几个字不会打印。当执行cla.newInstance()的时候，就是利用反射机制将Class对象生成一个该类的一个实例。这时候对象就产生了。所以打印”构造方法运行”。当执行到GetClassTestObj gctObj = new GetClassTestObj();语句时，又生成了一个对象。但这时候类已经加载完毕，静态的东西已经加载到内存中，而静态代码块只执行一次，所以不用再去加载类，所以只会打印”构造方法运行”，而”静态代码块运行”不会打印。</p>
-<p>反射机制不但可以例出该类对象所拥有的方法和属性，还可以获得该类的构造方法及通过构造方法获得实例。也可以动态的调用这个实例的成员方法。<br>代码示例：</p>
-<pre><code class="lang-java">package com.reflection.constructor;
-import java.lang.reflect.Constructor;
-/**
- * 本类测试反射获得类的构造器对象，
- * 并通过类构造器对象生成该类的实例
- */
-
-public class ConstructorTest &#123;
-   public static void main(String[] args) &#123;
-      try &#123;
-         /**
-          * 第一步:加载类对象
-          * 第二步：设置Class对象数组用于指定构造方法
-          * 第三步:获得Constructor构造器对象
-          */
-         Class clazz = Class.forName(&quot;com.reflection.constructor.Tests&quot;); //加载指定字符串类的对象
-         Class[] cl=new Class[]&#123;int.class,int.class&#125;;   //设置Class对象数组，用于指定构造方法类型
-         Constructor con=clazz.getConstructor(cl);      //获得Constructor构造器对象。并指定构造方法类型
-         //Object[] x=&#123;new Integer(33),new Integer(67)&#125;;   //给传入参数赋初值
-         //Object obj=con.newInstance(x);  //得到实例
-         Object object = con.newInstance(33,66);
-      &#125; catch (Exception e) &#123;
-         e.printStackTrace();
-      &#125;
-   &#125;
-&#125;
-
-
-
-class Tests&#123;
-   public Tests(int x,int y)&#123;
-      System.out.println(x+&quot; ,&quot;+y);
-   &#125;
-&#125;
-</code></pre>
-<p>运行的结果是” 33    67”。说明我们已经生成了Tests这个类的一个对象。<br>通过反射模式，来执行Java类的方法<br>代码示例：</p>
-<pre><code class="lang-java">package com.reflection.MethodInvoke;
-   import java.lang.reflect.Method;
-   /**
-    *
-    * 本类测试反射获得类的方法对象，
-    * 并通过类对象和类方法对象，运行该方法
-    */
-   public class MethodInvoke &#123;
-      public static void main(String[] args) &#123;
-         try &#123;
-            Class cla=Class.forName(&quot;javax.swing.JFrame&quot;); //获得窗体类的Class对象
-            Object obj=cla.newInstance();  //生成窗体类的无参实例
-            //Method methodSize=cla.getMethod(&quot;setSize&quot;, new Class[]&#123;int.class,int.class&#125;); //获得窗体类的setSize方法对象，并指定该方法参数类型为int,int
-            Class[] classes = new Class[]&#123;int.class, int.class&#125;;
-            Method methodSize = cla.getMethod(&quot;setSize&quot;, classes);
-            /*
-             * 执行setSize()方法，并传入一个Object[]数组对象，
-             * 作为该方法参数，等同于  窗体对象.setSize(300,300);
-             * 参数1:obj是类加载的一个实例对象
-             * 参数2:是一个指定的参数对象
-             */
-            methodSize.invoke(obj, new Object[]&#123;new Integer(600),new Integer(300)&#125;);
-         //获得窗体类的setSize方法对象，并指定该方法参数类型为boolean
-            Method methodVisible=cla.getMethod(&quot;setVisible&quot;, new Class[]&#123;boolean.class&#125;);
-            /*
-             * 执行setVisible()方法，并传入一个Object[]数组对象，              *作为该方法参数。 等同于  窗体对象.setVisible(true);
-             */
-            methodVisible.invoke(obj, new Object[]&#123;new Boolean(true)&#125;);
-         &#125; catch (Exception e) &#123;
-            e.printStackTrace();
-         &#125;
-      &#125;
-   &#125;
-</code></pre>
+<p>代码示例： 代码分析： 在进行
+gctObj.getClass()的时候，实际上是对指定类进行类加载，这时候，会把静态属性、方法以及静态代码块都加载到内存中。所以这时候会打印出"静态代码块运行"。但这时候，对象却还没有产生。所以"构造方法运行"这几个字不会打印。当执行cla.newInstance()的时候，就是利用反射机制将Class对象生成一个该类的一个实例。这时候对象就产生了。所以打印"构造方法运行"。当执行到GetClassTestObj
+gctObj = new
+GetClassTestObj();语句时，又生成了一个对象。但这时候类已经加载完毕，静态的东西已经加载到内存中，而静态代码块只执行一次，所以不用再去加载类，所以只会打印"构造方法运行"，而"静态代码块运行"不会打印。</p>
+<p>反射机制不但可以例出该类对象所拥有的方法和属性，还可以获得该类的构造方法及通过构造方法获得实例。也可以动态的调用这个实例的成员方法。
+代码示例：</p>
+<p>``` java<br />
+package com.reflection.constructor; import
+java.lang.reflect.Constructor; /** * 本类测试反射获得类的构造器对象， *
+并通过类构造器对象生成该类的实例 */</p>
+<p>public class ConstructorTest { public static void main(String[] args)
+{ try { /** * 第一步:加载类对象 *
+第二步：设置Class对象数组用于指定构造方法 *
+第三步:获得Constructor构造器对象 */ Class clazz =
+Class.forName("com.reflection.constructor.Tests");
+//加载指定字符串类的对象 Class[] cl=new Class[]{int.class,int.class};
+//设置Class对象数组，用于指定构造方法类型 Constructor
+con=clazz.getConstructor(cl);
+//获得Constructor构造器对象。并指定构造方法类型 //Object[] x={new
+Integer(33),new Integer(67)}; //给传入参数赋初值 //Object
+obj=con.newInstance(x); //得到实例 Object object =
+con.newInstance(33,66); } catch (Exception e) { e.printStackTrace(); } }
+}</p>
+<p>class Tests{ public Tests(int x,int y){ System.out.println(x+" ,"+y);
+} }```</p>
+<p>运行的结果是” 33 67”。说明我们已经生成了Tests这个类的一个对象。
+通过反射模式，来执行Java类的方法 代码示例：
+<code>java  package com.reflection.MethodInvoke;    import java.lang.reflect.Method;    /**     *     * 本类测试反射获得类的方法对象，     * 并通过类对象和类方法对象，运行该方法     */    public class MethodInvoke &#123;       public static void main(String[] args) &#123;          try &#123;             Class cla=Class.forName("javax.swing.JFrame"); //获得窗体类的Class对象             Object obj=cla.newInstance();  //生成窗体类的无参实例             //Method methodSize=cla.getMethod("setSize", new Class[]&#123;int.class,int.class&#125;); //获得窗体类的setSize方法对象，并指定该方法参数类型为int,int             Class[] classes = new Class[]&#123;int.class, int.class&#125;;             Method methodSize = cla.getMethod("setSize", classes);             /*              * 执行setSize()方法，并传入一个Object[]数组对象，              * 作为该方法参数，等同于  窗体对象.setSize(300,300);              * 参数1:obj是类加载的一个实例对象              * 参数2:是一个指定的参数对象              */             methodSize.invoke(obj, new Object[]&#123;new Integer(600),new Integer(300)&#125;);          //获得窗体类的setSize方法对象，并指定该方法参数类型为boolean             Method methodVisible=cla.getMethod("setVisible", new Class[]&#123;boolean.class&#125;);             /*              * 执行setVisible()方法，并传入一个Object[]数组对象，              *作为该方法参数。 等同于  窗体对象.setVisible(true);              */             methodVisible.invoke(obj, new Object[]&#123;new Boolean(true)&#125;);          &#125; catch (Exception e) &#123;             e.printStackTrace();          &#125;       &#125;    &#125;</code></p>
 <p><strong>反射技术大量用于Java设计模式和框架技术，最常见的设计模式就是工厂模式(Factory)和单例模式(Singleton)。</strong></p>
-<h1 id="单例模式-Singleton"><a href="#单例模式-Singleton" class="headerlink" title="单例模式(Singleton)"></a>单例模式(Singleton)</h1><p>保证在Java应用程序中，一个类Class只有一个实例存在。<br>如：建立目录，数据库连接都需要这样的单线程操作。<br>目的: 节省内存空间，保证我们所访问到的都是同一个对象。<br>单例模式要求保证唯一 可以通过静态变量保证单列模式的唯一性。<br>单例模式有以下两种形式：<br>第一种形式：</p>
-<pre><code class="lang-java">package reflect;
-public class Singleton &#123;
-    /*
-     * 注意这是private私有的构造方法， 只供内部调用
-     * 外部不能通过new的方式来生成该类的实例
-     */
-    private Singleton() &#123;
-    &#125;
-
-    /*
-     * 在自己内部定义自己一个实例，是不是很奇怪？
-     * 定义一个静态的实例，保证其唯一性
-     */
-    private static Singleton instance = new Singleton();
-
-    // 这里提供了一个供外部访问本class的静态方法，可以直接访问
-    public static Singleton getInstance() &#123;
-           return instance;
-    &#125;
-
-
-/**
- *测试单例模式
+<h1 id="单例模式singleton">单例模式(Singleton)</h1>
+<p>保证在Java应用程序中，一个类Class只有一个实例存在。
+如：建立目录，数据库连接都需要这样的单线程操作。 目的:
+节省内存空间，保证我们所访问到的都是同一个对象。 单例模式要求保证唯一
+可以通过静态变量保证单列模式的唯一性。 单例模式有以下两种形式：
+第一种形式： ``` java package reflect; public class Singleton { /<em>
+</em> 注意这是private私有的构造方法， 只供内部调用 *
+外部不能通过new的方式来生成该类的实例 */ private Singleton() { }</p>
+<pre><code>/*
+ * 在自己内部定义自己一个实例，是不是很奇怪？
+ * 定义一个静态的实例，保证其唯一性
  */
-class SingRun&#123;
-    public static void main(String[] args)&#123;
-       //这样的调用不被允许，因为构造方法是私有的。
-       //Singleton x=new Singleton();
-       //得到一个Singleton类实例
-       Singleton x=Singleton.getInstance();
-       //得到另一个Singleton类实例
-       Singleton y=Singleton.getInstance();
-       //比较x和y的地址，结果为true。说明两次获得的是同一个对象
-       System.out.println(x==y);
-    &#125;
-&#125;
-</code></pre>
-<p>第二种形式：</p>
-<pre><code class="lang-java">public class Singleton &#123;
-    //先申明该类静态对象
-    private static Singleton instance = null;
-    //创建一个静态访问器，获得该类实例。加上同步机制，防止两个线程同时进行对对象的创建
-    public static synchronized Singleton getInstance() &#123;
-    //如果为空，则生成一个该类实例
-       if (instance == null)&#123;
-           instance = new Singleton();
-       &#125;
+private static Singleton instance = new Singleton();
+
+// 这里提供了一个供外部访问本class的静态方法，可以直接访问
+public static Singleton getInstance() &#123;
        return instance;
-    &#125;
-&#125;
-</code></pre>
+&#125;</code></pre>
+<p>/** <em>测试单例模式 </em>/ class SingRun{ public static void
+main(String[] args){ //这样的调用不被允许，因为构造方法是私有的。
+//Singleton x=new Singleton(); //得到一个Singleton类实例 Singleton
+x=Singleton.getInstance(); //得到另一个Singleton类实例 Singleton
+y=Singleton.getInstance();
+//比较x和y的地址，结果为true。说明两次获得的是同一个对象
+System.out.println(x==y); } }```</p>
+<p>第二种形式：
+<code>java public class Singleton &#123;     //先申明该类静态对象     private static Singleton instance = null;     //创建一个静态访问器，获得该类实例。加上同步机制，防止两个线程同时进行对对象的创建     public static synchronized Singleton getInstance() &#123;     //如果为空，则生成一个该类实例        if (instance == null)&#123;            instance = new Singleton();        &#125;        return instance;     &#125; &#125;</code></p>
 <p>两种形式大体上是差不多的</p>
-<h1 id="工厂模式（Factory）"><a href="#工厂模式（Factory）" class="headerlink" title="工厂模式（Factory）"></a>工厂模式（Factory）</h1><p>工厂模式:著名的Jive论坛 ,就大量使用了工厂模式。<br><strong>为什么工厂模式是如此常用？因为工厂模式利用Java反射机制和Java多态的特性可以让我们的程序更加具有灵活性。用工厂模式进行大型项目的开发，可以很好的进行项目并行开发。就是一个程序员和另一个程序员可以同时去书写代码，而不是一个程序员等到另一个程序员写完以后再去书写代码。其中的粘合剂就是接口和配置文件。</strong></p>
-<p>利用接口可以将调用和实现相分离。<br>那么这是怎么样去实现的呢？工厂模式可以为我们解答。<br>我们先来了解一下软件的生命周期: 分析、设计、编码、调试、测试。<br>分析: 就是指需求分析，就是知道这个软件要做成什么样子，要实现什么样的功能。<br>设计: 设计的时候要考虑到怎么样高效的实现这个项目，如果让一个项目团队并行开发。这时候，通常先设计接口，把接口给实现接口的程序员和调用接口的程序员，在编码的时候，<strong>两个程序员可以互不影响的实现相应的功能，最后通过配置文件进行整合。</strong></p>
-<p>代码示例：</p>
-<pre><code class="lang-java">/**
- *
- *定义接口
- */
-package com.reflection.Factory;
-/**
- * @interface: InterfaceTest
- * @author: chenliang
- * @description: 声明一个测试接口
- */
-public interface InterfaceTest &#123;
-      public void getName();//定义获得名字的方法
-&#125;
-</code></pre>
-<p>实现这个接口，重写其中定义的方法<br>接口实现方：</p>
-<pre><code class="lang-java">/**
- * @class: Test1
- * @author: chenliang
- * @description: 测试类
- */
-package com.reflection.Factory;
-public class Test1 implements InterfaceTest &#123;
-   @Override
-   public void getName() &#123;  //测试方法
-      System.out.println(&quot;test1&quot;);
-   &#125;
-&#125;
-
-
-
-/**
- * @class: Test2
- * @author: chenliang
- * @description: 测试类
- */
-package com.reflection.Factory;
-public class Test2 implements InterfaceTest &#123;
-   @Override
-   public void getName() &#123; //测试方法
-      System.out.println(&quot;test2&quot;);
-   &#125;
-&#125;
-</code></pre>
-<p>可以发现，当接口定义好了以后，不但可以规范代码，而且可以让程序员有条不紊的进行功能的实现。实现接口的程序员根本不用去管，这个类要被谁去调用。<br>那么怎么能获得这些程序员定义的对象呢？在工厂模式里，单独定义一个工厂类来实现对象的生产，注意这里返回的接口对象。</p>
-<p>工厂类，生产接口对象：</p>
-<pre><code class="lang-java">/**
- * 本类为工厂类，用于生成接口对象
- */
-/**
- * @class: Factory
- * @author: chenliang
- * @description: 模仿创建一个工厂类
- */
-package com.reflection.Factory;
-import java.io.InputStream;
-import java.util.Properties;
-public class Factory&#123;
-  private static Properties prop=new Properties();  //创建私有的静态的Properties对象
-  static&#123;  //静态代码块,在创建这个类的实例之前执行，且只执行一次，用来加载配置文件
-     try &#123;
-        InputStream ips = Factory.class.getClassLoader().getResourceAsStream(&quot;file.properties&quot;);  //加载配置文件
-        prop.load(ips);
-     &#125; catch (Exception e) &#123;
-        e.printStackTrace();
-     &#125;
-  &#125;
-
-  /**
-   * 单例模式，保证该类只有一个Factory对象
-   */
-  private static Factory factory=new Factory();
-
-  private Factory()&#123;&#125;   //构建一个私有构造方法
-
-  public static Factory getFactory()&#123;  //返回工厂对象的方法
-     return factory;
-  &#125;
-
-
-  /**
-   * 本方法为公有方法，用于生产接口对象
-   * @return： InterfaceTest接口对象
-   */
-  public  InterfaceTest getInterface()&#123;
-     InterfaceTest interfaceTest = null;  //定义接口对象
-     try &#123;
-        String classInfo = prop.getProperty(&quot;test&quot;);   //根据键，获得值，这里的值是类的全路径
-        Class&lt;?&gt; c = Class.forName(classInfo);  //利用反射，生成Class对象
-        Object obj = c.newInstance();  //获得该Class对象的实例
-        interfaceTest = (InterfaceTest)obj;  //将Object对象强转为接口对象
-     &#125; catch (Exception e) &#123;
-        e.printStackTrace();
-     &#125;
-     return interfaceTest; //返回接口对象
-  &#125;
-&#125;
-</code></pre>
-<p><strong>配置文件内容：<br>test=com.reflection.Factory.Test1</strong></p>
+<h1 id="工厂模式factory">工厂模式（Factory）</h1>
+<p>工厂模式:著名的Jive论坛 ,就大量使用了工厂模式。
+<strong>为什么工厂模式是如此常用？因为工厂模式利用Java反射机制和Java多态的特性可以让我们的程序更加具有灵活性。用工厂模式进行大型项目的开发，可以很好的进行项目并行开发。就是一个程序员和另一个程序员可以同时去书写代码，而不是一个程序员等到另一个程序员写完以后再去书写代码。其中的粘合剂就是接口和配置文件。</strong></p>
+<p>利用接口可以将调用和实现相分离。
+那么这是怎么样去实现的呢？工厂模式可以为我们解答。
+我们先来了解一下软件的生命周期: 分析、设计、编码、调试、测试。 分析:
+就是指需求分析，就是知道这个软件要做成什么样子，要实现什么样的功能。
+设计:
+设计的时候要考虑到怎么样高效的实现这个项目，如果让一个项目团队并行开发。这时候，通常先设计接口，把接口给实现接口的程序员和调用接口的程序员，在编码的时候，<strong>两个程序员可以互不影响的实现相应的功能，最后通过配置文件进行整合。</strong></p>
+<p>代码示例：
+<code>java /**  *  *定义接口  */ package com.reflection.Factory; /**  * @interface: InterfaceTest  * @author: chenliang  * @description: 声明一个测试接口  */ public interface InterfaceTest &#123;       public void getName();//定义获得名字的方法 &#125;</code></p>
+<p>实现这个接口，重写其中定义的方法 接口实现方： ``` java /** * <span
+class="citation" data-cites="class">@class</span>: Test1 * <span
+class="citation" data-cites="author">@author</span>: chenliang * <span
+class="citation" data-cites="description">@description</span>: 测试类 */
+package com.reflection.Factory; public class Test1 implements
+InterfaceTest { <span class="citation"
+data-cites="Override">@Override</span> public void getName() {
+//测试方法 System.out.println("test1"); } }</p>
+<p>/** * <span class="citation" data-cites="class">@class</span>: Test2
+* <span class="citation" data-cites="author">@author</span>: chenliang *
+<span class="citation" data-cites="description">@description</span>:
+测试类 */ package com.reflection.Factory; public class Test2 implements
+InterfaceTest { <span class="citation"
+data-cites="Override">@Override</span> public void getName() {
+//测试方法 System.out.println("test2"); } }```</p>
+<p>可以发现，当接口定义好了以后，不但可以规范代码，而且可以让程序员有条不紊的进行功能的实现。实现接口的程序员根本不用去管，这个类要被谁去调用。
+那么怎么能获得这些程序员定义的对象呢？在工厂模式里，单独定义一个工厂类来实现对象的生产，注意这里返回的接口对象。</p>
+<p>工厂类，生产接口对象： ``` java /** * 本类为工厂类，用于生成接口对象
+*/ /** * <span class="citation" data-cites="class">@class</span>:
+Factory * <span class="citation" data-cites="author">@author</span>:
+chenliang * <span class="citation"
+data-cites="description">@description</span>: 模仿创建一个工厂类 */
+package com.reflection.Factory; import java.io.InputStream; import
+java.util.Properties; public class Factory{ private static Properties
+prop=new Properties(); //创建私有的静态的Properties对象 static{
+//静态代码块,在创建这个类的实例之前执行，且只执行一次，用来加载配置文件
+try { InputStream ips =
+Factory.class.getClassLoader().getResourceAsStream("file.properties");
+//加载配置文件 prop.load(ips); } catch (Exception e) {
+e.printStackTrace(); } }</p>
+<p>/** * 单例模式，保证该类只有一个Factory对象 */ private static Factory
+factory=new Factory();</p>
+<p>private Factory(){} //构建一个私有构造方法</p>
+<p>public static Factory getFactory(){ //返回工厂对象的方法 return
+factory; }</p>
+<p>/** * 本方法为公有方法，用于生产接口对象 * <span class="citation"
+data-cites="return">@return</span>： InterfaceTest接口对象 */ public
+InterfaceTest getInterface(){ InterfaceTest interfaceTest = null;
+//定义接口对象 try { String classInfo = prop.getProperty("test");
+//根据键，获得值，这里的值是类的全路径 Class&lt;?&gt; c =
+Class.forName(classInfo); //利用反射，生成Class对象 Object obj =
+c.newInstance(); //获得该Class对象的实例 interfaceTest =
+(InterfaceTest)obj; //将Object对象强转为接口对象 } catch (Exception e) {
+e.printStackTrace(); } return interfaceTest; //返回接口对象 } }```</p>
+<p><strong>配置文件内容： test=com.reflection.Factory.Test1</strong></p>
 <p><strong>通过这个类，可以发现，在调用的时候，得到的是个接口对象。而一个接口变量可以指向实现了这个接口的类对象。在利用反射的时候，我们并没有直接把类的全路径写出来，而是通过键获得值。这样的话，就有很大的灵活性，只要改变配置文件里的内容，就可以改变我们调用的接口实现类，而代码不需做任何改变。在调用的时候，我们也是通过接口调用，甚至我们可以连这个接口实现类的名字都不知道。</strong></p>
-<p>调用方：</p>
-<pre><code class="lang-java">/**
- * @author: chenliang
- * @class: FactoryTest
- * @description: 测试工厂类
- */
-
-package com.reflection.Factory;
-public class FactoryTest &#123;
-   public static void main(String[] args) &#123;
-      Factory factory = Factory.getFactory(); //获得工厂类的实例
-      InterfaceTest interObj = factory.getInterface();  //调用获得接口对象的方法，获得接口对象
-      interObj.getName();   //调用接口定义的方法
-   &#125;
-&#125;
-</code></pre>
-<p>上面的代码就是调用方法。大家可以发现，在调用的时候，我们根本没有管这个接口定义的方法要怎么样去实现它，我们只知道这个接口定义这个方法起什么作用就行了。<strong>上面代码运行结果要根据配置文件来定。如果配置文件里的内容是test= com.reflection.Factory.Test2。那么表示调用com.reflection.Factory.Tes2这个类里实现接口的方法，这时候打印“test2”。如果配置文件里的内容是test= com.reflection.Factory.Test1。那么表示调用com.reflection.Factory.Test1这个类里实现接口的方法，这时候打印“test1”。</strong></p>
+<p>调用方： ``` java /** * <span class="citation"
+data-cites="author">@author</span>: chenliang * <span class="citation"
+data-cites="class">@class</span>: FactoryTest * <span class="citation"
+data-cites="description">@description</span>: 测试工厂类 */</p>
+<p>package com.reflection.Factory; public class FactoryTest { public
+static void main(String[] args) { Factory factory =
+Factory.getFactory(); //获得工厂类的实例 InterfaceTest interObj =
+factory.getInterface(); //调用获得接口对象的方法，获得接口对象
+interObj.getName(); //调用接口定义的方法 } }```</p>
+<p>上面的代码就是调用方法。大家可以发现，在调用的时候，我们根本没有管这个接口定义的方法要怎么样去实现它，我们只知道这个接口定义这个方法起什么作用就行了。<strong>上面代码运行结果要根据配置文件来定。如果配置文件里的内容是test=
+com.reflection.Factory.Test2。那么表示调用com.reflection.Factory.Tes2这个类里实现接口的方法，这时候打印“test2”。如果配置文件里的内容是test=
+com.reflection.Factory.Test1。那么表示调用com.reflection.Factory.Test1这个类里实现接口的方法，这时候打印“test1”。</strong></p>
 <p><strong>反射机制是框架技术的原理和核心部分。通过反射机制我们可以动态的通过改变配置文件(以后是XML文件)的方式来加载类、调用类方法，以及使用类属性。这样的话，对于编码和维护带来相当大的便利。在程序进行改动的时候，也只会改动相应的功能就行了，调用的方法是不用改的。更不会一改就改全身。</strong></p>
 
     </div>

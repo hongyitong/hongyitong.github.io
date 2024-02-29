@@ -20,14 +20,13 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="1. 案例　　有张表名为table的表，由三列组成，分别是姓名、性别和婚姻状况，其中性别只有男和女两项，婚姻状况由已婚、未婚、离婚这三项，该表共有100w个记录。现在有这样的查询：     select * from table where Gender&#x3D;‘男’ and Marital&#x3D;“未婚”;">
+    <meta name="description" content="1. 案例 　　有张表名为table的表，由三列组成，分别是姓名、性别和婚姻状况，其中性别只有男和女两项，婚姻状况由已婚、未婚、离婚这三项，该表共有100w个记录。现在有这样的查询： select * from table where Gender&#x3D;‘男’ and Marital&#x3D;“未婚”;">
 <meta property="og:type" content="article">
 <meta property="og:title" content="位图索引原理（BitMap index）">
 <meta property="og:url" content="http://hongyitong.github.io/2016/08/22/%E4%BD%8D%E5%9B%BE%E7%B4%A2%E5%BC%95%E5%8E%9F%E7%90%86%EF%BC%88BitMap%20index%EF%BC%89/index.html">
 <meta property="og:site_name" content="忆桐之家的博客">
-<meta property="og:description" content="1. 案例　　有张表名为table的表，由三列组成，分别是姓名、性别和婚姻状况，其中性别只有男和女两项，婚姻状况由已婚、未婚、离婚这三项，该表共有100w个记录。现在有这样的查询：     select * from table where Gender&#x3D;‘男’ and Marital&#x3D;“未婚”;">
+<meta property="og:description" content="1. 案例 　　有张表名为table的表，由三列组成，分别是姓名、性别和婚姻状况，其中性别只有男和女两项，婚姻状况由已婚、未婚、离婚这三项，该表共有100w个记录。现在有这样的查询： select * from table where Gender&#x3D;‘男’ and Marital&#x3D;“未婚”;">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://hongyitong.github.io/img/%E4%BD%8D%E5%9B%BE%E7%B4%A2%E5%BC%951.png">
 <meta property="og:image" content="http://hongyitong.github.io/img/%E4%BD%8D%E5%9B%BE%E7%B4%A2%E5%BC%952.png">
 <meta property="og:image" content="http://hongyitong.github.io/img/%E4%BD%8D%E5%9B%BE%E7%B4%A2%E5%BC%953.png">
 <meta property="og:image" content="http://hongyitong.github.io/img/%E4%BD%8D%E5%9B%BE%E7%B4%A2%E5%BC%954.png">
@@ -35,7 +34,7 @@
 <meta property="article:modified_time" content="2017-07-12T04:32:13.000Z">
 <meta property="article:author" content="Rayman.hung">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://hongyitong.github.io/img/%E4%BD%8D%E5%9B%BE%E7%B4%A2%E5%BC%951.png">
+<meta name="twitter:image" content="http://hongyitong.github.io/img/%E4%BD%8D%E5%9B%BE%E7%B4%A2%E5%BC%952.png">
 
 
 <link rel="canonical" href="http://hongyitong.github.io/2016/08/22/%E4%BD%8D%E5%9B%BE%E7%B4%A2%E5%BC%95%E5%8E%9F%E7%90%86%EF%BC%88BitMap%20index%EF%BC%89/">
@@ -152,7 +151,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E6%A1%88%E4%BE%8B"><span class="nav-number">1.</span> <span class="nav-text">1. 案例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%EF%BC%89%E4%B8%8D%E4%BD%BF%E7%94%A8%E7%B4%A2%E5%BC%95"><span class="nav-number">1.1.</span> <span class="nav-text">1）不使用索引</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%EF%BC%89B%E6%A0%91%E7%B4%A2%E5%BC%95"><span class="nav-number">1.2.</span> <span class="nav-text">2）B树索引**</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E4%BD%8D%E5%9B%BE%E7%B4%A2%E5%BC%95%E5%87%BA%E9%A9%AC"><span class="nav-number">2.</span> <span class="nav-text">2. 位图索引出马</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E4%BD%8D%E5%9B%BE%E7%B4%A2%E5%BC%95%E7%9A%84%E9%80%82%E7%94%A8%E6%9D%A1%E4%BB%B6"><span class="nav-number">3.</span> <span class="nav-text">3.位图索引的适用条件</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A1%88%E4%BE%8B"><span class="nav-number">1.</span> <span class="nav-text">1. 案例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%8D%E5%9B%BE%E7%B4%A2%E5%BC%95%E5%87%BA%E9%A9%AC"><span class="nav-number">2.</span> <span class="nav-text">2. 位图索引出马</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%8D%E5%9B%BE%E7%B4%A2%E5%BC%95%E7%9A%84%E9%80%82%E7%94%A8%E6%9D%A1%E4%BB%B6"><span class="nav-number">3.</span> <span class="nav-text">3.位图索引的适用条件</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -284,14 +283,35 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h2 id="1-案例"><a href="#1-案例" class="headerlink" title="1. 案例"></a>1. 案例</h2><p>　　有张表名为table的表，由三列组成，分别是姓名、性别和婚姻状况，其中性别只有男和女两项，婚姻状况由已婚、未婚、离婚这三项，该表共有100w个记录。现在有这样的查询：     select * from table where Gender=‘男’ and Marital=“未婚”;<br><img src="/img/位图索引1.png" alt=""><br><span id="more"></span></p>
-<h3 id="1）不使用索引"><a href="#1）不使用索引" class="headerlink" title="1）不使用索引"></a>1）不使用索引</h3><p>　　不使用索引时，数据库只能一行行扫描所有记录，然后判断该记录是否满足查询条件。</p>
-<h3 id="2）B树索引"><a href="#2）B树索引" class="headerlink" title="2）B树索引**"></a>2）B树索引**</h3><p>　　对于性别，可取值的范围只有’男’,’女’，并且男和女可能各站该表的50%的数据，这时添加B树索引还是需要取出一半的数据， 因此完全没有必要。相反，如果某个字段的取值范围很广，几乎没有重复，比如身份证号，此时使用B树索引较为合适。事实上，当取出的行数据占用表中大部分的数据时，即使添加了B树索引，数据库如oracle、mysql也不会使用B树索引，很有可能还是一行行全部扫描。</p>
-<h2 id="2-位图索引出马"><a href="#2-位图索引出马" class="headerlink" title="2. 位图索引出马"></a>2. 位图索引出马</h2><p>如果用户查询的列的基数非常的小， 即只有的几个固定值，如性别、婚姻状况、行政区等等。要为这些基数值比较小的列建索引，就需要建立位图索引。<br>对于性别这个列，位图索引形成两个向量，男向量为10100…，向量的每一位表示该行是否是男，如果是则位1，否为0，同理，女向量位01011。<br><img src="/img/位图索引2.png" alt=""></p>
-<p>对于婚姻状况这一列，位图索引生成三个向量，已婚为11000…，未婚为00100…，离婚为00010…。<br><img src="/img/位图索引3.png" alt=""></p>
-<p>当我们使用查询语句“select * from table where Gender=‘男’ and Marital=“未婚”;”的时候 首先取出男向量10100…，然后取出未婚向量00100…，将两个向量做and操作，这时生成新向量00100…，可以发现第三位为1，表示该表的第三行数据就是我们需要查询的结果。<br><img src="/img/位图索引4.png" alt=""></p>
-<h2 id="3-位图索引的适用条件"><a href="#3-位图索引的适用条件" class="headerlink" title="3.位图索引的适用条件"></a>3.位图索引的适用条件</h2><p>　　上面讲了，位图索引适合只有几个固定值的列，如性别、婚姻状况、行政区等等，而身份证号这种类型不适合用位图索引。<br>　　此外，位图索引适合静态数据，而不适合索引频繁更新的列。举个例子，有这样一个字段busy，记录各个机器的繁忙与否，当机器忙碌时，busy为1，当机器不忙碌时，busy为0。<br>　　这个时候有人会说使用位图索引，因为busy只有两个值。好，我们使用位图索引索引busy字段！假设用户A使用update更新某个机器的busy值，比如update table set table.busy=1 where rowid=100;，但还没有commit，而用户B也使用update更新另一个机器的busy值，update table set table.busy=1 where rowid=12; 这个时候用户B怎么也更新不了，需要等待用户A commit。<br>　　原因：用户A更新了某个机器的busy值为1，会导致所有busy为1的机器的位图向量发生改变，因此数据库会将busy＝1的所有行锁定，只有commit之后才解锁。</p>
-<p>转载自：<a target="_blank" rel="noopener" href="http://www.cnblogs.com/LBSer">http://www.cnblogs.com/LBSer</a></p>
+        <h2 id="案例">1. 案例</h2>
+<p>　　有张表名为table的表，由三列组成，分别是姓名、性别和婚姻状况，其中性别只有男和女两项，婚姻状况由已婚、未婚、离婚这三项，该表共有100w个记录。现在有这样的查询：
+select * from table where Gender=‘男’ and Marital=“未婚”; <img
+src="/img/位图索引1.png" /> <span id="more"></span> ### 1）不使用索引
+　　不使用索引时，数据库只能一行行扫描所有记录，然后判断该记录是否满足查询条件。
+### 2）B树索引**
+　　对于性别，可取值的范围只有'男','女'，并且男和女可能各站该表的50%的数据，这时添加B树索引还是需要取出一半的数据，
+因此完全没有必要。相反，如果某个字段的取值范围很广，几乎没有重复，比如身份证号，此时使用B树索引较为合适。事实上，当取出的行数据占用表中大部分的数据时，即使添加了B树索引，数据库如oracle、mysql也不会使用B树索引，很有可能还是一行行全部扫描。</p>
+<h2 id="位图索引出马">2. 位图索引出马</h2>
+<p>如果用户查询的列的基数非常的小，
+即只有的几个固定值，如性别、婚姻状况、行政区等等。要为这些基数值比较小的列建索引，就需要建立位图索引。
+对于性别这个列，位图索引形成两个向量，男向量为10100...，向量的每一位表示该行是否是男，如果是则位1，否为0，同理，女向量位01011。
+<img src="/img/位图索引2.png" /></p>
+<p>对于婚姻状况这一列，位图索引生成三个向量，已婚为11000...，未婚为00100...，离婚为00010...。
+<img src="/img/位图索引3.png" /></p>
+<p>当我们使用查询语句“select * from table where Gender=‘男’ and
+Marital=“未婚”;”的时候
+首先取出男向量10100...，然后取出未婚向量00100...，将两个向量做and操作，这时生成新向量00100...，可以发现第三位为1，表示该表的第三行数据就是我们需要查询的结果。
+<img src="/img/位图索引4.png" /></p>
+<h2 id="位图索引的适用条件">3.位图索引的适用条件</h2>
+<p>　　上面讲了，位图索引适合只有几个固定值的列，如性别、婚姻状况、行政区等等，而身份证号这种类型不适合用位图索引。
+　　此外，位图索引适合静态数据，而不适合索引频繁更新的列。举个例子，有这样一个字段busy，记录各个机器的繁忙与否，当机器忙碌时，busy为1，当机器不忙碌时，busy为0。
+　　这个时候有人会说使用位图索引，因为busy只有两个值。好，我们使用位图索引索引busy字段！假设用户A使用update更新某个机器的busy值，比如update
+table set table.busy=1 where
+rowid=100;，但还没有commit，而用户B也使用update更新另一个机器的busy值，update
+table set table.busy=1 where rowid=12;
+这个时候用户B怎么也更新不了，需要等待用户A commit。
+　　原因：用户A更新了某个机器的busy值为1，会导致所有busy为1的机器的位图向量发生改变，因此数据库会将busy＝1的所有行锁定，只有commit之后才解锁。</p>
+<p>转载自：http://www.cnblogs.com/LBSer</p>
 
     </div>
 
