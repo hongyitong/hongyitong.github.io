@@ -28,7 +28,7 @@
 <meta property="og:description" content="散列表的应用 涉及到数据查找比对，首先考虑到使用HashSet。HashSet最大的好处就是实现查找时间复杂度为O（1）。使用HashSet需要解决一个重要问题：冲突问题。对比研究了网上一些字符串哈希函数，发现几乎所有的流行的HashMap都采用了DJB Hash Function，俗称“Times33”算法。Times33的算法很简单，就是对字符串逐字符迭代乘以33，见下面算法原型:hash(i">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2017-01-12T07:03:00.000Z">
-<meta property="article:modified_time" content="2017-07-12T06:42:15.000Z">
+<meta property="article:modified_time" content="2024-04-10T08:18:00.040Z">
 <meta property="article:author" content="Rayman.hung">
 <meta property="article:tag" content="Hash">
 <meta property="article:tag" content="time33">
@@ -173,7 +173,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags">
-        <span class="site-state-item-count">1107</span>
+        <span class="site-state-item-count">1108</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -268,7 +268,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2017-07-12 14:42:15" itemprop="dateModified" datetime="2017-07-12T14:42:15+08:00">2017-07-12</time>
+      <time title="修改时间：2024-04-10 16:18:00" itemprop="dateModified" datetime="2024-04-10T16:18:00+08:00">2024-04-10</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -294,19 +294,22 @@
 target="_blank" rel="noopener" href="http://blog.csdn.net/v_JULY_v/article/details/6256463">散列表的应用</a></p>
 <p>涉及到数据查找比对，首先考虑到使用HashSet。HashSet最大的好处就是实现查找时间复杂度为O（1）。使用HashSet需要解决一个重要问题：冲突问题。对比研究了网上一些字符串哈希函数，发现几乎所有的流行的HashMap都采用了DJB
 Hash
-Function，俗称“Times33”算法。Times33的算法很简单，就是对字符串逐字符迭代乘以33，见下面算法原型:hash(i)=33*hash(i-1)+str[i]
-<code>c++ uint32_t time33(char const *str, int len)  &#123;          unsigned long  hash = 0;          for (int i = 0; i &lt; len; i++) &#123;              hash = hash *33 + (unsigned long) str[i];          &#125;          return hash;  &#125;</code>
-把乘法操作换成位操作(Java版)
-<code>java public String time33(String skey) &#123;         if (skey == null) return null;         int hash = 5381;         for (int i = 0, len = skey.length(); i &lt; len; ++i) &#123;             int cc = skey.charAt(i);             hash += (hash &lt;&lt; 5) + cc;         &#125;         hash &amp;= 0x7fffffff;         return String.valueOf(hash);     &#125;</code>
+Function，俗称“Times33”算法。Times33的算法很简单，就是对字符串逐字符迭代乘以33，见下面算法原型:hash(i)=33*hash(i-1)+str[i]</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">uint32_t</span> <span class="title">time33</span><span class="params">(<span class="type">char</span> <span class="type">const</span> *str, <span class="type">int</span> len)</span>   </span></span><br><span class="line"><span class="function"></span>&#123;   </span><br><span class="line">        <span class="type">unsigned</span> <span class="type">long</span>  hash = <span class="number">0</span>;   </span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; len; i++) &#123;   </span><br><span class="line">            hash = hash *<span class="number">33</span> + (<span class="type">unsigned</span> <span class="type">long</span>) str[i];   </span><br><span class="line">        &#125;   </span><br><span class="line">        <span class="keyword">return</span> hash;   </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>把乘法操作换成位操作(Java版)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> String <span class="title function_">time33</span><span class="params">(String skey)</span> &#123;  </span><br><span class="line">        <span class="keyword">if</span> (skey == <span class="literal">null</span>) <span class="keyword">return</span> <span class="literal">null</span>;  </span><br><span class="line">        <span class="type">int</span> <span class="variable">hash</span> <span class="operator">=</span> <span class="number">5381</span>;  </span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>, len = skey.length(); i &lt; len; ++i) &#123;  </span><br><span class="line">            <span class="type">int</span> <span class="variable">cc</span> <span class="operator">=</span> skey.charAt(i);  </span><br><span class="line">            hash += (hash &lt;&lt; <span class="number">5</span>) + cc;  </span><br><span class="line">        &#125;  </span><br><span class="line">        hash &amp;= <span class="number">0x7fffffff</span>;  </span><br><span class="line">        <span class="keyword">return</span> String.valueOf(hash);  </span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 <span id="more"></span>
-<strong>Time33在效率和随机性两方面上俱佳</strong>。对于一个Hash函数，评价其优劣的标准应为随机性，即对任意一组标本，进入Hash表每一个单元（cell）之概率的平均程度，因为这个概率越平均，数据在表中的分布就越平均，表的空间利用率就越高。</p>
+<p><strong>Time33在效率和随机性两方面上俱佳</strong>。对于一个Hash函数，评价其优劣的标准应为随机性，即对任意一组标本，进入Hash表每一个单元（cell）之概率的平均程度，因为这个概率越平均，数据在表中的分布就越平均，表的空间利用率就越高。</p>
 <p><strong>为什么初始值是5381？</strong>5381（001 010 100 000
 101），据说hash后的分布更好一些。</p>
-<p><strong>如何实现乘除运算和位运算之间的转化： </strong> a&lt;&lt;n
-在数值上等同于 a<em>2^n a&gt;&gt;n 在数值上等同于 a/2^n 比如 a</em>33
-(33=2^5+1)用位运算可以写成 ((a&lt;&lt;5)+a)</p>
-<p><strong>其它倍数</strong> Ngix使用的是 time31 Tokyo Cabinet使用的是
-time37 <strong>Bob在他的文章说，小写英文词汇适合33,
+<p><strong>如何实现乘除运算和位运算之间的转化：</strong><br />
+a&lt;&lt;n 在数值上等同于 a*2^n<br />
+a&gt;&gt;n 在数值上等同于 a/2^n<br />
+比如 a*33 (33=2^5+1)用位运算可以写成 ((a&lt;&lt;5)+a)</p>
+<p><strong>其它倍数</strong><br />
+Ngix使用的是 time31<br />
+Tokyo Cabinet使用的是 time37<br />
+<strong>Bob在他的文章说，小写英文词汇适合33,
 大小写混合使用65。time33比较适合的是英文词汇的hash.</strong></p>
 
     </div>

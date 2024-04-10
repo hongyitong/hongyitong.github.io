@@ -28,7 +28,7 @@
 <meta property="og:description" content="1、加盐 生成一个随机数，我们称之为salt，然后在数据库中记录salt和h&#x3D;hash(pwd + salt)，查询的时候，得到用户的口令p，然后从数据库中查出salt，计算hash(p+salt)，看是不是等于h，等于就是对的，不等于就是不对的。 单纯使用MD5之所以不好，并不是说MD5这种方法容易遭到破解，而事实上对于MD5求原象或者第二原象，也就是“逆计算”这种破解，没有什么很好的方法。只能">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2017-01-09T16:00:00.000Z">
-<meta property="article:modified_time" content="2017-07-12T03:13:05.000Z">
+<meta property="article:modified_time" content="2024-04-10T05:37:13.462Z">
 <meta property="article:author" content="Rayman.hung">
 <meta property="article:tag" content="加密">
 <meta property="article:tag" content="彩虹表">
@@ -151,7 +151,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8A%A0%E7%9B%90"><span class="nav-number">1.</span> <span class="nav-text">1、加盐</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8A%A0%E7%9B%90"><span class="nav-number">1.</span> <span class="nav-text">1、加盐</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8F%90%E9%AB%98%E5%A4%8D%E6%9D%82%E5%BA%A6"><span class="nav-number">2.</span> <span class="nav-text">2、提高复杂度</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -175,7 +175,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags">
-        <span class="site-state-item-count">1107</span>
+        <span class="site-state-item-count">1108</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -270,7 +270,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2017-07-12 11:13:05" itemprop="dateModified" datetime="2017-07-12T11:13:05+08:00">2017-07-12</time>
+      <time title="修改时间：2024-04-10 13:37:13" itemprop="dateModified" datetime="2024-04-10T13:37:13+08:00">2024-04-10</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -295,25 +295,29 @@
         <h1 id="加盐">1、加盐</h1>
 <p><strong>生成一个随机数，我们称之为salt，然后在数据库中记录salt和h=hash(pwd
 +
-salt)，查询的时候，得到用户的口令p</strong>，然后从数据库中查出salt，计算hash(p+salt)，看是不是等于h，等于就是对的，不等于就是不对的。
-单纯使用MD5之所以不好，并不是说MD5这种方法容易遭到破解，而事实上对于MD5求原象或者第二原象，也就是“逆计算”这种破解，没有什么很好的方法。只能通过预先计算知道许多MD5的对应关系，存在数据库中，然后使用的时候反查，例如我知道’password’的MD5值是5f4dcc3b5aa765d61d8327deb882cf99，那么我就用一个数据库存起来，只要我看到5f4dcc3b5aa765d61d8327deb882cf99，我就知道这个是口令’password‘使用MD5处理之后的值，原来的口令就是’password’。MD5在身份鉴别系统中用于口令保护已经是很久了事情了，<strong>大部分黑客也有针对这种Hash方式准备相应的数据库进行反查，这种数据库称为彩虹表</strong>。<span id="more"></span>
-所以，为了对抗彩虹表，我们要做的工作是避免预先计算，让攻击者无法（或者非常困难）提前计算好彩虹表。
+salt)，查询的时候，得到用户的口令p</strong>，然后从数据库中查出salt，计算hash(p+salt)，看是不是等于h，等于就是对的，不等于就是不对的。<br />
+单纯使用MD5之所以不好，并不是说MD5这种方法容易遭到破解，而事实上对于MD5求原象或者第二原象，也就是“逆计算”这种破解，没有什么很好的方法。只能通过预先计算知道许多MD5的对应关系，存在数据库中，然后使用的时候反查，例如我知道’password’的MD5值是5f4dcc3b5aa765d61d8327deb882cf99，那么我就用一个数据库存起来，只要我看到5f4dcc3b5aa765d61d8327deb882cf99，我就知道这个是口令’password‘使用MD5处理之后的值，原来的口令就是’password’。MD5在身份鉴别系统中用于口令保护已经是很久了事情了，<strong>大部分黑客也有针对这种Hash方式准备相应的数据库进行反查，这种数据库称为彩虹表</strong>。<span id="more"></span><br />
+所以，为了对抗彩虹表，我们要做的工作是避免预先计算，让攻击者无法（或者非常困难）提前计算好彩虹表。<br />
 为了反映为何彩虹表计算是可行的，我们再来算一下。我们假设用户可能输入的口令是键盘上的小写字母和数字，共26+10=36种，之所以这样假设是因为
-一个用户比较多的系统中总是会有一些弱口令用户的，我们假设输入的口令至少5个字符，至多12个字符，那么用户可能的输入一共有：
-<span class="math display">\[
-\sum_{i=5}^{12}{36^i} = 4873763662271935488 \approx 2^{64}
-\]</span> 而12个字节可能的组合应有 <span class="math display">\[
-2^{8 \times 12} = 2^{96}
-\]</span>
+一个用户比较多的系统中总是会有一些弱口令用户的，我们假设输入的口令至少5个字符，至多12个字符，那么用户可能的输入一共有：<br />
+<span class="math display">\[  
+\sum_{i=5}^{12}{36^i} = 4873763662271935488 \approx 2^{64}  
+\]</span><br />
+而12个字节可能的组合应有<br />
+<span class="math display">\[  
+2^{8 \times 12} = 2^{96}  
+\]</span><br />
 种。如果再考虑到用户为了方便记忆，输入的口令是一些已经存在的单词或是词组，可能的输入将会远远少于<span
-class="math display">\[2^{64}\]</span>。用户可能的输入少了，就给了我们枚举的空间。
+class="math inline">\(2^{64}\)</span>
+。用户可能的输入少了，就给了我们枚举的空间。<br />
 为了阻止这种枚举，加salt的方法是扩大用户输入的一种简单有效的途径，随机生成一个16字节的随机数，加上用户本身输入的至多12个字符的口令，可能的输入就有<span
-class="math display">\[2^{64} \times 2^{16 \times
-8}=2^{160}\]</span>种，这么多种可能性，任何一个机构和组织都没有办法存储规模如此庞大的彩虹表。
-# 2、提高复杂度
-另外一种方法是通过提升Hash的复杂度，延长攻击者进行暴力破解时所消耗的时间。现在显卡用于并行计算实在太容易，6位纯数字的口令在显卡看来就是秒破。Hash算法的多次迭代就是最简单的延长计算时间的方法，Apache的htpasswd就使用了MD5的1000次迭代，不过只是使得这些口令稍微难破解一些。
+class="math inline">\(2^{64} \times 2^{16 \times 8}=2^{160}\)</span>
+种，这么多种可能性，任何一个机构和组织都没有办法存储规模如此庞大的彩虹表。</p>
+<h1 id="提高复杂度">2、提高复杂度</h1>
+<p>另外一种方法是通过提升Hash的复杂度，延长攻击者进行暴力破解时所消耗的时间。现在显卡用于并行计算实在太容易，6位纯数字的口令在显卡看来就是秒破。Hash算法的多次迭代就是最简单的延长计算时间的方法，Apache的htpasswd就使用了MD5的1000次迭代，不过只是使得这些口令稍微难破解一些。<br />
 另外，题中使用了SHA1和MD5两种算法的方法，除了稍微提升一点计算的难度以外，并没有多好，这种组合方法不能增加用户输入的可能性，另外虽然SHA1生成的是160位的Hash，但是由于输入是一个128位的MD5，所以输出也至多只可能有<span
-class="math display">\[2^{128}\]</span>种可能，猜测的范围也没有缩小。所以这是原来回答我建议你使用更多次数（如1000次）MD5迭代的原因，至少应当有一个方面有稍微大一些的加强。
+class="math inline">\(2^{128}\)</span>
+种可能，猜测的范围也没有缩小。所以这是原来回答我建议你使用更多次数（如1000次）MD5迭代的原因，至少应当有一个方面有稍微大一些的加强。<br />
 另外此文（暴力密码破解器 ocl-Hashcat-plus 支持每秒猜测最多 80
 亿个密码，意味着什么？）中有数据可以供参考，bcrypt是一种有效对抗口令Hash破解的算法，建议使用。</p>
 
