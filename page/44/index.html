@@ -157,7 +157,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives">
-          <span class="site-state-item-count">865</span>
+          <span class="site-state-item-count">866</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -168,7 +168,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags">
-        <span class="site-state-item-count">1108</span>
+        <span class="site-state-item-count">1111</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -217,6 +217,91 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2016/09/06/Oracle%20%E4%B8%9A%E5%8A%A1%E8%A1%A8%E6%B7%BB%E5%8A%A0%E6%97%B6%E9%97%B4%E6%88%B3%E8%A7%A6%E5%8F%91%E5%99%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="忆桐之家的博客">
+      <meta itemprop="description" content="技术分享、读书心得、亲子时刻">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | 忆桐之家的博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2016/09/06/Oracle%20%E4%B8%9A%E5%8A%A1%E8%A1%A8%E6%B7%BB%E5%8A%A0%E6%97%B6%E9%97%B4%E6%88%B3%E8%A7%A6%E5%8F%91%E5%99%A8/" class="post-title-link" itemprop="url">Oracle 业务表添加时间戳触发器</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016-09-06 00:00:00" itemprop="dateCreated datePublished" datetime="2016-09-06T00:00:00+08:00">2016-09-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-04-10 15:41:53" itemprop="dateModified" datetime="2024-04-10T15:41:53+08:00">2024-04-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E6%9C%AF%E7%9B%B8%E5%85%B3/" itemprop="url" rel="index"><span itemprop="name">技术相关</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*Oracle 业务表添加时间戳触发器*/</span>  </span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">OR</span> REPLACE <span class="keyword">PROCEDURE</span> &quot;P_ADD_KETTLE&quot; (  </span><br><span class="line">  table_name VARCHAR2) <span class="keyword">AS</span>  </span><br><span class="line"><span class="keyword">BEGIN</span>  </span><br><span class="line">    DBMS_OUTPUT.PUT_LINE(table_name);  </span><br><span class="line">    <span class="comment">--添加时间戳列  </span></span><br><span class="line">    <span class="keyword">EXECUTE</span> IMMEDIATE <span class="string">&#x27;Alter Table &quot;&#x27;</span><span class="operator">||</span> table_name <span class="operator">||</span> <span class="string">&#x27;&quot; add KETTLE_LASTMODIFY TIMESTAMP (6) DEFAULT current_timestamp&#x27;</span>;  </span><br><span class="line">    <span class="keyword">COMMIT</span>;  </span><br><span class="line">    <span class="comment">--添加触发器  </span></span><br><span class="line">    <span class="keyword">EXECUTE</span> IMMEDIATE <span class="string">&#x27;CREATE OR REPLACE TRIGGER KL_&#x27;</span><span class="operator">||</span> SUBSTR(<span class="string">&#x27;KL_&#x27;</span> <span class="operator">||</span> table_name,<span class="number">4</span>,<span class="number">27</span>) <span class="operator">||</span> <span class="string">&#x27;  </span></span><br><span class="line"><span class="string">    BEFORE Insert or Update  ON &quot;&#x27;</span><span class="operator">||</span> table_name <span class="operator">||</span> <span class="string">&#x27;&quot;  </span></span><br><span class="line"><span class="string">    FOR EACH ROW  </span></span><br><span class="line"><span class="string">    DECLARE  </span></span><br><span class="line"><span class="string">      -- local variables here  </span></span><br><span class="line"><span class="string">    BEGIN  </span></span><br><span class="line"><span class="string">      :NEW.KETTLE_LASTMODIFY := current_timestamp;  </span></span><br><span class="line"><span class="string">    END;&#x27;</span>;  </span><br><span class="line">    <span class="keyword">COMMIT</span>;  </span><br><span class="line">  DBMS_OUTPUT.PUT_LINE(<span class="string">&#x27;PROCESS OK...&#x27;</span>);  </span><br><span class="line">  </span><br><span class="line"><span class="keyword">END</span> p_add_kettle;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1047,103 +1132,6 @@ UTC基于国际原子时，并通过不规则的加入闰秒来抵消地球自�
 在军事中，协调世界时区会使用“Z”来表示。而在航空上，所有使用的时间划一规定是协调世界时。而且Z在无线电中应以北约音标字母读作“Zulu”，协调世界时也会被称为“Zulu
 time”。比如说飞机在香港时间（UTC+8）18:00整起飞，就会写成1000z，又或者读作“1000Zulu”。</p>
 
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2016/08/30/%E5%A4%9A%E5%AF%B9%E5%A4%9A%E7%BB%B4%E5%BA%A6%E6%88%96%E5%A4%9A%E5%80%BC%E7%BB%B4%E5%BA%A6-%E6%A1%A5%E6%8E%A5%E8%A1%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Rayman.hung">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="忆桐之家的博客">
-      <meta itemprop="description" content="技术分享、读书心得、亲子时刻">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | 忆桐之家的博客">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2016/08/30/%E5%A4%9A%E5%AF%B9%E5%A4%9A%E7%BB%B4%E5%BA%A6%E6%88%96%E5%A4%9A%E5%80%BC%E7%BB%B4%E5%BA%A6-%E6%A1%A5%E6%8E%A5%E8%A1%A8/" class="post-title-link" itemprop="url">多对多维度或多值维度-桥接表</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2016-08-30 00:00:00" itemprop="dateCreated datePublished" datetime="2016-08-30T00:00:00+08:00">2016-08-30</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-04-10 13:28:35" itemprop="dateModified" datetime="2024-04-10T13:28:35+08:00">2024-04-10</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%8A%80%E6%9C%AF%E7%9B%B8%E5%85%B3/" itemprop="url" rel="index"><span itemprop="name">技术相关</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="多对多维度或多值维度">多对多维度或多值维度</h1>
-<p>维度表和事实表之间的标准关系是一对多关系，这意味着维度表中的一行记录会连接事实表中的多行记录，但是事实表中的一行记录在维度表中只关联一行记录。这种关系很重要，因为它防止了重复计数。幸运的是，在大多数情况下都是这种一对多关系。<br />
-在现实世界中还存在比一对多关系更复杂的两种常见情况：<br />
-事实表和维度表之间的多对多关系。<br />
-维度表之间的多对多关系。<br />
-这两种情况本质是相同的，但事实表和维度表之间的多对多关系少了唯一描述事实和维度组的中间维度。
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2016/08/30/%E5%A4%9A%E5%AF%B9%E5%A4%9A%E7%BB%B4%E5%BA%A6%E6%88%96%E5%A4%9A%E5%80%BC%E7%BB%B4%E5%BA%A6-%E6%A1%A5%E6%8E%A5%E8%A1%A8/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
       
     </div>
 

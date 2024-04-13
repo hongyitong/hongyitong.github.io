@@ -157,7 +157,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives">
-          <span class="site-state-item-count">865</span>
+          <span class="site-state-item-count">866</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -168,7 +168,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags">
-        <span class="site-state-item-count">1108</span>
+        <span class="site-state-item-count">1111</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -217,6 +217,125 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2018/08/28/TPS%E3%80%81%E5%B9%B6%E5%8F%91%E3%80%81%E5%93%8D%E5%BA%94%E6%97%B6%E9%97%B4%E8%AF%A6%E8%A7%A3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="忆桐之家的博客">
+      <meta itemprop="description" content="技术分享、读书心得、亲子时刻">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | 忆桐之家的博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2018/08/28/TPS%E3%80%81%E5%B9%B6%E5%8F%91%E3%80%81%E5%93%8D%E5%BA%94%E6%97%B6%E9%97%B4%E8%AF%A6%E8%A7%A3/" class="post-title-link" itemprop="url">TPS、并发、响应时间详解</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-08-28 00:00:00" itemprop="dateCreated datePublished" datetime="2018-08-28T00:00:00+08:00">2018-08-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-04-11 10:26:11" itemprop="dateModified" datetime="2024-04-11T10:26:11+08:00">2024-04-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%8A%80%E6%9C%AF%E7%9B%B8%E5%85%B3/" itemprop="url" rel="index"><span itemprop="name">技术相关</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="一tps举例">一、TPS举例</h1>
+<p>例子：一个高速路有10个入口，每个入口每秒钟只能进1辆车<br />
+1、请问1秒钟最多能进几辆车？<br />
+TPS=10<br />
+2、每辆车需要多长时间进行响应？<br />
+reponse time = 1<br />
+3、改成20辆车，每秒能进几辆？每辆车的响应时间是多长？<br />
+TPS = 10，reponse time = 1 (10个为一等份，分成两等份，平均tps
+(10/1+10/2)/2=7.5 平均响应时间(2+1)/2=1.5<br />
+4、入口扩展到20个，每秒能进几辆？每辆车的响应时间是多长？<br />
+TPS = 20，reponse time = 1<br />
+5、看看，现在TPS变了，响应时间没变，TPS和响应时间有关系吗？<br />
+木有关系<br />
+6、如何理解？<br />
+TPS和响应时间在理想状态下都是额定值(联想运行一个压力测试场景来考虑)，把入口看成线程池，如果有20个入口，并发数只有10的时候，TPS就是10，而响应时间始终是1，说明并发数不够，需要增加并发数达到TPS的峰值。<br />
+7、同样是20个入口，如果并发数变成100的话，TPS和响应时间会怎么样呢？<br />
+并发数到100的时候，就会出现堵车，堵车了平均每个车过去的时间就长了，把100个车按照20一份分成5份，第5份的等待时间就是最长的，从等待开始到这个车进去，实际花费了5秒，那100辆车都过去的响应时间就是（5+4+3+2+1）/5=3，平均的TPS就是（20/1+20/2+20/3+20/4+20/5)/5=9.13（我怎么感觉应该是100/（5+4+3+2+1）=6.67
+完成的事务总数/完成事务数的时间，使用该方法计算出来的tps会稍微小些,可以乘以1.5倍作为当前tps）<br />
+8、由此可知，TPS和响应时间宏观上是倒数关系，但是两者实际上木有直接的关系的，在上例中，系统只存在20个线程，100的并发就会造成线程的等待，引起平均响应时间从1秒增加到3秒，TPS从20下降到9，TPS和响应时间都是单独计算出来的，并不是互相算出来的！<br />
+9、同样可知，在并发量保持不变的情况下，提高TPS的手段有几种？<br />
+A、增加线程池的数量（入口）B、降低每辆车入关的时间（也就是提高单个线程的处理效率）<br />
+10、从TPS和response time的定义查看这2者的区别？<br />
+TPS =
+在场景或者灰化步骤运行的每一秒钟中，每个事务通过、失败以及停止的次数<br />
+<strong>也就是说，TPS =
+总的通过、失败的事务总数/整个场景的运行时间；<br />
+reponse time = 每个事务完成实际需要的时间/事务处理数目<br />
+因此，这2个东西压根就是木有关系的！</strong><br />
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2018/08/28/TPS%E3%80%81%E5%B9%B6%E5%8F%91%E3%80%81%E5%93%8D%E5%BA%94%E6%97%B6%E9%97%B4%E8%AF%A6%E8%A7%A3/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1088,98 +1207,6 @@ Max后的看法。
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2018/08/16/%E7%89%B9%E8%89%B2%E5%B0%8F%E9%95%87-%E7%89%A9%E8%81%94%E7%BD%91%E6%8A%80%E6%9C%AF%E4%BA%A4%E6%B5%81/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2018/08/15/%E9%98%BF%E9%87%8C%E4%B8%AD%E5%8F%B0%E6%96%B0%E9%9B%B6%E5%94%AE%E7%A0%94%E8%AE%A8%E4%BC%9A/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Rayman.hung">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="忆桐之家的博客">
-      <meta itemprop="description" content="技术分享、读书心得、亲子时刻">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | 忆桐之家的博客">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2018/08/15/%E9%98%BF%E9%87%8C%E4%B8%AD%E5%8F%B0%E6%96%B0%E9%9B%B6%E5%94%AE%E7%A0%94%E8%AE%A8%E4%BC%9A/" class="post-title-link" itemprop="url">阿里中台新零售研讨会</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2018-08-15 00:00:00" itemprop="dateCreated datePublished" datetime="2018-08-15T00:00:00+08:00">2018-08-15</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-04-11 10:19:05" itemprop="dateModified" datetime="2024-04-11T10:19:05+08:00">2024-04-11</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%8A%80%E6%9C%AF%E7%9B%B8%E5%85%B3/" itemprop="url" rel="index"><span itemprop="name">技术相关</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p><img src="/img/阿里新零售1.jpg" /><br />
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2018/08/15/%E9%98%BF%E9%87%8C%E4%B8%AD%E5%8F%B0%E6%96%B0%E9%9B%B6%E5%94%AE%E7%A0%94%E8%AE%A8%E4%BC%9A/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
