@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="相关概念  协方差、自相关、偏相关、时间序列建模、时间序列预测、ARIMA、P值、t检验。 风险&#x3D;波动&#x3D;方差&#x3D;离散度  几个概念定义 https:&#x2F;&#x2F;blog.csdn.net&#x2F;Yuting_Sunshine&#x2F;article&#x2F;details&#x2F;95317735">
+<meta property="og:type" content="article">
+<meta property="og:title" content="金融时间序列相关分析模型资料">
+<meta property="og:url" content="http://hongyitong.github.io/2024/05/28/%E9%87%91%E8%9E%8D%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E7%9B%B8%E5%85%B3%E5%88%86%E6%9E%90%E6%A8%A1%E5%9E%8B%E8%B5%84%E6%96%99/index.html">
+<meta property="og:site_name" content="忆桐之家的博客">
+<meta property="og:description" content="相关概念  协方差、自相关、偏相关、时间序列建模、时间序列预测、ARIMA、P值、t检验。 风险&#x3D;波动&#x3D;方差&#x3D;离散度  几个概念定义 https:&#x2F;&#x2F;blog.csdn.net&#x2F;Yuting_Sunshine&#x2F;article&#x2F;details&#x2F;95317735">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/img2/%E5%90%84%E7%A7%8D%E5%88%86%E5%B8%83%E6%A6%82%E7%8E%87%E5%AF%86%E5%BA%A6%E5%87%BD%E6%95%B0.png">
+<meta property="article:published_time" content="2024-05-27T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-05-28T04:11:24.860Z">
+<meta property="article:author" content="Rayman.hung">
+<meta property="article:tag" content="金融">
+<meta property="article:tag" content="数学模型">
+<meta property="article:tag" content="VaR">
+<meta property="article:tag" content="ARIMA">
+<meta property="article:tag" content="Python">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hongyitong.github.io/img2/%E5%90%84%E7%A7%8D%E5%88%86%E5%B8%83%E6%A6%82%E7%8E%87%E5%AF%86%E5%BA%A6%E5%87%BD%E6%95%B0.png">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2024/05/28/%E9%87%91%E8%9E%8D%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E7%9B%B8%E5%85%B3%E5%88%86%E6%9E%90%E6%A8%A1%E5%9E%8B%E8%B5%84%E6%96%99/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2024/05/28/%E9%87%91%E8%9E%8D%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E7%9B%B8%E5%85%B3%E5%88%86%E6%9E%90%E6%A8%A1%E5%9E%8B%E8%B5%84%E6%96%99/","path":"2024/05/28/金融时间序列相关分析模型资料/","title":"金融时间序列相关分析模型资料"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>金融时间序列相关分析模型资料 | 忆桐之家的博客</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">忆桐之家的博客</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman&Tony</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li><li class="menu-item menu-item-tags"><a href="/tags" rel="section">标签</a></li><li class="menu-item menu-item-commonweal"><a href="/404.html" rel="section">公益 404</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5"><span class="nav-number">1.</span> <span class="nav-text">相关概念</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%A0%E4%B8%AA%E6%A6%82%E5%BF%B5%E5%AE%9A%E4%B9%89"><span class="nav-number">1.1.</span> <span class="nav-text">几个概念定义</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97"><span class="nav-number">1.1.1.</span> <span class="nav-text">时间序列</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E7%9B%B8%E5%85%B3%E5%87%BD%E6%95%B0-acf"><span class="nav-number">1.1.2.</span> <span class="nav-text">自相关函数 (ACF)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%81%8F%E8%87%AA%E7%9B%B8%E5%85%B3%E5%87%BD%E6%95%B0pacf"><span class="nav-number">1.1.3.</span> <span class="nav-text">偏自相关函数（PACF）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BD%AE%E4%BF%A1%E5%BA%A6%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="nav-number">1.1.4.</span> <span class="nav-text">置信度的概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#t%E5%88%86%E5%B8%83"><span class="nav-number">1.1.5.</span> <span class="nav-text">T分布</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8A%95%E8%B5%84%E7%9A%84%E7%9B%AE%E7%9A%84"><span class="nav-number">2.</span> <span class="nav-text">投资的目的</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%A3%8E%E9%99%A9%E4%BB%B7%E5%80%BC%E6%A8%A1%E5%9E%8Bvar"><span class="nav-number">3.</span> <span class="nav-text">风险价值模型（VaR）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%85%B3%E9%94%AE"><span class="nav-number">4.</span> <span class="nav-text">模型的关键</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%83%E7%A7%8D%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E9%A2%84%E6%B5%8B%E6%96%B9%E6%B3%95"><span class="nav-number">5.</span> <span class="nav-text">七种时间序列预测方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#arima%E6%A8%A1%E5%9E%8B"><span class="nav-number">6.</span> <span class="nav-text">ARIMA模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#var%E9%A3%8E%E9%99%A9%E6%B5%8B%E5%BA%A6"><span class="nav-number">7.</span> <span class="nav-text">VaR风险测度</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F"><span class="nav-number">8.</span> <span class="nav-text">注意⚠️</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、亲子时刻</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives">
+          <span class="site-state-item-count">870</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags">
+        <span class="site-state-item-count">1121</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/hongyitong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hongyitong" rel="noopener" target="_blank">GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://blog.sina.com.cn/yitonghong" title="忆桐之家 → http:&#x2F;&#x2F;blog.sina.com.cn&#x2F;yitonghong" rel="noopener" target="_blank">忆桐之家</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://douban.com/people/2780741" title="豆瓣 → http:&#x2F;&#x2F;douban.com&#x2F;people&#x2F;2780741" rel="noopener" target="_blank">豆瓣</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.zhihu.com/people/rayman-36" title="知乎 → http:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;rayman-36" rel="noopener" target="_blank">知乎</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.liaoxuefeng.com/" title="廖雪峰的官方网站 → http:&#x2F;&#x2F;www.liaoxuefeng.com&#x2F;" rel="noopener" target="_blank">廖雪峰的官方网站</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.vaikan.com/" title="外刊IT评论 → http:&#x2F;&#x2F;www.vaikan.com&#x2F;" rel="noopener" target="_blank">外刊IT评论</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2024/05/28/%E9%87%91%E8%9E%8D%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E7%9B%B8%E5%85%B3%E5%88%86%E6%9E%90%E6%A8%A1%E5%9E%8B%E8%B5%84%E6%96%99/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="忆桐之家的博客">
+      <meta itemprop="description" content="技术分享、读书心得、亲子时刻">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="金融时间序列相关分析模型资料 | 忆桐之家的博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          金融时间序列相关分析模型资料
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2024-05-28 00:00:00 / 修改时间：12:11:24" itemprop="dateCreated datePublished" datetime="2024-05-28T00:00:00+08:00">2024-05-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%96%87%E5%8F%B2%E6%95%B0%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">文史数理</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="相关概念">相关概念</h1>
+<ul>
+<li>协方差、自相关、偏相关、时间序列建模、时间序列预测、ARIMA、P值、t检验。</li>
+<li>风险=波动=方差=离散度</li>
+</ul>
+<h2 id="几个概念定义">几个概念定义</h2>
+<p>https://blog.csdn.net/Yuting_Sunshine/article/details/95317735</p>
+<span id="more"></span>
+<h3 id="时间序列">时间序列</h3>
+<p>每个时间序列数据集都可以分解为其组成部分，即趋势、季节性和残差。</p>
+<ul>
+<li>时间序列的正式定义如下：它是一系列在相同时间间隔内测量到的数据点。</li>
+<li>该序列中的每个数据点都与先前的数据点相关。 （所以可以用来预测）</li>
+</ul>
+<h3 id="自相关函数-acf">自相关函数 (ACF)</h3>
+<p>延迟为 k 时，这是相距 k 个时间间隔的序列值之间的相关性。<br />
+偏自相关函数 (PACF)。延迟为 k 时，这是相距 k
+个时间间隔的序列值之间的相关性，同时考虑了间隔之间的值。</p>
+<h3 id="偏自相关函数pacf">偏自相关函数（PACF）</h3>
+<p>偏自相关函数用来度量暂时调整所有其他较短滞后的项 (y_{t-1}, y_{t-2},
+…, y_{t-k-1}) 之后，时间序列中以 k
+个时间单位（y_{t}和y_{t-k}）分隔的观测值之间的相关。<br />
+类似游泳和冷饮销售， (y_{t-1}, y_{t-2}, …, y_{t-k-1})
+就类似增加气温及其它控制参数（这里是K-1个参数）<br />
+偏自相关是剔除干扰后时间序列观察与先前时间步长时间序列观察之间关系的总结。在滞后k处的偏自相关是在消除由于较短滞后条件导致的任何相关性的影响之后产生的相关性。一项观察的自相关和在先验时间步上的观测包括直接相关和间接相关。这些间接相关是线性函数观察（这个观察在两个时间步长之间）的相关。偏自相关函数试图移除这些间接相关。</p>
+<h3 id="置信度的概念">置信度的概念</h3>
+<p>置信度就是说，你测得的均值，和总体真实情况的差距小于这个给定的值的概率，应该是1-α，如式(4)，换句话说，我们有1-α的信心认为，你测得的这个均值和总体的实际期望很接近了。（说你测得的均值就是总体期望是很草率的，但是说，我有95%的把握认为我测得的均值，非常接近总体的期望了，听起来就靠谱的多）</p>
+<p>https://zhuanlan.zhihu.com/p/609446579 （置信区间的技术文档）</p>
+<h3 id="t分布">T分布</h3>
+<p>T检验、T分布、T检验的计算方法<br />
+https://zhuanlan.zhihu.com/p/86188571 （很好的一篇关于T检验的文章）</p>
+<p>T分布的特点</p>
+<p>（1）t分布为对称分布，关于t=0对称，只有一个峰，峰值在t=0处，与标准正太分布曲线相比，t分布曲线顶部略底，两尾部稍高而平。<br />
+（2）t分布曲线受自由度影响，自由度越小，离散程度越大。<br />
+（3）t分布的极限是正太分布，自由度越大，越接近标准正太分布。<br />
+（4）当n&gt;30时，t分布与标准正太分布的区别较小；当n&gt;100时，t分布与标准正太分布基本一致；n接近无穷时，t分布与标准正太分布完全一致。<br />
+（5）t分布适用于n小于30的场景。</p>
+<h1 id="投资的目的">投资的目的</h1>
+<p>投资组合是为了分散风险，在一定的收益下，风险的最小化；或者在一定的风险下收益最大化。<br />
+投资不是最求收益最大化，所以需要考虑风险对冲。</p>
+<h1 id="风险价值模型var">风险价值模型（VaR）</h1>
+<p>Value at risk</p>
+<h1 id="模型的关键">模型的关键</h1>
+<ul>
+<li>假设；</li>
+<li>模型的核心是输入输出（Input、Output）；</li>
+<li>预测，很多时候先人工判断（借助计算机工具和图形），选取在不同的参数下的得分；也可以让机器按不同的参数做预测，然后比较预测结果，选择相关的最优参数；</li>
+</ul>
+<h1 id="七种时间序列预测方法">七种时间序列预测方法</h1>
+<p>https://www.modb.pro/db/219387<br />
+<strong>在拿到数据集的时候，根据经验做初步的判断，然后使用合适的方法也是一种经验！</strong>在过程中，如果模拟的分数不高，可以尝试不同的方法，直到找到合适的方法为止。</p>
+<p><strong>从这些步骤中可以学到的一个教训是，这些模型中的每一个都可以在特定数据集上优于其他模型。因此，这并不意味着在一种类型的数据集上表现最佳的模型对于所有其他数据集也表现相同。</strong></p>
+<h1 id="arima模型">ARIMA模型</h1>
+<p>自回归综合移动平均（Auto-Regressive Integrated Moving
+Averages）的首字母缩写。<br />
+ARIMA模型建立在以下假设的基础上：</p>
+<ul>
+<li>数据序列是平稳的，这意味着均值和方差不应随时间而变化。通过对数变换或差分可以使序列平稳。</li>
+<li>输入的数据必须是单变量序列，因为ARIMA利用过去的数值预测未来的数值。</li>
+</ul>
+<p>ARIMA模型（差分整合移动平均自回归模型）<br />
+https://www.modb.pro/db/219387<br />
+虽然ARIMA是一个非常强大的预测时间序列数据的模型，但是数据准备和参数调整过程是非常耗时的。在实现ARIMA之前，需要使数据保持平稳，并使用前面讨论的ACF和PACF图确定p和q的值。AutoARIMA让整个任务实现起来非常简单</p>
+<p><strong>实现ARIMA模型的通用步骤如下：（个人注：应该是大部分建模的通用流程）</strong></p>
+<ol type="1">
+<li>加载数据：构建模型的第一步当然是加载数据集。</li>
+<li>预处理：根据数据集定义预处理步骤。包括创建时间戳、日期/时间列转换为d类型、序列单变量化等。</li>
+<li>序列平稳化：为了满足假设，应确保序列平稳。这包括检查序列的平稳性和执行所需的转换。</li>
+<li>确定d值：为了使序列平稳，执行差分操作的次数将确定为d值。</li>
+<li>创建ACF和PACF图：这是ARIMA实现中最重要的一步。用ACF
+PACF图来确定ARIMA模型的输入参数。</li>
+<li>确定p值和q值：从上一步的ACF和PACF图中读取p和q的值。</li>
+<li>拟合ARIMA模型：利用我们从前面步骤中计算出来的数据和参数值，拟合ARIMA模型。</li>
+<li>在验证集上进行预测：预测未来的值。</li>
+<li>计算RMSE：通过检查RMSE值来检查模型的性能，用验证集上的预测值和实际值检查RMSE值。</li>
+</ol>
+<p>虽然ARIMA是一个非常强大的预测时间序列数据的模型，但是数据准备和参数调整过程是非常耗时的。在实现ARIMA之前，需要使数据保持平稳，并使用前面讨论的ACF和PACF图确定p和q的值。Auto
+ARIMA让整个任务实现起来非常简单，因为它去除了我们在上一节中提到的步骤3至6。</p>
+<p><strong>下面是实现AUTO
+ARIMA应该遵循的步骤：（个人注：简化后理论上说应该是有些地方要注意的，或者说是不是有条件的？）</strong></p>
+<ol type="1">
+<li>加载数据：此步骤与ARIMA实现步骤1相同。将数据加载到笔记本中。</li>
+<li>预处理数据：输入应该是单变量，因此删除其他列。</li>
+<li>拟合Auto ARIMA：在单变量序列上拟合模型。</li>
+<li>在验证集上进行预测：对验证集进行预测。</li>
+<li>计算RMSE：用验证集上的预测值和实际值检查RMSE值。</li>
+</ol>
+<h1 id="var风险测度">VaR风险测度</h1>
+<p>https://zhuanlan.zhihu.com/p/111692540 （VaR概念性介绍）<br />
+VaR风险模型：<br />
+在金融数据的分析中，很多情况下我们会假设数据满足正态分布，例如证券的收益率和价差等。
+在一些量化交易策略中，正态分布也为我们提供了许多便捷，例如很多配对交易策略，就是以证券对之间的价差变化服从正态分布为假设前提的。<br />
+有了这个分布，我们就方便了。如果要计算在95%的概率下，损失不会超过多少，我们只要计算在5%的概率下，损失是多少，就能知道损失不超过多少了。<br />
+<strong>当然，正态分布只是一个我们能假定的最简单的分布，在实际中，很多资产的收益率是不符合正态分布的，可能是其他分布，也可能是完全没有分布。<br />
+如果是其他分布，找到这种分布，采用一样的方法即可。<br />
+如果没有分布，那就用历史模拟法，也是可以得出结论的。</strong></p>
+<p>2008年金融危机爆发之前，华尔街的许多风险管理模型都非常精确，VaR的概念让这些公司得以在不同情况下可能损失的资产进行量化，但问题是，嵌入这些模型中有关全球市场可能会发生的风险假设其实是错误的，因而精确计算所得出的结论从根本上说就是不准确的。</p>
+<p>https://wiki.mbalib.com/zh-tw/VaR%E6%96%B9%E6%B3%95
+（概念性介绍）</p>
+<p>https://zhuanlan.zhihu.com/p/669170449 （VaR具体的算法介绍）</p>
+<p>有几种计算VaR的方法，每种方法都有自己的假设和局限性。在本文中，我们将探讨三种常用的VaR计算方法:历史模拟法、参数化法、蒙特卡洛模拟法<br />
+需要注意的是：<strong>VAR并不提供关于损失超过这个值的情况下可能面临的实际损失的信息。</strong>因此，在使用VAR时还需要结合其他风险度量指标和情景分析，来更全面地了解潜在风险。</p>
+<p>知乎上有人将VaR模型视为史上最蠢的指标(见
+https://www.zhihu.com/question/21774616/answer/19739484 ）<br />
+在此我不敢苟同，在我看来这是因为大家对VaR的期望太高，很多人对VaR不满意的地方主要在于两点.<br />
+一是建模准确性问题，历史模拟法计算VaR太过依赖尾部数据，参数法下的正态分布假设不准确，因为几乎不存在刚好符合正态分布的金融时间序列，且大部分序列都是厚尾的，因此低估了尾部风险，这些的确都是VaR模型的缺点.<strong>但是大家都知道，所有建模都是错误的，但是有些模型是有用的，建模就是离不开假设。</strong>VaR模型普遍作为一种市场风险度量指标，和金融衍生品定价不同，其精确度的不足完全可以忍受，而衍生品定价则对准确度要求要高许多，却在风险中性定价原理中（如Black-Scholes期权定价模型），同样作了正态分布的假设。<br />
+对VaR模型的第二点不满意的地方在于其对极端损失的度量不足，这就是典型的期望过高，因为VaR度量的是市场正常波动下的极端损失，VaR只是一把杀猪刀，不是屠龙刀，但是没人说杀猪刀最蠢最没用，因为杀猪刀本来就只能杀猪，不能屠龙，你想让杀猪刀有屠龙刀的功能，就只能说杀猪刀没用了。<br />
+杀猪刀的升级版就是压力测试，以及预期损失模型（ES模型），ES模型度量的是组合超过VaR值的平均损失，的确更能反映尾部风险，但是它不易于理解，ES模型度量的是尾部平均损失，但是其波动范围多大？模型没有提供解释，另一方面，ES模型无法验证其有效性，因此总的说来在实用性上ES模型并不如VaR模型。而未来真的会有人研究出屠龙刀吗？恐怕很难，在金融危机等极端情形下，整个金融系统的系统性风险很容易将自己击溃，而这种极端事件的发生可能性微乎其微，所以我们在日常经营中无需时常采取准备措施预防这种系统性风险，不然只会造成资本资源的浪费。<br />
+因此，不管是VaR模型，还是其他风险计量指标，都只是风险管理的一方面，它们始终代替不了经验、判断，在面临可能到来的系统性风险等极端情形时，经验和判断可以让我们提前消除风险，这才是最有效的风险管理。</p>
+<p>正态分布由于其计算的方便性已经被广泛应用于金融时间序列分析，虽然它不是拟合金融时间序列的最佳分布。金融时间序列常表现出尖峰厚尾性，因此实务中也会对金融序列做其他分布假设，最常用的有t分布以及广义误差分布（GED分布）。t分布的分布函数有一个自由度参数 𝑛 ， 𝑛越小则分布的厚尾性越好，而当 𝑛越大时，t分布就趋近于正态分布。广义误差分布与t分布类似，也能更好的拟合尖峰厚尾特征，正态分布就是广义误差分布的一种特殊情况。</p>
+<p><img src="/img2/各种分布概率密度函数.png" /></p>
+<p>关于 VaR 的争议，一直都存在。</p>
+<p>不少投资界的大腕批评过 VaR 的使用，Charlie Munger
+算是他们中最著名的的一位。其他的专门撰写长文的包括著名的 Trader
+和风险研究专家 Nassim Taleb（对，就是那个写了一本叫做 Black Swan
+的书的作者）和 David Einhorn（这位做投资的都知道吧）</p>
+<p>David 在 GARP 的杂志（就是那个发 FRM
+牌子的组织的杂志）上发了一篇长文，写他是如何看空美国银行业的，</p>
+<p><strong>其中对 VaR
+的批评很到位（果然，好的投资者都是优秀的风控经理）</strong>：</p>
+<ol type="1">
+<li><strong>风控经理的职责是关注那些很少发生但是影响重大的风险，而不是常规损失。</strong>VaR
+在设计上，把尾部风险直接砍掉了，也就是说，VaR 能够回答你 95% 或 99%
+的情况下，你的最大能损失是 XX 百万美元，但是不能回答你，在那 1% 或 5%
+的情况下（装一点的话，就是 black swan event
+发生的情况下）你的最大损失是多少，在极端情况下，你的损失最小是 VaR
+所统计的数，最大，不知道，也许是一个天文数字。用统计的术语说，就是让风控经理把注意力集中在那些处在分布接近中央的可以管理的常规风险，而忽略了尾部风险。</li>
+<li><strong>由于 VaR 不能很好地度量尾部风险，所以在那些用 VaR
+去衡量风险并找交易员的银行里面，交易员会有意规避这个监管指标（game the
+system）</strong>，去投资那些风险非常低但是一旦风险失去大的投资机会（take
+excessive but remote risks），这也是为什么大银行会出现大的 trading loss
+的原因之一。这里有一个小例子，就是开一个特别扭的赌局，概率是
+1:127，赌硬币不可能次次都扭正面。从概率上说，这个赌很安全，出现金了 7
+次正面概率只有 1/128，约等于 0.78%。也就是说，在 99%
+的情况下，这个赌是赚钱的，这个投资机会的 VaR 值是 0。因为在 99%
+的情况下你是赚钱的，但是你输一次，你亏损是你平时赚的 127
+倍，通常的金融机构都有很高的杠杆，出现一次，就破产了。</li>
+<li>第三个重要的问题，<strong>就是 VaR
+是给高管汇报和监管层看的</strong>，监管者通常不是专门的风险专家，他们没有对
+VaR 的深刻理解，容易让高管和监管层低估风险（have a false sense of
+security）。在美国 SEC 经常被认为 toothless
+的监管机构，就是因为在大投行的监管上，SEC 一再让步。VaR 值作为 SEC
+认可的风险监管披露方式，不出意外是投行游说的结果。按照 SEC 2004
+年通过的条例，大投行可以选择用自己的一套方法去管理风险，只要他们愿意向
+SEC 做更多披露，SEC
+并不具备审查投行日益复杂的资产负债表的能力，所以，基本上就是你报一个 VaR
+我就认为你没问题了。在中国，大家都知道，报数会有水分的。在美国也一样。</li>
+</ol>
+<p>对于尾部风险，一个非常好的注脚是：<strong>人性不能用正态分布模型解释</strong>。在面对风险的时候，天生本性和后天教育教导我们，需要避险！一个著名的交易员法则是，不要抄底，十抄九死。（美国人也有类似说法，don't
+catch a falling
+knife.）所以，在风险来临的时候，大家会一窝蜂冲向出口，在市场狂热的时候，大家会羊群一样跟进。装一点的话，这叫反身性。人性决定了尾部风险高于正态分布预测的那么低。所以，用正态分布算出来的
+VaR 会低估风险。Taleb 为了尾部风险写了整整一本书，有空大家看看吧。</p>
+<h1 id="注意">注意⚠️</h1>
+<p>与数据分析不同，在真实的证券交易中，对各位投资人来说至关重要的是买入/卖出时机（量化中的买入/卖出信号）的把握，而非文中为进行数据分析而考虑的误差。<br />
+使用预测模型得到的信息只具有参考意义，理论上不存在100%成功率的预测方法，还请各位谨记投资有风险，入市需谨慎，操作不注意，亲人两行泪。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E9%87%91%E8%9E%8D/" rel="tag"># 金融</a>
+              <a href="/tags/%E6%95%B0%E5%AD%A6%E6%A8%A1%E5%9E%8B/" rel="tag"># 数学模型</a>
+              <a href="/tags/VaR/" rel="tag"># VaR</a>
+              <a href="/tags/ARIMA/" rel="tag"># ARIMA</a>
+              <a href="/tags/Python/" rel="tag"># Python</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/04/24/%E3%80%8A%E7%8E%A9%E9%80%8F%E5%B0%8F%E7%BA%A2%E4%B9%A6%E3%80%8B%E8%AF%BB%E4%B9%A6%E5%BF%83%E5%BE%97/" rel="prev" title="《玩透小红书》读书心得">
+                  <i class="fa fa-chevron-left"></i> 《玩透小红书》读书心得
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
