@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="似然函数和条件概率的分别？ 这是一个非常重要但容易混淆的问题，尤其是在学习贝叶斯推断时。  相同点（为什么它们看起来像一样的东西）  两者在数学形式上确实很相似： \[ P(x \mid \theta) \]  当我们把它当成关于 \(x\) 的函数（已知参数 \(\theta\)）：这是条件概率； 当我们把它当成关于 \(\theta\) 的函数（已知数据 \(x\)）：这是似然函数。  所以：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="似然函数和条件概率的分别">
+<meta property="og:url" content="http://hongyitong.github.io/2025/07/28/%E4%BC%BC%E7%84%B6%E5%87%BD%E6%95%B0%E5%92%8C%E6%9D%A1%E4%BB%B6%E6%A6%82%E7%8E%87%E7%9A%84%E5%88%86%E5%88%AB/index.html">
+<meta property="og:site_name" content="忆桐之家的博客">
+<meta property="og:description" content="似然函数和条件概率的分别？ 这是一个非常重要但容易混淆的问题，尤其是在学习贝叶斯推断时。  相同点（为什么它们看起来像一样的东西）  两者在数学形式上确实很相似： \[ P(x \mid \theta) \]  当我们把它当成关于 \(x\) 的函数（已知参数 \(\theta\)）：这是条件概率； 当我们把它当成关于 \(\theta\) 的函数（已知数据 \(x\)）：这是似然函数。  所以：">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/Users/hongyuanjiao/Desktop/%E6%9D%A1%E4%BB%B6%E6%A6%82%E7%8E%87%E5%92%8C%E4%BC%BC%E7%84%B6%E5%87%BD%E6%95%B0.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/%E8%B4%9D%E5%8F%B6%E6%96%AF%E5%AE%9A%E7%90%86%E7%A1%AC%E5%B8%81%E5%BA%94%E7%94%A8%E5%9B%BE%E5%83%8F.png">
+<meta property="article:published_time" content="2025-07-27T16:00:00.000Z">
+<meta property="article:modified_time" content="2025-07-29T02:26:37.491Z">
+<meta property="article:author" content="Rayman.hung">
+<meta property="article:tag" content="数学">
+<meta property="article:tag" content="贝叶斯">
+<meta property="article:tag" content="似然函数">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hongyitong.github.io/Users/hongyuanjiao/Desktop/%E6%9D%A1%E4%BB%B6%E6%A6%82%E7%8E%87%E5%92%8C%E4%BC%BC%E7%84%B6%E5%87%BD%E6%95%B0.png">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2025/07/28/%E4%BC%BC%E7%84%B6%E5%87%BD%E6%95%B0%E5%92%8C%E6%9D%A1%E4%BB%B6%E6%A6%82%E7%8E%87%E7%9A%84%E5%88%86%E5%88%AB/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2025/07/28/%E4%BC%BC%E7%84%B6%E5%87%BD%E6%95%B0%E5%92%8C%E6%9D%A1%E4%BB%B6%E6%A6%82%E7%8E%87%E7%9A%84%E5%88%86%E5%88%AB/","path":"2025/07/28/似然函数和条件概率的分别/","title":"似然函数和条件概率的分别"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>似然函数和条件概率的分别 | 忆桐之家的博客</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">忆桐之家的博客</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman&Tony</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li><li class="menu-item menu-item-tags"><a href="/tags" rel="section">标签</a></li><li class="menu-item menu-item-commonweal"><a href="/404.html" rel="section">公益 404</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-overview-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、亲子时刻</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives">
+          <span class="site-state-item-count">879</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags">
+        <span class="site-state-item-count">1137</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/hongyitong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hongyitong" rel="noopener" target="_blank">GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://blog.sina.com.cn/yitonghong" title="忆桐之家 → http:&#x2F;&#x2F;blog.sina.com.cn&#x2F;yitonghong" rel="noopener" target="_blank">忆桐之家</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://douban.com/people/2780741" title="豆瓣 → http:&#x2F;&#x2F;douban.com&#x2F;people&#x2F;2780741" rel="noopener" target="_blank">豆瓣</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.zhihu.com/people/rayman-36" title="知乎 → http:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;rayman-36" rel="noopener" target="_blank">知乎</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.liaoxuefeng.com/" title="廖雪峰的官方网站 → http:&#x2F;&#x2F;www.liaoxuefeng.com&#x2F;" rel="noopener" target="_blank">廖雪峰的官方网站</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.vaikan.com/" title="外刊IT评论 → http:&#x2F;&#x2F;www.vaikan.com&#x2F;" rel="noopener" target="_blank">外刊IT评论</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2025/07/28/%E4%BC%BC%E7%84%B6%E5%87%BD%E6%95%B0%E5%92%8C%E6%9D%A1%E4%BB%B6%E6%A6%82%E7%8E%87%E7%9A%84%E5%88%86%E5%88%AB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="忆桐之家的博客">
+      <meta itemprop="description" content="技术分享、读书心得、亲子时刻">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="似然函数和条件概率的分别 | 忆桐之家的博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          似然函数和条件概率的分别
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-07-28 00:00:00" itemprop="dateCreated datePublished" datetime="2025-07-28T00:00:00+08:00">2025-07-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-07-29 10:26:37" itemprop="dateModified" datetime="2025-07-29T10:26:37+08:00">2025-07-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%95%B0%E7%90%86%E7%BB%9F%E8%AE%A1/" itemprop="url" rel="index"><span itemprop="name">数理统计</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>似然函数和条件概率的分别？
+这是一个非常重要但容易混淆的问题，尤其是在学习贝叶斯推断时。</p>
+<ol type="1">
+<li><strong>相同点</strong>（为什么它们看起来像一样的东西）</li>
+</ol>
+<p>两者在<strong>数学形式</strong>上确实很相似：</p>
+<p><span class="math display">\[
+P(x \mid \theta)
+\]</span></p>
+<ul>
+<li>当我们把它当成关于 <span class="math inline">\(x\)</span>
+的函数（已知参数 <span
+class="math inline">\(\theta\)</span>）：这是<strong>条件概率</strong>；</li>
+<li>当我们把它当成关于 <span class="math inline">\(\theta\)</span>
+的函数（已知数据 <span
+class="math inline">\(x\)</span>）：这是<strong>似然函数</strong>。</li>
+</ul>
+<p>所以：</p>
+<blockquote>
+<p><strong>同一个表达式 <span class="math inline">\(P(x \mid
+\theta)\)</span>，既可以是条件概率，也可以是似然函数，取决于我们把哪个当变量、哪个当已知！</strong></p>
+</blockquote>
+<span id="more"></span>
+<ol start="2" type="1">
+<li><strong>核心区别：函数变量不同</strong></li>
+</ol>
+<table>
+<colgroup>
+<col style="width: 9%" />
+<col style="width: 32%" />
+<col style="width: 31%" />
+<col style="width: 26%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>概念</th>
+<th>表达</th>
+<th>自变量</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>条件概率</strong></td>
+<td><span class="math inline">\(P(x \mid \theta)\)</span></td>
+<td><span class="math inline">\(x\)</span>
+是<strong>变量</strong>，<span class="math inline">\(\theta\)</span>
+是<strong>固定参数</strong></td>
+<td>给定参数，求事件发生的<strong>概率</strong></td>
+</tr>
+<tr class="even">
+<td><strong>似然函数</strong></td>
+<td><span class="math inline">\(\mathcal{L}(\theta) = P(x \mid
+\theta)\)</span></td>
+<td><span class="math inline">\(\theta\)</span>
+是<strong>变量</strong>，<span class="math inline">\(x\)</span>
+是<strong>固定数据</strong></td>
+<td>给定数据，评估不同参数的“可能性”</td>
+</tr>
+</tbody>
+</table>
+<ol start="3" type="1">
+<li><strong>直观类比</strong></li>
+</ol>
+<p>设想你在射击：</p>
+<ul>
+<li><strong>条件概率</strong>：你知道你的<strong>射击技术（参数 <span
+class="math inline">\(\theta\)</span>）</strong>，问你在某个地方击中目标的概率
+<span class="math inline">\(P(x \mid \theta)\)</span>。</li>
+<li><strong>似然函数</strong>：你看到子弹落点（观测结果 <span
+class="math inline">\(x\)</span>），你想反推你的<strong>技术水平（<span
+class="math inline">\(\theta\)</span>）到底有多好</strong>。</li>
+</ul>
+<ol start="4" type="1">
+<li>应用场景上的区分</li>
+</ol>
+<table>
+<colgroup>
+<col style="width: 22%" />
+<col style="width: 12%" />
+<col style="width: 64%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>应用</th>
+<th>使用哪个？</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>频率派统计（MLE）</strong></td>
+<td><strong>似然函数</strong></td>
+<td>最大化 <span
+class="math inline">\(\mathcal{L}(\theta)\)</span>，得到参数估计值</td>
+</tr>
+<tr class="even">
+<td><strong>贝叶斯推断</strong></td>
+<td>两者都用</td>
+<td>用 <span class="math inline">\(P(x \mid \theta)\)</span>
+作为“似然”，乘上先验 <span
+class="math inline">\(P(\theta)\)</span>，得出后验分布</td>
+</tr>
+<tr class="odd">
+<td><strong>预测或模拟</strong></td>
+<td>条件概率</td>
+<td>给定参数后，模拟或计算未来数据的概率分布</td>
+</tr>
+</tbody>
+</table>
+<ol start="5" type="1">
+<li>一个例子帮你彻底搞懂</li>
+</ol>
+<p>例子：抛硬币 10 次，看到 7 次正面</p>
+<p>假设硬币正面概率为 <span class="math inline">\(\theta\)</span></p>
+<p><strong>（A）条件概率：</strong> 如果 <span
+class="math inline">\(\theta = 0.5\)</span>，我们问：出现 7
+次正面的<strong>概率是多少？</strong></p>
+<p><span class="math display">\[
+P(x = 7 \mid \theta = 0.5) = \binom{10}{7} (0.5)^7 (0.5)^3 = 0.117
+\]</span></p>
+<p>这是“给定参数、问数据”的问题。</p>
+<p><strong>（B）似然函数：</strong> 如果我们已看到 7
+次正面（数据固定），我们要估计 <span
+class="math inline">\(\theta\)</span>：</p>
+<p><span class="math display">\[
+\mathcal{L}(\theta) = P(x=7 \mid \theta) = \binom{10}{7} \theta^7
+(1-\theta)^3
+\]</span></p>
+<p>这是“给定数据，反推哪个 <span class="math inline">\(\theta\)</span>
+值最有可能产生这些数据”的问题。</p>
+<p>总结</p>
+<table>
+<thead>
+<tr class="header">
+<th>条目</th>
+<th>条件概率</th>
+<th>似然函数</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>表达式</td>
+<td><span class="math inline">\(P(x \mid \theta)\)</span></td>
+<td><span class="math inline">\(P(x \mid \theta)\)</span></td>
+</tr>
+<tr class="even">
+<td>自变量</td>
+<td><span class="math inline">\(x\)</span></td>
+<td><span class="math inline">\(\theta\)</span></td>
+</tr>
+<tr class="odd">
+<td>参数</td>
+<td><span class="math inline">\(\theta\)</span>（固定）</td>
+<td><span class="math inline">\(x\)</span>（固定）</td>
+</tr>
+<tr class="even">
+<td>语义</td>
+<td>给定模型，事件发生的概率</td>
+<td>给定结果，参数的合理性评估</td>
+</tr>
+<tr class="odd">
+<td>用途</td>
+<td>用于预测</td>
+<td>用于估计</td>
+</tr>
+</tbody>
+</table>
+<figure>
+<img src="/Users/hongyuanjiao/Desktop/条件概率和似然函数.png"
+alt="条件概率和似然函数" />
+<figcaption aria-hidden="true">条件概率和似然函数</figcaption>
+</figure>
+<p>如图所示，图像展示了<strong>条件概率</strong>和<strong>似然函数</strong>之间的关键区别：</p>
+<p>左图：条件概率 <span class="math inline">\(P(x \mid \theta =
+0.5)\)</span></p>
+<ul>
+<li>固定参数 <span class="math inline">\(\theta = 0.5\)</span></li>
+<li>横轴是可能出现的正面次数 <span class="math inline">\(x\)</span></li>
+<li>描述在固定参数下，各种结果 <span class="math inline">\(x\)</span>
+的概率分布</li>
+</ul>
+<p><strong>用途：</strong>用于预测或模拟未来数据</p>
+<p>、右图：似然函数 <span class="math inline">\(\mathcal{L}(\theta) =
+P(x=7 \mid \theta)\)</span></p>
+<ul>
+<li>固定观察结果 <span class="math inline">\(x = 7\)</span></li>
+<li>横轴是参数 <span
+class="math inline">\(\theta\)</span>（正面概率）</li>
+<li>描述在不同参数值下，观察到这个数据的“可能性”</li>
+</ul>
+<p><strong>用途：</strong>用于估计参数（如最大似然估计、贝叶斯更新）</p>
+<p>两图长得像，但<strong>方向反了</strong>：</p>
+<ul>
+<li>条件概率：已知参数，预测数据</li>
+<li>似然函数：已知数据，推断参数</li>
+</ul>
+<p><img src="/img3/贝叶斯定理硬币应用图像.png" alt="贝叶斯定理硬币应用图像" style="zoom:67%;" /></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E5%AD%A6/" rel="tag"># 数学</a>
+              <a href="/tags/%E8%B4%9D%E5%8F%B6%E6%96%AF/" rel="tag"># 贝叶斯</a>
+              <a href="/tags/%E4%BC%BC%E7%84%B6%E5%87%BD%E6%95%B0/" rel="tag"># 似然函数</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/07/28/%E4%BA%8C%E9%98%B6%E5%AF%BC%E6%95%B0%E8%BF%9E%E7%BB%AD%E7%9A%84%E6%84%8F%E4%B9%89/" rel="prev" title="二阶导数连续的意义">
+                  <i class="fa fa-chevron-left"></i> 二阶导数连续的意义
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/07/28/%E4%BA%8C%E6%AC%A1%E8%A7%84%E5%88%92%E9%97%AE%E9%A2%98%EF%BC%88Quadratic%20Programming,%20QP%EF%BC%89/" rel="next" title="二次规划问题（Quadratic Programming, QP）">
+                  二次规划问题（Quadratic Programming, QP） <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
