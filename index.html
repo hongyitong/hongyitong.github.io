@@ -157,7 +157,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives">
-          <span class="site-state-item-count">885</span>
+          <span class="site-state-item-count">892</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -168,7 +168,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags">
-        <span class="site-state-item-count">1145</span>
+        <span class="site-state-item-count">1147</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -425,6 +425,806 @@ P.S.目前数学界有"0.9999999999.......=1"之证明如下。</p>
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2025/09/09/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E7%AC%AC12%E7%AB%A0%22%E6%94%AF%E6%8C%81%E5%90%91%E9%87%8F%E6%9C%BA%E5%88%86%E7%B1%BB%22/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="忆桐之家的博客">
+      <meta itemprop="description" content="技术分享、读书心得、亲子时刻">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | 忆桐之家的博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2025/09/09/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E7%AC%AC12%E7%AB%A0%22%E6%94%AF%E6%8C%81%E5%90%91%E9%87%8F%E6%9C%BA%E5%88%86%E7%B1%BB%22/" class="post-title-link" itemprop="url">《机器学习的数学基础》第12章"支持向量机分类"</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2025-09-09 00:00:00 / 修改时间：11:56:16" itemprop="dateCreated datePublished" datetime="2025-09-09T00:00:00+08:00">2025-09-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AF%BB%E4%B9%A6%E5%BF%83%E5%BE%97/" itemprop="url" rel="index"><span itemprop="name">读书心得</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="第12章-支持向量机分类">第12章 支持向量机分类</h2>
+<p>在许多情况下，我们希望机器学习算法能够预测若干（离散）结果中的一个。例如，电子邮件客户端会将邮件分为个人邮件和垃圾邮件，这就有两个结果。另一个例子是望远镜识别夜空中的天体是星系、恒星还是行星。通常结果的数量较少，更重要的是，这些结果之间往往没有额外的结构。
+在本章中，我们考虑输出二元值的预测器，也就是说，只有两种可能的结果。这种机器学习任务称为<strong>二分类（binary
+classification）</strong>。这与第 9
+章形成对比，当时我们讨论的是连续值输出的预测问题。对于二分类，标签/输出可以取的值是二元的，本章中我们用
+{+1,−1} 表示。换句话说，我们考虑的预测器形式为 <span
+class="math display">\[
+f:\mathbb{R}^D \to \{+1,-1\}. \tag{12.1}
+\]</span></p>
+<p>回忆第 8 章，我们用 <span class="math inline">\(D\)</span>
+个实数的特征向量表示每个样本（数据点）<span
+class="math inline">\(x_n\)</span>。标签通常分别称为正类（positive
+class）和负类（negative
+class）。但应当注意，不要根据“正”或“负”字面意义推断+1类的直观属性。例如，在癌症检测任务中，有癌症的患者往往被标记为+1。原则上可以使用任何两个不同的值，例如{True,False}、{0,1}或{red,blue}。二分类问题研究得比较充分，其他方法的综述我们放到
+12.6 节再介绍。我们将介绍一种称为<strong>支持向量机（Support Vector
+Machine,
+SVM）</strong>的方法，它用于解决二分类任务。与回归类似，这是一个<strong>监督学习</strong>任务：我们有一组样本
+<span class="math inline">\(x_n \in
+\mathbb{R}^D\)</span>，以及对应的（二元）标签 <span
+class="math inline">\(y_n \in
+\{+1,-1\}\)</span>。给定一个包含样本–标签对 <span
+class="math inline">\(\{(x_1,y_1),\dots,(x_N,y_N)\}\)</span>
+的训练数据集，我们希望估计模型参数，使分类错误率最小。类似第 9
+章，<strong>我们考虑线性模型，并把非线性隐藏在对样本的一个变换 <span
+class="math inline">\(\phi\)</span> 中（见式(9.13)）</strong>。我们将在
+12.4 节重新讨论 <span class="math inline">\(\phi\)</span>。</p>
+<p>支持向量机（SVM）在许多应用中都能提供最先进的结果，并且具有坚实的理论保证（Steinwart
+和 Christmann, 2008）。我们之所以选择用 SVM
+来说明二分类问题，主要有两个原因。</p>
+<p>首先，SVM 提供了一种<strong>几何方式</strong>来思考监督学习问题。
+在第 9
+章中，我们是从<strong>概率模型</strong>的角度来看待机器学习问题，并用极大似然估计和贝叶斯推断来解决。而在这里，我们考虑一种替代的方法，即从几何角度来推理机器学习任务。这种方法高度依赖于我们在第
+3 章讨论过的<strong>内积</strong>和<strong>投影</strong>等概念。</p>
+<p>第二个原因是，与第 9 章不同，SVM
+的优化问题<strong>没有解析解</strong>，因此需要借助第 7
+章介绍的各种优化工具。 SVM 对机器学习的理解与第 9
+章的极大似然方法存在细微的差异：极大似然方法是基于数据分布的概率观点提出一个模型，再由此推导出一个优化问题；而
+SVM
+的方法则是从几何直觉出发，先设计一个需要在训练过程中被优化的函数。我们已经在第
+10 章看到过类似的情况，当时我们从几何原理出发推导了 PCA。在 SVM
+的例子中，我们通过设计一个损失函数来度量训练数据上的误差，并遵循<strong>经验风险最小化原则</strong>（第
+8.2 节），在训练中加以最小化。</p>
+<p>接下来，我们推导 SVM 的训练优化问题。
+直观上，我们可以想象一个二分类数据，它们能够被一个超平面分开，如图 12.1
+所示。</p>
+<p><img src="/img3/机器学习的数学基础Part2/F12.1.png" alt="F12.1" style="zoom:50%;" /></p>
+<p>在这里，每个样本 <span
+class="math inline">\(x_n\)</span>（一个二维向量）是一个二维位置（<span
+class="math inline">\(x^{(1)}_n, x^{(2)}_n\)</span>），对应的二元标签
+<span class="math inline">\(y_n\)</span>
+则是两种不同的符号（橙色叉号或蓝色圆点）。“超平面”（hyperplane）是机器学习中常用的术语，我们在第
+2.8 节已经遇到过。超平面是一个仿射子空间，维度为 <span
+class="math inline">\(D-1\)</span>（如果对应的向量空间维度是 <span
+class="math inline">\(D\)</span>）。在二分类中，两个类别的样本（对应两种可能的标签）在特征空间中分布得刚好可以用一条直线（在二维情况下）来分开。</p>
+<blockquote>
+<p>个人注：注意：<strong>在 <span class="math inline">\(n\)</span>
+维空间 (<span class="math inline">\(\mathbb{R}^n\)</span>)
+中，超平面（hyperplane）按定义就是一个 <span
+class="math inline">\((n-1)\)</span> 维的仿射子空间</strong>。</p>
+</blockquote>
+<blockquote>
+<p>个人注：引用前文2.8.1节的例子。</p>
+<p>例 2.26（仿射子空间）</p>
+<ul>
+<li>一维仿射子空间称为<strong>直线</strong></li>
+</ul>
+<p>可写为 <span class="math display">\[
+y = x_0 + \lambda b_1,
+\]</span></p>
+<p>其中 <span class="math inline">\(\lambda \in \mathbb{R}\)</span>，且
+<span class="math inline">\(U=\text{span}[b_1]\subseteq
+\mathbb{R}^n\)</span> 是 <span
+class="math inline">\(\mathbb{R}^n\)</span> 的一维子空间。
+这意味着一条直线由一个<strong>支撑点</strong>（support point）<span
+class="math inline">\(x_0\)</span> 和一个定义方向的向量 <span
+class="math inline">\(b_1\)</span> 决定。图 2.13 给出了示意图。</p>
+<ul>
+<li><span class="math inline">\(\mathbb{R}^n\)</span>
+中的二维仿射子空间称为<strong>平面</strong></li>
+</ul>
+<p>其参数方程为</p>
+<p><span class="math display">\[
+y = x_0 + \lambda_1 b_1 + \lambda_2 b_2,
+\]</span></p>
+<p>其中 <span class="math inline">\(\lambda_1,\lambda_2 \in
+\mathbb{R}\)</span>，且 <span
+class="math inline">\(U=\text{span}[b_1,b_2]\subseteq
+\mathbb{R}^n\)</span>。 这意味着一个平面由一个支撑点 <span
+class="math inline">\(x_0\)</span> 和<strong>两个线性无关的向量 <span
+class="math inline">\(b_1,b_2\)</span>
+确定</strong>，这两个向量张成方向空间。</p>
+<ul>
+<li>在 <span class="math inline">\(\mathbb{R}^n\)</span> 中，<span
+class="math inline">\((n-1)\)</span>
+维的仿射子空间称为<strong>超平面</strong>（hyperplane）</li>
+</ul>
+<p>其对应的参数方程为</p>
+<p><span class="math display">\[
+y = x_0 + \sum_{i=1}^{n-1} \lambda_i b_i,
+\]</span></p>
+<p>其中 <span class="math inline">\(b_1,\dots,b_{n-1}\)</span> 组成
+<span class="math inline">\(\mathbb{R}^n\)</span> 中一个 <span
+class="math inline">\((n-1)\)</span> 维子空间 <span
+class="math inline">\(U\)</span> 的一组基。
+这意味着一个超平面由一个支撑点 <span class="math inline">\(x_0\)</span>
+和 <span class="math inline">\((n-1)\)</span> 个线性无关的向量 <span
+class="math inline">\(b_1,\dots,b_{n-1}\)</span>
+确定，这些向量张成方向空间。</p>
+<p><strong>在 <span class="math inline">\(\mathbb{R}^2\)</span>
+中，一条直线也是一个超平面；在 <span
+class="math inline">\(\mathbb{R}^3\)</span>
+中，一个平面也是一个超平面。</strong></p>
+<p><img src="/img3/机器学习的数学基础Part2/F2.13.png" alt="F2.13" style="zoom:50%;" /></p>
+</blockquote>
+<p>在下面的推导中，我们将形式化“寻找一个线性分隔器”的思想。我们会引入<strong>间隔（margin）</strong>的概念，并进一步推广线性分隔器，使其允许某些样本落在“错误”的一侧，从而引入分类误差。我们将介绍两种等价的
+SVM 形式化方式：</p>
+<ul>
+<li><strong>几何视角</strong>（第 12.2.4 节），</li>
+<li><strong>损失函数视角</strong>（第 12.2.5 节）。</li>
+</ul>
+<p>随后，我们利用 <strong>拉格朗日乘子法</strong>（第 7.2 节）推导 SVM
+的<strong>对偶形式</strong>。对偶 SVM 使我们能够看到第三种形式化 SVM
+的方式：即从每个类别样本的<strong>凸包</strong>的角度来理解（第 12.3.2
+节）。最后，我们会简要介绍<strong>核方法</strong>，以及如何数值化地求解<strong>非线性核
+SVM</strong>的优化问题。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/09/09/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E7%AC%AC12%E7%AB%A0%22%E6%94%AF%E6%8C%81%E5%90%91%E9%87%8F%E6%9C%BA%E5%88%86%E7%B1%BB%22/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2025/09/09/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E7%AC%AC11%E7%AB%A0%22%E9%AB%98%E6%96%AF%E6%B7%B7%E5%90%88%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%AF%86%E5%BA%A6%E4%BC%B0%E8%AE%A1%22/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="忆桐之家的博客">
+      <meta itemprop="description" content="技术分享、读书心得、亲子时刻">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | 忆桐之家的博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2025/09/09/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E7%AC%AC11%E7%AB%A0%22%E9%AB%98%E6%96%AF%E6%B7%B7%E5%90%88%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%AF%86%E5%BA%A6%E4%BC%B0%E8%AE%A1%22/" class="post-title-link" itemprop="url">《机器学习的数学基础》第11章"高斯混合模型的密度估计"</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2025-09-09 00:00:00 / 修改时间：11:53:54" itemprop="dateCreated datePublished" datetime="2025-09-09T00:00:00+08:00">2025-09-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AF%BB%E4%B9%A6%E5%BF%83%E5%BE%97/" itemprop="url" rel="index"><span itemprop="name">读书心得</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="第11章-高斯混合模型的密度估计">第11章
+高斯混合模型的密度估计</h2>
+<p>Density Estimation with Gaussian Mixture Models</p>
+<p>在前几章中，我们已经讨论了机器学习中的两个基本问题：回归（第 9
+章）和降维（第 10
+章）。在本章中，我们将探讨机器学习的第三个支柱：<strong>密度估计</strong>。在这一过程中，我们会引入一些重要的概念，例如期望最大化（EM）算法，以及通过混合模型来理解密度估计的潜在变量视角。</p>
+<p><img src="/img3/机器学习的数学基础Part2/F11.1.png" alt="F11.1" style="zoom:50%;" /></p>
+<p>当我们将机器学习应用于数据时，往往希望<strong>以某种方式来表示数据</strong>。<strong>一个直接的方法就是将数据点本身作为数据的表示</strong>；例如见图
+11.1。
+然而，如果数据集非常庞大，或者我们更关心数据的整体特征，那么这种方式可能就不太有用了。<strong>在密度估计中，我们通过使用某个参数化分布族中的分布（例如高斯分布或
+Beta
+分布），来紧凑地表示数据。</strong>比如，我们可能希望通过数据集的均值和方差，用一个高斯分布来进行紧凑表示。均值和方差可以通过第
+8.3
+节讨论的工具（最大似然估计或最大后验估计）来求得。接着，<strong>我们就可以用这个高斯分布的均值和方差来表示数据背后的分布，即我们认为该数据集是从这个分布中采样得到的一次典型实现。</strong></p>
+<blockquote>
+<p>个人注：高斯混合模型的<strong>密度估计</strong>是一种表示数据的方法！其实也是一种建模，因为这个分布就是对应该类数据的模型表达。</p>
+</blockquote>
+<p>在实际应用中，高斯分布（或类似我们迄今遇到的其他分布）具有有限的建模能力。例如，用一个高斯分布去近似图
+11.1
+中生成数据的真实密度，就会是一个很差的近似。接下来，我们将研究一种更具表现力的分布族，可以用来进行密度估计：<strong>混合模型</strong>。</p>
+<p>混合模型可以通过 <strong>K 个简单（基）分布的凸组合</strong>
+来描述一个分布 <span class="math inline">\(p(x)\)</span>： <span
+class="math display">\[
+p(x) = \sum_{k=1}^K \pi_k p_k(x) \tag{11.1}
+\]</span> 满足： <span class="math display">\[
+0 \leq \pi_k \leq 1, \quad \sum_{k=1}^K \pi_k = 1 \tag{11.2}
+\]</span> 其中，各个成分分布 <span class="math inline">\(p_k\)</span>
+属于某个基本分布族，例如高斯分布、伯努利分布或伽马分布，而 <span
+class="math inline">\(\pi_k\)</span>
+是混合权重。混合模型比相应的单个基分布更具表现力，因为它们可以表示多峰的数据分布，即能够描述具有多个“簇”的数据集，就像图
+11.1 中的例子。</p>
+<p>我们将重点讨论<strong>高斯混合模型（GMMs）</strong>，其中的基本分布是高斯分布。给定一个数据集，我们的目标是通过最大化模型参数的似然来训练
+GMM。为此，我们将会用到第 5 章、第 6 章和第 7.2
+节的结果。然而，与之前讨论过的应用（线性回归或主成分分析）不同，这里我们无法得到最大似然的闭式解。相反，我们将得到一组相互依赖的联立方程，而这些方程只能通过<strong>迭代方法</strong>来求解。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/09/09/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E7%AC%AC11%E7%AB%A0%22%E9%AB%98%E6%96%AF%E6%B7%B7%E5%90%88%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%AF%86%E5%BA%A6%E4%BC%B0%E8%AE%A1%22/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2025/09/09/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E7%AC%AC10%E7%AB%A0%22%E4%B8%BB%E6%88%90%E5%88%86%E5%88%86%E6%9E%90%E7%9A%84%E9%99%8D%E7%BB%B4%22/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="忆桐之家的博客">
+      <meta itemprop="description" content="技术分享、读书心得、亲子时刻">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | 忆桐之家的博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2025/09/09/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E7%AC%AC10%E7%AB%A0%22%E4%B8%BB%E6%88%90%E5%88%86%E5%88%86%E6%9E%90%E7%9A%84%E9%99%8D%E7%BB%B4%22/" class="post-title-link" itemprop="url">《机器学习的数学基础》第10章"主成分分析的降维"</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2025-09-09 00:00:00 / 修改时间：11:51:05" itemprop="dateCreated datePublished" datetime="2025-09-09T00:00:00+08:00">2025-09-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AF%BB%E4%B9%A6%E5%BF%83%E5%BE%97/" itemprop="url" rel="index"><span itemprop="name">读书心得</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="第10章-主成分分析的降维">第10章 主成分分析的降维</h2>
+<p>Dimensionality Reduction with Principal Component Analysis</p>
+<p>直接处理高维数据（例如图像）会带来一些困难：它很难分析、难以解释、几乎无法可视化，并且（从实际角度来看）存储这些数据向量的代价可能很高。然而，高维数据往往具有一些可以利用的性质。例如，高维数据通常是
+<strong>过完备的（overcomplete）</strong>，即许多维度是冗余的，可以由其他维度的组合来解释。此外，高维数据中的各个维度往往是相关的，因此数据实际上存在一个
+<strong>内在的低维结构</strong>。<strong>降维</strong>
+就是利用这种结构和相关性，使我们能够以更紧凑的方式表示数据，理想情况下还能避免信息丢失。我们可以将<strong>降维看作是一种压缩技术</strong>，类似于
+<strong>jpeg</strong> 或
+<strong>mp3</strong>，它们分别是图像和音乐的压缩算法。</p>
+<p>在本章中，我们将讨论
+<strong>主成分分析（PCA），这是一种<em><u>线性的降维算法</u></em></strong>。PCA
+由 Pearson (1901) 和 Hotelling (1933)
+提出，至今已有一百多年历史，但仍然是数据压缩和数据可视化中最常用的技术之一。它还被广泛用于识别高维数据中的简单模式、潜在因子以及数据结构。在信号处理领域，PCA
+也被称为 Karhunen-Loève 变换。在本章中，我们将从最基本的原理推导
+PCA，依赖于我们对 <strong>基和基变换</strong>（第 2.6.1 和 2.7.2
+节）、<strong>投影</strong>（第 3.8 节）、<strong>特征值</strong>（第
+4.2 节）、<strong>高斯分布</strong>（第 6.5 节）以及
+<strong>约束优化</strong>（第 7.2 节）的理解。</p>
+<p>降维通常利用高维数据（例如图像）的一个性质：它们往往位于低维子空间上。图
+10.1 给出了一个二维的示例说明。虽然图 10.1(a)
+中的数据并不完全落在一条直线上，但它在 <span
+class="math inline">\(x_2\)</span>-方向上的变化很小，因此我们几乎可以把它看作是落在一条直线上——几乎没有信息损失；见图
+10.1(b)。为了描述图 10.1(b) 中的数据，只需要 <span
+class="math inline">\(x_1\)</span>-坐标即可，此时数据位于 <span
+class="math inline">\(\mathbb{R}^2\)</span> 的一个一维子空间中。</p>
+<p><img src="/img3/机器学习的数学基础Part2/F10.1.png" alt="F10.1" style="zoom:50%;" /></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/09/09/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E7%AC%AC10%E7%AB%A0%22%E4%B8%BB%E6%88%90%E5%88%86%E5%88%86%E6%9E%90%E7%9A%84%E9%99%8D%E7%BB%B4%22/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2025/09/09/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E7%AC%AC9%E7%AB%A0%22%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%22/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="忆桐之家的博客">
+      <meta itemprop="description" content="技术分享、读书心得、亲子时刻">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | 忆桐之家的博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2025/09/09/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E7%AC%AC9%E7%AB%A0%22%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%22/" class="post-title-link" itemprop="url">《机器学习的数学基础》第9章"线性回归"</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2025-09-09 00:00:00 / 修改时间：11:47:48" itemprop="dateCreated datePublished" datetime="2025-09-09T00:00:00+08:00">2025-09-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AF%BB%E4%B9%A6%E5%BF%83%E5%BE%97/" itemprop="url" rel="index"><span itemprop="name">读书心得</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="第-9-章-线性回归">第 9 章 线性回归</h2>
+<p>Linear Regression</p>
+<p>在本章中，我们将应用第 2、5、6 和 7
+章中的数学概念来解决<strong>线性回归（曲线拟合 curve
+fitting）</strong>问题。在回归中，我们的目标是找到一个函数 <span
+class="math inline">\(f\)</span>，它将输入 <span class="math inline">\(x
+\in \mathbb{R}^D\)</span> 映射到相应的函数值 <span
+class="math inline">\(f(x) \in \mathbb{R}\)</span>。</p>
+<p>我们假设给定了一组训练输入 <span class="math inline">\(x_n\)</span>
+及其对应的带噪观测值 <span class="math inline">\(y_n = f(x_n) +
+\varepsilon\)</span>，其中 <span
+class="math inline">\(\varepsilon\)</span>
+是独立同分布（i.i.d.）的随机变量，用来描述测量/观测噪声以及可能未建模的过程（本章中我们不再考虑后者）。<strong>在整个章节中，我们假设噪声是零均值高斯噪声。</strong></p>
+<p><img src="/img3/机器学习的数学基础Part2/F9.1.png" alt="F9.1" style="zoom:67%;" /></p>
+<p>我们的任务是找到一个函数，该函数不仅能够拟合训练数据，还能够很好地推广到预测训练数据之外输入位置的函数值（见第
+8 章）。图 9.1 展示了这样一个回归问题的例子。典型的回归场景如图
+9.1(a)：对于一些输入值 <span
+class="math inline">\(x_n\)</span>，我们观测到带噪声的函数值 <span
+class="math inline">\(y_n = f(x_n) +
+\varepsilon\)</span>。任务是推断出生成这些数据的函数 <span
+class="math inline">\(f\)</span>，并且能很好地推广到新的输入位置。图
+9.1(b) 给出了一个可能的解答，其中我们同时展示了以函数值 <span
+class="math inline">\(f(x)\)</span>
+为中心的三个分布，用来表示数据中的噪声。</p>
+<p>回归是机器学习中的一个基本问题，回归问题广泛出现在各种研究领域和应用中，包括：</p>
+<ul>
+<li>时间序列分析（如系统辨识）</li>
+<li>控制与机器人（如强化学习、前向/逆向模型学习）</li>
+<li>优化（如线搜索、全局优化）</li>
+<li>深度学习应用（如电子游戏、语音转文本转换、图像识别、自动视频标注）</li>
+</ul>
+<p>此外，回归还是分类算法中的关键组成部分。寻找回归函数需要解决多种问题，包括：</p>
+<ol type="1">
+<li><strong>模型选择与参数化</strong>
+<ul>
+<li>给定一个数据集，哪些函数类别（如多项式）是建模的良好候选？</li>
+<li>具体的参数化（如多项式的次数）应该如何选择？</li>
+<li>第 8.6
+节讨论的模型选择方法，可以帮助我们比较不同模型，从中找到能够合理解释训练数据的最简单模型。</li>
+</ul></li>
+<li><strong>寻找合适的参数</strong>
+<ul>
+<li>在选定回归函数模型后，如何找到合适的模型参数？</li>
+<li>我们需要研究不同的损失/目标函数（它们决定了“拟合得好”的含义），以及能够最小化该损失的优化算法。</li>
+</ul></li>
+<li><strong>过拟合与模型选择</strong>
+<ul>
+<li>当回归函数对训练数据“拟合得过好”但无法推广到未见过的测试数据时，就会出现过拟合。</li>
+<li>过拟合通常出现在底层模型（或其参数化）过于灵活、表达能力过强的情况下（见第
+8.6 节）。</li>
+<li>我们将探讨过拟合的根本原因，并在线性回归的背景下讨论减轻过拟合的方法。</li>
+</ul></li>
+<li><strong>损失函数与参数先验的关系</strong>
+<ul>
+<li>损失函数（优化目标）通常由概率模型引导并激发。</li>
+<li>我们将探讨损失函数与其背后引入这些损失的先验假设之间的联系。</li>
+</ul></li>
+<li><strong>不确定性建模</strong>
+<ul>
+<li>在实际问题中，我们只能获得有限（尽管可能较大）数量的训练数据，用于选择模型类别和相应参数。</li>
+<li>由于这些有限的训练数据无法覆盖所有可能情况，我们可能需要刻画剩余的参数不确定性，以便在测试时得到模型预测的置信度度量。</li>
+<li>训练集越小，不确定性建模就越重要。</li>
+<li><strong>一致的不确定性建模能够为模型预测提供置信区间</strong>。</li>
+</ul></li>
+</ol>
+<p>在接下来的内容中，我们将使用第 3、5、6 和 7
+章中的数学工具来解决线性回归问题。我们将讨论极大似然估计（MLE）和最大后验估计（MAP）以找到最优模型参数。利用这些参数估计，我们将简要考察泛化误差和过拟合。在本章的最后，我们将讨论贝叶斯线性回归，它能在更高层次上推理模型参数，从而避免极大似然和最大后验估计中遇到的一些问题。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/09/09/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E7%AC%AC9%E7%AB%A0%22%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%22/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2025/09/09/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E7%AC%AC8%E7%AB%A0%22%E5%BD%93%E6%A8%A1%E5%9E%8B%E9%81%87%E5%88%B0%E6%95%B0%E6%8D%AE%22/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="忆桐之家的博客">
+      <meta itemprop="description" content="技术分享、读书心得、亲子时刻">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | 忆桐之家的博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2025/09/09/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E7%AC%AC8%E7%AB%A0%22%E5%BD%93%E6%A8%A1%E5%9E%8B%E9%81%87%E5%88%B0%E6%95%B0%E6%8D%AE%22/" class="post-title-link" itemprop="url">《机器学习的数学基础》第8章"当模型遇到数据"</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2025-09-09 00:00:00 / 修改时间：11:39:54" itemprop="dateCreated datePublished" datetime="2025-09-09T00:00:00+08:00">2025-09-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AF%BB%E4%B9%A6%E5%BF%83%E5%BE%97/" itemprop="url" rel="index"><span itemprop="name">读书心得</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="第8章-当模型遇到数据">第8章 当模型遇到数据</h2>
+<p>在本书的第一部分，我们介绍了许多机器学习方法所依赖的数学基础。希望读者能够从第一部分学习到数学语言的基本形式，而我们接下来将利用这些形式来描述和讨论机器学习。本书的第二部分介绍了机器学习的四大支柱：</p>
+<ul>
+<li>回归（第9章）</li>
+<li>降维（第10章）</li>
+<li>密度估计（第11章）</li>
+<li>分类（第12章）</li>
+</ul>
+<p>本书这一部分的主要目标是展示如何利用第一部分介绍的数学概念来设计机器学习算法，从而解决四大支柱范围内的任务。我们无意介绍高级的机器学习概念，而是希望提供一套实用的方法，使读者能够运用第一部分所学的知识。同时，这部分内容也为已经熟悉数学的读者提供了进入更广泛机器学习文献的入口。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/09/09/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E7%AC%AC8%E7%AB%A0%22%E5%BD%93%E6%A8%A1%E5%9E%8B%E9%81%87%E5%88%B0%E6%95%B0%E6%8D%AE%22/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2025/09/06/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="忆桐之家的博客">
+      <meta itemprop="description" content="技术分享、读书心得、亲子时刻">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | 忆桐之家的博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2025/09/06/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" class="post-title-link" itemprop="url">《机器学习的数学基础》读书笔记</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-09-06 00:00:00" itemprop="dateCreated datePublished" datetime="2025-09-06T00:00:00+08:00">2025-09-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-09-09 11:28:41" itemprop="dateModified" datetime="2025-09-09T11:28:41+08:00">2025-09-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AF%BB%E4%B9%A6%E5%BF%83%E5%BE%97/" itemprop="url" rel="index"><span itemprop="name">读书心得</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>原书《MATHEMATICS FOR MACHINE LEARNING》</p>
+<p>马斯克的第一性原理、评价一个好学生就说他概念很清晰。这些都指向了基本的理解概念的重要性；正是这本书的特点；不过因为在一本书里面讲解了很多概念，包括线性代数、解析几何、微积分、概率等，所以还是需要读者有一定的数学基础，同时有些时候需要借助ChatGPT等工具进行概念的理解。</p>
+<p>本书把涉及机器学习的数学的概念梳理了一遍；以介绍概念为主，从数学的角度、用数学的语言，从概念的角度引申出各知识点。这本书的优点是把涉及机器学习部分的数学概念讲得系统并深入浅出，把各个概念之间的关联性讲得很透彻，整体性很强，而不是简单概念的罗列。</p>
+<p>不过，学习就是理论联系实际的过程，学习概念然后实践（练习、看书、应用等等），在实践中会发现对概念理解不透彻的地方，回头去理解概念，然后得到升华。概念就譬如对人的定义，在中国你可能觉得人就是黄种人的样子，但当你出国发现欧洲人之后，你回头去看人的定义，会增加对人这个概念的理解。</p>
+<p>这本书通过数学语言定义了很多概念，直指本质；例如向量、内积；很多定义推翻了我们常识中的一些认定，例如内积，之前的通常的认知都是点积，其实真正内积的内涵广泛得多，应用也广泛得多。</p>
+<blockquote>
+<p>核心的概念内积！！！！！！！内积的定义以及从内积引申出的正定矩阵、范数、距离等概念。</p>
+</blockquote>
+<blockquote>
+<p>数学是这个世界上最精确的语言！</p>
+</blockquote>
+<p>本笔记结合原版和网上中文翻译做了笔记。</p>
+<p>本书两部分：</p>
+<p>Part I：Mathematical Foundations</p>
+<p>PartII：Central Machine Learning Problems</p>
+<p>原书</p>
+<p>中文翻译收录在这个专栏（只翻译了数学基础这一部分。）：</p>
+<p>https://binaryai.blog.csdn.net/article/details/115050415</p>
+<p>不过，中文版的译作者修改和加了一些内容，例如例6.1中，就把$换成人民币¥；还有矩阵那里增加了分块矩阵的运算！还有最后一章节的“信息论”原书并没有。</p>
+<blockquote>
+<p>注意函数和曲面的区别。详见《函数与曲面.md》</p>
+</blockquote>
+<p>以下是本书的一些摘录。</p>
+<p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/09/06/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
     <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2025/07/26/ESL%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -629,7 +1429,7 @@ class="math inline">\(f&#39;&#39;(x_1) = f&#39;&#39;(x_n) =
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2025/07/28/%E5%B9%BF%E4%B9%89%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B%EF%BC%88GLM%EF%BC%89%E5%92%8C%E5%B9%BF%E4%B9%89%E5%8F%AF%E5%8A%A0%E6%A8%A1%E5%9E%8B%EF%BC%88GAM%EF%BC%89%E5%8C%BA%E5%88%AB/">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2025/07/26/%E6%A2%AF%E5%BA%A6%E6%8F%90%E5%8D%87%E6%A0%91/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -647,7 +1447,7 @@ class="math inline">\(f&#39;&#39;(x_1) = f&#39;&#39;(x_n) =
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2025/07/28/%E5%B9%BF%E4%B9%89%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B%EF%BC%88GLM%EF%BC%89%E5%92%8C%E5%B9%BF%E4%B9%89%E5%8F%AF%E5%8A%A0%E6%A8%A1%E5%9E%8B%EF%BC%88GAM%EF%BC%89%E5%8C%BA%E5%88%AB/" class="post-title-link" itemprop="url">广义线性模型（GLM）和广义可加模型（GAM）区别</a>
+          <a href="/2025/07/26/%E6%A2%AF%E5%BA%A6%E6%8F%90%E5%8D%87%E6%A0%91/" class="post-title-link" itemprop="url">梯度提升树</a>
         </h2>
 
         <div class="post-meta-container">
@@ -658,14 +1458,14 @@ class="math inline">\(f&#39;&#39;(x_1) = f&#39;&#39;(x_n) =
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2025-07-28 00:00:00" itemprop="dateCreated datePublished" datetime="2025-07-28T00:00:00+08:00">2025-07-28</time>
+      <time title="创建时间：2025-07-26 00:00:00" itemprop="dateCreated datePublished" datetime="2025-07-26T00:00:00+08:00">2025-07-26</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-07-30 10:48:46" itemprop="dateModified" datetime="2025-07-30T10:48:46+08:00">2025-07-30</time>
+      <time title="修改时间：2025-08-01 10:16:40" itemprop="dateModified" datetime="2025-08-01T10:16:40+08:00">2025-08-01</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -673,7 +1473,7 @@ class="math inline">\(f&#39;&#39;(x_1) = f&#39;&#39;(x_n) =
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%95%B0%E7%90%86%E7%BB%9F%E8%AE%A1/" itemprop="url" rel="index"><span itemprop="name">数理统计</span></a>
+          <a href="/categories/%E8%AF%BB%E4%B9%A6%E5%BF%83%E5%BE%97/" itemprop="url" rel="index"><span itemprop="name">读书心得</span></a>
         </span>
     </span>
 
@@ -687,781 +1487,24 @@ class="math inline">\(f&#39;&#39;(x_1) = f&#39;&#39;(x_n) =
     
     
     <div class="post-body" itemprop="articleBody">
-          <p>广义线性模型（<strong>GLM</strong>）和广义可加模型（<strong>GAM</strong>）都是用于回归分析的统计模型，它们都扩展了线性回归的能力，但在建模方式上有<strong>关键的不同</strong>。下面是它们的<strong>区别</strong>和<strong>联系</strong>：</p>
-<p>一句话区别：</p>
-<ul>
-<li><strong>GLM</strong>
-假设：<strong>响应变量是一组解释变量的线性组合（经过变换）</strong>。</li>
-<li><strong>GAM</strong>
-假设：<strong>响应变量是一组解释变量的非线性函数之和（经过变换）</strong>。</li>
-</ul>
-<p>广义线性模型（GLM）</p>
-<p><strong>基本形式</strong>：</p>
-<p><span class="math display">\[
-g(\mathbb{E}[Y]) = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \dots + \beta_p
-x_p
-\]</span></p>
-<ul>
-<li><span
-class="math inline">\(Y\)</span>：响应变量（可以是非正态分布，如二项、泊松等）</li>
-<li><span class="math inline">\(x_i\)</span>：解释变量（特征）</li>
-<li><span
-class="math inline">\(g(\cdot)\)</span>：<strong>链接函数</strong>（如
-logit、log、identity 等）</li>
-<li>模型对解释变量是<strong>线性加权组合</strong>的</li>
-</ul>
-<p><strong>常见的 GLM 实例</strong>：</p>
-<ul>
-<li>线性回归：<span class="math inline">\(g(y) = y\)</span></li>
-<li>逻辑回归：<span class="math inline">\(g(p) =
-\log\left(\frac{p}{1-p}\right)\)</span></li>
-<li>泊松回归：<span class="math inline">\(g(\mu) =
-\log(\mu)\)</span></li>
-</ul>
-<p>广义可加模型（GAM）</p>
-<p><strong>基本形式</strong>：</p>
-<p><span class="math display">\[
-g(\mathbb{E}[Y]) = \beta_0 + f_1(x_1) + f_2(x_2) + \dots + f_p(x_p)
-\]</span></p>
-<ul>
-<li>这里的 <span
-class="math inline">\(f_i(x_i)\)</span>：<strong>未知的非线性平滑函数</strong>，通常用样条（splines）估计</li>
-<li>每个解释变量的作用可以是非线性的，但函数之间仍然是<strong>加性组合</strong></li>
-<li>可以看作是 GLM 的<strong>非线性扩展</strong></li>
-</ul>
-<p><strong>对比表格</strong></p>
-<table>
-<colgroup>
-<col style="width: 18%" />
-<col style="width: 42%" />
-<col style="width: 39%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th>特征</th>
-<th>GLM</th>
-<th>GAM</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>模型结构</td>
-<td>线性组合：<span class="math inline">\(\beta_1 x_1 + \beta_2
-x_2\)</span></td>
-<td>非线性函数和：<span class="math inline">\(f_1(x_1) +
-f_2(x_2)\)</span></td>
-</tr>
-<tr class="even">
-<td>特征对响应的关系</td>
-<td><strong>线性</strong>（在链接函数作用下）</td>
-<td><strong>非线性</strong></td>
-</tr>
-<tr class="odd">
-<td>链接函数</td>
-<td>有</td>
-<td>有</td>
-</tr>
-<tr class="even">
-<td>灵活性</td>
-<td>较低</td>
-<td>更高（可适应更复杂的数据结构）</td>
-</tr>
-<tr class="odd">
-<td>可解释性</td>
-<td>好</td>
-<td>一般，非线性函数较难解释</td>
-</tr>
-<tr class="even">
-<td>拟合方法</td>
-<td>最大似然估计</td>
-<td>平滑回归 + 最大似然</td>
-</tr>
-</tbody>
-</table>
-<p><strong>举个例子</strong>：</p>
-<p>预测工资（Salary）</p>
-<p>GLM（如线性回归）：</p>
-<p><span class="math display">\[
-\log(\text{Salary}) = \beta_0 + \beta_1 \cdot \text{Age} + \beta_2 \cdot
-\text{Education}
-\]</span></p>
-<p>假设年龄和教育对薪资的影响是线性的。</p>
-<p>GAM：</p>
-<p><span class="math display">\[
-\log(\text{Salary}) = \beta_0 + f_1(\text{Age}) + f_2(\text{Education})
-\]</span></p>
-<p>允许年龄对薪资影响是“非线性”的，比如工资在 40 岁左右达到峰值。</p>
-<p>总结：</p>
-<table>
-<thead>
-<tr class="header">
-<th>项目</th>
-<th>GLM</th>
-<th>GAM</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>建模方式</td>
-<td>线性关系</td>
-<td>非线性加性关系</td>
-</tr>
-<tr class="even">
-<td>灵活性</td>
-<td>一般</td>
-<td>高（可处理非线性）</td>
-</tr>
-<tr class="odd">
-<td>适合场景</td>
-<td>关系近似线性的情况</td>
-<td>变量与响应变量关系复杂、非线性的情况</td>
-</tr>
-</tbody>
-</table>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2025/07/28/%E8%B4%9D%E5%8F%B6%E6%96%AF%E5%AE%9A%E7%90%86%EF%BC%88Bayes%E2%80%99%20Theorem%EF%BC%89/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Rayman.hung">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="忆桐之家的博客">
-      <meta itemprop="description" content="技术分享、读书心得、亲子时刻">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | 忆桐之家的博客">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2025/07/28/%E8%B4%9D%E5%8F%B6%E6%96%AF%E5%AE%9A%E7%90%86%EF%BC%88Bayes%E2%80%99%20Theorem%EF%BC%89/" class="post-title-link" itemprop="url">贝叶斯定理（Bayes’ Theorem）</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2025-07-28 00:00:00" itemprop="dateCreated datePublished" datetime="2025-07-28T00:00:00+08:00">2025-07-28</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-07-29 10:34:34" itemprop="dateModified" datetime="2025-07-29T10:34:34+08:00">2025-07-29</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%95%B0%E7%90%86%E7%BB%9F%E8%AE%A1/" itemprop="url" rel="index"><span itemprop="name">数理统计</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p><strong>贝叶斯定理</strong>（Bayes’
-Theorem）是概率论中一个非常重要的定理，用于在已知结果的情况下推断原因（也就是“后验概率”）。</p>
-<h3 id="一句话理解">一句话理解</h3>
+          <p><strong>梯度提升树（Gradient Boosting Trees, GBT 或 GBDT）</strong>
+是一种强大的机器学习算法，广泛应用于回归、分类等任务中。它结合了多个决策树的预测结果，以构建一个更强的模型。</p>
+<h3 id="简单理解">简单理解</h3>
+<p>梯度提升树的核心思想是：</p>
 <blockquote>
-<p><strong>贝叶斯定理告诉我们如何根据已有信息更新对某事件的信念。</strong></p>
+<p>逐步构建多个弱学习器（通常是决策树），每一棵新树都试图纠正之前所有树预测的残差（错误）。</p>
 </blockquote>
-<h3 id="数学表达式">数学表达式</h3>
-<p>对于两个事件 <span class="math inline">\(A\)</span> 和 <span
-class="math inline">\(B\)</span>，只要 <span class="math inline">\(P(B)
-&gt; 0\)</span>，贝叶斯定理公式如下：</p>
-<p><span class="math display">\[
-P(A|B) = \frac{P(B|A) \cdot P(A)}{P(B)}
-\]</span></p>
-<p>其中：</p>
-<ul>
-<li><span
-class="math inline">\(P(A)\)</span>：<strong>先验概率</strong>，事件 A
-发生的原始概率；</li>
-<li><span
-class="math inline">\(P(B|A)\)</span>：<strong>似然度</strong>，在 A
-发生的条件下，观察到 B 的概率；</li>
-<li><span
-class="math inline">\(P(B)\)</span>：<strong>边缘概率</strong>，B
-发生的总概率；</li>
-<li><span
-class="math inline">\(P(A|B)\)</span>：<strong>后验概率</strong>，在 B
-发生的前提下，A 发生的概率。</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/07/28/%E8%B4%9D%E5%8F%B6%E6%96%AF%E5%AE%9A%E7%90%86%EF%BC%88Bayes%E2%80%99%20Theorem%EF%BC%89/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2025/07/28/%E4%BA%8C%E9%98%B6%E5%AF%BC%E6%95%B0%E8%BF%9E%E7%BB%AD%E7%9A%84%E6%84%8F%E4%B9%89/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Rayman.hung">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="忆桐之家的博客">
-      <meta itemprop="description" content="技术分享、读书心得、亲子时刻">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | 忆桐之家的博客">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2025/07/28/%E4%BA%8C%E9%98%B6%E5%AF%BC%E6%95%B0%E8%BF%9E%E7%BB%AD%E7%9A%84%E6%84%8F%E4%B9%89/" class="post-title-link" itemprop="url">二阶导数连续的意义</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2025-07-28 00:00:00" itemprop="dateCreated datePublished" datetime="2025-07-28T00:00:00+08:00">2025-07-28</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-07-29 10:30:23" itemprop="dateModified" datetime="2025-07-29T10:30:23+08:00">2025-07-29</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%95%B0%E7%90%86%E7%BB%9F%E8%AE%A1/" itemprop="url" rel="index"><span itemprop="name">数理统计</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>二阶导数连续的意义</p>
-<p>要求<strong>二阶导数连续</strong>，其意义主要体现在函数的“平滑性”和“曲率变化”的稳定性上。具体来说：</p>
+<h3 id="工作流程概览">工作流程概览</h3>
 <ol type="1">
-<li><strong>函数更光滑</strong>
-一阶导数连续保证函数的切线方向变化平稳，函数曲线没有尖点或折角；
-而二阶导数连续进一步保证了曲率的变化也很平滑，没有突变。这意味着函数弯曲的“加速度”没有突跳，整体形状非常平滑。</li>
-<li><strong>物理上的解释</strong>
-<ul>
-<li>一阶导数是速度，二阶导数是加速度。二阶导数连续表示加速度变化平缓，没有突然的跳跃。</li>
-<li>比如在运动学中，物体的加速度如果突然跳变，意味着存在无限大的力，二阶导数连续则说明力的变化是渐进的。</li>
-</ul></li>
-<li><strong>数值计算和建模的稳定性</strong>
-在数值分析和插值（如三次样条插值）中，二阶导数连续是保证结果平滑且逼近真实函数的关键条件，避免出现不自然的波动。</li>
-<li><strong>数学分析上的意义</strong> 连续的二阶导数意味着函数属于 <span
-class="math inline">\(C^2\)</span>
-类，即函数及其一阶、二阶导数均连续，这通常是很多定理（如泰勒展开的准确性、偏微分方程解的正则性等）成立的重要前提。</li>
-</ol>
-<p>总结：</p>
-<blockquote>
-<p>要求二阶导数连续，保证函数在二阶导数层面没有“断点”或“跳变”，使得函数的曲率变化平滑，形状光滑自然，且在物理和数学模型中具有良好的解释和稳定性。</p>
-</blockquote>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2025/07/28/%E6%A0%B7%E6%9D%A1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Rayman.hung">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="忆桐之家的博客">
-      <meta itemprop="description" content="技术分享、读书心得、亲子时刻">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | 忆桐之家的博客">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2025/07/28/%E6%A0%B7%E6%9D%A1/" class="post-title-link" itemprop="url">样条</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2025-07-28 00:00:00" itemprop="dateCreated datePublished" datetime="2025-07-28T00:00:00+08:00">2025-07-28</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-07-29 10:31:12" itemprop="dateModified" datetime="2025-07-29T10:31:12+08:00">2025-07-29</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%95%B0%E7%90%86%E7%BB%9F%E8%AE%A1/" itemprop="url" rel="index"><span itemprop="name">数理统计</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>在<strong>统计学</strong>中，“样条（spline）”是一种常用的<strong>函数逼近工具</strong>，用来构建一条<strong>平滑的曲线</strong>，以拟合数据点或逼近某个未知函数。它在非参数回归、平滑处理、插值、数据可视化等领域非常重要。</p>
-<h3 id="样条的核心概念">样条的核心概念</h3>
-<p>定义</p>
-<p><strong>样条函数（spline function）</strong>
-是一种<strong>分段定义</strong>的函数，通常由<strong>低阶多项式</strong>（例如线性、多项式）在各区间上定义，并在<strong>节点处</strong>拼接，但要保证一定的<strong>连续性和平滑性</strong>（如导数连续）。</p>
-<p>节点（knots）</p>
-<p>节点是定义样条函数时用来分段的关键点。
-例如：一个三次样条在每个分段是三次多项式，但在节点处要求函数值、一阶导数和二阶导数都连续。</p>
-<p>
+<li><strong>初始化模型</strong>：先用一个简单的模型（通常是常数）作为初始预测值。</li>
+<li><strong>计算残差</strong>：残差 = 真实值 − 当前预测值。</li>
+<li><strong>拟合残差</strong>：训练一棵新的决策树来拟合残差（即学习错误）。</li>
+<li><strong>更新模型</strong>：将这棵新树的输出加权后加入到原模型中。</li>
+<li><strong>重复步骤
+2-4</strong>：不断迭代，直到达到指定的树数量或误差收敛。
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2025/07/28/%E6%A0%B7%E6%9D%A1/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2025/07/28/%E4%BC%BC%E7%84%B6%E5%87%BD%E6%95%B0%E5%92%8C%E6%9D%A1%E4%BB%B6%E6%A6%82%E7%8E%87%E7%9A%84%E5%88%86%E5%88%AB/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Rayman.hung">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="忆桐之家的博客">
-      <meta itemprop="description" content="技术分享、读书心得、亲子时刻">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | 忆桐之家的博客">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2025/07/28/%E4%BC%BC%E7%84%B6%E5%87%BD%E6%95%B0%E5%92%8C%E6%9D%A1%E4%BB%B6%E6%A6%82%E7%8E%87%E7%9A%84%E5%88%86%E5%88%AB/" class="post-title-link" itemprop="url">似然函数和条件概率的分别</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2025-07-28 00:00:00" itemprop="dateCreated datePublished" datetime="2025-07-28T00:00:00+08:00">2025-07-28</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-07-29 10:26:37" itemprop="dateModified" datetime="2025-07-29T10:26:37+08:00">2025-07-29</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%95%B0%E7%90%86%E7%BB%9F%E8%AE%A1/" itemprop="url" rel="index"><span itemprop="name">数理统计</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>似然函数和条件概率的分别？
-这是一个非常重要但容易混淆的问题，尤其是在学习贝叶斯推断时。</p>
-<ol type="1">
-<li><strong>相同点</strong>（为什么它们看起来像一样的东西）</li>
-</ol>
-<p>两者在<strong>数学形式</strong>上确实很相似：</p>
-<p><span class="math display">\[
-P(x \mid \theta)
-\]</span></p>
-<ul>
-<li>当我们把它当成关于 <span class="math inline">\(x\)</span>
-的函数（已知参数 <span
-class="math inline">\(\theta\)</span>）：这是<strong>条件概率</strong>；</li>
-<li>当我们把它当成关于 <span class="math inline">\(\theta\)</span>
-的函数（已知数据 <span
-class="math inline">\(x\)</span>）：这是<strong>似然函数</strong>。</li>
-</ul>
-<p>所以：</p>
-<blockquote>
-<p><strong>同一个表达式 <span class="math inline">\(P(x \mid
-\theta)\)</span>，既可以是条件概率，也可以是似然函数，取决于我们把哪个当变量、哪个当已知！</strong></p>
-</blockquote>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/07/28/%E4%BC%BC%E7%84%B6%E5%87%BD%E6%95%B0%E5%92%8C%E6%9D%A1%E4%BB%B6%E6%A6%82%E7%8E%87%E7%9A%84%E5%88%86%E5%88%AB/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2025/07/28/%E4%BA%8C%E6%AC%A1%E8%A7%84%E5%88%92%E9%97%AE%E9%A2%98%EF%BC%88Quadratic%20Programming,%20QP%EF%BC%89/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Rayman.hung">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="忆桐之家的博客">
-      <meta itemprop="description" content="技术分享、读书心得、亲子时刻">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | 忆桐之家的博客">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2025/07/28/%E4%BA%8C%E6%AC%A1%E8%A7%84%E5%88%92%E9%97%AE%E9%A2%98%EF%BC%88Quadratic%20Programming,%20QP%EF%BC%89/" class="post-title-link" itemprop="url">二次规划问题（Quadratic Programming, QP）</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2025-07-28 00:00:00" itemprop="dateCreated datePublished" datetime="2025-07-28T00:00:00+08:00">2025-07-28</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-07-29 10:20:32" itemprop="dateModified" datetime="2025-07-29T10:20:32+08:00">2025-07-29</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%95%B0%E7%90%86%E7%BB%9F%E8%AE%A1/" itemprop="url" rel="index"><span itemprop="name">数理统计</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p><strong>二次规划问题（Quadratic Programming, QP）</strong>
-从直观理解到数学定义、例子、应用场景等都讲一遍。</p>
-<p>一、<strong>什么是二次规划</strong>？</p>
-<p>二次规划（Quadratic Programming）是一类
-<strong>目标函数是二次函数</strong>、但 <strong>约束是线性</strong>
-的优化问题。</p>
-<p>可以理解为：</p>
-<blockquote>
-<p>“在线性约束条件下，找到一个变量组合，使一个二次函数取得最小（或最大）值”。</p>
-</blockquote>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/07/28/%E4%BA%8C%E6%AC%A1%E8%A7%84%E5%88%92%E9%97%AE%E9%A2%98%EF%BC%88Quadratic%20Programming,%20QP%EF%BC%89/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2025/02/01/%E7%BB%9F%E8%AE%A1%E5%AD%A6%E7%9A%84%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Rayman.hung">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="忆桐之家的博客">
-      <meta itemprop="description" content="技术分享、读书心得、亲子时刻">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | 忆桐之家的博客">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2025/02/01/%E7%BB%9F%E8%AE%A1%E5%AD%A6%E7%9A%84%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" class="post-title-link" itemprop="url">统计学的学习笔记</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2025-02-01 00:00:00" itemprop="dateCreated datePublished" datetime="2025-02-01T00:00:00+08:00">2025-02-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-07-30 10:25:07" itemprop="dateModified" datetime="2025-07-30T10:25:07+08:00">2025-07-30</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%96%87%E5%8F%B2%E6%95%B0%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">文史数理</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>推断统计学（Inferential
-Statistics）是统计学的一个核心分支，它的目标是：基于样本数据对总体（population）作出合理推断或决策。
-描述统计对已知样本进行总结与展示，包括均值、方差、图表等
-包括估计、检验、模型等，不涉及概率推断。</p>
-<h4 id="重点记录">重点记录</h4>
-<ul>
-<li>oracle不等式<br />
-</li>
-<li>各种残差的概念的理解：方差 偏差 残差 标准误差 标准差
-残差偏差（<em>residual deviance</em>）<br />
-</li>
-<li>残差在模型诊断中的重要性<br />
-</li>
-<li>小波基底 压缩感知 傅⾥叶滤波<br />
-</li>
-<li>统计学复杂的地方：不同假设对应不同估计和方案选择，所以结果出来需要对假设做检验<br />
-偏差-方差权衡（<em>bias-variance trade off</em>）<br />
-</li>
-<li>投资风险就是方差<br />
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/02/01/%E7%BB%9F%E8%AE%A1%E5%AD%A6%E7%9A%84%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#more" rel="contents">
+              <a class="btn" href="/2025/07/26/%E6%A2%AF%E5%BA%A6%E6%8F%90%E5%8D%87%E6%A0%91/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -1485,7 +1528,7 @@ Statistics）是统计学的一个核心分支，它的目标是：基于样本�
 
 
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/89/">89</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/90/">90</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 </div>

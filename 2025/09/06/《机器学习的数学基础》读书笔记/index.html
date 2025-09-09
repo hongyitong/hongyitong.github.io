@@ -1,0 +1,3008 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="原书《MATHEMATICS FOR MACHINE LEARNING》 马斯克的第一性原理、评价一个好学生就说他概念很清晰。这些都指向了基本的理解概念的重要性；正是这本书的特点；不过因为在一本书里面讲解了很多概念，包括线性代数、解析几何、微积分、概率等，所以还是需要读者有一定的数学基础，同时有些时候需要借助ChatGPT等工具进行概念的理解。 本书把涉及机器学习的数学的概念梳理了一遍；以介绍概念">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《机器学习的数学基础》读书笔记">
+<meta property="og:url" content="http://hongyitong.github.io/2025/09/06/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="忆桐之家的博客">
+<meta property="og:description" content="原书《MATHEMATICS FOR MACHINE LEARNING》 马斯克的第一性原理、评价一个好学生就说他概念很清晰。这些都指向了基本的理解概念的重要性；正是这本书的特点；不过因为在一本书里面讲解了很多概念，包括线性代数、解析几何、微积分、概率等，所以还是需要读者有一定的数学基础，同时有些时候需要借助ChatGPT等工具进行概念的理解。 本书把涉及机器学习的数学的概念梳理了一遍；以介绍概念">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/img3/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80Part1/%E5%8F%98%E6%8D%A2.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80Part1/F2.12.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80Part1/%E5%9B%BE%E8%A7%A3%E7%89%B9%E5%BE%81%E5%80%BC%E5%88%86%E8%A7%A3.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80Part1/%E5%9B%BE%E8%A7%A3SVD_1.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80Part1/%E5%9B%BE%E8%A7%A3SVD_2.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80Part1/%E7%9F%A9%E9%98%B5%E5%88%86%E7%B1%BB%E5%85%B3%E7%B3%BB%E5%9B%BE.png">
+<meta property="og:image" content="http://hongyitong.github.io/2025/09/06/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/%E5%B8%B8%E8%A7%81%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3%E6%80%BB%E7%BB%93%E8%A1%A8.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80Part1/%E5%8F%98%E6%8D%A2.png">
+<meta property="og:image" content="http://hongyitong.github.io/2025/09/06/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/%E5%81%8F%E5%AF%BC%E6%95%B0%E7%9A%84%E7%BB%B4%E5%BA%A6.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80Part1/%E9%9A%8F%E6%9C%BA%E5%8F%98%E9%87%8F%E7%9A%84%E5%87%A0%E4%BD%95.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80Part1/beta%E5%88%86%E5%B8%83.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80Part1/%E5%B8%B8%E8%A7%81%E4%BC%BC%E7%84%B6%E5%87%BD%E6%95%B0%E7%9A%84%E5%85%B1%E8%BD%AD%E5%85%88%E9%AA%8C.png">
+<meta property="article:published_time" content="2025-09-05T16:00:00.000Z">
+<meta property="article:modified_time" content="2025-09-09T03:28:41.300Z">
+<meta property="article:author" content="Rayman.hung">
+<meta property="article:tag" content="数学">
+<meta property="article:tag" content="算法">
+<meta property="article:tag" content="统计">
+<meta property="article:tag" content="深度学习">
+<meta property="article:tag" content="机器学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hongyitong.github.io/img3/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80Part1/%E5%8F%98%E6%8D%A2.png">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2025/09/06/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2025/09/06/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/","path":"2025/09/06/《机器学习的数学基础》读书笔记/","title":"《机器学习的数学基础》读书笔记"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>《机器学习的数学基础》读书笔记 | 忆桐之家的博客</title>
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">忆桐之家的博客</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman&Tony</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li><li class="menu-item menu-item-tags"><a href="/tags" rel="section">标签</a></li><li class="menu-item menu-item-commonweal"><a href="/404.html" rel="section">公益 404</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%BC%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">导言</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E7%9B%B4%E8%A7%89%E5%AF%BB%E6%89%BE%E8%AF%8D%E8%AF%AD"><span class="nav-number">1.1.</span> <span class="nav-text">为直觉寻找词语</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0"><span class="nav-number">2.</span> <span class="nav-text">线性代数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BA%BF%E6%80%A7%E6%96%B9%E7%A8%8B%E6%B1%82%E8%A7%A3"><span class="nav-number">2.1.</span> <span class="nav-text">线性方程求解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BE%A4"><span class="nav-number">2.2.</span> <span class="nav-text">群</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BA%BF%E6%80%A7%E5%8F%98%E6%8D%A2%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="nav-number">2.3.</span> <span class="nav-text">线性变换的定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%98%E6%8D%A2%E7%9F%A9%E9%98%B5"><span class="nav-number">2.4.</span> <span class="nav-text">变换矩阵</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%B8%E4%BC%BC%E7%9F%A9%E9%98%B5"><span class="nav-number">2.5.</span> <span class="nav-text">相似矩阵</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%81%92%E7%AD%89%E6%98%A0%E5%B0%84"><span class="nav-number">2.6.</span> <span class="nav-text">恒等映射</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E5%8F%98%E6%8D%A2"><span class="nav-number">2.7.</span> <span class="nav-text">基变换</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%98%E9%87%8F%E5%8F%98%E6%8D%A2%E5%92%8C%E5%9F%BA%E5%8F%98%E6%8D%A2%E7%9A%84%E7%9F%A9%E9%98%B5%E5%8C%BA%E5%88%AB"><span class="nav-number">2.8.</span> <span class="nav-text">变量变换和基变换的矩阵区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%83%8F%E4%B8%8E%E6%A0%B8"><span class="nav-number">2.9.</span> <span class="nav-text">像与核</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%BF%E5%B0%84%E7%A9%BA%E9%97%B4"><span class="nav-number">2.10.</span> <span class="nav-text">仿射空间</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%BF%E5%B0%84%E6%98%A0%E5%B0%84"><span class="nav-number">2.11.</span> <span class="nav-text">仿射映射</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E6%9E%90%E5%87%A0%E4%BD%95"><span class="nav-number">3.</span> <span class="nav-text">解析几何</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8C%83%E6%95%B0"><span class="nav-number">3.1.</span> <span class="nav-text">范数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E7%A7%AF"><span class="nav-number">3.2.</span> <span class="nav-text">内积</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A3%E5%AE%9A%E7%9F%A9%E9%98%B5"><span class="nav-number">3.3.</span> <span class="nav-text">正定矩阵</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%95%BF%E5%BA%A6%E5%92%8C%E8%B7%9D%E7%A6%BB"><span class="nav-number">3.4.</span> <span class="nav-text">长度和距离</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B7%9D%E7%A6%BB%E5%92%8C%E5%BA%A6%E9%87%8F"><span class="nav-number">3.5.</span> <span class="nav-text">距离和度量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%92%E5%BA%A6%E5%92%8C%E6%AD%A3%E4%BA%A4"><span class="nav-number">3.6.</span> <span class="nav-text">角度和正交</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A3%E4%BA%A4%E7%9F%A9%E9%98%B5"><span class="nav-number">3.7.</span> <span class="nav-text">正交矩阵</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E7%9A%84%E5%86%85%E7%A7%AF"><span class="nav-number">3.8.</span> <span class="nav-text">函数的内积</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A3%E4%BA%A4%E6%8A%95%E5%BD%B1"><span class="nav-number">3.9.</span> <span class="nav-text">正交投影</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%8B%E8%BD%AC"><span class="nav-number">3.10.</span> <span class="nav-text">旋转</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3"><span class="nav-number">4.</span> <span class="nav-text">矩阵分解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A1%8C%E5%88%97%E5%BC%8F%E4%B8%8E%E8%BF%B9"><span class="nav-number">4.1.</span> <span class="nav-text">行列式与迹</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%89%B9%E5%BE%81%E5%80%BC%E5%92%8C%E7%89%B9%E5%BE%81%E5%90%91%E9%87%8F"><span class="nav-number">4.2.</span> <span class="nav-text">特征值和特征向量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B0%B1%E5%AE%9A%E7%90%86"><span class="nav-number">4.3.</span> <span class="nav-text">谱定理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%89%B9%E5%BE%81%E5%80%BC%E7%89%B9%E5%BE%81%E5%90%91%E9%87%8F%E8%A1%8C%E5%88%97%E5%BC%8F%E8%BF%B9%E7%9A%84%E8%81%94%E7%B3%BB"><span class="nav-number">4.4.</span> <span class="nav-text">特征值、特征向量、行列式、迹的联系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3-1"><span class="nav-number">4.5.</span> <span class="nav-text">矩阵分解</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#cholesky%E5%88%86%E8%A7%A3"><span class="nav-number">4.5.1.</span> <span class="nav-text">Cholesky分解</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%89%B9%E5%BE%81%E5%80%BC%E5%88%86%E8%A7%A3%E4%B8%8E%E5%AF%B9%E8%A7%92%E5%8C%96"><span class="nav-number">4.5.2.</span> <span class="nav-text">特征值分解与对角化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A5%87%E5%BC%82%E5%80%BC%E5%88%86%E8%A7%A3"><span class="nav-number">4.5.3.</span> <span class="nav-text">奇异值分解</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%89%B9%E5%BE%81%E5%80%BC%E5%88%86%E8%A7%A3-vs.-%E5%A5%87%E5%BC%82%E5%80%BC%E5%88%86%E8%A7%A3"><span class="nav-number">4.5.4.</span> <span class="nav-text">特征值分解 vs. 奇异值分解</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%9F%A9%E9%98%B5%E9%80%BC%E8%BF%91"><span class="nav-number">4.5.5.</span> <span class="nav-text">矩阵逼近</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9F%A9%E9%98%B5%E5%88%86%E7%B1%BB%E5%85%B3%E7%B3%BB%E5%9B%BE"><span class="nav-number">4.6.</span> <span class="nav-text">矩阵分类关系图</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%91%E9%87%8F%E5%BE%AE%E7%A7%AF%E5%88%86"><span class="nav-number">5.</span> <span class="nav-text">向量微积分</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B3%B0%E5%8B%92%E7%BA%A7%E6%95%B0"><span class="nav-number">5.1.</span> <span class="nav-text">泰勒级数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BE%AE%E5%88%86%E6%B3%95%E5%88%99"><span class="nav-number">5.2.</span> <span class="nav-text">微分法则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%81%8F%E5%BE%AE%E5%88%86%E4%B8%8E%E6%A2%AF%E5%BA%A6"><span class="nav-number">5.3.</span> <span class="nav-text">偏微分与梯度</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%93%BE%E5%BC%8F%E6%B3%95%E5%88%99"><span class="nav-number">5.3.1.</span> <span class="nav-text">链式法则</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A4%9A%E5%8F%98%E9%87%8F%E9%93%BE%E5%BC%8F%E6%B3%95%E5%88%99"><span class="nav-number">5.3.2.</span> <span class="nav-text">多变量链式法则</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%91%E9%87%8F%E5%80%BC%E5%87%BD%E6%95%B0%E7%9A%84%E6%A2%AF%E5%BA%A6"><span class="nav-number">5.4.</span> <span class="nav-text">向量值函数的梯度</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD%E4%B8%8E%E8%87%AA%E5%8A%A8%E5%BE%AE%E5%88%86%E6%B3%95"><span class="nav-number">5.4.1.</span> <span class="nav-text">反向传播与自动微分法</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E7%8E%87%E4%B8%8E%E5%88%86%E5%B8%83"><span class="nav-number">6.</span> <span class="nav-text">概率与分布</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E7%8E%87%E7%A9%BA%E9%97%B4-omega-mathcala-p"><span class="nav-number">6.1.</span> <span class="nav-text">概率空间 \((\Omega, \mathcal{A}, P)\)，</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%A0%E6%B3%95%E6%B3%95%E5%88%99%E4%B9%98%E6%B3%95%E6%B3%95%E5%88%99%E5%92%8C%E8%B4%9D%E5%8F%B6%E6%96%AF%E5%AE%9A%E7%90%86"><span class="nav-number">6.2.</span> <span class="nav-text">加法法则、乘法法则和贝叶斯定理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%9F%E6%9C%9B%E5%80%BC"><span class="nav-number">6.3.</span> <span class="nav-text">期望值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%8F%E6%96%B9%E5%B7%AE"><span class="nav-number">6.4.</span> <span class="nav-text">协方差</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3"><span class="nav-number">6.5.</span> <span class="nav-text">相关</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E5%B7%AE%E7%9A%84%E4%B8%89%E4%B8%AA%E8%A1%A8%E8%BE%BE%E5%BC%8F"><span class="nav-number">6.6.</span> <span class="nav-text">方差的三个表达式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9A%8F%E6%9C%BA%E5%8F%98%E9%87%8F%E7%9A%84%E5%92%8C%E4%B8%8E%E5%8F%98%E6%8D%A2"><span class="nav-number">6.7.</span> <span class="nav-text">随机变量的和与变换</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%9F%E8%AE%A1%E7%8B%AC%E7%AB%8B%E6%80%A7"><span class="nav-number">6.8.</span> <span class="nav-text">(统计)独立性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9A%8F%E6%9C%BA%E5%8F%98%E9%87%8F%E7%9A%84%E5%86%85%E7%A7%AF"><span class="nav-number">6.9.</span> <span class="nav-text">随机变量的内积</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E7%8E%87%E5%88%86%E5%B8%83%E7%9A%84%E8%B7%9D%E7%A6%BB%E5%AE%9A%E4%B9%89"><span class="nav-number">6.10.</span> <span class="nav-text">概率分布的距离定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%AB%98%E6%96%AF%E5%88%86%E5%B8%83"><span class="nav-number">6.11.</span> <span class="nav-text">高斯分布</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B1%E8%BD%AD%E4%B8%8E%E6%8C%87%E6%95%B0%E6%97%8F"><span class="nav-number">6.12.</span> <span class="nav-text">共轭与指数族</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#beta%E5%88%86%E5%B8%83"><span class="nav-number">6.12.1.</span> <span class="nav-text">Beta分布</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B1%E8%BD%AD"><span class="nav-number">6.12.2.</span> <span class="nav-text">共轭</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8C%87%E6%95%B0%E6%97%8F"><span class="nav-number">6.12.3.</span> <span class="nav-text">指数族</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%98%E9%87%8F%E6%9B%BF%E6%8D%A2%E9%80%86%E5%8F%98%E6%8D%A2"><span class="nav-number">6.13.</span> <span class="nav-text">变量替换&#x2F;逆变换</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%87%BD%E6%95%B0%E6%8A%80%E6%9C%AF"><span class="nav-number">6.13.1.</span> <span class="nav-text">分布函数技术</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%98%E9%87%8F%E6%9B%BF%E6%8D%A2"><span class="nav-number">6.13.2.</span> <span class="nav-text">变量替换</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9E%E7%BB%AD%E4%BC%98%E5%8C%96"><span class="nav-number">7.</span> <span class="nav-text">连续优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E6%B3%95%E4%BC%98%E5%8C%96"><span class="nav-number">7.1.</span> <span class="nav-text">使用梯度下降法优化</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%8A%A8%E9%87%8F%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D"><span class="nav-number">7.1.0.1.</span> <span class="nav-text">动量梯度下降：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%9A%8F%E6%9C%BA%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E6%B3%95"><span class="nav-number">7.1.0.2.</span> <span class="nav-text">随机梯度下降法：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BA%A6%E6%9D%9F%E4%BC%98%E5%8C%96%E4%B8%8E%E6%8B%89%E6%A0%BC%E6%9C%97%E6%97%A5%E4%B9%98%E5%AD%90"><span class="nav-number">7.2.</span> <span class="nav-text">约束优化与拉格朗日乘子</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%B8%E4%BC%98%E5%8C%96"><span class="nav-number">7.3.</span> <span class="nav-text">凸优化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BA%BF%E6%80%A7%E8%A7%84%E5%88%92"><span class="nav-number">7.3.1.</span> <span class="nav-text">线性规划</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BA%8C%E6%AC%A1%E8%A7%84%E5%88%92"><span class="nav-number">7.3.2.</span> <span class="nav-text">二次规划</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#legendre-fenchel%E5%8F%98%E6%8D%A2%E5%92%8C%E5%87%B8%E5%85%B1%E8%BD%AD"><span class="nav-number">7.3.3.</span> <span class="nav-text">Legendre-Fenchel变换和凸共轭</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BF%A1%E6%81%AF%E8%AE%BA"><span class="nav-number">8.</span> <span class="nav-text">信息论</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、亲子时刻</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives">
+          <span class="site-state-item-count">892</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags">
+        <span class="site-state-item-count">1147</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/hongyitong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hongyitong" rel="noopener" target="_blank">GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://blog.sina.com.cn/yitonghong" title="忆桐之家 → http:&#x2F;&#x2F;blog.sina.com.cn&#x2F;yitonghong" rel="noopener" target="_blank">忆桐之家</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://douban.com/people/2780741" title="豆瓣 → http:&#x2F;&#x2F;douban.com&#x2F;people&#x2F;2780741" rel="noopener" target="_blank">豆瓣</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.zhihu.com/people/rayman-36" title="知乎 → http:&#x2F;&#x2F;www.zhihu.com&#x2F;people&#x2F;rayman-36" rel="noopener" target="_blank">知乎</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.liaoxuefeng.com/" title="廖雪峰的官方网站 → http:&#x2F;&#x2F;www.liaoxuefeng.com&#x2F;" rel="noopener" target="_blank">廖雪峰的官方网站</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="http://www.vaikan.com/" title="外刊IT评论 → http:&#x2F;&#x2F;www.vaikan.com&#x2F;" rel="noopener" target="_blank">外刊IT评论</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2025/09/06/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="忆桐之家的博客">
+      <meta itemprop="description" content="技术分享、读书心得、亲子时刻">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="《机器学习的数学基础》读书笔记 | 忆桐之家的博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《机器学习的数学基础》读书笔记
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-09-06 00:00:00" itemprop="dateCreated datePublished" datetime="2025-09-06T00:00:00+08:00">2025-09-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-09-09 11:28:41" itemprop="dateModified" datetime="2025-09-09T11:28:41+08:00">2025-09-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AF%BB%E4%B9%A6%E5%BF%83%E5%BE%97/" itemprop="url" rel="index"><span itemprop="name">读书心得</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>原书《MATHEMATICS FOR MACHINE LEARNING》</p>
+<p>马斯克的第一性原理、评价一个好学生就说他概念很清晰。这些都指向了基本的理解概念的重要性；正是这本书的特点；不过因为在一本书里面讲解了很多概念，包括线性代数、解析几何、微积分、概率等，所以还是需要读者有一定的数学基础，同时有些时候需要借助ChatGPT等工具进行概念的理解。</p>
+<p>本书把涉及机器学习的数学的概念梳理了一遍；以介绍概念为主，从数学的角度、用数学的语言，从概念的角度引申出各知识点。这本书的优点是把涉及机器学习部分的数学概念讲得系统并深入浅出，把各个概念之间的关联性讲得很透彻，整体性很强，而不是简单概念的罗列。</p>
+<p>不过，学习就是理论联系实际的过程，学习概念然后实践（练习、看书、应用等等），在实践中会发现对概念理解不透彻的地方，回头去理解概念，然后得到升华。概念就譬如对人的定义，在中国你可能觉得人就是黄种人的样子，但当你出国发现欧洲人之后，你回头去看人的定义，会增加对人这个概念的理解。</p>
+<p>这本书通过数学语言定义了很多概念，直指本质；例如向量、内积；很多定义推翻了我们常识中的一些认定，例如内积，之前的通常的认知都是点积，其实真正内积的内涵广泛得多，应用也广泛得多。</p>
+<blockquote>
+<p>核心的概念内积！！！！！！！内积的定义以及从内积引申出的正定矩阵、范数、距离等概念。</p>
+</blockquote>
+<blockquote>
+<p>数学是这个世界上最精确的语言！</p>
+</blockquote>
+<p>本笔记结合原版和网上中文翻译做了笔记。</p>
+<p>本书两部分：</p>
+<p>Part I：Mathematical Foundations</p>
+<p>PartII：Central Machine Learning Problems</p>
+<p>原书</p>
+<p>中文翻译收录在这个专栏（只翻译了数学基础这一部分。）：</p>
+<p>https://binaryai.blog.csdn.net/article/details/115050415</p>
+<p>不过，中文版的译作者修改和加了一些内容，例如例6.1中，就把$换成人民币¥；还有矩阵那里增加了分块矩阵的运算！还有最后一章节的“信息论”原书并没有。</p>
+<blockquote>
+<p>注意函数和曲面的区别。详见《函数与曲面.md》</p>
+</blockquote>
+<p>以下是本书的一些摘录。</p>
+<p><span id="more"></span></p>
+<h2 id="导言">导言</h2>
+<p>理解这些原理可以帮助创建新的机器学习解决方案，理解和调试现有方法，了解我们正在使用的方法的固有假设和局限性。</p>
+<h3 id="为直觉寻找词语">为直觉寻找词语</h3>
+<p>作为另一个关于词语是多么微妙的例子，有（至少）三种不同的方式来思考向量：向量作为数字数组（计算机科学观点），向量作为具有方向和大小的箭头（物理学观），以及向量作为一个服从加法和缩放的对象（数学观点）。</p>
+<p>向量和矩阵的研究称为 <em>线性代数（linear algebra）</em></p>
+<p>相似度和距离的构造是 <em>解析几何（analytic geometry）</em>
+的核心</p>
+<p>不确定性的量化是 <em>概率论（probability theory）</em> 的范畴</p>
+<p>为了训练机器学习模型，我们通常会找到最大化某些性能指标的参数。
+许多优化技术需要梯度的概念，它告诉我们搜索解决方案的方向。 第 5 章是关于
+<em>向量微积分（vector calculus）</em> 并详细介绍梯度的概念</p>
+<h2 id="线性代数">线性代数</h2>
+<p>Linear Algebra</p>
+<p>在形式化一些直观概念时，常见的方法是构造一组对象(符号)和一些操作这些对象的规则。
+这就是所谓的代数(algebra)。线性代数是研究向量以及使用某些确定的规则来操作向量的
+一门学科。
+我们许多人从学校里知道的向量被称为“几何向量”，通常用上方带一个小箭头的字母表示。</p>
+<p><strong>向量是特殊的对象，将它们相加并乘以标量产生的是另一个相同类型的对象。从
+抽象的数学来看，任何满足这两个性质的物体都可以被认为是向量。</strong></p>
+<h3 id="线性方程求解">线性方程求解</h3>
+<p>出于数值精度的原因，通常不建议计算逆或伪逆。因此，在下文中，我们将简要讨论求解线性方程组的其他方法。
+高斯消元法在计算行列式、检查向量集是否线性独立、计算矩阵的逆，计算矩阵的秩，和确定向量空间的基时起着重要作用。高斯消元法是一种直观而有建设性的方法来解决一个含成千上万变量的线性方程组。然而，对于具有数百万个变量的方程组，这是不切实际的，因为所需的运算量是按联立方程组的数量的立方增长的。
+在实践中，许多线性方程组都是通过定常迭代方法(stationary iterative
+methods)间接求解的，如Richardson方法、Jacobi方法、Gauß-Seidel方法和逐次超松弛方法，或Krylov子空间方法，如共轭梯度、广义最小残差或双共轭梯度。</p>
+<h3 id="群">群</h3>
+<p><strong>群的概念，它包含一组元素和一个定义在这些元素上的操作，该操作可以保持集合的某些结构完整。</strong>
+群在计算机科学中扮演着重要的角色。除了为集合上的运算提供一个基本框架外，它们还被大量应用于密码学、编码理论和图形学。</p>
+<ul>
+<li>封闭性(Closure)</li>
+<li>结合律(Associativity)</li>
+<li>单位元(Neutral elemen)</li>
+<li>逆元(Inverse element)</li>
+</ul>
+<p><strong>如果可交换运算顺序，是阿贝尔群( Abelian group）</strong></p>
+<blockquote>
+<p>个人注：很多时候交换律都不是必须的。</p>
+</blockquote>
+<p><strong><u>向量空间</u>的定义太赞了</strong>，通过群的定义引出！</p>
+<h3 id="线性变换的定义">线性变换的定义</h3>
+<p>保持<strong>向量空间结构不变</strong>需满足:</p>
+<p><span class="math display">\[
+\forall x, y \in V\ \forall \lambda, \psi \in \mathbb{R} : \Phi(\lambda
+\mathbf{x} + \psi \mathbf{y}) = \lambda \Phi(\mathbf{x}) + \psi
+\Phi(\mathbf{y}).
+\]</span></p>
+<p>我们可以把线性映射用矩阵(2.7.1节)表示。回想一下前面的内容：我们将向量集合用矩阵的列表示。<strong>在处理矩阵时，我们必须判断矩阵所表示的内容：是线性映射还是向量集合。</strong></p>
+<blockquote>
+<p>个人注：重点要理解变换矩阵、恒等变换（<span
+class="math inline">\(\text{id}_V\)</span>）、基变换的概念！！！！</p>
+</blockquote>
+<p><strong>空间结构不变的定义</strong>：</p>
+<blockquote>
+<p>从几何角度理解线性变换保持空间结构不变，可以帮助直观掌握线性变换的本质。</p>
+<p>1、线性变换几何视角的理解</p>
+<p><strong>线性变换</strong> <span class="math inline">\(\Phi: V \to
+W\)</span> 是一种映射，满足：</p>
+<ul>
+<li>加法保持：<span class="math inline">\(\Phi(\mathbf{x} + \mathbf{y})
+= \Phi(\mathbf{x}) + \Phi(\mathbf{y})\)</span></li>
+<li>数乘保持：<span class="math inline">\(\Phi(\lambda \mathbf{x}) =
+\lambda \Phi(\mathbf{x})\)</span></li>
+</ul>
+<p>这意味着：</p>
+<p>1）<strong>直线映射为直线</strong> 任何向量空间中的直线（即所有形如
+<span class="math inline">\(\mathbf{v}_0 + t\mathbf{v}\)</span>
+的点集，其中 <span class="math inline">\(t \in
+\mathbb{R}\)</span>）经过线性变换后，仍然是直线（或退化成一点）。换句话说，线性变换不会把直线扭曲成曲线。</p>
+<p>2）<strong>原点保持不变</strong> 由于 <span
+class="math inline">\(\Phi(\mathbf{0}) =
+\mathbf{0}\)</span>，线性变换一定把原点映射为原点。这保持了空间的“参考点”。</p>
+<p>3）<strong>比例保持</strong> 对于任意标量 <span
+class="math inline">\(\lambda\)</span>，线性变换保证拉伸或压缩比例保持。例如，<span
+class="math inline">\(\mathbf{x}\)</span> 拉伸两倍后变为 <span
+class="math inline">\(2\mathbf{x}\)</span>，变换后也是变换 <span
+class="math inline">\(\Phi(\mathbf{x})\)</span> 的两倍：<span
+class="math inline">\(\Phi(2\mathbf{x}) =
+2\Phi(\mathbf{x})\)</span>。</p>
+<p>4）<strong>平行保持</strong>
+如果两条线在原空间平行，那么它们的像也平行（或者重合）。这是因为线性变换保持向量加法关系。</p>
+<p>5）<strong>向量加法的几何含义保持</strong>
+变换前后，向量的组合关系（比如三角形的顶点、平行四边形的形状）在变换后的空间里依然成立（尽管大小和方向可能改变）。</p>
+<p>2、换句话说</p>
+<p>线性变换是“刚性”变换的一个推广，它可以拉伸、压缩、旋转、反射空间，但不会产生弯曲或折叠，也不会“撕裂”空间结构。<strong>它保持了“直线”、“比例”、“原点”这些最基础的几何性质。</strong></p>
+<p>3、举个例子</p>
+<ul>
+<li><strong>旋转</strong>
+是线性变换，保持长度和角度（保持空间结构不变的同时还保持距离）。</li>
+<li><strong>缩放</strong>（拉伸/压缩）也是线性变换，改变大小但不改变“直线性”和“比例”。</li>
+<li><strong>投影</strong>
+是线性变换，把三维空间映射到二维平面，保持直线的映射，但改变维度和形状。</li>
+</ul>
+</blockquote>
+<h3 id="变换矩阵">变换矩阵</h3>
+<p><strong>注意变换矩阵的定义。transformation
+matrix</strong>；以及使用变换矩阵将相对于<span
+class="math inline">\(V\)</span>的有序基的坐标映射到相对于<span
+class="math inline">\(W\)</span>中有序基的坐标；以及后文提到的，为了简化变换矩阵，通过基变换的处理。</p>
+<p>在矩阵和有限维向量空间之间的线性映射之间建立一个显式联系。</p>
+<blockquote>
+<p>重点是理解线性变换和矩阵之间的本质联系！</p>
+</blockquote>
+<h3 id="相似矩阵">相似矩阵</h3>
+<p>如果存在可逆矩阵 <span
+class="math inline">\(\boldsymbol{P}\)</span>，使得 <span
+class="math display">\[
+\boldsymbol{D} = \boldsymbol{P}^{-1} \boldsymbol{A} \boldsymbol{P}
+\]</span> 则称矩阵 <span class="math inline">\(\boldsymbol{A}\)</span>
+与 <span class="math inline">\(\boldsymbol{D}\)</span>
+是相似(Similarity)的（定义 2.22）。</p>
+<h3 id="恒等映射">恒等映射</h3>
+<p><span class="math inline">\(\mathrm{id}_V : V \to V,\ x \mapsto
+x\)</span> 为 <span class="math inline">\(V\)</span>
+中的恒等映射或<strong>单位自同构</strong> (<em>identity mapping or
+identity automorphism</em>)。</p>
+<p>通过改变基从而改变向量的的表示，这允许通过一个简单的变换矩阵直接计算实现。</p>
+<h3 id="基变换">基变换</h3>
+<p>重要的作用：同一个点，在不同的基的不同坐标表示！变换矩阵相当于坐标的映射（不同基）。</p>
+<p>在第四章中，我们将利用基变换的概念来寻找一个基，使得自同态的变换矩阵有一个特别简单的（对角）形式。在第十章降维中，我们将利用基变换研究一个数据压缩问题，即找到一个基并在这个基上投影数据从而压缩数据，同时最小化压缩损失。</p>
+<h3 id="变量变换和基变换的矩阵区别">变量变换和基变换的矩阵区别</h3>
+<blockquote>
+<p>要分清楚基变换和变量变换的区别！不要混淆；两者得出的变换矩阵是不同的。</p>
+<p><img src="/img3/机器学习的数学基础Part1/变换.png" alt="变换" style="zoom:50%;" /></p>
+<p>1、变量变换</p>
+<p>如果给定两个向量 <span class="math inline">\(\boldsymbol{b}_{1} =
+[1,0]^{\top}, \ \boldsymbol{b}_{2} = [0,1]^{\top}\)</span>
+作为单位正方形（图5.5中的蓝色区域）的边，则该正方形的面积为： <span
+class="math display">\[
+\left|\det\!\begin{bmatrix}
+1 &amp; 0 \\
+0 &amp; 1
+\end{bmatrix}\right| = 1
+\]</span></p>
+<p>如果我们取一个平行四边形（图5.5中的橙色区域），它的边为 <span
+class="math inline">\(\boldsymbol{c}_{1} = [-2,1]^{\top}, \
+\boldsymbol{c}_{2} = [1,1]^{\top}\)</span>，
+则它的面积是行列式（见第4.1节）的绝对值： <span class="math display">\[
+\left|\det\!\begin{bmatrix}
+-2 &amp; 1 \\
+1 &amp; 1
+\end{bmatrix}\right|
+= |-3| = 3
+\]</span></p>
+<p>即它的面积正好是单位方形的三倍。我们可以通过一个将单位方形转换成另一个方形的映射来找到这个缩放因子。用线性代数的术语说，就是有效地执行从
+<span class="math inline">\((\boldsymbol{b}_{1},
+\boldsymbol{b}_{2})\)</span> 到 <span
+class="math inline">\((\boldsymbol{c}_{1}, \boldsymbol{c}_{2})\)</span>
+的变量变换。在我们的例子中，这个映射是线性的，且它的行列式的绝对值正好给出了我们要寻找的缩放因子。</p>
+<p>因为<span
+class="math inline">\(\boldsymbol{b}_{1},\boldsymbol{b}_{2}\)</span>是基，根据变换矩阵的定义，故<strong>变换矩阵</strong>是：
+<span class="math display">\[
+A =
+\begin{bmatrix}
+-2 &amp; 1 \\
+1 &amp; 1
+\end{bmatrix}
+\]</span></p>
+<p>2、基变换</p>
+<p>为了开始使用线性代数的方法，我们首先确定 <span
+class="math inline">\(\{\boldsymbol{b}_{1},
+\boldsymbol{b}_{2}\}\)</span> 和 <span
+class="math inline">\(\{\boldsymbol{c}_{1},
+\boldsymbol{c}_{2}\}\)</span> 都是 <span
+class="math inline">\(\mathbb{R}^2\)</span> 的基。我们要有效地执行的是从
+<span class="math inline">\(\{\boldsymbol{b}_{1},
+\boldsymbol{b}_{2}\}\)</span> 到 <span
+class="math inline">\(\{\boldsymbol{c}_{1},
+\boldsymbol{c}_{2}\}\)</span> 的基变换，就得寻找实现基变换的变换矩阵。
+利用第2.7.2节的结果，我们确定了所需的<strong>基变换矩阵</strong>为：
+<span class="math display">\[
+\boldsymbol{J} =
+\begin{bmatrix}
+-2 &amp; 1 \\
+1 &amp; 1
+\end{bmatrix} \tag{5.62}
+\]</span></p>
+<p>它使得 <span class="math inline">\(\boldsymbol{J}\boldsymbol{b}_{1} =
+\boldsymbol{c}_{1}, \quad
+\boldsymbol{J}\boldsymbol{b}_{2} = \boldsymbol{c}_{2}\)</span>。 矩阵
+<span class="math inline">\(\boldsymbol{J}\)</span> 的行列式的绝对值为：
+<span class="math display">\[
+\left|\det(\boldsymbol{J})\right| = 3,
+\]</span> 这正是我们在寻找的缩放因子。也就是说， <span
+class="math inline">\((\boldsymbol{c}_{1}, \boldsymbol{c}_{2})\)</span>
+所张成的平行四边形的面积是 <span
+class="math inline">\((\boldsymbol{b}_{1}, \boldsymbol{b}_{2})\)</span>
+所张成面积的三倍。</p>
+<p>把 <span class="math inline">\(\{\boldsymbol{b}_{1},
+\boldsymbol{b}_{2}\}\)</span> 坐标变换成 <span
+class="math inline">\(\{\boldsymbol{c}_{1},
+\boldsymbol{c}_{2}\}\)</span> 的坐标，是左乘<span
+class="math inline">\(\boldsymbol{J}^{-1}\)</span>；反向是左乘<span
+class="math inline">\(\boldsymbol{J}\)</span>。</p>
+</blockquote>
+<h3 id="像与核">像与核</h3>
+<p>“直观地说，核是被 <span class="math inline">\(\Phi\)</span>
+映射到单位元 <span class="math inline">\(\mathbf{0}_W \in W\)</span>
+上的一组向量 <span class="math inline">\(\mathbf{v} \in
+V\)</span>。”</p>
+<p>具体见原书图2.12</p>
+<p><img src="/img3/机器学习的数学基础Part1/F2.12.png" alt="F2.12" style="zoom:50%;" /></p>
+<h3 id="仿射空间">仿射空间</h3>
+<p>在下面，我们将研究从原点偏移的空间，即不再是向量子空间的空间。此外，我们将简要讨论这些仿射空间之间类似线性映射的一些性质。</p>
+<p><strong>备注</strong>：
+在机器学习领域的文献中，线性和仿射之间的区别有时是不明确的，因此我们可以将线性空间/映射作为仿射空间/映射的参考。</p>
+<h3 id="仿射映射">仿射映射</h3>
+<p>仿射映射保持几何结构不变。它们还保留了尺寸比例和平行度。</p>
+<h2 id="解析几何">解析几何</h2>
+<p>Analytic Geometry</p>
+<p>内积及其相应的范数和度量可以得到相似性和距离的直观概念</p>
+<blockquote>
+<p>范数表示向量的长度，范数可以由内积引出，内积可以是不同的定义（所以不同的内积定义的长度是不一样的），<strong>内积由唯一的对称正定矩阵确定</strong>（正定矩阵的定义符合要求）。</p>
+<p>用内积来计算向量的长度和向量之间的夹角.</p>
+</blockquote>
+<h3 id="范数">范数</h3>
+<p>向量空间 <span class="math inline">\(V\)</span>
+的范数是一个指定每个向量 <span class="math inline">\(x\)</span>
+的长度的函数:</p>
+<p><span class="math display">\[
+\|\cdot\|: V \to \mathbb{R}
+\]</span> <span class="math display">\[
+x \mapsto \|x\|
+\]</span></p>
+<p>并且对于任何 <span class="math inline">\(\lambda \in
+\mathbb{R}\)</span> 以及 <span class="math inline">\(x, y \in
+V\)</span>，以下成立：</p>
+<ul>
+<li><strong>绝对一次齐次性</strong> (Absolutely homogeneous)：<span
+class="math inline">\(\|\lambda x\| = |\lambda| \|x\|\)</span></li>
+<li><strong>三角不等式</strong> (Triangle inequality)：<span
+class="math inline">\(\|x + y\| \leq \|x\| + \|y\|\)</span></li>
+<li><strong>正定性</strong> (Positive definite)：$|x| $ 且 <span
+class="math inline">\(\|x\| = 0 \iff x = 0\)</span></li>
+</ul>
+<p>注意，范数可以是多种，例如<span class="math inline">\(\mathcal
+l_1\)</span>范数（<em>曼哈顿范数</em>）、<span
+class="math inline">\(\mathcal
+l_2\)</span>范数（<em>欧氏距离</em>）。</p>
+<h3 id="内积">内积</h3>
+<p>内积可以引入一些直观的几何概念，例如<strong>向量的长度和两个向量之间的角度或距离</strong>。内积的一个主要目的是确定向量之间是否正交。</p>
+<p><strong>3.2.1 点积</strong></p>
+<p>我们可能已经熟悉了一种特殊类型的内积，<span
+class="math inline">\(\mathbb{R}^n\)</span>中的标量积/点积（scalar
+product/dot product）：</p>
+<p><span class="math display">\[
+\mathbf{x}^\top \mathbf{y} = \sum_{i=1}^n x_i y_i \tag{3.5}
+\]</span></p>
+<p>在这本书中，我们将<strong>把这种特殊的内积称为点积</strong>。但是，<strong>内积是具有特定性质的更一般的概念</strong>，我们现在将介绍这些概念。</p>
+<p><strong>定义 3.3：内积与内积空间</strong></p>
+<p>设 <span class="math inline">\(V\)</span> 为向量空间，<span
+class="math inline">\(\langle \cdot,\cdot \rangle : V \times V \to
+\mathbb{R}\)</span> 为一个双线性映射，即它将 <span
+class="math inline">\(V\)</span> 中两个向量映射为一个实数，则有：</p>
+<ul>
+<li>若 <span class="math inline">\(\langle \cdot,\cdot \rangle\)</span>
+是<strong>正定且对称</strong>的，则称其为 <span
+class="math inline">\(V\)</span> 上的内积，常记作 <span
+class="math inline">\(\langle x, y \rangle\)</span>；</li>
+<li>则 <span class="math inline">\((V, \langle \cdot,\cdot
+\rangle)\)</span> 被称为一个内积空间（或带内积的实向量空间）；</li>
+<li>若该内积为点积，则称 <span class="math inline">\((V, \langle
+\cdot,\cdot \rangle)\)</span> 为一个欧氏向量空间。</li>
+</ul>
+<p><strong>注</strong>：本书将上述所有空间统称为“内积空间”。</p>
+<p>注意：点积只是内积的一种特殊的定义，而非唯一。</p>
+<blockquote>
+<p>注意，正定性是指<span class="math inline">\(\forall \boldsymbol{x}
+\in V \setminus \{\mathbf{0}\}:\quad \boldsymbol{x}^{\top}
+\boldsymbol{A} \boldsymbol{x} &gt; 0.\)</span>,而不是：<span
+class="math inline">\(\boldsymbol{x}^T\boldsymbol{A} \boldsymbol{y} &gt;
+0.\)</span></p>
+</blockquote>
+<h3 id="正定矩阵"><strong>正定矩阵</strong></h3>
+<blockquote>
+<p>正定矩阵一定是对称的。《正定矩阵和半正定矩阵的区别.md》</p>
+<p><span class="math inline">\(A\)</span> 正定 <span
+class="math inline">\(\iff\)</span> 所有特征值 <span
+class="math inline">\(\lambda_i &gt; 0\)</span>。（故行列式也大于0）</p>
+</blockquote>
+<p><strong>对称正定矩阵</strong></p>
+<p><strong><u><em>对称正定矩阵在机器学习中起着重要的作用，它们是通过内积定义的</em></u></strong>。在
+4.3
+节矩阵分解中将涉及到对称正定矩阵。对称半正定矩阵的思想也是机器学习中核技巧的关键（12.4
+节）。</p>
+<p>考虑一个 <span class="math inline">\(n\)</span> 维向量空间 <span
+class="math inline">\(V\)</span> 和内积 <span class="math display">\[
+\langle \cdot, \cdot \rangle : V \times V \to \mathbb{R}
+\]</span> （见定义 3.3），以及 <span class="math inline">\(V\)</span>
+的有序基 <span class="math display">\[
+B = (\boldsymbol{b}_{1}, \ldots, \boldsymbol{b}_{n}).
+\]</span> 对于合适的 <span class="math inline">\(\psi_i, \lambda_j \in
+\mathbb{R}\)</span>，任何向量 <span
+class="math inline">\(\boldsymbol{x}, \boldsymbol{y} \in V\)</span>
+都可以写成基向量的线性组合： <span class="math display">\[
+\boldsymbol{x} = \sum_{i=1}^{n} \psi_i \boldsymbol{b}_i \in V,
+\qquad
+\boldsymbol{y} = \sum_{j=1}^{n} \lambda_j \boldsymbol{b}_j \in V.
+\]</span></p>
+<p>由于内积的双线性，对于所有 <span
+class="math inline">\(\boldsymbol{x}, \boldsymbol{y} \in
+V\)</span>，有： <span class="math display">\[
+\langle \boldsymbol{x}, \boldsymbol{y} \rangle
+= \left\langle \sum_{i=1}^{n} \psi_i \boldsymbol{b}_i,\ \sum_{j=1}^{n}
+\lambda_j \boldsymbol{b}_j \right\rangle
+= \sum_{i=1}^{n}\sum_{j=1}^{n} \psi_i \langle \boldsymbol{b}_i,
+\boldsymbol{b}_j \rangle \lambda_j
+= \hat{\boldsymbol{x}}^{\top} \boldsymbol{A} \hat{\boldsymbol{y}}.
+\]</span></p>
+<p>以 <span class="math inline">\(n = 2\)</span> 为例，考虑内积： <span
+class="math display">\[
+\left\langle \sum_{i=1}^{2} \psi_i \boldsymbol{b}_i, \sum_{j=1}^{2}
+\lambda_j \boldsymbol{b}_j \right\rangle
+= \left\langle \psi_1 \boldsymbol{b}_1 + \psi_2 \boldsymbol{b}_2,\
+\lambda_1 \boldsymbol{b}_1 + \lambda_2 \boldsymbol{b}_2 \right\rangle
+= \psi_1 \left\langle \boldsymbol{b}_1, \lambda_1 \boldsymbol{b}_1 +
+\lambda_2 \boldsymbol{b}_2 \right\rangle
+  + \psi_2 \left\langle \boldsymbol{b}_2, \lambda_1 \boldsymbol{b}_1 +
+\lambda_2 \boldsymbol{b}_2 \right\rangle.
+\]</span></p>
+<p>展开后得到： <span class="math display">\[
+\begin{aligned}
+&amp; \psi_1 [ \lambda_1 \langle \boldsymbol{b}_1, \boldsymbol{b}_1
+\rangle + \lambda_2 \langle \boldsymbol{b}_1, \boldsymbol{b}_2 \rangle ]
++ \psi_2 [ \lambda_1 \langle \boldsymbol{b}_2, \boldsymbol{b}_1 \rangle
++ \lambda_2 \langle \boldsymbol{b}_2, \boldsymbol{b}_2 \rangle ] \\
+&amp;= [\psi_1, \psi_2]
+\begin{bmatrix}
+\langle \boldsymbol{b}_1, \boldsymbol{b}_1 \rangle &amp; \langle
+\boldsymbol{b}_1, \boldsymbol{b}_2 \rangle \\
+\langle \boldsymbol{b}_2, \boldsymbol{b}_1 \rangle &amp; \langle
+\boldsymbol{b}_2, \boldsymbol{b}_2 \rangle
+\end{bmatrix}
+\begin{bmatrix}
+\lambda_1 \\ \lambda_2
+\end{bmatrix} \\
+&amp;= [\psi_1, \psi_2]\, \boldsymbol{A} \begin{bmatrix} \lambda_1 \\
+\lambda_2 \end{bmatrix},
+\end{aligned}
+\]</span> 其中 <span class="math inline">\(A_{ij} := \langle
+\boldsymbol{b}_i, \boldsymbol{b}_j \rangle\)</span>，<span
+class="math inline">\(\hat{\boldsymbol{x}},
+\hat{\boldsymbol{y}}\)</span> 为 <span
+class="math inline">\(\boldsymbol{x}, \boldsymbol{y}\)</span> 相对于基
+<span class="math inline">\(B\)</span> 的坐标。这意味着内积 <span
+class="math inline">\(\langle \cdot, \cdot \rangle\)</span> 由 <span
+class="math inline">\(\boldsymbol{A}\)</span>
+唯一确定。由于内积是对称的，矩阵 <span
+class="math inline">\(\boldsymbol{A}\)</span>
+也是对称的。此外，内积的正定性意味着： <span class="math display">\[
+\forall \boldsymbol{x} \in V \setminus \{\mathbf{0}\}:\quad
+\boldsymbol{x}^{\top} \boldsymbol{A} \boldsymbol{x} &gt; 0.
+\]</span></p>
+<p><strong>定义 3.4 对称正定矩阵</strong></p>
+<p>一个对称矩阵 <span class="math inline">\(\boldsymbol{A} \in
+\mathbb{R}^{n \times n}\)</span> 称为 对称正定矩阵（symmetric, positive
+definite），如果它满足： <span class="math display">\[
+\forall \boldsymbol{x} \in V \setminus \{\mathbf{0}\} : \quad
+\boldsymbol{x}^{\top} \boldsymbol{A} \boldsymbol{x} &gt; 0.
+\]</span></p>
+<p>如果只满足 <span class="math display">\[
+\forall \boldsymbol{x} \in V \setminus \{\mathbf{0}\} : \quad
+\boldsymbol{x}^{\top} \boldsymbol{A} \boldsymbol{x} \ge 0,
+\]</span> 则称 <span class="math inline">\(\boldsymbol{A}\)</span>
+为对称半正定矩阵（symmetric, positive semidefinite）。</p>
+<p><strong>例 3.4 对称正定矩阵</strong></p>
+<p>考虑矩阵 <span class="math display">\[
+\boldsymbol{A}_1 =
+\begin{bmatrix} 9 &amp; 6 \\ 6 &amp; 5 \end{bmatrix}, \quad
+\boldsymbol{A}_2 =
+\begin{bmatrix} 9 &amp; 6 \\ 6 &amp; 3 \end{bmatrix}.
+\]</span></p>
+<p>对于任意 <span class="math inline">\(\boldsymbol{x} = [x_1, x_2]^\top
+\neq \mathbf{0}\)</span>，有 <span class="math display">\[
+\boldsymbol{x}^{\top} \boldsymbol{A}_1 \boldsymbol{x}
+= [x_1, x_2]
+\begin{bmatrix} 9 &amp; 6 \\ 6 &amp; 5 \end{bmatrix}
+\begin{bmatrix} x_1 \\ x_2 \end{bmatrix}
+= 9 x_1^2 + 12 x_1 x_2 + 5 x_2^2
+= (3 x_1 + 2 x_2)^2 + x_2^2 &gt; 0,
+\]</span> 因此 <span class="math inline">\(\boldsymbol{A}_1\)</span>
+是对称且正定的。而</p>
+<p><span class="math display">\[
+\boldsymbol{x}^{\top} \boldsymbol{A}_2 \boldsymbol{x}
+= 9 x_1^2 + 12 x_1 x_2 + 3 x_2^2
+= (3 x_1 + 2 x_2)^2 - x_2^2,
+\]</span> 当 <span class="math inline">\(\boldsymbol{x} = [2,
+-3]^\top\)</span> 时，<span class="math inline">\(\boldsymbol{x}^{\top}
+\boldsymbol{A}_2 \boldsymbol{x} &lt; 0\)</span>，所以 <span
+class="math inline">\(\boldsymbol{A}_2\)</span>
+仅对称，但不是正定矩阵。</p>
+<p>如果 <span class="math inline">\(\boldsymbol{A} \in \mathbb{R}^{n
+\times n}\)</span> 是对称正定的，则可以定义内积： <span
+class="math display">\[
+\langle \boldsymbol{x}, \boldsymbol{y} \rangle =
+\hat{\boldsymbol{x}}^\top \boldsymbol{A} \hat{\boldsymbol{y}},
+\]</span> 其中 <span class="math inline">\(\hat{\boldsymbol{x}},
+\hat{\boldsymbol{y}}\)</span> 为 <span
+class="math inline">\(\boldsymbol{x}, \boldsymbol{y}\)</span>
+相对于有序基 <span class="math inline">\(B\)</span> 的坐标。</p>
+<p><strong>定理 3.5 对称正定矩阵与内积</strong></p>
+<p>设 <span class="math inline">\(V\)</span>
+是一个实值、有限维向量空间，<span class="math inline">\(B\)</span> 是
+<span class="math inline">\(V\)</span> 的一个有序基： <span
+class="math display">\[
+B = (\boldsymbol{b}_1, \ldots, \boldsymbol{b}_n),
+\]</span> 并且 <span class="math inline">\(\langle \cdot , \cdot \rangle
+: V \times V \to \mathbb{R}\)</span> 是 <span
+class="math inline">\(V\)</span> 上的一个内积。</p>
+<p><strong>定理：</strong>内积 <span class="math inline">\(\langle \cdot
+, \cdot \rangle\)</span> 当且仅当存在一个对称正定矩阵 <span
+class="math inline">\(\boldsymbol{A} \in \mathbb{R}^{n \times
+n}\)</span>，使得对于任意 <span class="math inline">\(\boldsymbol{x},
+\boldsymbol{y} \in V\)</span>，有： <span class="math display">\[
+\langle \boldsymbol{x}, \boldsymbol{y} \rangle =
+\hat{\boldsymbol{x}}^\top \boldsymbol{A} \hat{\boldsymbol{y}},
+\]</span> 其中 <span class="math inline">\(\hat{\boldsymbol{x}},
+\hat{\boldsymbol{y}}\)</span> 为 <span
+class="math inline">\(\boldsymbol{x}, \boldsymbol{y}\)</span> 相对于基
+<span class="math inline">\(B\)</span> 的坐标向量。</p>
+<p><strong>如果 <span class="math inline">\(\boldsymbol{A}\)</span>
+是对称正定矩阵，则它具有以下性质：</strong></p>
+<ul>
+<li><p>零空间（核）只包含零向量： 对于所有 <span
+class="math inline">\(\boldsymbol{x} \neq \mathbf{0}\)</span>，有 <span
+class="math display">\[
+    \boldsymbol{x}^\top \boldsymbol{A} \boldsymbol{x} &gt; 0,
+\]</span> ​ 这意味着如果 <span class="math inline">\(\boldsymbol{x} \neq
+\mathbf{0}\)</span>，则 <span class="math inline">\(\boldsymbol{A}
+\boldsymbol{x} \neq \mathbf{0}\)</span>。</p></li>
+<li><p><strong>对角元素为正</strong>： 矩阵 <span
+class="math inline">\(\boldsymbol{A}\)</span> 的对角元素 <span
+class="math inline">\(a_{ii}\)</span> 满足 <span class="math display">\[
+a_{ii} = \boldsymbol{e}_i^\top \boldsymbol{A} \boldsymbol{e}_i &gt; 0,
+\]</span> 其中 <span class="math inline">\(\boldsymbol{e}_i\)</span> 是
+<span class="math inline">\(\mathbb{R}^n\)</span> 的标准基向量</p></li>
+</ul>
+<h3 id="长度和距离">长度和距离</h3>
+<p>在第3.1节中，我们已经讨论了可以用来计算向量长度的范数。<strong><u><em>内积与范数密切相关，因为任何内积都自然地引出范数</em></u></strong>：
+<span class="math display">\[
+\|\boldsymbol{x}\| := \sqrt{\langle \boldsymbol{x}, \boldsymbol{x}
+\rangle}
+\]</span>
+这使得我们可以用内积来计算向量的长度。<strong><em><u>然而，并不是每一个范数都是由内积引起的。曼哈顿范数就是一种没有对应内积的范数</u></em></strong>。在下面，<strong>我们将集中讨论由内积导出的范数，并介绍一些几何概念，如长度、距离和角度。</strong></p>
+<p><strong>柯西-施瓦兹不等式</strong></p>
+<p>对于一个内积向量空间 <span class="math inline">\((V, \langle \cdot,
+\cdot \rangle)\)</span>，其引出的范数 <span
+class="math inline">\(\|\cdot\|\)</span>
+满足<strong>柯西-施瓦兹不等式（Cauchy-Schwarz Inequality）</strong>：
+<span class="math display">\[
+|\langle \boldsymbol{x}, \boldsymbol{y} \rangle| \leqslant
+\|\boldsymbol{x}\| \, \|\boldsymbol{y}\|
+\]</span></p>
+<h3 id="距离和度量">距离和度量</h3>
+<p>考虑一个内积空间 <span class="math inline">\((V, \langle \cdot, \cdot
+\rangle)\)</span>，对于任意 <span class="math inline">\(\boldsymbol{x},
+\boldsymbol{y} \in V\)</span>，定义： <span class="math display">\[
+d(\boldsymbol{x}, \boldsymbol{y}) := \|\boldsymbol{x} - \boldsymbol{y}\|
+= \sqrt{\langle \boldsymbol{x} - \boldsymbol{y}, \boldsymbol{x} -
+\boldsymbol{y} \rangle}
+\]</span> 该式称为 <span class="math inline">\(\boldsymbol{x}\)</span>
+和 <span class="math inline">\(\boldsymbol{y}\)</span>
+之间的<strong>距离（distance）</strong>。如果我们采用点积（dot
+product）作为内积，则该距离被称为<strong>欧几里得距离（Euclidean
+distance）</strong>。定义映射： <span class="math display">\[
+d : V \times V \to \mathbb{R}, \quad (\boldsymbol{x}, \boldsymbol{y})
+\mapsto d(\boldsymbol{x}, \boldsymbol{y})
+\]</span> 称为该空间上的一个<strong>度量（metric）</strong>。
+与向量的长度类似，向量之间的距离不一定需要依赖于内积：一般的范数已经足够用于定义距离。<strong>如果一个范数由内积引出，那么该范数导出的距离也依赖于所选用的内积，不同内积可能导致不同的距离定义。</strong></p>
+<p>乍一看，内积和度量的一系列属性看起来非常相似。然而，通过比较定义3.3和定义3.6，我们发现
+<span class="math inline">\(\langle \boldsymbol{x}, \boldsymbol{y}
+\rangle\)</span> 和 <span class="math inline">\(d(\boldsymbol{x},
+\boldsymbol{y})\)</span> 的表现是<strong>相反的</strong>：</p>
+<p>当 <span class="math inline">\(\boldsymbol{x}\)</span> 和 <span
+class="math inline">\(\boldsymbol{y}\)</span>
+非常相似时，其内积值较大，而度量值却很小（因为度量涉及两个向量的差，即
+<span class="math inline">\(\boldsymbol{x} -
+\boldsymbol{y}\)</span>）。</p>
+<h3 id="角度和正交">角度和正交</h3>
+<p>直观地说，<strong>两个向量之间的夹角告诉我们它们的<em><u>方向</u></em>有多相似。</strong>(个人注：和长度无关！)</p>
+<p>两个向量 <span class="math inline">\(\boldsymbol{x}\)</span> 和 <span
+class="math inline">\(\boldsymbol{y}\)</span>
+是<strong>正交（orthogonal）</strong>的，当且仅当 <span
+class="math display">\[
+\langle \boldsymbol{x}, \boldsymbol{y} \rangle = 0,
+\]</span> 写作 <span class="math inline">\(\boldsymbol{x} \perp
+\boldsymbol{y}\)</span>。若 <span
+class="math inline">\(\|\boldsymbol{x}\| = 1 =
+\|\boldsymbol{y}\|\)</span>，即两个向量都是单位向量，则称 <span
+class="math inline">\(\boldsymbol{x}\)</span> 和 <span
+class="math inline">\(\boldsymbol{y}\)</span>
+为<strong>标准正交（orthonormal）</strong>的。</p>
+<p><strong>两个向量 <span class="math inline">\(\boldsymbol{x}\)</span>
+和 <span class="math inline">\(\boldsymbol{y}\)</span> 之间的角度 <span
+class="math inline">\(\omega\)</span>
+取决于所采用的内积。</strong>关于一种内积正交的向量不一定关于其他内积正交。</p>
+<p><strong>夹角的定义：</strong>两个非零向量 <span
+class="math inline">\(\boldsymbol{x}\)</span> 和 <span
+class="math inline">\(\boldsymbol{y}\)</span> 之间的夹角 <span
+class="math inline">\(\omega\)</span> 满足： <span
+class="math display">\[
+\cos \omega = \frac{\langle \boldsymbol{x}, \boldsymbol{y}
+\rangle}{\|\boldsymbol{x}\| \, \|\boldsymbol{y}\|}
+\]</span></p>
+<h3 id="正交矩阵"><strong>正交矩阵</strong></h3>
+<p>设方阵 <span class="math inline">\(\boldsymbol{A} \in \mathbb{R}^{n
+\times n}\)</span>。当且仅当 <span
+class="math inline">\(\boldsymbol{A}\)</span>
+的<strong>列向量构成一组<em><u>标准正交</u></em></strong>（orthonormal）的向量组时，<span
+class="math inline">\(\boldsymbol{A}\)</span> 被称为正交矩阵（orthogonal
+matrix）。</p>
+<p>换句话说，<span class="math inline">\(\boldsymbol{A}\)</span>
+是正交矩阵当且仅当满足： <span class="math display">\[
+\boldsymbol{A} \boldsymbol{A}^{\top} = \boldsymbol{I} =
+\boldsymbol{A}^{\top} \boldsymbol{A}
+\]</span>
+<strong>正交矩阵保持长度不变</strong>；正交矩阵变换是特殊的，因为当一个向量
+<span class="math inline">\(\boldsymbol{x}\)</span> 被<strong>正交矩阵
+<span class="math inline">\(\boldsymbol{A}\)</span>
+变换后，其长度保持不变</strong>。以点积为内积时，可以如下推导： <span
+class="math display">\[
+\|\boldsymbol{A} \boldsymbol{x}\|^{2}
+= (\boldsymbol{A} \boldsymbol{x})^{\top} (\boldsymbol{A} \boldsymbol{x})
+= \boldsymbol{x}^{\top} \boldsymbol{A}^{\top} \boldsymbol{A}
+\boldsymbol{x}
+= \boldsymbol{x}^{\top} \boldsymbol{I} \boldsymbol{x}
+= \boldsymbol{x}^{\top} \boldsymbol{x}
+= \|\boldsymbol{x}\|^{2}
+\]</span>
+因此，<strong><em><u>正交变换</u></em>不会改变向量的长度或两向量之间的角度（即它<em><u>保持内积结构</u></em>）</strong>，这使得正交矩阵广泛应用于几何变换、图像旋转、特征值分解等领域。<strong>这表明正交矩阵定义的变换是旋转（也可能是翻转）</strong>.</p>
+<p><strong>正交补</strong>：<strong>三维向量空间中的平面<span
+class="math inline">\(U\)</span>可以由它的法向量来描述</strong>。法向量张成某子空间
+<span class="math inline">\(U\)</span> 的正交补 <span
+class="math inline">\(U^\perp\)</span>;在<span
+class="math inline">\(n\)</span>维向量空间和仿射空间中，通常可以用正交补来描述超平面。</p>
+<h3 id="函数的内积">函数的内积</h3>
+<p>设两个函数 <span class="math inline">\(\boldsymbol{u}: \mathbb{R}
+\rightarrow \mathbb{R}\)</span> 与 <span
+class="math inline">\(\boldsymbol{v}: \mathbb{R} \rightarrow
+\mathbb{R}\)</span>，则它们在区间 <span class="math inline">\([a,
+b]\)</span> 上的内积可以定义为： <span class="math display">\[
+\langle u, v \rangle := \int_{a}^{b} u(x)\, v(x)\, dx, \quad \text{其中
+} a, b &lt; \infty
+\]</span>
+与一般的内积一样，我们可以使用这个定义来引出函数的范数和正交性。特别地，若<span
+class="math inline">\(\langle u, v \rangle = 0,\)</span>则称函数 <span
+class="math inline">\(u\)</span> 和 <span
+class="math inline">\(v\)</span>
+在该内积下是<strong>正交的</strong>。</p>
+<p><strong>一个例子：</strong><span
+class="math inline">\(\sin(x)\)</span>与 <span
+class="math inline">\(\cos(x)\)</span>的正交性</p>
+<p>若取函数 $u(x) = (x) <span class="math inline">\(，\)</span>v(x) =
+(x) <span class="math inline">\(，则\)</span>$ f(x) = u(x) v(x) = (x)
+(x) <span class="math display">\[
+如图 3.8 所示，该函数是一个奇函数，即满足：$f(-x) = -f(x)$
+因此，在对称区间 $ [a, b] = [-\pi, \pi] $上，其积分为 0，即：
+\]</span> _{-}^{} (x) (x), dx = 0 $$ 由此可知，<span
+class="math inline">\(\sin(x)\)</span>与 $(x) $是正交函数。</p>
+<p>如果积分区间为 $ [-, ] <span
+class="math inline">\(，则下列函数集：\)</span>$ {1, (x), (2x), (3x), }
+$$
+构成一个正交函数集。也就是说，集合中任意两个不同的函数在该区间上的内积为
+0。</p>
+<p>该集合张成了一个函数的巨大子空间。这个子空间中的函数在 $ [-, ) $
+上是偶函数且具有周期性。<strong>将任意函数投影到这个子空间，是傅里叶级数（Fourier
+series）展开的核心思想。</strong>(<strong>备注：傅里叶级数中的正交函数集</strong>)</p>
+<h3 id="正交投影">正交投影</h3>
+<p>投影是一类重要的线性变换（还有旋转和反射）。</p>
+<p><strong>投影</strong>（Projection）</p>
+<p>设 $V <span class="math inline">\(为一个向量空间，\)</span>U V $为 $V
+$ 的一个子空间。如果一个线性映射 $ : V U <span
+class="math inline">\(满足：\)</span>$ ^2 = = , $$ 则称 $$是一个从 $ V
+$到 $U $的<strong>投影（projection）</strong>。</p>
+<p>由于线性映射可以由矩阵表示，因此上述定义也适用于一类特殊的矩阵，这类矩阵被称为<strong>投影矩阵（projection
+matrix）</strong>，记作 $ <em><span
+class="math inline">\(，它满足：\)</span>$ </em>^2 = _ $$
+也就是说，<strong>投影矩阵是满足幂等性质（idempotent）的线性变换矩阵</strong>。<strong>投影
+<span class="math inline">\(\pi_{U}(\boldsymbol{x}) \in
+\mathbb{R}^{n}\)</span> 仍然是 <span class="math inline">\(n\)</span>
+维向量而不是标量。</strong>我们可以用张成子空间 <span
+class="math inline">\(U\)</span> 的基向量 <span
+class="math inline">\(\boldsymbol{b}\)</span>
+来表示投影，这样我们就只需要一个坐标 <span
+class="math inline">\(\lambda\)</span>
+来表示投影(针对一维子空间（线）上的投影)，而不再需要 <span
+class="math inline">\(n\)</span> 个坐标。在第四章矩阵分解中，我们将展示
+<span class="math inline">\(\pi_{U}(\boldsymbol{x})\)</span> 是 <span
+class="math inline">\(\boldsymbol{P}_{\pi}\)</span>
+的特征向量，对应的特征值为 <span class="math inline">\(1\)</span>。</p>
+<p>通过投影，我们可以近似求解无解的线性方程组 $ =
+$。线性方程组无解，意味着 $ $ 不在 $ $ 的张成空间中，也就是说，向量 $ $
+不在 $ $
+的列所张成的子空间内。<strong>具体的原理见资料《线性方程解的本质.md》文件。</strong>如果线性方程不能精确求解，那么我们可以尝试找到一个近似解（approximate
+solution）。其思想是在 $ $ 的列所张成的子空间中找到最接近 $ $
+的向量，即计算 $ $ 在 $ $
+的列所张成的子空间上的正交投影。这类问题在实践中经常出现，这个解叫做超定系统的最小二乘解（least-squares
+solution）（假设点积为内积）。</p>
+<h3 id="旋转">旋转</h3>
+<p>旋转(rotation)是一种线性映射（更具体地说，是欧氏向量空间的自同构），它将平面绕原点旋转<span
+class="math inline">\(θ\)</span>角，即原点是一个不动点。</p>
+<p><span class="math inline">\(\mathbb{R}^{2}\)</span>
+中，旋转使物体绕平面内的一个原点旋转。如果旋转角度是正的，我们就称为逆时针旋转。</p>
+<p>在 <span class="math inline">\(\mathbb{R}^{3}\)</span> 中的旋转与
+<span class="math inline">\(\mathbb{R}^{2}\)</span> 不同的是，在 <span
+class="math inline">\(\mathbb{R}^{3}\)</span>
+中，我们可以<strong>围绕其中一维的轴旋转</strong>任何二维平面。确定通用旋转矩阵的最简单方法是确定标准基
+<span class="math inline">\(e_1, e_2, e_3\)</span>
+旋转得到的像，并确保这些像 <span class="math inline">\(\boldsymbol{R
+e}_1, \boldsymbol{R e}_2, \boldsymbol{R e}_3\)</span>
+彼此正交。然后，我们可以通过组合标准基的像得到一个通用的旋转矩阵 <span
+class="math inline">\(\boldsymbol{R}\)</span></p>
+<p><span class="math inline">\(\mathbb{R}^{n}\)</span> 中的旋转：</p>
+<p>从二维和三维推广到 <span class="math inline">\(n\)</span>
+维的欧氏向量空间的旋转可以直观地描述为：固定其 <span
+class="math inline">\(n-2\)</span> 维，旋转 <span
+class="math inline">\(\mathbb{R}^{n}\)</span>
+空间中的二维平面。就像在三维情况下，我们可以旋转任意平面（<span
+class="math inline">\(\mathbb{R}^{n}\)</span> 的二维子空间）。</p>
+<p><strong>旋转的性质</strong>:</p>
+<p><strong>旋转表现出许多有用的性质，这些性质可以通过将它们视为正交矩阵来说明</strong>（定义
+3.8）：</p>
+<ul>
+<li>旋转保持距离，即</li>
+</ul>
+<p><span class="math display">\[
+    \|\boldsymbol{x} - \boldsymbol{y}\| = \left\|
+\boldsymbol{R}_{\theta}(\boldsymbol{x}) -
+\boldsymbol{R}_{\theta}(\boldsymbol{y}) \right\|
+\]</span> ​
+换句话说，任意两点经过旋转变换后，它们之间的距离保持不变。</p>
+<ul>
+<li><p>旋转保持角度，即 <span
+class="math inline">\(\boldsymbol{R}_{\theta} \boldsymbol{x}\)</span> 和
+<span class="math inline">\(\boldsymbol{R}_{\theta}
+\boldsymbol{y}\)</span> 之间的夹角与原始向量 <span
+class="math inline">\(\boldsymbol{x}\)</span> 和 <span
+class="math inline">\(\boldsymbol{y}\)</span> 之间的夹角相同。</p></li>
+<li><p>三维（或更高维）旋转通常是不可交换的。因此，应用旋转的顺序是重要的，即使它们是围绕同一点旋转。</p>
+<p>在二维空间中，旋转是可交换的。也就是说，对于所有 <span
+class="math inline">\(\phi, \theta \in [0, 2\pi)\)</span>，都有： <span
+class="math display">\[
+\boldsymbol{R}(\phi)\boldsymbol{R}(\theta) =
+\boldsymbol{R}(\theta)\boldsymbol{R}(\phi)
+\]</span>
+当且仅当它们围绕同一个点（例如原点）旋转时，二维旋转矩阵形成一个关于乘法的阿贝尔群。</p></li>
+</ul>
+<h2 id="矩阵分解">矩阵分解</h2>
+<p>Matrix Decomposition</p>
+<p>在本章中，我们将介绍矩阵的三个方面：如何概括矩阵，如何分解矩阵，以及<strong>如何利用矩阵分解进行矩阵近似</strong>，矩阵分解的一个类比是因数分解(factoring
+of numbers)。</p>
+<p><strong>对称正定矩阵的类平方根运算，即Cholesky分解。</strong></p>
+<h3 id="行列式与迹">行列式与迹</h3>
+<ul>
+<li><p><strong>行列式只适用于方阵</strong>。</p></li>
+<li><p>可以看作是将矩阵映射到一个实数的函数。</p></li>
+<li><p>当且仅当行列式不等于0时，矩阵可逆。</p></li>
+<li><p><strong>上三角（下三角）矩阵的行列式是其对角元素的积。</strong></p></li>
+<li><p>行列式度量体积；列向量代表各条边。</p></li>
+<li><p>一个方阵 <span class="math inline">\(\boldsymbol{A} \in
+\mathbb{R}^{n \times n}\)</span> 的行列式 <span
+class="math inline">\(\operatorname{det}(\boldsymbol{A}) \neq
+0\)</span>，当且仅当 <span
+class="math inline">\(\operatorname{rk}(\boldsymbol{A}) =
+n.\)</span>换句话说，<span class="math inline">\(\boldsymbol{A}\)</span>
+可逆当且仅当它是满秩的</p></li>
+</ul>
+<p>对于 <span class="math inline">\(n \times n\)</span>
+矩阵的行列式，需要一个通用的算法来解决 <span class="math inline">\(n
+&gt; 3\)</span> 的情况，我们将在下面探讨这个问题。定理 4.2 将计算 <span
+class="math inline">\(n \times n\)</span> 矩阵的行列式的问题简化为计算
+<span class="math inline">\((n - 1) \times (n - 1)\)</span>
+矩阵的行列式。通过递归地应用<strong>拉普拉斯展开（Laplace
+Expansion）</strong>，我们最终可以通过计算 <span class="math inline">\(2
+\times 2\)</span> 矩阵的行列式来计算 <span class="math inline">\(n
+\times n\)</span> 矩阵的行列式。</p>
+<p><strong>行列式具有以下特性</strong>：</p>
+<ul>
+<li><p>矩阵相乘的行列式是相应行列式的乘积，即 <span
+class="math display">\[
+\operatorname{det}(\boldsymbol{AB}) = \operatorname{det}(\boldsymbol{A})
+\operatorname{det}(\boldsymbol{B})
+\]</span></p></li>
+<li><p>矩阵转置不改变行列式的值，即 <span class="math display">\[
+\operatorname{det}(\boldsymbol{A}) =
+\operatorname{det}(\boldsymbol{A}^{\top})
+\]</span></p></li>
+<li><p>如果 <span class="math inline">\(\boldsymbol{A}\)</span>
+是正则的（可逆的）， <span class="math display">\[
+\operatorname{det}(\boldsymbol{A}^{-1}) =
+\frac{1}{\operatorname{det}(\boldsymbol{A})}
+\]</span></p></li>
+<li><p><strong>相似矩阵（定义 2.22）具有相同的行列式。因此，对于线性映射
+<span class="math inline">\(\Phi: V \rightarrow V\)</span>，<span
+class="math inline">\(\Phi\)</span> 的所有变换矩阵 <span
+class="math inline">\(\boldsymbol{A}_\Phi\)</span>
+都具有相同的行列式。因此，线性映射基的选择不影响行列式的值。</strong>（注意前提是<span
+class="math inline">\(V \rightarrow V\)</span>）</p></li>
+<li><p>将一列/行的倍数加到另一列/行不会更改 <span
+class="math inline">\(\operatorname{det}(\boldsymbol{A})\)</span>。</p></li>
+<li><p>用标量 <span class="math inline">\(\lambda \in
+\mathbb{R}\)</span> 乘矩阵 <span
+class="math inline">\(\boldsymbol{A}\)</span> 的行/列，将 <span
+class="math inline">\(\lambda\)</span> 倍缩放 <span
+class="math inline">\(\operatorname{det}(\boldsymbol{A})\)</span>。特别地，
+<span class="math display">\[
+\operatorname{det}(\lambda \boldsymbol{A}) = \lambda^n
+\operatorname{det}(\boldsymbol{A})
+\]</span></p></li>
+<li><p>交换两行/列将更改 <span
+class="math inline">\(\operatorname{det}(\boldsymbol{A})\)</span>
+的符号。</p></li>
+</ul>
+<p><strong>迹</strong></p>
+<p>方阵 <span class="math inline">\(\boldsymbol{A} \in \mathbb{R}^{n
+\times n}\)</span> 的<strong>迹</strong>（trace）定义为：</p>
+<p><span class="math display">\[
+\operatorname{tr}(\boldsymbol{A}) := \sum_{i=1}^{n} a_{ii}
+\]</span></p>
+<p>即，迹是 <span class="math inline">\(\boldsymbol{A}\)</span>
+的对角元素之和。</p>
+<p>迹满足以下属性：</p>
+<ol type="1">
+<li>对于 <span class="math inline">\(\boldsymbol{A}, \boldsymbol{B} \in
+\mathbb{R}^{n \times n}\)</span>，有： <span class="math display">\[
+tr⁡(A+B)== \operatorname{tr}(\boldsymbol{A}) +
+\operatorname{tr}(\boldsymbol{B})
+\]</span></li>
+<li>对于 <span class="math inline">\(\boldsymbol{A} \in \mathbb{R}^{n
+\times n}\)</span>，<span class="math inline">\(\alpha \in
+\mathbb{R}\)</span>，有： <span class="math display">\[
+tr⁡(αA) = \alpha \operatorname{tr}({A})
+\]</span></li>
+<li>单位矩阵的迹为： <span class="math display">\[
+tr⁡(In) = n
+\]</span></li>
+<li>对于 <span class="math inline">\(\boldsymbol{A} \in \mathbb{R}^{n
+\times k}\)</span>，<span class="math inline">\(\boldsymbol{B} \in
+\mathbb{R}^{k \times n}\)</span>，有： <span class="math display">\[
+tr⁡(AB)= \operatorname{tr}({B}{A})
+\]</span></li>
+</ol>
+<p>可以证明，<strong>只有一个函数同时满足这四个性质——即迹</strong>（Gohberg
+et al., 2012）。</p>
+<p><strong>线性映射的矩阵表示依赖于基，而线性映射<span
+class="math inline">\(\phi\)</span>的迹独立于基。具体原理见资料《迹的相似不变性.md》</strong></p>
+<p><strong>特征多项式</strong>:</p>
+<p>将行列式和迹作为描述方阵的函数来讨论。</p>
+<p>对于 <span class="math inline">\(\lambda \in \mathbb{R}\)</span>
+和一个方阵 <span class="math inline">\(\boldsymbol{A} \in \mathbb{R}^{n
+\times n}\)</span>，其特征多项式（Characteristic
+Polynomial）定义为：</p>
+<p><span class="math display">\[
+p_A(\lambda) := \det(\boldsymbol{A} - \lambda \boldsymbol{I}) = c_0 +
+c_1 \lambda + c_2 \lambda^2 + \cdots + c_{n-1} \lambda^{n-1} + (-1)^n
+\lambda^n
+\]</span></p>
+<p>其中 <span class="math inline">\(c_0, \ldots, c_{n-1} \in
+\mathbb{R}\)</span>。特别地，</p>
+<p><span class="math display">\[
+c_0 = \det(\boldsymbol{A}), \quad c_{n-1} = (-1)^{n-1}
+\operatorname{tr}(\boldsymbol{A})
+\]</span></p>
+<p>特征多项式将允许我们计算特征值和特征向量。</p>
+<h3 id="特征值和特征向量">特征值和特征向量</h3>
+<p>指向同一方向的两个向量称为共向的(codirected)。如果两个向量指向相同或相反的方向，则它们是共线的（collinear）。</p>
+<p>令 <span class="math inline">\(A \in \mathbb{R}^{n \times n}\)</span>
+为一个<u><strong>方阵</strong></u>。</p>
+<p><span class="math display">\[
+\boldsymbol{A}\boldsymbol{x} = \lambda \boldsymbol{x}
+\]</span></p>
+<p>我们称这个方程为特征方程（eigenvalue equation）。其中 <span
+class="math inline">\(\lambda \in \mathbb{R}\)</span> 为 <span
+class="math inline">\(\boldsymbol{A}\)</span>
+的特征值（eigenvalue），<span class="math inline">\(\boldsymbol{x} \in
+\mathbb{R}^{n} \setminus \{\boldsymbol{0}\}\)</span>
+为相应的特征向量（eigenvector）。</p>
+<blockquote>
+<p>如果 <span class="math inline">\(A\)</span> 不是方阵会发生什么？</p>
+<p>设 <span class="math inline">\(A \in \mathbb{R}^{m \times
+n}\)</span>，如果 <span class="math inline">\(m \ne n\)</span>，则：</p>
+<ul>
+<li><span class="math inline">\(\boldsymbol{x} \in
+\mathbb{R}^n\)</span></li>
+<li><span class="math inline">\(A\boldsymbol{x} \in
+\mathbb{R}^m\)</span></li>
+<li>无法比较 <span class="math inline">\(A\boldsymbol{x}\)</span> 与
+<span class="math inline">\(\lambda
+\boldsymbol{x}\)</span>，因为它们不在同一个空间中！</li>
+</ul>
+<p>所以没有办法定义类似</p>
+<p><span class="math inline">\(A\boldsymbol{x} = \lambda
+\boldsymbol{x}\)</span></p>
+<p>这种“成比例”的特征值概念。</p>
+</blockquote>
+<p>以下说法是等效的：</p>
+<ol type="1">
+<li><p><span class="math inline">\(\lambda\)</span> 是 <span
+class="math inline">\(\boldsymbol{A} \in \mathbb{R}^{n \times
+n}\)</span> 的特征值。</p></li>
+<li><p>存在 <span class="math inline">\(\boldsymbol{x} \in
+\mathbb{R}^{n} \backslash \{\mathbf{0}\}\)</span>，使得 <span
+class="math inline">\(\boldsymbol{A}\boldsymbol{x} = \lambda
+\boldsymbol{x},\)</span> 或等价地 $ ( - _{n}) = $ 有非平凡解，即 <span
+class="math inline">\(\boldsymbol{x} \neq \mathbf{0}\)</span>。</p></li>
+<li><p>$ !( - _{n}) &lt; n$</p></li>
+<li><p>$ !( - _{n}) = 0$</p></li>
+</ol>
+<p><strong>特征空间和特征谱</strong>:</p>
+<p>对于 <span class="math inline">\(A \in \mathbb{R}^{n \times
+n}\)</span>，<span class="math inline">\(\boldsymbol{A}\)</span>
+对应于特征值 <span class="math inline">\(\lambda\)</span>
+的特征向量集合张成 <span class="math inline">\(\mathbb{R}^{n}\)</span>
+的子空间，这个子空间称为 <span
+class="math inline">\(\boldsymbol{A}\)</span> 关于 <span
+class="math inline">\(\lambda\)</span>
+的特征空间（eigenspace），记为：<span
+class="math inline">\(E_{\lambda}\)</span> ; <strong><span
+class="math inline">\(\boldsymbol{A}\)</span>
+的特征值构成的集合称为特征谱（eigenspectrum），或 <span
+class="math inline">\(\boldsymbol{A}\)</span> 的谱。</strong></p>
+<p>单位矩阵 <span class="math inline">\(\boldsymbol{I} \in \mathbb{R}^{n
+\times n}\)</span> 的特征方程为：</p>
+<p><span class="math display">\[
+P_{I}(\lambda) = \operatorname{det}(\boldsymbol{I} - \lambda
+\boldsymbol{I}) = (1 - \lambda)^n = 0
+\]</span></p>
+<p>它只拥有 <span class="math inline">\(\lambda = 1\)</span>
+这个特征值，并出现 <span class="math inline">\(n\)</span>
+次。而且，对于任意 <span class="math inline">\(\boldsymbol{x} \in
+\mathbb{R}^{n} \setminus \{\boldsymbol{0}\}\)</span>，有：</p>
+<p><span class="math display">\[
+\boldsymbol{I} \boldsymbol{x} = \lambda \boldsymbol{x} = 1 \cdot
+\boldsymbol{x}
+\]</span></p>
+<p>因此，单位矩阵的唯一特征空间 <span class="math inline">\(E_1\)</span>
+张成 <span class="math inline">\(n\)</span> 维，<span
+class="math inline">\(\mathbb{R}^{n}\)</span> 的 <span
+class="math inline">\(n\)</span> 个标准基向量都是 <span
+class="math inline">\(\boldsymbol{I}\)</span> 的特征向量。</p>
+<p><strong>关于特征值和特征向量的常用特性包括</strong>：</p>
+<ul>
+<li><p>矩阵 <span class="math inline">\(\boldsymbol{A}\)</span> 及其转置
+<span class="math inline">\(\boldsymbol{A}^{\top}\)</span>
+具有相同的特征值，但不一定具有相同的特征向量。</p></li>
+<li><p>特征空间 <span class="math inline">\(E_{\lambda}\)</span> 是
+<span class="math inline">\(\boldsymbol{A} - \lambda
+\boldsymbol{I}\)</span> 的零空间，因为：</p></li>
+</ul>
+<p><span class="math display">\[
+  \boldsymbol{A} \boldsymbol{x} = \lambda \boldsymbol{x}
+  \Longleftrightarrow
+  \boldsymbol{A} \boldsymbol{x} - \lambda \boldsymbol{x} =
+\boldsymbol{0}
+  \Longleftrightarrow
+  (\boldsymbol{A} - \lambda \boldsymbol{I}) \boldsymbol{x} =
+\boldsymbol{0}
+  \Longleftrightarrow
+  \boldsymbol{x} \in \ker(\boldsymbol{A} - \lambda \boldsymbol{I})
+\]</span></p>
+<ul>
+<li><p>相似矩阵（定义
+2.22）具有相同的特征值。基变换得到的是相似矩阵。因此，<strong>线性映射
+<span class="math inline">\(\Phi\)</span>
+的特征值与它的变换矩阵的基的选择无关。这使得特征值、行列式和迹成为线性映射的重要不变量。</strong></p></li>
+<li><p>对称正定矩阵总是有正的实特征值。</p></li>
+</ul>
+<blockquote>
+<p><strong>剪切映射</strong>：</p>
+<p><strong>剪切映射（Shearing Mapping）</strong>
+是一种保持某些几何特征（如面积、体积）不变，但改变形状的线性变换。在二维或三维欧几里得空间中，它通过“滑动”坐标轴方向的某些分量，使图形在不旋转也不缩放的前提下发生<strong>倾斜变形</strong>。</p>
+<p><strong>几何直观</strong>：</p>
+<ul>
+<li>剪切会把一个<strong>矩形变成平行四边形</strong>。</li>
+<li>面积保持不变。</li>
+<li>角度和形状会改变，但线之间的平行关系保持。</li>
+<li>单位正方形在剪切后变成平行四边形，但底边长度不变。</li>
+</ul>
+<p>详见《剪切映射的变换矩阵.md》</p>
+</blockquote>
+<p><strong>特征值为 0
+的特征向量是矩阵零空间中的非零向量；它揭示了矩阵在某些方向上把向量“压扁”为零；</strong></p>
+<p>一个矩阵 <span class="math inline">\(\boldsymbol{A} \in \mathbb{R}^{n
+\times n}\)</span> 的 <span class="math inline">\(n\)</span> 个特征向量
+<span class="math inline">\(\boldsymbol{x}_{1}, \ldots,
+\boldsymbol{x}_{n}\)</span> 对应 <span class="math inline">\(n\)</span>
+个不同的特征值 <span class="math inline">\(\lambda_{1}, \ldots,
+\lambda_{n}\)</span>，则它们是线性独立的。这个定理指出，具有 <span
+class="math inline">\(n\)</span> 个不同特征值的矩阵的特征向量构成 <span
+class="math inline">\(\mathbb{R}^{n}\)</span> 的一组基。</p>
+<p>给定一个矩阵 <span class="math inline">\(\boldsymbol{A} \in
+\mathbb{R}^{m \times n}\)</span>，我们总能通过<span
+class="math inline">\(\boldsymbol{S} := \boldsymbol{A}^{\top}
+\boldsymbol{A}\)</span> 得到一个<strong>对称的半正定矩阵</strong><span
+class="math inline">\(\boldsymbol{S} \in \mathbb{R}^{n \times
+n}\)</span>。</p>
+<blockquote>
+<p>很多地方只需要半正定矩阵即可。</p>
+</blockquote>
+<h3 id="谱定理">谱定理</h3>
+<p>Spectral Theorem</p>
+<p>如果 <span class="math inline">\(\boldsymbol{A} \in \mathbb{R}^{n
+\times n}\)</span> 是<strong>对称的</strong>，则存在 <span
+class="math inline">\(\boldsymbol{A}\)</span> 的特征向量组成向量空间
+<span class="math inline">\(V\)</span>
+的一个正交基，且每个特征值都是实数。</p>
+<p>谱定理的直接含义是：对称矩阵 <span
+class="math inline">\(\boldsymbol{A}\)</span>
+存在特征值分解（具有实特征值），并且我们可以由特征向量构造一个标准正交基，使得
+<span class="math display">\[
+\boldsymbol{A} = \boldsymbol{P} \boldsymbol{D} \boldsymbol{P}^{\top},
+\]</span> 其中 <span class="math inline">\(\boldsymbol{D}\)</span>
+是对角矩阵，<span class="math inline">\(\boldsymbol{P}\)</span> 的列是
+<span class="math inline">\(\boldsymbol{A}\)</span> 的单位特征向量，满足
+<span class="math inline">\(\boldsymbol{P}^{\top} \boldsymbol{P} =
+\boldsymbol{I}\)</span>。</p>
+<h3
+id="特征值特征向量行列式迹的联系">特征值、特征向量、行列式、迹的联系</h3>
+<p><strong>定理</strong> 4.16：</p>
+<p>设矩阵 <span class="math inline">\(\boldsymbol{A} \in \mathbb{R}^{n
+\times n}\)</span>，则其行列式等于其所有特征值的乘积，即 <span
+class="math display">\[
+\det(\boldsymbol{A}) = \prod_{i=1}^{n} \lambda_i
+\]</span> 其中 <span class="math inline">\(\lambda_i \in
+\mathbb{C}\)</span>（可重复）为矩阵 <span
+class="math inline">\(\boldsymbol{A}\)</span> 的特征值。</p>
+<p><strong>定理</strong> 4.17：</p>
+<p>设矩阵 <span class="math inline">\(\boldsymbol{A} \in \mathbb{R}^{n
+\times n}\)</span>，则其迹等于其所有特征值的和，即 <span
+class="math display">\[
+\operatorname{tr}(\boldsymbol{A}) = \sum_{i=1}^{n} \lambda_i
+\]</span> 其中 <span class="math inline">\(\lambda_i \in
+\mathbb{C}\)</span>（可重复）为矩阵 <span
+class="math inline">\(\boldsymbol{A}\)</span> 的特征值。</p>
+<h3 id="矩阵分解-1">矩阵分解</h3>
+<p>Matrix Decomposition</p>
+<h4 id="cholesky分解">Cholesky分解</h4>
+<p><strong>对称正定矩阵</strong> <span
+class="math inline">\(\boldsymbol{A}\)</span> 可以分解为： <span
+class="math display">\[
+\boldsymbol{A} = \boldsymbol{L} \boldsymbol{L}^{\top},
+\]</span> 其中 <span class="math inline">\(\boldsymbol{L}\)</span>
+是具有正对角元素的下三角矩阵。 <span
+class="math inline">\(\boldsymbol{L}\)</span> 被称为 <span
+class="math inline">\(\boldsymbol{A}\)</span> 的Cholesky 因子（Cholesky
+factor），且是唯一的。</p>
+<h4 id="特征值分解与对角化">特征值分解与对角化</h4>
+<p>矩阵 <span class="math inline">\(\boldsymbol{A} \in \mathbb{R}^{n
+\times n}\)</span>
+的对角化，实际是在另一个基中表示相同线性映射的一种方法，这个基由 <span
+class="math inline">\(\boldsymbol{A}\)</span> 的特征向量组成。</p>
+<p>定理 4.20<strong>特征值分解</strong>，Eigendecomposition</p>
+<p>设 <span class="math inline">\(\boldsymbol{A} \in \mathbb{R}^{n
+\times n}\)</span>，则当且仅当 <span
+class="math inline">\(\boldsymbol{A}\)</span> 有 <span
+class="math inline">\(n\)</span> 个线性无关的特征向量时，<span
+class="math inline">\(\boldsymbol{A}\)</span>
+可以被对角化，即存在可逆矩阵 <span
+class="math inline">\(\boldsymbol{P}\)</span> 和对角矩阵 <span
+class="math inline">\(\boldsymbol{D}\)</span>，使得： <span
+class="math display">\[
+\boldsymbol{A} = \boldsymbol{P} \boldsymbol{D} \boldsymbol{P}^{-1}
+\]</span></p>
+<p>其中：<span class="math inline">\(\boldsymbol{P} \in \mathbb{R}^{n
+\times n}\)</span> 的列是 <span
+class="math inline">\(\boldsymbol{A}\)</span> 的 <span
+class="math inline">\(n\)</span> 个线性无关的特征向量；<span
+class="math inline">\(\boldsymbol{D}\)</span> 是对角矩阵，其对角元素为
+<span class="math inline">\(\boldsymbol{A}\)</span>
+的特征值（可重复）；因此，只有当 <span
+class="math inline">\(\boldsymbol{A}\)</span> 的特征向量张成 <span
+class="math inline">\(\mathbb{R}^n\)</span>，即 <span
+class="math inline">\(\boldsymbol{A}\)</span> 是非亏损的，<span
+class="math inline">\(\boldsymbol{A}\)</span> 才可以对角化。</p>
+<p>定理 4.21<strong><em><u>对称矩阵</u></em>的特征值分解</strong></p>
+<p>设 <span class="math inline">\(\boldsymbol{S} \in \mathbb{R}^{n
+\times n}\)</span> 是对称矩阵（即 <span
+class="math inline">\(\boldsymbol{S}^{\top} =
+\boldsymbol{S}\)</span>），则 <span
+class="math inline">\(\boldsymbol{S}\)</span> 一定可以被对角化。</p>
+<p>根据谱定理，对于任意对称矩阵 <span
+class="math inline">\(\boldsymbol{S}\)</span>，存在一个标准正交基，由
+<span class="math inline">\(\boldsymbol{S}\)</span>
+的特征向量构成。即存在正交矩阵 <span
+class="math inline">\(\boldsymbol{P}\)</span>，使得：</p>
+<p><span class="math display">\[
+\boldsymbol{S} = \boldsymbol{P} \boldsymbol{D} \boldsymbol{P}^\top
+\]</span></p>
+<p>其中： - <span class="math inline">\(\boldsymbol{P} \in \mathbb{R}^{n
+\times n}\)</span> 是正交矩阵，列向量为单位正交的特征向量； - <span
+class="math inline">\(\boldsymbol{D}\)</span> 是对角矩阵，对角元素为
+<span class="math inline">\(\boldsymbol{S}\)</span> 的特征值； -
+此分解方式也可表示为 <span class="math inline">\(\boldsymbol{D} =
+\boldsymbol{P}^\top \boldsymbol{S} \boldsymbol{P}\)</span>。</p>
+<p><img src="/img3/机器学习的数学基础Part1/图解特征值分解.png" alt="图解特征值分解" style="zoom:50%;" /></p>
+<blockquote>
+<p><strong>在相同的向量空间中应用相同的基变化，然后撤消</strong>。</p>
+</blockquote>
+<h4 id="奇异值分解">奇异值分解</h4>
+<p>singular value decomposition, SVD</p>
+<p>表示线性映射 <span class="math inline">\(\Phi: V \rightarrow
+W\)</span> 的矩阵 <span class="math inline">\(\boldsymbol{A}\)</span>
+的奇异值分解量化了这两个向量空间的潜在几何变化。</p>
+<p><strong>奇异值分解（SVD）公式</strong></p>
+<p><span class="math display">\[
+\boldsymbol{A} = \boldsymbol{U} \boldsymbol{\Sigma} \boldsymbol{V}^\top
+\]</span></p>
+<p>以及它在几何上的意义（旋转+缩放+旋转）.</p>
+<p>其中 <span class="math inline">\(\boldsymbol{U} \in \mathbb{R}^{m
+\times m}\)</span> 为正交矩阵，其列向量为 <span
+class="math inline">\(\boldsymbol{u}_i, \ i=1, \ldots, m\)</span>；<span
+class="math inline">\(\boldsymbol{V} \in \mathbb{R}^{n \times
+n}\)</span> 也为正交矩阵，其列向量为<span
+class="math inline">\(\boldsymbol{v}_i, \ i=1, \ldots,
+n\)</span>。另外，<span
+class="math inline">\(\boldsymbol{\Sigma}\)</span> 为 <span
+class="math inline">\(m \times n\)</span> 矩阵，且<span
+class="math inline">\(\Sigma_{ii} = \sigma_i \geqslant 0, \quad
+\Sigma_{ij} = 0, \ i \neq j .\)</span> <span
+class="math inline">\(\boldsymbol{\Sigma}\)</span> 的对角元素<span
+class="math inline">\(\sigma_i, \quad i = 1, \ldots,
+r\)</span>称为奇异值（singular values），<span
+class="math inline">\(\boldsymbol{u}_i\)</span>
+称为左奇异向量（left-singular vectors），<span
+class="math inline">\(\boldsymbol{v}_i\)</span>
+称为右奇异向量（right-singular
+vectors）。按照惯例，奇异值是有序的：<span
+class="math inline">\(\sigma_1 \geqslant \sigma_2 \geqslant \cdots
+\geqslant \sigma_r \geqslant 0 .\)</span></p>
+<p>奇异值矩阵 <span class="math inline">\(\boldsymbol{\Sigma}\)</span>
+是唯一的。需要注意 <span class="math inline">\(\boldsymbol{\Sigma} \in
+\mathbb{R}^{m \times n}\)</span> 是矩形的，且与 <span
+class="math inline">\(\boldsymbol{A}\)</span> 尺寸相同。这意味着 <span
+class="math inline">\(\boldsymbol{\Sigma}\)</span>
+有一个包含奇异值的对角子矩阵，其他元素为零。 备注：SVD 对任意 <span
+class="math inline">\(\boldsymbol{A} \in \mathbb{R}^{m \times
+n}\)</span> 都成立。</p>
+<blockquote>
+<p><strong>旋转矩阵</strong>就是一个行列式为 <span
+class="math inline">\(+1\)</span> 的正交矩阵，也就是： <span
+class="math inline">\(R^\top R = I, \quad \det(R) = 1\)</span></p>
+</blockquote>
+<blockquote>
+<p>SVD表示域和陪域（见线性代数中的像与核）的基变换。这与在同一向量空间中操作的特征值分解形成对比：后者在相同的向量空间中应用相同的基变化，然后撤消。奇异值分解的特殊之处在于这两个不同的基同时被奇异值矩阵<span
+class="math inline">\(\boldsymbol{\Sigma}\)</span> 连接起来。</p>
+</blockquote>
+<blockquote>
+<p>标准正交基(ONB)</p>
+</blockquote>
+<blockquote>
+<p>左奇异向量和右奇异向量的直观理解，详见《SVD
+中的左奇异向量和右奇异向量.md》</p>
+</blockquote>
+<h4 id="特征值分解-vs.-奇异值分解">特征值分解 vs. 奇异值分解</h4>
+<p>考虑特征值分解 <span class="math display">\[
+\boldsymbol{A} = \boldsymbol{P} \boldsymbol{D} \boldsymbol{P}^{-1}
+\]</span> 和奇异值分解 <span class="math display">\[
+\boldsymbol{A} = \boldsymbol{U} \boldsymbol{\Sigma} \boldsymbol{V}^{-1},
+\]</span> 下面回顾一下它们的核心内容：</p>
+<ul>
+<li><p>对于任意矩阵 <span class="math inline">\(\mathbb{R}^{m \times
+n}\)</span>，奇异值分解总是存在的。而特征值分解仅对平方矩阵 <span
+class="math inline">\(\mathbb{R}^{n \times n}\)</span>
+有效，并且仅当我们能找到 <span
+class="math inline">\(\mathbb{R}^n\)</span>
+的特征向量的基时才存在。</p></li>
+<li><p>特征值分解矩阵 <span
+class="math inline">\(\boldsymbol{P}\)</span>
+中的向量不一定是正交的，即基的变化不是简单的旋转和缩放。而另一方面，奇异值分解中矩阵
+<span class="math inline">\(\boldsymbol{U}\)</span> 和 <span
+class="math inline">\(\boldsymbol{V}\)</span>
+中的向量是正交的，因此它们确实表示旋转。</p></li>
+<li><p>特征值分解和奇异值分解都是三个线性映射的组合：</p>
+<ul>
+<li>定义域的<strong>基变换</strong>；</li>
+<li>每个新基向量的缩放都是独立的，并从定义域映射到陪域；</li>
+<li>陪域的<strong>基变换</strong>。
+特征值分解和奇异值分解的一个关键区别是，<strong>在奇异值分解中，定义域和陪域可以是不同维数的向量空间。</strong></li>
+</ul></li>
+<li><p>在奇异值分解中，左奇异向量矩阵 <span
+class="math inline">\(\boldsymbol{U}\)</span> 和右奇异向量矩阵 <span
+class="math inline">\(\boldsymbol{V}\)</span>
+通常不是互逆的（它们在不同的向量空间中执行基变换）。在特征值分解中，基变化矩阵
+<span class="math inline">\(\boldsymbol{U}\)</span> 和 <span
+class="math inline">\(\boldsymbol{U}^{-1}\)</span> 是互逆的。</p></li>
+<li><p>在奇异值分解中，对角矩阵 <span
+class="math inline">\(\boldsymbol{\Sigma}\)</span>
+中的项都是实的、非负的，这对于特征值分解中的对角矩阵则不一定成立。</p></li>
+<li><p>奇异值分解和特征值分解通过它们的投影关系密切相关：</p>
+<ul>
+<li><span class="math inline">\(\boldsymbol{A}\)</span> 的左奇异向量是
+<span class="math inline">\(\boldsymbol{A} \boldsymbol{A}^\top\)</span>
+的特征向量；</li>
+<li><span class="math inline">\(\boldsymbol{A}\)</span> 的右奇异向量是
+<span class="math inline">\(\boldsymbol{A}^\top \boldsymbol{A}\)</span>
+的特征向量；</li>
+<li><span class="math inline">\(\boldsymbol{A}\)</span> 的非零奇异值是
+<span class="math inline">\(\boldsymbol{A} \boldsymbol{A}^\top\)</span>
+和 <span class="math inline">\(\boldsymbol{A}^\top
+\boldsymbol{A}\)</span> 的非零特征值的平方根。</li>
+</ul></li>
+<li><p>对于对称矩阵 <span class="math inline">\(\boldsymbol{A} \in
+\mathbb{R}^{n \times
+n}\)</span>，特征值分解和奇异值分解是相同的，这符合谱定理（定理
+4.15）。</p></li>
+<li><p><img src="/img3/机器学习的数学基础Part1/图解SVD_1.png" alt="图解SVD_1" style="zoom:50%;" /></p></li>
+</ul>
+<p><img src="/img3/机器学习的数学基础Part1/图解SVD_2.png" alt="图解SVD_2" style="zoom:50%;" /></p>
+<h4 id="矩阵逼近">矩阵逼近</h4>
+<p>我们可以使用奇异值分解（SVD）将秩<span
+class="math inline">\(r\)</span> 矩阵<span
+class="math inline">\(\boldsymbol{A}\)</span>降为秩<span
+class="math inline">\(k\)</span>矩阵$ $
+，这是一种取主要成分并达到最优的（在谱范数意义上）方式。我们可以将秩<span
+class="math inline">\(k\)</span>矩阵对$
+$的逼近解释为有损压缩的一种方法。因此，矩阵的低秩逼近出现在许多机器学习应用中，例如图像处理、噪声滤波和不适定问题的正则化。此外，它在降维和主成分分析中起着关键作用</p>
+<p>秩为 <span class="math inline">\(r\)</span> 的矩阵 <span
+class="math inline">\(\boldsymbol{A} \in \mathbb{R}^{m \times
+n}\)</span> 能被写成秩 <span class="math inline">\(1\)</span> 矩阵 <span
+class="math inline">\(\boldsymbol{A}_i\)</span> 的和： <span
+class="math display">\[
+\boldsymbol{A} = \sum_{i=1}^{r} \sigma_{i} \boldsymbol{u}_{i}
+\boldsymbol{v}_{i}^{\top}
+= \sum_{i=1}^{r} \sigma_{i} \boldsymbol{A}_{i},
+\]</span> 其中，外积矩阵 <span
+class="math inline">\(\boldsymbol{A}_{i}\)</span> 的权重为第 <span
+class="math inline">\(i\)</span> 个奇异值 <span
+class="math inline">\(\sigma_{i}\)</span>。</p>
+<h3 id="矩阵分类关系图">矩阵分类关系图</h3>
+<p>Matrix Phylogeny</p>
+<blockquote>
+<p>可对角化其实就是可特征值分解。</p>
+</blockquote>
+<p><img src="/img3/机器学习的数学基础Part1/矩阵分类关系图.png" alt="矩阵分类关系图" style="zoom:50%;" /></p>
+<p>在第2章和第3章中，我们介绍了线性代数和解析几何的基础知识。在这一章中，我们研究了矩阵和线性映射的基本特征。图4.13描述了不同类型矩阵之间关系的
+Phylogeny（黑色箭头表示子集）以及我们可以对其执行的操作（蓝色）。</p>
+<p>我们考虑所有实矩阵（real matrices）<span
+class="math inline">\(\boldsymbol{A} \in \mathbb{R}^{n \times
+m}\)</span>。对于非方阵（其中 <span class="math inline">\(n \neq
+m\)</span>），奇异值分解总是存在的，正如我们在本章中看到的。以方阵（square
+matrices）<span class="math inline">\(\boldsymbol{A} \in \mathbb{R}^{n
+\times n}\)</span> 为中心，行列式告诉我们方阵是否具有逆矩阵（inverse
+matrix），即它是否属于正则可逆矩阵类。如果 <span class="math inline">\(n
+\times n\)</span> 矩阵具有 <span class="math inline">\(n\)</span>
+个线性无关的特征向量，则矩阵是非退化的（non-defective），并且存在特征值分解（定理4.12）。我们知道，重复的特征值可能导致矩阵退化，这种矩阵是不能对角化的。</p>
+<blockquote>
+<p>No basis of eigenvectors 特征向量不是基； Basis of eigenvectors
+特征向量是基。 Singular 奇异的 Orthogonal 正交的</p>
+</blockquote>
+<p>非奇异矩阵和非退化矩阵是不同的。例如，旋转矩阵是可逆的（行列式是非零的），但不一定可对角化（特征值不能保证是实数）。</p>
+<blockquote>
+<p>以上这句话的例子详见《非奇异矩阵和非退化矩阵.md》</p>
+</blockquote>
+<p>我们进一步研究了非退化 <span class="math inline">\(n \times
+n\)</span> 方阵的分支。如果条件<span
+class="math inline">\(\boldsymbol{A}^{\top} \boldsymbol{A} =
+\boldsymbol{A} \boldsymbol{A}^{\top}\)</span>成立，则 <span
+class="math inline">\(\boldsymbol{A}\)</span>
+是正规的（normal）。此外，如果更严格的条件<span
+class="math inline">\(\boldsymbol{A}^{\top} \boldsymbol{A} =
+\boldsymbol{A} \boldsymbol{A}^{\top} = \boldsymbol{I}\)</span>成立，则
+<span class="math inline">\(\boldsymbol{A}\)</span>
+称为正交（orthogonal，见定义3.8）。正交矩阵集是正则（可逆）矩阵的子集，满足<span
+class="math inline">\(\boldsymbol{A}^{\top} =
+\boldsymbol{A}^{-1}.\)</span></p>
+<p>正规矩阵有一个常见的子集，即对称矩阵 <span
+class="math inline">\(\boldsymbol{S} \in \mathbb{R}^{n \times
+n}\)</span>，它满足<span class="math inline">\(\boldsymbol{S} =
+\boldsymbol{S}^{\top}.\)</span>对称矩阵只有实特征值。对称矩阵的子集由正定矩阵
+<span class="math inline">\(\boldsymbol{P}\)</span> 组成，正定矩阵 <span
+class="math inline">\(\boldsymbol{P}\)</span> 对所有 <span
+class="math inline">\(\boldsymbol{x} \in \mathbb{R}^{n} \backslash
+\{\mathbf{0}\}\)</span> 满足条件<span
+class="math inline">\(\boldsymbol{x}^{\top} \boldsymbol{P}
+\boldsymbol{x} &gt; 0.\)</span>在这种情况下，存在唯一的 Cholesky
+分解（Cholesky
+decomposition，定理4.18）。<strong>正定矩阵只有正特征值且总是可逆的（即，具有非零行列式）。</strong></p>
+<p>对称矩阵的另一个子集由对角矩阵（diagonal matrices）<span
+class="math inline">\(\boldsymbol{D}\)</span>
+组成。对角矩阵在乘法和加法下是闭合的，但不一定形成一个群（只有当所有的对角项都不为零时才是这种情况，这样矩阵才是可逆的）。一种特殊的对角矩阵是单位矩阵
+<span class="math inline">\(\boldsymbol{I}\)</span>。</p>
+<blockquote>
+<p>Identity matrix 单位矩阵</p>
+</blockquote>
+<figure>
+<img src="./常见矩阵分解总结表.png" alt="常见矩阵分解总结表" />
+<figcaption aria-hidden="true">常见矩阵分解总结表</figcaption>
+</figure>
+<p>上表来源鸢尾花那本书Book4_ch24 《矩阵力量》</p>
+<h2 id="向量微积分">向量微积分</h2>
+<p>Vector Calculus</p>
+<p><strong><span class="math inline">\(f\)</span>导数的方向指向<span
+class="math inline">\(f\)</span>最陡峭的上升方向。</strong></p>
+<blockquote>
+<p>组合符号 <span class="math inline">\(C_n^m\)</span> 也可写成 <span
+class="math inline">\(\binom{n}{m}\)</span>。</p>
+</blockquote>
+<h3 id="泰勒级数">泰勒级数</h3>
+<p>泰勒级数是函数$ f<span
+class="math inline">\(的无穷项和的表示。这些项是用\)</span>
+f$的导数来确定的。<strong>多项式逼近函数的泰勒级数</strong>。</p>
+<p><strong>泰勒级数</strong></p>
+<p>对于一个平滑的函数 $ f ^{},  f: $ （$ f ^{} $ 表示 $ f $
+连续且可微无穷多次）， $ f $ 在 $ x_0 $ 的泰勒级数Taylor
+series）定义为：<br />
+<span class="math display">\[
+T_{\infty}(x) = \sum_{k=0}^{\infty} \frac{f^{(k)}\left(x_{0}\right)}{k
+!} \left(x - x_{0}\right)^{k}
+\]</span></p>
+<p>当 $ x_0 = 0 $ 时，我们得到麦克劳林级数（Maclaurin
+series），它是泰勒级数的特殊实例。 如果 $ f(x) = T_{}(x) $，那么 $ f $
+称为解析的（analytic）。</p>
+<p><strong>备注</strong>： 一般来说，$ n $
+次泰勒多项式是非多项式函数的近似值。 它在 $ x_0 $ 附近与 $ f $ 相似。
+然而，$ n $ 次泰勒多项式用 $ k n $ 次多项式表示 $ f $ 已经足够精确了，
+因为导数 $ f^{(i)},  i &gt; k $ 可能为 $ 0 $。</p>
+<blockquote>
+<p>泰勒级数中的 <span
+class="math inline">\(x_0\)</span>（也叫展开点）<strong>原则上可以选任意实数或复数</strong>，不过能不能用它准确表示函数，还得看<strong>收敛性和函数的可导性</strong>条件。</p>
+</blockquote>
+<p><strong>备注</strong>：<br />
+泰勒级数是幂级数的特例，幂级数表达式为：<br />
+<span class="math display">\[
+f(x) = \sum_{k=0}^{\infty} a_{k} (x - c)^{k}
+\]</span> 其中 <span class="math inline">\(a_k\)</span>为系数，<span
+class="math inline">\(c\)</span>为常数。定义5.4中的式子是它的特殊形式。</p>
+<h3 id="微分法则">微分法则</h3>
+<p>下面，我们用 $ f' $ 表示 $ f $ 的导数，简要地说明基本的微分规则：</p>
+<ol type="1">
+<li>乘积法则：</li>
+</ol>
+<p><span class="math display">\[
+(f(x) g(x))&#39; = f&#39;(x) g(x) + f(x) g&#39;(x)
+\]</span></p>
+<ol start="2" type="1">
+<li>除法法则：</li>
+</ol>
+<p><span class="math display">\[
+\left(\frac{f(x)}{g(x)}\right)&#39; = \frac{f&#39;(x) g(x) - f(x)
+g&#39;(x)}{\left(g(x)\right)^{2}}
+\]</span></p>
+<ol start="3" type="1">
+<li>加法法则：</li>
+</ol>
+<p><span class="math display">\[
+(f(x) + g(x))&#39; = f&#39;(x) + g&#39;(x)
+\]</span></p>
+<ol start="4" type="1">
+<li>链式法则：</li>
+</ol>
+<p><span class="math display">\[
+(g(f(x)))&#39; = (g \circ f)&#39;(x) = g&#39;(f(x)) \cdot f&#39;(x)
+\]</span></p>
+<p>​ 这里，$ g f $ 表示函数复合：<br />
+<span class="math display">\[
+x \mapsto f(x) \mapsto g(f(x))
+\]</span></p>
+<h3 id="偏微分与梯度">偏微分与梯度</h3>
+<p><strong>导数对多变量函数的推广是梯度(gradient)。</strong></p>
+<p>我们通过一次改变一个变量并保持其他变量不变来求函数$ f<span
+class="math inline">\(相对于\)</span>
+x$的偏导数。<strong>梯度就是这些偏导数</strong>(partial
+derivatives)构成的的集合。</p>
+<p>将它们组成一个<strong>行向量</strong>： <span class="math display">\[
+  \nabla_{\boldsymbol{x}} f = \operatorname{grad} f
+  = \frac{\mathrm{d} f}{\mathrm{d} \boldsymbol{x}}
+  = \left[
+  \frac{\partial f(\boldsymbol{x})}{\partial x_{1}},\
+  \frac{\partial f(\boldsymbol{x})}{\partial x_{2}},\
+  \cdots,\
+  \frac{\partial f(\boldsymbol{x})}{\partial x_{n}}
+  \right]
+  \in \mathbb{R}^{1 \times n}
+  \qquad (5.40)
+\]</span></p>
+<p>其中 $ n $ 是变量个数，$ 1 $ 是 $ f $ 的像/值域/陪域的维数。
+这里，我们定义了列向量<span class="math inline">\(\boldsymbol{x} =
+\left[ x_{1}, \ldots, x_{n} \right]^{\top} \in \mathbb{R}^n.\)</span> 式
+(5.40) 中的行向量称为 $ f $ 的梯度(gradient) 或
+雅可比矩阵(Jacobian)，是第 5.1 节中导数的推广。</p>
+<p><strong>备注（梯度用行向量表示）：</strong></p>
+<p>向量通常用列向量表示，将梯度向量定义为列向量在文献中并不少见。
+我们将梯度向量定义为行向量的原因有两个：
+首先，我们可以一致地将梯度推广到向量值函数<span class="math inline">\(f:
+\mathbb{R}^{n} \rightarrow \mathbb{R}^{m}\)</span>（然后梯度变成矩阵）。
+其次，我们可以很方便地应用多变量链式法则，而不必注意梯度的维数。</p>
+<h4 id="链式法则">链式法则</h4>
+<p>考虑两个变量 <span class="math inline">\(x_{1}\)</span>, <span
+class="math inline">\(x_{2}\)</span> 的函数<span
+class="math inline">\(f: \mathbb{R}^{2} \rightarrow
+\mathbb{R}.\)</span>此外，<span class="math inline">\(x_{1}(t)\)</span>
+和 <span class="math inline">\(x_{2}(t)\)</span> 本身就是 <span
+class="math inline">\(t\)</span> 的函数。 为了计算 <span
+class="math inline">\(f\)</span> 相对于 <span
+class="math inline">\(t\)</span>
+的导数，我们需要对多元函数使用链式法则： <span class="math display">\[
+\frac{\mathrm{d} f}{\mathrm{d} t}
+=
+\begin{bmatrix}
+\frac{\partial f}{\partial x_{1}} &amp; \frac{\partial f}{\partial
+x_{2}}
+\end{bmatrix}
+\begin{bmatrix}
+\frac{\partial x_{1}(t)}{\partial t} \\
+\frac{\partial x_{2}(t)}{\partial t}
+\end{bmatrix}
+=
+\frac{\partial f}{\partial x_{1}} \frac{\partial x_{1}}{\partial t}
++
+\frac{\partial f}{\partial x_{2}} \frac{\partial x_{2}}{\partial t}.
+\]</span> <strong>其中 <span class="math inline">\(\mathrm{d}\)</span>
+表示全导数，<span class="math inline">\(\partial\)</span>
+表示偏导数。</strong></p>
+<h4 id="多变量链式法则">多变量链式法则</h4>
+<p>如果 <span class="math inline">\(f(x_{1}, x_{2})\)</span> 是 <span
+class="math inline">\(x_{1}\)</span> 和 <span
+class="math inline">\(x_{2}\)</span> 的函数，其中 <span
+class="math inline">\(x_{1}(s, t)\)</span> 和 <span
+class="math inline">\(x_{2}(s, t)\)</span> 是两个变量 <span
+class="math inline">\(s\)</span> 和 <span
+class="math inline">\(t\)</span> 的函数，则用链式法则可得偏导数： <span
+class="math display">\[
+\frac{\partial f}{\partial s}
+=
+\frac{\partial f}{\partial x_{1}} \frac{\partial x_{1}}{\partial s}
++
+\frac{\partial f}{\partial x_{2}} \frac{\partial x_{2}}{\partial s},
+\]</span></p>
+<p><span class="math display">\[
+\frac{\partial f}{\partial t}
+=
+\frac{\partial f}{\partial x_{1}} \frac{\partial x_{1}}{\partial t}
++
+\frac{\partial f}{\partial x_{2}} \frac{\partial x_{2}}{\partial t}.
+\]</span></p>
+<p>将梯度写成矩阵乘法的形式为： <span class="math display">\[
+\frac{\mathrm{d} f}{\mathrm{d}(s, t)}
+=
+\frac{\partial f}{\partial \boldsymbol{x}}
+\frac{\partial \boldsymbol{x}}{\partial (s, t)}
+=
+\underbrace{
+\begin{bmatrix}
+\frac{\partial f}{\partial x_{1}} &amp; \frac{\partial f}{\partial
+x_{2}}
+\end{bmatrix}
+}_{\frac{\partial f}{\partial \boldsymbol{x}}}
+\underbrace{
+\begin{bmatrix}
+\frac{\partial x_{1}}{\partial s} &amp; \frac{\partial x_{1}}{\partial
+t} \\
+\frac{\partial x_{2}}{\partial s} &amp; \frac{\partial x_{2}}{\partial
+t}
+\end{bmatrix}
+}_{\frac{\partial \boldsymbol{x}}{\partial (s, t)}}.
+\]</span></p>
+<p><strong>这种将链式法则写成矩阵乘法的简洁方法，只有在将梯度定义为行向量时才直接成立。</strong>否则，需要对矩阵进行转置以匹配维数。当对象是向量或矩阵时，转置很简单；但当对象是张量时（将在后面讨论），转置就不再是小事了。</p>
+<h3 id="向量值函数的梯度">向量值函数的梯度</h3>
+<p><strong>雅可比矩阵</strong></p>
+<p><strong>向量值函数</strong>的所有一阶偏导数的集合称为雅可比矩阵（Jacobian）。雅可比矩阵
+<span class="math inline">\(\mathbf{J}\)</span> 是一个 <span
+class="math inline">\(m \times n\)</span> 矩阵，我们将其定义如下： <span
+class="math display">\[
+\mathbf{J}
+= \nabla_{\mathbf{x}} \mathbf{f}
+= \frac{\mathrm{d} \mathbf{f}(\mathbf{x})}{\mathrm{d} \mathbf{x}}
+= \left[
+\frac{\partial \mathbf{f}(\mathbf{x})}{\partial x_{1}} \quad
+\cdots \quad
+\frac{\partial \mathbf{f}(\mathbf{x})}{\partial x_{n}}
+\right].
+\]</span></p>
+<p>具体写成矩阵形式为： <span class="math display">\[
+\begin{equation}
+\mathbf{J} =
+\begin{bmatrix}
+\dfrac{\partial f_{1}(\mathbf{x})}{\partial x_{1}} &amp; \cdots &amp;
+\dfrac{\partial f_{1}(\mathbf{x})}{\partial x_{n}} \\
+\vdots &amp; \ddots &amp; \vdots \\
+\dfrac{\partial f_{m}(\mathbf{x})}{\partial x_{1}} &amp; \cdots &amp;
+\dfrac{\partial f_{m}(\mathbf{x})}{\partial x_{n}}
+\end{bmatrix},
+\tag{5.58}
+\end{equation}
+\]</span> 其中 <span class="math display">\[
+\mathbf{x} =
+\begin{bmatrix}
+x_{1} \\ \vdots \\ x_{n}
+\end{bmatrix},
+\quad
+J(i,j) = \frac{\partial f_{i}}{\partial x_{j}}.
+\]</span></p>
+<p>雅可比矩阵表示我们想要的坐标变换。如果坐标变换是线性的（如我们的例子），那么它是精确的，（5.66）精确地恢复了（5.62）中的基变化矩阵。如果坐标变换是非线性的，雅可比矩阵则用一个线性变换局部地逼近这个非线性变换。雅可比行列式
+<span
+class="math inline">\(|\operatorname{det}(\boldsymbol{J})|\)</span>
+的绝对值是变换坐标时面积或体积的缩放因子。</p>
+<p><img src="/img3/机器学习的数学基础Part1/变换.png" alt="变换" style="zoom:50%;" /></p>
+<p><strong>方法</strong>一、</p>
+<p>为了开始使用线性代数的方法，我们首先确定 <span
+class="math inline">\(\{\boldsymbol{b}_{1},
+\boldsymbol{b}_{2}\}\)</span> 和 <span
+class="math inline">\(\{\boldsymbol{c}_{1},
+\boldsymbol{c}_{2}\}\)</span> 都是 <span
+class="math inline">\(\mathbb{R}^2\)</span> 的基。我们要有效地执行的是从
+<span class="math inline">\(\{\boldsymbol{b}_{1},
+\boldsymbol{b}_{2}\}\)</span> 到 <span
+class="math inline">\(\{\boldsymbol{c}_{1},
+\boldsymbol{c}_{2}\}\)</span> 的基变换，就得寻找实现基变换的变换矩阵。
+利用第2.7.2节的结果，我们确定了所需的<strong>基变换矩阵</strong>为：
+<span class="math display">\[
+\boldsymbol{J} =
+\begin{bmatrix}
+-2 &amp; 1 \\
+1 &amp; 1
+\end{bmatrix} \tag{5.62}
+\]</span></p>
+<p>它使得 <span class="math inline">\(\boldsymbol{J}\boldsymbol{b}_{1} =
+\boldsymbol{c}_{1}, \quad
+\boldsymbol{J}\boldsymbol{b}_{2} = \boldsymbol{c}_{2}\)</span>。 矩阵
+<span class="math inline">\(\boldsymbol{J}\)</span> 的行列式的绝对值为：
+<span class="math display">\[
+\left|\det(\boldsymbol{J})\right| = 3,
+\]</span> 这正是我们在寻找的缩放因子。也就是说， <span
+class="math inline">\((\boldsymbol{c}_{1}, \boldsymbol{c}_{2})\)</span>
+所张成的平行四边形的面积是 <span
+class="math inline">\((\boldsymbol{b}_{1}, \boldsymbol{b}_{2})\)</span>
+所张成面积的三倍。</p>
+<p>把 <span class="math inline">\(\{\boldsymbol{b}_{1},
+\boldsymbol{b}_{2}\}\)</span> 坐标变换成 <span
+class="math inline">\(\{\boldsymbol{c}_{1},
+\boldsymbol{c}_{2}\}\)</span> 的坐标，是左乘<span
+class="math inline">\(\boldsymbol{J}^{-1}\)</span>；反向是左乘<span
+class="math inline">\(\boldsymbol{J}\)</span>。</p>
+<p><strong>方法二</strong>、</p>
+<p>线性代数方法适用于线性变换；对于非线性变换（与第6.7节有关），我们有基于偏微分的更一般的方法。</p>
+<p>在这种方法中，我们考虑执行变量变换的函数<span
+class="math inline">\(\boldsymbol{f}: \mathbb{R}^{2} \rightarrow
+\mathbb{R}^{2}.\)</span>在我们的例子中，<span
+class="math inline">\(\boldsymbol{f}\)</span> 将关于 <span
+class="math inline">\((\boldsymbol{b}_{1}, \boldsymbol{b}_{2})\)</span>
+的任意向量 <span class="math inline">\(\boldsymbol{x} \in
+\mathbb{R}^{2}\)</span> 的坐标映射到关于 <span
+class="math inline">\((\boldsymbol{c}_{1}, \boldsymbol{c}_{2})\)</span>
+的坐标 <span class="math inline">\(\boldsymbol{y} \in
+\mathbb{R}^{2}\)</span>。
+我们想确定这个映射，这样就可以计算出一个面积（或体积）在 <span
+class="math inline">\(\boldsymbol{f}\)</span> 变换下是如何变化的。
+为此，我们需要找出 <span
+class="math inline">\(\boldsymbol{f}(\boldsymbol{x})\)</span> 在 <span
+class="math inline">\(\boldsymbol{x}\)</span> 微小变化时的变化方式。
+雅可比矩阵 <span class="math display">\[
+\frac{\mathrm{d} \boldsymbol{f}}{\mathrm{d} \boldsymbol{x}} \in
+\mathbb{R}^{2 \times 2}
+\]</span> 正是这个问题的答案。 由下式定义的映射： <span
+class="math display">\[
+y_{1} = -2x_{1} + x_{2}, \qquad
+y_{2} = x_{1} + x_{2},
+\]</span> 我们得到了 <span class="math inline">\(\boldsymbol{x}\)</span>
+和 <span class="math inline">\(\boldsymbol{y}\)</span> 之间的函数关系。
+这允许我们计算偏导数： <span class="math display">\[
+\frac{\partial y_{1}}{\partial x_{1}}=-2, \quad
+\frac{\partial y_{1}}{\partial x_{2}}=1, \quad
+\frac{\partial y_{2}}{\partial x_{1}}=1, \quad
+\frac{\partial y_{2}}{\partial x_{2}}=1.
+\]</span></p>
+<p>将它们组合成雅可比矩阵： <span class="math display">\[
+\boldsymbol{J} =
+\begin{bmatrix}
+\frac{\partial y_{1}}{\partial x_{1}} &amp; \frac{\partial
+y_{1}}{\partial x_{2}} \\
+\frac{\partial y_{2}}{\partial x_{1}} &amp; \frac{\partial
+y_{2}}{\partial x_{2}}
+\end{bmatrix}
+=
+\begin{bmatrix}
+-2 &amp; 1 \\
+1 &amp; 1
+\end{bmatrix} \tag{5.66}
+\]</span></p>
+<p>雅可比矩阵表示我们想要的坐标变换。
+如果坐标变换是线性的（如我们的例子），那么它是精确的，（5.66）正好恢复了（5.62）中的基变化矩阵。
+<strong>如果坐标变换是非线性的，雅可比矩阵则用一个线性变换局部地逼近这个非线性变换</strong>。
+雅可比行列式的绝对值 <span class="math display">\[
+\left|\det(\boldsymbol{J})\right| = 3
+\]</span> 就是变换坐标时面积或体积的缩放因子。在我们的例子中，结果正好是
+3。</p>
+<figure>
+<img src="./偏导数的维度.png" alt="偏导数的维度" />
+<figcaption aria-hidden="true">偏导数的维度</figcaption>
+</figure>
+<p><strong>向量值函数的梯度</strong></p>
+<p>给定： <span class="math display">\[
+\mathbf{f}(\mathbf{x}) = \mathbf{A} \mathbf{x}
+\]</span> 其中：</p>
+<ul>
+<li><span class="math inline">\(\mathbf{f}(\mathbf{x}) \in
+\mathbb{R}^M\)</span>（输出是 <span class="math inline">\(M\)</span>
+维向量）</li>
+<li><span class="math inline">\(\mathbf{A} \in \mathbb{R}^{M \times
+N}\)</span></li>
+<li><span class="math inline">\(\mathbf{x} \in
+\mathbb{R}^N\)</span></li>
+</ul>
+<p>这是一个<strong>线性映射</strong>：<span
+class="math inline">\(\mathbf{x} \mapsto \mathbf{A}
+\mathbf{x}\)</span>。</p>
+<p>向量值函数的梯度是 <span class="math inline">\(A\)</span>。</p>
+<h4 id="反向传播与自动微分法">反向传播与自动微分法</h4>
+<p>在许多机器学习应用中，我们通过执行梯度下降（第7.1节）来找到好的模型参数，这基于我们可以计算目标函数相对于模型参数的梯度。对于给定的目标函数，我们可以通过微积分和应用链式法则来获得关于模型参数的梯度；见第5.2.2节。在第5.3节中，我们已经研究了线性回归模型的平方损失函数的梯度。</p>
+<p>反向传播是数值分析中称为自动微分(automatic
+differentiation)技术的一个特例。我们可以把自动微分看作是一套技术，它通过处理中间变量和应用链式法则，在数值上（而不是符号化地）计算函数的精确（达到机器精度）梯度。自动微分应用了一系列基本算术运算，例如加法和乘法，以及基本函数，例如：<span
+class="math inline">\(⁡ \sin , \cos , \exp ,
+\log\)</span>将链式法则应用到这些运算中，可以自动计算相当复杂函数的梯度。自动微分适用于一般的计算机程序，有正向和反向两种模式。</p>
+<p>直观地说，正向和反向模式在乘法的顺序上是不同的。由于矩阵乘法的结合性，我们有以下两种选择：
+<span class="math display">\[
+\begin{equation}
+\frac{\mathrm{d} y}{\mathrm{d} x} =
+\left(
+\frac{\mathrm{d} y}{\mathrm{d} b}
+\frac{\mathrm{d} b}{\mathrm{d} a}
+\right)
+\frac{\mathrm{d} a}{\mathrm{d} x}
+\qquad (5.120)
+\end{equation}
+\]</span></p>
+<p><span class="math display">\[
+\begin{equation}
+\frac{\mathrm{d} y}{\mathrm{d} x} =
+\frac{\mathrm{d} y}{\mathrm{d} b}
+\left(
+\frac{\mathrm{d} b}{\mathrm{d} a}
+\frac{\mathrm{d} a}{\mathrm{d} x}
+\right)
+\qquad (5.121)
+\end{equation}
+\]</span></p>
+<p>方程（5.120）是反向模式（reverse mode），因为梯度通过数据流向后传播。
+方程（5.121）是正向模式（forward
+mode），其中梯度随数据从左到右流过整个图。</p>
+<p>下面，我们将重点介绍反向模式的自动微分，即反向传播。<strong>在神经网络中，输入的维数通常比标签的维数高得多，所以反向模式比正向模式计算量要少得多。</strong></p>
+<blockquote>
+<p>具体的例子详见《损失函数的梯度计算例子.md》</p>
+</blockquote>
+<h2 id="概率与分布">概率与分布</h2>
+<p>Probability and Distributions</p>
+<p>概率论可以看作是布尔逻辑的推广。在机器学习的背景下，它经常以这种方式应用于自动推理系统的形式化设计。</p>
+<p>在机器学习和统计学中，有两种主要的概率解释：贝叶斯主义和频率主义(Bishop,
+2006;Efron and Hastie,
+2016)。贝叶斯主义使用概率来指定用户对事件的不确定性程度。它有时被称为“主观概率”或“置信程度”。频率主义则考虑感兴趣的事件与所发生事件的总数的相对频率。一个事件的概率定义为当发生事件的总数趋于无限时，该事件的相对频率。</p>
+<p>许多机器学习的概率模型描述使用惰性符号和术语，这会令人困惑的。这篇文章也不例外。有多个不同的概念都被称为“概率分布”，读者往往要从上下文中获知其中的含义。一个有助于理解概率分布的技巧是检查我们是在尝试建立一个分类的（离散的随机变量）模型还是一个连续的（连续的随机变量）模型。我们在机器学习中处理的问题的种类与我们要考虑分类模型还是连续模型密切相关。</p>
+<blockquote>
+<p>在抽第二枚硬币之前放回了第一枚抽到的硬币，这意味着两次抽硬币是相互独立的。</p>
+</blockquote>
+<h3 id="概率空间-omega-mathcala-p">概率空间 <span
+class="math inline">\((\Omega, \mathcal{A}, P)\)</span>，</h3>
+<p>示例：连续两次抛硬币</p>
+<ul>
+<li><p><strong>样本空间</strong> <span class="math display">\[
+\Omega = \{hh, ht, th, tt\}
+\]</span> 这里每个元素（样本点）表示两次抛硬币的具体结果。例如 <span
+class="math inline">\(hh\)</span> = 第一次正面、第二次正面。</p></li>
+<li><p><strong>事件空间</strong> 事件就是样本空间的子集。比如：</p>
+<ul>
+<li>事件 <span
+class="math inline">\(A=\{\text{hh}\}\)</span>：两次都是正面。</li>
+<li>事件 <span
+class="math inline">\(B=\{\text{ht},\text{th}\}\)</span>：恰好出现一次正面。</li>
+<li>事件 <span
+class="math inline">\(C=\{\text{hh},\text{ht},\text{th}\}\)</span>：至少出现一次正面。</li>
+</ul>
+<p>所有可能的事件集合（即事件空间 <span
+class="math inline">\(\mathcal{A}\)</span>）在离散情况下就是 <span
+class="math inline">\(\Omega\)</span> 的幂集： <span
+class="math display">\[
+\mathcal{A} = \{ \emptyset, \{hh\}, \{ht\}, \{th\}, \{tt\}, \{hh,ht\},
+\dots, \Omega \}.
+\]</span></p></li>
+<li><p><strong>概率分布</strong>
+假设硬币均匀独立，样本空间中每个结果的概率都是 <span
+class="math inline">\(1/4\)</span>。那么：</p>
+<ul>
+<li><span class="math inline">\(P(A)=P(\{hh\})=1/4\)</span>。</li>
+<li><span
+class="math inline">\(P(B)=P(\{ht,th\})=1/4+1/4=1/2\)</span>。</li>
+<li><span class="math inline">\(P(C)=P(\{hh,ht,th\})=3/4\)</span>。</li>
+</ul></li>
+</ul>
+<p><strong>总结</strong></p>
+<ul>
+<li><strong>样本空间 <span
+class="math inline">\(\Omega\)</span></strong>：所有可能的基本结果。</li>
+<li><strong>事件空间 <span
+class="math inline">\(\mathcal{A}\)</span></strong>：由样本空间的子集组成，每个子集就是一个“事件”。</li>
+<li><strong>概率 <span
+class="math inline">\(P\)</span></strong>：为每个事件赋予一个数，满足概率公理。</li>
+</ul>
+<p>给定一个概率空间 <span class="math inline">\((\Omega, \mathcal{A},
+P)\)</span>，我们希望使用它来模拟一些现实世界的现象。在机器学习中，我们经常避免直接引用概率空间，而是引用感兴趣的量上的概率，我们用
+<span class="math inline">\(\mathcal{T}\)</span>
+表示。在这本书中，我们把 <span
+class="math inline">\(\mathcal{T}\)</span> 称为目标空间（target
+space），把 <span class="math inline">\(\mathcal{T}\)</span>
+的元素称为状态。我们引入了一个函数 <span class="math inline">\(X :
+\Omega \to \mathcal{T}\)</span>它接受 <span
+class="math inline">\(\Omega\)</span>
+元素（一个结果，样本点），并返回感兴趣对象 <span
+class="math inline">\(x\)</span> 在 <span
+class="math inline">\(\mathcal{T}\)</span> 中的特定量（值）。从 <span
+class="math inline">\(\Omega\)</span> 到 <span
+class="math inline">\(\mathcal{T}\)</span>
+的这种关联/映射称为随机变量（random variable）。</p>
+<p>例如，考虑投掷两枚硬币并计算正面数。随机变量 <span
+class="math inline">\(X\)</span> 映射到三种可能的结果：<span
+class="math inline">\(X(hh) = 2, \quad X(ht) = 1, \quad X(th) = 1, \quad
+X(tt) = 0\)</span>在这个特殊的情况下，<span
+class="math inline">\(\mathcal{T} = \{0,1,2\}\)</span>，我们感兴趣的是
+<span class="math inline">\(\mathcal{T}\)</span>
+中元素的概率。对于有限的样本空间 <span
+class="math inline">\(\Omega\)</span> 和有限的 <span
+class="math inline">\(\mathcal{T}\)</span>，随机变量对应的函数本质上是一个查找表。对于任意子集
+<span class="math inline">\(S \subseteq
+\mathcal{T}\)</span>，我们将<span class="math inline">\(P_X(S) \in
+[0,1]\)</span>（概率）与随机变量 <span class="math inline">\(X\)</span>
+对应的特定事件联系起来。例 6.1 提供了具体说明。</p>
+<p><strong>将 $X <span
+class="math inline">\(&lt;u&gt;*输出的概率*&lt;/u&gt;和\)</span>$中样本的概率这两个不同的概念等同起来!</strong></p>
+<p>Example 6.1</p>
+<p>This toy example is essentially a biased coin flip example. We assume
+that the reader is already familiar with computing probabilities of
+intersections and unions of sets of events. A gentler introduction to
+probability with many examples can be found in chapter 2 of Walpole et
+al. (2011).</p>
+<p>Consider a statistical experiment where we model a funfair game
+consisting of drawing two coins from a bag (with replacement). There are
+coins from USA (denoted as $) and UK (denoted as £) in the bag, and
+since we draw two coins from the bag, there are four outcomes in total.
+The state space or sample space <span
+class="math inline">\(\Omega\)</span> of this experiment is then <span
+class="math display">\[
+(\$, \$), (\$, £), (£, \$), (£, £).
+\]</span> Let us assume that the composition of the bag of coins is such
+that a draw returns at random a $ with probability 0.3.</p>
+<p>The event we are interested in is the total number of times the
+repeated draw returns $. Let us define a random variable <span
+class="math inline">\(X\)</span> that maps the sample space <span
+class="math inline">\(\Omega\)</span> to <span
+class="math inline">\(\mathcal{T}\)</span>, which denotes the number of
+times we draw $ out of the bag. We can see from the preceding sample
+space we can get zero $, one $, or two $s, and therefore <span
+class="math inline">\(\mathcal{T} = \{0, 1, 2\}\)</span>. The random
+variable <span class="math inline">\(X\)</span> (a function or lookup
+table) can be represented as a table like the following: <span
+class="math display">\[
+\begin{align}
+X((\$, \$)) &amp;= 2 \tag{6.1}\\
+X((\$, £)) &amp;= 1 \tag{6.2}\\
+X((£, \$)) &amp;= 1 \tag{6.3}\\
+X((£, £)) &amp;= 0. \tag{6.4}
+\end{align}
+\]</span> Since we return the first coin we draw before drawing the
+second, this implies that the two draws are independent of each other,
+which we will discuss in Section 6.4.5. Note that there are two
+experimental outcomes which map to the same event, where only one of the
+draws returns $. Therefore, the probability mass function (Section
+6.2.1) of <span class="math inline">\(X\)</span> is given by <span
+class="math display">\[
+\begin{align}
+P(X=2) &amp;= P((\$, \$)) \nonumber \\
+&amp;= P(\$) \cdot P(\$) \nonumber \\
+&amp;= 0.3 \cdot 0.3 = 0.09 \tag{6.5}\\
+P(X=1) &amp;= P((\$, £) \cup (\,£, \$)) \nonumber \\
+&amp;= P((\$, £)) + P((\,£, \$)) \nonumber \\
+&amp;= 0.3 \cdot (1 - 0.3) + (1 - 0.3) \cdot 0.3 = 0.42 \tag{6.6}\\
+P(X=0) &amp;= P((\,£, £)) \nonumber \\
+&amp;= P(£) \cdot P(£) \nonumber \\
+&amp;= (1 - 0.3) \cdot (1 - 0.3) = 0.49. \tag{6.7}
+\end{align}
+\]</span></p>
+<p>离散状态数值化特别有用，因为我们经常需要考虑随机变量的期望值</p>
+<p>不幸的是，机器学习许多相关文献使用的符号和术语隐藏了样本空间 <span
+class="math inline">\(\Omega\)</span>、目标空间 <span
+class="math inline">\(\mathcal{T}\)</span> 和随机变量 <span
+class="math inline">\(X\)</span> 之间的区别。对于随机变量 <span
+class="math inline">\(X\)</span> 的一组可能结果的值 <span
+class="math inline">\(x\)</span>，即 <span class="math inline">\(x \in
+\mathcal{T}\)</span>，<span class="math inline">\(p(x)\)</span>
+表示随机变量 <span class="math inline">\(X\)</span> 取结果 <span
+class="math inline">\(x\)</span> 的概率。对于离散随机变量，这表示为
+<span class="math inline">\(p(X =
+x)\)</span>，这称为概率质量函数（probability mass
+function）。概率质量函数通常被称为“分布”。</p>
+<p>对于连续变量，<span class="math inline">\(p(x)\)</span>
+称为概率密度函数（probability density
+function，通常称为密度），而累积分布函数 <span class="math inline">\(P(x
+\le X)\)</span> 通常也被称为“分布”。在本章中，我们将使用符号 <span
+class="math inline">\(X\)</span> 来表示一元和多元随机变量，并分别用
+<span class="math inline">\(x\)</span> 和 <span
+class="math inline">\(\boldsymbol{x}\)</span> 表示状态。</p>
+<p>我们用“概率分布”表达离散的概率质量函数以及连续的概率密度函数，尽管这在技术上是不正确的。与大多数机器学习文献一样，我们也依赖上下文来区分“概率分布”这个短语的不同用法。</p>
+<h3
+id="加法法则乘法法则和贝叶斯定理">加法法则、乘法法则和贝叶斯定理</h3>
+<p>1、<strong>求和法则</strong> <span class="math display">\[
+p(x) =
+\begin{cases}
+\sum_{y \in \mathcal{Y}} p(x,y), &amp; \text{如果 $y$ 是离散的}, \\[1em]
+\int_{\mathcal{Y}} p(x,y)\,dy, &amp; \text{如果 $y$ 是连续的}.
+\end{cases}
+\]</span></p>
+<p>求和法则将<strong>联合分布与边缘分布</strong>联系了起来。</p>
+<p><strong>备注：</strong>
+概率建模的许多计算困难都是由于应用了求和法则。当有许多变量或具有许多状态的离散变量时，求和法则执行的是高维求和或积分。执行高维求和或积分通常是难以计算，因为没有已知的多项式时间(polynomial-time)算法来精确计算它们。</p>
+<p>2、<strong>乘法法则</strong></p>
+<p>乘法法则(<em>product
+rule</em>)，它将<strong>联合分布与条件分布</strong>联系起来： <span
+class="math display">\[
+\begin{equation}
+p(\boldsymbol{x}, \boldsymbol{y}) = p(\boldsymbol{y} \mid
+\boldsymbol{x}) \, p(\boldsymbol{x}) \qquad (6.22)
+\end{equation}
+\]</span>
+乘积法则可以解释为：两个随机变量的联合分布能被因子分解（乘积形式）为其他两个分布。这两个因子分别是：</p>
+<ul>
+<li>第一个随机变量的边缘分布<span
+class="math inline">\(p(\boldsymbol{x})\)</span></li>
+<li>给定第一个随机变量时，第二个随机变量的条件分布<span
+class="math inline">\(p(\boldsymbol{y} \mid
+\boldsymbol{x})\)</span></li>
+</ul>
+<p>联合分布中随机变量的顺序是任意的，这意味着： <span
+class="math display">\[
+p(\boldsymbol{x}, \boldsymbol{y}) = p(\boldsymbol{x} \mid
+\boldsymbol{y}) \, p(\boldsymbol{y})
+\]</span>
+<strong>准确地说，式（6.22）表示的是离散随机变量的概率质量函数。对于连续随机变量，乘积规则用概率密度函数（第
+6.2.3 节）表示。</strong></p>
+<p>3、<strong>贝叶斯定理</strong></p>
+<p>在机器学习和贝叶斯统计中，如果我们观察到部分随机变量，我们通常会对未观察到的（潜在的）随机变量的推断感兴趣。假设我们有一些关于未观测随机变量
+<span class="math inline">\(\boldsymbol{x}\)</span> 的先验（prior）知识
+<span
+class="math inline">\(p(\boldsymbol{x})\)</span>，并且我们可以观察到
+<span class="math inline">\(\boldsymbol{x}\)</span> 和第二个随机变量
+<span class="math inline">\(\boldsymbol{y}\)</span> 之间的关系 <span
+class="math inline">\(p(\boldsymbol{y} \mid
+\boldsymbol{x})\)</span>。那么，如果我们观察到 <span
+class="math inline">\(\boldsymbol{y}\)</span>，就可以利用贝叶斯定理，在给定
+<span class="math inline">\(\boldsymbol{y}\)</span> 的观测值前提下，得出
+<span class="math inline">\(\boldsymbol{x}\)</span> 的一些结论。</p>
+<p><strong>贝叶斯定理（也叫贝叶斯法则或贝叶斯定律）：</strong> <span
+class="math display">\[
+\begin{equation}
+\underbrace{p(\boldsymbol{x} \mid \boldsymbol{y})}_{\text{后验}}
+= \frac{\overbrace{p(\boldsymbol{y} \mid \boldsymbol{x})}^{\text{似然}}
+\;
+\overbrace{p(\boldsymbol{x})}^{\text{先验}}}{\underbrace{p(\boldsymbol{y})}_{\text{证据}}}
+\qquad (6.23)
+\end{equation}
+\]</span> 似然（likelihood，有时也被称为“测量模型”）<span
+class="math inline">\(p(\boldsymbol{y} \mid
+\boldsymbol{x})\)</span>描述了<span
+class="math inline">\(\boldsymbol{x}\)</span>和<span
+class="math inline">\(\boldsymbol{y}\)</span>是如何相关的。对于离散概率分布，它是在已知潜在变量<span
+class="math inline">\(\boldsymbol{x}\)</span>前提下，数据<span
+class="math inline">\(\boldsymbol{y}\)</span>的概率。注意，似然<span
+class="math inline">\(p(\boldsymbol{y} \mid
+\boldsymbol{x})\)</span>不是<span
+class="math inline">\(\boldsymbol{x}\)</span>的分布，而是<span
+class="math inline">\(\boldsymbol{y}\)</span>的分布(<strong>个人注：但是关于<span
+class="math inline">\(x\)</span>的函数，见下面的场景</strong>)。并且我们称<span
+class="math inline">\(p(\boldsymbol{y} \mid
+\boldsymbol{x})\)</span>为“<span
+class="math inline">\(\boldsymbol{x}\)</span>的似然（给定<span
+class="math inline">\(\boldsymbol{y}\)</span>）”或“给定<span
+class="math inline">\(\boldsymbol{x}\)</span>，<span
+class="math inline">\(\boldsymbol{y}\)</span>的概率”，但不是<span
+class="math inline">\(\boldsymbol{y}\)</span>的似然（MacKay,
+2003）。</p>
+<blockquote>
+<p>1、<strong>场景：连续测量——身高推断</strong></p>
+<p>假设我们想根据某人的身高 <span class="math inline">\(Y\)</span>
+推断其年龄 <span class="math inline">\(X\)</span>（以年为单位）。</p>
+<ul>
+<li><p><strong>先验分布 <span
+class="math inline">\(p(x)\)</span></strong>： 假设我们认为年龄 <span
+class="math inline">\(X\)</span> 在 0–100 岁之间大致服从均匀分布： <span
+class="math display">\[
+p(x) = \frac{1}{100}, \quad 0 \le x \le 100
+\]</span></p></li>
+<li><p><strong>似然函数 <span class="math inline">\(p(y \mid
+x)\)</span></strong>： 假设对于给定年龄 <span
+class="math inline">\(X=x\)</span>，身高 <span
+class="math inline">\(Y\)</span> 服从正态分布： <span
+class="math display">\[
+Y \mid X=x \sim \mathcal{N}(\mu=x\cdot0.5 + 50, \sigma^2=10^2)
+\]</span> 即 <span class="math inline">\(\mu = 0.5x + 50\)</span>
+厘米，<span class="math inline">\(\sigma = 10\)</span> 厘米。</p></li>
+<li><p><strong>观测值</strong>： 假设测得身高 <span
+class="math inline">\(Y = 80\)</span> 厘米，我们想推断年龄 <span
+class="math inline">\(X\)</span>。</p></li>
+</ul>
+<p>2、<strong>连续贝叶斯公式</strong></p>
+<p>连续情况下的贝叶斯定理为： <span class="math display">\[
+p(x \mid y) = \frac{p(y \mid x)\, p(x)}{p(y)}, \quad \text{其中 } p(y) =
+\int_0^{100} p(y \mid x)\, p(x)\, dx
+\]</span></p>
+<ul>
+<li><strong>分子</strong>：似然 × 先验</li>
+<li><strong>分母</strong>：归一化因子（确保后验密度积分为1）</li>
+</ul>
+<p>所以： <span class="math display">\[
+p(x \mid Y=80) = \frac{\frac{1}{\sqrt{2\pi}10}
+\exp\Big[-\frac{(80-(0.5x+50))^2}{2\cdot10^2}\Big] \cdot
+\frac{1}{100}}{\int_0^{100} \frac{1}{\sqrt{2\pi}10}
+\exp\Big[-\frac{(80-(0.5x+50))^2}{2\cdot10^2}\Big] \cdot \frac{1}{100}
+dx}
+\]</span></p>
+<blockquote>
+<p>$p(y x) = $</p>
+<p>表示根据<span class="math inline">\(y\)</span>的分布函数，在<span
+class="math inline">\(y=80\)</span>对应的关于<span
+class="math inline">\(x\)</span>的函数。也就是，针对不同的<span
+class="math inline">\(x\)</span>, <span
+class="math inline">\(y=80\)</span> 的概率。</p>
+</blockquote>
+<p>3、直观理解</p>
+<ul>
+<li><strong>先验 <span
+class="math inline">\(p(x)\)</span></strong>：在观测身高之前我们对年龄的猜测。</li>
+<li><strong>似然 <span class="math inline">\(p(y\mid
+x)\)</span></strong>：身高为 80
+厘米时，不同年龄产生这个观测的可能性。</li>
+<li><strong>后验 <span class="math inline">\(p(x\mid
+y)\)</span></strong>：结合观测数据后的年龄分布。</li>
+</ul>
+</blockquote>
+<p><span class="math display">\[
+p(y) := \int p(y \mid x) p(x) \, dx = \mathbb{E}_{X}[p(y \mid x)]
+\tag{6.27}
+\]</span> 是边缘似然 / 证据（marginal likelihood / evidence）。</p>
+<p>(6.27) 的右边使用我们在第 6.4.1 节中定义的期望操作符。
+根据定义，边缘似然是 (6.23) 贝叶斯公式的分子对潜在变量 $ $
+的积分。因此，边缘似然与 $ $ 无关，它保证了后验 $ p( ) $ 被标准化。
+边缘似然也可以解释为期望似然，关于先验 $ p() $ 的期望。
+除了用于后验标准化之外，边缘似然在贝叶斯模型选择中也起着重要作用，我们将在第
+8.6 节中讨论。 由于 (8.44) 中的积分，证据（evidence）通常很难计算。</p>
+<p><strong>贝叶斯定理 (6.23) 允许我们反转由似然给出的 $ $ 和 $ $
+之间的关系。 因此，贝叶斯定理有时也被称为概率逆（probabilistic
+inverse）。</strong></p>
+<p><strong>备注：</strong>
+在贝叶斯统计中，后验分布是我们感兴趣的量，因为它包含了所有来自先验和数据的可用信息。<strong>我们把重点放在后验的一些统计量上，例如后验的最大值</strong>，这将在8.3节中讨论。<strong>然而，只关注后验的统计量会导致信息的丢失</strong>。如果我们在更大的背景下思考，那么后验还可以在决策系统中使用。<strong>拥有完整的后验非常有用</strong>，它可以得到对干扰具有鲁棒性的决策。例如，在基于模型的强化学习中，Deisenroth等人(2015)表明，使用似然转移函数的完全后验分布可以非常快速(数据/样本高效)学习，而关注最大的后验则会导致一致性失败。因此，拥有完整的后验对于下游任务非常有用。在第9章中，我们将在线性回归的背景下继续这个讨论。</p>
+<h3 id="期望值">期望值</h3>
+<p>期望值的概念是机器学习的中心，概率本身的一些基本概念可以从期望值派生
+(Whittle, 2000)。</p>
+<p><strong>定义 6.3 期望值</strong></p>
+<p>关于单变量连续随机变量 <span class="math inline">\(X \sim
+p(X)\)</span> 的函数<br />
+<span class="math inline">\(g : \mathbb{R} \to \mathbb{R}\)</span>
+的期望值（expected value）为： <span class="math display">\[
+\mathbb{E}_{X}[g(x)] = \int_{\mathcal{X}} g(x) \, p(x) \, \mathrm{d}x
+\]</span> 相应地，关于离散随机变量 <span class="math inline">\(X \sim
+p(X)\)</span> 的函数 <span class="math inline">\(g\)</span> 的期望值为：
+<span class="math display">\[
+\mathbb{E}_{X}[g(x)] = \sum_{x \in \mathcal{X}} g(x) \, p(x)
+\]</span> 其中 <span class="math inline">\(\mathcal{X}\)</span>
+是随机变量 <span class="math inline">\(X\)</span>
+的可能结果的集合（目标空间）。</p>
+<p>在本节中，我们考虑离散随机变量的数值结果。通过<strong>观察函数 <span
+class="math inline">\(g\)</span></strong>
+以实数作为输入可以看出这一点。</p>
+<p><strong>定义 6.4 均值:</strong></p>
+<p>状态 <span class="math inline">\(\boldsymbol{x} \in
+\mathbb{R}^D\)</span> 的随机变量 <span class="math inline">\(X\)</span>
+的均值（mean）为平均值（average），定义为<br />
+<span class="math display">\[
+\mathbb{E}_{X}[\boldsymbol{x}]
+=
+\begin{bmatrix}
+\mathbb{E}_{X_1}[x_1] \\
+\vdots \\
+\mathbb{E}_{X_D}[x_D]
+\end{bmatrix}
+\in \mathbb{R}^{D}
+\]</span></p>
+<p>对于 <span class="math inline">\(d = 1, \ldots, D\)</span>：<br />
+<span class="math display">\[
+\mathbb{E}_{X_d}[x_d] :=
+\begin{cases}
+\int_{\mathcal{X}} x_d \, p(x_d) \, dx_d, &amp; \text{如果 $X$
+为连续型随机变量}, \\[1em]
+\sum\limits_{x_i \in \mathcal{X}} x_i \, p(x_d = x_i), &amp; \text{如果
+$X$ 为离散型随机变量}.
+\end{cases}
+\qquad (6.32)
+\]</span></p>
+<p>其中下标 <span class="math inline">\(d\)</span> 表示 <span
+class="math inline">\(\boldsymbol{x}\)</span>
+对应的维度。上式是对随机变量 <span class="math inline">\(X\)</span>
+的目标空间状态 <span class="math inline">\(\mathcal{X}\)</span>
+的积分以及求和。</p>
+<p>在一个维度中，还有另外两个直观的“平均”概念，即 中位数 (median) 和
+众数 (mode)。<br />
+如果我们对这些值进行排序，中位数就是“最中间”的值，即 <span
+class="math inline">\(50\%\)</span> 的值大于中位数，<span
+class="math inline">\(50\%\)</span>
+的值小于中位数。这一思想可以推广到连续值，考虑累计分布函数（定义 6.2）为
+<span class="math inline">\(0.5\)</span> 的值。
+对于不对称或有长尾的分布，中位数提供了一个典型值的估计，该值比平均值更接近人类的直觉。
+此外，中位数对异常值的鲁棒性比平均值强。中位数向更高维度的推广是非平凡的，因为目前没有方法可以在不止一个维度中“排序”
+(Hallin et al., 2010; Kong and Mizera, 2012)。<br />
+众数 (mode)是最常出现的值。对于离散随机变量，众数定义为出现频率最高的
+<span class="math inline">\(x\)</span> 的值。
+对于连续随机变量，众数定义为密度 <span
+class="math inline">\(p(\boldsymbol{x})\)</span> 上的一个峰值。
+一个特定的密度 <span class="math inline">\(p(\boldsymbol{x})\)</span>
+可能有不止一个众数，而且在高维分布中可能有大量的众数。
+因此，找到一个分布的所有众数在计算上是具有挑战性的。</p>
+<p>定义 6.3 定义了符号 <span class="math inline">\(\mathbb{E}_X\)</span>
+的意义，作为一个算子，它表示我们应该取关于概率密度的积分（对于连续分布）或关于所有状态的和（对于离散分布）。<strong>均值的定义（定义
+6.4），是期望值的一种特殊情况，通过取 <span
+class="math inline">\(g\)</span> 为恒等函数得到。</strong></p>
+<p>在一个维度中，还有另外两个直观的“平均”概念，即中位数（median）和众数（mode）。如果我们对这些值进行排序，中位数就是“最中间”的值，即
+<span class="math inline">\(50\%\)</span> 的值大于中位数，<span
+class="math inline">\(50\%\)</span>
+的值小于中位数。这一思想可以推广到连续值，考虑累计分布函数（定义 6.2）为
+<span class="math inline">\(0.5\)</span>
+的值。对于不对称或有长尾的分布，中位数提供了一个典型值的估计值，该值比平均值更接近人类的直觉。此外，中位数对异常值的鲁棒性比平均值强。中位数向更高维度的推广是非平凡的，因为目前没有方法可以在不止一个维度中“排序”Hallin2010,Kong2012。</p>
+<p>众数（mode）是最常出现的值。对于离散随机变量，众数定义为出现频率最高的
+<span class="math inline">\(x\)</span>
+的值。对于连续随机变量，众数定义为密度 <span
+class="math inline">\(p(x)\)</span> 上的一个峰值。一个特定的密度 <span
+class="math inline">\(p(x)\)</span>
+可能有不止一个众数，而且在高维分布中可能有大量的众数。因此，找到一个分布的所有众数在计算上是具有挑战性的。</p>
+<blockquote>
+<p>众数是类似概率分布函数的局部最值吗？</p>
+</blockquote>
+<h3 id="协方差">协方差</h3>
+<p>对于两个随机变量，我们可以描述它们之间的对应关系。协方差直观地表示随机变量之间的相关性。</p>
+<blockquote>
+<p>方差的概念是从协方差引出的，而不是相反！</p>
+</blockquote>
+<p><strong>协方差(一元)</strong></p>
+<p>两个单变量随机变量 <span class="math inline">\(X, Y \in
+\mathbb{R}\)</span>
+之间的协方差（covariance）由其偏离各自均值的期望积给出，即<br />
+<span class="math display">\[
+\operatorname{Cov}_{X, Y}[x, y] := \mathbb{E}_{X, Y}\left[ \left(x -
+\mathbb{E}_{X}[x]\right)\left(y - \mathbb{E}_{Y}[y]\right) \right]
+\]</span> <strong>术语：多元随机变量的协方差 <span
+class="math inline">\(\operatorname{Cov}[x, y]\)</span>
+有时被称为交叉协方差（cross-covariance），其中协方差指的是 <span
+class="math inline">\(\operatorname{Cov}[x, x]\)</span>。</strong></p>
+<p><strong>备注：</strong><br />
+当与期望或协方差相关的随机变量的参数明确时，下标通常被去掉（例如，<span
+class="math inline">\(\mathbb{E}_X[x]\)</span> 经常被写成 <span
+class="math inline">\(\mathbb{E}[x]\)</span>）。</p>
+<p>利用期望的线性性，定义 6.5
+中的表达式可以改写为乘积的期望值减去期望值的乘积，即<br />
+<span class="math display">\[
+\operatorname{Cov}[x, y] = \mathbb{E}[xy] - \mathbb{E}[x]\,\mathbb{E}[y]
+\]</span> <strong>一个变量与自身的协方差 <span
+class="math inline">\(\operatorname{Cov}[x, x]\)</span>
+称为方差（variance），用 <span
+class="math inline">\(\mathbb{V}_X[x]\)</span>
+表示。方差的平方根称为标准差（standard deviation），通常用 <span
+class="math inline">\(\sigma(x)\)</span>
+表示。协方差的概念可以推广到多元随机变量。</strong></p>
+<p><strong>定义 6.6 协方差（多元）</strong></p>
+<p>如果我们考虑两个多元随机变量 <span
+class="math inline">\(\mathbf{X}\)</span> 和 <span
+class="math inline">\(\mathbf{Y}\)</span>，分别对应状态 <span
+class="math inline">\(\mathbf{x} \in \mathbb{R}^D\)</span> 和 <span
+class="math inline">\(\mathbf{y} \in \mathbb{R}^E\)</span>，则 <span
+class="math inline">\(\mathbf{X}\)</span> 和 <span
+class="math inline">\(\mathbf{Y}\)</span> 之间的协方差定义为： <span
+class="math display">\[
+{Cov}[\mathbf{x}, \mathbf{y}]
+= \mathbb{E}\!\left[\mathbf{x} \mathbf{y}^{\top}\right] -
+\mathbb{E}[\mathbf{x}]\,\mathbb{E}[\mathbf{y}]^{\top}
+= \operatorname{Cov}[\mathbf{y}, \mathbf{x}]^{\top}
+\in \mathbb{R}^{D \times E}.
+\]</span> <strong>定义 6.6
+可以应用于两个相同的多元随机变量，从而产生一个有用的概念，直观地捕捉随机变量的“扩散程度”。对于一个多元随机变量，方差描述了该随机变量的单个维度之间的关系。</strong></p>
+<p><strong>方差与协方差矩阵</strong> 状态为 <span
+class="math inline">\(\boldsymbol{x} \in \mathbb{R}^{D}\)</span>
+且均值向量为 <span class="math inline">\(\boldsymbol{\mu} \in
+\mathbb{R}^{D}\)</span> 的随机变量 <span
+class="math inline">\(X\)</span> 的方差 (variance) 定义为<br />
+<span class="math display">\[
+\begin{align}
+V_X[\boldsymbol{x}]
+&amp;= \mathrm{Cov}_X[\boldsymbol{x}, \boldsymbol{x}] \\
+&amp;= \mathbb{E}_X \big[ (\boldsymbol{x} -
+\boldsymbol{\mu})(\boldsymbol{x} - \boldsymbol{\mu})^\top \big] \\
+&amp;= \mathbb{E}_X[\boldsymbol{x} \boldsymbol{x}^\top] -
+\mathbb{E}_X[\boldsymbol{x}] \ \mathbb{E}_X[\boldsymbol{x}]^\top \\
+&amp;=
+\begin{bmatrix}
+\mathrm{Cov}[x_1, x_1] &amp; \mathrm{Cov}[x_1, x_2] &amp; \cdots &amp;
+\mathrm{Cov}[x_1, x_D] \\
+\mathrm{Cov}[x_2, x_1] &amp; \mathrm{Cov}[x_2, x_2] &amp; \cdots &amp;
+\mathrm{Cov}[x_2, x_D] \\
+\vdots &amp; \vdots &amp; \ddots &amp; \vdots \\
+\mathrm{Cov}[x_D, x_1] &amp; \mathrm{Cov}[x_D, x_2] &amp; \cdots &amp;
+\mathrm{Cov}[x_D, x_D]
+\end{bmatrix}.
+\end{align}
+\]</span> <strong>上式中的 <span class="math inline">\(D \times
+D\)</span> 矩阵称为多元随机变量 <span class="math inline">\(X\)</span>
+的 协方差矩阵 (covariance matrix)。
+协方差矩阵是对称的，且半正定，它描述了数据的扩散程度。</strong>协方差矩阵的对角线元素包含了边缘分布
+<span class="math display">\[
+\begin{equation}
+p(x_i) = \int p(x_1, \ldots, x_D) \ \mathrm{d}x_{\backslash i}
+\end{equation}
+\]</span> 的方差，其中符号 <span class="math inline">\(\backslash
+i\)</span>表示“除了 <span class="math inline">\(i\)</span>
+之外的所有变量”。 非对角线元素为交叉协方差项 <span
+class="math inline">\(\mathrm{Cov}[x_i, x_j]\)</span>，其中 <span
+class="math inline">\(i, j = 1, \ldots, D, \ i \neq j\)</span>。</p>
+<h3 id="相关"><strong>相关</strong></h3>
+<p>当我们想比较不同随机变量对之间的协方差时，每个随机变量的方差都会影响协方差的值。协方差的标准化版本称为<strong>相关</strong>（correlation）</p>
+<p>两个随机变量 <span class="math inline">\(X, Y\)</span>
+的相关（correlation）为： <span class="math display">\[
+\operatorname{corr}[x, y] = \frac{\operatorname{Cov}[x,
+y]}{\sqrt{\mathbb{V}[x] \, \mathbb{V}[y]}} \in [-1, 1]
+\]</span> 相关矩阵是被标准化的随机变量<span
+class="math inline">\(x/{\sigma(x)}\)</span>协方差矩阵。换句话说，每个随机变量在相关矩阵中都除以其标准差（方差的平方根）。</p>
+<p><strong>经验均值和协方差</strong></p>
+<blockquote>
+<p><strong>为什么 $ N-1 $ 是“无偏(unbiased)”？</strong></p>
+<ul>
+<li>当我们从总体中抽样时，用样本均值 <span
+class="math inline">\(\bar{x}\)</span> 和 <span
+class="math inline">\(\bar{y}\)</span>
+代替真实均值，会引入<strong>低估总体方差和协方差</strong>的偏差。</li>
+<li>分母用 <span class="math inline">\(N-1\)</span> 而不是 <span
+class="math inline">\(N\)</span>
+可以修正这个偏差，使得估计值的期望等于真实值。</li>
+</ul>
+</blockquote>
+<h3 id="方差的三个表达式">方差的三个表达式</h3>
+<p>1、方差的标准定义</p>
+<p>与协方差的定义（定义6.5）相对应，是随机变量 <span
+class="math inline">\(X\)</span> 与其期望值 <span
+class="math inline">\(\mu\)</span> 的平方偏差的期望，即<br />
+<span class="math display">\[
+\begin{equation}
+\mathbb{V}_{X}[x] := \mathbb{E}_{X} \left[ (x - \mu)^{2} \right]
+\tag{6.43}
+\end{equation}
+\]</span> 式（6.43）中的期望和平均值<span class="math inline">\(\mu =
+\mathbb{E}_{X}(x)\)</span>使用（6.32）计算，取决于 <span
+class="math inline">\(X\)</span>
+是离散的还是连续的随机变量。式（6.43）中表示的方差可以说是一个新的随机变量<span
+class="math inline">\(Z := (X - \mu)^{2}\)</span>的均值。
+当根据经验估计（6.43）中的方差时，我们需要使用一个两阶段的算法：首先利用数据使用（6.41）计算平均值
+<span class="math inline">\(\mu\)</span>，然后使用这个估计值 <span
+class="math inline">\(\hat{\mu}\)</span> 计算方差。</p>
+<p>2、事实证明，我们可以通过整理表达式来避免两个阶段。方差的标准定义：
+<span class="math display">\[
+\begin{equation}
+\mathbb{V}_{X}[x] := \mathbb{E}_{X}\left[(x-\mu)^2\right]
+\end{equation}
+\]</span> （6.43）可以转换为所谓的“方差的原始分数公式”（raw-score
+formula for variance）： <span class="math display">\[
+\begin{equation}
+\mathbb{V}_{X}[x] = \mathbb{E}_{X}\left[x^2\right] -
+\left(\mathbb{E}_{X}[x]\right)^2 \qquad (6.44)
+\end{equation}
+\]</span>
+(6.44)中的表达式可以这样记住：“平方的均值减去均值的平方”。这种方法只需对数据进行一次遍历计算，因为我们可以同时计算每个观测值
+<span class="math inline">\(x_i\)</span> 的平均值 <span
+class="math inline">\(\bar{x} = \frac{1}{n}\sum_i x_i\)</span>
+和平方平均值 <span class="math inline">\(\frac{1}{n}\sum_i
+x_i^2\)</span>。</p>
+<p>不幸的是，如果以这种方式计算，它在数值上可能不稳定，尤其是当 <span
+class="math inline">\(x_i\)</span>
+的数值很大时，减法可能导致有效数字损失。</p>
+<p>3、理解方差的第三种方式是，它可以表示为所有观测值对的差的总和。<br />
+考虑随机变量 <span class="math inline">\(X\)</span> 的一个样本 <span
+class="math inline">\(x_1, \ldots, x_N\)</span>，我们计算 <span
+class="math inline">\(x_i\)</span> 和 <span
+class="math inline">\(x_j\)</span>
+对之间的平方差。通过展开平方差，可以证明 <span
+class="math inline">\(N^2\)</span>
+个观测值对的差的总和正好与观测值的经验方差相关： <span
+class="math display">\[
+\begin{equation}
+\frac{1}{N^2} \sum_{i,j=1}^{N} (x_i - x_j)^2 = 2 \left[ \frac{1}{N}
+\sum_{i=1}^{N} x_i^2 - \left( \frac{1}{N} \sum_{i=1}^{N} x_i \right)^2
+\right] \qquad (6.45)
+\end{equation}
+\]</span> 由此可见，(6.45) 是原始分数公式 (6.44)
+的两倍。这意味着，我们可以用观测值两两之间的距离总和（<span
+class="math inline">\(N^2\)</span> 个）来表示偏离均值的偏离值总和（<span
+class="math inline">\(N\)</span> 个）。
+<strong>从几何上来看，这意味着在一个点集中，点两两之间的距离总和与每个点到点集中心的距离总和是等价的。</strong></p>
+<h3 id="随机变量的和与变换">随机变量的和与变换</h3>
+<p>均值和协方差在随机变量的仿射变换中表现出一些有用的特性。<br />
+假设随机变量 <span class="math inline">\(\boldsymbol{X}\)</span>
+的均值向量为 <span
+class="math inline">\(\boldsymbol{\mu}\)</span>，协方差矩阵为 <span
+class="math inline">\(\boldsymbol{\Sigma}\)</span>，且 <span
+class="math inline">\(\boldsymbol{X}\)</span> 的（确定性）仿射变换为：
+<span class="math display">\[
+\boldsymbol{y} = \boldsymbol{A} \boldsymbol{x} + \boldsymbol{b}
+\]</span> 由于 <span class="math inline">\(\boldsymbol{y}\)</span>
+本身是一个随机变量，其均值向量和协方差矩阵分别为： <span
+class="math display">\[
+\begin{equation}
+\mathbb{E}_Y[\boldsymbol{y}] = \mathbb{E}_X[\boldsymbol{A}\boldsymbol{x}
++ \boldsymbol{b}]
+= \boldsymbol{A}\,\mathbb{E}_X[\boldsymbol{x}] + \boldsymbol{b}
+= \boldsymbol{A}\boldsymbol{\mu} + \boldsymbol{b} \qquad (6.50)
+\end{equation}
+\]</span></p>
+<p><span class="math display">\[
+\begin{equation}
+\mathbb{V}_Y[\boldsymbol{y}] = \mathbb{V}_X[\boldsymbol{A}\boldsymbol{x}
++ \boldsymbol{b}]
+= \mathbb{V}_X[\boldsymbol{A}\boldsymbol{x}]
+= \boldsymbol{A}\,\mathbb{V}_X[\boldsymbol{x}]\,\boldsymbol{A}^\top
+= \boldsymbol{A}\boldsymbol{\Sigma}\boldsymbol{A}^\top \qquad (6.51)
+\end{equation}
+\]</span> 此外，<span class="math inline">\(\boldsymbol{X}\)</span> 与
+<span class="math inline">\(\boldsymbol{Y}\)</span> 的协方差为： <span
+class="math display">\[
+\begin{align}
+\mathrm{Cov}[\boldsymbol{x}, \boldsymbol{y}]
+&amp;= \mathbb{E}\big[\boldsymbol{x} (\boldsymbol{A}\boldsymbol{x} +
+\boldsymbol{b})^\top\big]
+   - \mathbb{E}[\boldsymbol{x}]\,\mathbb{E}[\boldsymbol{A}\boldsymbol{x}
++ \boldsymbol{b}]^\top \\
+&amp;= \mathbb{E}[\boldsymbol{x}]\boldsymbol{b}^\top +
+\mathbb{E}[\boldsymbol{x}\boldsymbol{x}^\top]\boldsymbol{A}^\top
+   - \boldsymbol{\mu}\boldsymbol{b}^\top -
+\boldsymbol{\mu}\boldsymbol{\mu}^\top \boldsymbol{A}^\top \\
+&amp;= (\mathbb{E}[\boldsymbol{x}\boldsymbol{x}^\top] -
+\boldsymbol{\mu}\boldsymbol{\mu}^\top)\,\boldsymbol{A}^\top
+= \boldsymbol{\Sigma}\,\boldsymbol{A}^\top
+\end{align}
+\]</span> 其中，<span class="math inline">\(\boldsymbol{\Sigma} =
+\mathbb{E}[\boldsymbol{x}\boldsymbol{x}^\top] -
+\boldsymbol{\mu}\boldsymbol{\mu}^\top\)</span> 为 <span
+class="math inline">\(\boldsymbol{X}\)</span> 的方差矩阵。</p>
+<h3 id="统计独立性">(统计)独立性</h3>
+<p>独立推出不相关（协方差为0）</p>
+<p>但这一点是充分不必然的，即，两个随机变量的协方差为零，但在统计上可能不独立。为了理解为什么，回想一下<strong>协方差是只能测量线性相关</strong>。而非线性相关的随机变量可能协方差也为零。</p>
+<p>详见《协方差只反映线性相关.md》</p>
+<h3 id="随机变量的内积">随机变量的内积</h3>
+<p><strong>把协方差作为内积的一个例子，协方差符合内积的定义。例如点积符合内积的定义一样。</strong>两个随机变量的“正交”就意味着它们协方差为零。具体的内积的定义见前文。在用协方差定义内积空间后，可以得出：
+<span class="math display">\[
+\|X\| = \sqrt{\mathbb{V}[X]} = \sigma[X]
+\]</span>
+<strong>这就是标准差。在普通向量空间里，向量长短衡量了它在空间中“延伸”的程度。在<em><u>随机变量空间里</u></em>，“长度”衡量的是它在概率空间中“波动”的程度。如果
+<span class="math inline">\(\sigma[X] = 0\)</span>，那么 <span
+class="math inline">\(\mathbb{V}[X] = 0\)</span>，意味着 <span
+class="math inline">\(X\)</span>
+<em><u>在概率意义上</u></em>是常数，不会随机变化。</strong></p>
+<p>如果我们考虑两个随机变量 <span
+class="math inline">\(X\)</span>、<span class="math inline">\(Y\)</span>
+之间的夹角 <span class="math inline">\(\theta\)</span>，我们得到： <span
+class="math display">\[
+\begin{equation}
+\cos\theta = \frac{\langle X, Y \rangle}{\|X\|\,\|Y\|}
+= \frac{\operatorname{Cov}[x, y]}{\sqrt{\mathbb{V}[x]\,\mathbb{V}[y]}}
+\end{equation}
+\]</span> 这是两个随机变量之间的相关性（定义
+6.8）。这意味着，当我们从几何角度考虑两个随机变量时，可以把它们的相关性看作是两个随机变量之间夹角的余弦。</p>
+<p>根据定义 3.7，我们知道：<span class="math inline">\(X \perp Y \quad
+\Longleftrightarrow \quad \langle X, Y\rangle = 0\)</span>
+在我们的例子中，这意味着 <span class="math inline">\(X\)</span> 和 <span
+class="math inline">\(Y\)</span> 是正交的当且仅当：<span
+class="math inline">\(\operatorname{Cov}[X, Y] =
+0\)</span>即它们是不相关的。图 6.6 说明了这种关系。</p>
+<p><img src="/img3/机器学习的数学基础Part1/随机变量的几何.png" alt="随机变量的几何" style="zoom:50%;" /></p>
+<p>随机变量的几何。如果随机变量<span
+class="math inline">\(X\)</span>和<span
+class="math inline">\(Y\)</span>不相关，则它们是对应向量空间中的正交向量，且勾股定理也适用。</p>
+<h3 id="概率分布的距离定义">概率分布的距离定义</h3>
+<p>使用之前内积定义的欧几里得距离来比较概率分布似乎是个不错的选择，但不幸的是，这不是获得分布之间距离的最佳方法。回想一下，概率质量(或密度)是正的，需要加起来等于1。这些限制意味着分布存在于一种叫做统计流形(statistical
+manifold)的东西上。对概率分布空间的研究被称为信息几何( information
+geometry)。计算分布之间的距离通常使用Kullback-Leibler散度(KL散度)来完成，它是距离的推广，它解释了统计流形的性质。正如欧氏距离是矩阵的一种特殊情况一样(第3.3节)，KL散度是另外两种广义散度的一种特殊情况，它们被称为Bregman散度和f
+ff-散度。关于它们区别的研究超出了这本书的范围，读者可以参考信息几何领域的创始人之一Amari(2016)的新书了解更多细节。</p>
+<p>具体的例子见《概率分布的距离定义.md》</p>
+<h3 id="高斯分布">高斯分布</h3>
+<p>由于高斯分布完全由其均值和协方差来表示，我们通常可以通过对随机变量的均值和协方差进行变换来得到变换后的分布。<strong>高斯分布的边缘分布和条件分布是高斯分布</strong>。高斯随机变量的任何线性/仿射变换后依然服从高斯分布。</p>
+<h3 id="共轭与指数族">共轭与指数族</h3>
+<p>在应用概率运算法则时，存在一些“封闭性”，如贝叶斯定理。<strong>封闭是指对一类对象应用特定操作后返回相同类型的对象。</strong></p>
+<h4 id="beta分布"><strong>Beta分布</strong></h4>
+<p>我们可能想在有限区间上建立一个连续随机变量的模型。Beta分布是一个连续随机变量
+<span class="math inline">\(\mu \in [0,1]\)</span>
+上的分布，通常用来表示一些二值事件的概率（例如，控制伯努利分布的参数）。Beta分布
+<span class="math inline">\(\mathrm{Beta}(\alpha,
+\beta)\)</span>（如图6.11所示）本身由两个参数控制 <span
+class="math inline">\(\alpha &gt; 0, \ \beta &gt; 0\)</span>，并被定义为
+<span class="math display">\[
+\begin{equation}
+p(\mu \mid \alpha, \beta) = \frac{\Gamma(\alpha+\beta)}{\Gamma(\alpha)
+\, \Gamma(\beta)} \, \mu^{\alpha-1} (1-\mu)^{\beta-1}
+\tag{6.98}
+\end{equation}
+\]</span></p>
+<p><span class="math display">\[
+\mathbb{E}[\mu] = \frac{\alpha}{\alpha+\beta},
+\quad
+\mathbb{V}[\mu] = \frac{\alpha \beta}{(\alpha+\beta)^2 (\alpha+\beta+1)}
+\]</span> 其中 <span class="math inline">\(\Gamma(\cdot)\)</span>
+为伽马（Gamma）函数，定义为： <span class="math display">\[
+\Gamma(t) := \int_{0}^{\infty} x^{t-1} e^{-x} \, dx, \quad t &gt; 0,
+\qquad
+\Gamma(t+1) = t \, \Gamma(t)
+\]</span> 注意，（6.98）中的Gamma函数的分数标准化了Beta分布。</p>
+<p>直观地看，<span class="math inline">\(\alpha\)</span> 将概率质量移向
+<span class="math inline">\(1\)</span>，而 <span
+class="math inline">\(\beta\)</span> 将概率质量移向 <span
+class="math inline">\(0\)</span>。一些特殊的情况：</p>
+<ul>
+<li>对于 <span class="math inline">\(\alpha = 1 =
+\beta\)</span>，我们得到均匀分布 <span
+class="math inline">\(\mathcal{U}[0,1]\)</span>。</li>
+<li>对于 <span class="math inline">\(\alpha, \beta &lt;
+1\)</span>，我们得到双峰分布，峰值在 <span
+class="math inline">\(0\)</span> 和 <span
+class="math inline">\(1\)</span> 处。</li>
+<li>对于 <span class="math inline">\(\alpha, \beta &gt;
+1\)</span>，分布是单峰的。</li>
+<li>对于 <span class="math inline">\(\alpha, \beta &gt; 1\)</span> 且
+<span class="math inline">\(\alpha =
+\beta\)</span>，分布是单峰对称的，且集中在区间 <span
+class="math inline">\([0,1]\)</span>，即均值在 <span
+class="math inline">\(1/2\)</span>。</li>
+</ul>
+<p><img src="/img3/机器学习的数学基础Part1/beta分布.png" alt="beta分布" style="zoom:50%;" /></p>
+<p>有一大堆有名字的分布，它们以不同的方式相互联系(Leemis和McQueston,
+2008)。值得记住的是，<strong>每个被命名的分布都是为了特定的原因而创建的，但是可能还有其他的应用。了解创建特定分布背后的原因可以知道如何最好地使用它</strong>。</p>
+<h4 id="共轭">共轭</h4>
+<p><strong>共轭先验</strong></p>
+<p>如果<strong>后验与先验具有相同的形式/类型</strong>，则<strong><em><u>先验</u></em></strong>是<u><strong><em>似然函数</em></strong></u>的共轭(conjugate)。共轭特别方便，因为我们可以通过更新先验分布的参数来用代数方法计算后验分布。</p>
+<p><strong>备注：</strong>
+<strong>在考虑概率分布的几何时，共轭先验保留了似然的距离结构(Agarwal and
+Daum´e III, 2010)</strong></p>
+<p>对于二项分布似然函数中的参数<span
+class="math inline">\(\mu\)</span>，Beta先验是共轭的。Beta分布是伯努利分布的共轭先验。</p>
+<p><img src="/img3/机器学习的数学基础Part1/常见似然函数的共轭先验.png" alt="常见似然函数的共轭先验" style="zoom:50%;" /></p>
+<p>表6.2列出了一些<strong>用于概率建模的标准似然的参数的共轭先验</strong>。分布如多项式分布、逆Gamma分布、逆Wishart分布和Dirichlet分布可以在任何统计文本中找到，例如在Bishop(2006)中就进行了描述。</p>
+<p>Beta分布是二项分布和伯努利分布似然中<strong>关于参数<span
+class="math inline">\(\mu\)</span>的共轭先验</strong>。对于高斯似然函数，我们可以在均值上设置一个共轭高斯先验。高斯似然在表中出现两次的原因是我们需要区分一元和多元情况。在一元（标量）情况下，逆Gamma是<strong>方差</strong>的共轭先验。在多元情形下，我们使用逆Wishart分布作为<strong>协方差矩阵</strong>的共轭先验。Dirichlet分布是多项式似然函数的共轭先验。</p>
+<h4 id="指数族">指数族</h4>
+<p><strong>分布三个抽象级别</strong>：</p>
+<p>在考虑分布（离散或连续的随机变量）时，我们可以有三个可能的抽象级别。</p>
+<p>在第一级（这是最具体的级别），我们有一个具有固定参数的特定“命名”分布，例如一个均值为零，方差为单位矩阵的一元高斯分布
+<span class="math inline">\(\mathcal{N}(0,1)\)</span>。</p>
+<p>而在机器学习中，我们经常使用第二层抽象，即我们采用参数形式固定的分布（如一元高斯分布），并从数据中推断出它的参数。例如，我们假设一个未知均值
+<span class="math inline">\(\mu\)</span> 和未知方差 <span
+class="math inline">\(\sigma^2\)</span> 的一元高斯分布 <span
+class="math inline">\(\mathcal{N}\left(\mu,
+\sigma^{2}\right)\)</span>，并使用最大似然拟合来确定最佳参数 <span
+class="math inline">\((\mu,
+\sigma^2)\)</span>。我们将在第9章讨论线性回归时看到一个例子。</p>
+<p>第三个抽象的层次是考虑分布的族，在本书中，我们考虑指数族。一元高斯分布是指数族中的一个例子。许多广泛使用的统计模型，包括表
+6.2 中所有的“命名”模型，都属于指数族。它们都可以统一成一个概念。</p>
+<p><strong>我们研究指数族的主要动机是它们具有有限维的充分统计信息。此外，共轭分布很容易写出来，而且也来自一个指数族。</strong>从推理的角度来看，指数族的极大似然估计表现得很好，因为它的充分统计量的经验估计是充分统计量总体的最佳估计（回忆一下高斯分布的均值和协方差）。<strong>从优化的角度来看，指数族的的对数似然函数是凹的，允许我们应用有效的优化方法</strong>(第7章)。</p>
+<h3 id="变量替换逆变换">变量替换/逆变换</h3>
+<p>似乎有很多已知的分布，但实际上，我们可以命名的分布是非常有限的。因此，理解随机变量在变换后是如何分布的通常很有用。例如，假设
+<span class="math inline">\(X\)</span> 是根据一元正态分布 <span
+class="math inline">\(\mathcal{N}(0,1)\)</span> 得到的一个随机变量。那么
+<span class="math inline">\(X^2\)</span> 的分布是什么？
+另一个在机器学习中很常见的例子是，假设 <span
+class="math inline">\(X_1\)</span> 和 <span
+class="math inline">\(X_2\)</span> 是一元标准正态分布，那么 <span
+class="math inline">\(\frac{1}{2} (X_1 + X_2)\)</span>的分布是什么？计算
+<span class="math inline">\(\frac{1}{2} (X_1 + X_2)\)</span>
+的分布的一个选择是计算 <span class="math inline">\(X_1\)</span> 和 <span
+class="math inline">\(X_2\)</span>
+的均值和方差，然后组合它们。正如我们在第 6.4.4
+节中看到的，当我们考虑随机变量的仿射变换时，我们可以计算变换后得到的随机变量的均值和方差。
+然而，我们也可能无法得到变换后分布的函数形式。此外，我们还可能关心随机变量的非线性变换，这时变换后的封闭形式的表达式是不容易得到的。</p>
+<p>我们将介绍两种通过随机变量变换获取分布的方法：<strong>一种是使用累积分布函数定义的直接方法，另一种是使用微积分的链式法则(第5.2.2节)的变量替换(change-of-variable)方法</strong>。<strong>变量替换方法被广泛使用，因为它提供了一个用于计算由于转换而产生的分布的“秘诀”。</strong>我们将解释关于一元随机变量的变量替换技术，并将简要地给出多元随机变量的一般情况的结果。</p>
+<h4 id="分布函数技术">分布函数技术</h4>
+<p>均匀分布在统计中的重要性</p>
+<ul>
+<li><strong>基准分布</strong>：在随机数生成和蒙特卡罗模拟中，均匀分布是最常用的基础分布（大多数随机数生成器先生成
+<span
+class="math inline">\(U(0,1)\)</span>，再通过变换得到其他分布）。</li>
+<li><strong>概率积分变换</strong>：<strong>定理 6.15</strong>
+就是基于这个思想：如果 <span class="math inline">\(X\)</span> 的 CDF
+是严格单调的，那么 <span class="math inline">\(Y = F_X(X)\)</span> 服从
+<span class="math inline">\(U(0,1)\)</span>。</li>
+</ul>
+<p>将随机变量<span class="math inline">\(X\)</span>的累积分布函数<span
+class="math inline">\(F_X(x)\)</span>作为变换函数<span
+class="math inline">\(U(x)\)</span>，可以得到一个有用的结果,这导出了下面的定理。</p>
+<p><strong>定理 6.15</strong> 令 <span class="math inline">\(X\)</span>
+为连续随机变量，且具有严格单调的累积分布函数 <span
+class="math inline">\(F_X(x)\)</span>。 那么定义为 <span
+class="math display">\[
+Y := F_X(X)
+\]</span> 的随机变量 <span class="math inline">\(Y\)</span>
+具有均匀分布。</p>
+<p><strong>证明：</strong></p>
+<p>对任意 <span class="math inline">\(y\in[0,1]\)</span>，由于 <span
+class="math inline">\(F_X\)</span> 严格单调且连续，存在反函数 <span
+class="math inline">\(F_X^{-1}:(0,1)\to \mathbb{R}\)</span>。于是 <span
+class="math display">\[
+\begin{aligned}
+F_Y(y)
+&amp;:=\mathbb{P}(Y\le y)
+=\mathbb{P}\big(F_X(X)\le y\big) \\
+&amp;=\mathbb{P}\big(X\le F_X^{-1}(y)\big)
+=F_X\!\big(F_X^{-1}(y)\big)
+= y,\qquad y\in[0,1].
+\end{aligned}
+\]</span> 对区间外的 <span class="math inline">\(y\)</span>，有 <span
+class="math inline">\(F_Y(y)=0\)</span>（当 <span
+class="math inline">\(y&lt;0\)</span>）和 <span
+class="math inline">\(F_Y(y)=1\)</span>（当 <span
+class="math inline">\(y&gt;1\)</span>）。 因此 <span
+class="math inline">\(F_Y(y)=y\)</span>（<span
+class="math inline">\(y\in[0,1]\)</span>），即 <span
+class="math inline">\(Y\sim \mathrm{Unif}(0,1)\)</span>。</p>
+<p>定理6.15被称为<strong>概率积分变换</strong>(probability integral
+transform)，它用于推导<strong><em><u>从分布中采样</u></em></strong>的算法，<strong>这个算法通过均匀随机变量的采样结果进行变换（Bishop，2006）。该算法的工作原理是首先从均匀分布生成样本，然后通过逆累计密度函数（假设这是可以得到的）对其进行变换，以从所需分布获得样本。</strong>概率积分变换也用于假设检验样本是否来自特定分布（Lehmann和Romano，2005）。累积分布函数的输出是均匀分布的这一观点也构成了copulas的基础（Nelsen，2006）。</p>
+<p><strong>直观理解</strong>：</p>
+<ul>
+<li>均匀分布随机数就像一个“百分比刻度”</li>
+<li>逆 CDF 就是把这个刻度映射到目标分布的位置</li>
+<li>这样就能用均匀分布随机数生成任何我们想要的分布样本</li>
+</ul>
+<h4 id="变量替换">变量替换</h4>
+<p>区间可逆的函数要么严格递增要么严格递减。</p>
+<blockquote>
+<p>事件的等价变换不会改变概率</p>
+</blockquote>
+<p>微积分的基本定理中，有一个非常经典的结论：<strong>积分上限函数求导</strong>，<strong>它把导数与积分直接联系了起来</strong>。</p>
+<p>详见《积分上限函数求导.md》。</p>
+<p><strong>备注：</strong><br />
+“变量替换”这个名字来源于当我们面对一个困难的积分时改变积分变量的想法。
+对于一元函数，我们使用换元积分法：<br />
+<span class="math display">\[
+\begin{equation}
+\int f(g(x)) g^{\prime}(x)\, \mathrm{d}x
+= \int f(u)\, \mathrm{d}u,
+\quad \text{其中} \quad u = g(x)
+\qquad (6.133)
+\end{equation}
+\]</span> 该法则的推导基于微积分的链式法则
+(5.32)，以及应用两次微积分基本定理。
+微积分基本定理证明了积分和微分在某种程度上是互“逆”的。
+通过（松散地）考虑方程<span class="math inline">\(u =
+g(x)\)</span>的微小变化（微分），即把<span class="math inline">\(\Delta
+u = g^{\prime}(x)\, \Delta x\)</span>看作 <span class="math inline">\(u
+= g(x)\)</span> 的微分，可以直观地理解这个规则。 将 <span
+class="math inline">\(u = g(x)\)</span> 代入，积分 (6.133)
+右边的参数变成了 <span class="math inline">\(f(g(x))\)</span>。 通过假设
+<span class="math inline">\(\mathrm{d}u \approx \Delta u =
+g^{\prime}(x)\, \Delta x,\mathrm{d}x \approx \Delta
+x,\)</span>我们最终得到了 (6.133)。</p>
+<p><strong>定理</strong> 6.16:</p>
+<p>令 <span class="math inline">\(f(\boldsymbol{x})\)</span>
+是多变量连续随机变量 <span class="math inline">\(\boldsymbol{X}\)</span>
+的概率密度函数。如果向量值函数 <span
+class="math inline">\(\boldsymbol{y} =
+U(\boldsymbol{x})\)</span>在定义域内对于所有 <span
+class="math inline">\(\boldsymbol{x}\)</span>
+可微且可逆，那么对应的随机变量 <span
+class="math inline">\(\boldsymbol{Y} =
+U(\boldsymbol{X})\)</span>的概率密度函数由下式给出： <span
+class="math display">\[
+f(\boldsymbol{y}) = f_{\boldsymbol{x}}\bigl(U^{-1}(\boldsymbol{y})\bigr)
+\cdot \left|\frac{d}{d \boldsymbol{y}} U^{-1}(\boldsymbol{y})\right|,
+\]</span> 其中 <span class="math inline">\(\left|\frac{d}{d
+\boldsymbol{y}} U^{-1}(\boldsymbol{y})\right|\)</span>
+表示雅可比矩阵的行列式的绝对值。</p>
+<p>这个定理的关键是多元随机变量的变量替换遵循单变量变量替换的过程。首先需要求出逆变换
+<span class="math inline">\(U^{-1}\)</span>，并将其代入 <span
+class="math inline">\(\boldsymbol{x}\)</span> 的密度函数 <span
+class="math inline">\(f_{\boldsymbol{x}}(\boldsymbol{x})\)</span>
+中，然后计算雅可比矩阵的行列式，并与密度函数相乘得到结果。</p>
+<h2 id="连续优化">连续优化</h2>
+<p>Continuous Optimization</p>
+<p>由于机器学习算法是在计算机上实现的，其中许多<strong>数学方程式都表示为数值优化方法</strong>。本章描述了训练机器学习模型的基本数值方法。训练机器学习模型通常归结为找到一组好的参数。“好”的概念是由目标函数或概率模型来决定的，我们将在本书的第二部分看到这些例子。给定一个目标函数，使用优化算法来寻找最佳值。$
+^{D}$
+中考虑数据和模型，所以我们面临的优化问题是连续优化问题，而不是离散变量的组合优化问题。</p>
+<p>一般情况下，机器学习中的大多数目标函数都是要被最小化的，即最优值就是最小值。直观上，梯度为目标函数每个点的上坡方向，而我们的目的是下坡（与梯度方向相反），希望找到最深的点。</p>
+<p>我们将学习一类称为凸函数的函数，它们对优化算法的起点没有依赖性。对于凸函数，局部最小值就是全局最小值。事实证明，许多机器学习目标函数的设计都是凸的.</p>
+<blockquote>
+<p>一般研究最小值，所以对应研究的也是凸函数。</p>
+</blockquote>
+<h3 id="使用梯度下降法优化">使用梯度下降法优化</h3>
+<p>梯度下降法是一种一阶优化算法。为了用梯度下降法寻找函数的局部最小值，我们取与函数在当前点的梯度的一定比例的负值调整<span
+class="math inline">\(x\)</span>。回想第5.1节，梯度指向最陡的上升方向。另一个直观的表现是考虑函数的等高线。梯度指向与我们希望优化的函数的等高线正交的方向。</p>
+<blockquote>
+<p><strong>梯度一定是指向上升的方向</strong>：</p>
+<p>严格来说，<strong>梯度确实指向函数在某一点上“最陡上升”的方向</strong>。梯度的符号和大小告诉我们<strong>函数值局部上升最快的方向</strong>和<strong>速率</strong>。对于一元函数，梯度的正负直接指明函数上升的方向。</p>
+<p><strong>梯度的几何意义</strong></p>
+<ul>
+<li>梯度方向是<strong>函数值增加最快的方向</strong>。</li>
+<li>梯度的大小 <span class="math inline">\(\|\nabla
+f(\boldsymbol{x})\|\)</span>
+表示<strong>该方向上函数上升的速率</strong>。</li>
+<li>如果沿着梯度的负方向移动 <span class="math inline">\(-\nabla
+f(\boldsymbol{x})\)</span>，则是下降最快的方向（常用于梯度下降算法）。</li>
+</ul>
+<p><strong>梯度是函数上升最快的方向</strong>。但它只描述局部方向，想找最大值还需要结合函数整体信息。</p>
+<p>例如 <span class="math inline">\(y=x^2\)</span>,导数是<span
+class="math inline">\(2x\)</span>，针对负轴，导数&lt;0;所以沿<span
+class="math inline">\(x\)</span>轴负方向是函数值上升最快的方向，反之也能推导出。</p>
+</blockquote>
+<p>自适应梯度方法能根据函数的局部性质，在每次迭代时重新调整步长。有两种简单的方法（Toussaint，2012）：</p>
+<ul>
+<li>当采用梯度下降后函数值增大了，则表明步长过大了。这时我们可以撤消并减小步长。</li>
+<li>当函数值减小时，我们可以尝试增大步长。</li>
+</ul>
+<p>尽管“撤消”步骤似乎是浪费资源，但使用这种启发式方法可以保证单调收敛。</p>
+<h5 id="动量梯度下降">动量梯度下降：</h5>
+<p>如图7.3所示，如果优化的曲面的存在缩放效果不佳的区域，那么梯度下降的收敛速度可能非常慢。改进收敛性的一个方法是给梯度下降添加记忆项。动量梯度下降法（Rumelhart
+et
+al.，1986）引入了附加项来记忆上一次迭代中发生了什么。这种记忆可以抑制振荡，平滑梯度更新。继续用球做类比，动量项模拟了重球从斜坡滚下不会轻易改变方向的现象。其思想是使用记忆进行梯度更新，以实现滑动平均(
+moving average)。<strong>基于动量的方法记忆了每次迭代的更新量<span
+class="math inline">\(\Delta
+\boldsymbol{x}_{i}\)</span>,下一次更新则用当前和之前梯度的线性组合确定：</strong></p>
+<h5 id="随机梯度下降法">随机梯度下降法：</h5>
+<p><strong>计算梯度非常耗时。然而，通常可以找到梯度的“<em>cheap</em>”近似值。只要近似梯度指向与真实梯度大致相同的方向，那么它就是有用的。</strong></p>
+<p>随机梯度下降法（Stochastic gradient
+descent，通常简称为SGD）是梯度下降法的一种随机近似方法，用于最小化目标函数，且目标函数应是可微函数之和。这里的“随机”一词指的是这样一个事实，即我们承认我们并不精确地知道梯度，而是只知道它的噪声近似值。通过约束近似梯度的概率分布，我们仍然可以从理论上保证SGD收敛。</p>
+<p>如前所述，标准梯度下降法是一种“批量”优化方法，即选取合适的步长参数
+<span
+class="math inline">\(gamma_i\)</span>，并使用所有训练集，然后通过以下公式更新向量参数：
+<span class="math display">\[
+\boldsymbol{\theta}_{i+1}
+= \boldsymbol{\theta}_{i} - \gamma_{i} \left( \nabla
+L(\boldsymbol{\theta}_{i}) \right)^{\top}
+= \boldsymbol{\theta}_{i} - \gamma_{i} \sum_{n=1}^{N} \left( \nabla
+L_{n}(\boldsymbol{\theta}_{i}) \right)^{\top}
+\qquad (7.15)
+\]</span> 求梯度和可能需要对所有<span
+class="math inline">\(L_n\)</span>的梯度进行计算。当训练集是巨大的，或者（并且）损失函数不是简单的公式时，计算梯度和需要消耗巨大的计算资源。</p>
+<p>考虑 (7.15) 中的<span
+class="math inline">\(\sum_{n=1}^{N}\left(\nabla
+L_{n}\left(\boldsymbol{\theta}_{i}\right)\right),\)</span>我们可以取较小的
+<span class="math inline">\(L_n\)</span>
+集合来求它们的梯度和以减少计算量。与批量梯度下降法使用 <span
+class="math inline">\(n=1,\ldots,N\)</span> 的所有 <span
+class="math inline">\(L_n\)</span> 不同，小批量<strong>梯度下降随机选取
+<span class="math inline">\(L_n\)</span>
+的子集</strong>。在极端情况下，我们还可以随机选择一个 <span
+class="math inline">\(L_n\)</span> 来估计梯度。</p>
+<p>关于为什么选取数据子集是明智的，关键的见解是要认识到，为了使梯度下降收敛，我们只要求梯度是真实梯度的无偏估计。事实上，(7.15)
+中的<span class="math inline">\(\sum_{n=1}^{N}\left(\nabla
+L_{n}\left(\boldsymbol{\theta}_{i}\right)\right)\)</span>是梯度期望值（第
+6.4.1
+节）的经验估计。因此，对期望值的任何其他无偏经验估计，例如使用数据的任何子样本，将足以使梯度下降收敛。</p>
+<p><strong>备注</strong>：
+<strong>当学习率以适当的速率下降时，在相对不严格的假设下，随机梯度下降必然收敛到局部最小值（Bottou,
+1998）。</strong></p>
+<p>为什么要考虑使用近似梯度？一个主要原因是硬件的限制，例如中央处理器（CPU）/图形处理器（GPU）内存大小或计算时间的限制。我们可以像在估计经验平均数时考虑样本的大小一样（第
+6.4.1 节），来考虑用来估计梯度的子集的大小。
+较大的小批量将提供准确的梯度估计，减少参数更新中的方差。此外，较大的小批量可以使代价和梯度向量化，从而能使用高度优化的矩阵运算。方差的减少导致更稳定的收敛性，但每次梯度计算的计算量都很大。</p>
+<p>相比之下，较小的小批量可以很快估计。如果我们保持较小的小批量，梯度估计中的噪声将允许我们脱离局部最优解。<strong>在机器学习中，优化方法是利用训练数据，通过最小化目标函数来进行训练的，但总体目标是提高泛化性能（第
+8
+章）</strong>。<strong>由于机器学习的目标不一定需要精确估计目标函数的最小值，所以使用小批量方法的近似梯度被广泛使用。</strong></p>
+<h3 id="约束优化与拉格朗日乘子">约束优化与拉格朗日乘子</h3>
+<p><strong>拉格朗日对偶( Lagrangian
+duality)</strong>的概念。一般来说，对偶优化的思想是将一组变量<span
+class="math inline">\(\boldsymbol{x}\)</span>（称为原始变量）的优化问题转化为另一组变量<span
+class="math inline">\(\boldsymbol{\lambda}\)</span>（称为对偶变量）的优化问题。我们将会介绍两种不同的对偶方法：在本节中，我们讨论的是拉格朗日对偶；在第7.3.3节中，我们将讨论Legendre-Fenchel对偶。</p>
+<blockquote>
+<p><strong>对偶问题计算上的好处</strong></p>
+<ul>
+<li>有时原问题不好解，但对偶问题更容易（例如约束简单、凸结构更明显）。</li>
+<li>在大规模问题（如支持向量机 SVM）中，通常是通过对偶问题求解的。</li>
+</ul>
+</blockquote>
+<p>不等式约束对应的拉格朗日乘子约束为非负，而等式约束对应的拉格朗日乘子则不加约束。</p>
+<p>通过引入与每个不等式约束分别对应的拉格朗日乘子 <span
+class="math inline">\(\lambda_i \geq 0\)</span> （Boyd 和
+Vandenberghe，2004，第 4 章），得到：</p>
+<p><span class="math display">\[
+\begin{equation}
+\mathfrak{L}(\boldsymbol{x}, \boldsymbol{\lambda})
+= f(\boldsymbol{x}) + \sum_{i=1}^{m} \lambda_i g_i(\boldsymbol{x})
+= f(\boldsymbol{x}) + \boldsymbol{\lambda}^{\top}
+\boldsymbol{g}(\boldsymbol{x})
+\qquad (7.20)
+\end{equation}
+\]</span></p>
+<p>其中我们将所有约束 <span
+class="math inline">\(g_i(\boldsymbol{x})\)</span> 写成一个向量 <span
+class="math inline">\(\boldsymbol{g}(\boldsymbol{x})\)</span>；
+把所有拉格朗日乘子也写成向量 <span
+class="math inline">\(\boldsymbol{\lambda} \in
+\mathbb{R}^{m}\)</span>。</p>
+<p>我们现在介绍拉格朗日对偶 (Lagrangian duality)}的概念。
+一般来说，对偶优化的思想是将一组变量 <span
+class="math inline">\(\boldsymbol{x}\)</span>（称为原始变量）的优化问题转化为另一组变量
+<span
+class="math inline">\(\boldsymbol{\lambda}\)</span>（称为对偶变量）的优化问题。
+<strong>定义7.1</strong> 问题 <span class="math display">\[
+\begin{equation}
+\min_{\boldsymbol{x}} f(\boldsymbol{x})
+\quad \text{subject to} \quad g_i(\boldsymbol{x}) \leqslant 0, \quad
+i=1,\ldots,m
+\end{equation}
+\]</span> 被称为 原始问题 (primal problem)，对应原始变量 <span
+class="math inline">\(\boldsymbol{x}\)</span>。</p>
+<p>与它对应的拉格朗日对偶问题 (Lagrangian dual problem)由下式给出：
+<span class="math display">\[
+\begin{equation}
+\max_{\boldsymbol{\lambda} \in \mathbb{R}^m} \;
+\mathfrak{D}(\boldsymbol{\lambda})
+\quad \text{subject to} \quad \boldsymbol{\lambda} \geqslant \mathbf{0},
+\end{equation}
+\]</span> 其中 <span class="math inline">\(\boldsymbol{\lambda}\)</span>
+为对偶变量，且 <span class="math display">\[
+\begin{equation}
+\mathfrak{D}(\boldsymbol{\lambda}) = \min_{\boldsymbol{x} \in
+\mathbb{R}^d} \; \mathfrak{L}(\boldsymbol{x}, \boldsymbol{\lambda}).
+\end{equation}
+\]</span></p>
+<h3 id="凸优化">凸优化</h3>
+<p>让我们我们重点讨论一类特别有用的优化问题上，因为在这类问题上我们可以保证得到全局最优解。目标函数<span
+class="math inline">\(f(·)\)</span>是一个凸函数，且约束<span
+class="math inline">\(g(·)\)</span>和<span
+class="math inline">\(h(·)\)</span>是凸集的问题称为凸优化问题( convex
+optimization problem)。在这种情况下，<strong>称它具有强对偶性(strong
+duality)：对偶问题的最优解与原问题的最优解相同。</strong>在机器学习文献中，凸函数和凸集通常是不严格区别的，但是人们通常可以从上下文中推断出隐含的含义。</p>
+<blockquote>
+<p>凸函数的非负加权和是凸的.</p>
+</blockquote>
+<h4 id="线性规划">线性规划</h4>
+<p>考虑所有函数都是线性的特殊情况，即： <span class="math display">\[
+\begin{equation}
+\min_{\boldsymbol{x} \in \mathbb{R}^{d}} \boldsymbol{c}^{\top}
+\boldsymbol{x}
+\qquad (7.39)
+\end{equation}
+\]</span></p>
+<p><span class="math display">\[
+\text{subject to } \quad \boldsymbol{A}\boldsymbol{x} \leqslant
+\boldsymbol{b}
+\]</span> 其中 <span class="math inline">\(\boldsymbol{A} \in
+\mathbb{R}^{m \times d}, \ \boldsymbol{b} \in
+\mathbb{R}^{m}\)</span>。</p>
+<p>取 <span class="math inline">\(\mathfrak{L}(\boldsymbol{x},
+\boldsymbol{\lambda})\)</span> 对 <span
+class="math inline">\(\boldsymbol{x}\)</span>
+的导数并将其设为零(因为是<span
+class="math inline">\(x\)</span>的一次函数，求导消去了<span
+class="math inline">\(x\)</span>)，得到对偶优化问题，是关于<span
+class="math inline">\(\lambda\)</span>的线性规划问题，但有<span
+class="math inline">\(m\)</span>个变量。我们可以选择求解原始规划问题（7.39）或其对偶规划问题（7.43），这取决于<span
+class="math inline">\(m\)</span>和<span
+class="math inline">\(d\)</span>哪个更大。</p>
+<h4 id="二次规划">二次规划</h4>
+<p>考虑凸二次目标函数的情况，其中约束是仿射的，即： <span
+class="math display">\[
+\min_{\boldsymbol{x} \in \mathbb{R}^{d}}
+\frac{1}{2} \boldsymbol{x}^{\top} \boldsymbol{Q} \boldsymbol{x}
++ \boldsymbol{c}^{\top} \boldsymbol{x}  
+\]</span></p>
+<p><span class="math display">\[
+\text{subject to} \quad \boldsymbol{A}\boldsymbol{x} \leqslant
+\boldsymbol{b}
+\]</span> 其中 <span class="math inline">\(\boldsymbol{A} \in
+\mathbb{R}^{m \times d},\ \boldsymbol{b} \in \mathbb{R}^{m},\
+\boldsymbol{c} \in \mathbb{R}^{d}\)</span>。</p>
+<p>对称方阵 <span class="math inline">\(\boldsymbol{Q} \in \mathbb{R}^{d
+\times d}\)</span>
+是正定的，因此目标函数是凸的。这就是所谓的二次规划。注意它有 <span
+class="math inline">\(d\)</span> 个变量和 <span
+class="math inline">\(m\)</span> 个线性约束。</p>
+<blockquote>
+<p>一般定义<strong>二次规划（QP）</strong>时，只要求 <span
+class="math inline">\(Q\)</span> <strong>半正定（positive semidefinite,
+PSD）</strong>，这样目标函数就是凸的；</p>
+</blockquote>
+<p>同线性规划，取 <span
+class="math inline">\(\mathfrak{L}(\boldsymbol{x},
+\boldsymbol{\lambda})\)</span> 对 <span
+class="math inline">\(\boldsymbol{x}\)</span>
+的导数，并将其设为零(因为是<span
+class="math inline">\(x\)</span>的二次函数，求导得到关于<span
+class="math inline">\(x\)</span>的一次方程，可以用<span
+class="math inline">\(\lambda\)</span>替换<span
+class="math inline">\(x\)</span>代入对耦优化问题)，得到对偶优化问题，是关于<span
+class="math inline">\(\lambda\)</span>的二次规划问题。</p>
+<h4 id="legendre-fenchel变换和凸共轭">Legendre-Fenchel变换和凸共轭</h4>
+<p>这一节没深入看！</p>
+<h2 id="信息论">信息论</h2>
+<p>原书里面找不到这一章？</p>
+<p>称为随机变量<span
+class="math inline">\(X\)</span>的信息熵(Entropy)。自信息用单个事件的结果计算。而熵来对整个概率分布中的平均不确定性进行量化，是从平均意义上表征随机变量总体特性的一个量。换言之，一个分布的熵是指服从这个分布的随机变量所能产生的期望信息总量。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E5%AD%A6/" rel="tag"># 数学</a>
+              <a href="/tags/%E7%AE%97%E6%B3%95/" rel="tag"># 算法</a>
+              <a href="/tags/%E7%BB%9F%E8%AE%A1/" rel="tag"># 统计</a>
+              <a href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" rel="tag"># 深度学习</a>
+              <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" rel="tag"># 机器学习</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/07/28/%E8%B4%9D%E5%8F%B6%E6%96%AF%E5%AE%9A%E7%90%86%EF%BC%88Bayes%E2%80%99%20Theorem%EF%BC%89/" rel="prev" title="贝叶斯定理（Bayes’ Theorem）">
+                  <i class="fa fa-chevron-left"></i> 贝叶斯定理（Bayes’ Theorem）
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/09/09/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E7%AC%AC9%E7%AB%A0%22%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%22/" rel="next" title="《机器学习的数学基础》第9章"线性回归"">
+                  《机器学习的数学基础》第9章"线性回归" <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
