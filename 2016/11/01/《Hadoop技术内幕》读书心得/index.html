@@ -167,7 +167,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives">
-          <span class="site-state-item-count">270</span>
+          <span class="site-state-item-count">268</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -178,7 +178,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags">
-        <span class="site-state-item-count">1155</span>
+        <span class="site-state-item-count">476</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -304,8 +304,7 @@
 <h2 id="一个例子">1、一个例子</h2>
 <p><img src="/img/MapReduce例子.jpg" /></p>
 <ul>
-<li>split的多少决定了Map Task的数目，因为每个split会交由一个Map
-Task处理。<br />
+<li>split的多少决定了Map Task的数目，因为每个split会交由一个Map Task处理。<br />
 </li>
 <li>Partitioner的作用是对Mapper产生的中间结果进行分片，以便将同一分组的数据交给同一Reduce处理，它直接影响Reduce阶段的负载均衡。</li>
 </ul>
@@ -318,27 +317,21 @@ MapReduce编程模型给出了其分布式编程方法，共5个步骤：<br />
 4）以组为单位对数据进行规约（Reduce）；<br />
 5）迭代。将最终产生的Key/value对保存到输出文件中。</p>
 <h2 id="mapreduce运行过程">3、MapReduce运行过程</h2>
-<p>Map Task分解成Read、Map、Collect、Spill和Combine五个阶段，讲Reduce
-Task分解成Shuffle、Merge、Sort、Reduce和Write五个阶段。<br />
+<p>Map Task分解成Read、Map、Collect、Spill和Combine五个阶段，讲Reduce Task分解成Shuffle、Merge、Sort、Reduce和Write五个阶段。<br />
 <img src="/img/MapReduce运行过程.jpg" /></p>
 <h2 id="hadoop原理">4、Hadoop原理</h2>
-<p>在Hadoop
-MapReduce中，不同组件的通信协议均是基于RPC的，它们就像系统的“骨架”，支撑起整个MapReduce系统。</p>
+<p>在Hadoop MapReduce中，不同组件的通信协议均是基于RPC的，它们就像系统的“骨架”，支撑起整个MapReduce系统。</p>
 <ul>
-<li>RPC： Remot Procedure
-Call，是一种常用的分布式网络通讯协议。JDK中的RMI（Remote Method
-Invocation）也是一种RPC框架。<br />
+<li>RPC： Remot Procedure Call，是一种常用的分布式网络通讯协议。JDK中的RMI（Remote Method Invocation）也是一种RPC框架。<br />
 </li>
 <li>Stub程序：客户端和服务器端均包含Stub程序，可将之看做代理程序。它使得远程函数调用表现的跟本地调用一样，对用户程序完全透明。<br />
 </li>
 <li>RPC 通用架构<br />
 <img src="/img/RPC通用架构.jpg" /><br />
 </li>
-<li>IDL：开源RPC框架提供了一套接口描述语言（Interfae Description
-Language,IDL)。它提供了一套通用的数据类型，并以这些数据类型来定义更为复杂的数据类型和对外服务接口。一旦用户按照IDL定义的语法编写完成接口文件后，即可根据实际应用需要生成特定的编程语言（例如Java，C++，Python等）的客户端和服务器端代码。</li>
+<li>IDL：开源RPC框架提供了一套接口描述语言（Interfae Description Language,IDL)。它提供了一套通用的数据类型，并以这些数据类型来定义更为复杂的数据类型和对外服务接口。一旦用户按照IDL定义的语法编写完成接口文件后，即可根据实际应用需要生成特定的编程语言（例如Java，C++，Python等）的客户端和服务器端代码。</li>
 </ul>
-<p><strong>任务推测执行原理：</strong>Hadoop采用了推测执行（Speculative
-Execution)机制。它根据一定的法则推测出“拖后腿”的任务，并为这样的任务启动一个备份任务，让该任务与原始任务同时处理一份数据，并最终选用最先成功完成任务的计算结果作为最终结果。</p>
+<p><strong>任务推测执行原理：</strong>Hadoop采用了推测执行（Speculative Execution)机制。它根据一定的法则推测出“拖后腿”的任务，并为这样的任务启动一个备份任务，让该任务与原始任务同时处理一份数据，并最终选用最先成功完成任务的计算结果作为最终结果。</p>
 <h1 id="二下一代mapreduce框架">二、下一代MapReduce框架</h1>
 <p><strong>下一代MapReduce框架的基本设计思想是蒋JobTracker的两个主要功能，即资源管理和作业控制（包括作业监控、容错等），分拆成两个独立的进程。</strong><br />
 随着互联网的告诉发展，基于数据密集型应用的计算框架不断出现。从支持离线处理的MapReduce，到支持在线处理的Storm，从迭代式计算框架Spark到流式处理框架S4，各种框架诞生与不同的公司或者实验室。一种可能的技术方案如下：网页建索引采用MapReduce框架，自然语言处理/数据挖掘算法用MPI邓。考虑到资源利用率、运维成本、数据共享等因素，公司一般希望将所有这些框架部署到一个公共的集群中，让他们共享集群的资源，并对资源进行统一使用，这样，便诞生了资源统一管理与调度平台。<br />
