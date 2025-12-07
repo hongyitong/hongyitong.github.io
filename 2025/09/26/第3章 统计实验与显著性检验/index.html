@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="《Practical Statistics for Data Scientists》书籍英文版 《面向数据科学家的实用统计学》中文版书籍 第 3 章 统计实验与显著性检验 实验设计是统计实践的基石，在几乎所有研究领域都有应用。其目标是设计实验以确认或拒绝某个假设。数据科学家往往需要持续进行实验，尤其是关于用户界面和产品营销方面的实验。本章回顾了传统实验设计，并讨论了数据科学中常见的一些挑战；还介绍">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第3章 统计实验与显著性检验">
+<meta property="og:url" content="http://hongyitong.github.io/2025/09/26/%E7%AC%AC3%E7%AB%A0%20%E7%BB%9F%E8%AE%A1%E5%AE%9E%E9%AA%8C%E4%B8%8E%E6%98%BE%E8%91%97%E6%80%A7%E6%A3%80%E9%AA%8C/index.html">
+<meta property="og:site_name" content="墨语浮生">
+<meta property="og:description" content="《Practical Statistics for Data Scientists》书籍英文版 《面向数据科学家的实用统计学》中文版书籍 第 3 章 统计实验与显著性检验 实验设计是统计实践的基石，在几乎所有研究领域都有应用。其目标是设计实验以确认或拒绝某个假设。数据科学家往往需要持续进行实验，尤其是关于用户界面和产品营销方面的实验。本章回顾了传统实验设计，并讨论了数据科学中常见的一些挑战；还介绍">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/img3/%E9%9D%A2%E5%90%91%E6%95%B0%E6%8D%AE%E7%A7%91%E5%AD%A6%E5%AE%B6%E7%9A%84%E5%AE%9E%E7%94%A8%E7%BB%9F%E8%AE%A1%E5%AD%A6/F3.1.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/%E9%9D%A2%E5%90%91%E6%95%B0%E6%8D%AE%E7%A7%91%E5%AD%A6%E5%AE%B6%E7%9A%84%E5%AE%9E%E7%94%A8%E7%BB%9F%E8%AE%A1%E5%AD%A6/F3.2.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/%E9%9D%A2%E5%90%91%E6%95%B0%E6%8D%AE%E7%A7%91%E5%AD%A6%E5%AE%B6%E7%9A%84%E5%AE%9E%E7%94%A8%E7%BB%9F%E8%AE%A1%E5%AD%A6/T3.1.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/%E9%9D%A2%E5%90%91%E6%95%B0%E6%8D%AE%E7%A7%91%E5%AD%A6%E5%AE%B6%E7%9A%84%E5%AE%9E%E7%94%A8%E7%BB%9F%E8%AE%A1%E5%AD%A6/F3.3.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/%E9%9D%A2%E5%90%91%E6%95%B0%E6%8D%AE%E7%A7%91%E5%AD%A6%E5%AE%B6%E7%9A%84%E5%AE%9E%E7%94%A8%E7%BB%9F%E8%AE%A1%E5%AD%A6/F3.4.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/%E9%9D%A2%E5%90%91%E6%95%B0%E6%8D%AE%E7%A7%91%E5%AD%A6%E5%AE%B6%E7%9A%84%E5%AE%9E%E7%94%A8%E7%BB%9F%E8%AE%A1%E5%AD%A6/T3.2.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/%E9%9D%A2%E5%90%91%E6%95%B0%E6%8D%AE%E7%A7%91%E5%AD%A6%E5%AE%B6%E7%9A%84%E5%AE%9E%E7%94%A8%E7%BB%9F%E8%AE%A1%E5%AD%A6/F3.5.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/%E9%9D%A2%E5%90%91%E6%95%B0%E6%8D%AE%E7%A7%91%E5%AD%A6%E5%AE%B6%E7%9A%84%E5%AE%9E%E7%94%A8%E7%BB%9F%E8%AE%A1%E5%AD%A6/T3.3.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/%E9%9D%A2%E5%90%91%E6%95%B0%E6%8D%AE%E7%A7%91%E5%AD%A6%E5%AE%B6%E7%9A%84%E5%AE%9E%E7%94%A8%E7%BB%9F%E8%AE%A1%E5%AD%A6/F3.6.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/%E9%9D%A2%E5%90%91%E6%95%B0%E6%8D%AE%E7%A7%91%E5%AD%A6%E5%AE%B6%E7%9A%84%E5%AE%9E%E7%94%A8%E7%BB%9F%E8%AE%A1%E5%AD%A6/T3.4.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/%E9%9D%A2%E5%90%91%E6%95%B0%E6%8D%AE%E7%A7%91%E5%AD%A6%E5%AE%B6%E7%9A%84%E5%AE%9E%E7%94%A8%E7%BB%9F%E8%AE%A1%E5%AD%A6/T3.5.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/%E9%9D%A2%E5%90%91%E6%95%B0%E6%8D%AE%E7%A7%91%E5%AD%A6%E5%AE%B6%E7%9A%84%E5%AE%9E%E7%94%A8%E7%BB%9F%E8%AE%A1%E5%AD%A6/T3.6.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/%E9%9D%A2%E5%90%91%E6%95%B0%E6%8D%AE%E7%A7%91%E5%AD%A6%E5%AE%B6%E7%9A%84%E5%AE%9E%E7%94%A8%E7%BB%9F%E8%AE%A1%E5%AD%A6/F3.7.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/%E9%9D%A2%E5%90%91%E6%95%B0%E6%8D%AE%E7%A7%91%E5%AD%A6%E5%AE%B6%E7%9A%84%E5%AE%9E%E7%94%A8%E7%BB%9F%E8%AE%A1%E5%AD%A6/T3.7.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/%E9%9D%A2%E5%90%91%E6%95%B0%E6%8D%AE%E7%A7%91%E5%AD%A6%E5%AE%B6%E7%9A%84%E5%AE%9E%E7%94%A8%E7%BB%9F%E8%AE%A1%E5%AD%A6/F3.8.png">
+<meta property="article:published_time" content="2025-09-25T16:00:00.000Z">
+<meta property="article:modified_time" content="2025-12-07T03:42:07.763Z">
+<meta property="article:author" content="Rayman.hung">
+<meta property="article:tag" content="机器学习">
+<meta property="article:tag" content="深度学习">
+<meta property="article:tag" content="AI">
+<meta property="article:tag" content="统计">
+<meta property="article:tag" content="数据科学">
+<meta property="article:tag" content="R">
+<meta property="article:tag" content="Python">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hongyitong.github.io/img3/%E9%9D%A2%E5%90%91%E6%95%B0%E6%8D%AE%E7%A7%91%E5%AD%A6%E5%AE%B6%E7%9A%84%E5%AE%9E%E7%94%A8%E7%BB%9F%E8%AE%A1%E5%AD%A6/F3.1.png">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2025/09/26/%E7%AC%AC3%E7%AB%A0%20%E7%BB%9F%E8%AE%A1%E5%AE%9E%E9%AA%8C%E4%B8%8E%E6%98%BE%E8%91%97%E6%80%A7%E6%A3%80%E9%AA%8C/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2025/09/26/%E7%AC%AC3%E7%AB%A0%20%E7%BB%9F%E8%AE%A1%E5%AE%9E%E9%AA%8C%E4%B8%8E%E6%98%BE%E8%91%97%E6%80%A7%E6%A3%80%E9%AA%8C/","path":"2025/09/26/第3章 统计实验与显著性检验/","title":"第3章 统计实验与显著性检验"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>第3章 统计实验与显著性检验 | 墨语浮生</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZXGEJDXQ33"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-ZXGEJDXQ33","only_pageview":false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">墨语浮生</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li><li class="menu-item menu-item-tags"><a href="/tags" rel="section">标签</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC-3-%E7%AB%A0-%E7%BB%9F%E8%AE%A1%E5%AE%9E%E9%AA%8C%E4%B8%8E%E6%98%BE%E8%91%97%E6%80%A7%E6%A3%80%E9%AA%8C"><span class="nav-text">第 3 章 统计实验与显著性检验</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ab-%E6%B5%8B%E8%AF%95"><span class="nav-text">A&#x2F;B 测试</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E6%9C%89%E5%AF%B9%E7%85%A7%E7%BB%84"><span class="nav-text">为什么要有对照组？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E5%8F%AA%E6%98%AFab%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8Dcd"><span class="nav-text">为什么只是A&#x2F;B？为什么不C、D……？</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%81%87%E8%AE%BE%E6%A3%80%E9%AA%8C"><span class="nav-text">假设检验</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8E%9F%E5%81%87%E8%AE%BE"><span class="nav-text">原假设</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A4%87%E6%8B%A9%E5%81%87%E8%AE%BE"><span class="nav-text">备择假设</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8D%95%E5%B0%BE%E6%A3%80%E9%AA%8C%E4%B8%8E%E5%8F%8C%E5%B0%BE%E6%A3%80%E9%AA%8C"><span class="nav-text">单尾检验与双尾检验</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%8D%E6%8A%BD%E6%A0%B7"><span class="nav-text">重抽样</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BD%AE%E6%8D%A2%E6%A3%80%E9%AA%8C"><span class="nav-text">置换检验</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B%E7%BD%91%E7%AB%99%E9%BB%8F%E6%80%A7"><span class="nav-text">示例：网站黏性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%A9%B7%E4%B8%BE%E7%BD%AE%E6%8D%A2%E6%A3%80%E9%AA%8C%E4%B8%8E%E8%87%AA%E5%8A%A9%E7%BD%AE%E6%8D%A2%E6%A3%80%E9%AA%8C"><span class="nav-text">穷举置换检验与自助置换检验</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BD%AE%E6%8D%A2%E6%A3%80%E9%AA%8C%E6%95%B0%E6%8D%AE%E7%A7%91%E5%AD%A6%E4%B8%AD%E7%9A%84%E6%A0%B8%E5%BF%83%E8%A6%81%E7%82%B9"><span class="nav-text">置换检验：数据科学中的核心要点</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%9F%E8%AE%A1%E6%98%BE%E8%91%97%E6%80%A7%E4%B8%8E-p-%E5%80%BC"><span class="nav-text">统计显著性与 p 值</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#p-%E5%80%BC"><span class="nav-text">p 值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%CE%B1%E6%98%BE%E8%91%97%E6%80%A7%E6%B0%B4%E5%B9%B3"><span class="nav-text">α（显著性水平）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E7%B1%BB%E9%94%99%E8%AF%AF%E4%B8%8E%E7%AC%AC%E4%BA%8C%E7%B1%BB%E9%94%99%E8%AF%AF"><span class="nav-text">第一类错误与第二类错误</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E7%A7%91%E5%AD%A6%E4%B8%8E-p-%E5%80%BC"><span class="nav-text">数据科学与 p 值</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#t-%E6%A3%80%E9%AA%8C"><span class="nav-text">t 检验</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E9%87%8D%E6%A3%80%E9%AA%8C"><span class="nav-text">多重检验</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E7%94%B1%E5%BA%A6"><span class="nav-text">自由度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#anova%E6%96%B9%E5%B7%AE%E5%88%86%E6%9E%90"><span class="nav-text">ANOVA（方差分析）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#f-%E7%BB%9F%E8%AE%A1%E9%87%8F"><span class="nav-text">F 统计量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%8C%E5%9B%A0%E7%B4%A0-anova"><span class="nav-text">双因素 ANOVA</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%A1%E6%96%B9%E6%A3%80%E9%AA%8C"><span class="nav-text">卡方检验</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8D%A1%E6%96%B9%E6%A3%80%E9%AA%8C%E4%B8%80%E7%A7%8D%E9%87%8D%E6%8A%BD%E6%A0%B7%E6%96%B9%E6%B3%95"><span class="nav-text">卡方检验：一种重抽样方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8D%A1%E6%96%B9%E6%A3%80%E9%AA%8C%E7%BB%9F%E8%AE%A1%E7%90%86%E8%AE%BA"><span class="nav-text">卡方检验：统计理论</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B4%B9%E8%88%8D%E5%B0%94%E7%A1%AE%E5%88%87%E6%A3%80%E9%AA%8C"><span class="nav-text">费舍尔确切检验</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%A7%91%E5%AD%A6%E7%9A%84%E7%9B%B8%E5%85%B3%E6%80%A7"><span class="nav-text">与数据科学的相关性</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E8%87%82%E8%80%81%E8%99%8E%E6%9C%BA%E7%AE%97%E6%B3%95"><span class="nav-text">多臂老虎机算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A3%80%E9%AA%8C%E6%95%88%E8%83%BD%E4%B8%8E%E6%A0%B7%E6%9C%AC%E9%87%8F"><span class="nav-text">检验效能与样本量</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A0%B7%E6%9C%AC%E9%87%8F"><span class="nav-text">样本量</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、心情记录</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives">
+          <span class="site-state-item-count">170</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags">
+        <span class="site-state-item-count">314</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/hongyitong" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;hongyitong" rel="noopener" target="_blank">GitHub</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2025/09/26/%E7%AC%AC3%E7%AB%A0%20%E7%BB%9F%E8%AE%A1%E5%AE%9E%E9%AA%8C%E4%B8%8E%E6%98%BE%E8%91%97%E6%80%A7%E6%A3%80%E9%AA%8C/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="第3章 统计实验与显著性检验 | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          第3章 统计实验与显著性检验
+        </h1>
+
+        </h1>
+          
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-09-26 00:00:00" itemprop="dateCreated datePublished" datetime="2025-09-26T00:00:00+08:00">2025-09-26</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p><a
+href="/img3/面向数据科学家的实用统计学/Practical-Statistics-for-Data-Scientists.pdf">《Practical
+Statistics for Data Scientists》书籍英文版</a><br />
+<a
+href="/img3/面向数据科学家的实用统计学/面向数据科学家的实用统计学.pdf">《面向数据科学家的实用统计学》中文版书籍</a></p>
+<h2 id="第-3-章-统计实验与显著性检验">第 3 章 统计实验与显著性检验</h2>
+<p>实验设计是统计实践的基石，在几乎所有研究领域都有应用。其目标是<strong>设计实验以确认或拒绝某个假设</strong>。数据科学家往往需要持续进行实验，尤其是关于用户界面和产品营销方面的实验。本章回顾了传统实验设计，并讨论了数据科学中常见的一些挑战；还介绍了一些统计推断中经常被引用的概念，并解释了它们的含义及其与数据科学的相关性（或不相关性）。</p>
+<p><img src="/img3/面向数据科学家的实用统计学/F3.1.png" alt="F3.1" style="zoom:50%;" /></p>
+<p>当你看到统计显著性、t 检验或 p
+值等术语时，通常是在经典统计推断“流水线”的上下文中（见图
+3-1）。这个过程从一个假设开始（例如“药物 A 优于现有标准药物”或“价格 A
+比现有价格 B 更有利可图”）。然后设计实验（可能是 A/B
+测试）以检验这个假设——设计得尽可能能够得出结论性结果。接着收集并分析数据，然后得出结论。<strong>术语“推断”体现了这样一种意图：将涉及有限数据集的实验结果，应用到更大的过程或总体上。</strong></p>
+<span id="more"></span>
+<h3 id="ab-测试">A/B 测试</h3>
+<p>A/B
+测试是一种<strong>包含两个组的实验</strong>，用于确定两种处理、产品、程序等哪一种更优。通常两种处理中的一种是现有的标准处理，或是不做处理。如果使用标准处理（或不处理），则称其为<strong>对照组（control）</strong>。典型的假设是新处理优于对照组。</p>
+<p><strong>A/B 测试关键术语</strong></p>
+<ul>
+<li><strong>处理（Treatment）</strong>：让受试对象接触的某种东西（药物、价格、网页标题等）。</li>
+<li><strong>处理组（Treatment
+group）</strong>：接触特定处理的一组受试对象。</li>
+<li><strong>对照组（Control
+group）</strong>：接触标准处理或不处理的一组受试对象。</li>
+<li><strong>随机化（Randomization）</strong>：将受试对象随机分配到不同处理的过程。</li>
+<li><strong>受试对象（Subjects）</strong>：暴露在处理下的个体（网页访问者、患者等）。</li>
+<li><strong>检验统计量（Test
+statistic）</strong>：用于衡量处理效果的指标。</li>
+</ul>
+<p>A/B 测试在网页设计和营销中很常见，因为结果容易衡量。A/B
+测试的一些例子包括：</p>
+<ul>
+<li>测试两种土壤处理方法，看哪种能让种子发芽更好</li>
+<li>测试两种疗法，看哪种对抑制癌症更有效</li>
+<li>测试两种定价，看哪种能带来更多净利润</li>
+<li>测试两个网页标题，看哪一个能带来更多点击（图 3-2）</li>
+<li>测试两个网页广告，看哪一个能带来更多转化</li>
+</ul>
+<p><img src="/img3/面向数据科学家的实用统计学/F3.2.png" alt="F3.2" style="zoom:33%;" /></p>
+<p>一个<strong>合格的 A/B
+测试</strong>要求受试对象可以被分配到某个处理或另一个处理。受试对象可以是人、植物种子、网页访问者；关键是受试对象接触到处理。理想情况下，受试对象要随机分配到处理组。这样你就知道，处理组之间的差异只可能来自两种原因：</p>
+<ul>
+<li>不同处理的效果</li>
+<li>随机分配带来的偶然性（比如天生表现更好的受试对象恰好集中在 A 组或 B
+组）</li>
+</ul>
+<p>你还需要注意用于比较 A 组和 B
+组的检验统计量或指标。数据科学中最常见的指标是<strong>二元变量</strong>：点击或不点击、购买或不购买、欺诈或不欺诈等等。这些结果可以汇总在一个
+2×2 表中。表 3-1 就是一个实际价格测试的 2×2
+表（关于这些结果的进一步讨论见第 103 页“统计显著性与 p 值”）。</p>
+<p><img src="/img3/面向数据科学家的实用统计学/T3.1.png" alt="T3.1" style="zoom:50%;" /></p>
+<p>如果指标是<strong>连续变量</strong>（购买金额、利润等）或<strong>计数</strong>（例如住院天数、访问页面数），结果可能以不同方式展示。如果关注的不是转化率而是<strong>每次页面浏览的收入</strong>，那么表
+3-1 中的价格测试结果在典型软件输出中可能看起来是这样的：</p>
+<ul>
+<li>价格 A 每次页面浏览收入：平均值 = 3.87，标准差 SD = 51.10</li>
+<li>价格 B 每次页面浏览收入：平均值 = 4.11，标准差 SD = 62.98</li>
+</ul>
+<p>“SD”指的是各组内值的标准差。</p>
+<blockquote>
+<p><strong>警告：</strong></p>
+<p>但要注意：统计软件（包括 R 和
+Python）默认生成的输出，并不意味着所有输出都有用或相关。<strong>你可以看到，上述标准差并不太有用；表面上它们暗示很多值可能是负的，而负收入在现实中并不可行。这类数据由少量较高值（带转化的页面浏览）和大量
+0
+值（无转化的页面浏览）组成。用一个数字来概括这种数据的变异性是很困难的，虽然</strong>平均绝对偏差**（A
+为 7.68，B 为 8.15）比标准差更合理一些。</p>
+</blockquote>
+<h4 id="为什么要有对照组">为什么要有对照组？</h4>
+<p>为什么不跳过对照组，只对一个组施加感兴趣的处理，然后把结果和以往经验相比呢？</p>
+<p>没有对照组，就不能保证“其他条件都相同”，也不能保证任何差异确实是由处理（或随机因素）引起的。当你有一个对照组时，除了研究的处理之外，它与处理组处在同样的条件下。如果只是与“基线”或以往经验比较，处理之外的其他因素也可能不同。</p>
+<blockquote>
+<p><strong>通用注解：</strong></p>
+<p>研究中的盲法**：盲法（blind
+study）是指受试者不知道自己接受的是A处理还是B处理。知道自己接受某种处理可能会影响反应。双盲研究（double-blind
+study）是指研究者和执行者（如医疗研究中的医生和护士）也不知道哪些受试者接受了哪种处理。当处理本身显而易见时（例如计算机认知疗法与心理学家面对面的认知疗法），就无法进行盲法。</p>
+</blockquote>
+<p>A/B测试在数据科学中通常用于网页场景。处理可能是网页的设计、商品价格、标题的措辞或其他项目。需要一定的思考来保持随机化原则。通常实验中的“受试者”是网站访客，而我们感兴趣的结果是点击、购买、访问时长、访问页面数量、是否访问某一特定页面等在标准A/B实验中，你需要<strong>事先</strong>决定一个度量指标。可能会收集多个行为指标且都感兴趣，但如果实验预期要在处理A和处理B之间做出决策，那么必须在实验前确定一个单一指标或检验统计量。在实验结束后才选择检验统计量会引入研究者偏倚。</p>
+<h4 id="为什么只是ab为什么不cd">为什么只是A/B？为什么不C、D……？</h4>
+<p>A/B测试在市场营销和电商领域很流行，但并不是唯一的统计实验类型。可以纳入更多处理。受试者可能会被多次测量。在药物试验中，受试者稀缺、昂贵且需要长期招募，有时会设计多个中途停止实验并得出结论的机会。</p>
+<p>传统的统计实验设计侧重于回答一个<strong>静态问题</strong>：</p>
+<blockquote>
+<p>“价格A和价格B之间的差异在统计上显著吗？”</p>
+</blockquote>
+<p>而数据科学家更关心的问题是：</p>
+<blockquote>
+<p>“在多个可能的价格中，哪个最好？”</p>
+</blockquote>
+<p>为此，使用了一种相对较新的实验设计：<strong>多臂老虎机算法</strong>（multi-arm
+bandit，见本书第131页）。</p>
+<blockquote>
+<p>警告：</p>
+<p>获得许可：**在涉及人类受试者的科学和医学研究中，通常需要获得受试者的许可，并得到机构审查委员会（IRB）的批准。而在商业中作为日常运营一部分进行的实验几乎从不这么做。在大多数情况下（如定价实验、显示哪个标题或提供哪个优惠），这种做法被普遍接受。然而，Facebook在2014年因一次实验引发广泛批评。他们操纵用户新闻推送（newsfeed）中的情绪色彩：用情感分析将帖子分类为正面或负面，然后改变展示给用户的正/负比例。一些随机选择的用户看到更多正面帖子，另一些用户看到更多负面帖子。Facebook发现，看到更正面新闻推送的用户更可能自己发布正面内容，反之亦然。这种效应的幅度虽然很小，但Facebook因为在不告知用户的情况下进行实验而受到大量批评。一些用户甚至推测，若极度抑郁的用户看到负面版本的推送，可能会被“推向崩溃的边缘”。</p>
+</blockquote>
+<p><strong>关键要点</strong></p>
+<ul>
+<li>受试者被分配到两个（或更多）组，这些组除了研究的处理不同之外，其他条件完全相同。</li>
+<li>理想情况下，受试者被<strong>随机分配</strong>到各组。</li>
+</ul>
+<h3 id="假设检验">假设检验</h3>
+<p>假设检验（hypothesis tests），也叫显著性检验（significance
+tests），在传统的已发表研究的统计分析中无处不在。它们的目的是帮助你判断，随机因素是否可能是观测到的效果的原因。</p>
+<p><strong>假设检验的关键术语</strong></p>
+<ul>
+<li><p><strong>原假设（Null hypothesis）</strong>
+认为随机因素是原因的假设。</p></li>
+<li><p><strong>备择假设（Alternative hypothesis）</strong>
+原假设的对立面（你希望证明的东西）。</p></li>
+<li><p><strong>单尾检验（One-way test）</strong>
+只在一个方向上计算偶然结果的假设检验。</p></li>
+<li><p><strong>双尾检验（Two-way test）</strong>
+在两个方向上都计算偶然结果的假设检验。</p></li>
+</ul>
+<p>A/B 测试（见第88页“A/B
+Testing”）通常是带着假设来设计的。例如，假设可能是“价格B带来更高利润”。<strong>为什么我们需要一个假设？为什么不直接看实验的结果，选那个更好的处理就行？答案在于人类大脑倾向于低估自然随机行为的幅度。</strong>这种倾向的一种表现是无法预见极端事件，即所谓的“黑天鹅”（见第73页“长尾分布”）。另一种表现是倾向于将随机事件误解为具有某种有意义的模式。<strong>统计假设检验就是为了防止研究人员被随机性所欺骗而发明的。</strong></p>
+<p><strong>误解随机性</strong>：</p>
+<p>你可以通过这个小实验观察人类低估随机性的倾向：请几个朋友“编造”一系列
+50 次掷硬币的结果，让他们写下一串随机的“H”和“T”。然后再让他们真的掷硬币
+50
+次，并把结果写下来。让他们把真正的掷硬币结果放在一堆，编造的结果放在另一堆。很容易看出哪些是真实结果：真实结果中“H”或“T”的连续串更长。在
+50 次真实掷硬币中，连续出现 5~6
+次“H”或“T”一点都不罕见。然而，当我们自己在编造随机掷硬币结果时，如果已经连续
+3~4
+次“H”，就会告诉自己“为了看起来随机”，最好换成“T”。从另一方面看，当我们在现实世界里看到“连续
+6
+次H”的等价情况（比如一个标题的点击率比另一个高出10%），我们往往倾向于把它归因于某种真实原因，而不仅仅是偶然。</p>
+<p>在一个设计合理的 A/B
+测试中，你以这样的方式收集A组和B组的数据，使得任何观测到的差异只能是以下两种原因之一：</p>
+<ul>
+<li>分配受试者时的随机因素</li>
+<li>A和B之间的真实差异</li>
+</ul>
+<p>统计假设检验就是对A/B测试或任何随机实验的进一步分析，以评估“随机因素”是否是解释A组和B组差异的合理原因。</p>
+<h4 id="原假设"><strong>原假设</strong></h4>
+<p>The Null Hypothesis</p>
+<p>假设检验的逻辑是这样的：“鉴于人类倾向于对不寻常但随机的行为作出反应，并把它解读为有意义、真实的东西，在我们的实验中，我们将要求证明，组间的差异比偶然因素合理产生的差异更为极端。”这包含一个基线假设：不同处理是等效的，组间的任何差异都源于随机因素。这个基线假设称为<strong>原假设</strong>（null
+hypothesis）。我们的希望是能够推翻原假设，证明 A 组与 B
+组的结果比随机机会所能产生的差异更大。</p>
+<p>一种方法是使用重抽样置换程序：把 A 组和 B
+组的结果混合打乱，然后反复按相同的样本量重新分组，再观察得到与观测差异一样极端的情况出现的频率。A
+组和 B 组混合后并抽样的结果体现了 A 组与 B
+组等价且可互换的原假设，被称为<strong>原模型</strong>（null
+model）。更多细节参见第 96 页“重抽样”。</p>
+<h4 id="备择假设"><strong>备择假设</strong></h4>
+<p>Alternative Hypothesis</p>
+<p>假设检验本质上不仅涉及原假设，还涉及与之相对的<strong>备择假设</strong>。例子如下：</p>
+<ul>
+<li>原假设：“A 组与 B 组均值无差异”；备择假设：“A 与 B
+不同”（可能更大或更小）</li>
+<li>原假设：“A ≤ B”；备择假设：“A &gt; B”</li>
+<li>原假设：“B 不比 A 高 X%”；备择假设：“B 比 A 高 X%”</li>
+</ul>
+<p>原假设和备择假设加在一起必须涵盖所有可能性。原假设的性质决定了假设检验的结构。</p>
+<h4 id="单尾检验与双尾检验"><strong>单尾检验与双尾检验</strong></h4>
+<p>One-Way Versus Two-Way Hypothesis Tests</p>
+<p>在 A/B 测试中，常见的情形是：你在测试一个新选项（如
+B）与一个既定默认选项（A），并假定除非新选项能明确更好，否则你会继续沿用默认选项。在这种情况下，你希望假设检验保护你免于在有利于
+B 的方向上被随机性误导。至于相反方向，你并不在意，因为除非 B
+被证明确实更好，否则你会坚持
+A。因此你需要一个<strong>有方向性的备择假设</strong>（B 优于
+A）。这种情况下使用<strong>单尾（单向）假设检验</strong>，即只有一个方向上的极端随机结果计入
+p 值。</p>
+<p>如果你希望假设检验能保护你免于在任意方向上被随机性误导，那么备择假设是双向的（A
+与 B
+不同，可能更大或更小）。此时应使用<strong>双尾（双向）假设检验</strong>，即两个方向上的极端随机结果都计入
+p 值。</p>
+<p>单尾假设检验常常符合 A/B
+决策的实际性质：通常一方被赋予“默认”地位，只有另一方更好时才替换。但软件（包括
+R 和 Python 的
+scipy）通常默认输出<strong>双尾检验</strong>结果，许多统计学家也倾向于使用更保守的双尾检验以避免争论。单尾与双尾的区别是一个容易混淆的话题，在数据科学中并不太重要，因为
+p 值的精确性并不是特别关键。</p>
+<p><strong>关键要点</strong></p>
+<ul>
+<li>原假设是一种逻辑构造，体现“什么特殊情况都没发生，观测到的效应完全是随机机会造成的”这一概念。</li>
+<li>假设检验假定原假设成立，构建“原模型”（一个概率模型），并检验观测到的效应是否是该模型下的合理结果。</li>
+</ul>
+<h3 id="重抽样"><strong>重抽样</strong></h3>
+<p>Resampling</p>
+<p>在统计学中，重抽样指的是从已观测到的数据中反复抽取数值，其总体目标是评估某个统计量的随机变动性。它还可以用来评估和提高某些机器学习模型的准确度（例如，把多个自助抽样数据集上建立的决策树模型的预测结果取平均，这一过程称为“袋装法”——参见第
+259 页“袋装法与随机森林”）。</p>
+<p>重抽样程序主要有两种：<strong>自助法（bootstrap）</strong>和<strong>置换检验（permutation
+test）</strong>。自助法用来评估估计值的可靠性，在上一章已讨论过（见第 61
+页“自助法”）。置换检验用于检验假设，通常涉及两个或多个组，本节将讨论这种方法。</p>
+<p><strong>重抽样的关键术语</strong></p>
+<p><strong>置换检验（Permutation test）</strong>
+把两个或多个样本合并在一起，并随机（或穷尽地）重新分配观测值到新的重抽样中。</p>
+<p><strong>同义词</strong> 随机化检验、随机置换检验、精确检验</p>
+<p><strong>重抽样（Resampling）</strong>
+从一个已观测到的数据集抽取附加样本（“重抽样”）。</p>
+<p><strong>有放回或无放回（With or without replacement）</strong>
+抽样时，每次抽出一个项目后，是否在下一次抽样前将其放回样本中。</p>
+<h4 id="置换检验">置换检验</h4>
+<p>Permutation Test</p>
+<p>在置换程序中，涉及两个或更多的样本，通常是 A/B
+测试或其他假设检验中的各组。<strong>Permute</strong>
+的意思是改变一组数值的顺序。置换检验的第一步是将 A 组和 B 组（如果有
+C、D……则包括它们）的结果合并。这体现了原假设的逻辑，即各组接受的处理并无差异。随后，我们通过从这个合并集里随机抽取各组，来检验这一假设并观察它们之间的差异。</p>
+<p>置换程序如下：</p>
+<ol type="1">
+<li>将不同组的结果合并为一个数据集。</li>
+<li>将合并后的数据打乱，然后随机抽取（无放回）一个与 A
+组同样大小的重抽样（显然其中会包含来自其他组的数据）。</li>
+<li>从剩余数据中随机抽取（无放回）一个与 B 组同样大小的重抽样。</li>
+<li>对 C、D
+组等做同样操作。至此，你得到了一组与原始样本大小对应的重抽样。</li>
+<li>对原始样本计算的统计量或估计值（如组间比例差异），在重抽样上重新计算并记录；这构成了一次置换迭代。</li>
+<li>重复上述步骤 R 次，以得到检验统计量的置换分布。</li>
+</ol>
+<p>然后回到实际观测到的组间差异，把它与置换得到的差异集合进行比较。如果观测到的差异完全落在置换差异集合之内，我们并不能证明任何东西——观测差异在随机机会可能产生的范围内。但如果观测差异大多落在置换分布之外，则可以认为并非随机机会导致。从技术角度说，这个差异具有统计显著性（参见第
+103 页“统计显著性与 p 值”）。</p>
+<h4 id="示例网站黏性"><strong>示例：网站黏性</strong></h4>
+<p>Web Stickiness</p>
+<p>一家销售相对高价值服务的公司想要测试两种网页展示哪一种更能促进销售。由于所售服务价值高，销售频率低且周期长，如果直接看销售量，要花很长时间才能积累足够数据判断哪种展示更优。因此，公司决定用一个代理变量来衡量结果，具体是使用描述该服务的详细内部页面。</p>
+<blockquote>
+<p><strong>知识点：</strong></p>
+<p>代理变量**（proxy
+variable）是用来替代真正感兴趣的变量的指标，这个真正的变量可能不可获得、成本太高或耗时太长。例如，在气候研究中，古代冰芯中的氧含量被用作温度的代理指标。最好至少有一些真正感兴趣变量的数据，以便评估它与代理变量之间的关联强度。</p>
+</blockquote>
+<p>对这家公司来说，一个潜在的代理变量是用户点击详细落地页的次数；一个更好的代理变量是用户在页面上停留的时间。合理的假设是，一个能更长时间吸引用户注意的网页展示更有可能带来更多销售。因此，我们的指标是平均会话时长，比较
+A 页和 B 页。</p>
+<p>由于这是一个内部的、特殊用途的页面，访客数并不多。还要注意，我们用
+Google Analytics
+来测量会话时长，但它无法测量用户访问的最后一个会话时长。Google Analytics
+并不会将这类会话从数据中删除，而是记录为
+0，因此数据需要额外处理以剔除这些会话。处理后，两种不同展示共 36
+个会话，其中 A 页 21 个，B 页 15 个。</p>
+<p><img src="/img3/面向数据科学家的实用统计学/F3.3.png" alt="F3.3" style="zoom:33%;" /></p>
+<p>我们可以用 ggplot 通过并排箱线图直观比较会话时长：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ggplot<span class="punctuation">(</span>session_times<span class="punctuation">,</span> aes<span class="punctuation">(</span>x<span class="operator">=</span>Page<span class="punctuation">,</span> y<span class="operator">=</span>Time<span class="punctuation">)</span><span class="punctuation">)</span> <span class="operator">+</span></span><br><span class="line">  geom_boxplot<span class="punctuation">(</span><span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+<p>pandas 的 boxplot 命令使用 <code>by</code> 参数来生成图形：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ax = session_times.boxplot(by=<span class="string">&#x27;Page&#x27;</span>, column=<span class="string">&#x27;Time&#x27;</span>)</span><br><span class="line">ax.set_xlabel(<span class="string">&#x27;&#x27;</span>)</span><br><span class="line">ax.set_ylabel(<span class="string">&#x27;Time (in seconds)&#x27;</span>)</span><br><span class="line">plt.suptitle(<span class="string">&#x27;&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<p>图 3-3 的箱线图表明，B 页的会话时长比 A 页更长。可以在 R
+中这样计算各组均值：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mean_a <span class="operator">&lt;-</span> mean<span class="punctuation">(</span>session_times<span class="punctuation">[</span>session_times<span class="punctuation">[</span><span class="string">&#x27;Page&#x27;</span><span class="punctuation">]</span> <span class="operator">==</span> <span class="string">&#x27;Page A&#x27;</span><span class="punctuation">,</span> <span class="string">&#x27;Time&#x27;</span><span class="punctuation">]</span><span class="punctuation">)</span></span><br><span class="line">mean_b <span class="operator">&lt;-</span> mean<span class="punctuation">(</span>session_times<span class="punctuation">[</span>session_times<span class="punctuation">[</span><span class="string">&#x27;Page&#x27;</span><span class="punctuation">]</span> <span class="operator">==</span> <span class="string">&#x27;Page B&#x27;</span><span class="punctuation">,</span> <span class="string">&#x27;Time&#x27;</span><span class="punctuation">]</span><span class="punctuation">)</span></span><br><span class="line">mean_b <span class="operator">-</span> mean_a</span><br><span class="line"><span class="punctuation">[</span><span class="number">1</span><span class="punctuation">]</span> <span class="number">35.66667</span></span><br></pre></td></tr></table></figure>
+<p>在 Python 中，我们先按页面筛选 pandas 数据框，再取 Time 列均值：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mean_a = session_times[session_times.Page == <span class="string">&#x27;Page A&#x27;</span>].Time.mean()</span><br><span class="line">mean_b = session_times[session_times.Page == <span class="string">&#x27;Page B&#x27;</span>].Time.mean()</span><br><span class="line">mean_b - mean_a</span><br></pre></td></tr></table></figure>
+<p>结果表明，B 页的平均会话时长比 A 页长 35.67
+秒。问题在于，这个差异是否在随机因素可能产生的范围内，即是否具有统计显著性。一种方法是应用置换检验——把所有会话时长合并，然后反复打乱并按
+21 个（A 页，nA=21）和 15 个（B 页，nB=15）分组。</p>
+<p>为了应用置换检验，我们需要一个函数，把 36 个会话时长随机分配为一组 21
+个（A 页）和一组 15 个（B 页）。R 版本的函数是：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">perm_fun <span class="operator">&lt;-</span> <span class="keyword">function</span><span class="punctuation">(</span>x<span class="punctuation">,</span> nA<span class="punctuation">,</span> nB<span class="punctuation">)</span></span><br><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  n <span class="operator">&lt;-</span> nA <span class="operator">+</span> nB</span><br><span class="line">  idx_b <span class="operator">&lt;-</span> sample<span class="punctuation">(</span><span class="number">1</span><span class="operator">:</span>n<span class="punctuation">,</span> nB<span class="punctuation">)</span></span><br><span class="line">  idx_a <span class="operator">&lt;-</span> setdiff<span class="punctuation">(</span><span class="number">1</span><span class="operator">:</span>n<span class="punctuation">,</span> idx_b<span class="punctuation">)</span></span><br><span class="line">  mean_diff <span class="operator">&lt;-</span> mean<span class="punctuation">(</span>x<span class="punctuation">[</span>idx_b<span class="punctuation">]</span><span class="punctuation">)</span> <span class="operator">-</span> mean<span class="punctuation">(</span>x<span class="punctuation">[</span>idx_a<span class="punctuation">]</span><span class="punctuation">)</span></span><br><span class="line">  <span class="built_in">return</span><span class="punctuation">(</span>mean_diff<span class="punctuation">)</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>Python 版本的置换检验函数如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">perm_fun</span>(<span class="params">x, nA, nB</span>):</span><br><span class="line">    n = nA + nB</span><br><span class="line">    idx_B = <span class="built_in">set</span>(random.sample(<span class="built_in">range</span>(n), nB))</span><br><span class="line">    idx_A = <span class="built_in">set</span>(<span class="built_in">range</span>(n)) - idx_B</span><br><span class="line">    <span class="keyword">return</span> x.loc[idx_B].mean() - x.loc[idx_A].mean()</span><br></pre></td></tr></table></figure>
+<p>这个函数的工作方式是：不放回地抽取 <span
+class="math inline">\(n_B\)</span> 个索引分配给 B 组；剩下的 <span
+class="math inline">\(n_A\)</span> 个索引分配给 A
+组；<strong>返回两组均值之差</strong>。 将这个函数调用 R=1,000
+次，并指定 <span class="math inline">\(n_A\)</span>=21、<span
+class="math inline">\(n_B\)</span>=15，就可以得到会话时长差异的分布，并画出直方图。
+在 R 中用 hist 函数实现如下：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">perm_diffs <span class="operator">&lt;-</span> <span class="built_in">rep</span><span class="punctuation">(</span><span class="number">0</span><span class="punctuation">,</span> <span class="number">1000</span><span class="punctuation">)</span></span><br><span class="line"><span class="keyword">for</span> <span class="punctuation">(</span>i <span class="keyword">in</span> <span class="number">1</span><span class="operator">:</span><span class="number">1000</span><span class="punctuation">)</span> <span class="punctuation">&#123;</span></span><br><span class="line">  perm_diffs<span class="punctuation">[</span>i<span class="punctuation">]</span> <span class="operator">=</span> perm_fun<span class="punctuation">(</span>session_times<span class="punctuation">[</span><span class="punctuation">,</span> <span class="string">&#x27;Time&#x27;</span><span class="punctuation">]</span><span class="punctuation">,</span> <span class="number">21</span><span class="punctuation">,</span> <span class="number">15</span><span class="punctuation">)</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br><span class="line">hist<span class="punctuation">(</span>perm_diffs<span class="punctuation">,</span> xlab<span class="operator">=</span><span class="string">&#x27;Session time differences (in seconds)&#x27;</span><span class="punctuation">)</span></span><br><span class="line">abline<span class="punctuation">(</span>v<span class="operator">=</span>mean_b <span class="operator">-</span> mean_a<span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+<p>在 Python 中，我们可以用 matplotlib 画类似的图：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">perm_diffs = [perm_fun(session_times.Time, nA, nB) <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1000</span>)]</span><br><span class="line">fig, ax = plt.subplots(figsize=(<span class="number">5</span>, <span class="number">5</span>))</span><br><span class="line">ax.hist(perm_diffs, bins=<span class="number">11</span>, rwidth=<span class="number">0.9</span>)</span><br><span class="line">ax.axvline(x = mean_b - mean_a, color=<span class="string">&#x27;black&#x27;</span>, lw=<span class="number">2</span>)</span><br><span class="line">ax.text(<span class="number">50</span>, <span class="number">190</span>, <span class="string">&#x27;Observed\ndifference&#x27;</span>, bbox=&#123;<span class="string">&#x27;facecolor&#x27;</span>:<span class="string">&#x27;white&#x27;</span>&#125;)</span><br><span class="line">ax.set_xlabel(<span class="string">&#x27;Session time differences (in seconds)&#x27;</span>)</span><br><span class="line">ax.set_ylabel(<span class="string">&#x27;Frequency&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<p>图 3-4
+的直方图显示，随机置换的均值差异经常超过观测到的会话时长差异（竖线所示）。</p>
+<p><img src="/img3/面向数据科学家的实用统计学/F3.4.png" alt="F3.4" style="zoom:33%;" /></p>
+<p>在我们的结果中，这种情况发生在 12.6% 的案例里：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mean<span class="punctuation">(</span>perm_diffs <span class="operator">&gt;</span> <span class="punctuation">(</span>mean_b <span class="operator">-</span> mean_a<span class="punctuation">)</span><span class="punctuation">)</span></span><br><span class="line"><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span></span><br><span class="line"><span class="number">0.126</span></span><br></pre></td></tr></table></figure>
+<p>由于模拟使用了随机数，这个百分比会有所不同。例如，在 Python
+版本中，我们得到的是 12.1%：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">np.mean(perm_diffs &gt; mean_b - mean_a)</span><br><span class="line">---</span><br><span class="line"><span class="number">0.121</span></span><br></pre></td></tr></table></figure>
+<p>这表明，A 页与 B
+页之间观测到的会话时长差异完全在随机波动范围内，因此<strong>没有统计显著性</strong>。</p>
+<h4 id="穷举置换检验与自助置换检验">穷举置换检验与自助置换检验</h4>
+<p>Exhaustive and Bootstrap Permutation Tests</p>
+<p>除了前面这种随机洗牌程序（又叫随机置换检验或随机化检验）外，置换检验还有两个变体：</p>
+<ul>
+<li><strong>穷举置换检验（exhaustive permutation test）</strong></li>
+<li><strong>自助置换检验（bootstrap permutation test）</strong></li>
+</ul>
+<p>在穷举置换检验中，我们不是只随机打乱并分组，而是列举出所有可能的分组方式。这只在样本量较小时可行。随机置换检验在重复次数足够多时，其结果会逼近穷举置换检验，并在极限情况下收敛于它。
+由于具有保证“原模型”不会以超过检验 α
+水平被判定为“显著”的统计性质，穷举置换检验有时也被称为<strong>精确检验（exact
+test）</strong>（参见第 103 页“统计显著性与 p 值”）。</p>
+<p>在自助置换检验中，随机置换检验步骤 2 和步骤 3
+中的抽样改为<strong>有放回</strong>而非无放回。这样，重抽样程序不仅模拟处理分配给受试者的随机因素，还模拟从总体抽取受试者的随机因素。</p>
+<p>这两种程序在统计学中都能遇到，它们之间的区别有些复杂，但在数据科学实践中并不重要。</p>
+<h4
+id="置换检验数据科学中的核心要点">置换检验：数据科学中的核心要点</h4>
+<p>Permutation Tests: The Bottom Line for Data Science</p>
+<p>置换检验是一种用来探索随机变异作用的有用启发式程序。它们相对容易编写代码、解释和说明，并且提供了一种有别于基于公式统计方法的“形式主义”和“虚假确定性”的有用路径，因为公式给出的“精确”答案往往暗示了不必要的确定性。与公式方法相比，重抽样的一个优点是，它更接近于一种“通用”推断方法。数据可以是数值型的或二值型的；样本容量可以相同也可以不同；不需要假设数据服从正态分布。</p>
+<p><strong>关键要点</strong></p>
+<ul>
+<li>在置换检验中，先将多个样本合并再打乱顺序。</li>
+<li>然后将打乱后的值分成重抽样样本，计算感兴趣的统计量。</li>
+<li>重复这一过程，并记录重抽样统计量。</li>
+<li>将观察到的统计量与重抽样分布进行比较，可以判断样本间观察到的差异是否可能由随机性产生。</li>
+</ul>
+<h3 id="统计显著性与-p-值">统计显著性与 p 值</h3>
+<p>Statistical Significance and p-Values</p>
+<p>统计显著性是统计学家衡量实验（或对现有数据的研究）所得结果是否比随机性产生的结果更极端的一种方法。如果结果超出了随机变异的范围，就称之为具有统计显著性。</p>
+<p><strong>统计显著性与 p 值的关键术语</strong></p>
+<ul>
+<li><strong>p
+值</strong>：在一个体现零假设的随机模型下，得到与观测结果一样不寻常或极端的结果的概率。</li>
+<li><strong>α（显著性水平）</strong>：判断“异常”程度的概率阈值，实际结果超过该阈值就被视为具有统计显著性。</li>
+<li><strong>第一类错误（Type 1
+error）</strong>：错误地认为效应存在（其实是偶然造成的）。</li>
+<li><strong>第二类错误（Type 2
+error）</strong>：错误地认为效应是偶然的（其实是真实存在的）。</li>
+</ul>
+<p>请看前面网页测试示例的表 3-2：</p>
+<p><img src="/img3/面向数据科学家的实用统计学/T3.2.png" alt="T3.2" style="zoom:67%;" /></p>
+<p>价格 A 的转化率比价格 B 高将近 5%（0.8425% = 200/(23,539+200)*100，而
+0.8057% = 182/(22,406+182)*100，差值为 0.0368
+个百分点），在高流量业务中已足够有意义。这里我们有 45,000
+多个数据点，容易认为这是“大数据”，不需要做统计显著性检验（主要用于处理小样本中的抽样变异）。然而，转化率不到
+1%，实际有意义的数值（转化次数）只有几百个，真正决定所需样本量的是这些转化次数。我们可以用重抽样程序来检验价格
+A 和 B
+之间的转化率差异是否在随机变异的范围内。这里“随机变异”指的是一个体现零假设（即两种价格的转化率没有差别）的概率模型所产生的随机波动。</p>
+<p>下述置换程序提出的问题是：“如果两种价格具有相同的转化率，随机波动能否产生像
+5% 这样大的差异？”</p>
+<ol type="1">
+<li>把标有 1 和 0 的卡片放入盒中：这代表假定的共享转化率，382 个 1 和
+45,945 个 0 = 0.008246 = 0.8246%。</li>
+<li>洗牌并抽取一个大小为 23,739（价格 A 的样本量）的重抽样，记录 1
+的数量。</li>
+<li>记录剩下的 22,588（价格 B 的样本量）中 1 的数量。</li>
+<li>记录 1 的比例差异。</li>
+<li>重复步骤 2–4。</li>
+<li>统计差异 ≥ 0.0368 的次数。</li>
+</ol>
+<p>在 R 中可以重用第 98 页“示例：网页黏性”里定义的 <code>perm_fun</code>
+函数来创建转化率随机置换差异的直方图：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">obs_pct_diff <span class="operator">&lt;-</span> 100 <span class="operator">*</span> <span class="punctuation">(</span><span class="number">200</span> <span class="operator">/</span> <span class="number">23739</span> <span class="operator">-</span> <span class="number">182</span> <span class="operator">/</span> <span class="number">22588</span><span class="punctuation">)</span></span><br><span class="line">conversion <span class="operator">&lt;-</span> <span class="built_in">c</span><span class="punctuation">(</span><span class="built_in">rep</span><span class="punctuation">(</span><span class="number">0</span><span class="punctuation">,</span> <span class="number">45945</span><span class="punctuation">)</span><span class="punctuation">,</span> <span class="built_in">rep</span><span class="punctuation">(</span><span class="number">1</span><span class="punctuation">,</span> <span class="number">382</span><span class="punctuation">)</span><span class="punctuation">)</span></span><br><span class="line">perm_diffs <span class="operator">&lt;-</span> <span class="built_in">rep</span><span class="punctuation">(</span><span class="number">0</span><span class="punctuation">,</span> <span class="number">1000</span><span class="punctuation">)</span></span><br><span class="line"><span class="keyword">for</span> <span class="punctuation">(</span>i <span class="keyword">in</span> <span class="number">1</span><span class="operator">:</span><span class="number">1000</span><span class="punctuation">)</span> <span class="punctuation">&#123;</span></span><br><span class="line">  perm_diffs<span class="punctuation">[</span>i<span class="punctuation">]</span> <span class="operator">=</span> <span class="number">100</span> <span class="operator">*</span> perm_fun<span class="punctuation">(</span>conversion<span class="punctuation">,</span> <span class="number">23739</span><span class="punctuation">,</span> <span class="number">22588</span><span class="punctuation">)</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br><span class="line">hist<span class="punctuation">(</span>perm_diffs<span class="punctuation">,</span> xlab<span class="operator">=</span><span class="string">&#x27;Conversion rate (percent)&#x27;</span><span class="punctuation">,</span> main<span class="operator">=</span><span class="string">&#x27;&#x27;</span><span class="punctuation">)</span></span><br><span class="line">abline<span class="punctuation">(</span>v<span class="operator">=</span>obs_pct_diff<span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+<p>对应的 Python 代码为：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">obs_pct_diff = <span class="number">100</span> * (<span class="number">200</span> / <span class="number">23739</span> - <span class="number">182</span> / <span class="number">22588</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&#x27;Observed difference: <span class="subst">&#123;obs_pct_diff:<span class="number">.4</span>f&#125;</span>%&#x27;</span>)</span><br><span class="line">conversion = [<span class="number">0</span>] * <span class="number">45945</span></span><br><span class="line">conversion.extend([<span class="number">1</span>] * <span class="number">382</span>)</span><br><span class="line">conversion = pd.Series(conversion)</span><br><span class="line">perm_diffs = [<span class="number">100</span> * perm_fun(conversion, <span class="number">23739</span>, <span class="number">22588</span>)</span><br><span class="line">              <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1000</span>)]</span><br><span class="line">fig, ax = plt.subplots(figsize=(<span class="number">5</span>, <span class="number">5</span>))</span><br><span class="line">ax.hist(perm_diffs, bins=<span class="number">11</span>, rwidth=<span class="number">0.9</span>)</span><br><span class="line">ax.axvline(x=obs_pct_diff, color=<span class="string">&#x27;black&#x27;</span>, lw=<span class="number">2</span>)</span><br><span class="line">ax.text(<span class="number">0.06</span>, <span class="number">200</span>, <span class="string">&#x27;Observed\ndifference&#x27;</span>, bbox=&#123;<span class="string">&#x27;facecolor&#x27;</span>:<span class="string">&#x27;white&#x27;</span>&#125;)</span><br><span class="line">ax.set_xlabel(<span class="string">&#x27;Conversion rate (percent)&#x27;</span>)</span><br><span class="line">ax.set_ylabel(<span class="string">&#x27;Frequency&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<p>在图 3-5 中展示了 1,000 个重抽样结果的直方图：就本例而言，观察到的
+0.0368% 的差异完全处于随机波动范围内。</p>
+<p><img src="/img3/面向数据科学家的实用统计学/F3.5.png" alt="F3.5" style="zoom:33%;" /></p>
+<h4 id="p-值">p 值</h4>
+<p>单纯看图并不是衡量统计显著性的精确方法，因此更有意义的是 p 值。p
+值指的是“机会模型”（即零假设模型）产生比观测结果更极端结果的频率。我们可以用置换检验估计
+p 值：计算置换检验产生的差异大于或等于观测差异的比例：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mean<span class="punctuation">(</span>perm_diffs <span class="operator">&gt;</span> obs_pct_diff<span class="punctuation">)</span></span><br><span class="line"><span class="punctuation">[</span><span class="number">1</span><span class="punctuation">]</span> <span class="number">0.308</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">np.mean([diff &gt; obs_pct_diff <span class="keyword">for</span> diff <span class="keyword">in</span> perm_diffs])</span><br></pre></td></tr></table></figure>
+<p>这里，R 和 Python 都利用了“true 被当作 1、false 被当作 0”这一事实。p
+值为 0.308，意味着在随机条件下，我们大约 30%
+的时间会得到像这样极端或更极端的结果。</p>
+<p>在这种情况下，其实不必用置换检验来得到 p
+值。由于我们有二项分布，可以近似计算 p 值。R 代码如下：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">prop.test<span class="punctuation">(</span>x<span class="operator">=</span><span class="built_in">c</span><span class="punctuation">(</span><span class="number">200</span><span class="punctuation">,</span> <span class="number">182</span><span class="punctuation">)</span><span class="punctuation">,</span> n<span class="operator">=</span><span class="built_in">c</span><span class="punctuation">(</span><span class="number">23739</span><span class="punctuation">,</span> <span class="number">22588</span><span class="punctuation">)</span><span class="punctuation">,</span> alternative<span class="operator">=</span><span class="string">&#x27;greater&#x27;</span><span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+<p>输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">2-sample test for equality of proportions with continuity correction</span><br><span class="line">data: c(200, 182) out of c(23739, 22588)</span><br><span class="line">X-squared = 0.14893, df = 1, p-value = 0.3498</span><br><span class="line">alternative hypothesis: greater</span><br><span class="line">95 percent confidence interval:</span><br><span class="line">-0.001057439 1.000000000</span><br><span class="line">sample estimates:</span><br><span class="line">prop 1 prop 2</span><br><span class="line">0.008424955 0.008057376</span><br></pre></td></tr></table></figure>
+<p>参数 <code>x</code> 是每组成功次数，参数 <code>n</code>
+是每组试验次数。</p>
+<p><code>scipy.stats.chi2_contingency</code> 方法可接受表 3-2
+中的数据：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">survivors = np.array([[<span class="number">200</span>, <span class="number">23739</span> - <span class="number">200</span>], [<span class="number">182</span>, <span class="number">22588</span> - <span class="number">182</span>]])</span><br><span class="line">chi2, p_value, df, _ = stats.chi2_contingency(survivors)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&#x27;p-value for single sided test: <span class="subst">&#123;p_value / <span class="number">2</span>:<span class="number">.4</span>f&#125;</span>&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<p>正态近似得出 p 值为 0.3498，与置换检验的 p 值接近。</p>
+<h4 id="α显著性水平">α（显著性水平）</h4>
+<p>统计学家不赞成把“结果是否太不寻常”交给研究者自由裁量，而是提前规定一个阈值，例如“比零假设下
+5% 的结果更极端”。这个阈值称为 α。典型的 α 水平有 5% 和
+1%。无论选择哪一个水平，本质上都是人为的决策，并不能保证 x%
+的时候都作出正确判断。这是因为所回答的概率问题并不是“这个结果发生的概率是多少？”，而是“在机会模型成立的前提下，得到如此极端结果的概率是多少？”。然后我们再反推机会模型是否合适，但这种判断并不具有概率意义。这一点长期以来造成了许多混淆。</p>
+<p><strong>p 值争议</strong>:p-value controversy</p>
+<p>近年来，p 值的使用引发了大量争议。某心理学期刊甚至“禁止”投稿论文使用
+p 值，理由是单纯根据 p
+值决定是否发表，导致了劣质研究的出版。太多研究者对 p
+值的真正含义只有模糊的认识，他们在数据里翻找、在不同假设之间挑选，直到找到一个显著的
+p 值，于是就能发表论文。</p>
+<p>真正的问题是，人们希望从 p 值中得到超出它本身的信息。我们希望 p
+值代表的是：</p>
+<blockquote>
+<p>结果由随机性造成的概率</p>
+</blockquote>
+<p>我们希望这个值越低越好，这样就可以得出“我们证明了某件事”的结论。许多期刊编辑就是这样解读
+p 值的。但实际上 p 值真正表示的是：</p>
+<blockquote>
+<p>在一个机会模型成立的条件下，得到像观测结果一样极端结果的概率</p>
+</blockquote>
+<p>两者区别微妙但真实。显著的 p
+值并不能像它表面承诺的那样把你推向“证明”的地步。当理解了 p
+值的真正含义时，“统计显著”这一结论的逻辑基础其实更弱。</p>
+<p>2016 年 3 月，美国统计学会（ASA）经过内部长时间讨论，发布了关于 p
+值使用的警示声明，揭示了人们对 p 值的误解。ASA
+声明强调了供研究者和期刊编辑参考的六条原则：</p>
+<ol type="1">
+<li>p 值可以反映数据与某个特定统计模型的不兼容程度。</li>
+<li>p
+值不能衡量所研究假设为真的概率，也不能衡量数据纯粹由随机性产生的概率。</li>
+<li>科学结论和商业或政策决策不应仅仅基于 p 值是否超过某个阈值。</li>
+<li>做出恰当推断需要全面报告和透明度。</li>
+<li>p 值或统计显著性不能衡量效应大小或结果的重要性。</li>
+<li>单靠 p 值无法提供关于模型或假设的有力证据。</li>
+</ol>
+<p><strong>实际显著性</strong>:Practical significance</p>
+<p>即使一个结果在统计上显著，这也并不意味着它在实际中具有显著性。如果样本量足够大，即便是一个毫无实际意义的微小差异，也可能在统计上显著。大样本能确保即便是小且无意义的效应，也足以排除“随机”作为解释。然而，排除了随机性并不会神奇地使一个本质上无关紧要的结果变得重要。</p>
+<h4 id="第一类错误与第二类错误">第一类错误与第二类错误</h4>
+<p>在评估统计显著性时，可能发生两种错误：</p>
+<ul>
+<li><strong>第一类错误（Type 1
+error）</strong>：当效应实际上只是随机造成的，却错误地得出效应真实存在的结论；</li>
+<li><strong>第二类错误（Type 2
+error）</strong>：当效应实际上是真实存在的，却错误地得出效应不存在（即归因于随机性）的结论。</li>
+</ul>
+<p>实际上，第二类错误与其说是错误，不如说是样本量太小，无法检测到效应。当
+p 值未达到统计显著性（例如大于
+5%）时，我们真正的意思是“效应未被证明”。可能换成更大的样本就会得到更小的
+p 值。</p>
+<p>显著性检验（也称假设检验）的基本功能是防止被随机性所欺骗，因此它们通常设计成最小化第一类错误。</p>
+<h4 id="数据科学与-p-值">数据科学与 p 值</h4>
+<p>数据科学家的工作通常不是为了在科学期刊上发表，因此围绕 p
+值价值的争论更多是学术问题。对于数据科学家来说，p
+值在想要知道某个看起来有趣且有用的模型结果是否处于正常随机波动范围内时，是一个有用的度量指标。作为实验中的决策工具，p
+值不应被视为“决定性”的，而仅仅是为决策提供信息的一个参考点。例如，在某些统计或机器学习模型中，p
+值有时作为中间输入使用——某个特征是否被包含在模型中，可能取决于它的 p
+值。</p>
+<p><strong>关键要点</strong></p>
+<ul>
+<li>显著性检验用于判断观测到的效应是否在零假设模型的随机波动范围内；</li>
+<li>p
+值是在零假设模型成立的前提下，得到像观测结果一样极端结果的概率；</li>
+<li>α 值是零假设随机模型中“异常程度”的阈值；</li>
+<li>显著性检验在正式研究报告中比在数据科学中更相关（但近年即便在研究中也逐渐淡化）。</li>
+</ul>
+<h3 id="t-检验">t 检验</h3>
+<p>显著性检验有很多种，具体取决于数据是计数数据还是测量数据、样本有多少以及测量的是什么。非常常见的一种是
+<strong>t 检验</strong>，它以 <strong>Student’s t
+分布</strong>命名，最初由 W. S. Gosset
+提出，用于近似单一样本均值的分布（参见第 75 页“Student’s t 分布”）。</p>
+<p><strong>t 检验关键术语</strong></p>
+<ul>
+<li><strong>检验统计量（Test
+statistic）</strong>：衡量差异或感兴趣效应的指标；</li>
+<li><strong>t
+统计量（t-statistic）</strong>：均值等常见检验统计量的标准化版本；</li>
+<li><strong>t
+分布（t-distribution）</strong>：一个参考分布（此处来源于零假设），用来与观测到的
+t 统计量进行比较。</li>
+</ul>
+<p>所有显著性检验都要求你指定一个检验统计量，用来衡量你感兴趣的效应，并帮助你判断观测到的效应是否处于正常随机波动的范围内。在重抽样检验中（见第
+97
+页“置换检验”的讨论），数据的量纲无关紧要。你从数据本身创建参考（零假设）分布，并直接使用该检验统计量。</p>
+<p>在 20 世纪 20–30
+年代，统计假设检验正在发展之时，随机打乱数据上千次以做重抽样检验在计算上并不可行。统计学家发现，一个对置换（打乱）分布的良好近似是
+t 检验，它基于 Gosset 的 t 分布。它被用于非常常见的两样本比较——A/B
+测试——当数据是数值型时尤为常见。但要使 t
+分布在不考虑量纲的情况下使用，必须采用检验统计量的标准化形式。</p>
+<p>一本经典的统计教材在此处会展示各种结合 Gosset
+分布的公式，并演示如何将数据标准化以与标准 t
+分布进行比较。这里没有列出这些公式，因为所有统计软件（包括 R 和
+Python）都内置了实现这些公式的命令。在 R 中，对应的函数是
+<code>t.test</code>：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="operator">&gt;</span> t.test<span class="punctuation">(</span>Time <span class="operator">~</span> Page<span class="punctuation">,</span> data<span class="operator">=</span>session_times<span class="punctuation">,</span> alternative<span class="operator">=</span><span class="string">&#x27;less&#x27;</span><span class="punctuation">)</span></span><br><span class="line"></span><br><span class="line">Welch Two Sample t<span class="operator">-</span>test  </span><br><span class="line">data<span class="operator">:</span> Time by Page  </span><br><span class="line">t <span class="operator">=</span> <span class="operator">-</span><span class="number">1.0983</span><span class="punctuation">,</span> df <span class="operator">=</span> <span class="number">27.693</span><span class="punctuation">,</span> p<span class="operator">-</span>value <span class="operator">=</span> <span class="number">0.1408</span>  </span><br><span class="line">alternative hypothesis<span class="operator">:</span> true difference <span class="keyword">in</span> means is less than <span class="number">0</span>  </span><br><span class="line"><span class="number">95</span> percent confidence interval<span class="operator">:</span>  </span><br><span class="line"><span class="operator">-</span><span class="literal">Inf</span> <span class="number">19.59674</span>  </span><br><span class="line">sample estimates<span class="operator">:</span>  </span><br><span class="line">mean <span class="keyword">in</span> group Page A mean <span class="keyword">in</span> group Page B  </span><br><span class="line"><span class="number">126.3333</span> <span class="number">162.0000</span></span><br></pre></td></tr></table></figure>
+<p>在 Python 中可以使用 <code>scipy.stats.ttest_ind</code>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">res = stats.ttest_ind(</span><br><span class="line">    session_times[session_times.Page == <span class="string">&#x27;Page A&#x27;</span>].Time,</span><br><span class="line">    session_times[session_times.Page == <span class="string">&#x27;Page B&#x27;</span>].Time,</span><br><span class="line">    equal_var=<span class="literal">False</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&#x27;p-value for single sided test: <span class="subst">&#123;res.pvalue / <span class="number">2</span>:<span class="number">.4</span>f&#125;</span>&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<p>备择假设是：Page A 的会话时间均值小于 Page B 的会话时间。p 值为
+0.1408，与置换检验得到的 p 值 0.121 和 0.126（见第 98
+页“示例：网页黏性”）相当接近。</p>
+<p>在重抽样模式下，我们根据观测数据和待检验的假设来构造解，不必担心数据是数值型还是二元型，样本量是否均衡、样本方差、以及其他各种因素。而在公式的世界里，存在很多变体，可能令人眼花缭乱。统计学家需要在那个世界中导航并掌握它的地图，但数据科学家不必如此——他们通常无需像准备学术论文的研究者那样在假设检验和置信区间的细节上费尽心思。</p>
+<p><strong>关键要点</strong></p>
+<ul>
+<li>在计算机出现之前，重抽样检验并不实际，统计学家使用标准参考分布。</li>
+<li>然后可以将检验统计量标准化并与参考分布进行比较。</li>
+<li>一个广泛使用的标准化统计量就是 <strong>t 统计量</strong>。</li>
+</ul>
+<h3 id="多重检验">多重检验</h3>
+<p>Multiple Testing</p>
+<p>正如我们之前提到过的，统计学里有句俗语：“折磨数据足够久，它终会招供。”这意味着，如果你从足够多的角度看数据、问足够多的问题，几乎总能找到某个“统计显著”的效应。</p>
+<p>例如，如果你有 20 个预测变量和 1
+个结果变量，且它们都是随机生成的，那么如果你按 α = 0.05 的显著性水平做
+20
+次显著性检验，至少有一个预测变量（错误地）显得统计显著的概率非常大。正如前文所述，这就是<strong>Ⅰ类错误</strong>。你可以这样计算这个概率：先求出所有检验都正确地不显著的概率。一个检验正确地不显著的概率是
+0.95，那么 20 个都正确地不显著的概率就是0.95 × 0.95 × 0.95… = 0.95²⁰ =
+0.36。至少一个预测变量（错误地）显著的概率就是这个概率的反面，即1 –
+（所有都不显著的概率）= 0.64。这被称为<strong>α 膨胀（alpha
+inflation）</strong>。</p>
+<p>这一问题与数据挖掘中的过拟合有关，也就是“把模型拟合到噪声上”。你加入的变量越多、运行的模型越多，就越可能仅凭偶然性得出“显著”的结果。</p>
+<p><strong>多重检验关键术语</strong></p>
+<ul>
+<li><p><strong>Ⅰ类错误（Type 1 error）</strong>
+错误地认为某个效应具有统计显著性。</p></li>
+<li><p><strong>假发现率（False discovery rate）</strong>
+在多次检验中犯Ⅰ类错误的比例。</p></li>
+<li><p><strong>α 膨胀（Alpha inflation）</strong>
+随着进行更多检验，α（Ⅰ类错误概率）不断上升的多重检验现象。</p></li>
+<li><p><strong>p 值调整（Adjustment of p-values）</strong>
+针对同一数据做多次检验时进行的校正。</p></li>
+<li><p><strong>过拟合（Overfitting）</strong> 拟合到了噪声。</p></li>
+</ul>
+<p>在监督学习任务中，使用一个模型未见过的数据集（保留集/验证集）来评估模型，可以降低这种风险。而在没有标注保留集的统计或机器学习任务中，基于统计噪声得出结论的风险依然存在。</p>
+<p>在统计学中，有一些方法在特定情境下用来处理这个问题。例如，如果你在比较多个处理组的结果，你可能会问多个问题。对于
+A–C 三个处理，你可能会问：</p>
+<ul>
+<li>A 是否不同于 B？</li>
+<li>B 是否不同于 C？</li>
+<li>A 是否不同于 C？</li>
+</ul>
+<p>或者，在临床试验中，你可能想在多个阶段观察某种疗法的结果。每一次提问，都会增加被偶然性“愚弄”的概率。统计学中的调整方法可以通过比单个假设检验更严格地设定显著性门槛来补偿这种风险。这些调整方法通常涉及根据检验的次数“分割
+α”。这会导致每个检验的 α 更小（即显著性标准更严格）。</p>
+<ul>
+<li><strong>Bonferroni 调整</strong>：简单地把 α 除以比较的次数。</li>
+<li><strong>Tukey
+的“诚实显著性差异”（HSD）</strong>：用于比较多个组均值。这个检验针对组均值之间的最大差异，将其与一个基于
+t
+分布的基准进行比较（大致相当于把所有值混在一起，重新抽取与原来组大小相同的样本，然后找出这些重抽样组均值之间的最大差异）。</li>
+</ul>
+<p>然而，多重比较的问题超出了这些高度结构化的情形，并与反复“淘洗”数据的现象有关，这正是那句“折磨数据”的俗语的由来。换句话说，给定足够复杂的数据，如果你还没发现有趣的东西，那只是因为你还没看得足够久、问得足够多。如今可用的数据比以往任何时候都多，期刊文章的数量在
+2002–2010
+年间几乎翻了一番。这给了我们大量机会在数据中发现有趣的东西，同时也带来了多重性问题，例如：</p>
+<ul>
+<li>检查多个组间的成对差异</li>
+<li>观察多个子组的结果（“整体治疗效果不显著，但我们在 30
+岁以下未婚女性中发现了效果”）</li>
+<li>尝试大量统计模型</li>
+<li>在模型中包含大量变量</li>
+<li>提出许多不同的问题（即不同的可能结果）</li>
+</ul>
+<blockquote>
+<p><strong>通用注解</strong></p>
+<p>假发现率（False Discovery Rate,
+FDR）**：“假发现率”这一术语最初用来描述一组假设检验中，错误地识别出显著效应的比例。随着基因组学研究的兴起，它变得尤其有用，因为在基因测序项目中可能要进行海量的统计检验。在这些情境中，这个术语适用于整个检验流程，而单个错误“发现”指的是某次假设检验的结果（例如比较两份样本）。研究人员希望设置检验过程的参数，以在指定水平上控制假发现率。该术语还被用在数据挖掘的分类问题中：它表示在类别
+1
+的预测中出现的误分类率。换句话说，它是“发现”是假的概率（把一条记录标为“1”时，它实际上是假的概率）。这种情形通常对应
+0 类丰富、1 类稀少而有趣的情况（参见第 5 章“稀有类别问题”）。</p>
+</blockquote>
+<p>由于包括“多重性”在内的多种原因，更多的研究并不一定意味着更好的研究。例如，制药公司拜耳在
+2011 年发现，当它试图重复 67 项科学研究时，只有 14
+项能完全复现，近三分之二完全无法复现。</p>
+<p>无论如何，高度结构化的统计检验的各种调整程序过于具体和僵化，不适合数据科学的普遍用途。数据科学家在多重性问题上的要点是：</p>
+<ul>
+<li>对于预测建模，通过交叉验证（见第 155
+页“交叉验证”）和使用保留样本，可以减轻得到一个看似有效、但实际上主要源自随机性的虚幻模型的风险。</li>
+<li>对于没有带标签的保留集来检查模型的其他过程，你必须依赖： —
+意识到查询和操作数据越多，随机性起作用的可能性就越大； —
+使用重采样和模拟的启发式方法提供随机基准，与观测结果进行比较。</li>
+</ul>
+<p><strong>关键要点</strong></p>
+<ul>
+<li>研究或数据挖掘项目中的多重性（多重比较、许多变量、许多模型等）增加了仅因偶然性而得出显著结论的风险。</li>
+<li>在涉及多次统计比较（即多重显著性检验）的情形下，有统计学上的调整程序。</li>
+<li>在数据挖掘情境中，使用带标签结果变量的保留样本可以帮助避免误导性结果。</li>
+</ul>
+<h3 id="自由度">自由度</h3>
+<p>Degrees of Freedom</p>
+<p>在许多统计检验和概率分布的文档及设置中，你会看到“自由度”一词。该概念应用于从样本数据计算得来的统计量，指可自由变化的数值个数。例如，如果你知道一个包含
+10 个值的样本的均值，那么自由度就是 9（因为一旦你知道其中 9 个样本值，第
+10
+个值就可以计算出来，不再自由）。在许多概率分布中，自由度参数会影响分布的形状。</p>
+<p>自由度的数量是许多统计检验的输入参数。例如，自由度就是在方差和标准差计算中分母
+n – 1 的名称。为什么这很重要？当你用样本估计总体方差时，如果分母用
+n，你会得到一个略微向下偏倚的估计；如果用 n –
+1，估计就没有这种偏倚。</p>
+<p><strong>自由度关键术语</strong></p>
+<ul>
+<li><strong>n
+或样本量</strong>：数据中的观测数（也称行数或记录数）。</li>
+<li><strong>d.f.（自由度）</strong></li>
+</ul>
+<p>传统统计课程或教材中很大一部分都在讲各种标准假设检验（t 检验、F
+检验等）。当样本统计量被标准化以应用于传统统计公式时，自由度是标准化计算的一部分，以确保你的标准化数据与相应的参考分布（t
+分布、F 分布等）相匹配。</p>
+<p>对数据科学来说重要吗？其实不太重要，至少在显著性检验的语境中不是这样。一方面，数据科学中正式的统计检验使用得很有限；另一方面，数据规模通常足够大，因此对于数据科学家来说，分母是
+n 还是 n – 1 几乎没有实质差别（当 n 变大时，用 n
+作为分母所产生的偏倚会消失）。</p>
+<p>不过，有一个情境与之相关：<strong>在回归（包括逻辑回归）中使用分解变量时。如果存在完全冗余的预测变量，一些回归算法会出错。这种情况最常见于把分类变量分解为二元指示变量（哑变量）。</strong>以“星期几”为例。虽然一周有七天，但“星期几”这个变量只有六个自由度。比如，一旦你知道“不是周一到周六”，就可以推知“必然是周日”。因此，如果你包含了周一到周六的指示变量，再加上周日，就会因为多重共线性导致回归失败。</p>
+<p><strong>关键要点</strong></p>
+<ul>
+<li>自由度（d.f.）是标准化检验统计量以便与参考分布（t 分布、F
+分布等）比较的计算的一部分。</li>
+<li>自由度概念是把分类变量分解为 n – 1
+个指示（哑）变量以进行回归的理论基础（避免多重共线性）。</li>
+</ul>
+<h3 id="anova方差分析">ANOVA（方差分析）</h3>
+<p>假设我们不是进行 A/B 测试，而是要比较多个组，比如
+A/B/C/D，每个组都有数值数据。用来检验各组之间是否存在统计学显著差异的统计程序称为<strong>方差分析</strong>（analysis
+of variance，简称 <strong>ANOVA</strong>）。</p>
+<p><strong>ANOVA 的关键术语</strong></p>
+<ul>
+<li><p><strong>成对比较（Pairwise comparison）</strong>
+在多个组中对任意两组之间（如均值）进行的假设检验。</p></li>
+<li><p><strong>总体检验（Omnibus test）</strong>
+对多个组均值总体方差进行的单一假设检验。</p></li>
+<li><p><strong>方差分解（Decomposition of variance）</strong>
+将对单个值有贡献的成分分离出来（例如相对于总体均值、相对于处理均值和相对于残差误差的成分）。</p></li>
+<li><p><strong>F 统计量（F-statistic）</strong>
+标准化的统计量，衡量<strong>组均值之间的差异</strong>是否超过随机模型下可能出现的差异程度。</p></li>
+<li><p><strong>SS（平方和，Sum of Squares）</strong>
+指的是相对于某个平均值的偏差（deviations）平方之和。</p></li>
+</ul>
+<p><img src="/img3/面向数据科学家的实用统计学/T3.3.png" alt="T3.3" style="zoom:50%;" /></p>
+<p>表 3-3
+显示了四个网页的“黏性”（stickiness），定义为访问者停留在页面上的秒数。四个页面是随机分配的，每位访客只会看到其中一个页面。每个页面有
+5 位访客，表 3-3 中的每一列都是一组独立的数据。例如，第 1 页的第 1
+位访客与第 2 页的第 1
+位访客之间没有关联。注意在这种网页测试中，我们无法完全实现经典的随机抽样设计（即每位访客从某个庞大总体中随机选取），只能按访客到来的顺序分配。访客可能因一天中的时间、星期几、季节、网络条件、所用设备等而系统性地不同，在回顾实验结果时要把这些因素视为潜在偏差。</p>
+<p><img src="/img3/面向数据科学家的实用统计学/F3.6.png" alt="F3.6" style="zoom:33%;" /></p>
+<p>现在我们遇到了一个难题（见图
+3-6）。当只比较两个组时，我们只需看两组均值的差异就行。但当有四个均值时，可能的成对比较有六种：</p>
+<ul>
+<li>第 1 页与第 2 页比较</li>
+<li>第 1 页与第 3 页比较</li>
+<li>第 1 页与第 4 页比较</li>
+<li>第 2 页与第 3 页比较</li>
+<li>第 2 页与第 4 页比较</li>
+<li>第 3 页与第 4 页比较</li>
+</ul>
+<p>成对比较越多，就越有可能因随机性而得出错误的结论（见第 112
+页“多重检验”）。与其担心页面间所有可能的比较，不如做一个<strong>总体检验</strong>，回答这样的问题：“所有页面的真实‘黏性’是否可能相同，观察到的差异是否仅仅是由于相同会话时间随机分配给四个页面造成的？”</p>
+<p>用来检验这一点的程序就是
+ANOVA。它的原理可以用下面的重抽样程序来说明（这里针对网页黏性的 A/B/C/D
+测试）：</p>
+<ol type="1">
+<li>将所有数据合并到一个整体中；</li>
+<li>随机打乱后抽取四个包含 5 个值的重样本；</li>
+<li>记录四个组的均值；</li>
+<li>记录四个组均值之间的方差；</li>
+<li>重复步骤 2–4 多次（比如 1,000 次）；</li>
+</ol>
+<p>重抽样后有多少次方差超过了观察到的方差？这就是 p 值。</p>
+<p>这种置换检验比第 97 页“置换检验”所用的要复杂一些。幸运的是，R 中
+<code>lmPerm</code> 包的 <code>aovp</code>
+函数可以计算这种情况的置换检验：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">library<span class="punctuation">(</span>lmPerm<span class="punctuation">)</span></span><br><span class="line">summary<span class="punctuation">(</span>aovp<span class="punctuation">(</span>Time <span class="operator">~</span> Page<span class="punctuation">,</span> data<span class="operator">=</span>four_sessions<span class="punctuation">)</span><span class="punctuation">)</span></span><br><span class="line"><span class="punctuation">[</span><span class="number">1</span><span class="punctuation">]</span> <span class="string">&quot;Settings: unique SS &quot;</span></span><br><span class="line">Component <span class="number">1</span> <span class="operator">:</span></span><br><span class="line">Df R Sum Sq R Mean Sq Iter Pr<span class="punctuation">(</span>Prob<span class="punctuation">)</span></span><br><span class="line">Page <span class="number">3</span> <span class="number">831.4</span> <span class="number">277.13</span> <span class="number">3104</span> <span class="number">0.09278</span> .</span><br><span class="line">Residuals <span class="number">16</span> <span class="number">1618.4</span> <span class="number">101.15</span></span><br><span class="line"><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span></span><br><span class="line">Signif. codes<span class="operator">:</span> <span class="number">0</span> <span class="string">&#x27;***&#x27;</span> <span class="number">0.001</span> <span class="string">&#x27;**&#x27;</span> <span class="number">0.01</span> <span class="string">&#x27;*&#x27;</span> <span class="number">0.05</span> <span class="string">&#x27;.&#x27;</span> <span class="number">0.1</span> <span class="string">&#x27; &#x27;</span> <span class="number">1</span></span><br></pre></td></tr></table></figure>
+<p>这里 <code>Pr(Prob)</code> 给出的 p 值是
+0.09278。换句话说，假设底层黏性相同，9.3%
+的时候四个页面的响应率可能会像实际观察到的那样不同，仅仅是因为随机性。这种程度的不可能性没有达到传统统计学的
+5% 阈值，因此我们得出结论：四个页面之间的差异可能是由随机性造成的。</p>
+<p>列 <code>Iter</code> 列出了置换检验的迭代次数。其他列对应于传统 ANOVA
+表，下一节会详细介绍。</p>
+<p>在 Python 中，我们可以用下面的代码计算这种置换检验：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">observed_variance = four_sessions.groupby(<span class="string">&#x27;Page&#x27;</span>).mean().var()[<span class="number">0</span>]</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;Observed means:&#x27;</span>, four_sessions.groupby(<span class="string">&#x27;Page&#x27;</span>).mean().values.ravel())</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;Variance:&#x27;</span>, observed_variance)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">perm_test</span>(<span class="params">df</span>):</span><br><span class="line">    df = df.copy()</span><br><span class="line">    df[<span class="string">&#x27;Time&#x27;</span>] = np.random.permutation(df[<span class="string">&#x27;Time&#x27;</span>].values)</span><br><span class="line">    <span class="keyword">return</span> df.groupby(<span class="string">&#x27;Page&#x27;</span>).mean().var()[<span class="number">0</span>]</span><br><span class="line"></span><br><span class="line">perm_variance = [perm_test(four_sessions) <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">3000</span>)]</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;Pr(Prob)&#x27;</span>, np.mean([var &gt; observed_variance <span class="keyword">for</span> var <span class="keyword">in</span> perm_variance]))</span><br></pre></td></tr></table></figure>
+<h4 id="f-统计量"><strong>F 统计量</strong></h4>
+<p>就像 <strong>t
+检验可以用来替代置换检验以比较两个组的均值</strong>一样，<strong>基于 F
+统计量也有一个用于方差分析（ANOVA）的统计检验。F
+统计量是“组均值之间的方差（the variance across group
+means）”（即处理效应）与“残差误差的方差（the variance due to residual
+error）”的比值</strong>。这个比值越大，结果就越显著。如果数据服从正态分布，统计理论规定该统计量应当服从某种特定分布。基于此，我们就可以计算
+p 值。</p>
+<p>在 R 中，可以用 <code>aov</code> 函数计算 ANOVA 表：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="operator">&gt;</span> summary<span class="punctuation">(</span>aov<span class="punctuation">(</span>Time <span class="operator">~</span> Page<span class="punctuation">,</span> data<span class="operator">=</span>four_sessions<span class="punctuation">)</span><span class="punctuation">)</span></span><br><span class="line">             Df Sum Sq Mean Sq <span class="built_in">F</span> value Pr<span class="punctuation">(</span><span class="operator">&gt;</span><span class="built_in">F</span><span class="punctuation">)</span>  </span><br><span class="line">Page          <span class="number">3</span>  <span class="number">831.4</span>  <span class="number">277.1</span>   <span class="number">2.74</span>   <span class="number">0.0776</span> .</span><br><span class="line">Residuals    <span class="number">16</span> <span class="number">1618.4</span>  <span class="number">101.2</span></span><br><span class="line"><span class="operator">-</span><span class="operator">-</span><span class="operator">-</span></span><br><span class="line">Signif. codes<span class="operator">:</span> <span class="number">0</span> ‘<span class="operator">*</span><span class="operator">*</span><span class="operator">*</span>’ <span class="number">0.001</span> ‘<span class="operator">*</span><span class="operator">*</span>’ <span class="number">0.01</span> ‘<span class="operator">*</span>’ <span class="number">0.05</span> ‘.’ <span class="number">0.1</span> ‘ ’ <span class="number">1</span></span><br></pre></td></tr></table></figure>
+<p><code>statsmodels</code> 包在 Python 中也提供了 ANOVA 的实现：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">model = smf.ols(<span class="string">&#x27;Time ~ Page&#x27;</span>, data=four_sessions).fit()</span><br><span class="line">aov_table = sm.stats.anova_lm(model)</span><br><span class="line">aov_table</span><br></pre></td></tr></table></figure>
+<p>Python 输出与 R 的输出几乎相同。</p>
+<p>Df 表示“自由度（degrees of freedom）”，Sum Sq 表示“平方和（sum of
+squares）”，Mean Sq 表示“均方（mean squares，均方偏差）”，F value 表示 F
+统计量。对于总平均值，平方和是总平均值偏离 0 的平方乘以
+20（观测数）。总平均值的自由度按定义是 1。</p>
+<p>对于处理均值，自由度是
+3（当三个值确定后，再加上总平均值就固定了，另一个处理均值不能再变）。处理均值的平方和是各处理均值与总平均值之间偏差的平方和。</p>
+<p>对于残差，自由度是
+20（所有观测可以变动），平方和是各观测值与处理均值之间差异的平方和。均方（MS）就是平方和除以自由度。F
+统计量是 MS(处理)/MS(误差)。F 值因此只依赖这个比率，并可以与标准 F
+分布比较，以判断处理均值之间的差异是否超出了随机波动的期望范围。</p>
+<blockquote>
+<p><strong>通用注解</strong></p>
+<p>方差分解**：数据集中每个观测值都可以视为不同组成部分的和。对于数据集中的任意观测值，我们可以将其分解为总平均值、处理效应和残差误差。这就是所谓的“方差分解”：</p>
+<ol type="1">
+<li>从总平均值开始（网页粘性数据为 173.75）。</li>
+<li>加上处理效应，可能是负的（自变量 = 网页）。</li>
+<li>加上残差误差（residual error,），可能是负的。</li>
+</ol>
+<p>因此，A/B/C/D 测试表左上角值的方差分解如下：</p>
+<ol type="1">
+<li>从总平均值开始：173.75。</li>
+<li>加上处理（组）效应：–1.75（172 – 173.75）。</li>
+<li>加上残差：–8（164 – 172）。</li>
+<li>得到：164</li>
+</ol>
+</blockquote>
+<h4 id="双因素-anova"><strong>双因素 ANOVA</strong></h4>
+<p>Two-Way ANOVA</p>
+<p>刚才描述的 A/B/C/D
+测试是一种“单因素”ANOVA，即只有一个因子（组）在变化。如果有第二个因子——例如“周末
+vs 工作日”——并且在每种组合（A 组周末、A 组工作日、B
+组周末等）上收集数据，这就是“双因素 ANOVA”。处理方法与单因素 ANOVA
+类似，但需要识别“交互效应”。在确定总平均效应和处理效应后，我们把每组的周末和工作日观测分开，计算这些子集平均值与处理平均值的差异。</p>
+<p>可以看出，ANOVA 和双因素 ANOVA
+是迈向完整统计建模（如回归和逻辑回归）的第一步，在完整模型中可以同时刻画多个因素及其效应（见第
+4 章）。</p>
+<p><strong>关键概念</strong></p>
+<ul>
+<li>ANOVA 是一种分析多个组实验结果的统计方法。</li>
+<li>它是 A/B
+测试等类似程序的推广，用于评估组间总体差异是否在随机波动范围内。</li>
+<li>ANOVA
+的一个有用结果是识别与组处理、交互效应和误差相关的方差组成部分。</li>
+</ul>
+<h3 id="卡方检验">卡方检验</h3>
+<p>Chi-Square Test</p>
+<p>在网络测试中，人们经常会超越简单的 A/B
+测试，同时检验多种处理方案。卡方检验用于计数型数据，以检验其与某个期望分布的拟合程度。在统计实践中，卡方统计量最常见的用途是用于
+<span class="math inline">\(r \times c\)</span>
+列联表，以评估变量之间独立性的原假设是否合理（参见第 80
+页“卡方分布”）。</p>
+<p>卡方检验最早由 Karl Pearson 于 1900 年提出。“chi”这个词来源于 Pearson
+在文章中使用的希腊字母 Χ。</p>
+<p><strong>卡方检验关键术语</strong></p>
+<ul>
+<li><p><strong>卡方统计量（Chi-square statistic）</strong>
+衡量一组观测数据偏离期望程度的指标。</p></li>
+<li><p><strong>期望值（Expectation or expected）</strong>
+在某个假设（通常是原假设）下，我们期望数据呈现的结果。</p></li>
+</ul>
+<blockquote>
+<p><strong>通用注解</strong> <strong><span class="math inline">\(r
+\times c\)</span></strong> 表示“行 × 列”。例如，一个 <span
+class="math inline">\(2 \times 3\)</span> 的表格表示两行三列。</p>
+</blockquote>
+<h4 id="卡方检验一种重抽样方法">卡方检验：一种重抽样方法</h4>
+<p>假设你在测试三条不同的标题——A、B 和 C——并分别在 1,000
+位访客上运行测试，结果如表 3-4 所示。</p>
+<p><img src="/img3/面向数据科学家的实用统计学/T3.4.png" alt="T3.4" style="zoom:50%;" /></p>
+<p>标题之间显然存在差异。标题 A 的点击率几乎是 B
+的两倍。但实际数字很小。我们可以通过重抽样方法来检验点击率的差异是否超出了偶然性造成的范围。对于这个检验，我们需要“期望”的点击分布。在原假设下，假定三条标题的点击率相同，总体点击率为
+34/3,000。在这种假设下，我们的列联表如表 3-5 所示。</p>
+<p><img src="/img3/面向数据科学家的实用统计学/T3.5.png" alt="T3.5" style="zoom:50%;" /></p>
+<p><strong>Pearson 残差（Pearson residual）</strong> 定义为：</p>
+<p><span class="math display">\[
+R = \frac{\text{Observed} - \text{Expected}}{ \sqrt{\text{Expected}}}
+\]</span></p>
+<p><span class="math inline">\(R\)</span>
+衡量实际计数与期望计数的差异程度（见表 3-6）。</p>
+<p><img src="/img3/面向数据科学家的实用统计学/T3.6.png" alt="T3.6" style="zoom:50%;" /></p>
+<p><strong>卡方统计量（Chi-square statistic）</strong> 定义为所有
+Pearson 残差平方和：</p>
+<p><span class="math display">\[
+\chi^2 = \sum_{i}^{r}\sum_{j}^{c}R_{ij}^2
+\]</span></p>
+<p>其中 <span class="math inline">\(r\)</span> 和 <span
+class="math inline">\(c\)</span> 分别为行数和列数。本例中的卡方统计量为
+1.666。这是否超过了偶然模型中合理出现的范围呢？</p>
+<p>我们可以用以下重抽样算法进行检验：</p>
+<ol type="1">
+<li>构建一个包含 34 个“1”（点击）和 2,966 个“0”（未点击）的总体。</li>
+<li>打乱顺序，分别抽取三个 1,000 人样本，并统计每个样本的点击数。</li>
+<li>计算抽样计数与期望计数之间的平方差并求和。</li>
+<li>重复步骤 2 和 3，例如 1,000 次。</li>
+<li>观察重抽样平方偏差和超过实际观测值的频率。这就是 p 值。</li>
+</ol>
+<p><code>chisq.test</code> 函数可用于在 R
+中计算重抽样的卡方统计量。对于点击数据，卡方检验如下：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="operator">&gt;</span> chisq.test<span class="punctuation">(</span>clicks<span class="punctuation">,</span> simulate.p.value<span class="operator">=</span><span class="literal">TRUE</span><span class="punctuation">)</span></span><br><span class="line">Pearson<span class="string">&#x27;s Chi-squared test with simulated p-value (based on 2000 replicates)</span></span><br><span class="line"><span class="string">data: clicks</span></span><br><span class="line"><span class="string">X-squared = 1.6659, df = NA, p-value = 0.4853</span></span><br></pre></td></tr></table></figure>
+<p>该检验结果表明，这个观测值很可能只是随机性所致。</p>
+<p>在 Python 中运行置换检验</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">box = [<span class="number">1</span>] * <span class="number">34</span></span><br><span class="line">box.extend([<span class="number">0</span>] * <span class="number">2966</span>)</span><br><span class="line">random.shuffle(box)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">chi2</span>(<span class="params">observed, expected</span>):</span><br><span class="line">    pearson_residuals = []</span><br><span class="line">    <span class="keyword">for</span> row, expect <span class="keyword">in</span> <span class="built_in">zip</span>(observed, expected):</span><br><span class="line">        pearson_residuals.append([(observe - expect) ** <span class="number">2</span> / expect</span><br><span class="line">                                 <span class="keyword">for</span> observe <span class="keyword">in</span> row])</span><br><span class="line">    <span class="comment"># 返回平方和</span></span><br><span class="line">    <span class="keyword">return</span> np.<span class="built_in">sum</span>(pearson_residuals)</span><br><span class="line"></span><br><span class="line">expected_clicks = <span class="number">34</span> / <span class="number">3</span></span><br><span class="line">expected_noclicks = <span class="number">1000</span> - expected_clicks</span><br><span class="line">expected = [<span class="number">34</span> / <span class="number">3</span>, <span class="number">1000</span> - <span class="number">34</span> / <span class="number">3</span>]</span><br><span class="line">chi2observed = chi2(clicks.values, expected)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">perm_fun</span>(<span class="params">box</span>):</span><br><span class="line">    sample_clicks = [<span class="built_in">sum</span>(random.sample(box, <span class="number">1000</span>)),</span><br><span class="line">                     <span class="built_in">sum</span>(random.sample(box, <span class="number">1000</span>)),</span><br><span class="line">                     <span class="built_in">sum</span>(random.sample(box, <span class="number">1000</span>))]</span><br><span class="line">    sample_noclicks = [<span class="number">1000</span> - n <span class="keyword">for</span> n <span class="keyword">in</span> sample_clicks]</span><br><span class="line">    <span class="keyword">return</span> chi2([sample_clicks, sample_noclicks], expected)</span><br><span class="line"></span><br><span class="line">perm_chi2 = [perm_fun(box) <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">2000</span>)]</span><br><span class="line"></span><br><span class="line">resampled_p_value = <span class="built_in">sum</span>(perm_chi2 &gt; chi2observed) / <span class="built_in">len</span>(perm_chi2)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&#x27;Observed chi2: <span class="subst">&#123;chi2observed:<span class="number">.4</span>f&#125;</span>&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&#x27;Resampled p-value: <span class="subst">&#123;resampled_p_value:<span class="number">.4</span>f&#125;</span>&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<h4 id="卡方检验统计理论">卡方检验：统计理论</h4>
+<p>Chi-Square Test: Statistical Theory</p>
+<p>渐近统计理论表明，卡方统计量的分布可以用卡方分布来近似（参见第 80
+页“卡方分布”）。合适的标准卡方分布由<strong>自由度</strong>决定（参见第
+116 页“自由度”）。对于一个列联表，自由度与行数 <span
+class="math inline">\(r\)</span> 和列数 <span
+class="math inline">\(c\)</span> 的关系如下：</p>
+<p><span class="math display">\[
+\text{degrees of freedom} = (r-1)\times(c-1)
+\]</span></p>
+<p>卡方分布通常是偏斜的，具有右长尾；见图 3-7（自由度分别为 1、2、5 和
+20 的分布）。</p>
+<p><img src="/img3/面向数据科学家的实用统计学/F3.7.png" alt="F3.7" style="zoom:50%;" /></p>
+<p>观测统计量在卡方分布上的位置越靠右，p 值就越小。</p>
+<p><code>chisq.test</code> 函数可使用卡方分布作为参考计算 p 值：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="operator">&gt;</span> chisq.test<span class="punctuation">(</span>clicks<span class="punctuation">,</span> simulate.p.value<span class="operator">=</span><span class="literal">FALSE</span><span class="punctuation">)</span></span><br><span class="line">Pearson<span class="string">&#x27;s Chi-squared test</span></span><br><span class="line"><span class="string">data: clicks</span></span><br><span class="line"><span class="string">X-squared = 1.6659, df = 2, p-value = 0.4348</span></span><br></pre></td></tr></table></figure>
+<p>在 Python 中，使用 <code>scipy.stats.chi2_contingency</code>
+函数：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">chisq, pvalue, df, expected = stats.chi2_contingency(clicks)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&#x27;Observed chi2: <span class="subst">&#123;chi2observed:<span class="number">.4</span>f&#125;</span>&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&#x27;p-value: <span class="subst">&#123;pvalue:<span class="number">.4</span>f&#125;</span>&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<p>这个 p 值比重抽样的 p
+值稍小；这是因为卡方分布只是对统计量实际分布的一种近似。</p>
+<h4 id="费舍尔确切检验"><strong>费舍尔确切检验</strong></h4>
+<p>Fisher’s Exact Test</p>
+<p>卡方分布是前面描述的洗牌重抽样检验（shuffled resampling
+test）的一个很好的近似，但在计数值非常小（个位数，尤其是 5
+或更少）时就不再适用。在这种情况下，重抽样程序会给出更精确的 p
+值。事实上，大多数统计软件都有一个程序，能够枚举所有可能发生的重新排列（置换），统计它们的频率，并精确地判断观察到的结果有多极端。这种方法被称为
+<strong>费舍尔确切检验</strong>，以纪念著名统计学家 R. A. Fisher。R
+语言中调用费舍尔确切检验的代码非常简单：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="operator">&gt;</span> fisher.test<span class="punctuation">(</span>clicks<span class="punctuation">)</span></span><br><span class="line"></span><br><span class="line">Fisher<span class="string">&#x27;s Exact Test for Count Data</span></span><br><span class="line"><span class="string">data: clicks</span></span><br><span class="line"><span class="string">p-value = 0.4824</span></span><br><span class="line"><span class="string">alternative hypothesis: two.sided</span></span><br></pre></td></tr></table></figure>
+<p>得到的 p 值与使用重抽样方法得到的 0.4853 非常接近。</p>
+<p>在某些情况下，如果部分计数非常小而其他计数很大（例如转化率中的分母很大），则可能需要执行
+<strong>洗牌置换检验</strong>(a shuffled permutation test
+)，而不是完整的确切检验，因为计算所有可能的置换会非常困难。上述 R
+函数提供了几个参数来控制是否使用近似方法（<code>simulate.p.value = TRUE 或 FALSE</code>）、迭代次数（<code>B = ...</code>），以及一个计算约束参数（<code>workspace = ...</code>），用于限制精确结果的计算规模。</p>
+<p>Python 中并没有易用的费舍尔确切检验实现。</p>
+<p><strong>科学造假的检测</strong></p>
+<p>一个有趣的案例是塔夫茨大学（Tufts University）的研究员
+<strong>Thereza Imanishi-Kari</strong>，她在 1991
+年被指控在研究中捏造数据。美国国会议员 <strong>John Dingell</strong>
+介入此事，最终导致她的同事、当时任洛克菲勒大学校长的 <strong>David
+Baltimore</strong> 辞职。</p>
+<p>案件中的一个关键环节涉及其实验数据中数字的预期分布。她的每条观测数据包含多个数字，调查人员将注意力集中在<strong>中间的数字</strong>（忽略首位和末位数字）。按统计规律，这些中间数字应该遵循<strong>均匀随机分布</strong>，即每个数字出现的概率相等（首位数字可能偏向某个值，而末位数字可能受到四舍五入的影响）。表
+3-7 给出了实际数据中各中间数字的频数。</p>
+<p><img src="/img3/面向数据科学家的实用统计学/T3.7.png" alt="T3.7" style="zoom:50%;" /></p>
+<p>图 3-8 显示了 315
+个数字的分布，看起来明显不像是随机的。调查人员计算了与期望值的偏差（理论上严格均匀分布下每个数字应出现
+31.5
+次），并使用卡方检验（同样也可以使用重抽样方法）证明实际分布远远超出正常的随机波动范围，表明数据可能被捏造。</p>
+<p>（注：Imanishi-Kari 最终在经历漫长调查后被澄清无罪。）</p>
+<p><img src="/img3/面向数据科学家的实用统计学/F3.8.png" alt="F3.8" style="zoom:33%;" /></p>
+<blockquote>
+<p>个人注：<strong>辩护方的观点：</strong>
+伊马尼西-卡里及其支持者（包括大卫·巴尔的摩）坚称，数据中的不一致性是由于实验过程中的疏忽、不规范的记录习惯，以及当时生物学实验固有的可变性所致。他们认为，指控方过于依赖统计学分析，而忽略了生物学实验的复杂性和现实情况。此外，他们还批评了调查程序缺乏正当性，对伊马尼西-卡里不公平</p>
+</blockquote>
+<h4 id="与数据科学的相关性"><strong>与数据科学的相关性</strong></h4>
+<p>Relevance for Data Science</p>
+<p>当你想知道某个效应是否真实存在，还是只是偶然产生时，就会用到
+<strong>卡方检验（chi-square test）</strong> 或
+<strong>费舍尔确切检验（Fisher’s exact
+test）</strong>。在大多数经典统计学的应用中，卡方检验的作用是建立<strong>统计显著性</strong>，通常这是研究或实验能够发表前所必须具备的条件。
+但对于数据科学家来说，这一点并不那么重要。在大多数数据科学实验中（无论是
+A/B 还是
+A/B/C……），目标不仅仅是建立统计显著性，而是找到<strong>最佳处理方案</strong>。为此，<strong>多臂老虎机算法</strong>（见第
+131 页 “Multi-Arm Bandit Algorithm”）提供了一个更完整的解决方案。</p>
+<p>卡方检验（特别是费舍尔确切检验）在数据科学中的一个应用，是用来确定网络实验的<strong>适当样本量</strong>。这些实验往往点击率极低，即使有成千上万的曝光，计数率可能仍然太小，无法在实验中得出确定结论。在这种情况下，费舍尔确切检验、卡方检验以及其他检验可以作为<strong>功效（power）和样本量计算</strong>（见第
+135 页 “Power and Sample Size”）的一部分发挥作用。</p>
+<p><strong>研究人员广泛使用卡方检验，以寻找那个“难以捉摸的统计显著性 p
+值”来支撑论文发表。而在数据科学应用中，卡方检验或类似的重抽样模拟更多地被用作筛选工具，用来判断某个效应或特征是否值得进一步研究，而不是作为形式化的显著性检验。</strong></p>
+<p>例如，它们可以用在空间统计和制图中，以判断空间数据是否符合某个指定的零假设分布（比如：犯罪是否集中在某个区域，超出了随机机会所允许的程度？）。它们也可以用在机器学习中的自动化特征选择，评估不同特征上的类别分布，从而识别某些特征在某个类别上出现率异常高或异常低的情况，这种偏差无法用随机波动解释。</p>
+<p><strong>关键要点（Key Ideas）</strong></p>
+<ul>
+<li>统计学中的一个常见做法是检验观测到的数据计数是否与<strong>独立性假设</strong>一致（例如，购买某种商品的倾向是否与性别无关）。</li>
+<li><strong>卡方分布</strong>是一个参照分布（体现了独立性假设），用来与观测数据计算出的卡方统计量进行比较。</li>
+</ul>
+<h3 id="多臂老虎机算法"><strong>多臂老虎机算法</strong></h3>
+<p>Multi-Arm Bandit Algorithm</p>
+<p>多臂老虎机为测试（尤其是网络测试）提供了一种方法，它能比传统的实验设计与统计方法实现<strong>显式优化</strong>和<strong>更快速的决策</strong>。</p>
+<p><strong>多臂老虎机关键术语</strong></p>
+<ul>
+<li><p><strong>多臂老虎机（Multi-arm bandit）</strong>
+一个假想的老虎机，顾客可以选择多个拉杆，每个拉杆的收益不同，这里用作多处理（多方案）实验的类比。</p></li>
+<li><p><strong>拉杆（Arm）</strong>
+实验中的一种处理（例如：“网页测试中的标题 A”）。</p></li>
+<li><p><strong>中奖（Win）</strong>
+在实验中对应老虎机中奖的事件（例如：“顾客点击了链接”）。</p></li>
+</ul>
+<p>传统的 A/B
+测试是在实验中按预先设定的设计收集数据，用来回答一个特定的问题，例如：“哪一个更好，处理
+A 还是处理 B？”
+这种方法默认一旦我们得到问题的答案，实验就结束，然后基于结果采取行动。</p>
+<p>但这种方法存在几个问题：</p>
+<ol type="1">
+<li><p><strong>结果可能不明确</strong>： “效果未被证明。”
+换句话说，实验结果可能暗示有某种效应，但如果真的存在效应，我们的样本量可能不够大，无法按照传统统计标准“证明”它。那么我们该如何决策？</p></li>
+<li><p><strong>想在实验结束前利用已有结果</strong>：
+我们可能希望在实验完全结束前就根据已经获得的数据做出决策。</p></li>
+<li><p><strong>想在实验后期调整或改变方案</strong>：
+根据实验结束后新出现的数据，我们可能希望更换策略或做其他尝试。</p></li>
+</ol>
+<p>传统的实验与假设检验方法源自 20 世纪 20
+年代，相当<strong>不灵活</strong>。而计算机算力和软件的发展使得更强大、更灵活的方法成为可能。此外，数据科学（以及商业领域）并不太在乎统计显著性，而更关注<strong>优化整体努力与结果</strong>。</p>
+<p><strong>老虎机算法（Bandit
+algorithms）</strong>在网络测试中非常流行，它允许你<strong>同时测试多种处理方案</strong>，并比传统统计设计<strong>更快得出结论</strong>。它的名字来自赌博中的老虎机（slot
+machine，又称“单臂强盗”one-armed
+bandit，因为它们“稳定地”从赌徒那里赢钱）。如果你想象一台有多个拉杆的老虎机，每个拉杆的支付率不同，你就得到了一个“多臂老虎机”，也就是该算法的全称。</p>
+<p>你的目标是<strong>赢取尽可能多的钱</strong>，更具体地说，<strong>尽早识别并选定获胜的拉杆</strong>。困难在于你并不知道每个拉杆的总体中奖率——你只知道每次拉动时的个别结果。假设每次中奖的奖金都是一样的（无论拉哪个杆），不同之处在于<strong>中奖的概率</strong>。再假设你最初每个拉杆都尝试
+50 次，得到如下结果：</p>
+<ul>
+<li><strong>拉杆 A</strong>：50 次中赢了 10 次</li>
+<li><strong>拉杆 B</strong>：50 次中赢了 2 次</li>
+<li><strong>拉杆 C</strong>：50 次中赢了 4 次</li>
+</ul>
+<p><strong>一种极端做法</strong>是说：“看起来 A
+拉杆是赢家——那我们就不再尝试其他拉杆，专注于 A
+吧。”这样可以充分利用初始试验的信息。如果 A
+真的更好，我们可以早早享受到这一优势。但另一方面，如果 B 或 C
+实际上更好，我们就失去了发现它们的机会。</p>
+<p><strong>另一种极端做法</strong>是说：“这些结果都可能是偶然的——那就继续平等地拉所有拉杆吧。”这样可以最大限度地给
+A
+之外的备选方案展示自己的机会。然而，在此过程中，我们也在持续投放看起来较差的处理。那我们要容忍多久？</p>
+<p><strong>多臂老虎机算法采取折中方法</strong>： 我们开始更频繁地拉
+A，以利用它的明显优势，但并不放弃 B 和 C，只是减少拉它们的次数。如果 A
+持续优于其他，我们就继续把资源（拉动次数）从 B、C 转移到 A；如果相反，C
+开始表现更好而 A 变差，我们可以把拉动次数从 A 转回
+C。如果其中某个在初始试验中因偶然性被“埋没”的处理其实比 A
+优秀，那么通过后续测试它就有机会显现出来。</p>
+<p>现在把这个思路应用到<strong>网络测试</strong>：
+不再是多个老虎机拉杆，而是多个优惠、标题、颜色等在网站上进行测试。顾客要么点击（商家“中奖”），要么不点击。最初，所有方案都是随机且均等展示。然而，如果某个方案开始优于其他方案，它就可以被更频繁地展示（“拉”）。但是，修改展示比例的算法参数应该怎么设定？应该改成什么比例？什么时候改？</p>
+<p><strong>一个简单的算法：A/B 测试中的
+ε-贪婪算法（epsilon-greedy）</strong></p>
+<ol type="1">
+<li><p>生成一个 0 到 1 之间均匀分布的随机数。</p></li>
+<li><p>如果这个数在 0 和 ε 之间（ε 是 0 到 1
+之间的数，通常比较小），掷一枚公平的硬币（50/50 概率）：</p>
+<ul>
+<li>如果正面，展示方案 A；</li>
+<li>如果反面，展示方案 B。</li>
+</ul></li>
+<li><p>如果这个数 ≥ ε，就展示目前响应率最高的方案。</p></li>
+</ol>
+<p>ε 是唯一控制这个算法的参数：</p>
+<ul>
+<li>如果 ε = 1，我们得到的是标准的简单 A/B 实验（每个用户在 A 和 B
+间随机分配）。</li>
+<li>如果 ε =
+0，我们得到的是<strong>纯贪婪算法</strong>——始终选择当前表现最好的方案（局部最优），不再继续探索，仅把用户（网站访问者）分配到当前最佳处理。</li>
+</ul>
+<p><strong>更高级的算法：Thompson 采样（Thompson’s
+sampling）</strong></p>
+<p>这个方法在每一步“抽样”（拉动拉杆），以最大化选择最佳拉杆的概率。当然你并不知道哪一个是最好的——这正是问题所在！——
+但随着每次抽样后你观察到收益，你获得越来越多的信息。Thompson
+采样采用<strong>贝叶斯方法</strong>：最初假设奖励的先验分布（使用 Beta
+分布，这是在贝叶斯问题中指定先验信息的常见机制）。随着每次抽样积累信息，这些信息被更新，从而使下一次抽样在选择正确拉杆时更优化。</p>
+<p>多臂老虎机算法可以高效地处理 <strong>3
+个以上处理方案</strong>，并趋向于最优的“最佳”选择。而在传统统计检验程序中，处理
+3 个以上方案的决策复杂度远远超过传统 A/B
+测试，这使得多臂老虎机算法的优势更大。</p>
+<p><strong>关键要点</strong></p>
+<ul>
+<li>传统的 A/B
+测试设想的是随机抽样过程，这可能导致对劣质处理的过多暴露。</li>
+<li>多臂老虎机算法则相反，它在实验过程中利用获得的信息，动态调整抽样过程，减少对劣质处理的分配频率。</li>
+<li>它们还能高效处理多于两种处理方案的情况。</li>
+<li>有多种算法可以将抽样概率从较差处理方案转向（假定的）较优方案。</li>
+</ul>
+<h3 id="检验效能与样本量"><strong>检验效能与样本量</strong></h3>
+<p>Power and Sample Size</p>
+<p>如果你要运行一次网页测试，如何决定测试要运行多久（即每个处理需要多少展示次数）？尽管许多网页测试指南都有所提及，但实际上没有什么普遍适用的“标准答案”——主要取决于你所期望达成的目标出现的频率。</p>
+<p><strong>检验效能与样本量的关键术语</strong></p>
+<ul>
+<li><p><strong>效应量（Effect size）</strong>
+你希望在统计检验中能够检测到的最小效应，例如“点击率提高 20%”。</p></li>
+<li><p><strong>检验效能（Power）</strong>
+在给定样本量下检测到指定效应量的概率。</p></li>
+<li><p><strong>显著性水平（Significance level）</strong>
+检验所采用的统计显著性水平。</p></li>
+</ul>
+<p>在进行样本量的统计计算时，其中一步要问：“假设检验能否真正揭示处理 A
+和 B 之间的差异？”假设检验的结果（即 p 值）取决于处理 A 和 B
+之间真实的差异，也取决于抽样的运气——即实验中谁被分配到哪个组。但直觉上，A
+和 B
+之间真实差异越大，我们越有可能在实验中发现它；差异越小，就需要更多数据来检测它。比如，要区分棒球打击率
+0.350 和 0.200 的打者，不需要太多打席就可以；而要区分 0.300 和 0.280
+的打者，就需要更多打席。</p>
+<p><strong>检验效能</strong>是指在给定样本特征（样本量与变异度）下，检测到指定效应量的概率。例如，我们可以（假设性地）说：在
+25 次打席中区分打击率 0.330 和 0.200 的打者的概率是 0.75。这里的效应量是
+0.130，而“检测到”意味着假设检验能够拒绝“无差异”的原假设，并得出“存在真实效应”的结论。所以这个包含两位打者、每人
+25 次打席（n=25）、效应量 0.130 的实验，其（假设的）检验效能为 0.75，即
+75%。</p>
+<p>你可以看到这里有好几个变量，而且很容易在众多统计假设和公式中打结（需要指定样本变异、效应量、样本量、假设检验的
+α
+水平等，才能计算效能）。实际上，有专门的统计软件可以用来计算效能。大多数数据科学家并不需要完全按照发表论文那样严格地报告检验效能。不过，他们可能会遇到这样一种情况：要为一次
+A/B
+测试收集一些数据，而收集或处理数据是有成本的。这时，大致知道需要多少数据有助于避免“辛辛苦苦收集数据却得到无结论结果”的情况。下面是一种比较直观的替代方法：</p>
+<ol type="1">
+<li>用一些假设数据作为最初的“最佳猜测”，代表预期的实验结果（或许基于以往数据）——例如，用一个包含
+20 个“1”和 80 个“0”的盒子来代表打击率 0.200
+的打者，或用一个盒子存放一些“在网站停留时间”的观测值。</li>
+<li>通过在第一个样本的基础上加上期望的效应量来创建第二个样本——例如，第二个盒子中包含
+33 个“1”和 67 个“0”，或者在每条最初“网站停留时间”上加 25 秒。</li>
+<li>从每个盒子中各抽取一个大小为 n 的自助（bootstrap）样本。</li>
+<li>对这两个自助样本进行一次置换检验（或基于公式的假设检验），并记录它们之间的差异是否具有统计显著性。</li>
+<li>多次重复前两步，并计算差异显著的比例——这就是估计的检验效能。</li>
+</ol>
+<h4 id="样本量">样本量</h4>
+<p>Sample Size</p>
+<p>检验效能计算最常见的用途就是<strong>估算需要多大的样本量</strong>。</p>
+<p>例如，假设你在观察点击率（点击次数占展示次数的百分比），并测试一个新广告与现有广告。那在研究中你需要积累多少点击数呢？
+如果你只对巨大的差异（比如 50%
+的差异）感兴趣，相对较小的样本量可能就足够了；反之，如果你连很小的差异也想检测出来，那么就需要大得多的样本量。一种常见做法是先制定一个政策：新广告必须比现有广告好一定百分比，比如
+10%；否则现有广告继续使用。<strong>这个目标——即“效应量”——就决定了所需的样本量。</strong></p>
+<p>例如，假设当前点击率约为 1.1%，你希望获得 10% 的提升，即
+1.21%。那么我们有两个“盒子”：盒子 A 含有 1.1% 的“1”（比如 110 个“1”和
+9,890 个“0”），盒子 B 含有 1.21% 的“1”（比如 121 个“1”和 9,879
+个“0”）。起步时，我们从每个盒子各抽取 300 次（就像每个广告 300
+次展示）。 假设第一次抽取得到如下结果：</p>
+<ul>
+<li>盒子 A：3 个“1”</li>
+<li>盒子 B：5 个“1”</li>
+</ul>
+<p>显然，任何假设检验都能看出这种差异（5 比
+3）完全在随机波动范围之内。这个样本量（每组 n=300）和效应量（10%
+差异）的组合太小，无法让任何假设检验可靠地显示差异。</p>
+<p>所以我们可以尝试增加样本量（比如 2,000
+次展示），并要求更大的提升（50% 而不是 10%）。 例如，假设当前点击率仍为
+1.1%，但我们现在寻求 50% 的提升至 1.65%。于是两个盒子：盒子 A 仍为 1.1%
+的“1”（比如 110 个“1”和 9,890 个“0”），盒子 B 为 1.65% 的“1”（比如 165
+个“1”和 9,868 个“0”）。 我们从每个盒子各抽取 2,000
+次。假设第一次抽取得到：</p>
+<ul>
+<li>盒子 A：19 个“1”</li>
+<li>盒子 B：34 个“1”</li>
+</ul>
+<p>对这个差异（34–19）进行显著性检验，仍显示为“非显著”（但比之前的 5–3
+更接近显著）。要计算检验效能，我们需要多次重复前面的步骤，或使用可以计算效能的统计软件，但我们初步抽取就已经提示：即便是检测
+50% 的提升，也需要几千次广告展示。</p>
+<p><strong>总结</strong>：在计算检验效能或所需样本量时，有四个“活动部件”：</p>
+<ul>
+<li>样本量</li>
+<li>希望检测的效应量</li>
+<li>检验的显著性水平（α）</li>
+<li>检验效能（Power）</li>
+</ul>
+<p>指定其中三个，就可以计算出第四个。最常见的需求是计算<strong>样本量</strong>，因此必须指定其他三个条件。
+在 R 和 Python
+中，你还需要指定备择假设是“greater”还是“larger”以得到单尾检验；关于单尾与双尾检验的讨论见本书第
+95 页“一尾与双尾假设检验”。</p>
+<p>下面是一个 R 代码示例，计算两个比例的检验，其中两个样本大小相同（使用
+pwr 包）：</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">effect_size <span class="operator">=</span> ES.h<span class="punctuation">(</span>p1<span class="operator">=</span><span class="number">0.0121</span><span class="punctuation">,</span> p2<span class="operator">=</span><span class="number">0.011</span><span class="punctuation">)</span></span><br><span class="line">pwr.2p.test<span class="punctuation">(</span>h<span class="operator">=</span>effect_size<span class="punctuation">,</span> sig.level<span class="operator">=</span><span class="number">0.05</span><span class="punctuation">,</span> power<span class="operator">=</span><span class="number">0.8</span><span class="punctuation">,</span> alternative<span class="operator">=</span><span class="string">&#x27;greater&#x27;</span><span class="punctuation">)</span></span><br></pre></td></tr></table></figure>
+<p>输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Difference of proportion power calculation for binomial distribution (arcsine transformation)</span><br><span class="line">h = 0.01029785</span><br><span class="line">n = 116601.7</span><br><span class="line">sig.level = 0.05</span><br><span class="line">alternative = greater</span><br><span class="line">NOTE: same sample sizes</span><br></pre></td></tr></table></figure>
+<p>函数 <code>ES.h</code> 用来计算效应量。我们看到，如果我们要 80%
+的检验效能，需要的样本量接近 120,000 次展示。如果我们寻求的是 50%
+的提升（p1=0.0165），所需样本量则减少到 5,500 次展示。</p>
+<p><code>statsmodels</code> 包中包含若干效能计算方法。这里用
+<code>proportion_effectsize</code> 计算效应量，用
+<code>TTestIndPower</code> 求样本量：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">effect_size = sm.stats.proportion_effectsize(<span class="number">0.0121</span>, <span class="number">0.011</span>)</span><br><span class="line">analysis = sm.stats.TTestIndPower()</span><br><span class="line">result = analysis.solve_power(effect_size=effect_size,</span><br><span class="line">                              alpha=<span class="number">0.05</span>, power=<span class="number">0.8</span>, alternative=<span class="string">&#x27;larger&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;Sample Size: %.3f&#x27;</span> % result)</span><br></pre></td></tr></table></figure>
+<p>输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Sample Size: 116602.393</span><br></pre></td></tr></table></figure>
+<p><strong>关键要点</strong></p>
+<ul>
+<li>确定所需样本量时，要提前考虑将要进行的统计检验。</li>
+<li>必须指定你希望检测的最小效应量。</li>
+<li>必须指定检测该效应量的概率（检验效能）。</li>
+<li>最后，必须指定检验的显著性水平（α）。</li>
+</ul>
+<h3 id="总结">总结</h3>
+<p>实验设计的原则——将受试者随机分配到接受不同处理的两个或多个组——使我们能够对处理效果得出有效的结论。最好包含一个“无变化”的对照处理。<strong>正式统计推断这一主题——假设检验、p
+值、t
+检验及更多类似内容——在传统统计课程或教材中占据大量时间和篇幅，但从数据科学的角度来看，这种形式化在多数情况下并非必需。然而，认识到随机变动在误导人类大脑方面可能发挥的作用仍然很重要。直观的重抽样程序（置换和自助法）让数据科学家能够评估随机变动在其数据分析中可能起到的作用程度。</strong></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" rel="tag"># 机器学习</a>
+              <a href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" rel="tag"># 深度学习</a>
+              <a href="/tags/AI/" rel="tag"># AI</a>
+              <a href="/tags/%E7%BB%9F%E8%AE%A1/" rel="tag"># 统计</a>
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E7%A7%91%E5%AD%A6/" rel="tag"># 数据科学</a>
+              <a href="/tags/R/" rel="tag"># R</a>
+              <a href="/tags/Python/" rel="tag"># Python</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/09/26/%E7%AC%AC6%E7%AB%A0%20%E7%BB%9F%E8%AE%A1%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" rel="prev" title="第6章 统计机器学习">
+                  <i class="fa fa-chevron-left"></i> 第6章 统计机器学习
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/09/26/%E7%AC%AC5%E7%AB%A0%20%E5%88%86%E7%B1%BB/" rel="next" title="第5章 分类">
+                  第5章 分类 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
