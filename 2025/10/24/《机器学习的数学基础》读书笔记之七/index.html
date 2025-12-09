@@ -20,15 +20,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="连续优化 Continuous Optimization 由于机器学习算法是在计算机上实现的，其中许多数学方程式都表示为数值优化方法。本章描述了训练机器学习模型的基本数值方法。训练机器学习模型通常归结为找到一组好的参数。“好”的概念是由目标函数或概率模型来决定的，我们将在本书的第二部分看到这些例子。给定一个目标函数，使用优化算法来寻找最佳值。$ ^{D}$ 中考虑数据和模型，所以我们面临的优化问题">
+    <meta name="description" content="7、连续优化 Continuous Optimization 由于机器学习算法是在计算机上实现的，其中许多数学方程式都表示为数值优化方法。本章描述了训练机器学习模型的基本数值方法。训练机器学习模型通常归结为找到一组好的参数。“好”的概念是由目标函数或概率模型来决定的，我们将在本书的第二部分看到这些例子。给定一个目标函数，使用优化算法来寻找最佳值。$ ^{D}$ 中考虑数据和模型，所以我们面临的优化">
 <meta property="og:type" content="article">
 <meta property="og:title" content="《机器学习的数学基础》（7&#x2F;7）">
 <meta property="og:url" content="http://hongyitong.github.io/2025/10/24/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B9%8B%E4%B8%83/index.html">
 <meta property="og:site_name" content="墨语浮生">
-<meta property="og:description" content="连续优化 Continuous Optimization 由于机器学习算法是在计算机上实现的，其中许多数学方程式都表示为数值优化方法。本章描述了训练机器学习模型的基本数值方法。训练机器学习模型通常归结为找到一组好的参数。“好”的概念是由目标函数或概率模型来决定的，我们将在本书的第二部分看到这些例子。给定一个目标函数，使用优化算法来寻找最佳值。$ ^{D}$ 中考虑数据和模型，所以我们面临的优化问题">
+<meta property="og:description" content="7、连续优化 Continuous Optimization 由于机器学习算法是在计算机上实现的，其中许多数学方程式都表示为数值优化方法。本章描述了训练机器学习模型的基本数值方法。训练机器学习模型通常归结为找到一组好的参数。“好”的概念是由目标函数或概率模型来决定的，我们将在本书的第二部分看到这些例子。给定一个目标函数，使用优化算法来寻找最佳值。$ ^{D}$ 中考虑数据和模型，所以我们面临的优化">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2025-10-23T16:00:00.000Z">
-<meta property="article:modified_time" content="2025-12-06T03:32:26.047Z">
+<meta property="article:modified_time" content="2025-12-09T03:57:47.898Z">
 <meta property="article:author" content="Rayman.hung">
 <meta property="article:tag" content="机器学习">
 <meta property="article:tag" content="深度学习">
@@ -155,7 +155,8 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9E%E7%BB%AD%E4%BC%98%E5%8C%96"><span class="nav-text">连续优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E6%B3%95%E4%BC%98%E5%8C%96"><span class="nav-text">使用梯度下降法优化</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%8A%A8%E9%87%8F%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D"><span class="nav-text">动量梯度下降：</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%9A%8F%E6%9C%BA%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E6%B3%95"><span class="nav-text">随机梯度下降法：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BA%A6%E6%9D%9F%E4%BC%98%E5%8C%96%E4%B8%8E%E6%8B%89%E6%A0%BC%E6%9C%97%E6%97%A5%E4%B9%98%E5%AD%90"><span class="nav-text">约束优化与拉格朗日乘子</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%B8%E4%BC%98%E5%8C%96"><span class="nav-text">凸优化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BA%BF%E6%80%A7%E8%A7%84%E5%88%92"><span class="nav-text">线性规划</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BA%8C%E6%AC%A1%E8%A7%84%E5%88%92"><span class="nav-text">二次规划</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#legendre-fenchel%E5%8F%98%E6%8D%A2%E5%92%8C%E5%87%B8%E5%85%B1%E8%BD%AD"><span class="nav-text">Legendre-Fenchel变换和凸共轭</span></a></li></ol></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9E%E7%BB%AD%E4%BC%98%E5%8C%96"><span class="nav-text">7、连续优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E6%B3%95%E4%BC%98%E5%8C%96"><span class="nav-text">7.1 使用梯度下降法优化</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%8A%A8%E9%87%8F%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D"><span class="nav-text">7.1.1 动量梯度下降</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%9A%8F%E6%9C%BA%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E6%B3%95"><span class="nav-text">7.1.2 随机梯度下降法</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BA%A6%E6%9D%9F%E4%BC%98%E5%8C%96%E4%B8%8E%E6%8B%89%E6%A0%BC%E6%9C%97%E6%97%A5%E4%B9%98%E5%AD%90"><span class="nav-text">7.2 约束优化与拉格朗日乘子</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%B8%E4%BC%98%E5%8C%96"><span class="nav-text">7.3 凸优化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BA%BF%E6%80%A7%E8%A7%84%E5%88%92"><span class="nav-text">7.3.1 线性规划</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BA%8C%E6%AC%A1%E8%A7%84%E5%88%92"><span class="nav-text">7.3.2 二次规划</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#legendre-fenchel%E5%8F%98%E6%8D%A2%E5%92%8C%E5%87%B8%E5%85%B1%E8%BD%AD"><span class="nav-text">7.3.3
+Legendre-Fenchel变换和凸共轭</span></a></li></ol></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -278,7 +279,7 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h2 id="连续优化">连续优化</h2>
+        <h2 id="连续优化">7、连续优化</h2>
 <p>Continuous Optimization</p>
 <p>由于机器学习算法是在计算机上实现的，其中许多<strong>数学方程式都表示为数值优化方法</strong>。本章描述了训练机器学习模型的基本数值方法。训练机器学习模型通常归结为找到一组好的参数。“好”的概念是由目标函数或概率模型来决定的，我们将在本书的第二部分看到这些例子。给定一个目标函数，使用优化算法来寻找最佳值。$
 ^{D}$
@@ -289,7 +290,7 @@
 <blockquote>
 <p>一般研究最小值，所以对应研究的也是凸函数。</p>
 </blockquote>
-<h3 id="使用梯度下降法优化">使用梯度下降法优化</h3>
+<h3 id="使用梯度下降法优化">7.1 使用梯度下降法优化</h3>
 <p>梯度下降法是一种一阶优化算法。为了用梯度下降法寻找函数的局部最小值，我们取与函数在当前点的梯度的一定比例的负值调整<span
 class="math inline">\(x\)</span>。回想第5.1节，梯度指向最陡的上升方向。另一个直观的表现是考虑函数的等高线。梯度指向与我们希望优化的函数的等高线正交的方向。</p>
 <blockquote>
@@ -315,14 +316,14 @@ class="math inline">\(x\)</span>轴负方向是函数值上升最快的方向，
 <li>当函数值减小时，我们可以尝试增大步长。</li>
 </ul>
 <p>尽管“撤消”步骤似乎是浪费资源，但使用这种启发式方法可以保证单调收敛。</p>
-<h5 id="动量梯度下降">动量梯度下降：</h5>
+<h5 id="动量梯度下降">7.1.1 动量梯度下降</h5>
 <p>如图7.3所示，如果优化的曲面的存在缩放效果不佳的区域，那么梯度下降的收敛速度可能非常慢。改进收敛性的一个方法是给梯度下降添加记忆项。动量梯度下降法（Rumelhart
 et
 al.，1986）引入了附加项来记忆上一次迭代中发生了什么。这种记忆可以抑制振荡，平滑梯度更新。继续用球做类比，动量项模拟了重球从斜坡滚下不会轻易改变方向的现象。其思想是使用记忆进行梯度更新，以实现滑动平均(
 moving average)。<strong>基于动量的方法记忆了每次迭代的更新量<span
 class="math inline">\(\Delta
 \boldsymbol{x}_{i}\)</span>,下一次更新则用当前和之前梯度的线性组合确定：</strong></p>
-<h5 id="随机梯度下降法">随机梯度下降法：</h5>
+<h5 id="随机梯度下降法">7.1.2 随机梯度下降法</h5>
 <p><strong>计算梯度非常耗时。然而，通常可以找到梯度的“<em>cheap</em>”近似值。只要近似梯度指向与真实梯度大致相同的方向，那么它就是有用的。</strong></p>
 <p>随机梯度下降法（Stochastic gradient
 descent，通常简称为SGD）是梯度下降法的一种随机近似方法，用于最小化目标函数，且目标函数应是可微函数之和。这里的“随机”一词指的是这样一个事实，即我们承认我们并不精确地知道梯度，而是只知道它的噪声近似值。通过约束近似梯度的概率分布，我们仍然可以从理论上保证SGD收敛。</p>
@@ -362,7 +363,7 @@ L_{n}\left(\boldsymbol{\theta}_{i}\right)\right)\)</span>是梯度期望值（�
 <p>相比之下，较小的小批量可以很快估计。如果我们保持较小的小批量，梯度估计中的噪声将允许我们脱离局部最优解。<strong>在机器学习中，优化方法是利用训练数据，通过最小化目标函数来进行训练的，但总体目标是提高泛化性能（第
 8
 章）</strong>。<strong>由于机器学习的目标不一定需要精确估计目标函数的最小值，所以使用小批量方法的近似梯度被广泛使用。</strong></p>
-<h3 id="约束优化与拉格朗日乘子">约束优化与拉格朗日乘子</h3>
+<h3 id="约束优化与拉格朗日乘子">7.2 约束优化与拉格朗日乘子</h3>
 <p><strong>拉格朗日对偶( Lagrangian
 duality)</strong>的概念。一般来说，对偶优化的思想是将一组变量<span
 class="math inline">\(\boldsymbol{x}\)</span>（称为原始变量）的优化问题转化为另一组变量<span
@@ -420,7 +421,7 @@ class="math inline">\(\boldsymbol{x}\)</span>。</p>
 \mathbb{R}^d} \; \mathfrak{L}(\boldsymbol{x}, \boldsymbol{\lambda}).
 \end{equation}
 \]</span></p>
-<h3 id="凸优化">凸优化</h3>
+<h3 id="凸优化">7.3 凸优化</h3>
 <p>让我们我们重点讨论一类特别有用的优化问题上，因为在这类问题上我们可以保证得到全局最优解。目标函数<span
 class="math inline">\(f(·)\)</span>是一个凸函数，且约束<span
 class="math inline">\(g(·)\)</span>和<span
@@ -430,7 +431,7 @@ duality)：对偶问题的最优解与原问题的最优解相同。</strong>在
 <blockquote>
 <p>凸函数的非负加权和是凸的.</p>
 </blockquote>
-<h4 id="线性规划">线性规划</h4>
+<h4 id="线性规划">7.3.1 线性规划</h4>
 <p>考虑所有函数都是线性的特殊情况，即： <span class="math display">\[
 \begin{equation}
 \min_{\boldsymbol{x} \in \mathbb{R}^{d}} \boldsymbol{c}^{\top}
@@ -454,7 +455,7 @@ class="math inline">\(\lambda\)</span>的线性规划问题，但有<span
 class="math inline">\(m\)</span>个变量。我们可以选择求解原始规划问题（7.39）或其对偶规划问题（7.43），这取决于<span
 class="math inline">\(m\)</span>和<span
 class="math inline">\(d\)</span>哪个更大。</p>
-<h4 id="二次规划">二次规划</h4>
+<h4 id="二次规划">7.3.2 二次规划</h4>
 <p>考虑凸二次目标函数的情况，其中约束是仿射的，即： <span
 class="math display">\[
 \min_{\boldsymbol{x} \in \mathbb{R}^{d}}
@@ -487,7 +488,8 @@ class="math inline">\(x\)</span>的一次方程，可以用<span
 class="math inline">\(\lambda\)</span>替换<span
 class="math inline">\(x\)</span>代入对耦优化问题)，得到对偶优化问题，是关于<span
 class="math inline">\(\lambda\)</span>的二次规划问题。</p>
-<h4 id="legendre-fenchel变换和凸共轭">Legendre-Fenchel变换和凸共轭</h4>
+<h4 id="legendre-fenchel变换和凸共轭">7.3.3
+Legendre-Fenchel变换和凸共轭</h4>
 <p>这一节没深入看！</p>
 <p>全书的读书笔记（共7篇）如下，可点击此链接直接跳转：<br />
 <a href="/2025/12/05/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B9%8B%E4%B8%80/" title="《机器学习的数学基础》（1&#x2F;7）">《机器学习的数学基础》读书笔记之一 ：导言</a><br />
