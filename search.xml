@@ -3167,22 +3167,21 @@ class="math inline">\(f_{\boldsymbol{x}}(\boldsymbol{x})\)</span>
     <url>/2025/10/24/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B9%8B%E4%B8%83/</url>
     <content><![CDATA[<h2 id="连续优化">7、连续优化</h2>
 <p>Continuous Optimization</p>
-<p>由于机器学习算法是在计算机上实现的，其中许多<strong>数学方程式都表示为数值优化方法</strong>。本章描述了训练机器学习模型的基本数值方法。训练机器学习模型通常归结为找到一组好的参数。“好”的概念是由目标函数或概率模型来决定的，我们将在本书的第二部分看到这些例子。给定一个目标函数，使用优化算法来寻找最佳值。$
-^{D}$
+<p>由于机器学习算法是在计算机上实现的，其中许多<strong>数学方程式都表示为数值优化方法</strong>。本章描述了训练机器学习模型的基本数值方法。训练机器学习模型通常归结为找到一组好的参数。“好”的概念是由目标函数或概率模型来决定的，我们将在本书的第二部分看到这些例子。给定一个目标函数，使用优化算法来寻找最佳值。<span
+class="math inline">\(\mathbb{R}^{D}\)</span>
 中考虑数据和模型，所以我们面临的优化问题是连续优化问题，而不是离散变量的组合优化问题。</p>
 <p>一般情况下，机器学习中的大多数目标函数都是要被最小化的，即最优值就是最小值。直观上，梯度为目标函数每个点的上坡方向，而我们的目的是下坡（与梯度方向相反），希望找到最深的点。</p>
 <span id="more"></span>
 <p>我们将学习一类称为凸函数的函数，它们对优化算法的起点没有依赖性。对于凸函数，局部最小值就是全局最小值。事实证明，许多机器学习目标函数的设计都是凸的.</p>
 <blockquote>
-<p>一般研究最小值，所以对应研究的也是凸函数。</p>
+<p>一般研究最小值，所以对应研究的也是凸函数（数学定义上是开口向上的函数）。</p>
 </blockquote>
 <h3 id="使用梯度下降法优化">7.1 使用梯度下降法优化</h3>
 <p>梯度下降法是一种一阶优化算法。为了用梯度下降法寻找函数的局部最小值，我们取与函数在当前点的梯度的一定比例的负值调整<span
 class="math inline">\(x\)</span>。回想第5.1节，梯度指向最陡的上升方向。另一个直观的表现是考虑函数的等高线。梯度指向与我们希望优化的函数的等高线正交的方向。</p>
-<blockquote>
-<p><strong>梯度一定是指向上升的方向</strong>：</p>
-<p>严格来说，<strong>梯度确实指向函数在某一点上“最陡上升”的方向</strong>。梯度的符号和大小告诉我们<strong>函数值局部上升最快的方向</strong>和<strong>速率</strong>。对于一元函数，梯度的正负直接指明函数上升的方向。</p>
-<p><strong>梯度的几何意义</strong></p>
+<p><strong>梯度一定是指向上升的方向</strong>：<br />
+严格来说，<strong>梯度确实指向函数在某一点上“最陡上升”的方向</strong>。梯度的符号和大小告诉我们<strong>函数值局部上升最快的方向</strong>和<strong>速率</strong>。对于一元函数，梯度的正负直接指明函数上升的方向。<br />
+<strong>梯度的几何意义</strong>：</p>
 <ul>
 <li>梯度方向是<strong>函数值增加最快的方向</strong>。</li>
 <li>梯度的大小 <span class="math inline">\(\|\nabla
@@ -3191,11 +3190,10 @@ f(\boldsymbol{x})\|\)</span>
 <li>如果沿着梯度的负方向移动 <span class="math inline">\(-\nabla
 f(\boldsymbol{x})\)</span>，则是下降最快的方向（常用于梯度下降算法）。</li>
 </ul>
-<p><strong>梯度是函数上升最快的方向</strong>。但它只描述局部方向，想找最大值还需要结合函数整体信息。</p>
-<p>例如 <span class="math inline">\(y=x^2\)</span>,导数是<span
+<p><strong>梯度是函数上升最快的方向</strong>。但它只描述局部方向，想找最大值还需要结合函数整体信息。<br />
+例如 <span class="math inline">\(y=x^2\)</span>,导数是<span
 class="math inline">\(2x\)</span>，针对负轴，导数&lt;0;所以沿<span
 class="math inline">\(x\)</span>轴负方向是函数值上升最快的方向，反之也能推导出。</p>
-</blockquote>
 <p>自适应梯度方法能根据函数的局部性质，在每次迭代时重新调整步长。有两种简单的方法（Toussaint，2012）：</p>
 <ul>
 <li>当采用梯度下降后函数值增大了，则表明步长过大了。这时我们可以撤消并减小步长。</li>
@@ -3211,6 +3209,9 @@ class="math inline">\(\Delta
 \boldsymbol{x}_{i}\)</span>,下一次更新则用当前和之前梯度的线性组合确定：</strong></p>
 <h5 id="随机梯度下降法">7.1.2 随机梯度下降法</h5>
 <p><strong>计算梯度非常耗时。然而，通常可以找到梯度的“<em>cheap</em>”近似值。只要近似梯度指向与真实梯度大致相同的方向，那么它就是有用的。</strong></p>
+<blockquote>
+<p>随机梯度：它不是确切的梯度，而是一个基于随机采样得到的噪声版本（随机近似）。</p>
+</blockquote>
 <p>随机梯度下降法（Stochastic gradient
 descent，通常简称为SGD）是梯度下降法的一种随机近似方法，用于最小化目标函数，且目标函数应是可微函数之和。这里的“随机”一词指的是这样一个事实，即我们承认我们并不精确地知道梯度，而是只知道它的噪声近似值。通过约束近似梯度的概率分布，我们仍然可以从理论上保证SGD收敛。</p>
 <p>如前所述，标准梯度下降法是一种“批量”优化方法，即选取合适的步长参数
@@ -3308,15 +3309,59 @@ class="math inline">\(\boldsymbol{x}\)</span>。</p>
 \end{equation}
 \]</span></p>
 <h3 id="凸优化">7.3 凸优化</h3>
-<p>让我们我们重点讨论一类特别有用的优化问题上，因为在这类问题上我们可以保证得到全局最优解。目标函数<span
+<p>让我们我们重点讨论一类特别有用的优化问题上，因为在这类问题上我们可以保证得到全局最优解。</p>
+<blockquote>
+<p>目标函数<span
 class="math inline">\(f(·)\)</span>是一个凸函数，且约束<span
 class="math inline">\(g(·)\)</span>和<span
 class="math inline">\(h(·)\)</span>是凸集的问题称为凸优化问题( convex
-optimization problem)。在这种情况下，<strong>称它具有强对偶性(strong
-duality)：对偶问题的最优解与原问题的最优解相同。</strong>在机器学习文献中，凸函数和凸集通常是不严格区别的，但是人们通常可以从上下文中推断出隐含的含义。</p>
-<blockquote>
-<p>凸函数的非负加权和是凸的.</p>
+optimization problem)。</p>
 </blockquote>
+<p><strong>哪些约束会产生“凸集”？</strong>：</p>
+<table>
+<thead>
+<tr class="header">
+<th>约束类型</th>
+<th>产生的可行集</th>
+<th>是否凸</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>线性不等式 <span class="math inline">\(a^\top x \le b\)</span></td>
+<td>半空间</td>
+<td>✔凸</td>
+</tr>
+<tr class="even">
+<td>线性等式 <span class="math inline">\(Ax=b\)</span></td>
+<td>仿射子空间</td>
+<td>✔凸</td>
+</tr>
+<tr class="odd">
+<td>二次凸约束 <span class="math inline">\(x^\top Qx \le 1\)</span></td>
+<td>椭球</td>
+<td>✔凸</td>
+</tr>
+<tr class="even">
+<td>范数约束 <span class="math inline">\(\|x\|\le r\)</span></td>
+<td>球或圆盘</td>
+<td>✔凸</td>
+</tr>
+<tr class="odd">
+<td>Box 约束</td>
+<td>超立方体</td>
+<td>✔凸</td>
+</tr>
+<tr class="even">
+<td>任意凸函数 <span class="math inline">\(g(x)\le 0\)</span></td>
+<td>凸集</td>
+<td>✔凸</td>
+</tr>
+</tbody>
+</table>
+<p>在这种情况下，<strong>称它具有强对偶性(strong
+duality)：对偶问题的最优解与原问题的最优解相同。</strong>在机器学习文献中，凸函数和凸集通常是不严格区别的，但是人们通常可以从上下文中推断出隐含的含义。</p>
+<p><strong>注：凸函数的非负加权和是凸的.</strong></p>
 <h4 id="线性规划">7.3.1 线性规划</h4>
 <p>考虑所有函数都是线性的特殊情况，即： <span class="math display">\[
 \begin{equation}
