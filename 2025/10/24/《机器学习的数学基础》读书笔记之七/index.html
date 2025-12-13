@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="7、连续优化 Continuous Optimization 由于机器学习算法是在计算机上实现的，其中许多数学方程式都表示为数值优化方法。本章描述了训练机器学习模型的基本数值方法。训练机器学习模型通常归结为找到一组好的参数。“好”的概念是由目标函数或概率模型来决定的，我们将在本书的第二部分看到这些例子。给定一个目标函数，使用优化算法来寻找最佳值。\(\mathbb{R}^{D}\) 中考虑数据和模">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《机器学习的数学基础》（7&#x2F;7）">
+<meta property="og:url" content="http://hongyitong.github.io/2025/10/24/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B9%8B%E4%B8%83/index.html">
+<meta property="og:site_name" content="墨语浮生">
+<meta property="og:description" content="7、连续优化 Continuous Optimization 由于机器学习算法是在计算机上实现的，其中许多数学方程式都表示为数值优化方法。本章描述了训练机器学习模型的基本数值方法。训练机器学习模型通常归结为找到一组好的参数。“好”的概念是由目标函数或概率模型来决定的，我们将在本书的第二部分看到这些例子。给定一个目标函数，使用优化算法来寻找最佳值。\(\mathbb{R}^{D}\) 中考虑数据和模">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-10-23T16:00:00.000Z">
+<meta property="article:modified_time" content="2025-12-12T06:43:07.914Z">
+<meta property="article:author" content="Rayman.hung">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2025/10/24/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B9%8B%E4%B8%83/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2025/10/24/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B9%8B%E4%B8%83/","path":"2025/10/24/《机器学习的数学基础》读书笔记之七/","title":"《机器学习的数学基础》（7/7）"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>《机器学习的数学基础》（7/7） | 墨语浮生</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZXGEJDXQ33"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-ZXGEJDXQ33","only_pageview":false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">墨语浮生</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9E%E7%BB%AD%E4%BC%98%E5%8C%96"><span class="nav-text">7、连续优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E6%B3%95%E4%BC%98%E5%8C%96"><span class="nav-text">7.1 使用梯度下降法优化</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%8A%A8%E9%87%8F%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D"><span class="nav-text">7.1.1 动量梯度下降</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%9A%8F%E6%9C%BA%E6%A2%AF%E5%BA%A6%E4%B8%8B%E9%99%8D%E6%B3%95"><span class="nav-text">7.1.2 随机梯度下降法</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BA%A6%E6%9D%9F%E4%BC%98%E5%8C%96%E4%B8%8E%E6%8B%89%E6%A0%BC%E6%9C%97%E6%97%A5%E4%B9%98%E5%AD%90"><span class="nav-text">7.2 约束优化与拉格朗日乘子</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%B8%E4%BC%98%E5%8C%96"><span class="nav-text">7.3 凸优化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BA%BF%E6%80%A7%E8%A7%84%E5%88%92"><span class="nav-text">7.3.1 线性规划</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BA%8C%E6%AC%A1%E8%A7%84%E5%88%92"><span class="nav-text">7.3.2 二次规划</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#legendre-fenchel%E5%8F%98%E6%8D%A2%E5%92%8C%E5%87%B8%E5%85%B1%E8%BD%AD"><span class="nav-text">7.3.3
+Legendre-Fenchel变换和凸共轭</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、心情记录</div>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2025/10/24/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B9%8B%E4%B8%83/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="《机器学习的数学基础》（7/7） | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《机器学习的数学基础》（7/7）
+        </h1>
+
+        </h1>
+          
+             <p class="post-subtitle">读书笔记之七：连续优化</p>
+          
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-10-24 00:00:00" itemprop="dateCreated datePublished" datetime="2025-10-24T00:00:00+08:00">2025-10-24</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AF%BB%E4%B9%A6%E5%BF%83%E5%BE%97%EF%BC%88%E8%87%AA%E7%84%B6%E7%A7%91%E5%AD%A6%EF%BC%89/" itemprop="url" rel="index"><span itemprop="name">读书心得（自然科学）</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="连续优化">7、连续优化</h2>
+<p>Continuous Optimization</p>
+<p>由于机器学习算法是在计算机上实现的，其中许多<strong>数学方程式都表示为数值优化方法</strong>。本章描述了训练机器学习模型的基本数值方法。训练机器学习模型通常归结为找到一组好的参数。“好”的概念是由目标函数或概率模型来决定的，我们将在本书的第二部分看到这些例子。给定一个目标函数，使用优化算法来寻找最佳值。<span
+class="math inline">\(\mathbb{R}^{D}\)</span>
+中考虑数据和模型，所以我们面临的优化问题是连续优化问题，而不是离散变量的组合优化问题。</p>
+<p>一般情况下，机器学习中的大多数目标函数都是要被最小化的，即最优值就是最小值。直观上，梯度为目标函数每个点的上坡方向，而我们的目的是下坡（与梯度方向相反），希望找到最深的点。</p>
+<span id="more"></span>
+<p>我们将学习一类称为凸函数的函数，它们对优化算法的起点没有依赖性。对于凸函数，局部最小值就是全局最小值。事实证明，许多机器学习目标函数的设计都是凸的.</p>
+<blockquote>
+<p>一般研究最小值，所以对应研究的也是凸函数（数学定义上是开口向上的函数）。</p>
+</blockquote>
+<h3 id="使用梯度下降法优化">7.1 使用梯度下降法优化</h3>
+<p>梯度下降法是一种一阶优化算法。为了用梯度下降法寻找函数的局部最小值，我们取与函数在当前点的梯度的一定比例的负值调整<span
+class="math inline">\(x\)</span>。回想第5.1节，梯度指向最陡的上升方向。另一个直观的表现是考虑函数的等高线。梯度指向与我们希望优化的函数的等高线正交的方向。</p>
+<p><strong>梯度一定是指向上升的方向</strong>：<br />
+严格来说，<strong>梯度确实指向函数在某一点上“最陡上升”的方向</strong>。梯度的符号和大小告诉我们<strong>函数值局部上升最快的方向</strong>和<strong>速率</strong>。对于一元函数，梯度的正负直接指明函数上升的方向。<br />
+<strong>梯度的几何意义</strong>：</p>
+<ul>
+<li>梯度方向是<strong>函数值增加最快的方向</strong>。</li>
+<li>梯度的大小 <span class="math inline">\(\|\nabla
+f(\boldsymbol{x})\|\)</span>
+表示<strong>该方向上函数上升的速率</strong>。</li>
+<li>如果沿着梯度的负方向移动 <span class="math inline">\(-\nabla
+f(\boldsymbol{x})\)</span>，则是下降最快的方向（常用于梯度下降算法）。</li>
+</ul>
+<p><strong>梯度是函数上升最快的方向</strong>。但它只描述局部方向，想找最大值还需要结合函数整体信息。<br />
+例如 <span class="math inline">\(y=x^2\)</span>,导数是<span
+class="math inline">\(2x\)</span>，针对负轴，导数&lt;0;所以沿<span
+class="math inline">\(x\)</span>轴负方向是函数值上升最快的方向，反之也能推导出。</p>
+<p>自适应梯度方法能根据函数的局部性质，在每次迭代时重新调整步长。有两种简单的方法（Toussaint，2012）：</p>
+<ul>
+<li>当采用梯度下降后函数值增大了，则表明步长过大了。这时我们可以撤消并减小步长。</li>
+<li>当函数值减小时，我们可以尝试增大步长。</li>
+</ul>
+<p>尽管“撤消”步骤似乎是浪费资源，但使用这种启发式方法可以保证单调收敛。</p>
+<h5 id="动量梯度下降">7.1.1 动量梯度下降</h5>
+<p>如图7.3所示，如果优化的曲面的存在缩放效果不佳的区域，那么梯度下降的收敛速度可能非常慢。改进收敛性的一个方法是给梯度下降添加记忆项。动量梯度下降法（Rumelhart
+et
+al.，1986）引入了附加项来记忆上一次迭代中发生了什么。这种记忆可以抑制振荡，平滑梯度更新。继续用球做类比，动量项模拟了重球从斜坡滚下不会轻易改变方向的现象。其思想是使用记忆进行梯度更新，以实现滑动平均(
+moving average)。<strong>基于动量的方法记忆了每次迭代的更新量<span
+class="math inline">\(\Delta
+\boldsymbol{x}_{i}\)</span>,下一次更新则用当前和之前梯度的线性组合确定：</strong></p>
+<h5 id="随机梯度下降法">7.1.2 随机梯度下降法</h5>
+<p><strong>计算梯度非常耗时。然而，通常可以找到梯度的“<em>cheap</em>”近似值。只要近似梯度指向与真实梯度大致相同的方向，那么它就是有用的。</strong></p>
+<blockquote>
+<p>随机梯度：它不是确切的梯度，而是一个基于随机采样得到的噪声版本（随机近似）。</p>
+</blockquote>
+<p>随机梯度下降法（Stochastic gradient
+descent，通常简称为SGD）是梯度下降法的一种随机近似方法，用于最小化目标函数，且目标函数应是可微函数之和。这里的“随机”一词指的是这样一个事实，即我们承认我们并不精确地知道梯度，而是只知道它的噪声近似值。通过约束近似梯度的概率分布，我们仍然可以从理论上保证SGD收敛。</p>
+<p>如前所述，标准梯度下降法是一种“批量”优化方法，即选取合适的步长参数
+<span
+class="math inline">\(gamma_i\)</span>，并使用所有训练集，然后通过以下公式更新向量参数：
+<span class="math display">\[
+\boldsymbol{\theta}_{i+1}
+= \boldsymbol{\theta}_{i} - \gamma_{i} \left( \nabla
+L(\boldsymbol{\theta}_{i}) \right)^{\top}
+= \boldsymbol{\theta}_{i} - \gamma_{i} \sum_{n=1}^{N} \left( \nabla
+L_{n}(\boldsymbol{\theta}_{i}) \right)^{\top}
+\qquad (7.15)
+\]</span> 求梯度和可能需要对所有<span
+class="math inline">\(L_n\)</span>的梯度进行计算。当训练集是巨大的，或者（并且）损失函数不是简单的公式时，计算梯度和需要消耗巨大的计算资源。</p>
+<p>考虑 (7.15) 中的<span
+class="math inline">\(\sum_{n=1}^{N}\left(\nabla
+L_{n}\left(\boldsymbol{\theta}_{i}\right)\right),\)</span>我们可以取较小的
+<span class="math inline">\(L_n\)</span>
+集合来求它们的梯度和以减少计算量。与批量梯度下降法使用 <span
+class="math inline">\(n=1,\ldots,N\)</span> 的所有 <span
+class="math inline">\(L_n\)</span> 不同，小批量<strong>梯度下降随机选取
+<span class="math inline">\(L_n\)</span>
+的子集</strong>。在极端情况下，我们还可以随机选择一个 <span
+class="math inline">\(L_n\)</span> 来估计梯度。</p>
+<p>关于为什么选取数据子集是明智的，关键的见解是要认识到，为了使梯度下降收敛，我们只要求梯度是真实梯度的无偏估计。事实上，(7.15)
+中的<span class="math inline">\(\sum_{n=1}^{N}\left(\nabla
+L_{n}\left(\boldsymbol{\theta}_{i}\right)\right)\)</span>是梯度期望值（第
+6.4.1
+节）的经验估计。因此，对期望值的任何其他无偏经验估计，例如使用数据的任何子样本，将足以使梯度下降收敛。</p>
+<p><strong>备注</strong>：
+<strong>当学习率以适当的速率下降时，在相对不严格的假设下，随机梯度下降必然收敛到局部最小值（Bottou,
+1998）。</strong></p>
+<p>为什么要考虑使用近似梯度？一个主要原因是硬件的限制，例如中央处理器（CPU）/图形处理器（GPU）内存大小或计算时间的限制。我们可以像在估计经验平均数时考虑样本的大小一样（第
+6.4.1 节），来考虑用来估计梯度的子集的大小。
+较大的小批量将提供准确的梯度估计，减少参数更新中的方差。此外，较大的小批量可以使代价和梯度向量化，从而能使用高度优化的矩阵运算。方差的减少导致更稳定的收敛性，但每次梯度计算的计算量都很大。</p>
+<p>相比之下，较小的小批量可以很快估计。如果我们保持较小的小批量，梯度估计中的噪声将允许我们脱离局部最优解。<strong>在机器学习中，优化方法是利用训练数据，通过最小化目标函数来进行训练的，但总体目标是提高泛化性能（第
+8
+章）</strong>。<strong>由于机器学习的目标不一定需要精确估计目标函数的最小值，所以使用小批量方法的近似梯度被广泛使用。</strong></p>
+<h3 id="约束优化与拉格朗日乘子">7.2 约束优化与拉格朗日乘子</h3>
+<p><strong>拉格朗日对偶( Lagrangian
+duality)</strong>的概念。一般来说，对偶优化的思想是将一组变量<span
+class="math inline">\(\boldsymbol{x}\)</span>（称为原始变量）的优化问题转化为另一组变量<span
+class="math inline">\(\boldsymbol{\lambda}\)</span>（称为对偶变量）的优化问题。我们将会介绍两种不同的对偶方法：在本节中，我们讨论的是拉格朗日对偶；在第7.3.3节中，我们将讨论Legendre-Fenchel对偶。</p>
+<blockquote>
+<p><strong>对偶问题计算上的好处</strong></p>
+<ul>
+<li>有时原问题不好解，但对偶问题更容易（例如约束简单、凸结构更明显）。</li>
+<li>在大规模问题（如支持向量机 SVM）中，通常是通过对偶问题求解的。</li>
+</ul>
+</blockquote>
+<p>不等式约束对应的拉格朗日乘子约束为非负，而等式约束对应的拉格朗日乘子则不加约束。</p>
+<p>通过引入与每个不等式约束分别对应的拉格朗日乘子 <span
+class="math inline">\(\lambda_i \geq 0\)</span> （Boyd 和
+Vandenberghe，2004，第 4 章），得到：</p>
+<p><span class="math display">\[
+\begin{equation}
+\mathfrak{L}(\boldsymbol{x}, \boldsymbol{\lambda})
+= f(\boldsymbol{x}) + \sum_{i=1}^{m} \lambda_i g_i(\boldsymbol{x})
+= f(\boldsymbol{x}) + \boldsymbol{\lambda}^{\top}
+\boldsymbol{g}(\boldsymbol{x})
+\qquad (7.20)
+\end{equation}
+\]</span></p>
+<p>其中我们将所有约束 <span
+class="math inline">\(g_i(\boldsymbol{x})\)</span> 写成一个向量 <span
+class="math inline">\(\boldsymbol{g}(\boldsymbol{x})\)</span>；
+把所有拉格朗日乘子也写成向量 <span
+class="math inline">\(\boldsymbol{\lambda} \in
+\mathbb{R}^{m}\)</span>。</p>
+<p>我们现在介绍拉格朗日对偶 (Lagrangian duality)}的概念。
+一般来说，对偶优化的思想是将一组变量 <span
+class="math inline">\(\boldsymbol{x}\)</span>（称为原始变量）的优化问题转化为另一组变量
+<span
+class="math inline">\(\boldsymbol{\lambda}\)</span>（称为对偶变量）的优化问题。
+<strong>定义7.1</strong> 问题 <span class="math display">\[
+\begin{equation}
+\min_{\boldsymbol{x}} f(\boldsymbol{x})
+\quad \text{subject to} \quad g_i(\boldsymbol{x}) \leqslant 0, \quad
+i=1,\ldots,m
+\end{equation}
+\]</span> 被称为 原始问题 (primal problem)，对应原始变量 <span
+class="math inline">\(\boldsymbol{x}\)</span>。</p>
+<p>与它对应的拉格朗日对偶问题 (Lagrangian dual problem)由下式给出：
+<span class="math display">\[
+\begin{equation}
+\max_{\boldsymbol{\lambda} \in \mathbb{R}^m} \;
+\mathfrak{D}(\boldsymbol{\lambda})
+\quad \text{subject to} \quad \boldsymbol{\lambda} \geqslant \mathbf{0},
+\end{equation}
+\]</span> 其中 <span class="math inline">\(\boldsymbol{\lambda}\)</span>
+为对偶变量，且 <span class="math display">\[
+\begin{equation}
+\mathfrak{D}(\boldsymbol{\lambda}) = \min_{\boldsymbol{x} \in
+\mathbb{R}^d} \; \mathfrak{L}(\boldsymbol{x}, \boldsymbol{\lambda}).
+\end{equation}
+\]</span></p>
+<h3 id="凸优化">7.3 凸优化</h3>
+<p>让我们我们重点讨论一类特别有用的优化问题上，因为在这类问题上我们可以保证得到全局最优解。</p>
+<blockquote>
+<p>目标函数<span
+class="math inline">\(f(·)\)</span>是一个凸函数，且约束<span
+class="math inline">\(g(·)\)</span>和<span
+class="math inline">\(h(·)\)</span>是凸集的问题称为凸优化问题( convex
+optimization problem)。</p>
+</blockquote>
+<p><strong>哪些约束会产生“凸集”？</strong>：</p>
+<table>
+<thead>
+<tr class="header">
+<th>约束类型</th>
+<th>产生的可行集</th>
+<th>是否凸</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>线性不等式 <span class="math inline">\(a^\top x \le b\)</span></td>
+<td>半空间</td>
+<td>✔凸</td>
+</tr>
+<tr class="even">
+<td>线性等式 <span class="math inline">\(Ax=b\)</span></td>
+<td>仿射子空间</td>
+<td>✔凸</td>
+</tr>
+<tr class="odd">
+<td>二次凸约束 <span class="math inline">\(x^\top Qx \le 1\)</span></td>
+<td>椭球</td>
+<td>✔凸</td>
+</tr>
+<tr class="even">
+<td>范数约束 <span class="math inline">\(\|x\|\le r\)</span></td>
+<td>球或圆盘</td>
+<td>✔凸</td>
+</tr>
+<tr class="odd">
+<td>Box 约束</td>
+<td>超立方体</td>
+<td>✔凸</td>
+</tr>
+<tr class="even">
+<td>任意凸函数 <span class="math inline">\(g(x)\le 0\)</span></td>
+<td>凸集</td>
+<td>✔凸</td>
+</tr>
+</tbody>
+</table>
+<p>在这种情况下，<strong>称它具有强对偶性(strong
+duality)：对偶问题的最优解与原问题的最优解相同。</strong>在机器学习文献中，凸函数和凸集通常是不严格区别的，但是人们通常可以从上下文中推断出隐含的含义。</p>
+<p><strong>注：凸函数的非负加权和是凸的.</strong></p>
+<h4 id="线性规划">7.3.1 线性规划</h4>
+<p>考虑所有函数都是线性的特殊情况，即： <span class="math display">\[
+\begin{equation}
+\min_{\boldsymbol{x} \in \mathbb{R}^{d}} \boldsymbol{c}^{\top}
+\boldsymbol{x}
+\qquad (7.39)
+\end{equation}
+\]</span></p>
+<p><span class="math display">\[
+\text{subject to } \quad \boldsymbol{A}\boldsymbol{x} \leqslant
+\boldsymbol{b}
+\]</span> 其中 <span class="math inline">\(\boldsymbol{A} \in
+\mathbb{R}^{m \times d}, \ \boldsymbol{b} \in
+\mathbb{R}^{m}\)</span>。</p>
+<p>取 <span class="math inline">\(\mathfrak{L}(\boldsymbol{x},
+\boldsymbol{\lambda})\)</span> 对 <span
+class="math inline">\(\boldsymbol{x}\)</span>
+的导数并将其设为零(因为是<span
+class="math inline">\(x\)</span>的一次函数，求导消去了<span
+class="math inline">\(x\)</span>)，得到对偶优化问题，是关于<span
+class="math inline">\(\lambda\)</span>的线性规划问题，但有<span
+class="math inline">\(m\)</span>个变量。我们可以选择求解原始规划问题（7.39）或其对偶规划问题（7.43），这取决于<span
+class="math inline">\(m\)</span>和<span
+class="math inline">\(d\)</span>哪个更大。</p>
+<h4 id="二次规划">7.3.2 二次规划</h4>
+<p>考虑凸二次目标函数的情况，其中约束是仿射的，即： <span
+class="math display">\[
+\min_{\boldsymbol{x} \in \mathbb{R}^{d}}
+\frac{1}{2} \boldsymbol{x}^{\top} \boldsymbol{Q} \boldsymbol{x}
++ \boldsymbol{c}^{\top} \boldsymbol{x}  
+\]</span></p>
+<p><span class="math display">\[
+\text{subject to} \quad \boldsymbol{A}\boldsymbol{x} \leqslant
+\boldsymbol{b}
+\]</span> 其中 <span class="math inline">\(\boldsymbol{A} \in
+\mathbb{R}^{m \times d},\ \boldsymbol{b} \in \mathbb{R}^{m},\
+\boldsymbol{c} \in \mathbb{R}^{d}\)</span>。</p>
+<p>对称方阵 <span class="math inline">\(\boldsymbol{Q} \in \mathbb{R}^{d
+\times d}\)</span>
+是正定的，因此目标函数是凸的。这就是所谓的二次规划。注意它有 <span
+class="math inline">\(d\)</span> 个变量和 <span
+class="math inline">\(m\)</span> 个线性约束。</p>
+<blockquote>
+<p>一般定义<strong>二次规划（QP）</strong>时，只要求 <span
+class="math inline">\(Q\)</span> <strong>半正定（positive semidefinite,
+PSD）</strong>，这样目标函数就是凸的；</p>
+</blockquote>
+<p>同线性规划，取 <span
+class="math inline">\(\mathfrak{L}(\boldsymbol{x},
+\boldsymbol{\lambda})\)</span> 对 <span
+class="math inline">\(\boldsymbol{x}\)</span>
+的导数，并将其设为零(因为是<span
+class="math inline">\(x\)</span>的二次函数，求导得到关于<span
+class="math inline">\(x\)</span>的一次方程，可以用<span
+class="math inline">\(\lambda\)</span>替换<span
+class="math inline">\(x\)</span>代入对耦优化问题)，得到对偶优化问题，是关于<span
+class="math inline">\(\lambda\)</span>的二次规划问题。</p>
+<h4 id="legendre-fenchel变换和凸共轭">7.3.3
+Legendre-Fenchel变换和凸共轭</h4>
+<p>这一节没深入看！</p>
+<p>全书的读书笔记（共7篇）如下：<br />
+<a href="/2025/12/05/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B9%8B%E4%B8%80/" title="《机器学习的数学基础》（1&#x2F;7）">《机器学习的数学基础》读书笔记之一 ：导言</a><br />
+<a href="/2025/10/29/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B9%8B%E4%BA%8C/" title="《机器学习的数学基础》（2&#x2F;7）">《机器学习的数学基础》读书笔记之二 ：线性代数</a><br />
+<a href="/2025/10/28/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B9%8B%E4%B8%89/" title="《机器学习的数学基础》（3&#x2F;7）">《机器学习的数学基础》读书笔记之三 ：解析几何</a><br />
+<a href="/2025/10/27/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%9B%9B/" title="《机器学习的数学基础》（4&#x2F;7）">《机器学习的数学基础》读书笔记之四 ：矩阵分解</a><br />
+<a href="/2025/10/26/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B9%8B%E4%BA%94/" title="《机器学习的数学基础》（5&#x2F;7）">《机器学习的数学基础》读书笔记之五 ：向量微积分</a><br />
+<a href="/2025/10/25/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%85%AD/" title="《机器学习的数学基础》（6&#x2F;7）">《机器学习的数学基础》读书笔记之六 ：概率与分布</a><br />
+<a href="/2025/10/24/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B9%8B%E4%B8%83/" title="《机器学习的数学基础》（7&#x2F;7）">《机器学习的数学基础》读书笔记之七 ：连续优化</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/07/27/ESL%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="prev" title="ESL读书笔记">
+                  <i class="fa fa-chevron-left"></i> ESL读书笔记
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/10/25/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%85%AD/" rel="next" title="《机器学习的数学基础》（6/7）">
+                  《机器学习的数学基础》（6/7） <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
