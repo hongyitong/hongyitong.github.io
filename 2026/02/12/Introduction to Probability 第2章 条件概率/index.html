@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"enable":true,"style":"tabs","active":"giscus","storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+
+
+    <meta name="description" content="第 2 章 条件概率 Conditional probability 我们已经将概率引入为一种表达我们对事件的置信程度或不确定性的语言。每当我们观察到新的证据（即获得数据）时，我们就获取了可能影响我们不确定性的信息。一个与现有信念一致的新观察结果可能会让我们对该信念更加确定，而一个令人惊讶的观察结果可能会使该信念受到质疑。条件概率正是解决这一根本问题的概念：我们应当如何根据观察到的证据来更新我们的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《Introduction to Probability 》第 2 章 条件概率">
+<meta property="og:url" content="http://hongyitong.github.io/2026/02/12/Introduction%20to%20Probability%20%E7%AC%AC2%E7%AB%A0%20%E6%9D%A1%E4%BB%B6%E6%A6%82%E7%8E%87/index.html">
+<meta property="og:site_name" content="墨语浮生">
+<meta property="og:description" content="第 2 章 条件概率 Conditional probability 我们已经将概率引入为一种表达我们对事件的置信程度或不确定性的语言。每当我们观察到新的证据（即获得数据）时，我们就获取了可能影响我们不确定性的信息。一个与现有信念一致的新观察结果可能会让我们对该信念更加确定，而一个令人惊讶的观察结果可能会使该信念受到质疑。条件概率正是解决这一根本问题的概念：我们应当如何根据观察到的证据来更新我们的">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Introduction%20to%20Probability/F2.1.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Introduction%20to%20Probabilityimg3/Introduction%20to%20Probability/F2.2.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Introduction%20to%20Probability/F2.3.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Introduction%20to%20Probability/F2.4.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Introduction%20to%20Probability/F2.01.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Introduction%20to%20Probability/F2.5.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Introduction%20to%20Probability/F2.02.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Introduction%20to%20Probability/F2.03.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Introduction%20to%20Probability/F2.6.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Introduction%20to%20Probability/F2.04.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Introduction%20to%20Probability/F2,7.png">
+<meta property="article:published_time" content="2026-02-11T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-02-04T04:02:25.614Z">
+<meta property="article:author" content="Rayman.hung">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hongyitong.github.io/img3/Introduction%20to%20Probability/F2.1.png">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2026/02/12/Introduction%20to%20Probability%20%E7%AC%AC2%E7%AB%A0%20%E6%9D%A1%E4%BB%B6%E6%A6%82%E7%8E%87/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2026/02/12/Introduction%20to%20Probability%20%E7%AC%AC2%E7%AB%A0%20%E6%9D%A1%E4%BB%B6%E6%A6%82%E7%8E%87/","path":"2026/02/12/Introduction to Probability 第2章 条件概率/","title":"《Introduction to Probability 》第 2 章 条件概率"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>《Introduction to Probability 》第 2 章 条件概率 | 墨语浮生</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZXGEJDXQ33"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-ZXGEJDXQ33","only_pageview":false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?ff358b9c7e949787b074bfc9c8019a9d"></script>
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">墨语浮生</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC-2-%E7%AB%A0-%E6%9D%A1%E4%BB%B6%E6%A6%82%E7%8E%87"><span class="nav-text">第 2 章 条件概率</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9D%A1%E4%BB%B6%E6%80%9D%E7%BB%B4%E7%9A%84%E9%87%8D%E8%A6%81%E6%80%A7"><span class="nav-text">2.1 条件思维的重要性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89%E4%B8%8E%E7%9B%B4%E8%A7%89"><span class="nav-text">2.2 定义与直觉</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B4%9D%E5%8F%B6%E6%96%AF%E6%B3%95%E5%88%99%E4%B8%8E%E5%85%A8%E6%A6%82%E7%8E%87%E5%85%AC%E5%BC%8F"><span class="nav-text">2.3 贝叶斯法则与全概率公式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9D%A1%E4%BB%B6%E6%A6%82%E7%8E%87%E4%B9%9F%E6%98%AF%E6%A6%82%E7%8E%87"><span class="nav-text">2.4 条件概率也是概率</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8B%E4%BB%B6%E7%9A%84%E7%8B%AC%E7%AB%8B%E6%80%A7"><span class="nav-text">2.5 事件的独立性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B4%9D%E5%8F%B6%E6%96%AF%E6%B3%95%E5%88%99%E7%9A%84%E4%B8%80%E8%87%B4%E6%80%A7"><span class="nav-text">2.6 贝叶斯法则的一致性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9D%A1%E4%BB%B6%E5%8C%96%E4%BD%9C%E4%B8%BA%E8%A7%A3%E9%A2%98%E5%B7%A5%E5%85%B7"><span class="nav-text">2.7 条件化作为解题工具</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AD%96%E7%95%A5%E4%BB%A5%E4%BD%A0%E5%B8%8C%E6%9C%9B%E7%9F%A5%E9%81%93%E7%9A%84%E4%BF%A1%E6%81%AF%E4%B8%BA%E6%9D%A1%E4%BB%B6"><span class="nav-text">2.7.1 策略：以你“希望知道”的信息为条件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AD%96%E7%95%A5%E4%BB%A5%E7%AC%AC%E4%B8%80%E6%AD%A5%E4%B8%BA%E6%9D%A1%E4%BB%B6"><span class="nav-text">2.7.2 策略：以第一步为条件</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%99%B7%E9%98%B1%E4%B8%8E%E6%82%96%E8%AE%BA"><span class="nav-text">2.8 陷阱与悖论</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%AC%E7%AB%A0%E5%B0%8F%E7%BB%93"><span class="nav-text">2.9 本章小结</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#r-%E8%AF%AD%E8%A8%80%E5%AE%9E%E7%8E%B0"><span class="nav-text">2.10 R 语言实现</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、心情记录</div>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/02/12/Introduction%20to%20Probability%20%E7%AC%AC2%E7%AB%A0%20%E6%9D%A1%E4%BB%B6%E6%A6%82%E7%8E%87/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="《Introduction to Probability 》第 2 章 条件概率 | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《Introduction to Probability 》第 2 章 条件概率
+        </h1>
+
+        </h1>
+          
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-02-12 00:00:00" itemprop="dateCreated datePublished" datetime="2026-02-12T00:00:00+08:00">2026-02-12</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="第-2-章-条件概率">第 2 章 条件概率</h2>
+<p>Conditional probability</p>
+<p>我们已经将概率引入为一种表达我们对事件的置信程度或不确定性的语言。每当我们观察到新的证据（即获得数据）时，我们就获取了可能影响我们不确定性的信息。一个与现有信念一致的新观察结果可能会让我们对该信念更加确定，而一个令人惊讶的观察结果可能会使该信念受到质疑。条件概率正是解决这一根本问题的概念：我们应当如何根据观察到的证据来更新我们的信念？</p>
+<span id="more"></span>
+<h3 id="条件思维的重要性">2.1 条件思维的重要性</h3>
+<p>The importance of thinking conditionally</p>
+<p>条件概率对于科学、医学和法律推理至关重要，因为它展示了如何以逻辑、连贯的方式将证据融入我们对世界的理解中。事实上，一个有用的视角是：<strong>所有的概率都是条件的</strong>；无论是否明确写出，每个概率中总包含着背景知识（或假设）。</p>
+<p>例如，假设某天早晨我们关注事件 <span class="math inline">\(R\)</span>（当天会下雨）。令 <span class="math inline">\(P(R)\)</span> 为我们在出门观察前的降雨概率评估。如果我们随后向外看，发现天空乌云密布（事件 <span class="math inline">\(C\)</span>），那么想必我们认为下雨的概率应该会增加；我们将这个新概率记为 <span class="math inline">\(P(R|C)\)</span>（读作“在给定 <span class="math inline">\(C\)</span> 的条件下 <span class="math inline">\(R\)</span> 的概率”）。当我们从 <span class="math inline">\(P(R)\)</span> 转换到 <span class="math inline">\(P(R|C)\)</span> 时，我们称之为“对 <span class="math inline">\(C\)</span> 进行条件化”。随着一天的进行，我们可能会获得越来越多关于天气状况的信息，并可以不断更新我们的概率。如果我们观察到事件 <span class="math inline">\(B_1, \dots, B_n\)</span> 发生，那么在给定这些证据的情况下，我们将新的条件概率写为 <span class="math inline">\(P(R|B_1, \dots, B_n)\)</span>。如果最终我们观察到真的开始下雨了，我们的条件概率就变成了 1。</p>
+<p>此外，我们将看到<strong>条件化是一种非常强大的解题策略</strong>，<strong>它通常可以通过分情况讨论，将一个复杂的问题分解为易于处理的小块。</strong>正如在计算机科学中，常见的策略是将大问题分解为“一口大小”的碎块（甚至是“字节大小”的碎块），<strong>在概率论中，常见的策略是将复杂的概率问题还原为一系列更简单的条件概率问题。</strong>特别地，我们将讨论一种被称为<strong>第一步分析法</strong>（first-step analysis）的策略，它通常允许我们在实验包含多个阶段时获得问题的递归解。</p>
+<p>由于条件化既是根据证据更新信念的手段，又是解决问题的核心策略，因此我们说：</p>
+<blockquote>
+<p><strong>条件化是统计学的灵魂。</strong></p>
+</blockquote>
+<h3 id="定义与直觉">2.2 定义与直觉</h3>
+<p>Definition and intuition</p>
+<p><strong>定义 2.2.1（条件概率</strong>）。若 <span class="math inline">\(A\)</span> 和 <span class="math inline">\(B\)</span> 是满足 <span class="math inline">\(P(B) &gt; 0\)</span> 的事件，则在给定 <span class="math inline">\(B\)</span> 的条件下 <span class="math inline">\(A\)</span> 的条件概率，记作 <span class="math inline">\(P(A|B)\)</span>，定义为： <span class="math display">\[
+P(A|B) = \frac{P(A \cap B)}{P(B)}
+\]</span> 在这里，<span class="math inline">\(A\)</span> 是我们想要更新其不确定性的事件，<span class="math inline">\(B\)</span> 是我们观察到（或想要视为给定）的证据。我们称 <span class="math inline">\(P(A)\)</span> 为 <span class="math inline">\(A\)</span> 的<strong>先验概率</strong>（prior probability），称 <span class="math inline">\(P(A|B)\)</span> 为 <span class="math inline">\(A\)</span> 的<strong>后验概率</strong>（posterior probability）（“先验”意为根据证据更新前，“后验”意为根据证据更新后）。</p>
+<p>必须将出现在垂直条件号后面的事件理解为我们已经观察到的证据或正在进行条件化的前提：<span class="math inline">\(P(A|B)\)</span> 是给定证据 <span class="math inline">\(B\)</span> 时 <span class="math inline">\(A\)</span> 的概率，而不是某个叫做 “<span class="math inline">\(A|B\)</span>” 的实体的概率。正如 2.4.1 节所讨论的，并不存在名为 “<span class="math inline">\(A|B\)</span>” 的事件。</p>
+<p>对于任何事件 <span class="math inline">\(A\)</span>，<span class="math inline">\(P(A|A) = P(A \cap A) / P(A) = 1\)</span>。一旦观察到 <span class="math inline">\(A\)</span> 已经发生，我们对 <span class="math inline">\(A\)</span> 的更新概率就是 1。如果不是这样，我们就需要一个全新的条件概率定义了！</p>
+<p><strong>例 2.2.2（两张牌）</strong>。一副标准扑克牌经过充分洗牌。随机抽取两张牌，每次一张，无放回。设 <span class="math inline">\(A\)</span> 为第一张牌是红心的事件，<span class="math inline">\(B\)</span> 为第二张牌是红牌的事件。求 <span class="math inline">\(P(A|B)\)</span> 和 <span class="math inline">\(P(B|A)\)</span>。</p>
+<p>解答：</p>
+<p>根据概率的原始定义和乘法原理：</p>
+<p><span class="math display">\[
+P(A \cap B) = \frac{13 \cdot 25}{52 \cdot 51} = \frac{25}{204}
+\]</span></p>
+<p>因为有利结果由选择 13 张红心之一，然后从剩余的 25 张红牌中任选一张决定。同时，<span class="math inline">\(P(A) = 1/4\)</span>，因为 4 种花色是等可能的；且</p>
+<p><span class="math display">\[
+P(B) = \frac{26 \cdot 51}{52 \cdot 51} = \frac{1}{2}
+\]</span></p>
+<p>因为第二张牌有 26 种有利的可能性，而对于其中每一种，第一张牌可以是任何其他牌（回想第 1 章，乘法原理不需要考虑时间顺序）。</p>
+<p>一种更巧妙的观察 <span class="math inline">\(P(B) = 1/2\)</span> 的方法是对称性：在进行实验之前的视角来看，第二张牌等可能地是牌堆中的任何一张牌。</p>
+<p>我们现在拥有了应用条件概率定义所需的所有部分：</p>
+<p><span class="math display">\[
+P(A|B) = \frac{P(A \cap B)}{P(B)} = \frac{25/204}{1/2} = \frac{25}{102}
+\]</span></p>
+<p><span class="math display">\[
+P(B|A) = \frac{P(B \cap A)}{P(A)} = \frac{25/204}{1/4} = \frac{25}{51}
+\]</span></p>
+<p>这是一个简单的例子，但已有几点值得注意：</p>
+<ol type="1">
+<li><p><strong>务必小心条件号两侧放置的事件</strong>。具体来说，<span class="math inline">\(P(A|B) \neq P(B|A)\)</span>。下一节将探讨这两个量在一般情况下是如何关联的。混淆这两个量被称为<strong>检察官谬误</strong>（prosecutor's fallacy），将在 2.8 节讨论。如果我们将 <span class="math inline">\(B\)</span> 定义为第二张牌是红心的事件，那么这两个条件概率将会相等。</p></li>
+<li><p><strong><span class="math inline">\(P(A|B)\)</span> 和 <span class="math inline">\(P(B|A)\)</span> 在直觉和数学上都有意义</strong>；抽牌的时间顺序并不决定我们可以观察哪些条件概率。当我们计算条件概率时，我们考虑的是观察到一个事件能提供关于另一个事件的何种信息，而不是一个事件是否引起了另一个事件。为了进一步获得直觉，想象有人把牌摊开，左手抽一张牌，右手同时抽另一张牌。基于左手的牌和右手的牌来定义 <span class="math inline">\(A\)</span> 和 <span class="math inline">\(B\)</span>，而不是第一张和第二张，并不会在任何重要方面改变问题的结构。</p>
+<blockquote>
+<p>个人注：以上这个时间顺序的说明很重要！</p>
+</blockquote></li>
+<li><p>我们可以通过对条件概率含义的直接解释看到 <span class="math inline">\(P(B|A) = 25/51\)</span>：如果抽到的第一张牌是红心，那么剩下的牌由 25 张红牌和 26 张黑牌组成（所有这些牌下次被抽到的概率均等），因此得到红牌的条件概率是 <span class="math inline">\(25/(25 + 26) = 25/51\)</span>。</p>
+<p>用这种方法找 <span class="math inline">\(P(A|B)\)</span> 则更难：如果我们得知第二张牌是红牌，我们可能会想“这很有用，但我们真正想知道的是它是不是红心！”本章稍后部分的条件概率结论将为我们提供解决此问题的方法。</p></li>
+</ol>
+<p>为了进一步阐明条件概率的含义，这里有两个直觉解释。</p>
+<p><strong>直觉 2.2.3（卵石世界）</strong>。考虑一个有限样本空间，其中的结果被想象成总质量为 1 的卵石。由于 <span class="math inline">\(A\)</span> 是一个事件，它是一组卵石，对于 <span class="math inline">\(B\)</span> 也是如此。图 2.1(a) 展示了一个示例。</p>
+<p><img src="/img3/Introduction to Probability/F2.1.png" alt="F2.1" style="zoom:60%;" /></p>
+<p>现在假设我们得知 <span class="math inline">\(B\)</span> 发生了。在图 2.1(b) 中，获取该信息后，我们移除了 <span class="math inline">\(B^c\)</span> 中的所有卵石，因为它们与“<span class="math inline">\(B\)</span> 已发生”这一知识不相容。此时，<span class="math inline">\(P(A \cap B)\)</span> 就是留在 <span class="math inline">\(A\)</span> 中的卵石的总质量。最后，在图 2.1(c) 中，我们进行<strong>归一化</strong>（renormalize），即通过除以一个常数，使得剩余卵石的新总质量为 1。这是通过除以 <span class="math inline">\(P(B)\)</span>（即 <span class="math inline">\(B\)</span> 中卵石的总质量）来实现的。对应于事件 <span class="math inline">\(A\)</span> 的结果的更新质量即为条件概率 <span class="math inline">\(P(A|B) = P(A \cap B) / P(B)\)</span>。</p>
+<p><strong>通过这种方式，我们的概率已经根据观察到的证据进行了更新。与证据相矛盾的结果被丢弃</strong>，它们的质量被重新分配给剩余的结果，<strong>同时保持剩余结果之间的相对质量</strong>。例如，如果最初卵石 2 的重量是卵石 1 的两倍，且两者都包含在 <span class="math inline">\(B\)</span> 中，那么在对 <span class="math inline">\(B\)</span> 进行条件化后，卵石 2 的重量仍然是卵石 1 的两倍。但如果卵石 2 不在 <span class="math inline">\(B\)</span> 中，那么在对 <span class="math inline">\(B\)</span> 进行条件化后，它的质量被更新为 0。</p>
+<p><strong>直觉 2.2.4（频率学派解释）</strong>。回想一下，概率的频率学派解释是基于大量重复试验中的相对频率。想象一下多次重复我们的实验，生成一长串观察结果。给定 <span class="math inline">\(B\)</span> 时 <span class="math inline">\(A\)</span> 的条件概率可以很自然地理解为：在仅关注 <span class="math inline">\(B\)</span> 发生的试验时，<span class="math inline">\(A\)</span> 发生的次数所占的比例。</p>
+<p><img src="/img3/Introduction to Probabilityimg3/Introduction to Probability/F2.2.png" alt="F2.2" style="zoom:60%;" /></p>
+<p>在图 2.2 中，我们实验的结果可以写成一串由 0 和 1 组成的字符串；<span class="math inline">\(B\)</span> 是第一个数字为 1 的事件，<span class="math inline">\(A\)</span> 是第二个数字为 1 的事件。对 <span class="math inline">\(B\)</span> 进行条件化时，我们圈出所有 <span class="math inline">\(B\)</span> 发生的重复次数，然后观察在这些被圈出的次数中，事件 <span class="math inline">\(A\)</span> 也发生的次数所占的比例。</p>
+<p>用符号表示，设 <span class="math inline">\(n_A, n_B, n_{AB}\)</span> 分别为在 <span class="math inline">\(n\)</span> 次大量重复实验中 <span class="math inline">\(A, B, A \cap B\)</span> 发生的次数。频率学派的解释是：</p>
+<p><span class="math display">\[
+P(A) \approx \frac{n_A}{n}, \quad P(B) \approx \frac{n_B}{n}, \quad P(A \cap B) \approx \frac{n_{AB}}{n}
+\]</span></p>
+<p>那么 <span class="math inline">\(P(A|B)\)</span> 被解释为 <span class="math inline">\(n_{AB}/n_B\)</span>，它等于 <span class="math inline">\((n_{AB}/n) / (n_B/n)\)</span>。这一解释再次转化为 <span class="math inline">\(P(A|B) = P(A \cap B) / P(B)\)</span>。</p>
+<p>为了练习应用条件概率的定义，让我们再看一些例子。接下来的三个例子都始于“一个有两个孩子的家庭”这一相同的基本场景，但根据具体假设和我们所依据的条件信息，其中会出现微妙的差异。</p>
+<p><strong>例 2.2.5（两个孩子）</strong>。马丁·加德纳（Martin Gardner）在 20 世纪 50 年代的《科学美国人》专栏中提出了以下谜题：</p>
+<ul>
+<li>琼斯先生有两个孩子。其中较大的孩子是女孩。两个孩子都是女孩的概率是多少？</li>
+<li>史密斯先生有两个孩子。其中至少一个是男孩。两个孩子都是男孩的概率是多少？</li>
+</ul>
+<p>乍一看，这个问题似乎只是条件概率的简单应用，但几十年来，关于这两部分是否应该有不同的答案、为什么会有不同的答案，以及问题的模糊程度，一直存在争议。加德纳给出的两部分答案分别是 <span class="math inline">\(1/2\)</span> 和 <span class="math inline">\(1/3\)</span>，这看起来可能有些矛盾：为什么得知大孩子的性别与仅仅得知其中一个孩子的性别会有所不同呢？</p>
+<p>明确问题的假设非常重要。为了得到加德纳给出的答案，需要做出以下几个隐含假设：</p>
+<ul>
+<li>假设性别是二元的，因此每个孩子都可以明确地被归类为男孩或女孩。事实上，许多人不完全符合“男性”或“女性”的范畴，并认为自己具有非二元性别。</li>
+<li>假设无论对于大孩子还是小孩子，都有 <span class="math inline">\(P(\text{男孩}) = P(\text{女孩})\)</span>。事实上，在大多数国家，男孩的出生率略高于女孩。例如，在美国，通常估计每出生 100 个女孩对应出生 105 个男孩。</li>
+<li>假设两个孩子的性别是独立的，即知道大孩子的性别不会提供关于小孩子性别的任何信息，反之亦然。如果孩子们是同卵双胞胎，这个假设就不现实了。</li>
+</ul>
+<p>在这些（诚然有问题的）简化假设下，我们可以按如下方式解决问题。</p>
+<p>解答：</p>
+<p>基于上述假设，根据条件概率的定义得：</p>
+<p><span class="math display">\[
+P(\text{均为女孩} \mid \text{大的是女孩}) = \frac{P(\text{均为女孩}，\text{大的是女孩})}{P(\text{大的是女孩})} = \frac{1/4}{1/2} = 1/2
+\]</span></p>
+<p><span class="math display">\[
+P(\text{均为女孩} \mid \text{至少一个是女孩}) = \frac{P(\text{均为女孩}，\text{至少一个是女孩})}{P(\text{至少一个是女孩})} = \frac{1/4}{3/4} = 1/3
+\]</span></p>
+<p>（为了方便比较，我们将问题的第二部分改用女孩而非男孩来求解。）两个结果不同可能看起来有违直觉，因为我们没有理由非得关心是大孩子还是小孩子是女孩。事实上，基于对称性： <span class="math display">\[
+P(\text{均为女孩} \mid \text{小的是女孩}) = P(\text{均为女孩} \mid \text{大的是女孩}) = 1/2
+\]</span> 然而，在 <span class="math inline">\(P(\text{均为女孩} \mid \text{大的是女孩})\)</span> 和 <span class="math inline">\(P(\text{均为女孩} \mid \text{至少一个是女孩})\)</span> 这两个条件概率之间不存在这种对称性。说“大孩子是女孩”指定了一个特定的孩子，那么另一个孩子（小孩子）是女孩的概率就是 50%。“至少一个”并没有指代特定的孩子。</p>
+<p>在样本空间 <span class="math inline">\(\{GG, GB, BG, BB\}\)</span> 中（例如 <span class="math inline">\(GB\)</span> 表示大的是女孩，小的是男孩），对“特定孩子是女孩”进行条件化会排除 4 个“卵石”中的 2 个。相比之下，对“至少一个是女孩”进行条件化仅排除了 <span class="math inline">\(BB\)</span>。</p>
+<p><strong>例 2.2.6（随机遇到的孩子是女孩）</strong>。一个家庭有两个孩子。你随机遇到了其中一个，发现她是个女孩。在与前一个例子相同的假设下，两个孩子都是女孩的条件概率是多少？同时假设你遇到任何一个孩子的可能性相等，且你遇到哪一个与性别无关。</p>
+<p>解答：</p>
+<p>直观上，答案应该是 1/2：想象我们遇到的那个孩子就在面前，而另一个在家里。两个都是女孩仅仅意味着在家的那个也是女孩，而这似乎与面前这个是女孩的事实无关。但让我们利用条件概率的定义更仔细地检查一下。这同时也是练习用集合符号表示事件的好机会。</p>
+<p>设 <span class="math inline">\(G_1, G_2\)</span> 和 <span class="math inline">\(G_3\)</span> 分别为大孩子、小孩子和随机遇到的孩子是女孩的事件。根据假设，<span class="math inline">\(P(G_1) = P(G_2) = P(G_3) = 1/2\)</span>。根据原始定义，或 2.5 节解释的独立性，<span class="math inline">\(P(G_1 \cap G_2) = 1/4\)</span>。因此： <span class="math display">\[
+P(G_1 \cap G_2 \mid G_3) = \frac{P(G_1 \cap G_2 \cap G_3)}{P(G_3)} = \frac{1/4}{1/2} = 1/2
+\]</span> 因为 <span class="math inline">\(G_1 \cap G_2 \cap G_3 = G_1 \cap G_2\)</span>（如果两个孩子都是女孩，这就保证了随机遇到的孩子必然是女孩）。</p>
+<p>但请记住，为了得出 1/2，需要对随机选择孩子的方式做一个假设。用统计学的语言来说，我们收集了一个随机样本；这里的样本由两个孩子中的一个组成。<strong>统计学中最重要的原则之一是：必须仔细思考样本是如何收集的，而不仅仅是盯着原始数据而不理解它们的来源。</strong>举一个简单的极端例子，假设某项压迫性法律禁止有姐姐或妹妹的男孩出门。那么“随机遇到的孩子是女孩”就等同于“至少有一个孩子是女孩”，问题就退化成了例 2.2.5 的第一部分。</p>
+<p><strong>例 2.2.7（出生在冬天的女孩）</strong>。一个家庭有两个孩子。求在已知至少有一个是出生在冬天的女孩的情况下，两个孩子都是女孩的概率。除了例 2.2.5 中的假设外，假设四季出现的概率相等，且性别与季节相互独立。（这意味着已知性别不会提供关于季节概率的信息，反之亦然；关于独立性的更多内容请参见 2.5 节。）</p>
+<p>解答：</p>
+<p>根据条件概率的定义： <span class="math display">\[
+P(\text{双女} \mid \text{至少一冬女}) = \frac{P(\text{双女}，\text{至少一冬女})}{P(\text{至少一冬女})}
+\]</span> 由于一个特定孩子是冬天出生的女孩的概率是 <span class="math inline">\(1/8\)</span>，分母等于：</p>
+<p><span class="math display">\[
+P(\text{至少一冬女}) = 1 - (7/8)^2
+\]</span></p>
+<p>为了计算分子，利用“双女且至少一冬女”与“双女且至少一冬子（指孩子）”是同一个事件这一事实；然后利用性别和季节独立的假设：</p>
+<p><span class="math display">\[
+P(\text{双女}，\text{至少一冬子}) = P(\text{双女}) \cdot P(\text{至少一冬子}) = \frac{1}{4}(1 - (3/4)^2)
+\]</span></p>
+<p>因此：</p>
+<p><span class="math display">\[
+P(\text{双女} \mid \text{至少一冬女}) = \frac{\frac{1}{4}(1 - (3/4)^2)}{1 - (7/8)^2} = \frac{7/64}{15/64} = 7/15
+\]</span></p>
+<p>起初这个结果看起来很荒谬！在例 2.2.5 中，已知至少一个是女孩时，两个都是女孩的条件概率是 1/3；为什么当我们得知至少一个是冬天出生的女孩时，结果会有所不同？关键在于，关于出生季节的信息使“至少一个是女孩”这一条件向“特定一个是女孩”靠近了。对越来越具体的信息进行条件化，会使概率越来越趋近于 1/2。</p>
+<p>例如，对“至少一个是出生在 3 月 31 日晚上 8:20 的女孩”进行条件化，已经非常接近于指定了某个孩子，而得知一个特定孩子的信息并不会给我们提供关于另一个孩子的信息。像出生季节这种看似无关的信息，在例 2.2.5 的两部分答案之间起到了插值作用。习题 29 将这个例子推广到了与性别独立的任意特征。</p>
+<h3 id="贝叶斯法则与全概率公式">2.3 贝叶斯法则与全概率公式</h3>
+<p>Bayes’ rule and the law of total probability</p>
+<p>条件概率的定义非常简单——仅仅是两个概率的比值——但它具有深远的影响。第一个推论可以通过将定义中的分母移动到等式另一侧轻松得出。</p>
+<p><strong>定理 2.3.1（两个事件交集的概率）</strong>。对于任何具有正概率的事件 <span class="math inline">\(A\)</span> 和 <span class="math inline">\(B\)</span>： <span class="math display">\[
+P(A \cap B) = P(B)P(A|B) = P(A)P(B|A)
+\]</span></p>
+<p>这是通过取 <span class="math inline">\(P(A|B)\)</span> 的定义并在两边乘以 <span class="math inline">\(P(B)\)</span>，以及取 <span class="math inline">\(P(B|A)\)</span> 的定义并在两边乘以 <span class="math inline">\(P(A)\)</span> 得出的。乍一看，这个定理似乎没那么有用：它只是条件概率定义的另一种写法，而且既然 <span class="math inline">\(P(A|B)\)</span> 是根据 <span class="math inline">\(P(A \cap B)\)</span> 定义的，用 <span class="math inline">\(P(A|B)\)</span> 来帮助寻找 <span class="math inline">\(P(A \cap B)\)</span> 似乎是循环论证。但我们将看到，该定理实际上非常有用，因为事实证明，通常无需回到定义即可找到条件概率，在这种情况下，定理 2.3.1 可以帮助我们更容易地找到 <span class="math inline">\(P(A \cap B)\)</span>。</p>
+<p>重复应用定理 2.3.1，我们可以将其推广到 <span class="math inline">\(n\)</span> 个事件的交集。</p>
+<p><strong>定理 2.3.2（<span class="math inline">\(n\)</span> 个事件交集的概率）</strong>。对于任何满足 <span class="math inline">\(P(A_1, A_2, \dots, A_{n-1}) &gt; 0\)</span> 的事件 <span class="math inline">\(A_1, \dots, A_n\)</span>： <span class="math display">\[
+P(A_1, A_2, \dots, A_n) = P(A_1)P(A_2|A_1)P(A_3|A_1, A_2) \cdots P(A_n|A_1, \dots, A_{n-1})
+\]</span></p>
+<p>公式中的逗号表示交集，例如 <span class="math inline">\(P(A_3|A_1, A_2)\)</span> 即 <span class="math inline">\(P(A_3|A_1 \cap A_2)\)</span>。</p>
+<p>事实上，这相当于把 <span class="math inline">\(n!\)</span> 个定理合而为一，因为我们可以随意排列 <span class="math inline">\(A_1, \dots, A_n\)</span> 而不会影响左侧的结果。在实际应用中，某些排列方式的右侧计算往往比其他排列方式容易得多。例如：</p>
+<p><span class="math display">\[
+P(A_1, A_2, A_3) = P(A_1)P(A_2|A_1)P(A_3|A_1, A_2) = P(A_2)P(A_3|A_2)P(A_1|A_2, A_3)
+\]</span></p>
+<p>此外还有 4 种此类形式的展开式。通常需要练习和思考才能知道该使用哪种顺序。</p>
+<p>现在我们准备引入本章的两个主要定理——<strong>贝叶斯法则</strong>（Bayes’ rule）和<strong>全概率公式</strong>（law of total probability）——它们将使我们能够计算广泛问题中的条件概率。贝叶斯法则是极负盛名且极其有用的结果，它关联了 <span class="math inline">\(P(A|B)\)</span> 和 <span class="math inline">\(P(B|A)\)</span>。</p>
+<p><strong>定理 2.3.3（贝叶斯法则）</strong>。 <span class="math display">\[
+P(A|B) = \frac{P(B|A)P(A)}{P(B)}
+\]</span></p>
+<p>这直接推导自定理 2.3.1，而定理 2.3.1 又直接推导自条件概率的定义。然而，<strong>贝叶斯法则在概率论和统计学中具有重要的意义和应用</strong>，因为我们经常需要寻找条件概率，而直接寻找 <span class="math inline">\(P(B|A)\)</span> 往往比直接寻找 <span class="math inline">\(P(A|B)\)</span> 容易得多（反之亦然）。</p>
+<p>另一种编写贝叶斯法则的方式是使用<strong>几率</strong>（odds）而非概率。</p>
+<p><strong>定义 2.3.4（几率）</strong>。事件 <span class="math inline">\(A\)</span> 的几率为： <span class="math display">\[
+\text{odds}(A) = \frac{P(A)}{P(A^c)}
+\]</span></p>
+<p>例如，如果 <span class="math inline">\(P(A) = 2/3\)</span>，我们说支持 <span class="math inline">\(A\)</span> 的几率是 2 比 1（有时写为 <span class="math inline">\(2:1\)</span>，有时表述为反对 <span class="math inline">\(A\)</span> 的几率是 1 比 2；需要注意，有些来源不会明确说明他们是指支持还是反对某个事件的几率）。当然，我们也可以将几率转换回概率：</p>
+<p><span class="math display">\[
+P(A) = \frac{\text{odds}(A)}{1 + \text{odds}(A)}
+\]</span></p>
+<p>通过取 <span class="math inline">\(P(A|B)\)</span> 的贝叶斯法则表达式并将其除以 <span class="math inline">\(P(A^c|B)\)</span> 的贝叶斯法则表达式，我们就可以得出贝叶斯法则的几率形式。</p>
+<p><strong>定理 2.3.5（几率形式的贝叶斯法则）</strong>。对于任何具有正概率的事件 <span class="math inline">\(A\)</span> 和 <span class="math inline">\(B\)</span>，在给定 <span class="math inline">\(B\)</span> 的条件下，<span class="math inline">\(A\)</span> 的后验几率为： <span class="math display">\[
+\frac{P(A|B)}{P(A^c|B)} = \frac{P(B|A)}{P(B|A^c)} \cdot \frac{P(A)}{P(A^c)}
+\]</span></p>
+<p>口头表述为：后验几率 <span class="math inline">\(P(A|B)/P(A^c|B)\)</span> 等于先验几率 <span class="math inline">\(P(A)/P(A^c)\)</span> 乘以<strong>因子 <span class="math inline">\(P(B|A)/P(B|A^c)\)</span>，该因子在统计学中被称为似然比（likelihood ratio）。</strong>有时，使用这种形式的贝叶斯法则先得到后验几率，然后在需要时再从几率转换回概率会非常方便。</p>
+<blockquote>
+<p>个人注：几率形式的贝叶斯法则的优点是不需要计算分母的无条件概率<span class="math inline">\(P(B)\)</span>。</p>
+</blockquote>
+<p><strong>全概率公式</strong>（LOTP）将条件概率与无条件概率联系起来。它是实现“利用条件概率将复杂概率问题分解为简单部分”这一承诺的核心工具，通常与贝叶斯法则配合使用。</p>
+<p><strong>定理 2.3.6（全概率公式）</strong>。设 <span class="math inline">\(A_1, \dots, A_n\)</span> 为样本空间 <span class="math inline">\(S\)</span> 的一个划分（即 <span class="math inline">\(A_i\)</span> 是互不相交的事件且它们的并集为 <span class="math inline">\(S\)</span>），对于所有 <span class="math inline">\(i\)</span> 都有 <span class="math inline">\(P(A_i) &gt; 0\)</span>。那么： <span class="math display">\[
+P(B) = \sum_{i=1}^n P(B|A_i)P(A_i)
+\]</span></p>
+<p>证明：由于 <span class="math inline">\(A_i\)</span> 构成了 <span class="math inline">\(S\)</span> 的一个划分，我们可以将 <span class="math inline">\(B\)</span> 分解为：</p>
+<p><span class="math display">\[
+B = (B \cap A_1) \cup (B \cap A_2) \cup \dots \cup (B \cap A_n)
+\]</span></p>
+<p><img src="/img3/Introduction to Probability/F2.3.png" alt="F2.3" style="zoom:50%;" /></p>
+<p>如图 2.3 所示，我们将 <span class="math inline">\(B\)</span> 切分成了从 <span class="math inline">\(B \cap A_1\)</span> 到 <span class="math inline">\(B \cap A_n\)</span> 的较小碎片。根据概率的第二公理，由于这些碎片是互不相交的，我们可以将它们的概率相加得到 <span class="math inline">\(P(B)\)</span>： <span class="math display">\[
+P(B) = P(B \cap A_1) + P(B \cap A_2) + \dots + P(B \cap n)
+\]</span></p>
+<p>现在我们可以对每个 <span class="math inline">\(P(B \cap A_i)\)</span> 应用定理 2.3.1：</p>
+<p><span class="math display">\[
+P(B) = P(B|A_1)P(A_1) + \dots + P(B|A_n)P(A_n)
+\]</span></p>
+<p>全概率公式告诉我们，要获得 <span class="math inline">\(B\)</span> 的无条件概率，我们可以将样本空间划分为不相交的切片 <span class="math inline">\(A_i\)</span>，计算 <span class="math inline">\(B\)</span> 在每个切片中的条件概率，然后对这些条件概率进行加权求和，权重即为概率 <span class="math inline">\(P(A_i)\)</span>。<strong>如何划分样本空间至关重要：选择得当的划分会将复杂问题简化，而选择不当的划分只会使问题恶化</strong>——导致我们需要计算 <span class="math inline">\(n\)</span> 个困难的概率而不是仅仅一个！</p>
+<p>接下来的几个例子展示了我们如何结合使用贝叶斯法则和全概率公式，根据观察到的证据来更新我们的信念。</p>
+<p><strong>例 2.3.7（随机硬币）</strong>。你有一枚公平的硬币，以及一枚不公平的硬币（正面朝上的概率为 3/4）。你随机挑选其中一枚硬币并抛掷三次。结果三次都是正面。已知这一信息，你挑选到的是公平硬币的概率是多少？</p>
+<p>解答：</p>
+<p>设 <span class="math inline">\(A\)</span> 为所选硬币三次均正面朝上的事件，<span class="math inline">\(F\)</span> 为我们选中公平硬币的事件。我们关注的是 <span class="math inline">\(P(F|A)\)</span>，但 <span class="math inline">\(P(A|F)\)</span> 和 <span class="math inline">\(P(A|F^c)\)</span> 更容易计算，因为知道手里的硬币类型会很有帮助；这提示我们使用贝叶斯法则和全概率公式。通过计算，我们得到：</p>
+<p><span class="math display">\[
+P(F|A) = \frac{P(A|F)P(F)}{P(A)} = \frac{P(A|F)P(F)}{P(A|F)P(F) + P(A|F^c)P(F^c)}
+\]</span></p>
+<p><span class="math display">\[
+= \frac{(1/2)^3 \cdot 1/2}{(1/2)^3 \cdot 1/2 + (3/4)^3 \cdot 1/2} \approx 0.23
+\]</span></p>
+<p>在抛掷硬币之前，我们认为选中公平硬币和不公平硬币的可能性相等：<span class="math inline">\(P(F) = P(F^c) = 1/2\)</span>。然而，在观察到三次正面后，选中不公平硬币的可能性变得比公平硬币大得多，因此 <span class="math inline">\(P(F|A)\)</span> 仅约为 0.23。</p>
+<p><strong>2.3.8（先验 vs. 后验）</strong>。在上述例子的计算中，在第一步就说“<span class="math inline">\(P(A) = 1\)</span>，因为我们知道 <span class="math inline">\(A\)</span> 已经发生了”是不正确的。虽然 <span class="math inline">\(P(A|A) = 1\)</span> 是事实，但 <span class="math inline">\(P(A)\)</span> 是 <span class="math inline">\(A\)</span> 的先验概率，<span class="math inline">\(P(F)\)</span> 是 <span class="math inline">\(F\)</span> 的先验概率——两者都是我们在实验中观察到任何数据之前的概率。绝不能将它们与给定证据 <span class="math inline">\(A\)</span> 的后验概率混淆。</p>
+<p><strong>例 2.3.9（罕见疾病检测）</strong>。一名叫弗雷德（Fred）的患者接受了“状况炎症”（conditionitis）的检测，这是一种在人口中发病率为 1% 的医学状况。检测结果呈阳性，即检测声称弗雷德患有该病。设 <span class="math inline">\(D\)</span> 为弗雷德患有该病的事件，<span class="math inline">\(T\)</span> 为他检测呈阳性的事件。</p>
+<p>假设该检测的“准确率为 95%”；在医学上衡量检测准确率有不同的指标，但在本题中，假设这意味着 <span class="math inline">\(P(T|D) = 0.95\)</span> 且 <span class="math inline">\(P(T^c|D^c) = 0.95\)</span>。量值 <span class="math inline">\(P(T|D)\)</span> 被称为检测的<strong>灵敏度</strong>（sensitivity）或真阳性率，而 <span class="math inline">\(P(T^c|D^c)\)</span> 被称为<strong>特异度</strong>（specificity）或真阴性率。</p>
+<p>根据检测结果提供的证据，求弗雷德患有“状况炎症”的条件概率。</p>
+<p>解答：</p>
+<p>应用贝叶斯法则和全概率公式，我们有：</p>
+<p><span class="math display">\[
+P(D|T) = \frac{P(T|D)P(D)}{P(T)}
+\]</span></p>
+<p><span class="math display">\[
+= \frac{P(T|D)P(D)}{P(T|D)P(D) + P(T|D^c)P(D^c)}
+\]</span></p>
+<p><span class="math display">\[
+= \frac{0.95 \cdot 0.01}{0.95 \cdot 0.01 + 0.05 \cdot 0.99} \approx 0.16
+\]</span></p>
+<p>因此，在检测呈阳性的情况下，弗雷德患有该病的概率仅为 16%，尽管这项检测看起来相当可靠！</p>
+<p>大多数人发现，尽管检测准确率高达 95%，但给定阳性结果时患病的条件概率仅为 16%，这令人十分惊讶。理解这一极低后验概率的关键在于意识到有两个因素在起作用：来自检测的证据，以及我们关于该疾病流行率的先验信息。</p>
+<p>虽然检测提供了支持患病的证据，但“状况炎症”也是一种罕见病！条件概率 <span class="math inline">\(P(D|T)\)</span> 反映了这两个因素之间的平衡，它适当地权衡了疾病的罕见程度与检测出错的罕见程度。</p>
+<p><img src="/img3/Introduction to Probability/F2.4.png" alt="F2.4" style="zoom:60%;" /></p>
+<p>为了进一步获得直觉，考虑如图 2.4 所示的 10,000 人的群体。其中 100 人患病，9,900 人未患病；这对应于 1% 的发病率。如果我们对该群体中的每个人进行检测，我们预期：在 100 名患病个体中，95 人会检测呈阳性，5 人呈阴性。在 9,900 名健康个体中，预期有 <span class="math inline">\(0.95 \times 9900 = 9405\)</span> 人呈阴性，而 495 人呈阳性。</p>
+<blockquote>
+<p>个人注：上图太直观了！</p>
+</blockquote>
+<p>现在让我们把注意力集中在那些检测呈阳性的个体上；也就是说，让我们对“阳性检测结果”进行条件化。95 名真阳性（即检测呈阳性且确实患病的人）在数量上远少于 495 名假阳性（即检测呈阳性但并未患病的人）。因此，大多数检测呈阳性的人实际上并没有患病。</p>
+<p><strong>例 2.3.10（六指男人）</strong>。在某个国家发生了一起犯罪。罪犯是该国 <span class="math inline">\(n\)</span> 个男人中的一个（且仅有一个）。最初，这 <span class="math inline">\(n\)</span> 个人被认为具有同等的作案嫌疑。随后，一名目击者报告称，罪犯右手有六根手指。</p>
+<p>设 <span class="math inline">\(p_0\)</span> 为一名无辜者右手有六指的概率，<span class="math inline">\(p_1\)</span> 为罪犯右手有六指的概率，且 <span class="math inline">\(p_0 &lt; p_1\)</span>。（由于目击者的报告并非 100% 可靠，我们可能得到 <span class="math inline">\(p_1 &lt; 1\)</span>。）令 <span class="math inline">\(a = p_0/p_1\)</span>，<span class="math inline">\(b = (1-p_1)/(1-p_0)\)</span>。</p>
+<p>鲁根（Rugen）居住在该国。他被发现右手有六根手指。</p>
+<ol type="a">
+<li><p>给定这一信息，鲁根是罪犯的概率是多少？</p></li>
+<li><p>现在假设对该国所有 <span class="math inline">\(n\)</span> 个男人的手进行了检查，发现鲁根是唯一一个右手有六指的人。给定这一信息，鲁根是罪犯的概率是多少？</p></li>
+</ol>
+<p>解答：</p>
+<ol type="a">
+<li>设 <span class="math inline">\(R\)</span> 为鲁根有罪的事件，<span class="math inline">\(M\)</span> 为他右手有六指的事件。根据贝叶斯法则和全概率公式（LOTP）：</li>
+</ol>
+<p><span class="math display">\[
+P(R|M) = \frac{P(M|R)P(R)}{P(M|R)P(R) + P(M|R^c)P(R^c)}
+\]</span></p>
+<p><span class="math display">\[
+= \frac{p_1 \cdot \frac{1}{n}}{p_1 \cdot \frac{1}{n} + p_0 \left(1 - \frac{1}{n}\right)}
+\]</span></p>
+<p><span class="math display">\[
+= \frac{p_1}{p_1 + p_0(n-1)} = \frac{1}{1 + a(n-1)}
+\]</span></p>
+<ol start="2" type="a">
+<li>设 <span class="math inline">\(N\)</span> 为该国除鲁根以外没有其他人右手有六指的事件。沿用上述符号：</li>
+</ol>
+<p><span class="math display">\[
+P(R|M,N) = \frac{P(M,N|R)P(R)}{P(M,N|R)P(R) + P(M,N|R^c)P(R^c)}
+\]</span></p>
+<p>在分子中，给定 <span class="math inline">\(R\)</span>（鲁根有罪），事件 <span class="math inline">\(M \cap N\)</span> 意味着鲁根有六指（概率为 <span class="math inline">\(p_1\)</span>）且其余 <span class="math inline">\(n-1\)</span> 个无辜者都没有六指（概率为 <span class="math inline">\((1-p_0)^{n-1}\)</span>）。</p>
+<p>在分母的第二项中，给定 <span class="math inline">\(R^c\)</span>（鲁根无辜），这意味着罪犯是另外 <span class="math inline">\(n-1\)</span> 个人中的某一个。要使 <span class="math inline">\(M \cap N\)</span> 发生，鲁根必须有六指（概率为 <span class="math inline">\(p_0\)</span>），真正的罪犯必须没有六指（概率为 <span class="math inline">\(1-p_1\)</span>），且其余 <span class="math inline">\(n-2\)</span> 个无辜者也都没有六指（概率为 <span class="math inline">\((1-p_0)^{n-2}\)</span>）。</p>
+<p>因此：</p>
+<p><span class="math display">\[
+P(R|M,N) = \frac{p_1(1-p_0)^{n-1} \cdot \frac{1}{n}}{p_1(1-p_0)^{n-1} \cdot \frac{1}{n} + p_0(1-p_1)(1-p_0)^{n-2} \cdot \frac{n-1}{n}}
+\]</span></p>
+<p><span class="math display">\[
+= \frac{p_1(1-p_0)}{p_1(1-p_0) + p_0(1-p_1)(n-1)}
+\]</span></p>
+<p>将分子分母同时除以 <span class="math inline">\(p_1(1-p_0)\)</span>，得：</p>
+<p><span class="math display">\[
+= \frac{1}{1 + \frac{p_0}{p_1} \cdot \frac{1-p_1}{1-p_0} (n-1)} = \frac{1}{1 + ab(n-1)}
+\]</span></p>
+<h3 id="条件概率也是概率">2.4 条件概率也是概率</h3>
+<p>Conditional probabilities are probabilities</p>
+<p>当我们以事件 <span class="math inline">\(E\)</span> 为条件时，我们会更新自己的置信度以与这一知识保持一致，这实际上是将我们置于一个已知 <span class="math inline">\(E\)</span> 发生的宇宙中。然而，在这个新的宇宙中，概率法则的运行方式与之前完全相同。<strong>条件概率满足概率的所有性质！</strong> 因此，我们之前推导出的关于概率的所有结论，如果在所有无条件概率处替换为以 <span class="math inline">\(E\)</span> 为条件的概率，这些结论仍然成立。特别是：</p>
+<ul>
+<li>条件概率介于 0 和 1 之间。</li>
+<li><span class="math inline">\(P(S|E) = 1\)</span>，<span class="math inline">\(P(\emptyset|E) = 0\)</span>。</li>
+<li>如果 <span class="math inline">\(A_1, A_2, \dots\)</span> 互不相交，则 <span class="math inline">\(P(\cup_{j=1}^{\infty} A_j | E) = \sum_{j=1}^{\infty} P(A_j | E)\)</span>。</li>
+<li><span class="math inline">\(P(A^c|E) = 1 - P(A|E)\)</span>。</li>
+<li>容斥原理：<span class="math inline">\(P(A \cup B | E) = P(A|E) + P(B|E) - P(A \cap B | E)\)</span>。</li>
+</ul>
+<p><strong>2.4.1</strong>。当我们写下 <span class="math inline">\(P(A|E)\)</span> 时，这并不意味着 <span class="math inline">\(A|E\)</span> 是一个事件而我们在计算它的概率；<strong><span class="math inline">\(A|E\)</span> 并不是一个事件</strong>。相反，<span class="math inline">\(P(\cdot|E)\)</span> 是一个根据 <span class="math inline">\(E\)</span> 已发生这一知识来分配概率的概率函数，而 <span class="math inline">\(P(\cdot)\)</span> 是另一个不考虑 <span class="math inline">\(E\)</span> 是否发生而分配概率的函数。当我们取一个事件 <span class="math inline">\(A\)</span> 并将其代入 <span class="math inline">\(P(\cdot)\)</span> 函数时，我们会得到一个数字 <span class="math inline">\(P(A)\)</span>；当我们将其代入 <span class="math inline">\(P(\cdot|E)\)</span> 函数时，我们会得到另一个数字 <span class="math inline">\(P(A|E)\)</span>，这个数字融入了（如果有的话）已知 <span class="math inline">\(E\)</span> 发生所提供的信息。</p>
+<p>为了从数学上证明条件概率也是概率，固定一个 <span class="math inline">\(P(E) &gt; 0\)</span> 的事件 <span class="math inline">\(E\)</span>，对于任何事件 <span class="math inline">\(A\)</span>，定义 <span class="math inline">\(\tilde{P}(A) = P(A|E)\)</span>。这种记法有助于强调我们固定了 <span class="math inline">\(E\)</span>，并将 <span class="math inline">\(P(\cdot|E)\)</span> 视为我们新的概率函数。我们只需要检查两条概率公理。首先：</p>
+<p><span class="math display">\[
+\tilde{P}(\emptyset) = P(\emptyset|E) = \frac{P(\emptyset \cap E)}{P(E)} = 0
+\]</span></p>
+<p><span class="math display">\[
+\tilde{P}(S) = P(S|E) = \frac{P(S \cap E)}{P(E)} = 1
+\]</span></p>
+<p>其次，如果 <span class="math inline">\(A_1, A_2, \dots\)</span> 是互不相交的事件，那么：</p>
+<p><span class="math display">\[
+\tilde{P}(A_1 \cup A_2 \cup \dots) = \frac{P((A_1 \cap E) \cup (A_2 \cap E) \cup \dots)}{P(E)} = \sum_{j=1}^{\infty} \tilde{P}(A_j)
+\]</span></p>
+<p>因此，<span class="math inline">\(\tilde{P}\)</span> 满足概率公理。</p>
+<p><strong>反之，所有的概率都可以被视为条件概率：每当我们做出一个概率陈述时，总会有一些我们作为背景信息的条件，即使我们没有显式地说明它。</strong>以本章开头的下雨例子为例。将今天下雨的初始概率 <span class="math inline">\(P(R)\)</span> 建立在过去下雨天数所占比例的基础上是很自然的。但是我们应该看过去的哪些日子呢？如果是 11 月 1 日，我们是否应该只计算过去秋天的雨天，从而以季节为条件？那是以具体的月份为条件，还是具体的日期为条件呢？关于地理位置也可以问同样的问题：我们应该看就在我们所在位置下雨的日子，还是只要在附近某处下雨就够了？</p>
+<p><strong>为了确定看似无条件的概率 <span class="math inline">\(P(R)\)</span>，我们实际上必须决定以哪些背景信息作为条件！这些选择需要仔细思考，不同的人可能会得出不同的先验概率 <span class="math inline">\(P(R)\)</span>（尽管每个人都能就如何根据新证据进行更新达成一致）。</strong></p>
+<p><strong>由于所有概率都是以背景信息为条件的</strong>，我们可以想象总是存在一条垂直的条件号，背景知识 <span class="math inline">\(K\)</span> 位于垂直号的右侧。那么无条件概率 <span class="math inline">\(P(A)\)</span> 只是 <span class="math inline">\(P(A|K)\)</span> 的简写；背景知识被吸收进了字母 <span class="math inline">\(P\)</span> 中，而不是显式地写出来。</p>
+<p>简要总结我们的讨论：</p>
+<p><strong>条件概率就是概率，而所有概率都是条件的。</strong></p>
+<p>现在我们给出贝叶斯法则和全概率公式的条件形式。这些形式是通过取贝叶斯法则和全概率公式的普通形式，并在垂直号右侧各处添加 <span class="math inline">\(E\)</span> 而得到的。</p>
+<p><strong>定理 2.4.2（带额外条件的贝叶斯法则）</strong>。在 <span class="math inline">\(P(A \cap E) &gt; 0\)</span> 且 <span class="math inline">\(P(B \cap E) &gt; 0\)</span> 的前提下，有： <span class="math display">\[
+P(A|B,E) = \frac{P(B|A,E)P(A|E)}{P(B|E)}
+\]</span></p>
+<p><strong>定理 2.4.3（带额外条件的全概率公式）</strong>。设 <span class="math inline">\(A_1, \dots, A_n\)</span> 为样本空间 <span class="math inline">\(S\)</span> 的一个划分。在对于所有 <span class="math inline">\(i\)</span> 均有 <span class="math inline">\(P(A_i \cap E) &gt; 0\)</span> 的前提下，有： <span class="math display">\[
+P(B|E) = \sum_{i=1}^n P(B|A_i,E)P(A_i|E)
+\]</span></p>
+<p>贝叶斯法则和全概率公式的这些额外条件形式，证明过程类似于我们验证 <span class="math inline">\(\tilde{P}\)</span> 满足概率公理的过程，但它们也直接遵循“条件概率也是概率”这一“元定理”。</p>
+<p><strong>例 2.4.4（随机硬币，续）</strong>。延续例 2.3.7 的场景，假设我们现在已经看到选中的硬币三次正面朝上。如果我们第四次抛掷该硬币，那么它再次正面朝上的概率是多少？</p>
+<p>解答：</p>
+<p>同前所述，设 <span class="math inline">\(A\)</span> 为选中硬币三次正面朝上的事件，并定义新事件 <span class="math inline">\(H\)</span> 为选中硬币在第四次抛掷时正面朝上。我们关注的是 <span class="math inline">\(P(H|A)\)</span>。如果能知道我们是否拿到了公平硬币，将会非常有帮助。带额外条件的全概率公式将 <span class="math inline">\(P(H|A)\)</span> 给出为 <span class="math inline">\(P(H|F,A)\)</span> 和 <span class="math inline">\(P(H|F^c,A)\)</span> 的加权平均值，而在后两个条件概率中，我们确实已知拿到了哪枚硬币：</p>
+<p><span class="math display">\[
+P(H|A) = P(H|F,A)P(F|A) + P(H|F^c,A)P(F^c|A)
+\]</span></p>
+<p><span class="math display">\[
+P(H|A) \approx \frac{1}{2} \cdot 0.23 + \frac{3}{4} \cdot (1 - 0.23) \approx 0.69
+\]</span></p>
+<p>其中，后验概率 <span class="math inline">\(P(F|A)\)</span> 和 <span class="math inline">\(P(F^c|A)\)</span> 来自例 2.3.7 的计算结果。</p>
+<p>解决此问题的等价方法是定义一个新的概率函数 <span class="math inline">\(\tilde{P}\)</span>，使得对于任何事件 <span class="math inline">\(B\)</span>，有 <span class="math inline">\(\tilde{P}(B) = P(B|A)\)</span>。这个新函数分配的是根据“<span class="math inline">\(A\)</span> 已发生”这一知识更新后的概率。那么根据普通的全概率公式：</p>
+<p><span class="math display">\[
+\tilde{P}(H) = \tilde{P}(H|F)\tilde{P}(F) + \tilde{P}(H|F^c)\tilde{P}(F^c)
+\]</span></p>
+<p>这与我们使用带额外条件的全概率公式完全一致。这再次说明了“条件概率也是概率”这一原理。</p>
+<p><strong>例 2.4.5（一致同意）</strong>。莱莎·齐加（Lisa Zyga）在文章《为什么证据太多可能是件坏事》中写道：</p>
+<blockquote>
+<p>在古代犹太法典中，如果一名受审嫌疑人被所有法官一致判定有罪，那么该嫌疑人将被无罪释放。这种推理听起来有违直觉，但当时的立法者已经注意到，<strong>一致同意往往预示着司法程序中存在系统性错误。</strong></p>
+</blockquote>
+<p>现有 <span class="math inline">\(n\)</span> 名法官对一起案件进行裁决。嫌疑人有罪的先验概率为 <span class="math inline">\(p\)</span>。每位法官投票决定定罪或释放嫌疑人。系统性错误（例如辩护方无能）发生的概率为 <span class="math inline">\(s\)</span>。如果发生系统性错误，则法官们会一致投票定罪（即所有 <span class="math inline">\(n\)</span> 名法官都投有罪票）。系统性错误是否发生与嫌疑人是否有罪相互独立。</p>
+<p>在已知未发生系统性错误且嫌疑人有罪的情况下，每位法官独立地以概率 <span class="math inline">\(c\)</span> 投有罪票。在已知未发生系统性错误且嫌疑人无罪的情况下，每位法官独立地以概率 <span class="math inline">\(w\)</span> 投有罪票。假设：<span class="math inline">\(0 &lt; p &lt; 1, 0 &lt; s &lt; 1\)</span>，且 <span class="math inline">\(0 &lt; w &lt; \frac{1}{2} &lt; c &lt; 1\)</span>。</p>
+<ol type="a">
+<li><p>仅就本小题而言，假设 <span class="math inline">\(n\)</span> 名法官中恰好有 <span class="math inline">\(k\)</span> 名投了有罪票，其中 <span class="math inline">\(k &lt; n\)</span>。已知这一信息，求嫌疑人有罪的概率。</p></li>
+<li><p>现在假设所有 <span class="math inline">\(n\)</span> 名法官都投了有罪票。已知这一信息，求嫌疑人有罪的概率。</p></li>
+<li><ol start="2" type="a">
+<li>小题的答案作为 <span class="math inline">\(n\)</span> 的函数，是否为递增函数？请给出简短的直觉性文字解释。</li>
+</ol></li>
+</ol>
+<p>解答：</p>
+<ol type="a">
+<li>由于 <span class="math inline">\(k &lt; n\)</span>，说明系统性错误没有发生。在本小题中我们将隐含地以此为条件。设 <span class="math inline">\(G\)</span> 为嫌疑人有罪的事件，<span class="math inline">\(X\)</span> 为投有罪票的法官人数。利用贝叶斯法则、全概率公式和二项分布的概率质量函数（PMF）：</li>
+</ol>
+<p><span class="math display">\[
+P(G|X=k) = \frac{P(X=k|G)P(G)}{P(X=k)} = \frac{pc^k(1-c)^{n-k}}{pc^k(1-c)^{n-k} + (1-p)w^k(1-w)^{n-k}}
+\]</span></p>
+<ol start="2" type="a">
+<li>设 <span class="math inline">\(U\)</span> 为事件 <span class="math inline">\(X=n\)</span>，<span class="math inline">\(B\)</span> 为发生系统性错误的事件。则：</li>
+</ol>
+<p><span class="math display">\[
+P(G|U) = \frac{P(U|G)P(G)}{P(U)} = \frac{p P(U|G)}{p P(U|G) + (1-p)P(U|G^c)}
+\]</span></p>
+<p>利用带额外条件的全概率公式：</p>
+<p><span class="math display">\[
+P(U|G) = P(U|G,B)P(B|G) + P(U|G,B^c)P(B^c|G) = s + (1-s)c^n
+\]</span></p>
+<p><span class="math display">\[
+P(U|G^c) = P(U|G^c,B)P(B|G^c) + P(U|G^c,B^c)P(B^c|G^c) = s + (1-s)w^n
+\]</span></p>
+<p>因此：</p>
+<p><span class="math display">\[
+P(G|U) = \frac{p(s + (1-s)c^n)}{p(s + (1-s)c^n) + (1-p)(s + (1-s)w^n)}
+\]</span></p>
+<ol start="3" type="a">
+<li>不是。因为 <span class="math inline">\(n\)</span> 的取值很大时，会导致系统性错误发生的可能性极高，而如果发生了系统性错误，法官的投票对于判断嫌疑人是否有罪就失去了信息价值。当 <span class="math inline">\(n \to \infty\)</span> 时，(b) 的答案会退回到先验概率 <span class="math inline">\(p\)</span>。</li>
+</ol>
+<p>我们经常需要以多个信息片段为条件，现在我们有几种方法可以做到。例如，以下是寻找 <span class="math inline">\(P(A|B,C)\)</span> 的几种途径：</p>
+<ol type="1">
+<li><p>我们可以将 <span class="math inline">\(B, C\)</span> 视为单个事件 <span class="math inline">\(B \cap C\)</span>，利用条件概率的定义得到：</p>
+<p><span class="math display">\[
+P(A|B,C) = \frac{P(A,B,C)}{P(B,C)}
+\]</span></p>
+<p>如果将 <span class="math inline">\(B\)</span> 和 <span class="math inline">\(C\)</span> 放在一起考虑最容易，这就是一种自然的方法。然后我们可以尝试评估分子和分母。例如，我们可以对分子和分母都使用全概率公式，或者将分子写成 <span class="math inline">\(P(B,C|A)P(A)\)</span>（这将得到贝叶斯法则的一个版本）并利用全概率公式来处理分母。</p></li>
+<li><p>我们可以使用带额外条件 <span class="math inline">\(C\)</span> 的贝叶斯法则：</p>
+<p><span class="math display">\[
+P(A|B,C) = \frac{P(B|A,C)P(A|C)}{P(B|C)}
+\]</span></p>
+<p>如果我们希望将问题中的所有内容都视为以 <span class="math inline">\(C\)</span> 为条件的，这是一种自然的方法。</p></li>
+<li><p>我们可以使用带额外条件 <span class="math inline">\(B\)</span> 的贝叶斯法则：</p>
+<p><span class="math display">\[
+P(A|B,C) = \frac{P(C|A,B)P(A|B)}{P(C|B)}
+\]</span></p>
+<p>这与前一种方法相同，只是交换了 <span class="math inline">\(B\)</span> 和 <span class="math inline">\(C\)</span> 的角色。我们特意提到它，是为了强调：如果不思考哪个事件应该扮演哪个角色就直接套用公式是不明智的。</p></li>
+</ol>
+<p>这类条件化问题存在多种处理方式，这既是挑战，也是其强大之处。</p>
+<h3 id="事件的独立性">2.5 事件的独立性</h3>
+<p>Independence of events</p>
+<p>我们已经看过了好几个例子，其中以一个事件为条件会改变我们对另一个事件概率的看法。<strong>如果事件之间互不提供信息，这种情况就被称为独立性。</strong></p>
+<blockquote>
+<p><strong>个人注：“独立性”本质上是关于“信息”的！</strong></p>
+<p>具体的见《独立性中<strong>物理上的独立</strong>和<strong>信息上的关联</strong>的区别.md》</p>
+</blockquote>
+<p><strong>定义 2.5.1（两个事件的独立性）</strong>。如果满足以下条件，则称事件 <span class="math inline">\(A\)</span> 和 <span class="math inline">\(B\)</span> 是独立的：</p>
+<p><span class="math display">\[
+P(A \cap B) = P(A)P(B)
+\]</span></p>
+<p>如果 <span class="math inline">\(P(A) &gt; 0\)</span> 且 <span class="math inline">\(P(B) &gt; 0\)</span>，则这等价于：</p>
+<p><span class="math display">\[
+P(A|B) = P(A)
+\]</span></p>
+<p>同时也等价于 <span class="math inline">\(P(B|A) = P(B)\)</span>。</p>
+<p>口头表述为：如果两个事件的交集概率可以通过它们各自概率的乘积得出，那么这两个事件就是独立的。或者说，如果得知 <span class="math inline">\(B\)</span> 发生并不能提供任何会改变我们对 <span class="math inline">\(A\)</span> 发生概率的信息（反之亦然），那么 <span class="math inline">\(A\)</span> 和 <span class="math inline">\(B\)</span> 就是独立的。</p>
+<p>注意，独立性是一种对称关系：如果 <span class="math inline">\(A\)</span> 独立于 <span class="math inline">\(B\)</span>，那么 <span class="math inline">\(B\)</span> 也独立于 <span class="math inline">\(A\)</span>。</p>
+<p><strong>2.5.2</strong>。<strong>独立性与互斥性（Disjointness）完全不同</strong>。如果 <span class="math inline">\(A\)</span> 和 <span class="math inline">\(B\)</span> 是互斥的，那么 <span class="math inline">\(P(A \cap B) = 0\)</span>，因此互斥事件只有在 <span class="math inline">\(P(A) = 0\)</span> 或 <span class="math inline">\(P(B) = 0\)</span> 时才可能是独立的。已知 <span class="math inline">\(A\)</span> 发生告诉我们 <span class="math inline">\(B\)</span> 肯定没有发生，所以 <span class="math inline">\(A\)</span> 显然传递了关于 <span class="math inline">\(B\)</span> 的信息，这意味着这两个事件不是独立的（除非 <span class="math inline">\(A\)</span> 或 <span class="math inline">\(B\)</span> 本身的概率已经为零）。</p>
+<p>直观上，如果 <span class="math inline">\(A\)</span> 不提供关于 <span class="math inline">\(B\)</span> 是否发生的信息，那么它也不应该提供关于 <span class="math inline">\(B^c\)</span> 是否发生的信息。我们现在来证明一个符合这一直觉的简便结论。</p>
+<p><strong>命题 2.5.3</strong>。如果 <span class="math inline">\(A\)</span> 和 <span class="math inline">\(B\)</span> 独立，那么 <span class="math inline">\(A\)</span> 与 <span class="math inline">\(B^c\)</span> 独立，<span class="math inline">\(A^c\)</span> 与 <span class="math inline">\(B\)</span> 独立，且 <span class="math inline">\(A^c\)</span> 与 <span class="math inline">\(B^c\)</span> 独立。</p>
+<p>证明：设 <span class="math inline">\(A\)</span> 和 <span class="math inline">\(B\)</span> 独立。我们首先证明 <span class="math inline">\(A\)</span> 与 <span class="math inline">\(B^c\)</span> 独立。如果 <span class="math inline">\(P(A) = 0\)</span>，那么 <span class="math inline">\(A\)</span> 独立于任何事件，包括 <span class="math inline">\(B^c\)</span>。故假设 <span class="math inline">\(P(A) \neq 0\)</span>，则：</p>
+<p><span class="math display">\[
+P(B^c|A) = 1 - P(B|A) = 1 - P(B) = P(B^c)
+\]</span></p>
+<p>因此 <span class="math inline">\(A\)</span> 与 <span class="math inline">\(B^c\)</span> 独立。交换 <span class="math inline">\(A\)</span> 和 <span class="math inline">\(B\)</span> 的角色，可知 <span class="math inline">\(A^c\)</span> 与 <span class="math inline">\(B\)</span> 独立。利用“<span class="math inline">\(A, B\)</span> 独立意味着 <span class="math inline">\(A, B^c\)</span> 独立”这一事实，并让 <span class="math inline">\(A^c\)</span> 扮演 <span class="math inline">\(A\)</span> 的角色，可知 <span class="math inline">\(A^c\)</span> 与 <span class="math inline">\(B^c\)</span> 也独立。</p>
+<p>我们还经常需要讨论三个或更多事件的独立性。</p>
+<p><strong>定义 2.5.4（三个事件的独立性）</strong>。如果以下所有等式都成立，则称事件 <span class="math inline">\(A, B, C\)</span> 是独立的： <span class="math display">\[
+P(A \cap B) = P(A)P(B)
+\]</span></p>
+<p><span class="math display">\[
+P(A \cap C) = P(A)P(C)
+\]</span></p>
+<p><span class="math display">\[
+P(B \cap C) = P(B)P(C)
+\]</span></p>
+<p><span class="math display">\[
+P(A \cap B \cap C) = P(A)P(B)P(C)
+\]</span></p>
+<p>如果仅前三个条件成立，我们称 <span class="math inline">\(A, B, C\)</span> 为<strong>两两独立</strong>（Pairwise independent）。两两独立并不意味着独立：可能仅仅得知 <span class="math inline">\(A\)</span> 或仅仅得知 <span class="math inline">\(B\)</span> 对预测 <span class="math inline">\(C\)</span> 是否发生毫无用处，但同时得知 <span class="math inline">\(A\)</span> 和 <span class="math inline">\(B\)</span> 发生可能对预测 <span class="math inline">\(C\)</span> 依然高度相关。下面是关于这一区别的一个简单例子。</p>
+<p><strong>例 2.5.5（两两独立并不意味着独立）</strong>。考虑两次公平且独立的投硬币实验，设 <span class="math inline">\(A\)</span> 为第一次是正面的事件，<span class="math inline">\(B\)</span> 为第二次是正面的事件，<span class="math inline">\(C\)</span> 为两次投掷结果相同的事件。那么 <span class="math inline">\(A\)</span>、<span class="math inline">\(B\)</span> 和 <span class="math inline">\(C\)</span> 是两两独立的，但不是相互独立的，因为 <span class="math inline">\(P(A \cap B \cap C) = 1/4\)</span>，而 <span class="math inline">\(P(A)P(B)P(C) = 1/8\)</span>。其核心点在于：仅仅知道 <span class="math inline">\(A\)</span> 或仅仅知道 <span class="math inline">\(B\)</span> 无法为我们提供关于 <span class="math inline">\(C\)</span> 的任何信息，但同时知道 <span class="math inline">\(A\)</span> 和 <span class="math inline">\(B\)</span> 的结果则会为我们提供关于 <span class="math inline">\(C\)</span> 的信息（事实上，在这种情况下，它为我们提供了关于 <span class="math inline">\(C\)</span> 的完美信息）。</p>
+<p>另一方面，<span class="math inline">\(P(A \cap B \cap C) = P(A)P(B)P(C)\)</span> 并不意味着两两独立；观察极端情况 <span class="math inline">\(P(A) = 0\)</span> 即可快速发现这一点，此时等式变为 <span class="math inline">\(0 = 0\)</span>，这并没有告诉我们关于 <span class="math inline">\(B\)</span> 和 <span class="math inline">\(C\)</span> 的任何信息。</p>
+<p>我们可以类似地定义任意数量事件的独立性。直觉上，其核心思想是：知道事件集中任何特定子集的情况，都不会为我们提供关于该子集之外事件情况的任何信息。</p>
+<p><strong>定义 2.5.6（多个事件的独立性）</strong>。要使 <span class="math inline">\(n\)</span> 个事件 <span class="math inline">\(A_1, A_2, \dots, A_n\)</span> 相互独立，我们需要：任意两个事件满足 <span class="math inline">\(P(A_i \cap A_j) = P(A_i)P(A_j)\)</span>（对于 <span class="math inline">\(i \neq j\)</span>）；任意三个事件满足 <span class="math inline">\(P(A_i \cap A_j \cap A_k) = P(A_i)P(A_j)P(A_k)\)</span>（对于 <span class="math inline">\(i, j, k\)</span> 互不相同）；以此类推，对于所有四个、五个以及更多事件的组合均需满足。这很快就会变得笨重难处理，但稍后我们将讨论思考独立性的其他方式。对于无限多个事件，如果它们的每一个有限子集都是独立的，我们就称它们是独立的。</p>
+<p>条件独立性的定义与独立性类似。</p>
+<p><strong>定义 2.5.7（条件独立性）</strong>。如果在给定 <span class="math inline">\(E\)</span> 的条件下，满足 <span class="math inline">\(P(A \cap B|E) = P(A|E)P(B|E)\)</span>，则称事件 <span class="math inline">\(A\)</span> 和 <span class="math inline">\(B\)</span> 在给定 <span class="math inline">\(E\)</span> 的条件下是<strong>条件独立</strong>的。</p>
+<p><strong>2.5.8</strong>。由于<strong>混淆“独立性”和“条件独立性”而导致严重错误是非常容易发生的</strong>。两个事件可能在给定 <span class="math inline">\(E\)</span> 时是条件独立的，但在给定 <span class="math inline">\(E^c\)</span> 时不是。两个事件可能在给定 <span class="math inline">\(E\)</span> 时是条件独立的，但本身并不独立。两个事件可能相互独立，但在给定 <span class="math inline">\(E\)</span> 时不是条件独立的。</p>
+<p>特别地，<span class="math inline">\(P(A, B) = P(A)P(B)\)</span> 并不意味着 <span class="math inline">\(P(A, B|E) = P(A|E)P(B|E)\)</span>；我们不能像从全概率公式（LOTP）推导带额外条件的 LOTP 那样，简单地在各处插入“给定 <span class="math inline">\(E\)</span>”。这是因为 LOTP 始终成立（它是概率公理的推论），而 <span class="math inline">\(P(A, B)\)</span> 是否等于 <span class="math inline">\(P(A)P(B)\)</span> 取决于 <span class="math inline">\(A\)</span> 和 <span class="math inline">\(B\)</span> 具体是什么。</p>
+<p>接下来的几个例子说明了这些区别。在处理条件概率和条件独立性时需要格外小心！</p>
+<p><strong>例 2.5.9（给定 <span class="math inline">\(E\)</span> 与给定 <span class="math inline">\(E^c\)</span> 时的条件独立性）</strong>。假设有两类课程：优质课和劣质课。在优质课上，如果你努力学习，就很有可能获得 A。在劣质课上，教授不看学生的努力程度，而是随机分配成绩。设 <span class="math inline">\(G\)</span> 为课程优质的事件，<span class="math inline">\(W\)</span> 为你努力学习的事件，<span class="math inline">\(A\)</span> 为你获得 A 的事件。那么 <span class="math inline">\(W\)</span> 和 <span class="math inline">\(A\)</span> 在给定 <span class="math inline">\(G^c\)</span> 时是条件独立的，但在给定 <span class="math inline">\(G\)</span> 时不是条件独立的。</p>
+<p><strong>例 2.5.10（条件独立并不意味着独立）</strong>。再次回到例 2.3.7 的场景：假设我们选了一枚公平硬币或一枚正面概率为 3/4 的偏差硬币，但我们不知道选了哪一枚。我们抛掷硬币若干次。在选定公平硬币的条件下，各次抛掷是独立的，每次正面概率为 1/2。同样，在选定偏差硬币的条件下，各次抛掷也是独立的，每次正面概率为 3/4。</p>
+<p>然而，这些抛掷在无条件的情况下并不是相互独立的。因为如果我们不知道选了哪枚硬币，那么观察抛掷序列就会为我们提供关于手里拿的是公平硬币还是偏差硬币的信息。这反过来又帮助我们预测同一枚硬币未来抛掷的结果。</p>
+<p>正式地说，设 <span class="math inline">\(F\)</span> 为选中公平硬币的事件，设 <span class="math inline">\(A_1\)</span> 和 <span class="math inline">\(A_2\)</span> 为第一次和第二次抛掷结果为正面的事件。在给定 <span class="math inline">\(F\)</span> 的条件下，<span class="math inline">\(A_1\)</span> 和 <span class="math inline">\(A_2\)</span> 是独立的；但 <span class="math inline">\(A_1\)</span> 和 <span class="math inline">\(A_2\)</span> 在无条件时不是独立的，因为 <span class="math inline">\(A_1\)</span> 提供了关于 <span class="math inline">\(A_2\)</span> 的信息。</p>
+<p><strong>例 2.5.11（独立并不意味着条件独立）</strong>。我的朋友爱丽丝（Alice）和鲍勃（Bob）是仅有的会给我打电话的两个人。每天，他们都会独立决定当天是否给我打电话。设 <span class="math inline">\(A\)</span> 为爱丽丝下周五给我打电话的事件，<span class="math inline">\(B\)</span> 为鲍勃下周五给我打电话的事件。假设 <span class="math inline">\(A\)</span> 和 <span class="math inline">\(B\)</span> 是无条件独立的，且 <span class="math inline">\(P(A) &gt; 0, P(B) &gt; 0\)</span>。</p>
+<p>然而，在已知我下周五恰好收到一个电话的条件下，<span class="math inline">\(A\)</span> 和 <span class="math inline">\(B\)</span> 不再独立：这个电话来自爱丽丝当且仅当它不是来自鲍勃。换句话说，设 <span class="math inline">\(C\)</span> 为我下周五恰好收到一个电话的事件，<span class="math inline">\(P(B|C) &gt; 0\)</span> 但 <span class="math inline">\(P(B|A,C) = 0\)</span>，因此在给定 <span class="math inline">\(C\)</span> 的条件下，<span class="math inline">\(A\)</span> 和 <span class="math inline">\(B\)</span> 不是条件独立的。</p>
+<p><strong>例 2.5.12（宝宝为什么在哭？）</strong>。某个宝宝当且仅当她饿了、累了或两者兼有时才会哭。设 <span class="math inline">\(C\)</span> 为宝宝在哭的事件，<span class="math inline">\(H\)</span> 为她饿了的事件，<span class="math inline">\(T\)</span> 为她累了的事件。令 <span class="math inline">\(P(C) = c, P(H) = h, P(T) = t\)</span>，其中 <span class="math inline">\(c, h, t\)</span> 均不为 0 或 1。设 <span class="math inline">\(H\)</span> 和 <span class="math inline">\(T\)</span> 相互独立。</p>
+<ol type="a">
+<li><p>用 <span class="math inline">\(h\)</span> 和 <span class="math inline">\(t\)</span> 表示 <span class="math inline">\(c\)</span>。</p></li>
+<li><p>求 <span class="math inline">\(P(H|C), P(T|C)\)</span> 以及 <span class="math inline">\(P(H,T|C)\)</span>。</p></li>
+<li><p>在给定 <span class="math inline">\(C\)</span> 的条件下，<span class="math inline">\(H\)</span> 和 <span class="math inline">\(T\)</span> 是否条件独立？请用两种方式解释：利用 (b) 中的量进行代数推导，以及文字上的直觉解释。</p></li>
+</ol>
+<p>解答：</p>
+<ol type="a">
+<li>由于 <span class="math inline">\(H\)</span> 和 <span class="math inline">\(T\)</span> 独立，我们有：</li>
+</ol>
+<p><span class="math display">\[
+P(C) = P(H \cup T) = P(H) + P(T) - P(H \cap T) = h + t - ht
+\]</span></p>
+<ol start="2" type="a">
+<li>根据贝叶斯法则：</li>
+</ol>
+<p><span class="math display">\[
+P(H|C) = \frac{P(C|H)P(H)}{P(C)} = \frac{h}{c}
+\]</span></p>
+<p><span class="math display">\[
+P(T|C) = \frac{P(C|T)P(T)}{P(C)} = \frac{t}{c}
+\]</span></p>
+<p><span class="math display">\[
+P(H,T|C) = \frac{P(C|H,T)P(H,T)}{P(C)} = \frac{ht}{c}
+\]</span></p>
+<p>（注意：如果 <span class="math inline">\(H\)</span> 或 <span class="math inline">\(T\)</span> 发生，则 <span class="math inline">\(P(C|H) = 1, P(C|T) = 1, P(C|H,T) = 1\)</span>。）</p>
+<ol start="3" type="a">
+<li>不独立。在给定 <span class="math inline">\(C\)</span> 的条件下，<span class="math inline">\(H\)</span> 和 <span class="math inline">\(T\)</span> 不是条件独立的，因为：</li>
+</ol>
+<p><span class="math display">\[
+P(H,T|C) = \frac{ht}{c} \neq \frac{h}{c} \cdot \frac{t}{c} = P(H|C)P(T|C)
+\]</span></p>
+<p>（由于 <span class="math inline">\(c &lt; 1\)</span>，所以 <span class="math inline">\(ht/c &gt; ht/c^2\)</span>。）</p>
+<p>我们也可以直观地看出为什么它们在给定 <span class="math inline">\(C\)</span> 时不是条件独立的：如果宝宝在哭但并不饿，那么她一定是累了。</p>
+<h3 id="贝叶斯法则的一致性">2.6 贝叶斯法则的一致性</h3>
+<p>Coherency of Bayes’ rule</p>
+<p>贝叶斯法则的一个重要性质是它是一致的（coherent）：如果我们收到多条信息并希望更新概率以整合所有信息，那么无论是顺序更新（每次考虑一条证据进行更新）还是同步更新（一次性使用所有证据进行更新），结果都是一样的。例如，假设我们进行一项为期一周的实验，每天结束时都会产生数据。我们可以每天使用贝叶斯法则根据当天的数据更新概率；或者我们可以休假一周，周五下午回来后利用全周的数据进行一次性更新。两种方法将得到相同的结果。</p>
+<p>让我们来看这个原则的具体应用。</p>
+<p><strong>例 2.6.1（罕见疾病检测，续）</strong>。在例 2.3.9 中检测呈阳性的患者弗雷德决定接受第二次检测。新检测与原检测是独立的（在给定其患病状态的情况下），且具有相同的灵敏度和特异度。对弗雷德来说不幸的是，第二次检测结果依然呈阳性。请通过两种方式计算弗雷德患病的概率：一步法（同时以两次检测结果为条件）和两步法（先根据第一次检测结果更新概率，然后再根据第二次结果再次更新）。</p>
+<p>解答：</p>
+<p>设 <span class="math inline">\(D\)</span> 为患病事件，<span class="math inline">\(T_1\)</span> 为第一次检测呈阳性，<span class="math inline">\(T_2\)</span> 为第二次检测呈阳性。在例 2.3.9 中，我们使用了贝叶斯法则和全概率公式求得 <span class="math inline">\(P(D|T_1)\)</span>。另一种快速解法是使用几率形式的贝叶斯法则：</p>
+<p><span class="math display">\[
+\frac{P(D|T_1)}{P(D^c|T_1)} = \frac{P(D)}{P(D^c)} \cdot \frac{P(T_1|D)}{P(T_1|D^c)} = \frac{1}{99} \cdot \frac{0.95}{0.05} \approx 0.19
+\]</span></p>
+<p>由于 <span class="math inline">\(P(D|T_1) / (1 - P(D|T_1)) = 0.19\)</span>，我们得到 <span class="math inline">\(P(D|T_1) = 0.19 / (1 + 0.19) \approx 0.16\)</span>，这与之前的答案一致。<strong>在这种情况下，几率形式的贝叶斯法则更快，因为我们不需要计算普通贝叶斯法则分母中的无条件概率 <span class="math inline">\(P(T_1)\)</span>。</strong>现在，再次使用几率形式，来看看如果弗雷德第二次检测仍为阳性会发生什么。</p>
+<p>一步法：同时根据两次检测结果进行更新，我们有</p>
+<p><span class="math display">\[
+\frac{P(D|T_1 \cap T_2)}{P(D^c|T_1 \cap T_2)} = \frac{P(D)}{P(D^c)} \cdot \frac{P(T_1 \cap T_2|D)}{P(T_1 \cap T_2|D^c)} = \frac{1}{99} \cdot \frac{0.95^2}{0.05^2} = \frac{361}{99} \approx 3.646
+\]</span></p>
+<p>对应的概率约为 0.78。</p>
+<p>两步法：第一次检测后，弗雷德患病的后验几率为</p>
+<p><span class="math display">\[
+\frac{P(D|T_1)}{P(D^c|T_1)} = \frac{1}{99} \cdot \frac{0.95}{0.05} \approx 0.19
+\]</span></p>
+<p>（如上所述）。这个后验几率变成了新的先验几率，然后根据第二次检测进行更新：</p>
+<p><span class="math display">\[
+\frac{P(D|T_1 \cap T_2)}{P(D^c|T_1 \cap T_2)} = \frac{P(D|T_1)}{P(D^c|T_1)} \cdot \frac{P(T_2|D, T_1)}{P(T_2|D^c, T_1)} = \left( \frac{1}{99} \cdot \frac{0.95}{0.05} \right) \cdot \frac{0.95}{0.05} = \frac{361}{99} \approx 3.646
+\]</span></p>
+<p>结果与上述一致。</p>
+<p>注意，随着第二次阳性结果的出现，弗雷德患病的概率从 0.16 跃升至 0.78，这使我们更加确信弗雷德确实患有“状况炎症”。这个故事的寓意是：寻求“第二意见”（复查）是一个好主意。</p>
+<h3 id="条件化作为解题工具">2.7 条件化作为解题工具</h3>
+<p>Conditioning as a problem-solving tool</p>
+<p><strong>条件化是解决问题的强大工具，因为它允许我们进行“一厢情愿的思考”（wishful thinking）：当我们遇到一个如果已知事件 <span class="math inline">\(E\)</span> 是否发生就会变得更容易的问题时，我们可以分别以 <span class="math inline">\(E\)</span> 和 <span class="math inline">\(E^c\)</span> 为条件考虑这些可能性，然后使用全概率公式（LOTP）将它们组合起来。</strong></p>
+<blockquote>
+<p>个人注：所以这也是第2.3节把贝叶斯法则与全概率公式放在同一节的原因了。</p>
+</blockquote>
+<h4 id="策略以你希望知道的信息为条件">2.7.1 策略：以你“希望知道”的信息为条件</h4>
+<p>Strategy: condition on what you wish you knew</p>
+<p><strong>例 2.7.1（蒙提·霍尔问题）</strong>。在由蒙提·霍尔（Monty Hall）主持的节目《让我们来做个交易》（<em>Let's Make a Deal</em>）中，参赛者在三扇关闭的门中选择一扇。其中两扇门后是山羊，一扇门后是汽车。蒙提知道汽车在哪，他会开启剩下的两扇门中的一扇。他开启的门后总是山羊（他绝不会揭晓汽车！）。如果他有选择余地，他会以等概率随机选择一扇门。随后，蒙提为参赛者提供换到另一扇未开启门的机会。如果参赛者的目标是得到汽车，她应该换门吗？</p>
+<p><img src="/img3/Introduction to Probability/F2.01.png" alt="F2.01" style="zoom:80%;" /></p>
+<p>解答：</p>
+<p>我们将门标记为 1 到 3 号。不失一般性，假设参赛者选择了 1 号门（如果她没选 1 号，我们只需重新编号，或在解答中置换门号）。蒙提打开了一扇门，露出了一只山羊。在参赛者决定是否换到另一扇未开启的门时，她真正“希望知道”的是什么？显然，如果她知道汽车在哪，决定就会容易得多！这提示我们应该以汽车的位置为条件。设 <span class="math inline">\(C_i\)</span> 为汽车在 <span class="math inline">\(i\)</span> 号门后的事件（<span class="math inline">\(i=1,2,3\)</span>）。根据全概率公式：</p>
+<p><span class="math display">\[
+P(\text{得到车}) = P(\text{得到车}|C_1) \cdot \frac{1}{3} + P(\text{得到车}|C_2) \cdot \frac{1}{3} + P(\text{得到车}|C_3) \cdot \frac{1}{3}
+\]</span></p>
+<p>假设参赛者采用“换门策略”。如果汽车在 1 号门后，换门会失败，所以 <span class="math inline">\(P(\text{得到车}|C_1) = 0\)</span>。如果汽车在 2 号或 3 号门后，由于蒙提总是展示山羊，剩下的那扇未开启的门必然是汽车，因此换门会成功。于是：</p>
+<p><span class="math display">\[
+P(\text{得到车}) = 0 \cdot \frac{1}{3} + 1 \cdot \frac{1}{3} + 1 \cdot \frac{1}{3} = \frac{2}{3}
+\]</span></p>
+<p>所以换门策略有 2/3 的成功率。参赛者应该换门。</p>
+<p>上图是我们刚才概述的论证的树状图：使用换门策略，只要汽车在 2 号或 3 号门后（概率为 2/3），参赛者就会赢。我们也可以给出一个支持换门的直观频率学派论证。想象玩这个游戏 1000 次。通常，大约有 333 次你最初对汽车位置的猜测是正确的，在这种情况下换门会失败。其余 667 次左右，你都会通过换门获胜。</p>
+<p>这里有一个微妙之处：当参赛者选择是否换门时，她还知道蒙提打开的是哪扇门。我们证明了成功的无条件概率是 2/3（采用换门策略时），但让我们也证明一下，在给定蒙提提供的信息的情况下，换门成功的条件概率也是 2/3。</p>
+<p><img src="/img3/Introduction to Probability/F2.5.png" alt="F2.5" style="zoom:60%;" /></p>
+<p>设 <span class="math inline">\(M_j\)</span> 为蒙提开启 <span class="math inline">\(j\)</span> 号门的事件（<span class="math inline">\(j=2,3\)</span>）。则：</p>
+<p><span class="math display">\[
+P(\text{得到车}) = P(\text{得到车}|M_2)P(M_2) + P(\text{得到车}|M_3)P(M_3)
+\]</span></p>
+<p>根据对称性，<span class="math inline">\(P(M_2) = P(M_3) = 1/2\)</span> 且 <span class="math inline">\(P(\text{得到车}|M_2) = P(\text{得到车}|M_3)\)</span>。这里的对称性在于题目陈述中没有区分 2 号门和 3 号门；相比之下，习题 40 考虑了蒙提比 3 号门更喜欢开 2 号门的情形。</p>
+<p>设 <span class="math inline">\(x = P(\text{得到车}|M_2) = P(\text{得到车}|M_3)\)</span>。代入已知量：</p>
+<p><span class="math display">\[
+\frac{2}{3} = P(\text{得到车}) = \frac{x}{2} + \frac{x}{2} = x
+\]</span></p>
+<p>得证。</p>
+<p>贝叶斯法则在给定证据下寻找换门策略的条件成功概率时也非常奏效。假设蒙提打开了 2 号门。使用上述记号和结果：</p>
+<p><span class="math display">\[
+P(C_1|M_2) = \frac{P(M_2|C_1)P(C_1)}{P(M_2)} = \frac{(1/2)(1/3)}{1/2} = \frac{1}{3}
+\]</span></p>
+<p>所以，在已知蒙提打开 2 号门的情况下，参赛者最初选择的门里有车的概率是 1/3，这意味着换门策略成功的概率是 2/3。</p>
+<p>许多人第一次看到这个问题时，会争辩说换门没有优势：“剩下两扇门，其中一扇有车，所以概率是 50-50。”在学习了上一章后，我们认识到这种观点误用了概率的原始定义。然而，即使在不适用的情况下，原始定义对人们的直觉仍有强大的控制力。当玛丽莲·沃斯·莎凡特（Marilyn vos Savant）于 1990 年在《Parade》杂志的专栏中给出蒙提·霍尔问题的正确解法时，她收到了成千上万封读者（甚至是数学家）的来信，坚称她是错的。</p>
+<p><strong>为了建立正确的直觉，让我们考虑一个极端情况。假设有一百万扇门，其中 999,999 扇后面是山羊，1 扇后面是汽车。在参赛者初步选择后，蒙提打开了 999,998 扇后面是山羊的门，并提供换门的机会。在这种极端情况下，很明显这两扇未开启门的概率不是 50-50；很少有人会固执地坚持最初的选择。三扇门的情况也是如此。</strong></p>
+<p>正如我们在例 2.2.6 中必须对如何遇到那个随机女孩做出假设一样，这里换门策略 2/3 的成功率取决于我们对蒙提如何决定开哪扇门的假设。在习题中，我们将考虑蒙提·霍尔问题的几种变体和推广，其中一些会改变换门策略的优劣。</p>
+<h4 id="策略以第一步为条件">2.7.2 策略：以第一步为条件</h4>
+<p>Strategy: condition on the first step</p>
+<p><strong>在具有递归结构的问题中，以实验的第一步为条件通常非常有用。接下来的两个例子应用了这一策略，我们称之为第一步分析法（first-step analysis）。</strong></p>
+<p><strong>例 2.7.2（分支过程）</strong>。一只名叫波波（Bobo）的单细胞阿米巴原虫生活在池塘里。一分钟后，波波会以等概率选择死亡、分裂成两个，或保持现状。在随后的每一分钟里，所有存活的阿米巴原虫都会以相同的方式独立地行动。请问阿米巴种群最终灭绝的概率是多少？</p>
+<p><img src="/img3/Introduction to Probability/F2.02.png" alt="F2.02" style="zoom:80%;" /></p>
+<p>解答：</p>
+<p>设 <span class="math inline">\(D\)</span> 为种群最终灭绝的事件；我们要寻找 <span class="math inline">\(P(D)\)</span>。我们通过以第一步的结果为条件来处理：设 <span class="math inline">\(B_i\)</span> 为一分钟后波波变为 <span class="math inline">\(i\)</span> 个阿米巴原虫的事件（<span class="math inline">\(i=0, 1, 2\)</span>）。</p>
+<p>我们已知 <span class="math inline">\(P(D|B_0) = 1\)</span>（如果它死了，种群就灭绝了），以及 <span class="math inline">\(P(D|B_1) = P(D)\)</span>（如果波波保持现状，我们就回到了起点）。如果波波分裂成两个，那么我们就有两个相互独立的原始问题的副本！我们需要这两个后代各自的种群都最终灭绝，因此 <span class="math inline">\(P(D|B_2) = P(D)^2\)</span>。现在我们已经穷举了所有可能的情况，可以用全概率公式将它们组合起来：</p>
+<p><span class="math display">\[
+P(D) = P(D|B_0) \cdot \frac{1}{3} + P(D|B_1) \cdot \frac{1}{3} + P(D|B_2) \cdot \frac{1}{3} 
+\]</span></p>
+<p><span class="math display">\[
+P(D) = 1 \cdot \frac{1}{3} + P(D) \cdot \frac{1}{3} + P(D)^2 \cdot \frac{1}{3}
+\]</span></p>
+<p>解这个关于 <span class="math inline">\(P(D)\)</span> 的二次方程，得到 <span class="math inline">\(P(D) = 1\)</span>：阿米巴种群最终灭绝的概率为 1。</p>
+<p>第一步分析策略之所以奏效，是因为这个问题本质上是自相似的：当波波继续作为单个个体存在或分裂为两个时，我们最终面对的是原始问题的一个或两个新版本。以第一步为条件让我们能够用 <span class="math inline">\(P(D)\)</span> 自身来表达 <span class="math inline">\(P(D)\)</span>。</p>
+<blockquote>
+<p>个人注：结果挺违反直觉。</p>
+</blockquote>
+<p><strong>例 2.7.3（赌徒输光问题）</strong>。两名赌徒 A 和 B 进行一系列 1 美元的赌博。在每一局中，赌徒 A 赢的概率为 <span class="math inline">\(p\)</span>，赌徒 B 赢的概率为 <span class="math inline">\(q = 1-p\)</span>。赌徒 A 初始资金为 <span class="math inline">\(i\)</span> 美元，赌徒 B 初始资金为 <span class="math inline">\(N-i\)</span> 美元；两人的总财富保持不变（恒为 <span class="math inline">\(N\)</span>），因为每次 A 输掉 1 美元，这 1 美元就归 B，反之亦然。</p>
+<blockquote>
+<p>个人注：这道题太经典了。数学建模的典型！</p>
+</blockquote>
+<p>我们可以将此游戏可视化为在整数 <span class="math inline">\(0\)</span> 到 <span class="math inline">\(N\)</span> 之间的<strong>随机游走</strong>（random walk），其中 <span class="math inline">\(p\)</span> 是在给定步中向右移动的概率：想象一个人从位置 <span class="math inline">\(i\)</span> 开始，在每个时间点，以概率 <span class="math inline">\(p\)</span> 向右移动一步，以概率 <span class="math inline">\(q = 1-p\)</span> 向左移动一步。当 A 或 B 其中一人输光时，游戏结束，即随机游走到达 <span class="math inline">\(0\)</span> 或 <span class="math inline">\(N\)</span>。请问 A 赢得比赛（带着所有的钱离开）的概率是多少？</p>
+<p><img src="/img3/Introduction to Probability/F2.03.png" alt="F2.03" style="zoom:50%;" /></p>
+<p>解答：</p>
+<p>我们认识到，这个博弈与波波的繁殖过程类似，都具有递归结构：第一步之后，博弈的性质完全没有改变，唯一的区别是 A 的财富现在变成了 <span class="math inline">\(i+1\)</span> 或 <span class="math inline">\(i-1\)</span>。设 <span class="math inline">\(p_i\)</span> 为 A 在拥有 <span class="math inline">\(i\)</span> 美元初始资金时赢得博弈的概率。我们将使用第一步分析法来求解 <span class="math inline">\(p_i\)</span>。</p>
+<blockquote>
+<p>个人注：以下可以看出条件概率和全概率公式的联系。</p>
+</blockquote>
+<p>设 <span class="math inline">\(W\)</span> 为 A 赢得博弈的事件。<strong>根据全概率公式，对第一局的结果进行条件化</strong>，我们有：</p>
+<p><span class="math display">\[
+p_i = P(W \mid A \text{从} i \text{开始，第一局赢}) \cdot p + P(W \mid A \text{从} i \text{开始，第一局输}) \cdot q
+\]</span></p>
+<p><span class="math display">\[
+= P(W \mid A \text{从} i+1 \text{开始}) \cdot p + P(W \mid A \text{从} i-1 \text{开始}) \cdot q
+\]</span></p>
+<p><span class="math display">\[
+= p_{i+1} \cdot p + p_{i-1} \cdot q
+\]</span></p>
+<p>这一等式对所有 <span class="math inline">\(i \in \{1, \dots, N-1\}\)</span> 都成立，此外我们还有边界条件 <span class="math inline">\(p_0 = 0\)</span>（输光了）和 <span class="math inline">\(p_N = 1\)</span>（赢了所有的钱）。现在我们可以通过解这个<strong>差分方程</strong>（difference equation）来获得 <span class="math inline">\(p_i\)</span>。</p>
+<blockquote>
+<p>个人注：</p>
+<p>差分方程：一个量在<strong>离散时间点</strong>上，如何由“前一步”的值决定“下一步”的值。</p>
+<p>差分方程是“平移不变”的。</p>
+<p>斐波那契数列数列也是差分方程，下一项由前两项决定，这同样是一个差分方程，只是<strong>高阶的</strong>。</p>
+<p>它研究的不是连续变化，而是<strong>一步一步的演化关系</strong>，本质上和微分方程是一致的。</p>
+<p>对比一下：</p>
+<ul>
+<li>微分方程：<span class="math inline">\(\dfrac{dx}{dt}\)</span>（连续变化）</li>
+<li>差分方程：<span class="math inline">\(x_{n+1} - x_n\)</span>（离散变化）</li>
+</ul>
+</blockquote>
+<p>该差分方程的特征方程为 <span class="math inline">\(px^2 - x + q = 0\)</span>，其根为 <span class="math inline">\(1\)</span> 和 <span class="math inline">\(q/p\)</span>。</p>
+<ul>
+<li><p>如果 <span class="math inline">\(p \neq 1/2\)</span>：根是互异的，通解为 <span class="math inline">\(p_i = a \cdot 1^i + b \cdot (q/p)^i\)</span>。</p>
+<p>利用边界条件 <span class="math inline">\(p_0 = 0\)</span> 和 <span class="math inline">\(p_N = 1\)</span>，我们求得系数：</p></li>
+</ul>
+<p><span class="math display">\[
+a = -b = \frac{1}{1 - (q/p)^N}
+\]</span> - 如果 <span class="math inline">\(p = 1/2\)</span>：特征方程有重根，通解为 <span class="math inline">\(p_i = a \cdot 1^i + b \cdot i \cdot 1^i\)</span>。</p>
+<p>利用边界条件可得 <span class="math inline">\(a = 0\)</span> 且 <span class="math inline">\(b = 1/N\)</span>。</p>
+<p>综上所述，A 在初始财富为 <span class="math inline">\(i\)</span> 时获胜的概率为：</p>
+<p><span class="math display">\[
+p_i = \begin{cases} \frac{1-(q/p)^i}{1-(q/p)^N} &amp; \text{若 } p \neq 1/2, \\ \frac{i}{N} &amp; \text{若 } p = 1/2. \end{cases}
+\]</span> <span class="math inline">\(p = 1/2\)</span> 的情形与 <span class="math inline">\(p \neq 1/2\)</span> 的情形是一致的，即：</p>
+<p><span class="math display">\[
+\lim_{p \to 1/2} \frac{1-(q/p)^i}{1-(q/p)^N} = \frac{i}{N}
+\]</span></p>
+<p>我们可以通过洛必达法则（L'Hôpital's rule）证明这一点。</p>
+<p>对于 <span class="math inline">\(p = 1/2\)</span>（公平博弈）的情况，答案有一个简单的解释：<strong>A 获胜的概率等于其初始财富占总财富的比例</strong>。因此，如果 A 的初始资金远少于 B，即使博弈是公平的，A 获胜的机会也很小。而如果 <span class="math inline">\(p &lt; 1/2\)</span>，即使 <span class="math inline">\(p\)</span> 仅仅比 <span class="math inline">\(1/2\)</span> 小一点点，A 获胜的概率也会骤降。例如，如果 <span class="math inline">\(p = 0.49\)</span> 且双方各有 <span class="math inline">\(100\)</span> 美元，A 获胜的概率仅约为 <span class="math inline">\(1.8\%\)</span>。</p>
+<blockquote>
+<p>个人注：有点像马太效应！</p>
+</blockquote>
+<p>我们关注了 A 获胜的概率，那 B 呢？我们可以利用<strong>对称性</strong>：除了符号不同，博弈的描述中没有任何区别 A 和 B 的地方。因此，B 在拥有 <span class="math inline">\(N-i\)</span> 财富时获胜的概率只需将 <span class="math inline">\(p\)</span> 与 <span class="math inline">\(q\)</span> 互换，并将 <span class="math inline">\(i\)</span> 替换为 <span class="math inline">\(N-i\)</span> 即可。可以验证，对于所有 <span class="math inline">\(i\)</span> 和 <span class="math inline">\(p\)</span>，<span class="math inline">\(P(\text{A 获胜}) + P(\text{B 获胜}) = 1\)</span>。这意味着<strong>博弈保证会结束</strong>：永远在中间状态振荡而不结束的概率为 <span class="math inline">\(0\)</span>。</p>
+<blockquote>
+<p>个人注：为什么“两个概率加起来等于 1”这么重要？</p>
+<p>在概率论里，一个系统的所有<strong>互斥且穷尽</strong>的结果，其概率之和必须等于 1。</p>
+<p>在这里，可能发生的事情理论上有三类：</p>
+<ol type="1">
+<li>A 最终获胜</li>
+<li>B 最终获胜</li>
+<li>游戏永远不结束（无限振荡）</li>
+</ol>
+<p>如果你能证明：</p>
+<p>P(A 获胜) + P(B 获胜) = 1</p>
+<p>那就意味着：</p>
+<p>P(永远不结束) = 0</p>
+<p>也就是说：</p>
+<p><strong>第三种情况在数学上“不存在”，或者说发生的概率为零。</strong></p>
+<p><strong>这句话真正想传达的“思想结论”</strong>：</p>
+<p>这句话不是在算概率，而是在<strong>排除一种哲学上的担忧</strong>：</p>
+<p>会不会存在一种状态，使得游戏永远卡在中间，不生不死？</p>
+<p>结论是：</p>
+<ul>
+<li>数学上允许这种路径存在</li>
+<li>但概率论明确告诉你： <strong>你永远不用担心它发生</strong></li>
+</ul>
+</blockquote>
+<h3 id="陷阱与悖论">2.8 陷阱与悖论</h3>
+<p>Pitfalls and paradoxes</p>
+<p>接下来的两个例子是法律背景下出现的条件化思维谬误。<strong>检察官谬误</strong>（Prosecutor’s fallacy）是指混淆了 <span class="math inline">\(P(A|B)\)</span> 与 <span class="math inline">\(P(B|A)\)</span>；而<strong>辩护律师谬误</strong>（Defense attorney’s fallacy）是指未能以所有证据为条件进行考量。</p>
+<p><strong>2.8.1 检察官谬误（Prosecutor’s fallacy）</strong>1998 年，萨莉·克拉克（Sally Clark）因两名儿子在出生后不久相继死亡而受审。在审判期间，控方的一名专家证人作证说，新生儿死于婴儿猝死综合征（SIDS）的概率为 <span class="math inline">\(1/8500\)</span>，因此一个家庭中发生两起 SIDS 死亡的概率为 <span class="math inline">\((1/8500)^2\)</span>，即大约 7300 万分之一。随后他断言，克拉克无罪的概率就是 7300 万分之一。</p>
+<p>这种推理方式至少存在两个重大问题：</p>
+<p><strong>第一，独立性假设的错误</strong>。专家证人通过将单个事件概率相乘，得出了“长子死于 SIDS”和“次子死于 SIDS”交集的概率。正如我们所知，这仅在同一个家庭内的 SIDS 死亡相互<strong>独立</strong>时才成立。然而，如果遗传或其他特定家庭的风险因素导致某些家庭内的所有新生儿面临更高的 SIDS 风险，这种独立性就不复存在。</p>
+<p><strong>第二，概率方向的混淆</strong>。这位所谓的专家混淆了两个截然不同的条件概率：<strong><span class="math inline">\(P(\text{无罪} | \text{证据})\)</span></strong> 与 <strong><span class="math inline">\(P(\text{证据} | \text{无罪})\)</span></strong>。证人声称，如果被告是无罪的，观察到两名新生儿死亡的概率极低；即 <span class="math inline">\(P(\text{证据} | \text{无罪})\)</span> 很小。然而，我们真正关心的是 <span class="math inline">\(P(\text{无罪} | \text{证据})\)</span>，即在已知所有证据的情况下，被告无罪的概率。</p>
+<p>根据贝叶斯法则：</p>
+<p><span class="math display">\[
+P(\text{无罪} | \text{证据}) = \frac{P(\text{证据} | \text{无罪}) P(\text{无罪})}{P(\text{证据})}
+\]</span> 因此，要计算给定证据下的无罪条件概率，我们必须考虑 <span class="math inline">\(P(\text{无罪})\)</span>，即无罪的先验概率。这个概率是非常高的：虽然 SIDS 导致双重死亡很罕见，但双重杀婴案同样罕见！将分母展开为：</p>
+<p><span class="math display">\[
+P(\text{证据} | \text{无罪}) P(\text{无罪}) + P(\text{证据} | \text{有罪}) P(\text{有罪})
+\]</span> 注意，如果 <span class="math inline">\(P(\text{有罪})\)</span> 足够小，使得第二项相对于第一项可以忽略不计，那么 <span class="math inline">\(P(\text{无罪} | \text{证据})\)</span> 的分母就近似等于分子，从而使 <span class="math inline">\(P(\text{无罪} | \text{证据})\)</span> 接近 <span class="math inline">\(1\)</span>。</p>
+<p>给定证据后的无罪后验概率高度取决于两个因素：极其微小的 <span class="math inline">\(P(\text{证据} | \text{无罪})\)</span> 和极其巨大的 <span class="math inline">\(P(\text{无罪})\)</span>。专家给出的 7300 万分之一的概率（其本身就值得商榷）仅仅是等式的一部分。</p>
+<p>悲剧的是，克拉克被定罪并被送往监狱，部分原因正是基于该专家错误的证词。她在监狱里度过了三年多，直到定罪被撤销。萨莉·克拉克案中对条件概率的误用引起了巨大的社会反响，促使人们对数百起使用类似错误逻辑的控方案件进行了重新审查。</p>
+<blockquote>
+<p>个人注：以上检查官的推理方式常常作为雄辩的政客的主要煽动人心的话术，从直观上冲击普通人的感情！</p>
+</blockquote>
+<p><strong>2.8.2 辩护律师谬误（Defense attorney’s fallacy）</strong>一名妇女被谋杀，她的丈夫因这项罪名受审。有证据显示，被告曾有虐待妻子的历史。辩护律师辩称，虐待证据与本案无关，应予以排除，因为在虐待妻子的男性中，随后谋杀妻子的比例仅为 万分之一。法官是否应该批准辩护律师排除该证据的动议？</p>
+<p>假设辩护律师给出的“万分之一”数据是正确的，并进一步假设相关人群（丈夫与妻子）的以下数据：</p>
+<ul>
+<li>10% 的丈夫虐待妻子。</li>
+<li>在被谋杀的妻子中，有 1/5（即 20%）是被丈夫杀害的。</li>
+<li>杀害妻子的丈夫中，有 50% 此前曾虐待过妻子。</li>
+<li>此外假设：如果被谋杀妻子的丈夫并非凶手，那么他虐待妻子的概率退回到无条件的虐待概率（即 10%）。</li>
+</ul>
+<p><strong>如何定义“相关人群”以及如何估算这些概率是困难的课题</strong>（例如：是看全市、全州还是全国的数据？如何统计未报告的虐待和未破获的命案？）。在本题中，我们假设已经商定了一个合理的样本范围，且上述概率已知正确。</p>
+<p>设 <span class="math inline">\(A\)</span> 为丈夫虐待妻子的事件，<span class="math inline">\(G\)</span> 为丈夫有罪的事件。辩护律师的论点是 <span class="math inline">\(P(G|A) = 1/10,000\)</span>，因此在已知虐待史的情况下，有罪的可能性依然极低。</p>
+<p>然而，辩护律师未能以一个关键事实为条件：在本案中，我们已经知道妻子被谋杀了。因此，相关的概率不是 <span class="math inline">\(P(G|A)\)</span>，而是 <span class="math inline">\(P(G|A,M)\)</span>，其中 <span class="math inline">\(M\)</span> 是妻子被谋杀的事件。</p>
+<p>利用带额外条件的全概率公式和贝叶斯法则：</p>
+<p><span class="math display">\[
+P(G|A,M) = \frac{P(A|G,M)P(G|M)}{P(A|G,M)P(G|M) + P(A|G^c,M)P(G^c|M)}
+\]</span> 代入已知数据：</p>
+<ul>
+<li><span class="math inline">\(P(A|G,M) = 0.5\)</span>（杀妻者中有 50% 曾施虐）</li>
+<li><span class="math inline">\(P(G|M) = 0.2\)</span>（被杀妻子中 20% 是被丈夫杀害的）</li>
+<li><span class="math inline">\(P(A|G^c,M) = 0.1\)</span>（如果丈夫无罪，其施虐概率为无条件概率 10%）</li>
+<li><span class="math inline">\(P(G^c|M) = 0.8\)</span>（1 - 0.2） <span class="math display">\[
+P(G|A,M) = \frac{0.5 \cdot 0.2}{0.5 \cdot 0.2 + 0.1 \cdot 0.8} = \frac{0.1}{0.1 + 0.08} = \frac{5}{9} \approx 0.56
+\]</span> 因此，有罪的后验概率 <span class="math inline">\(P(G|A,M)\)</span> 超过了 55%，是辩护律师所强调的 <span class="math inline">\(P(G|A)\)</span> 的 5000 多倍。以虐待证据为条件，将有罪概率从 <span class="math inline">\(P(G|M) = 0.2\)</span> 提升到了 <span class="math inline">\(P(G|A,M) \approx 0.56\)</span>。因此，被告的虐待史提供了非常重要的信息，这与辩护律师的论点恰恰相反。</li>
+</ul>
+<p>在上述计算中，我们根本没有用到辩护律师提供的“万分之一”这个数字；它对我们的计算是无关的，因为它没有考虑到“妻子已被谋杀”这一既定事实。我们必须以所有已知证据为条件。</p>
+<p><strong>例 2.8.3 辛普森悖论（Simpson’s Paradox）</strong>希伯特医生（Dr. Hibbert）和尼克医生（Dr. Nick）每人都执行两种类型的手术：心脏手术和创可贴拆除。每种手术的结果要么成功，要么失败。两位医生的记录如下表及图 2.6 所示（白点代表成功，黑点代表失败）：</p>
+<p><img src="/img3/Introduction to Probability/F2.6.png" alt="F2.6" style="zoom:60%;" /></p>
+<p>在心脏手术中，希伯特医生的成功率更高（90 次中成功 70 次 vs 10 次中成功 2 次）；在创可贴拆除中，也是希伯特医生更高（10/10 vs 81/90）。但是，如果我们聚合这两类手术来比较总成功率，希伯特医生在 100 次手术中成功了 80 次，而尼克医生成功了 83 次：尼克医生的总成功率反而更高！</p>
+<p><img src="/img3/Introduction to Probability/F2.04.png" alt="F2.04" style="zoom:60%;" /></p>
+<p>造成这种现象的原因是，希伯特医生可能由于医术更高超、名气更大，承担了更多数量的心脏手术，而心脏手术本质上比创可贴拆除风险大得多。他的总成功率较低并不是因为他在某一类特定手术上的技能较差，而是因为他承担了更高比例的高风险手术。</p>
+<p>为了精确描述，我们称事件 <span class="math inline">\(A, B, C\)</span> 构成了<strong>辛普森悖论</strong>，如果满足：</p>
+<ol type="1">
+<li><span class="math inline">\(P(A|B,C) &lt; P(A|B^c,C)\)</span></li>
+<li><span class="math inline">\(P(A|B,C^c) &lt; P(A|B^c,C^c)\)</span></li>
+<li><strong>但 <span class="math inline">\(P(A|B) &gt; P(A|B^c)\)</span></strong></li>
+</ol>
+<p>在这个例子中：</p>
+<ul>
+<li><span class="math inline">\(A\)</span>：手术成功的事件。</li>
+<li><span class="math inline">\(B\)</span>：医生是尼克医生的事件。</li>
+<li><span class="math inline">\(C\)</span>：手术是心脏手术的事件。</li>
+</ul>
+<p>全概率公式从数学上告诉了我们为什么会发生这种情况：</p>
+<p><span class="math display">\[
+P(A|B) = P(A|C,B)P(C|B) + P(A|C^c,B)P(C^c|B)
+\]</span></p>
+<p><span class="math display">\[
+P(A|B^c) = P(A|C,B^c)P(C|B^c) + P(A|C^c,B^c)P(C^c|B^c)
+\]</span> 上述等式将 <span class="math inline">\(P(A|B)\)</span> 表示为条件概率的<strong>加权平均值</strong>。如果两组加权平均值的权重（即 <span class="math inline">\(P(C|B)\)</span> 和 <span class="math inline">\(P(C|B^c)\)</span>）相同，辛普森悖论就不会发生。但这里的权重完全不同：尼克医生进行心脏手术的概率 <span class="math inline">\(P(C|B)\)</span> 远低于希伯特医生 <span class="math inline">\(P(C|B^c)\)</span>。</p>
+<p>数值上，这两个加权平均值为：</p>
+<ul>
+<li><strong>尼克 (B)</strong>：<span class="math inline">\(0.83 = (2/10) \cdot 0.1 + (81/90) \cdot 0.9\)</span></li>
+<li><strong>希伯特 (<span class="math inline">\(B^c\)</span>)</strong>：<span class="math inline">\(0.80 = (70/90) \cdot 0.9 + (10/10) \cdot 0.1\)</span></li>
+</ul>
+<p>尼克医生的等式在第二项（较简单的手术）上分配了更大的权重。对不同类型手术的聚合掩盖了医生能力的真实图景，因为我们丢失了关于“哪个医生倾向于做哪种手术”的信息。当可能存在<strong>混杂变量</strong>（如手术类型）时，我们应该观察<strong>分层数据</strong>来探究真相。</p>
+<p>现实生活中的例子:</p>
+<ul>
+<li><strong>大学录取的性别歧视</strong>：1970 年代，加州大学伯克利分校的研究生录取中，男性总体录取率显著高于女性，引发了歧视指控。然而，在大多数具体系别中，女性的录取率反而更高。原因是女性倾向于申请竞争更激烈的系别，而男性倾向于申请竞争较小的系别。</li>
+<li><strong>棒球击球率</strong>：球员 1 在赛季上半程和下半程的击球率都可能高于球员 2，但全赛季总击球率却低于球员 2。这取决于两名球员在不同半程的“打数”分配。</li>
+<li><strong>吸烟与健康</strong>：Cochran 发现，在任何年龄段内，香烟吸烟者的死亡率都高于雪茄吸烟者。但由于香烟吸烟者平均年龄更年轻，总体的死亡率反而看起来更低。</li>
+</ul>
+<h3 id="本章小结">2.9 本章小结</h3>
+<p>在给定 <span class="math inline">\(B\)</span> 的条件下，<span class="math inline">\(A\)</span> 的条件概率定义为：</p>
+<p><span class="math display">\[
+P(A|B) = \frac{P(A \cap B)}{P(B)}
+\]</span> 条件概率具有与普通概率完全相同的性质。<strong><span class="math inline">\(P(\cdot|B)\)</span> 实际上是根据观察到的证据 <span class="math inline">\(B\)</span> 更新了我们对事件的不确定性。如果在观察到证据 <span class="math inline">\(B\)</span> 后，事件的概率保持不变，则称该事件与 <span class="math inline">\(B\)</span> 相互独立。</strong>两个事件也可以在给定第三个事件 <span class="math inline">\(E\)</span> 的条件下<strong>条件独立</strong>。需要注意的是，条件独立并不意味着无条件独立，无条件独立也不意味着条件独立。</p>
+<p>关于条件概率有两个极其重要的结论：</p>
+<ol type="1">
+<li><strong>贝叶斯法则（Bayes’ rule）</strong>：它建立了 <span class="math inline">\(P(A|B)\)</span> 与 <span class="math inline">\(P(B|A)\)</span> 之间的联系。</li>
+<li><strong>全概率公式（LOTP）</strong>：它允许我们通过划分样本空间并计算每个切片内的条件概率，从而获得无条件概率。</li>
+</ol>
+<p>贝叶斯法则公式为：</p>
+<p><span class="math display">\[
+P(A|B) = \frac{P(B|A)P(A)}{P(B)}
+\]</span></p>
+<p>全概率公式（对于样本空间的任何划分 <span class="math inline">\(A_1, \dots, A_n\)</span>）为：</p>
+<p><span class="math display">\[
+P(B) = \sum_{i=1}^n P(B|A_i)P(A_i)
+\]</span></p>
+<p><strong>在实际应用中，贝叶斯法则和全概率公式经常协同使用。</strong></p>
+<p><strong>条件化是解决问题的极佳工具，因为它允许我们将问题分解为更小的部分，分别考虑所有可能的情况，然后将它们组合起来。在使用这一策略时，我们应该尝试以“如果你知道后问题会变得更简单”的信息为条件，即所谓的“以你希望知道的信息为条件”。当问题涉及多个阶段时，以“第一步”为条件来建立递归关系（第一步分析法）通常非常有效。</strong></p>
+<p>思考条件概率时常见的错误包括：</p>
+<ul>
+<li>混淆先验概率 <span class="math inline">\(P(A)\)</span> 与后验概率 <span class="math inline">\(P(A|B)\)</span>。</li>
+<li><strong>检察官谬误</strong>：混淆 <span class="math inline">\(P(A|B)\)</span> 与 <span class="math inline">\(P(B|A)\)</span>。</li>
+<li><strong>辩护律师谬误</strong>：未能以所有已知证据为条件进行考量。</li>
+<li>忽视<strong>辛普森悖论</strong>，以及在决定是否聚合数据时缺乏审慎思考。</li>
+</ul>
+<p>图 2.7 展示了概率如何随着新证据的接连出现而不断更新。假设我们对某个事件 <span class="math inline">\(A\)</span> 感兴趣：</p>
+<ol type="1">
+<li><strong>周一早上</strong>：我们的初始置信度是先验概率 <span class="math inline">\(P(A)\)</span>。</li>
+<li><strong>周一下午</strong>：观察到证据 <span class="math inline">\(B\)</span> 发生，使用贝叶斯法则计算后验概率 <span class="math inline">\(P(A|B)\)</span>。</li>
+<li><strong>周二早上</strong>：周一的后验概率成为新的“先验概率”。</li>
+<li><strong>周二下午</strong>：观察到新证据 <span class="math inline">\(C\)</span> 发生，我们可以计算新的后验概率 <span class="math inline">\(P(A|B,C)\)</span>（通常使用带额外条件 <span class="math inline">\(B\)</span> 的贝叶斯法则）。</li>
+</ol>
+<p>这个过程可以循环往复，随着证据的积累，我们的认识会越来越接近真相。</p>
+<p><img src="/img3/Introduction to Probability/F2,7.png" alt="F2,7" style="zoom:60%;" /></p>
+<h3 id="r-语言实现">2.10 R 语言实现</h3>
+<p><strong>模拟频率学派解释</strong></p>
+<p>回想一下，条件概率的频率学派解释基于实验的大量重复次数 <span class="math inline">\(n\)</span>：<span class="math inline">\(P(A|B) \approx n_{AB}/n_B\)</span>，其中 <span class="math inline">\(n_{AB}\)</span> 是 <span class="math inline">\(A \cap B\)</span> 发生的次数，<span class="math inline">\(n_B\)</span> 是 <span class="math inline">\(B\)</span> 发生的次数。</p>
+<p>让我们通过模拟来验证例 2.2.5 的结果。我们模拟 <span class="math inline">\(10^5\)</span> 个家庭，每个家庭有两个孩子。</p>
+<p>R</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">n &lt;- 10^5</span><br><span class="line">child1 &lt;- sample(2, n, replace = TRUE)</span><br><span class="line">child2 &lt;- sample(2, n, replace = TRUE)</span><br></pre></td></tr></table></figure>
+<p>这里 <code>child1</code> 是一个长度为 <span class="math inline">\(n\)</span> 的向量，每个元素为 1 或 2。让 1 代表“女孩”，2 代表“男孩”。</p>
+<p><strong>场景 1：已知老大是女孩</strong></p>
+<p>设 <span class="math inline">\(A\)</span> 为两个孩子都是女孩的事件，<span class="math inline">\(B\)</span> 为老大是女孩的事件。</p>
+<p>R</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">n.b &lt;- sum(child1 == 1)</span><br><span class="line">n.ab &lt;- sum(child1 == 1 &amp; child2 == 1)</span><br><span class="line">n.ab / n.b</span><br></pre></td></tr></table></figure>
+<p>结果约为 <strong>0.50</strong>，符合 <span class="math inline">\(P(\text{双女} | \text{老大是女}) = 1/2\)</span>。</p>
+<p><strong>场景 2：已知至少一个是女孩</strong></p>
+<p>此时 <span class="math inline">\(B\)</span> 变为“至少一个是女孩”。</p>
+<p>R</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">n.b &lt;- sum(child1 == 1 | child2 == 1) # 使用 | 运算符代表“或”</span><br><span class="line">n.ab &lt;- sum(child1 == 1 &amp; child2 == 1)</span><br><span class="line">n.ab / n.b</span><br></pre></td></tr></table></figure>
+<p>结果约为 <strong>0.33</strong>，符合 <span class="math inline">\(P(\text{双女} | \text{至少一女}) = 1/3\)</span>。</p>
+<p><strong>蒙提·霍尔问题的模拟</strong></p>
+<p>许多关于蒙提·霍尔问题的激烈争论都可以通过简单的模拟来化解。</p>
+<p>批量模拟策略：</p>
+<p>假设参赛者总是选 1 号门。那么“不换门”策略成功的唯一条件就是车在 1 号门后。</p>
+<p>R</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">n &lt;- 10^5</span><br><span class="line">cardoor &lt;- sample(3, n, replace = TRUE)</span><br><span class="line">sum(cardoor == 1) / n</span><br></pre></td></tr></table></figure>
+<p>模拟结果约为 <strong>0.334</strong>，非常接近理论值 <span class="math inline">\(1/3\)</span>。由此推论，换门成功的概率必然接近 <span class="math inline">\(2/3\)</span>。</p>
+<p>交互式模拟函数：</p>
+<p>如果你想亲自玩这个游戏，可以在 R 中定义如下函数：</p>
+<p>R</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">monty &lt;- function() &#123;</span><br><span class="line">  doors &lt;- 1:3</span><br><span class="line">  # 随机放置汽车</span><br><span class="line">  cardoor &lt;- sample(doors, 1)</span><br><span class="line">  </span><br><span class="line">  print(&quot;蒙提·霍尔说：‘选一扇门，随便哪扇！’&quot;)</span><br><span class="line">  chosen &lt;- scan(what = integer(), nlines = 1, quiet = TRUE)</span><br><span class="line">  </span><br><span class="line">  # 蒙提选一扇门打开（不能是玩家选的，也不能是车所在的门）</span><br><span class="line">  if (chosen != cardoor) &#123;</span><br><span class="line">    montydoor &lt;- doors[-c(chosen, cardoor)]</span><br><span class="line">  &#125; else &#123;</span><br><span class="line">    montydoor &lt;- sample(doors[-chosen], 1)</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  print(paste(&quot;蒙提打开了 &quot;, montydoor, &quot; 号门！&quot;, sep=&quot;&quot;))</span><br><span class="line">  print(&quot;你想换门吗 (y/n)?&quot;)</span><br><span class="line">  reply &lt;- scan(what = character(), nlines = 1, quiet = TRUE)</span><br><span class="line">  </span><br><span class="line">  # 如果回复以 &#x27;y&#x27; 开头，执行换门</span><br><span class="line">  if (substr(reply, 1, 1) == &quot;y&quot;) &#123;</span><br><span class="line">    chosen &lt;- doors[-c(chosen, montydoor)]</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  # 宣布结果</span><br><span class="line">  if (chosen == cardoor) print(&quot;你赢了！&quot;)</span><br><span class="line">  else print(&quot;你输了！&quot;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>print</code> 和 <code>paste</code>：用于将文字和变量组合输出到屏幕。</li>
+<li><code>scan</code>：交互式请求用户输入。<code>what = integer()</code> 用于读取整数，<code>what = character()</code> 用于读取文本。</li>
+<li><code>doors[-c(...)]</code>：这是 R 中非常有用的语法，表示“除了括号内索引以外的所有元素”。</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/02/11/Introduction%20to%20Probability%20%E7%AC%AC1%E7%AB%A0%20%E6%A6%82%E7%8E%87%E4%B8%8E%E8%AE%A1%E6%95%B0/" rel="prev" title="《Introduction to Probability 》第1章 概率与计数">
+                  <i class="fa fa-chevron-left"></i> 《Introduction to Probability 》第1章 概率与计数
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/02/13/Introduction%20to%20Probability%20%20%E7%AC%AC3%E7%AB%A0%20%E9%9A%8F%E6%9C%BA%E5%8F%98%E9%87%8F%E5%8F%8A%E5%85%B6%E5%88%86%E5%B8%83/" rel="next" title="《Introduction to Probability 》第3章 随机变量及其分布">
+                  《Introduction to Probability 》第3章 随机变量及其分布 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
