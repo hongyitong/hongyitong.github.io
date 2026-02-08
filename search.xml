@@ -1,6 +1,560 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>《Introduction to Probability》第9章 条件期望</title>
+    <url>/2026/01/19/Introduction%20to%20Probability%20%E7%AC%AC9%E7%AB%A0%20%E6%9D%A1%E4%BB%B6%E6%9C%9F%E6%9C%9B/</url>
+    <content><![CDATA[<h2 id="第9章-条件期望">第9章 条件期望</h2>
+<p>Conditional expectation</p>
+<p>既然你已经阅读了前面的章节，你已经知道什么是条件期望了：它就是期望，只不过使用了条件概率。这是一个至关重要的概念，其原因与我们需要条件概率的原因类似：</p>
+<ul>
+<li><strong>条件期望是计算期望的强大工具。</strong> 通过使用诸如“对我们希望知道的信息进行条件化”以及“第一步分析”等策略，我们通常可以将复杂的期望问题分解为更简单的部分。</li>
+<li><strong>条件期望本身就是一个相关的量</strong>，它允许我们基于当前可用的任何证据来预测或估计未知量。例如，在统计学中，我们经常希望基于解释变量（如解决的练习题数量或参加职业培训计划的情况）来预测响应变量（如考试成绩或收入）。</li>
+</ul>
+<p>关于条件期望，有两个不同但又紧密联系的概念：</p>
+<ul>
+<li><strong>给定事件下的条件期望 <span class="math inline">\(E(Y|A)\)</span></strong>：设 <span class="math inline">\(Y\)</span> 是一个随机变量，<span class="math inline">\(A\)</span> 是一个事件。如果我们获知 <span class="math inline">\(A\)</span> 发生了，我们对 <span class="math inline">\(Y\)</span> 更新后的期望记作 <span class="math inline">\(E(Y|A)\)</span>，其计算方法与 <span class="math inline">\(E(Y)\)</span> 类似，只是使用给定 <span class="math inline">\(A\)</span> 下的条件概率。</li>
+<li><strong>给定随机变量下的条件期望 <span class="math inline">\(E(Y|X)\)</span></strong>：一个更微妙的问题是如何定义 <span class="math inline">\(E(Y|X)\)</span>，其中 <span class="math inline">\(X\)</span> 和 <span class="math inline">\(Y\)</span> 都是随机变量。直观地说，<span class="math inline">\(E(Y|X)\)</span> 是一个仅使用从 <span class="math inline">\(X\)</span> 中获得的信息来最好地预测 <span class="math inline">\(Y\)</span> 的随机变量。</li>
+</ul>
+<p>在本章中，我们将探索这两种形式的条件期望的定义、性质、直觉和应用。</p>
+<span id="more"></span>
+<h3 id="给定事件下的条件期望">9.1 给定事件下的条件期望</h3>
+<p>Conditional expectation given an event</p>
+<p>回想一下，离散随机变量 <span class="math inline">\(Y\)</span> 的期望 <span class="math inline">\(E(Y)\)</span> 是其可能取值的加权平均，其中权重是 PMF 值 <span class="math inline">\(P(Y=y)\)</span>。在得知事件 <span class="math inline">\(A\)</span> 发生后，我们希望使用反映这一新信息的更新后的权重。<span class="math inline">\(E(Y|A)\)</span> 的定义仅仅是将概率 <span class="math inline">\(P(Y=y)\)</span> 替换为条件概率 <span class="math inline">\(P(Y=y|A)\)</span>。</p>
+<p>类似地，如果 <span class="math inline">\(Y\)</span> 是连续的，<span class="math inline">\(E(Y)\)</span> 仍然是 <span class="math inline">\(Y\)</span> 可能取值的加权平均，只不过用积分代替了求和，用 PDF 值 <span class="math inline">\(f(y)\)</span> 代替了 PMF 值。如果我们获知 <span class="math inline">\(A\)</span> 发生，我们通过将 <span class="math inline">\(f(y)\)</span> 替换为条件 PDF <span class="math inline">\(f(y|A)\)</span> 来更新对 <span class="math inline">\(Y\)</span> 的期望。</p>
+<p><strong>定义 9.1.1（给定事件下的条件期望）</strong>。设 <span class="math inline">\(A\)</span> 为一个概率为正的事件。如果 <span class="math inline">\(Y\)</span> 是离散随机变量，则 <span class="math inline">\(Y\)</span> 在给定 <span class="math inline">\(A\)</span> 下的条件期望为： <span class="math display">\[
+E(Y|A) = \sum_{y} yP(Y=y|A)
+\]</span></p>
+<p>其中求和是在 <span class="math inline">\(Y\)</span> 的支撑集上进行的。如果 <span class="math inline">\(Y\)</span> 是 PDF 为 <span class="math inline">\(f\)</span> 的连续随机变量，则： <span class="math display">\[
+E(Y|A) = \int_{-\infty}^{\infty} yf(y|A) dy
+\]</span></p>
+<p>其中条件 PDF <span class="math inline">\(f(y|A)\)</span> 定义为条件 CDF <span class="math inline">\(F(y|A) = P(Y \le y|A)\)</span> 的导数，也可以通过混合版本的贝叶斯法则计算： <span class="math display">\[
+f(y|A) = \frac{P(A|Y=y)f(y)}{P(A)}
+\]</span></p>
+<p><strong>直觉 9.1.2</strong>。为了获得对 <span class="math inline">\(E(Y|A)\)</span> 的直观认识，让我们考虑通过模拟（或从频率论的角度，基于多次重复同一实验）来近似它。想象生成大量的 <span class="math inline">\(n\)</span> 次实验复制，其中 <span class="math inline">\(Y\)</span> 是数值汇总。我们得到了 <span class="math inline">\(Y\)</span> 值 <span class="math inline">\(y_1, \dots, y_n\)</span>，并且可以近似： <span class="math display">\[
+E(Y) \approx \frac{1}{n} \sum_{j=1}^{n} y_j
+\]</span></p>
+<p>为了近似 <span class="math inline">\(E(Y|A)\)</span>，我们仅限于 <span class="math inline">\(A\)</span> 发生的那些复制，并仅对这些 <span class="math inline">\(Y\)</span> 值求平均。这可以写成： <span class="math display">\[
+E(Y|A) \approx \frac{\sum_{j=1}^{n} y_j I_j}{\sum_{j=1}^{n} I_j}
+\]</span></p>
+<p>其中 <span class="math inline">\(I_j\)</span> 是第 <span class="math inline">\(j\)</span> 次复制中 <span class="math inline">\(A\)</span> 发生的指示函数。如果在模拟中 <span class="math inline">\(A\)</span> 从未发生，则该式未定义，这是合理的，因为那时没有关于“<span class="math inline">\(A\)</span> 发生”场景的模拟数据。我们希望 <span class="math inline">\(n\)</span> 足够大，以便 <span class="math inline">\(A\)</span> 多次发生（如果 <span class="math inline">\(A\)</span> 是稀有事件，可能需要更复杂的近似 <span class="math inline">\(E(Y|A)\)</span> 的技术）。</p>
+<p>不过原理很简单：<span class="math inline">\(E(Y|A)\)</span> 大约是大量 <span class="math inline">\(A\)</span> 发生的模拟运行中 <span class="math inline">\(Y\)</span> 的平均值。</p>
+<p><strong>9.1.3.</strong> 混淆条件期望与无条件期望是一个危险的错误。更广泛地说，如果不能仔细追踪你应该对什么进行条件化，以及你正在对什么进行条件化，那么这就是通往灾难的秘诀。</p>
+<p>为了给上述“生物危害”提供一个关乎生死的例子，请考虑预期寿命。</p>
+<p><strong>示例 9.1.4（预期寿命）</strong>。弗雷德今年 30 岁，他听说他所在国家的平均预期寿命是 80 岁。他是否应该得出结论：平均而言，他还有 50 年的寿命？不，他必须对一条关键信息进行条件化：他已经活到了 30 岁这一事实。令 <span class="math inline">\(T\)</span> 为弗雷德的寿命，我们有一个令人振奋的消息： <span class="math display">\[
+E(T) &lt; E(T|T \ge 30)
+\]</span></p>
+<p>左侧是弗雷德出生时的预期寿命（它隐含地以他出生这一事实为条件），而右侧是弗雷德在达到 30 岁时的预期寿命。</p>
+<p>一个更难的问题是如何决定一个合适的估计值来表示 <span class="math inline">\(E(T)\)</span>。仅仅使用他所在国家的总体平均值 80 吗？在几乎所有国家，女性的平均预期寿命都高于男性，因此对“弗雷德是男性”这一条件进行条件化是有意义的。但我们是否也应该对他出生的城市进行条件化？我们是否应该对他父母的种族和财务信息，或者他出生的具体时间进行条件化？直觉上，我们希望估计值既准确又与弗雷德相关，但这其中存在权衡：如果我们对弗雷德的更多特征进行条件化，那么符合这些特征、可用于估计预期寿命的数据样本（人数）就会减少。</p>
+<p>现在考虑美国的一些具体数据。美国社会保障局的一项研究估计，在 1900 年至 2000 年间，美国男性出生时的平均预期寿命从 46 岁增加到 74 岁，女性则从 49 岁增加到 79 岁。这是巨大的进步！但大部分进步归功于儿童死亡率的降低。对于 1900 年的一位 30 岁人士，男性的平均剩余寿命为 35 年，女性为 36 年；而在 2000 年，对应的数字分别是男性 46 年和女性 50 年。</p>
+<p><strong>在获得这些估计值时存在一些微妙的统计问题。例如，如果不等到至少 2100 年，如何获得 2000 年出生的人的预期寿命估计值？估计生存分布是生物统计学和精算学中一个非常重要的课题。</strong></p>
+<p>全概率公式允许我们通过切分样本空间并计算每个切片中的条件概率来获得无条件概率。同样的想法也适用于计算无条件期望。</p>
+<p><strong>定理 9.1.5（全期望公式）</strong>。设 <span class="math inline">\(A_1, \dots, A_n\)</span> 为样本空间的一个划分，且对所有 <span class="math inline">\(i\)</span> 均有 <span class="math inline">\(P(A_i) &gt; 0\)</span>，并设 <span class="math inline">\(Y\)</span> 是该样本空间上的一个随机变量。则： <span class="math display">\[
+E(Y) = \sum_{i=1}^{n} E(Y|A_i)P(A_i)
+\]</span></p>
+<p>事实上，根据“基本桥梁”，<strong>既然所有概率都是期望，那么全概率公式就是全期望公式的一个特例</strong>。为了证明这一点，令 <span class="math inline">\(Y = I_B\)</span>（事件 <span class="math inline">\(B\)</span> 的指示函数）；那么上述定理说明： <span class="math display">\[
+P(B) = E(I_B) = \sum_{i=1}^{n} E(I_B|A_i)P(A_i) = \sum_{i=1}^{n} P(B|A_i)P(A_i)
+\]</span></p>
+<p>这正是全概率公式（LOTP）。反过来，全期望公式是一个被称为“亚当法则”（Adam’s Law，定理 9.3.7）的重要结论的特例，因此我们暂不证明它。</p>
+<p>有许多有趣的例子通过“一厢情愿法”将无条件期望分解为条件期望。我们先从两个关于仔细条件化以及不要在没有依据的情况下破坏信息的重要性的警示故事开始。</p>
+<p><strong>示例 9.1.6（两封信悖论）</strong>。一个陌生人给了你两封外观一模一样的密封信。每封信里都有一张金额为正的支票。你被告知，其中一封信里的钱恰好是另一封的两倍。你可以任选其一。你更倾向于哪一封：左边那封还是右边那封？（假设每封信中金额的期望值是有限的——在现实世界中这显然是一个合理的假设！）</p>
+<p><img src="/img3/Introduction to Probability/F9.1.png" alt="F9.1" style="zoom:60%;" /></p>
+<p><strong>解答：</strong></p>
+<p>设 <span class="math inline">\(X\)</span> 和 <span class="math inline">\(Y\)</span> 分别为左侧和右侧信封中的金额。根据对称性，没有理由偏好其中任何一封（我们假设没有先验信息表明这位陌生人是左撇子，且左撇子更喜欢把更多的钱放在左边）。根据对称性得出 <span class="math inline">\(E(X) = E(Y)\)</span>，看起来你应该不在乎得到哪一封。</p>
+<p>但当你幻想信封里的内容时，你想到了另一个论点：假设左边的信封里有 100 美元。那么右边的信封里要么有 50 美元，要么有 200 美元。50 美元和 200 美元的平均值是 125 美元，所以看起来右边的信封更好。但是 100 美元在这里并没有什么特殊的；对于左边信封的任何取值 <span class="math inline">\(x\)</span>，其可能的两倍 <span class="math inline">\(2x\)</span> 与一半 <span class="math inline">\(x/2\)</span> 的平均值都大于 <span class="math inline">\(x\)</span>，这暗示右边的信封总是更好。然而这非常荒谬，因为它不仅矛盾于对称性论点，而且同样的推理也可以从右边的信封开始，导致你永远在两封信之间不停地切换！</p>
+<p>让我们尝试将这个论点形式化，看看究竟发生了什么。我们有 <span class="math inline">\(Y = 2X\)</span> 或 <span class="math inline">\(Y = X/2\)</span> 的概率各占一半。根据定理 9.1.5（全期望公式）： <span class="math display">\[
+E(Y) = E(Y|Y = 2X) \cdot \frac{1}{2} + E(Y|Y = X/2) \cdot \frac{1}{2}
+\]</span></p>
+<p>有人可能会认为这等于： <span class="math display">\[
+E(2X) \cdot \frac{1}{2} + E(X/2) \cdot \frac{1}{2} = \frac{5}{4} E(X)
+\]</span></p>
+<p>这暗示从左信封换到右信封会有 25% 的收益。但这个计算中存在一个严重错误：虽然 <span class="math inline">\(E(Y|Y = 2X) = E(2X|Y = 2X)\)</span>，但在将 <span class="math inline">\(2X\)</span> 代入 <span class="math inline">\(Y\)</span> 后，没有理由直接去掉 <span class="math inline">\(Y = 2X\)</span> 这个条件。</p>
+<p>换句话说，设 <span class="math inline">\(I\)</span> 为事件 <span class="math inline">\(Y = 2X\)</span> 的指示函数，使得 <span class="math inline">\(E(Y|Y = 2X) = E(2X|I = 1)\)</span>。如果我们知道 <span class="math inline">\(X\)</span> 与 <span class="math inline">\(I\)</span> 相互独立，那么我们就可以去掉条件 <span class="math inline">\(I = 1\)</span>。但事实上，我们刚刚证明了 <span class="math inline">\(X\)</span> 与 <span class="math inline">\(I\)</span> <strong>不可能</strong>独立：如果它们独立，我们就会得到一个悖论！令人惊讶的是，观察 <span class="math inline">\(X\)</span> 的值会提供关于 <span class="math inline">\(X\)</span> 是较大值还是较小值的信息。如果我们发现 <span class="math inline">\(X\)</span> 非常大，我们可能会猜测 <span class="math inline">\(X\)</span> 比 <span class="math inline">\(Y\)</span> 大。但什么才算“非常大”？<span class="math inline">\(10^{12}\)</span> 算大吗，即使它相对于 <span class="math inline">\(10^{100}\)</span> 来说微不足道？两封信悖论告诉我们，无论 <span class="math inline">\(X\)</span> 的分布是什么，总能找到相对于该分布而言定义“非常大”的合理方式。</p>
+<p>在习题 8 中，你将研究一个相关问题，其中两个信封里的金额是独立同分布（i.i.d.）的随机变量。你将证明，如果允许你先看其中一封信的内容，再决定是否交换，存在一种策略能让你以超过 50% 的概率获得金额较多的那一封！</p>
+<p>接下来的例子生动地说明了<strong>对所有信息进行条件化的重要性</strong>。这里揭示的现象出现在现实生活中许多关于购买什么以及进行什么投资的决策中。</p>
+<p><strong>示例 9.1.7（神秘奖品）</strong>。另一位陌生人向你走来，给你一个对装有神秘奖品的神秘盒子进行竞标的机会！奖品的价值完全未知，只知道它至少价值 0，最高价值 100 万美元。因此，奖品的真实价值 <span class="math inline">\(V\)</span> 被认为在 <span class="math inline">\([0, 1]\)</span> 上服从均匀分布（以百万美元为单位）。</p>
+<p>你可以选择出价任何金额 <span class="math inline">\(b\)</span>（以百万美元为单位）。你有机会以远低于其价值的价格获得奖品，但如果你出价太高，也可能会赔钱。具体来说，如果 <span class="math inline">\(b &lt; 2V/3\)</span>，则出价被拒绝，没有任何得失。如果 <span class="math inline">\(b \ge 2V/3\)</span>，则出价被接受，你的净收益为 <span class="math inline">\(V - b\)</span>（因为你支付了 <span class="math inline">\(b\)</span> 来获得价值为 <span class="math inline">\(V\)</span> 的奖品）。为了使期望收益最大化，你的最优出价 <span class="math inline">\(b\)</span> 是多少？</p>
+<p><img src="/img3/Introduction to Probability/F9.2.png" alt="F9.2" style="zoom:60%;" /></p>
+<p><strong>解答：</strong></p>
+<p>你的出价 <span class="math inline">\(b \ge 0\)</span> 必须是一个预先确定的常数（不能基于 <span class="math inline">\(V\)</span>，因为 <span class="math inline">\(V\)</span> 是未知的！）。为了计算期望收益 <span class="math inline">\(W\)</span>，需根据出价是否被接受进行条件化。如果出价被接受，收益为 <span class="math inline">\(V - b\)</span>；如果被拒绝，收益为 0。因此： <span class="math display">\[
+E(W) = E(W|b \ge 2V/3)P(b \ge 2V/3) + E(W|b &lt; 2V/3)P(b &lt; 2V/3)
+\]</span> <span class="math display">\[
+= E(V - b|b \ge 2V/3)P(b \ge 2V/3) + 0
+\]</span> <span class="math display">\[
+= (E(V|V \le 3b/2) - b) P(V \le 3b/2)
+\]</span></p>
+<p>对于 <span class="math inline">\(b \ge 2/3\)</span>，事件 <span class="math inline">\(V \le 3b/2\)</span> 的概率为 1，因此右侧为 <span class="math inline">\(1/2 - b\)</span>，这是一个负数。现在假设 <span class="math inline">\(b &lt; 2/3\)</span>。那么 <span class="math inline">\(V \le 3b/2\)</span> 的概率为 <span class="math inline">\(3b/2\)</span>。在已知 <span class="math inline">\(V \le 3b/2\)</span> 的条件下，<span class="math inline">\(V\)</span> 的条件分布在 <span class="math inline">\([0, 3b/2]\)</span> 上服从均匀分布。因此： <span class="math display">\[
+E(W) = (E(V|V \le 3b/2) - b) P(V \le 3b/2) = (3b/4 - b)(3b/2) = -3b^2/8
+\]</span></p>
+<p>上述表达式除了在 <span class="math inline">\(b = 0\)</span> 时外均为负值，因此最优出价为 0：你不应该玩这个游戏！</p>
+<p>或者，根据以下事件是否发生进行条件化：<span class="math inline">\(A = \{V &lt; b/2\}\)</span>，<span class="math inline">\(B = \{b/2 \le V \le 3b/2\}\)</span>，<span class="math inline">\(C = \{V &gt; 3b/2\}\)</span>。我们有： <span class="math display">\[
+E(W|A) = E(V - b|A) &lt; E(b/2 - b|A) = -b/2 \le 0
+\]</span> <span class="math display">\[
+E(W|B) = E\left(\frac{b/2 + 3b/2}{2} - b \Big| B\right) = 0
+\]</span> <span class="math display">\[
+E(W|C) = 0
+\]</span></p>
+<p>所以我们应该直接设定 <span class="math inline">\(b = 0\)</span> 然后离开。</p>
+<p>这个故事的寓意是要对所有信息进行条件化。在上述计算中，使用 <span class="math inline">\(E(V|V \le 3b/2)\)</span> 而不是 <span class="math inline">\(E(V) = 1/2\)</span> 是至关重要的；得知出价被接受这一事实提供了关于神秘奖品价值的信息，因此我们不应破坏该信息。<strong>这个问题与所谓的“赢家的诅咒”（winner's curse）有关，它指出在信息不完全的拍卖中，赢家往往获得的利润比预期的要少（除非他们懂概率论！）</strong>。这是因为在许多场景下，在获胜的条件下，所竞标物品的价值期望低于他们最初心目中的无条件期望。对于 <span class="math inline">\(b \ge 2/3\)</span>，由于我们预先知道 <span class="math inline">\(V \le 1\)</span>，对 <span class="math inline">\(V \le 3b/2\)</span> 进行条件化没有任何作用，但这样的出价高得离谱。对于任何 <span class="math inline">\(b &lt; 2/3\)</span>，发现你的出价被接受会降低你的期望： <span class="math display">\[
+E(V|V \le 3b/2) &lt; E(V)
+\]</span></p>
+<p>剩下的例子使用第一步分析法来计算无条件期望。首先，正如在第 4 章中所承诺的，我们使用第一步分析法推导几何分布的期望。</p>
+<p><strong>示例 9.1.8（几何分布期望的再推导）</strong>。令 <span class="math inline">\(X \sim \text{Geom}(p)\)</span>。将 <span class="math inline">\(X\)</span> 解释为在一系列单次获胜概率为 <span class="math inline">\(p\)</span> 的硬币投掷中，第一次出现正面（Heads）之前的反面（Tails）次数。为了得到 <span class="math inline">\(E(X)\)</span>，我们根据第一次投掷的结果进行条件化：如果它是正面，那么 <span class="math inline">\(X\)</span> 为 0，实验结束；如果它是反面，那么我们浪费了一次投掷，且根据无记忆性，我们回到了起始状态。因此： <span class="math display">\[
+E(X) = E(X|\text{第一次为 H}) \cdot p + E(X|\text{第一次为 T}) \cdot q
+\]</span> <span class="math display">\[
+= 0 \cdot p + (1 + E(X)) \cdot q
+\]</span></p>
+<p>解得 <span class="math inline">\(E(X) = q/p\)</span>。</p>
+<p>接下来的例子使用两步条件化来推导一些更复杂模式的期望等待时间。</p>
+<p><strong>示例 9.1.9（出现 HH 与 HT 的时间对比）</strong>。你重复投掷一枚均匀的硬币。出现模式 HT 所需的期望投掷次数是多少？出现模式 HH 所需的期望投掷次数又是多少？</p>
+<p><strong>解答：</strong></p>
+<p>令 <span class="math inline">\(W_{HT}\)</span> 为直到出现 HT 的投掷次数。正如我们从图 9.3 中看到的，<span class="math inline">\(W_{HT}\)</span> 等于等待第一次正面的时间（记作 <span class="math inline">\(W_1\)</span>）加上第一次正面出现后等待第一个反面的额外时间（记作 <span class="math inline">\(W_2\)</span>）。</p>
+<p><img src="/img3/Introduction to Probability/F9.3.png" alt="F9.3" style="zoom:60%;" /></p>
+<blockquote>
+<p>个人注：上图的这种想法太强了，避免了直接找HT的模式，分解成先找H，再找T得两步。</p>
+</blockquote>
+<p>根据首中分布（First Success distribution）的故事，<span class="math inline">\(W_1\)</span> 和 <span class="math inline">\(W_2\)</span> 是独立同分布的 <span class="math inline">\(FS(1/2)\)</span>，因此 <span class="math inline">\(E(W_1) = E(W_2) = 2\)</span>，从而 <span class="math inline">\(E(W_{HT}) = 4\)</span>。</p>
+<p>计算 HH 的期望等待时间 <span class="math inline">\(E(W_{HH})\)</span> 则更为复杂。我们不能套用计算 <span class="math inline">\(E(W_{HT})\)</span> 的逻辑：如图 9.4 所示，如果第一个正面之后紧跟着一个反面，我们的进度就被摧毁了，必须从头开始。但这恰恰为我们解决问题提供了思路，因为系统会被“重置”这一事实暗示了可以使用第一步分析法。让我们根据第一次投掷的结果进行条件化： <span class="math display">\[
+E(W_{HH}) = E(W_{HH}|\text{第一次为 H}) \cdot \frac{1}{2} + E(W_{HH}|\text{第一次为 T}) \cdot \frac{1}{2}
+\]</span></p>
+<p><img src="/img3/Introduction to Probability/F9.4.png" alt="F9.4" style="zoom:60%;" /></p>
+<p>对于第二项，根据无记忆性，有 <span class="math inline">\(E(W_{HH}|\text{第一次为 T}) = 1 + E(W_{HH})\)</span>。对于第一项，我们通过进一步对第二次投掷的结果进行条件化来计算 <span class="math inline">\(E(W_{HH}|\text{第一次为 H})\)</span>。如果第二次投掷是正面，我们在两次投掷中得到了 HH。如果第二次投掷是反面，我们浪费了两次投掷且必须重新开始！由此得到： <span class="math display">\[
+E(W_{HH}|\text{第一次为 H}) = 2 \cdot \frac{1}{2} + (2 + E(W_{HH})) \cdot \frac{1}{2}
+\]</span></p>
+<p>因此： <span class="math display">\[
+E(W_{HH}) = \left( 2 \cdot \frac{1}{2} + (2 + E(W_{HH})) \cdot \frac{1}{2} \right) \cdot \frac{1}{2} + (1 + E(W_{HH})) \cdot \frac{1}{2}
+\]</span></p>
+<p>解关于 <span class="math inline">\(E(W_{HH})\)</span> 的方程，得到 <span class="math inline">\(E(W_{HH}) = 6\)</span>。</p>
+<p><strong>起初，HH 的期望等待时间大于 HT 的期望等待时间可能令人感到惊讶。既然在两次硬币投掷中，HH 和 HT 出现的概率都是 1/4，我们该如何理解这一差异？为什么根据对称性，平均等待时间会不相同呢？</strong></p>
+<p><strong>当我们解决这个问题时，实际上注意到了一个重要的不对称性。在等待 HT 时，一旦我们得到了第一个正面，我们就获得了一份不会被摧毁的部分进展：如果该正面之后又是一个正面，我们仍处于和之前相同的位置；如果该正面之后是一个反面，我们就完成了。相比之下，在等待 HH 时，即使得到了第一个正面，如果其后紧跟一个反面，我们就会被送回原点。这表明 HH 的平均等待时间应该更长。对称性意味着 HH 的平均等待时间与 TT 相同，HT 的与 TH 相同，但它并不意味着 HH 和 HT 的平均等待时间相同。</strong></p>
+<p>通过考虑一长串硬币投掷，可以获得更深刻的直观理解，如图 9.5 所示。我们立刻注意到，HH 的出现可以发生<strong>重叠</strong>，而 HT 的出现必须是<strong>不相交</strong>的。例如，HHHHHH 中有 5 次 HH 出现，但 HTHTHT 中只有 3 次 HT 出现。由于 HH 和 HT 出现的平均次数相同，但 HH 有时会“扎堆”出现，为了补偿这一点，HH 的平均等待时间必须比 HT 的更长。</p>
+<p><img src="/img3/Introduction to Probability/F9.5.png" alt="F9.5" style="zoom:60%;" /></p>
+<p>相关问题出现在信息论的消息压缩中，以及遗传学中寻找 DNA 序列中重复出现的模式（称为基序，motifs）。本节的最后一个例子通过在概率和期望中同时运用“一厢情愿法”，来研究一个关于随机游走的问题。</p>
+<p><strong>示例 9.1.10（整数上的随机游走）</strong>。一个长生不老的醉汉在整数上随机游荡。他从原点出发，每一步都独立地以相等的概率向右或向左移动 1 个单位。令 <span class="math inline">\(b\)</span> 为一个古戈尔普勒克斯（googolplex，即 <span class="math inline">\(10^g\)</span>，其中 <span class="math inline">\(g = 10^{100}\)</span> 是一个古戈尔）。</p>
+<ol type="a">
+<li><p>求出该醉汉在第一次回到原点之前，访问到 <span class="math inline">\(b\)</span> 的概率的简单表达式。</p></li>
+<li><p>求出该醉汉在第一次回到原点之前，访问到 <span class="math inline">\(b\)</span> 的期望次数。</p></li>
+</ol>
+<p><strong>解答：</strong></p>
+<ol type="a">
+<li><p>令 <span class="math inline">\(B\)</span> 为醉汉在第一次回到原点前访问到 <span class="math inline">\(b\)</span> 的事件，令 <span class="math inline">\(L\)</span> 为他第一步向左走的事件。由于任何从 <span class="math inline">\(-1\)</span> 到 <span class="math inline">\(b\)</span> 的路径都必须经过 <span class="math inline">\(0\)</span>，所以 <span class="math inline">\(P(B|L) = 0\)</span>。对于 <span class="math inline">\(P(B|L^c)\)</span>，我们完全处于赌徒破产问题的设定中：玩家 A 持有 1 美元，玩家 B 持有 <span class="math inline">\((b-1)\)</span> 美元，且每轮游戏是公平的。应用该结果，我们有： <span class="math display">\[
+P(B) = P(B|L)P(L) + P(B|L^c)P(L^c) = 0 \cdot \frac{1}{2} + \frac{1}{b} \cdot \frac{1}{2} = \frac{1}{2b}
+\]</span> &gt; 个人注： 以上的第二项详见本书 例2.7.3（赌徒输光问题）；也叫赌徒破产问题。</p></li>
+<li><p>令 <span class="math inline">\(N\)</span> 为在第一次回到原点前访问 <span class="math inline">\(b\)</span> 的次数，令 <span class="math inline">\(p = 1/(2b)\)</span> 为我们在 (a) 中求得的概率。那么： <span class="math display">\[
+E(N) = E(N|N = 0)P(N = 0) + E(N|N \ge 1)P(N \ge 1) = p E(N|N \ge 1)
+\]</span></p></li>
+</ol>
+<p>在给定 <span class="math inline">\(N \ge 1\)</span> 的条件下，<span class="math inline">\(N\)</span> 的条件分布是 <span class="math inline">\(FS(p)\)</span>：已知此人到达了 <span class="math inline">\(b\)</span>，根据对称性，在再次访问 <span class="math inline">\(b\)</span> 之前先回到原点的概率为 <span class="math inline">\(p\)</span>（称之为“成功”），在回到原点之前先再次访问 <span class="math inline">\(b\)</span> 的概率为 <span class="math inline">\(1-p\)</span>（称之为“失败”）。注意，由于每次他位于 <span class="math inline">\(b\)</span> 时情况都是相同的且独立于过去的历史，因此这些试验是相互独立的。由此得： <span class="math display">\[
+E(N|N \ge 1) = 1/p
+\]</span></p>
+<p>以及 <span class="math display">\[
+E(N) = p E(N|N \ge 1) = p \cdot \frac{1}{p} = 1
+\]</span></p>
+<p>令人惊讶的是，结果并不取决于 <span class="math inline">\(b\)</span> 的取值，而且我们的证明过程甚至不需要知道 <span class="math inline">\(p\)</span> 的具体数值。</p>
+<h3 id="给定随机变量下的条件期望">9.2 给定随机变量下的条件期望</h3>
+<p>Conditional expectation given an r.v.</p>
+<p>在本节中，我们将介绍给定随机变量下的条件期望。也就是说，我们想要理解对于一个随机变量 <span class="math inline">\(X\)</span>，写作 <span class="math inline">\(E(Y|X)\)</span> 的含义。我们将看到，<strong><span class="math inline">\(E(Y|X)\)</span> 是一个随机变量，从某种意义上说，它是我们在已知 <span class="math inline">\(X\)</span> 的情况下对 <span class="math inline">\(Y\)</span> 做出的最佳预测。</strong></p>
+<p>理解 <span class="math inline">\(E(Y|X)\)</span> 的关键是首先理解 <span class="math inline">\(E(Y|X=x)\)</span>。由于 <span class="math inline">\(X=x\)</span> 是一个事件，因此 <span class="math inline">\(E(Y|X=x)\)</span> 只是给定该事件下 <span class="math inline">\(Y\)</span> 的条件期望，它可以使用给定 <span class="math inline">\(X=x\)</span> 时 <span class="math inline">\(Y\)</span> 的条件分布来计算。</p>
+<p>如果 <span class="math inline">\(Y\)</span> 是离散的，我们使用条件 PMF <span class="math inline">\(P(Y=y|X=x)\)</span> 代替无条件 PMF <span class="math inline">\(P(Y=y)\)</span>： <span class="math display">\[
+E(Y|X=x) = \sum_{y} yP(Y=y|X=x)
+\]</span></p>
+<p>类似地，如果 <span class="math inline">\(Y\)</span> 是连续的，我们使用条件 PDF <span class="math inline">\(f_{Y|X}(y|x)\)</span> 代替无条件 PDF： <span class="math display">\[
+E(Y|X=x) = \int_{-\infty}^{\infty} yf_{Y|X}(y|x)dy
+\]</span></p>
+<p>注意，由于我们是对 <span class="math inline">\(y\)</span> 进行求和或积分，因此 <span class="math inline">\(E(Y|X=x)\)</span> 仅仅是 <span class="math inline">\(x\)</span> 的函数。我们可以给这个函数起个名字，比如 <span class="math inline">\(g\)</span>：设 <span class="math inline">\(g(x) = E(Y|X=x)\)</span>。我们将 <span class="math inline">\(E(Y|X)\)</span> 定义为通过找到函数 <span class="math inline">\(g(x)\)</span> 的形式，然后将 <span class="math inline">\(x\)</span> 替换为 <span class="math inline">\(X\)</span> 而得到的随机变量。</p>
+<p><strong>定义 9.2.1（给定随机变量下的条件期望）</strong>。令 <span class="math inline">\(g(x) = E(Y|X=x)\)</span>。那么在给定 <span class="math inline">\(X\)</span> 的条件下 <span class="math inline">\(Y\)</span> 的条件期望，记作 <span class="math inline">\(E(Y|X)\)</span>，被定义为随机变量 <span class="math inline">\(g(X)\)</span>。换句话说，如果在进行实验后 <span class="math inline">\(X\)</span> 具体化为 <span class="math inline">\(x\)</span>，那么 <span class="math inline">\(E(Y|X)\)</span> 就具体化为 <span class="math inline">\(g(x)\)</span>。</p>
+<p><strong>9.2.2</strong>。该定义中的符号有时会引起混淆。它并不是说“因为 <span class="math inline">\(g(x) = E(Y|X=x)\)</span>，所以 <span class="math inline">\(g(X) = E(Y|X=X)\)</span>，而由于 <span class="math inline">\(X=X\)</span> 总是成立，所以它等于 <span class="math inline">\(E(Y)\)</span>”。相反，我们应该先计算出函数 <span class="math inline">\(g(x)\)</span>，然后再将 <span class="math inline">\(X\)</span> 代入 <span class="math inline">\(x\)</span>。例如，如果 <span class="math inline">\(g(x) = x^2\)</span>，那么 <span class="math inline">\(g(X) = X^2\)</span>。在 5.3.2 节关于均匀分布万能性中 <span class="math inline">\(F(X)\)</span> 的含义时，也存在类似的“生物危害”（易错点）。</p>
+<p><strong>9.2.3</strong>。根据定义，<span class="math inline">\(E(Y|X)\)</span> 是 <span class="math inline">\(X\)</span> 的函数，因此它是一个随机变量。（这并不意味着不存在 <span class="math inline">\(E(Y|X)\)</span> 为常数的例子。常数是一个退化的随机变量，也是 <span class="math inline">\(X\)</span> 的常数函数。例如，如果 <span class="math inline">\(X\)</span> 和 <span class="math inline">\(Y\)</span> 相互独立，那么 <span class="math inline">\(E(Y|X) = E(Y)\)</span>，这是一个常数。）因此，计算诸如 <span class="math inline">\(E(E(Y|X))\)</span> 和 <span class="math inline">\(Var(E(Y|X))\)</span>（即随机变量 <span class="math inline">\(E(Y|X)\)</span> 的均值和方差）这类量是有意义的。在处理条件期望时，很容易陷入范畴错误（category errors），<strong>因此必须牢记：形如 <span class="math inline">\(E(Y|A)\)</span> 的条件期望是数值，而形如 <span class="math inline">\(E(Y|X)\)</span> 的条件期望是随机变量。</strong></p>
+<p>以下是一些如何计算条件期望的简短示例。在这两个示例中，我们不需要通过求和或积分来得到 <span class="math inline">\(E(Y|X=x)\)</span>，因为有更直接的方法。</p>
+<p><strong>例 9.2.4</strong>。一根长度为 1 的木棒在随机选择的点 <span class="math inline">\(X\)</span> 处折断，且 <span class="math inline">\(X\)</span> 服从均匀分布。已知 <span class="math inline">\(X=x\)</span>，我们再在区间 <span class="math inline">\([0, x]\)</span> 上均匀随机地选择另一个折断点 <span class="math inline">\(Y\)</span>。求 <span class="math inline">\(E(Y|X)\)</span> 及其均值和方差。</p>
+<p><strong>解：</strong></p>
+<p>根据实验描述，<span class="math inline">\(X \sim \text{Unif}(0,1)\)</span> 且 <span class="math inline">\(Y|X=x \sim \text{Unif}(0,x)\)</span>。</p>
+<p>那么 <span class="math inline">\(E(Y|X=x) = x/2\)</span>，通过将 <span class="math inline">\(x\)</span> 替换为 <span class="math inline">\(X\)</span>，我们得到： <span class="math display">\[
+E(Y|X) = X/2
+\]</span></p>
+<p><span class="math inline">\(E(Y|X)\)</span> 的期望值为： <span class="math display">\[
+E(E(Y|X)) = E(X/2) = 1/4
+\]</span></p>
+<p>（我们将在下一节证明条件期望的一个通用性质，即 <span class="math inline">\(E(E(Y|X)) = E(Y)\)</span>，因此同样可以得出 <span class="math inline">\(E(Y) = 1/4\)</span>。）<span class="math inline">\(E(Y|X)\)</span> 的方差为： <span class="math display">\[
+\text{Var}(E(Y|X)) = \text{Var}(X/2) = 1/48
+\]</span></p>
+<p><strong>例 9.2.5</strong>。设 <span class="math inline">\(X, Y\)</span> 独立同分布于 <span class="math inline">\(\text{Expo}(\lambda)\)</span>，求 <span class="math inline">\(E(\max(X,Y)|\min(X,Y))\)</span>。</p>
+<p><strong>解：</strong></p>
+<p>令 <span class="math inline">\(M = \max(X,Y)\)</span>，<span class="math inline">\(L = \min(X,Y)\)</span>。根据无记忆性，<span class="math inline">\(M-L\)</span> 与 <span class="math inline">\(L\)</span> 相互独立，且 <span class="math inline">\(M-L \sim \text{Expo}(\lambda)\)</span>（参见例 7.3.6）。因此： <span class="math display">\[
+E(M|L=l) = E(L|L=l) + E(M-L|L=l) = l + E(M-L) = l + \frac{1}{\lambda}
+\]</span></p>
+<p>从而得到 <span class="math inline">\(E(M|L) = L + \frac{1}{\lambda}\)</span>。</p>
+<h3 id="条件期望的性质">9.3 条件期望的性质</h3>
+<p>条件期望具有一些非常实用的性质：</p>
+<ul>
+<li><strong>舍弃独立部分</strong>：如果 <span class="math inline">\(X\)</span> 和 <span class="math inline">\(Y\)</span> 相互独立，则 <span class="math inline">\(E(Y|X) = E(Y)\)</span>。</li>
+<li><strong>提取已知部分</strong>：对于任何函数 <span class="math inline">\(h\)</span>，<span class="math inline">\(E(h(X)Y|X) = h(X)E(Y|X)\)</span>。</li>
+<li><strong>线性性质</strong>：<span class="math inline">\(E(Y_1 + Y_2|X) = E(Y_1|X) + E(Y_2|X)\)</span>，且对于常数 <span class="math inline">\(c\)</span>，<span class="math inline">\(E(cY|X) = cE(Y|X)\)</span>（后者是提取已知部分的特殊情况）。</li>
+<li><strong>亚当定律 (Adam’s law)</strong>：<span class="math inline">\(E(E(Y|X)) = E(Y)\)</span>。</li>
+<li><strong>投影解释</strong>：随机变量 <span class="math inline">\(Y - E(Y|X)\)</span> 被称为利用 <span class="math inline">\(X\)</span> 预测 <span class="math inline">\(Y\)</span> 的残差，它与任何函数 <span class="math inline">\(h(X)\)</span> 都不相关。</li>
+</ul>
+<p>让我们分别讨论每个性质。</p>
+<p><strong>定理 9.3.1（舍弃独立部分）</strong>。如果 <span class="math inline">\(X\)</span> 和 <span class="math inline">\(Y\)</span> 相互独立，则 <span class="math inline">\(E(Y|X) = E(Y)\)</span>。</p>
+<p>这是成立的，因为独立性意味着对于所有 <span class="math inline">\(x\)</span>，<span class="math inline">\(E(Y|X=x) = E(Y)\)</span>，因此 <span class="math inline">\(E(Y|X) = E(Y)\)</span>。直观地说，如果 <span class="math inline">\(X\)</span> 不能提供关于 <span class="math inline">\(Y\)</span> 的任何信息，那么即使我们知道了 <span class="math inline">\(X\)</span>，对 <span class="math inline">\(Y\)</span> 的最佳猜测仍然是无条件均值 <span class="math inline">\(E(Y)\)</span>。然而，其逆命题是错误的：下文的例 9.3.3 给出了一个反例。</p>
+<p><strong>定理 9.3.2（提取已知部分）</strong>。对于任何函数 <span class="math inline">\(h\)</span>， <span class="math display">\[
+E(h(X)Y|X) = h(X)E(Y|X)
+\]</span></p>
+<p>直观地说，当我们求给定 <span class="math inline">\(X\)</span> 的期望时，我们将 <span class="math inline">\(X\)</span> 视为已经具体化为一个已知常数。那么在以 <span class="math inline">\(X\)</span> 为条件时， <span class="math inline">\(X\)</span> 的任何函数（如 <span class="math inline">\(h(X)\)</span>）也表现得像一个已知常数。“提取已知部分”是无条件事实 <span class="math inline">\(E(cY) = cE(Y)\)</span> 的条件版本。区别在于 <span class="math inline">\(E(cY) = cE(Y)\)</span> 断言两个数值相等，而“提取已知部分”断言两个随机变量相等。</p>
+<p><strong>例 9.3.3</strong>。设 <span class="math inline">\(Z \sim N(0,1)\)</span> 且 <span class="math inline">\(Y = Z^2\)</span>。求 <span class="math inline">\(E(Y|Z)\)</span> 和 <span class="math inline">\(E(Z|Y)\)</span>。</p>
+<p><strong>解：</strong> 由于 <span class="math inline">\(Y\)</span> 是 <span class="math inline">\(Z\)</span> 的函数，通过提取已知部分可知，<span class="math inline">\(E(Y|Z) = E(Z^2|Z) = Z^2\)</span>。为了得到 <span class="math inline">\(E(Z|Y)\)</span>，注意到在给定 <span class="math inline">\(Y=y\)</span> 的条件下，根据标准正态分布的对称性，<span class="math inline">\(Z\)</span> 以相等的概率等于 <span class="math inline">\(\sqrt{y}\)</span> 或 <span class="math inline">\(-\sqrt{y}\)</span>。因此 <span class="math inline">\(E(Z|Y=y) = 0\)</span>，从而 <span class="math inline">\(E(Z|Y) = 0\)</span>。</p>
+<p>在这种情况下，尽管 <span class="math inline">\(Y\)</span> 提供了大量关于 <span class="math inline">\(Z\)</span> 的信息（将 <span class="math inline">\(Z\)</span> 可能的取值缩小到了仅有两个值），但 <span class="math inline">\(Y\)</span> 只告诉了我们 <span class="math inline">\(Z\)</span> 的大小而非其符号。出于这个原因，尽管 <span class="math inline">\(Z\)</span> 和 <span class="math inline">\(Y\)</span> 之间存在依赖关系，但 <span class="math inline">\(E(Z|Y) = E(Z)\)</span>。这个例子说明了定理 9.3.1 的逆命题是错误的。</p>
+<p><strong>定理 9.3.4（线性性质）</strong>。<span class="math inline">\(E(Y_1 + Y_2|X) = E(Y_1|X) + E(Y_2|X)\)</span>。</p>
+<p>这一结果是无条件事实 <span class="math inline">\(E(Y_1 + Y_2) = E(Y_1) + E(Y_2)\)</span> 的条件版本，且<strong>由于条件概率也是概率，因此它是成立的。</strong></p>
+<p><strong>9.3.5</strong>。写成 “<span class="math inline">\(E(Y|X_1 + X_2) = E(Y|X_1) + E(Y|X_2)\)</span>” 是错误的；线性性质适用于条件竖线的左侧，而不是右侧！</p>
+<p><strong>例 9.3.6</strong>。设 <span class="math inline">\(X_1, \dots, X_n\)</span> 独立同分布，且 <span class="math inline">\(S_n = X_1 + \dots + X_n\)</span>。求 <span class="math inline">\(E(X_1|S_n)\)</span>。</p>
+<p><strong>解：</strong></p>
+<p>基于对称性， <span class="math display">\[
+E(X_1|S_n) = E(X_2|S_n) = \dots = E(X_n|S_n)
+\]</span></p>
+<p>根据线性性质， <span class="math display">\[
+E(X_1|S_n) + \dots + E(X_n|S_n) = E(S_n|S_n) = S_n
+\]</span></p>
+<p>因此， <span class="math display">\[
+E(X_1|S_n) = S_n/n = \bar{X}_n
+\]</span></p>
+<p>即 <span class="math inline">\(X_j\)</span> 的样本均值。这是一个直观的结果：如果我们有两个独立同分布的随机变量 <span class="math inline">\(X_1, X_2\)</span> 且得知 <span class="math inline">\(X_1 + X_2 = 10\)</span>，那么猜测 <span class="math inline">\(X_1\)</span> 为 5（占总数的一半）是合理的。类似地，如果我们有 <span class="math inline">\(n\)</span> 个独立同分布的随机变量并知道了它们的总和，那么对其中任何一个的最佳猜测就是样本均值。</p>
+<p>下一个定理<strong>将条件期望与无条件期望联系起来</strong>。它有许多名称，包括全期望公式（law of total expectation）、迭代期望法则（law of iterated expectation，其英文缩写 LIE 对于一个闪烁着真理光芒的法则来说实在不太好听）以及塔性（tower property）。我们将其称为“亚当定律”（Adam’s law），因为它被使用得如此频繁，理应有一个简练的名字，而且它经常与我们稍后会遇到的另一个名字互补的法则结合使用。</p>
+<p><strong>定理 9.3.7（亚当定律）</strong>。对于任何随机变量 <span class="math inline">\(X\)</span> 和 <span class="math inline">\(Y\)</span>， <span class="math display">\[
+E(E(Y|X)) = E(Y)
+\]</span></p>
+<p><strong>证明</strong>。我们给出 <span class="math inline">\(X\)</span> 和 <span class="math inline">\(Y\)</span> 均为离散型随机变量时的证明（其他情况的证明与之类似）。令 <span class="math inline">\(E(Y|X) = g(X)\)</span>。我们通过应用无意识统计学家法则（LOTUS），展开 <span class="math inline">\(g(x)\)</span> 的定义得到一个二重级数，然后交换求和顺序： <span class="math display">\[
+E(g(X)) = \sum_{x} g(x)P(X=x)
+\]</span> <span class="math display">\[
+= \sum_{x} \left( \sum_{y} yP(Y=y|X=x) \right) P(X=x)
+\]</span> <span class="math display">\[
+= \sum_{x} \sum_{y} yP(X=x)P(Y=y|X=x)
+\]</span> <span class="math display">\[
+= \sum_{y} y \sum_{x} P(X=x, Y=y)
+\]</span> <span class="math display">\[
+= \sum_{y} yP(Y=y) = E(Y)
+\]</span></p>
+<p><strong>亚当定律是全期望公式（定理 9.1.5）更紧凑、更通用的版本</strong>。对于离散型 <span class="math inline">\(X\)</span>，以下表述： <span class="math display">\[
+E(Y) = \sum_{x} E(Y|X=x)P(X=x)
+\]</span></p>
+<p>与 <span class="math display">\[
+E(Y) = E(E(Y|X))
+\]</span></p>
+<p>含义相同。因为如果我们令 <span class="math inline">\(E(Y|X=x) = g(x)\)</span>，那么： <span class="math display">\[
+E(E(Y|X)) = E(g(X)) = \sum_{x} g(x)P(X=x) = \sum_{x} E(Y|X=x)P(X=x)
+\]</span></p>
+<p><strong>有了亚当定律，我们就有了一个计算期望 <span class="math inline">\(E(Y)\)</span> 的强大策略：通过对一个我们“希望已知”的随机变量 <span class="math inline">\(X\)</span> 进行条件化。首先通过将 <span class="math inline">\(X\)</span> 视为已知来求出 <span class="math inline">\(E(Y|X)\)</span>，然后对 <span class="math inline">\(E(Y|X)\)</span> 取期望。</strong>我们将在本章稍后看到各种相关的示例。</p>
+<p>正如第 2 章中讨论的贝叶斯法则和全概率公式（LOTP）存在带有额外条件的形式一样，亚当定律也有带有额外条件的形式。</p>
+<p><strong>定理 9.3.8（带有额外条件的亚当定律）</strong>。对于任何随机变量 <span class="math inline">\(X, Y, Z\)</span>， <span class="math display">\[
+E(E(Y|X,Z)|Z) = E(Y|Z)
+\]</span></p>
+<p>上述等式即为亚当定律，只是在每一处都插入了关于 <span class="math inline">\(Z\)</span> 的额外条件。这是成立的，因为条件概率也是概率。因此，我们可以自由地使用亚当定律来帮助我们求解无条件期望和条件期望。</p>
+<blockquote>
+<p>个人注：直观理解：层层过滤</p>
+<p>我们可以把期望 <span class="math inline">\(E(\cdot | \dots)\)</span> 理解为一种“信息过滤”：</p>
+<ul>
+<li><span class="math inline">\(E(Y | X, Z)\)</span>：这是在已知 <span class="math inline">\(X\)</span> 和 <span class="math inline">\(Z\)</span> 两个信息源时，对 <span class="math inline">\(Y\)</span> 的最佳预测。</li>
+<li>外层的 <span class="math inline">\(E(\cdot | Z)\)</span>：这意味着我们现在要抛弃 <span class="math inline">\(X\)</span> 的信息，仅保留 <span class="math inline">\(Z\)</span> 的信息。</li>
+</ul>
+<p>当你对“基于 <span class="math inline">\(X\)</span> 和 <span class="math inline">\(Z\)</span> 的预测值”再次根据“仅有 <span class="math inline">\(Z\)</span>”进行平均时，关于 <span class="math inline">\(X\)</span> 的细节就被抵消（平均掉）了，剩下的自然就是仅基于 <span class="math inline">\(Z\)</span> 对 <span class="math inline">\(Y\)</span> 的预测。</p>
+</blockquote>
+<p>利用亚当定律，我们还可以证明条件期望性质列表中的最后一项。</p>
+<p><strong>定理 9.3.9（投影解释）</strong>。对于任何函数 <span class="math inline">\(h\)</span>，随机变量 <span class="math inline">\(Y - E(Y|X)\)</span> 与 <span class="math inline">\(h(X)\)</span> 不相关。等价地， <span class="math display">\[
+E((Y - E(Y|X))h(X)) = 0
+\]</span></p>
+<p>（由于根据线性性质和亚当定律可知 <span class="math inline">\(E(Y - E(Y|X)) = 0\)</span>，因此这二者是等价的。）</p>
+<p><strong>证明</strong>。我们有 <span class="math display">\[
+E((Y - E(Y|X))h(X)) = E(h(X)Y) - E(h(X)E(Y|X))
+\]</span> <span class="math display">\[
+= E(h(X)Y) - E(E(h(X)Y|X))
+\]</span></p>
+<p>根据定理 9.3.2（这里我们在内部期望中使用了“放回已知部分”）。根据亚当定律，第二项等于 <span class="math inline">\(E(h(X)Y)\)</span>。</p>
+<p>从几何角度来看，我们可以将定理 9.3.9 视觉化为如图 9.6 所示。在某种意义上（如下所述），<span class="math inline">\(E(Y|X)\)</span> 是 <span class="math inline">\(X\)</span> 的所有函数中与 <span class="math inline">\(Y\)</span> 最接近的一个；我们说 <span class="math inline">\(E(Y|X)\)</span> 是 <span class="math inline">\(Y\)</span> 在所有 <span class="math inline">\(X\)</span> 的函数构成的空间上的<strong>投影</strong>。图中从 <span class="math inline">\(Y\)</span> 到 <span class="math inline">\(E(Y|X)\)</span> 的“线”与该“平面”正交（垂直），因为从 <span class="math inline">\(Y\)</span> 到 <span class="math inline">\(E(Y|X)\)</span> 的任何其他路径都会更长。这种正交性正是定理 9.3.9 的几何解释。</p>
+<p><img src="/img3/Introduction to Probability/F9.6.png" alt="F9.6" style="zoom:60%;" /></p>
+<p>有关这一视角的细节将在下一节给出，由于该节需要线性代数知识，因此标注了星号。但即使不深入研究线性代数，投影图示也能提供一些有用的直觉。如前所述，我们可以将 <span class="math inline">\(E(Y|X)\)</span> 视为基于 <span class="math inline">\(X\)</span> 对 <span class="math inline">\(Y\)</span> 的预测。这是统计学中一个极其常见的问题：根据数据预测或估计未来的观测值或未知参数。条件期望的投影解释意味着 <span class="math inline">\(E(Y|X)\)</span> 是基于 <span class="math inline">\(X\)</span> 预测 <span class="math inline">\(Y\)</span> 的最佳预测器，其含义是：在 <span class="math inline">\(X\)</span> 的所有函数中，它的均方误差（<span class="math inline">\(Y\)</span> 与预测值之间差值的平方期望）最低。</p>
+<p><strong>例 9.3.10（线性回归）</strong>。在统计学的数据分析中，一种应用极其广泛的方法是线性回归。在其最基本的形式中，线性回归模型使用单个解释变量 <span class="math inline">\(X\)</span> 来预测响应变量 <span class="math inline">\(Y\)</span>，并且假设 <span class="math inline">\(Y\)</span> 的条件期望关于 <span class="math inline">\(X\)</span> 是线性的： <span class="math display">\[
+E(Y|X) = a + bX
+\]</span></p>
+<ol type="a">
+<li>证明表达这一点的等价方式是写作： <span class="math display">\[
+Y = a + bX + \epsilon
+\]</span></li>
+</ol>
+<p>其中 <span class="math inline">\(\epsilon\)</span> 是一个满足 <span class="math inline">\(E(\epsilon|X) = 0\)</span> 的随机变量（称为误差项）。</p>
+<ol start="2" type="a">
+<li>用 <span class="math inline">\(E(X)\)</span>、<span class="math inline">\(E(Y)\)</span>、<span class="math inline">\(\text{Cov}(X,Y)\)</span> 和 <span class="math inline">\(\text{Var}(X)\)</span> 来求解常数 <span class="math inline">\(a\)</span> 和 <span class="math inline">\(b\)</span>。</li>
+</ol>
+<p><strong>解：</strong></p>
+<ol type="a">
+<li>设 <span class="math inline">\(Y = a + bX + \epsilon\)</span>，且 <span class="math inline">\(E(\epsilon|X) = 0\)</span>。那么根据线性性质： <span class="math display">\[
+E(Y|X) = E(a|X) + E(bX|X) + E(\epsilon|X) = a + bX
+\]</span></li>
+</ol>
+<p>反之，假设 <span class="math inline">\(E(Y|X) = a + bX\)</span>，并定义： <span class="math display">\[
+\epsilon = Y - (a + bX)
+\]</span></p>
+<p>那么 <span class="math inline">\(Y = a + bX + \epsilon\)</span>，且： <span class="math display">\[
+E(\epsilon|X) = E(Y|X) - E(a + bX|X) = E(Y|X) - (a + bX) = 0
+\]</span></p>
+<ol start="2" type="a">
+<li>首先，根据亚当定律，对等式两边取期望得： <span class="math display">\[
+E(Y) = a + bE(X)
+\]</span></li>
+</ol>
+<p>注意到 <span class="math inline">\(\epsilon\)</span> 的均值为 0，且 <span class="math inline">\(X\)</span> 与 <span class="math inline">\(\epsilon\)</span> 不相关，因为： <span class="math display">\[
+E(\epsilon) = E(E(\epsilon|X)) = E(0) = 0
+\]</span></p>
+<p>且 <span class="math display">\[
+E(\epsilon X) = E(E(\epsilon X|X)) = E(XE(\epsilon|X)) = E(0) = 0
+\]</span></p>
+<p>在 <span class="math inline">\(Y = a + bX + \epsilon\)</span> 的两边同时取与 <span class="math inline">\(X\)</span> 的协方差，我们有： <span class="math display">\[
+\text{Cov}(X,Y) = \text{Cov}(X,a) + b\text{Cov}(X,X) + \text{Cov}(X,\epsilon) = b\text{Var}(X)
+\]</span></p>
+<p>因此： <span class="math display">\[
+b = \frac{\text{Cov}(X,Y)}{\text{Var}(X)}
+\]</span> <span class="math display">\[
+a = E(Y) - bE(X) = E(Y) - \frac{\text{Cov}(X,Y)}{\text{Var}(X)} \cdot E(X)
+\]</span></p>
+<h3 id="条件期望的几何解释">9.4 *条件期望的几何解释</h3>
+<p>Geometric interpretation of conditional expectation</p>
+<p>本节使用线性代数中的一些概念，更详细地解释图 9.6 中所示的几何视角。考虑由某个概率空间上所有具有有限方差的随机变量构成的向量空间。空间中的每个向量或点都是一个随机变量（这里我们是在线性代数意义上使用“向量”一词，而不是指第 7 章中的随机向量）。定义两个随机变量 <span class="math inline">\(U\)</span> 和 <span class="math inline">\(V\)</span> 的<strong>内积</strong>为：</p>
+<p>This section explains in more detail the geometric perspective shown in Figure 9.6, using some concepts from linear algebra. Consider the vector space consisting of all random variables on a certain probability space, such that the random variables all have finite variance. Each vector or point in the space is a random variable (here we are using “vector” in the linear algebra sense, not in the sense of a random vector from Chapter 7). Define the inner product of two r.v.s U and V to be： <span class="math display">\[
+\langle U,V \rangle = E(UV)
+\]</span></p>
+<p>（为了使该定义满足内积公理，我们需要约定：如果两个随机变量以概率 1 相等，则视它们为同一个变量。）</p>
+<p>随机变量 <span class="math inline">\(X\)</span> 的<strong>长度平方</strong>为： <span class="math display">\[
+\|X\|^2 = \langle X,X \rangle = EX^2
+\]</span></p>
+<p>而两个随机变量 <span class="math inline">\(U\)</span> 和 <span class="math inline">\(V\)</span> 之间的<strong>距离平方</strong>为： <span class="math display">\[
+\|U-V\|^2 = E(U-V)^2
+\]</span></p>
+<p>如果 <span class="math inline">\(E(U) = E(V) = 0\)</span>，这些解释会变得特别优美，因为此时：</p>
+<ul>
+<li><span class="math inline">\(\|U\|^2 = \text{Var}(U)\)</span>，且 <span class="math inline">\(\|U\| = \text{SD}(U)\)</span>。</li>
+<li><span class="math inline">\(\langle U,V \rangle = \text{Cov}(U,V)\)</span>，且 <span class="math inline">\(U\)</span> 与 <span class="math inline">\(V\)</span> 之间“夹角”的余弦值就是 <span class="math inline">\(\text{Corr}(U,V)\)</span>。</li>
+<li><span class="math inline">\(U\)</span> 与 <span class="math inline">\(V\)</span> 正交（即 <span class="math inline">\(\langle U,V \rangle = 0\)</span>）当且仅当它们不相关。</li>
+</ul>
+<p>为了从几何上解释 <span class="math inline">\(E(Y|X)\)</span>，考虑所有可以表示为 <span class="math inline">\(X\)</span> 的函数（且具有有限方差）的随机变量所构成的空间。这是上述向量空间的一个子空间。在图 9.6 中，形式为 <span class="math inline">\(h(X)\)</span> 的随机变量子空间用一个平面表示。为了得到 <span class="math inline">\(E(Y|X)\)</span>，我们将 <span class="math inline">\(Y\)</span> <strong>投影</strong>到该平面上。那么残差 <span class="math inline">\(Y-E(Y|X)\)</span> 与所有函数 <span class="math inline">\(h(X)\)</span> 正交，且 <span class="math inline">\(E(Y|X)\)</span> 是预测 <span class="math inline">\(Y\)</span> 效果最好的 <span class="math inline">\(X\)</span> 的函数。这里的“最好”是指通过选择 <span class="math inline">\(g(X) = E(Y|X)\)</span> 使得均方误差 <span class="math inline">\(E(Y-g(X))^2\)</span> 最小。</p>
+<p><strong>投影解释是思考条件期望许多性质的一种有效方式。例如，如果 <span class="math inline">\(Y = h(X)\)</span> 是 <span class="math inline">\(X\)</span> 的一个函数，那么 <span class="math inline">\(Y\)</span> 本身已经位于该平面内，因此它的投影就是它自己；这解释了为什么 <span class="math inline">\(E(h(X)|X) = h(X)\)</span>。</strong></p>
+<p><strong>我们也可以将无条件期望看作一种投影：<span class="math inline">\(E(Y)\)</span> 可以被看作 <span class="math inline">\(E(Y|0)\)</span>，即 <span class="math inline">\(Y\)</span> 在所有常数构成的空间上的投影（事实上，<span class="math inline">\(E(Y)\)</span> 是使 <span class="math inline">\(E(Y-c)^2\)</span> 最小的常数 <span class="math inline">\(c\)</span>，</strong>正如我们在定理 6.1.4 中证明的那样）。</p>
+<p><strong>现在我们还可以给亚当定律一个几何解释：<span class="math inline">\(E(Y)\)</span> 代表将 <span class="math inline">\(Y\)</span> 一步投影到所有常数构成的空间上；<span class="math inline">\(E(E(Y|X))\)</span> 代表分两步完成：先投影到平面上得到 <span class="math inline">\(E(Y|X)\)</span>，再将 <span class="math inline">\(E(Y|X)\)</span> 投影到该平面内的一条直线——常数空间上。亚当定律指出，一步法和两步法产生的结果是相同的。</strong></p>
+<p>在下一节中，我们将介绍夏娃定律（Eve’s law），它对方差的作用类似于亚当定律对期望的作用。作为预告并进一步探索条件期望的几何解释，让我们从本节的角度来看看 <span class="math inline">\(\text{Var}(Y)\)</span>。假设 <span class="math inline">\(E(Y) = 0\)</span>（如果 <span class="math inline">\(E(Y) \neq 0\)</span>，我们可以通过减去 <span class="math inline">\(E(Y)\)</span> 对 <span class="math inline">\(Y\)</span> 进行中心化；这样做对方差没有影响）。</p>
+<p>我们可以将 <span class="math inline">\(Y\)</span> 分解为两个正交项：残差 <span class="math inline">\(Y-E(Y|X)\)</span> 和条件期望 <span class="math inline">\(E(Y|X)\)</span>： <span class="math display">\[
+Y = (Y-E(Y|X)) + E(Y|X)
+\]</span></p>
+<p>这两项是正交的，因为 <span class="math inline">\(Y-E(Y|X)\)</span> 与 <span class="math inline">\(X\)</span> 的任何函数都不相关，而 <span class="math inline">\(E(Y|X)\)</span> 是 <span class="math inline">\(X\)</span> 的函数。因此，根据<strong>勾股定理</strong>： <span class="math display">\[
+\|Y\|^2 = \|Y-E(Y|X)\|^2 + \|E(Y|X)\|^2
+\]</span></p>
+<p>即： <span class="math display">\[
+\text{Var}(Y) = \text{Var}(Y-E(Y|X)) + \text{Var}(E(Y|X))
+\]</span></p>
+<p>正如我们将在下一节看到的，这个等式是夏娃定律的一种形式。因此事实证明，夏娃定律虽然乍看之下有些晦涩，但其实可以解释为以 <span class="math inline">\(Y-E(Y|X)\)</span>、<span class="math inline">\(E(Y|X)\)</span> 和 <span class="math inline">\(Y\)</span> 为边构成的“三角形”的勾股定理。</p>
+<blockquote>
+<p>个人注；<strong>条件期望提取了 <span class="math inline">\(Y\)</span> 中所有能由 <span class="math inline">\(X\)</span> 解释的部分，剩下的残差与 <span class="math inline">\(X\)</span> 处于完全不同的“维度”，因此它们是正交（不相关）的。</strong></p>
+<p>这一性质是著名的<strong>最小均方误差（MMSE）</strong>估计的基础。</p>
+</blockquote>
+<h3 id="条件方差">9.5 条件方差</h3>
+<p>Conditional variance</p>
+<p>一旦我们定义了给定随机变量下的条件期望，我们就有了一种自然的方式来定义给定随机变量下的条件方差：即将无条件方差定义中的所有 <span class="math inline">\(E(\cdot)\)</span> 替换为 <span class="math inline">\(E(\cdot|X)\)</span>。</p>
+<p><strong>定义 9.5.1（条件方差）</strong>。给定 <span class="math inline">\(X\)</span> 下 <span class="math inline">\(Y\)</span> 的条件方差为： <span class="math display">\[
+\text{Var}(Y|X) = E((Y - E(Y|X))^2|X)
+\]</span></p>
+<p>这等价于： <span class="math display">\[
+\text{Var}(Y|X) = E(Y^2|X) - (E(Y|X))^2
+\]</span></p>
+<p><strong>9.5.2</strong>。与 <span class="math inline">\(E(Y|X)\)</span> 一样，<span class="math inline">\(\text{Var}(Y|X)\)</span> 也是一个随机变量，且它是 <span class="math inline">\(X\)</span> 的函数。</p>
+<p>由于条件方差是根据条件期望定义的，我们可以利用关于条件期望的结论来帮助我们计算条件方差。以下是一个示例。</p>
+<p><strong>例 9.5.3</strong>。设 <span class="math inline">\(Z \sim N(0,1)\)</span> 且 <span class="math inline">\(Y = Z^2\)</span>。求 <span class="math inline">\(\text{Var}(Y|Z)\)</span> 和 <span class="math inline">\(\text{Var}(Z|Y)\)</span>。</p>
+<p><strong>解：</strong></p>
+<p>无需任何计算，我们就可以看出 <span class="math inline">\(\text{Var}(Y|Z) = 0\)</span>：在给定 <span class="math inline">\(Z\)</span> 的条件下，<span class="math inline">\(Y\)</span> 是一个已知常数，而常数的方差为 0。同理，对于任何函数 <span class="math inline">\(h\)</span>，<span class="math inline">\(\text{Var}(h(Z)|Z) = 0\)</span>。</p>
+<p>为了得到 <span class="math inline">\(\text{Var}(Z|Y)\)</span>，应用定义： <span class="math display">\[
+\text{Var}(Z|Z^2) = E(Z^2|Z^2) - (E(Z|Z^2))^2
+\]</span></p>
+<p>第一项等于 <span class="math inline">\(Z^2\)</span>。正如我们在例 9.3.3 中发现的，根据对称性，第二项等于 0。因此 <span class="math inline">\(\text{Var}(Z|Z^2) = Z^2\)</span>，我们可以写成 <span class="math inline">\(\text{Var}(Z|Y) = Y\)</span>。</p>
+<p>在下一个示例中，我们将练习在二元正态分布背景下处理条件期望和条件方差。</p>
+<p><strong>例 9.5.4（二元正态分布中的条件期望和条件方差）</strong>。设 <span class="math inline">\((Z,W)\)</span> 服从二元正态分布，其中 <span class="math inline">\(\text{Corr}(Z,W) = \rho\)</span>，且 <span class="math inline">\(Z,W\)</span> 的边缘分布均为 <span class="math inline">\(N(0,1)\)</span>。求 <span class="math inline">\(E(W|Z)\)</span> 和 <span class="math inline">\(\text{Var}(W|Z)\)</span>。</p>
+<p><strong>解：</strong> 我们可以假设 <span class="math inline">\((Z,W)\)</span> 是按照例 7.5.10 中的方式构造的，因为 <span class="math inline">\(E(W|Z)\)</span> 和 <span class="math inline">\(\text{Var}(W|Z)\)</span> 仅取决于 <span class="math inline">\((Z,W)\)</span> 的联合分布，而与创建 <span class="math inline">\((Z,W)\)</span> 的具体方法无关。因此，令： <span class="math display">\[
+Z = X
+\]</span> <span class="math display">\[
+W = \rho X + \sqrt{1-\rho^2}Y
+\]</span></p>
+<p>其中 <span class="math inline">\(X,Y\)</span> 独立同分布于 <span class="math inline">\(N(0,1)\)</span>。这样我们就可以非常巧妙地解决问题，而无需诉诸基于二元正态联合 PDF 的繁琐积分。</p>
+<p>条件期望为： <span class="math display">\[
+E(W|Z) = E(W|X) = \rho X + \sqrt{1-\rho^2}E(Y|X) = \rho X + \sqrt{1-\rho^2}E(Y) = \rho Z
+\]</span></p>
+<p>因为 <span class="math inline">\(X\)</span> 和 <span class="math inline">\(Y\)</span> 相互独立。条件方差为： <span class="math display">\[
+\text{Var}(W|Z) = \text{Var}(W|X) = \text{Var}(\sqrt{1-\rho^2}Y|X) = (1-\rho^2)\text{Var}(Y) = 1-\rho^2
+\]</span></p>
+<p>因为在给定 <span class="math inline">\(X\)</span> 时，<span class="math inline">\(\rho X\)</span> 充当常数，且 <span class="math inline">\(Y\)</span> 与 <span class="math inline">\(X\)</span> 相互独立。</p>
+<p>有趣的是，将 <span class="math inline">\(Z\)</span> 和 <span class="math inline">\(W\)</span> 的角色互换使用相同的论证可以得出 <span class="math inline">\(E(Z|W) = \rho W\)</span> 且 <span class="math inline">\(\text{Var}(Z|W) = 1-\rho^2\)</span>。</p>
+<p>人们可能会猜测，如果从 <span class="math inline">\(Z\)</span> 的观测值映射到 <span class="math inline">\(W\)</span> 的预测值需要乘以 <span class="math inline">\(\rho\)</span>，那么从 <span class="math inline">\(W\)</span> 的观测值映射到 <span class="math inline">\(Z\)</span> 的预测值就应该除以 <span class="math inline">\(\rho\)</span>。但上述结果表明，无论使用 <span class="math inline">\(Z\)</span> 预测 <span class="math inline">\(W\)</span> 还是反之，都要乘以同一个 <span class="math inline">\(\rho\)</span>！这与相关性是对称的（<span class="math inline">\(\text{Corr}(Z,W) = \rho = \text{Corr}(W,Z)\)</span>）这一事实密切相关，也与统计学中一个被称为“向均值回归”的重要概念有关。</p>
+<p>我们在前一节了解到，亚当定律将条件期望与无条件期望联系起来。与亚当定律相伴的一个结论是夏娃定律（Eve’s law），它将条件方差与无条件方差联系起来。</p>
+<p><strong>定理 9.5.5（夏娃定律）</strong>。对于任何随机变量 <span class="math inline">\(X\)</span> 和 <span class="math inline">\(Y\)</span>， <span class="math display">\[
+\text{Var}(Y) = E(\text{Var}(Y|X)) + \text{Var}(E(Y|X))
+\]</span></p>
+<p><strong>等式右侧 <span class="math inline">\(E\)</span> 和 <span class="math inline">\(\text{Var}\)</span> 的顺序拼写为 EVVE，这正是“夏娃定律”名字的由来。夏娃定律也被称为全方差公式（law of total variance）或方差分解公式。</strong></p>
+<p><strong>证明</strong>。令 <span class="math inline">\(g(X) = E(Y|X)\)</span>。根据亚当定律，<span class="math inline">\(E(g(X)) = E(Y)\)</span>。那么： <span class="math display">\[
+E(\text{Var}(Y|X)) = E(E(Y^2|X) - g(X)^2) = E(Y^2) - E(g(X)^2)
+\]</span> <span class="math display">\[
+\text{Var}(E(Y|X)) = E(g(X)^2) - (Eg(X))^2 = E(g(X)^2) - (EY)^2
+\]</span></p>
+<p>将这两个等式相加，即可得到夏娃定律。</p>
+<p>为了直观地理解夏娃定律（Eve’s law），想象一个群体，其中每个人都有一个 <span class="math inline">\(X\)</span> 值和一个 <span class="math inline">\(Y\)</span> 值。我们可以根据 <span class="math inline">\(X\)</span> 的每个可能取值将这个群体划分为若干子群体。例如，如果 <span class="math inline">\(X\)</span> 代表年龄，<span class="math inline">\(Y\)</span> 代表身高，我们可以按年龄对人群进行分组。那么在总体中，造成人们身高差异的变异来源有两个。第一，在每个年龄组内部，人们的身高各不相同。每个年龄组内身高变异的平均量就是<strong>组内变异</strong>（within-group variation），即 <span class="math inline">\(E(\text{Var}(Y|X))\)</span>。第二，不同年龄组之间的平均身高是不同的。各年龄组平均身高的方差就是<strong>组间变异</strong>（between-group variation），即 <span class="math inline">\(\text{Var}(E(Y|X))\)</span>。夏娃定律指出，要得到 <span class="math inline">\(Y\)</span> 的总方差，我们只需将这两个变异来源相加即可。</p>
+<p>图 9.7 展示了在只有三个年龄组的简单情况下夏娃定律的含义。在 <span class="math inline">\(X = 1, X = 2\)</span> 和 <span class="math inline">\(X = 3\)</span> 各组内部的平均散布程度是组内变异 <span class="math inline">\(E(\text{Var}(Y|X))\)</span>。而各组均值 <span class="math inline">\(E(Y|X = 1), E(Y|X = 2)\)</span> 和 <span class="math inline">\(E(Y|X = 3)\)</span> 的方差则是组间变异 <span class="math inline">\(\text{Var}(E(Y|X))\)</span>。</p>
+<p><img src="/img3/Introduction to Probability/F9.7.png" alt="F9.7" style="zoom:60%;" /></p>
+<p>思考夏娃定律的另一种方式是从预测的角度出发。如果我们想仅根据年龄来预测某人的身高，理想的情况是每个年龄组内的每个人身高完全相同，而不同年龄组之间的身高各不相同。这样，给定某人的年龄，我们就能完美地预测其身高。换句话说，预测的理想情况是身高没有组内变异，因为组内变异无法由年龄差异来解释。出于这个原因，组内变异也被称为<strong>未解释变异</strong>（unexplained variation），而组间变异也被称为<strong>已解释变异</strong>（explained variation）。夏娃定律说明 <span class="math inline">\(Y\)</span> 的总方差是未解释变异与已解释变异之和。</p>
+<p>我们也可以将夏娃定律写成如下形式： <span class="math display">\[
+\text{Var}(Y) = \text{Var}(Y - E(Y|X)) + \text{Var}(E(Y|X))
+\]</span></p>
+<p>因为，若令 <span class="math inline">\(W\)</span> 为残差 <span class="math inline">\(Y - E(Y|X)\)</span>，则： <span class="math display">\[
+\text{Var}(Y - E(Y|X)) = E(W^2) = E(E(W^2|X)) = E(\text{Var}(Y|X))
+\]</span></p>
+<p>这再次表明我们可以将方差分解为组内变异加上组间变异。</p>
+<p><strong>9.5.6</strong>。设 <span class="math inline">\(Y\)</span> 为随机变量，<span class="math inline">\(A\)</span> 为事件。说“<span class="math inline">\(\text{Var}(Y) = \text{Var}(Y|A)P(A) + \text{Var}(Y|A^c)P(A^c)\)</span>”是错误的，尽管这看起来与全期望公式很相似。（举一个简单的反例：设 <span class="math inline">\(Y \sim \text{Bern}(1/2)\)</span>，<span class="math inline">\(A\)</span> 为事件 <span class="math inline">\(Y = 0\)</span>。那么 <span class="math inline">\(\text{Var}(Y|A)\)</span> 和 <span class="math inline">\(\text{Var}(Y|A^c)\)</span> 均为 0，但 <span class="math inline">\(\text{Var}(Y) = 1/4\)</span>。）</p>
+<p>相反，如果我们想根据事件 <span class="math inline">\(A\)</span> 是否发生来进行条件化，我们应该使用夏娃定律：令 <span class="math inline">\(I\)</span> 为 <span class="math inline">\(A\)</span> 的指示函数， <span class="math display">\[
+\text{Var}(Y) = E(\text{Var}(Y|I)) + \text{Var}(E(Y|I))
+\]</span></p>
+<p>为了看清这个表达式与那个“错误表达式”之间的关系，令：</p>
+<p><span class="math inline">\(p = P(A), q = P(A^c), a = E(Y|A), b = E(Y|A^c), v = \text{Var}(Y|A), w = \text{Var}(Y|A^c)\)</span>。</p>
+<p>那么 <span class="math inline">\(E(Y|I)\)</span> 以概率 <span class="math inline">\(p\)</span> 取 <span class="math inline">\(a\)</span>，以概率 <span class="math inline">\(q\)</span> 取 <span class="math inline">\(b\)</span>；而 <span class="math inline">\(\text{Var}(Y|I)\)</span> 以概率 <span class="math inline">\(p\)</span> 取 <span class="math inline">\(v\)</span>，以概率 <span class="math inline">\(q\)</span> 取 <span class="math inline">\(w\)</span>。因此： <span class="math display">\[
+E(\text{Var}(Y|I)) = vp + wq = \text{Var}(Y|A)P(A) + \text{Var}(Y|A^c)P(A^c)
+\]</span></p>
+<p>这恰好就是那个“错误表达式”，而 <span class="math inline">\(\text{Var}(Y)\)</span> 由此项加上另一项组成： <span class="math display">\[
+\text{Var}(E(Y|I)) = a^2p + b^2q - (ap + bq)^2
+\]</span></p>
+<p><strong>同时考虑组内变异和组间变异是至关重要的</strong>。</p>
+<h3 id="亚当与夏娃定律示例">9.6 亚当与夏娃定律示例</h3>
+<p>Adam and Eve examples</p>
+<p>本章最后通过几个示例来说明亚当定律和夏娃定律如何帮助我们求解复杂随机变量的均值和方差，特别是在涉及多层随机性的情况下。</p>
+<p>在第一个示例中，我们关注的随机变量是一个<strong>随机和</strong>（random sum）：即随机个数个随机变量之和。这里存在两层随机性：首先，和式中的每一项都是随机变量；其次，求和项的数量本身也是一个随机变量。</p>
+<p><strong>例 9.6.1（随机和）</strong>。一家商店一天接待 <span class="math inline">\(N\)</span> 个顾客，其中 <span class="math inline">\(N\)</span> 是一个具有有限均值和方差的随机变量。设 <span class="math inline">\(X_j\)</span> 为第 <span class="math inline">\(j\)</span> 个顾客在商店的消费金额。假设每个 <span class="math inline">\(X_j\)</span> 的均值为 <span class="math inline">\(\mu\)</span>，方差为 <span class="math inline">\(\sigma^2\)</span>，且 <span class="math inline">\(N\)</span> 与所有 <span class="math inline">\(X_j\)</span> 之间相互独立。用 <span class="math inline">\(\mu, \sigma^2, E(N)\)</span> 和 <span class="math inline">\(\text{Var}(N)\)</span> 来表示随机和 <span class="math inline">\(X = \sum_{j=1}^{N} X_j\)</span>（即商店一天的总收入）的均值和方差。</p>
+<p><strong>解：</strong></p>
+<p><strong>由于 <span class="math inline">\(X\)</span> 是一个和，我们的第一冲动可能是根据线性性质断言“<span class="math inline">\(E(X) = N\mu\)</span>”。唉，这将是一个范畴错误，因为 <span class="math inline">\(E(X)\)</span> 是一个数值，而 <span class="math inline">\(N\mu\)</span> 是一个随机变量。关键在于 <span class="math inline">\(X\)</span> 不仅仅是一个和，而是一个随机和；我们要相加的项数本身是随机的，<em><u>而线性性质适用于项数固定的求和</u></em>。</strong></p>
+<p>然而，这个范畴错误实际上暗示了正确的策略：如果我们被允许将 <span class="math inline">\(N\)</span> 视为常数，那么线性性质就会适用。因此，让我们对 <span class="math inline">\(N\)</span> 进行条件化。根据条件期望的线性性质： <span class="math display">\[
+E(X|N) = E\left(\sum_{j=1}^{N} X_j \middle| N\right) = \sum_{j=1}^{N} E(X_j|N) = \sum_{j=1}^{N} E(X_j) = N\mu
+\]</span></p>
+<p>我们利用了 <span class="math inline">\(X_j\)</span> 与 <span class="math inline">\(N\)</span> 的独立性来断言对于所有 <span class="math inline">\(j\)</span>，<span class="math inline">\(E(X_j|N) = E(X_j)\)</span>。请注意，“<span class="math inline">\(E(X|N) = N\mu\)</span>”这一表述并不是范畴错误，因为等式两边都是作为 <span class="math inline">\(N\)</span> 的函数的随机变量。最后，根据亚当定律： <span class="math display">\[
+E(X) = E(E(X|N)) = E(N\mu) = \mu E(N)
+\]</span></p>
+<p>这是一个令人愉悦的结果：<strong>平均总收入等于每个顾客的平均消费金额乘以平均顾客人数。</strong></p>
+<p>对于 <span class="math inline">\(\text{Var}(X)\)</span>，我们再次对 <span class="math inline">\(N\)</span> 进行条件化以得到 <span class="math inline">\(\text{Var}(X|N)\)</span>： <span class="math display">\[
+\text{Var}(X|N) = \text{Var}\left(\sum_{j=1}^{N} X_j \middle| N\right) = \sum_{j=1}^{N} \text{Var}(X_j|N) = \sum_{j=1}^{N} \text{Var}(X_j) = N\sigma^2
+\]</span></p>
+<p>夏娃定律告诉我们如何获取 <span class="math inline">\(X\)</span> 的无条件方差： <span class="math display">\[
+\text{Var}(X) = E(\text{Var}(X|N)) + \text{Var}(E(X|N))
+\]</span> <span class="math display">\[
+= E(N\sigma^2) + \text{Var}(N\mu)
+\]</span> <span class="math display">\[
+= \sigma^2 E(N) + \mu^2 \text{Var}(N)
+\]</span></p>
+<p>在下一个示例中，两层随机性的产生是因为我们的实验分两个阶段进行。我们先从一组城市中抽样一个城市，然后在该城市内对市民进行抽样。这是<strong>多层模型（multilevel model）</strong>的一个例子。</p>
+<p><strong>例 9.6.2（随机城市的随机样本）</strong>。为了研究某县内若干个城市的疾病流行率，我们随机挑选一个城市，然后从该城市中随机抽取 <span class="math inline">\(n\)</span> 个人作为样本。这是一种被广泛使用的调查技术，称为<strong>整群抽样</strong>（cluster sampling）。</p>
+<p>令 <span class="math inline">\(Q\)</span> 为所选城市中患病者的比例，并令 <span class="math inline">\(X\)</span> 为样本中患病者的人数。如图 9.8 所示（其中白点代表健康个体，黑点代表患病个体），不同城市的流行率可能大不相同。由于每个城市都有自己的疾病流行率，因此 <span class="math inline">\(Q\)</span> 是一个随机变量。假设 <span class="math inline">\(Q \sim \text{Unif}(0,1)\)</span>。还假设在给定 <span class="math inline">\(Q\)</span> 的条件下，样本中的每个人独立地以概率 <span class="math inline">\(Q\)</span> 患病；如果我们对所选城市进行有放回抽样，这一点是成立的；如果是无放回抽样但总体规模很大，这一点也近似成立。求 <span class="math inline">\(E(X)\)</span> 和 <span class="math inline">\(\text{Var}(X)\)</span>。</p>
+<p><img src="/img3/Introduction to Probability/F9.8.png" alt="F9.8" style="zoom:60%;" /></p>
+<p><strong>解：</strong></p>
+<p>根据我们的假设，<span class="math inline">\(X|Q \sim \text{Bin}(n,Q)\)</span>；这一符号表示在已知所选城市的疾病流行率的情况下，我们可以将 <span class="math inline">\(Q\)</span> 视为常数，每个抽样个体都是一个成功概率为 <span class="math inline">\(Q\)</span> 的独立伯努利试验。利用二项分布的均值和方差，可知 <span class="math inline">\(E(X|Q) = nQ\)</span> 且 <span class="math inline">\(\text{Var}(X|Q) = nQ(1-Q)\)</span>。此外，利用标准均匀分布的矩，可知 <span class="math inline">\(E(Q) = 1/2\)</span>，<span class="math inline">\(E(Q^2) = 1/3\)</span>，且 <span class="math inline">\(\text{Var}(Q) = 1/12\)</span>。现在我们可以应用亚当定律和夏娃定律来得到 <span class="math inline">\(X\)</span> 的无条件均值和方差： <span class="math display">\[
+E(X) = E(E(X|Q)) = E(nQ) = \frac{n}{2}
+\]</span> <span class="math display">\[
+\text{Var}(X) = E(\text{Var}(X|Q)) + \text{Var}(E(X|Q))
+\]</span> <span class="math display">\[
+= E(nQ(1-Q)) + \text{Var}(nQ)
+\]</span> <span class="math display">\[
+= nE(Q) - nE(Q^2) + n^2\text{Var}(Q)
+\]</span> <span class="math display">\[
+= \frac{n}{6} + \frac{n^2}{12}
+\]</span></p>
+<p>请注意，此问题的结构与贝叶斯台球（Bayes’ billiards）故事中的结构完全相同。因此，我们实际上知道 <span class="math inline">\(X\)</span> 的分布，而不仅仅是它的均值和方差：<span class="math inline">\(X\)</span> 在 <span class="math inline">\(\{0, 1, 2, \dots, n\}\)</span> 上服从离散均匀分布。但是，无论推导 <span class="math inline">\(X\)</span> 的分布是否可行，当 <span class="math inline">\(Q\)</span> 具有更复杂的分布，或者多层模型中存在更多层级时，都可以应用“亚当与夏娃”方法。例如，我们可以研究国家内部的州，州内部的县，县内部的城市，城市内部的人。</p>
+<p>最后但也同样重要的是，我们重新审视前一章中的故事 8.4.5，即伽马-泊松（Gamma-Poisson）问题。</p>
+<p><strong>例 9.6.3（再谈伽马-泊松）</strong>。回想一下，弗雷德（Fred）决定通过在公交车站等待 <span class="math inline">\(t\)</span> 小时并计算公交车数量 <span class="math inline">\(Y\)</span>，来了解布洛奇维尔（Blotchville）公交车泊松过程的速率。随后，他利用观测数据更新了他的先验分布 <span class="math inline">\(\lambda \sim \text{Gamma}(r_0, b_0)\)</span>。因此，弗雷德使用的是如下两层模型： <span class="math display">\[
+\lambda \sim \text{Gamma}(r_0, b_0)
+\]</span> <span class="math display">\[
+Y|\lambda \sim \text{Pois}(\lambda t)
+\]</span></p>
+<p>我们发现，在弗雷德的模型下，<span class="math inline">\(Y\)</span> 的边缘分布是参数为 <span class="math inline">\(r = r_0\)</span> 且 <span class="math inline">\(p = b_0/(b_0 + t)\)</span> 的负二项分布。特别地： <span class="math display">\[
+E(Y) = \frac{rq}{p} = \frac{r_0 t}{b_0}
+\]</span> <span class="math display">\[
+\text{Var}(Y) = \frac{rq}{p^2} = \frac{r_0 t(b_0 + t)}{b_0^2}
+\]</span></p>
+<p>让我们用亚当定律和夏娃定律独立验证这一点。利用泊松分布的结论，给定 <span class="math inline">\(\lambda\)</span> 下 <span class="math inline">\(Y\)</span> 的条件均值和方差为 <span class="math inline">\(E(Y|\lambda) = \text{Var}(Y|\lambda) = \lambda t\)</span>。利用伽马分布的结论，<span class="math inline">\(\lambda\)</span> 的边缘均值和方差为 <span class="math inline">\(E(\lambda) = r_0/b_0\)</span> 且 <span class="math inline">\(\text{Var}(\lambda) = r_0/b_0^2\)</span>。对于亚当和夏娃来说，这些信息就足够了： <span class="math display">\[
+E(Y) = E(E(Y|\lambda)) = E(\lambda t) = \frac{r_0 t}{b_0}
+\]</span> <span class="math display">\[
+\text{Var}(Y) = E(\text{Var}(Y|\lambda)) + \text{Var}(E(Y|\lambda))
+\]</span> <span class="math display">\[
+= E(\lambda t) + \text{Var}(\lambda t)
+\]</span> <span class="math display">\[
+= \frac{r_0 t}{b_0} + \frac{r_0 t^2}{b_0^2} = \frac{r_0 t(b_0 + t)}{b_0^2}
+\]</span></p>
+<p>这与我们之前的答案一致。区别在于，当使用亚当和夏娃定律时，我们不需要知道 <span class="math inline">\(Y\)</span> 服从负二项分布！如果我们当时懒得推导 <span class="math inline">\(Y\)</span> 的边缘分布，或者如果我们没那么幸运地得到一个有名字的分布，亚当和夏娃定律依然能提供 <span class="math inline">\(Y\)</span> 的均值和方差（尽管不能提供 PMF）。</p>
+<p>最后，让我们比较一下两层模型下 <span class="math inline">\(Y\)</span> 的均值和方差，与如果弗雷德完全确定 <span class="math inline">\(\lambda\)</span> 的真实值时所得到的均值和方差。换句话说，假设我们将 <span class="math inline">\(\lambda\)</span> 替换为其均值 <span class="math inline">\(E(\lambda) = r_0/b_0\)</span>，使 <span class="math inline">\(\lambda\)</span> 成为一个常数而非随机变量。那么在新假设下，公交车数量（我们称之为 <span class="math inline">\(\tilde{Y}\)</span>）的边缘分布将仅仅是参数为 <span class="math inline">\(r_0 t/b_0\)</span> 的泊松分布。于是我们会有： <span class="math display">\[
+E(\tilde{Y}) = \frac{r_0 t}{b_0}
+\]</span> <span class="math display">\[
+\text{Var}(\tilde{Y}) = \frac{r_0 t}{b_0}
+\]</span></p>
+<p>注意到 <span class="math inline">\(E(\tilde{Y}) = E(Y)\)</span>，但 <span class="math inline">\(\text{Var}(\tilde{Y}) &lt; \text{Var}(Y)\)</span>：来自夏娃定律的额外项 <span class="math inline">\(r_0 t^2 / b_0^2\)</span> 消失了。直观上，当我们把 <span class="math inline">\(\lambda\)</span> 固定在其均值时，我们消除了模型中的一层不确定性，这导致了无条件方差的减少。图 9.9 叠印了两个 PMF 的图像：灰色代表 <span class="math inline">\(Y \sim \text{NBin}(r_0, b_0/(b_0+t))\)</span>，黑色代表 <span class="math inline">\(\tilde{Y} \sim \text{Pois}(r_0 t/b_0)\)</span>。参数值被任意选择为 <span class="math inline">\(r_0 = 5, b_0 = 1, t = 2\)</span>。这两个 PMF 具有相同的质心（均值），但 <span class="math inline">\(Y\)</span> 的 PMF 明显更加分散。</p>
+<p><img src="/img3/Introduction to Probability/F9.9.png" alt="F9.9" style="zoom:60%;" /></p>
+<h3 id="本章小结">9.7 本章小结</h3>
+<p>要计算无条件期望，我们可以划分样本空间并使用全期望公式： <span class="math display">\[
+E(Y) = \sum_{i=1}^{n} E(Y|A_i)P(A_i)
+\]</span></p>
+<p>但我们必须注意不要在后续步骤中丢失信息（例如在漫长的计算过程中忘记对需要条件化的项进行条件化）。在具有递归结构的问题中，我们还可以对期望使用<strong>第一步分析法</strong>。</p>
+<p>条件期望 <span class="math inline">\(E(Y|X)\)</span> 和条件方差 <span class="math inline">\(\text{Var}(Y|X)\)</span> 是 <span class="math inline">\(X\)</span> 的函数，即随机变量；它们是通过将 <span class="math inline">\(X\)</span> 视为已知常数而得到的。如果 <span class="math inline">\(X\)</span> 和 <span class="math inline">\(Y\)</span> 相互独立，则 <span class="math inline">\(E(Y|X) = E(Y)\)</span> 且 <span class="math inline">\(\text{Var}(Y|X) = \text{Var}(Y)\)</span>。条件期望具有以下性质： <span class="math display">\[
+E(h(X)Y|X) = h(X)E(Y|X)
+\]</span> <span class="math display">\[
+E(Y_1 + Y_2|X) = E(Y_1|X) + E(Y_2|X)
+\]</span></p>
+<p>这与无条件期望的性质 <span class="math inline">\(E(cY) = cE(Y)\)</span> 和 <span class="math inline">\(E(Y_1 + Y_2) = E(Y_1) + E(Y_2)\)</span> 相类似。<strong>条件期望 <span class="math inline">\(E(Y|X)\)</span> 也是使残差 <span class="math inline">\(Y - E(Y|X)\)</span> 与 <span class="math inline">\(X\)</span> 的任何函数都不相关的随机变量，这意味着我们可以将其在几何上解释为一种投影。</strong></p>
+<p>最后，亚当定律（Adam’s law）和夏娃定律（Eve’s law）： <span class="math display">\[
+E(Y) = E(E(Y|X))
+\]</span> <span class="math display">\[
+\text{Var}(Y) = E(\text{Var}(Y|X)) + \text{Var}(E(Y|X))
+\]</span></p>
+<p>在具有多种形式或多层随机性的问题中，它们经常帮助我们计算 <span class="math inline">\(E(Y)\)</span> 和 <span class="math inline">\(\text{Var}(Y)\)</span>。</p>
+<p>图 9.10 展示了数值 <span class="math inline">\(E(Y|X=x)\)</span> 是如何与随机变量 <span class="math inline">\(E(Y|X)\)</span> 联系起来的，根据亚当定律，后者的期望为 <span class="math inline">\(E(Y)\)</span>。此外，它还展示了夏娃定律中的各项是如何构成的，以及它们如何组合在一起，从而根据以 <span class="math inline">\(X\)</span> 为条件的各项指标对 <span class="math inline">\(\text{Var}(Y)\)</span> 进行有用的分解。</p>
+<p><img src="/img3/Introduction to Probability/F9.10.png" alt="F9.10" style="zoom:80%;" /></p>
+<h3 id="r">9.8 R</h3>
+<p><strong>神秘奖金模拟</strong></p>
+<p>我们可以通过模拟来证明，在例 9.1.7（对价值未知的神秘奖金进行竞标）中，任何出价平均而言都会导致负收益。</p>
+<p>首先选择一个出价 <span class="math inline">\(b\)</span>（我们选择 0.6）；然后模拟大量假设的神秘奖金价值并将其存储在 <code>v</code> 中：</p>
+<p>R</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">b &lt;- 0.6</span><br><span class="line">nsim &lt;- 10^5</span><br><span class="line">v &lt;- runif(nsim)</span><br></pre></td></tr></table></figure>
+<p>如果 <span class="math inline">\(b &gt; (2/3)v\)</span>，则出价被接受。为了获得出价被接受情况下的平均利润，我们使用方括号仅保留满足条件的 <code>v</code> 值：</p>
+<p>R</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">mean(v[b &gt; (2/3)*v]) - b</span><br></pre></td></tr></table></figure>
+<p>你会发现无论 <span class="math inline">\(b\)</span> 取何值，该值都是负数，你可以通过尝试不同的 <span class="math inline">\(b\)</span> 值进行实验验证。</p>
+<p><strong>出现 HH 与 HT 的时间</strong></p>
+<p>为了验证例 9.1.9 的结果，我们可以先生成一长串公平硬币的投掷序列。这可以通过 <code>sample</code> 命令完成。我们使用 <code>paste</code> 函数配合 <code>collapse=""</code> 参数将这些投掷结果转为一个由 “H” 和 “T” 组成的字符串：</p>
+<p>R</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">paste(sample(c(&quot;H&quot;,&quot;T&quot;),100,replace=TRUE),collapse=&quot;&quot;)</span><br></pre></td></tr></table></figure>
+<p>长度为 100 的序列足以几乎保证 HH 和 HT 都至少出现一次。</p>
+<p>为了确定看到 HH 和 HT 平均需要多少次投掷，我们需要生成许多投掷序列。为此，我们使用熟悉的朋友 <code>replicate</code>：</p>
+<p>R</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">r &lt;- replicate(10^3,paste(sample(c(&quot;H&quot;,&quot;T&quot;),100,replace=T),</span><br><span class="line">collapse=&quot;&quot;))</span><br></pre></td></tr></table></figure>
+<p>现在 <code>r</code> 包含 1000 个硬币投掷序列，每个序列长度为 100。要找到每个序列中 HH 第一次出现的位置，你可以使用 <code>stringr</code> 包中的 <code>str_locate</code> 命令。在安装并加载该包后：</p>
+<p>R</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">t &lt;- str_locate(r,&quot;HH&quot;)</span><br></pre></td></tr></table></figure>
+<p>这将创建一个两列的表格 <code>t</code>，各列分别包含每个序列中 HH 第一次出现的起始位置和结束位置。（使用 <code>head(t)</code> 可以显示表格的前几行，让你了解结果的样式。）</p>
+<p>我们想要的是第二列给出的结束位置。特别地，我们想要第二列的平均值，它是对 HH 平均等待时间的近似：</p>
+<p>R</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">mean(t[,2])</span><br></pre></td></tr></table></figure>
+<p>你的答案是在 6 左右吗？将 “HH” 换成 “HT” 再试一次，你的答案是在 4 左右吗？</p>
+<p><strong>线性回归</strong></p>
+<p>在例 9.3.10 中，我们推导了线性回归模型斜率和截距的公式，这些公式可用于通过解释变量预测响应变量。让我们尝试将这些公式应用于模拟数据集：</p>
+<p>R</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">x &lt;- rnorm(100)</span><br><span class="line">y &lt;- 3 + 5*x + rnorm(100)</span><br></pre></td></tr></table></figure>
+<p>向量 <code>x</code> 包含 100 个随机变量 <span class="math inline">\(X \sim N(0,1)\)</span> 的实现值，向量 <code>y</code> 包含 100 个随机变量 <span class="math inline">\(Y = a + bX + \epsilon\)</span> 的实现值，其中 <span class="math inline">\(\epsilon \sim N(0,1)\)</span>。我们可以看到，该数据集的 <span class="math inline">\(a\)</span> 和 <span class="math inline">\(b\)</span> 真实值分别为 3 和 5。我们可以通过 <code>plot(x,y)</code> 将数据可视化为散点图。</p>
+<p>现在让我们看看是否能利用例 9.3.10 中的公式得到 <span class="math inline">\(a\)</span> 和 <span class="math inline">\(b\)</span> 真实值的良好估计：</p>
+<p>R</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">b &lt;- cov(x,y) / var(x)</span><br><span class="line">a &lt;- mean(y) - b*mean(x)</span><br></pre></td></tr></table></figure>
+<p>这里 <code>cov(x,y)</code>、<code>var(x)</code> 和 <code>mean(x)</code> 分别提供了样本协方差、样本方差和样本均值，用于分别估计 <span class="math inline">\(\text{Cov}(X,Y)\)</span>、<span class="math inline">\(\text{Var}(X)\)</span> 和 <span class="math inline">\(E(X)\)</span>。（我们在前面的章节中详细讨论过样本均值和样本方差。样本协方差的定义与之类似，是估计真实协方差的一种自然方式。）</p>
+<p>你会发现 <span class="math inline">\(b\)</span> 接近 5 而 <span class="math inline">\(a\)</span> 接近 3。这些估计值定义了最佳拟合线。<code>abline</code> 命令让我们可以将最佳拟合线绘制在散点图之上：</p>
+<p>R</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">plot(x,y)</span><br><span class="line">abline(a=a,b=b)</span><br></pre></td></tr></table></figure>
+<p><code>abline</code> 的第一个参数是直线的截距，第二个参数是斜率。</p>
+<p>目前我已经为您翻译完了第 9 章的所有内容，如果您有其他章节或特定的统计学问题，欢迎随时提供。</p>
+]]></content>
+      <categories>
+        <category>书籍翻译</category>
+      </categories>
+  </entry>
+  <entry>
     <title>《Introduction to Probability》第8章 变换</title>
     <url>/2026/01/18/Introduction%20to%20Probability%20%20%E7%AC%AC8%E7%AB%A0%20%E5%8F%98%E6%8D%A2/</url>
     <content><![CDATA[<h2 id="第8章-变换">第8章 变换</h2>
