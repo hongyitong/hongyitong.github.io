@@ -1,6 +1,401 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>《Introduction to Probability》第11章 马尔可夫链</title>
+    <url>/2026/01/21/Introduction%20to%20Probability%20%E7%AC%AC11%E7%AB%A0%20%E9%A9%AC%E5%B0%94%E5%8F%AF%E5%A4%AB%E9%93%BE/</url>
+    <content><![CDATA[<h1 id="第-11-章-马尔可夫链">第 11 章 马尔可夫链</h1>
+<p>Markov chains</p>
+<p><strong>马尔可夫链由安德烈·马尔可夫（Andrey Markov，马尔可夫不等式的提出者）于 1906 年首次引入，其目标是证明大数定律同样适用于非独立的随机变量。</strong></p>
+<p>为了理解马尔可夫模型的由来，首先考虑独立同分布（i.i.d.）的随机变量序列 <span class="math inline">\(X_0, X_1, \dots, X_n, \dots\)</span>，其中 <span class="math inline">\(n\)</span> 代表时间。这是我们在第 10 章中一直采用的设定，但对于模拟现实世界的现象，独立性假设可能过于苛刻；它意味着 <span class="math inline">\(X_n\)</span> 彼此之间完全不提供任何信息。在另一个极端，允许 <span class="math inline">\(X_n\)</span> 之间存在任意的相互作用会使计算变得异常困难。<strong>马尔可夫链是一种表现出“一步相关性”的随机变量序列。因此，马尔可夫链是完全独立与完全相关之间的一个理想折中点。</strong></p>
+<p>自发明以来，马尔可夫链已在生物学、博弈论、金融、机器学习和统计物理等众多领域变得极其重要。它们还广泛用于通过被称为<strong>马尔可夫链蒙特卡罗（MCMC）</strong>的算法来模拟复杂分布。在本章中，我们将介绍马尔可夫链及其性质，并在下一章探讨一些 MCMC 技术的示例。</p>
+<span id="more"></span>
+<h2 id="马尔可夫性质与转移矩阵">11.1 马尔可夫性质与转移矩阵</h2>
+<p>Markov property and transition matrix</p>
+<p>马尔可夫链同时“生存”在空间和时间中：<span class="math inline">\(X_n\)</span> 可能取值的集合称为<strong>状态空间</strong>（state space），而索引 <span class="math inline">\(n\)</span> 代表过程随时间的演变。马尔可夫链的状态空间可以是离散的或连续的，时间同样如此。在本章中，我们将专门讨论具有<strong>有限状态空间</strong>的<strong>离散状态、离散时间</strong>马尔可夫链。具体而言，我们假设 <span class="math inline">\(X_n\)</span> 在有限集合（通常为 <span class="math inline">\(\{1, 2, \dots, M\}\)</span> 或 <span class="math inline">\(\{0, 1, \dots, M\}\)</span>）中取值。</p>
+<p><strong>定义 11.1.1（马尔可夫链）</strong>。如果对于所有 <span class="math inline">\(n \geq 0\)</span>，在状态空间 <span class="math inline">\(\{1, 2, \dots, M\}\)</span> 中取值的随机变量序列 <span class="math inline">\(X_0, X_1, X_2, \dots\)</span> 满足： <span class="math display">\[
+P(X_{n+1} = j | X_n = i, X_{n-1} = i_{n-1}, \dots, X_0 = i_0) = P(X_{n+1} = j | X_n = i)
+\]</span></p>
+<p>则称该序列为<strong>马尔可夫链</strong>。</p>
+<p>数值 <span class="math inline">\(P(X_{n+1} = j | X_n = i)\)</span> 称为从状态 <span class="math inline">\(i\)</span> 到状态 <span class="math inline">\(j\)</span> 的<strong>转移概率</strong>（ transition probability）。在本书中，提到马尔可夫链时，我们将隐式地假设它是<strong>时间齐次（time-homogeneous）</strong>的，这意味着转移概率 <span class="math inline">\(P(X_{n+1} = j | X_n = i)\)</span> 对所有时间 <span class="math inline">\(n\)</span> 都是相同的。但需要注意，文献中对于是称其为“时间齐次马尔可夫链”还是简称“马尔可夫链”并不统一。</p>
+<p>上述条件被称为<strong>马尔可夫性质</strong>。它指出，在已知全部历史 <span class="math inline">\(X_0, X_1, \dots, X_n\)</span> 的情况下，只有最近的一项 <span class="math inline">\(X_n\)</span> 对预测 <span class="math inline">\(X_{n+1}\)</span> 是重要的。如果我们把时间 <span class="math inline">\(n\)</span> 看作“现在”，<span class="math inline">\(n\)</span> 之前的时间看作“过去”，<span class="math inline">\(n\)</span> 之后的时间看作“未来”，<strong>马尔可夫性质可以表述为：给定现在，过去和未来是条件独立的。马尔可夫性质极大地简化了条件概率的计算：我们不需要对整个过去进行条件化，而只需要对最近的值进行条件化。</strong></p>
+<p>为了描述马尔可夫链的动力学，我们需要知道从任何状态转移到任何其他状态的概率。这些信息可以编码在一个矩阵中，称为<strong>转移矩阵</strong>，其 <span class="math inline">\((i, j)\)</span> 位置的条目就是链在一步之内从状态 <span class="math inline">\(i\)</span> 转移到状态 <span class="math inline">\(j\)</span> 的概率。</p>
+<p><strong>定义 11.1.2（转移矩阵 transition matrix）</strong>。令 <span class="math inline">\(X_0, X_1, X_2, \dots\)</span> 为状态空间为 <span class="math inline">\(\{1, 2, \dots, M\}\)</span> 的马尔可夫链，令 <span class="math inline">\(q_{ij} = P(X_{n+1} = j | X_n = i)\)</span> 为从状态 <span class="math inline">\(i\)</span> 转移到状态 <span class="math inline">\(j\)</span> 的转移概率。则 <span class="math inline">\(M \times M\)</span> 矩阵 <span class="math inline">\(Q = (q_{ij})\)</span> 称为该链的<strong>转移矩阵</strong>。</p>
+<p>注意 <span class="math inline">\(Q\)</span> 是一个非负矩阵，且每一行的元素之和为 1。这是因为从任何状态 <span class="math inline">\(i\)</span> 出发，“移动到状态 1”、“移动到状态 2”、……、“移动到状态 <span class="math inline">\(M\)</span>”这些事件是互斥的，且它们的并集概率为 1，因为链必须转移到某个地方。</p>
+<p><strong>示例 11.1.3（雨天-晴天马尔可夫链）</strong>。假设在任何给定的一天，天气要么是雨天（R），要么是晴天（S）。如果今天是雨天，那么明天是雨天的概率为 <span class="math inline">\(1/3\)</span>，是晴天的概率为 <span class="math inline">\(2/3\)</span>。如果今天是晴天，那么明天是雨天的概率为 <span class="math inline">\(1/2\)</span>，是晴天的概率为 <span class="math inline">\(1/2\)</span>。令 <span class="math inline">\(X_n\)</span> 为第 <span class="math inline">\(n\)</span> 天的天气，则 <span class="math inline">\(X_0, X_1, X_2, \dots\)</span> 是状态空间 <span class="math inline">\(\{R, S\}\)</span> 上的马尔可夫链。我们知道它满足马尔可夫性质，因为根据描述，预测明天的天气只取决于今天。</p>
+<p>该链的转移矩阵为：</p>
+<p><img src="/img3/Introduction to Probability/F11.01.png" alt="F11.01" style="zoom:50%;" /></p>
+<p>第一行表示从状态 <span class="math inline">\(R\)</span> 开始，我们以 <span class="math inline">\(1/3\)</span> 的概率回到状态 <span class="math inline">\(R\)</span>，以 <span class="math inline">\(2/3\)</span> 的概率转移到状态 <span class="math inline">\(S\)</span>。第二行表示从状态 <span class="math inline">\(S\)</span> 开始，有 <span class="math inline">\(1/2\)</span> 的机会移动到状态 <span class="math inline">\(R\)</span>，有 <span class="math inline">\(1/2\)</span> 的机会留在状态 <span class="math inline">\(S\)</span>。如果状态没有明显的顺序（如 <span class="math inline">\(R\)</span> 和 <span class="math inline">\(S\)</span>），我们只需固定一个顺序并始终如一地使用它。</p>
+<p>马尔可夫链的转移概率也可以用图示表示。每个状态用一个圆圈表示，箭头指示可能的一步转移；我们可以想象一个粒子在状态之间游走，随机选择跟随哪个箭头。我们在箭头旁边写上相应的转移概率。</p>
+<p><img src="/img3/Introduction to Probability/F11.02.png" alt="F11.02" style="zoom:60%;" /></p>
+<p>如果明天的天气取决于今天和昨天的天气呢？ 例如，假设天气的运作方式如上，但增加两个条件：如果连续两天降雨，明天一定是晴天；如果连续两天晴天，明天一定是雨天。在这种新的天气动力学下，<span class="math inline">\(X_n\)</span> 不再构成马尔可夫链，因为违背了马尔可夫性质：在已知今天天气的条件下，昨天的天气仍然能为预测明天提供有用信息。</p>
+<p>然而，通过<strong>扩大状态空间</strong>，我们可以创建一个新的马尔可夫链：令 <span class="math inline">\(Y_n = (X_{n-1}, X_n)\)</span>（对于 <span class="math inline">\(n \geq 1\)</span>）。那么 <span class="math inline">\(Y_1, Y_2, \dots\)</span> 是状态空间 <span class="math inline">\(\{(R,R), (R,S), (S,R), (S,S)\}\)</span> 上的马尔可夫链。你可以验证新的转移矩阵为：</p>
+<p><img src="/img3/Introduction to Probability/F11.03.png" alt="F11.03" style="zoom:60%;" /></p>
+<p>其对应的图形表示如下：</p>
+<p><img src="/img3/Introduction to Probability/F11.04.png" alt="F11.04" style="zoom:60%;" /></p>
+<p>类似地，<strong>我们可以通过进一步扩大状态空间来处理天气的阶数为三或四的依赖关系，从而使马尔可夫性质成立。</strong></p>
+<p>一旦我们拥有了马尔可夫链的转移矩阵 <span class="math inline">\(Q\)</span>，我们就可以算出更长时间尺度的转移概率。</p>
+<p><strong>定义 11.1.4（<span class="math inline">\(n\)</span> 步转移概率）。</strong> 从 <span class="math inline">\(i\)</span> 到 <span class="math inline">\(j\)</span> 的 <span class="math inline">\(n\)</span> 步转移概率是：在处于状态 <span class="math inline">\(i\)</span> 恰好 <span class="math inline">\(n\)</span> 步之后处于状态 <span class="math inline">\(j\)</span> 的概率。我们将其记为 <span class="math inline">\(q_{ij}^{(n)}\)</span>： <span class="math display">\[
+q_{ij}^{(n)} = P(X_n = j | X_0 = i)
+\]</span></p>
+<p>注意 <span class="math display">\[
+q_{ij}^{(2)} = \sum_k q_{ik} q_{kj}
+\]</span></p>
+<p>因为要从 <span class="math inline">\(i\)</span> 经过两步到达 <span class="math inline">\(j\)</span>，该链必须先从 <span class="math inline">\(i\)</span> 到达某个中间状态 <span class="math inline">\(k\)</span>，然后再从 <span class="math inline">\(k\)</span> 到达 <span class="math inline">\(j\)</span>；由于马尔可夫性质，这些转移是相互独立的。由于根据矩阵乘法的定义，等号右侧是 <span class="math inline">\(Q^2\)</span> 的第 <span class="math inline">\((i, j)\)</span> 个条目，我们得出结论：矩阵 <span class="math inline">\(Q^2\)</span> 给出了两步转移概率。通过归纳法，转移矩阵的 <span class="math inline">\(n\)</span> 次幂给出了 <span class="math inline">\(n\)</span> 步转移概率：</p>
+<p><span class="math inline">\(q_{ij}^{(n)}\)</span> 是 <span class="math inline">\(Q^n\)</span> 的第 <span class="math inline">\((i, j)\)</span> 个条目。</p>
+<p><img src="/img3/Introduction to Probability/F11.1.png" alt="F11.1" style="zoom:60%;" /></p>
+<p><strong>例 11.1.5（4 状态马尔可夫链的转移矩阵）。</strong> 考虑图 11.1 中描绘的 4 状态马尔可夫链。当箭头上没有标注概率时（如此处所示），这意味着从给定状态发出的所有箭头都是等可能的。例如，从状态 1 发出 3 个箭头，因此转移 <span class="math inline">\(1 \to 3\)</span>、<span class="math inline">\(1 \to 2\)</span> 和 <span class="math inline">\(1 \to 1\)</span> 的概率均为 <span class="math inline">\(1/3\)</span>。因此，该链的转移矩阵为</p>
+<p><img src="/img3/Introduction to Probability/F11.05.png" alt="F11.05" style="zoom:50%;" /></p>
+<p>为了计算该链从状态 1 开始，在 5 步后处于状态 3 的概率，我们可以查看 <span class="math inline">\(Q^5\)</span> 的第 <span class="math inline">\((1, 3)\)</span> 个条目。这里，使用计算机计算得到 <span class="math inline">\(Q^5\)</span> 为</p>
+<p><img src="/img3/Introduction to Probability/F11.06.png" alt="F11.06" style="zoom:50%;" /></p>
+<p>所以 <span class="math inline">\(q_{13}^{(5)} = 52/243\)</span>。</p>
+<p>使用第 7 章的语言，转移矩阵 <span class="math inline">\(Q\)</span> 编码了在给定链的初始状态下 <span class="math inline">\(X_1\)</span> 的条件分布。具体来说，<span class="math inline">\(Q\)</span> 的第 <span class="math inline">\(i\)</span> 行是以行向量表示的、给定 <span class="math inline">\(X_0 = i\)</span> 时 <span class="math inline">\(X_1\)</span> 的条件 PMF。类似地，<span class="math inline">\(Q^n\)</span> 的第 <span class="math inline">\(i\)</span> 行是给定 <span class="math inline">\(X_0 = i\)</span> 时 <span class="math inline">\(X_n\)</span> 的条件 PMF。</p>
+<p>为了得到 <span class="math inline">\(X_0, X_1, \dots\)</span> 的边缘分布，我们不仅需要指定转移矩阵，还需要指定链的初始条件。初始状态 <span class="math inline">\(X_0\)</span> 可以是确定性指定的，也可以是根据某种分布随机指定的。令 <span class="math inline">\(\mathbf{t} = (t_1, t_2, \dots, t_M)\)</span> 为以向量形式表示的 <span class="math inline">\(X_0\)</span> 的 PMF，即 <span class="math inline">\(t_i = P(X_0 = i)\)</span>。那么该链在任何时间的边缘分布都可以通过转移矩阵计算得出，即使用全概率公式（LOTP）对所有状态进行平均。</p>
+<p><strong>命题 11.1.6（<span class="math inline">\(X_n\)</span> 的边缘分布）。</strong> 定义 <span class="math inline">\(\mathbf{t} = (t_1, t_2, \dots, t_M)\)</span>，其中 <span class="math inline">\(t_i = P(X_0 = i)\)</span>，并将 <span class="math inline">\(\mathbf{t}\)</span> 视为行向量。那么 <span class="math inline">\(X_n\)</span> 的边缘分布由向量 <span class="math inline">\(\mathbf{t}Q^n\)</span> 给出。也就是说，<span class="math inline">\(\mathbf{t}Q^n\)</span> 的第 <span class="math inline">\(j\)</span> 个分量是 <span class="math inline">\(P(X_n = j)\)</span>。</p>
+<p><strong>证明：</strong> 根据全概率公式，以 <span class="math inline">\(X_0\)</span> 为条件，链在 <span class="math inline">\(n\)</span> 步后处于状态 <span class="math inline">\(j\)</span> 的概率为 <span class="math display">\[
+P(X_n = j) = \sum_{i=1}^{M} P(X_0 = i)P(X_n = j | X_0 = i) = \sum_{i=1}^{M} t_i q_{ij}^{(n)}
+\]</span></p>
+<p>根据矩阵乘法的定义，这正是 <span class="math inline">\(\mathbf{t}Q^n\)</span> 的第 <span class="math inline">\(j\)</span> 个分量。</p>
+<p><strong>例 11.1.7（4 状态马尔可夫链的边缘分布）。</strong> 再次考虑图 11.1 所示的 4 状态马尔可夫链。假设初始条件为 <span class="math inline">\(\mathbf{t} = (1/4, 1/4, 1/4, 1/4)\)</span>，这意味着该链在四个状态中每个状态开始的概率相等。令 <span class="math inline">\(X_n\)</span> 为该链在时间 <span class="math inline">\(n\)</span> 的位置。那么 <span class="math inline">\(X_1\)</span> 的边缘分布为</p>
+<p><img src="/img3/Introduction to Probability/F11.07.png" alt="F11.07" style="zoom:50%;" /></p>
+<p><span class="math inline">\(X_5\)</span> 的边缘分布为</p>
+<p><img src="/img3/Introduction to Probability/F11.08.png" alt="F11.08" style="zoom:50%;" /></p>
+<p>我们使用了计算机来执行矩阵乘法。</p>
+<h2 id="状态的分类">11.2 状态的分类</h2>
+<p>Classification of states</p>
+<p>在本节中，我们将介绍用于描述马尔可夫链各种特征的术语。马尔可夫链的状态可以被分类为<strong>重现性</strong>（recurrent）或<strong>暂时性</strong>（transient），这取决于从长期来看，这些状态是被反复访问，还是最终被遗弃。状态还可以根据其<strong>周期</strong>（period）进行分类，周期是一个正整数，概括了对一个状态的连续访问之间可能流逝的时间量。这些特征非常重要，因为它们决定了马尔可夫链的长期行为，我们将在 11.3 节中对此进行研究。</p>
+<p>重现性和暂时性的概念通过具体的例子可以得到最好的说明。在图 11.2 左侧显示的马尔可夫链中（之前在例 11.1.5 中出现过），一个在各状态之间移动的粒子从长期来看将继续在所有 4 个状态中停留，因为从任何一个状态都可以到达任何其他状态。相比之下，考虑图 11.2 右侧的链，并让粒子从状态 1 开始。在一段时间内，该链可能会在由状态 1、2 和 3 组成的三角形中徘徊，但最终它会到达状态 4，并且从那里它再也无法回到状态 1、2 或 3。然后它将永远在状态 4、5 和 6 之间游荡。状态 1、2 和 3 是暂时性的，而状态 4、5 和 6 是重现性的。</p>
+<p><img src="/img3/Introduction to Probability/F11.2.png" alt="F11.2" style="zoom:60%;" /></p>
+<p>通常，这些概念定义如下：</p>
+<p><strong>定义 11.2.1（重现和暂时状态）。</strong> 马尔可夫链的状态 <span class="math inline">\(i\)</span> 是<strong>重现的</strong>，如果从 <span class="math inline">\(i\)</span> 开始，该链最终回到 <span class="math inline">\(i\)</span> 的概率为 1。否则，该状态是<strong>暂时性的</strong>，这意味着如果该链从 <span class="math inline">\(i\)</span> 开始，存在一个正概率永远不会回到 <span class="math inline">\(i\)</span>。</p>
+<p>事实上，尽管暂时状态的定义仅要求存在永远不回到该状态的正概率，但我们可以说得更绝对一些：只要存在永远离开 <span class="math inline">\(i\)</span> 的正概率，该链最终<strong>一定会</strong>永远离开 <span class="math inline">\(i\)</span>。此外，我们可以找到回到该状态次数的分布。</p>
+<p><strong>命题 11.2.2（回到暂时状态的次数服从几何分布）。</strong> 令 <span class="math inline">\(i\)</span> 为马尔可夫链的一个暂时状态。假设从 <span class="math inline">\(i\)</span> 开始，永远不回到 <span class="math inline">\(i\)</span> 的概率是一个正数 <span class="math inline">\(p &gt; 0\)</span>。那么，从 <span class="math inline">\(i\)</span> 开始，该链在永远离开之前回到 <span class="math inline">\(i\)</span> 的次数服从几何分布 <span class="math inline">\(Geom(p)\)</span>。</p>
+<p>其证明通过几何分布的故事得出：每次链处于 <span class="math inline">\(i\)</span> 时，我们就进行一次伯努利试验，如果链最终回到了 <span class="math inline">\(i\)</span>，则结果为“失败”；如果链永远离开了 <span class="math inline">\(i\)</span>，则结果为“成功”；由于马尔可夫性质，这些试验是相互独立的。回到状态 <span class="math inline">\(i\)</span> 的次数即为第一次成功前的失败次数，这与几何分布的故事相吻合。由于几何随机变量总是取有限值，这个命题告诉我们，在经过有限次访问后，该链将永远离开状态 <span class="math inline">\(i\)</span>。</p>
+<p>如果状态数量不是太多，对状态进行重现性或暂时性分类的一种方法是画出马尔可夫链的图示，并使用我们在分析图 11.2 中的链时所用的那种推理。我们可以立即断定所有状态都是重现的一个特殊情况是当该链是<strong>不可约的</strong>（irreducible），这意味着可以从任何状态到达任何其他状态。</p>
+<p><strong>定义 11.2.3（不可约链和可约链 Irreducible and reducible chain）。</strong> 如果对于任何两个状态 <span class="math inline">\(i\)</span> 和 <span class="math inline">\(j\)</span>，都可以在有限步内（以正概率）从 <span class="math inline">\(i\)</span> 到达 <span class="math inline">\(j\)</span>，则具有转移矩阵 <span class="math inline">\(Q\)</span> 的马尔可夫链是<strong>不可约的</strong>。也就是说，对于任何状态 <span class="math inline">\(i, j\)</span>，都存在某个正整数 <span class="math inline">\(n\)</span>，使得 <span class="math inline">\(Q^n\)</span> 的第 <span class="math inline">\((i, j)\)</span> 个条目为正。不是不可约的马尔可夫链被称为<strong>可约的</strong>。</p>
+<p><strong>命题 11.2.4（不可约意味着所有状态都是重现的）。</strong> 在具有有限状态空间的不可约马尔可夫链中，所有状态都是重现的。</p>
+<p><strong>证明：</strong> 显然至少有一个状态必须是重现的；如果所有状态都是暂时性的，该链最终将永远离开所有状态，变得无处可去！因此，在不失一般性的情况下，假设状态 1 是重现的，并考虑任何其他状态 <span class="math inline">\(i\)</span>。根据不可约性的定义，我们知道对于某个 <span class="math inline">\(n\)</span>，<span class="math inline">\(q_{1i}^{(n)}\)</span> 是正的。因此，每当链处于状态 1 时，都有一个正概率在 <span class="math inline">\(n\)</span> 步后处于状态 <span class="math inline">\(i\)</span>。</p>
+<p>由于该链无限次地访问状态 1，我们知道该链最终会从状态 1 到达状态 <span class="math inline">\(i\)</span>；可以将每次访问状态 1 看作是开始一次试验，其中“成功”被定义为在最多 <span class="math inline">\(n\)</span> 步内到达状态 <span class="math inline">\(i\)</span>。由于状态 1 是重现的，该链会从状态 <span class="math inline">\(i\)</span> 返回到状态 1，并且基于同样的逻辑，它最终会再次到达状态 <span class="math inline">\(i\)</span>。通过归纳法，该链将无限次地访问状态 <span class="math inline">\(i\)</span>。由于 <span class="math inline">\(i\)</span> 是任意取的，我们得出结论：所有状态都是重现的。</p>
+<p>该命题的逆命题是错误的；一个可约马尔可夫链的所有状态也可能是重现的。下面的马尔可夫链就是一个例子，它由两个状态“孤岛”组成。</p>
+<p><img src="/img3/Introduction to Probability/F11.09.png" alt="F11.09" style="zoom:60%;" /></p>
+<p><strong>注 11.2.5</strong>。请注意，<strong>重现性或暂时性是马尔可夫链中每个状态的属性，而不可约性或可约性是链整体的属性。</strong></p>
+<p>下面是前面章节中两个熟悉的例子，我们将从马尔可夫链的角度重新审视它们，并识别其重现状态和暂时状态。</p>
+<p><strong>例 11.2.6（作为马尔可夫链的赌徒破产问题）。</strong> 在赌徒破产问题（例 2.7.3）中，两名赌徒 A 和 B 分别持有 <span class="math inline">\(i\)</span> 和 <span class="math inline">\(N-i\)</span> 美元，进行一系列赌注为 $1 的博弈。在每一轮中，玩家 A 获胜的概率为 <span class="math inline">\(p\)</span>，输掉的概率为 <span class="math inline">\(q = 1-p\)</span>。令 <span class="math inline">\(X_n\)</span> 为赌徒 A 在时间 <span class="math inline">\(n\)</span> 的财富。那么 <span class="math inline">\(X_0, X_1, \dots\)</span> 是状态空间 <span class="math inline">\(\{0, 1, \dots, N\}\)</span> 上的马尔可夫链。根据设定，<span class="math inline">\(X_0 = i\)</span>。一旦马尔可夫链到达 0 或 <span class="math inline">\(N\)</span>（意味着玩家 A 或玩家 B 破产），该链将永远停留在那一状态。该链的图示如下。</p>
+<p><img src="/img3/Introduction to Probability/F11.010.png" alt="F11.010" style="zoom:60%;" /></p>
+<p>我们在第 2 章中证明了 A 或 B 破产的概率为 1，因此对于除 0 或 <span class="math inline">\(N\)</span> 之外的任何起始状态 <span class="math inline">\(i\)</span>，该马尔可夫链最终都会被吸收到状态 0 或 <span class="math inline">\(N\)</span>，且永远不会回到 <span class="math inline">\(i\)</span>。因此，对于这个马尔可夫链，状态 0 和 <span class="math inline">\(N\)</span> 是重现的，所有其他状态都是暂时性的。该链是可约的，因为从状态 0 只能到达状态 0，从状态 <span class="math inline">\(N\)</span> 只能到达状态 <span class="math inline">\(N\)</span>。</p>
+<p><strong>例 11.2.7（作为马尔可夫链的赠券收集者问题）。</strong> 在赠券收集者问题（例 4.3.12）中，有 <span class="math inline">\(C\)</span> 种类型的赠券（或玩具），我们逐一收集，每次从 <span class="math inline">\(C\)</span> 种赠券类型中有放回地抽样。令 <span class="math inline">\(X_n\)</span> 为 <span class="math inline">\(n\)</span> 次尝试后我们收集到的不同赠券类型的数量。那么 <span class="math inline">\(X_0, X_1, \dots\)</span> 是状态空间 <span class="math inline">\(\{0, 1, \dots, C\}\)</span> 上的马尔可夫链。根据设定，<span class="math inline">\(X_0 = 0\)</span>。该链如下图所示。</p>
+<p><img src="/img3/Introduction to Probability/F11.011.png" alt="F11.011" style="zoom:60%;" /></p>
+<p>除了状态 <span class="math inline">\(C\)</span> 之外，我们在离开一个状态后永远无法返回；收集到的赠券类型数量只能随时间增加。因此，除了 <span class="math inline">\(C\)</span> 是重现的，所有状态都是暂时性的。该链是可约的，因为例如，不可能从状态 2 回到状态 1。</p>
+<p>另一种分类状态的方法是根据它们的<strong>周期</strong>。状态的周期概括了对该状态的连续访问之间可能流逝的时间。</p>
+<p><strong>定义 11.2.8（状态的周期，周期链与非周期链 Period of a state, periodic and aperiodic chain）。</strong> 马尔可夫链中状态 <span class="math inline">\(i\)</span> 的<strong>周期</strong>是从 <span class="math inline">\(i\)</span> 开始，返回 <span class="math inline">\(i\)</span> 所需的可能步数的最大公约数（the greatest common divisor)(gcd）。也就是说，<span class="math inline">\(i\)</span> 的周期是使 <span class="math inline">\(Q^n\)</span> 的第 <span class="math inline">\((i, i)\)</span> 个条目为正的所有 <span class="math inline">\(n\)</span> 的最大公约数。（如果从 <span class="math inline">\(i\)</span> 开始永远无法回到 <span class="math inline">\(i\)</span>，则 <span class="math inline">\(i\)</span> 的周期为 <span class="math inline">\(\infty\)</span>。）如果状态的周期等于 1，则称该状态为<strong>非周期的</strong>；否则称为<strong>周期的</strong>。如果链中所有状态都是非周期的，则称该链本身为<strong>非周期的</strong>；否则称为<strong>周期的</strong>。</p>
+<p>例如，让我们再次考虑图 11.2 中的两个马尔可夫链（在图 11.3 中再次显示）。我们首先考虑右侧的 6 状态链。从状态 1 开始，可能在 3 步、6 步、9 步等之后回到状态 1，但不可能在任何非 3 的倍数的步数后回到状态 1。因此，状态 1 的周期为 3。同样，状态 2 和 3 的周期也为 3。另一方面，状态 4、5 和 6 的周期为 1，但由于至少有一个状态的周期不为 1，该链是周期的。相比之下，在左侧的链中，所有状态都是非周期的，因此该链是非周期的。</p>
+<p><img src="/img3/Introduction to Probability/F11.3.png" alt="F11.3" style="zoom:60%;" /></p>
+<p>在例 11.2.6 的赌徒破产链中，除了 0 和 <span class="math inline">\(N\)</span> 的周期为 1 之外，每个状态的周期都为 2。在赠券收集者链中，除了状态 0 的周期为 <span class="math inline">\(\infty\)</span>（因为不可能回到状态 0）之外，每个状态的周期都为 1。因此，这两个链都不是非周期的。</p>
+<p>检查一个不可约链是否为非周期链通常比看起来要容易得多：下一个命题表明，我们只需要计算一个状态的周期，而不需要逐个状态寻找周期不为 1 的状态。</p>
+<p><strong>命题 11.2.9（不可约链中的周期）。</strong> <strong>在不可约马尔可夫链中，所有状态都具有相同的周期。</strong></p>
+<h2 id="平稳分布">11.3 平稳分布</h2>
+<p>Stationary distribution</p>
+<p>重现性和暂时性的概念对于理解马尔可夫链的长期行为至关重要。起初，链可能会在暂时状态中停留。但最终，链会将所有时间都花在重现状态上。那么，它在每个重现状态中分别花费的时间比例是多少？这个问题由马尔可夫链的<strong>平稳分布</strong>（stationary distribution）来回答，平稳分布也被称为<strong>稳态分布</strong>（steady-state distribution）。我们将在本节中了解到，<strong>对于不可约且非周期的马尔可夫链，平稳分布描述了该链的长期行为，无论其初始条件如何。</strong>它将告诉我们处于任何特定状态的长期概率，以及该链在各状态中停留的时间长期比例。</p>
+<p><strong>定义 11.3.1（平稳分布）。</strong> 对于一个具有转移矩阵 <span class="math inline">\(Q\)</span> 的马尔可夫链，满足 <span class="math inline">\(s_i \geq 0\)</span> 且 <span class="math inline">\(\sum_i s_i = 1\)</span> 的行向量 <span class="math inline">\(\mathbf{s} = (s_1, \dots, s_M)\)</span> 被称为平稳分布，如果对于所有 <span class="math inline">\(j\)</span>，都有： <span class="math display">\[
+\sum_i s_i q_{ij} = s_j
+\]</span></p>
+<p>这一线性方程组可以写成一个矩阵方程： <span class="math display">\[
+\mathbf{s}Q = \mathbf{s}
+\]</span></p>
+<p>回想一下，如果 <span class="math inline">\(\mathbf{s}\)</span> 是 <span class="math inline">\(X_0\)</span> 的分布，那么 <span class="math inline">\(\mathbf{s}Q\)</span> 就是 <span class="math inline">\(X_1\)</span> 的边缘分布。因此，方程 <span class="math inline">\(\mathbf{s}Q = \mathbf{s}\)</span> 意味着如果 <span class="math inline">\(X_0\)</span> 服从分布 <span class="math inline">\(\mathbf{s}\)</span>，那么 <span class="math inline">\(X_1\)</span> 也服从分布 <span class="math inline">\(\mathbf{s}\)</span>。由此类推，<span class="math inline">\(X_2\)</span> 也服从分布 <span class="math inline">\(\mathbf{s}\)</span>，<span class="math inline">\(X_3\)</span> 亦然，依此类推。也就是说，一个初始分布为平稳分布 <span class="math inline">\(\mathbf{s}\)</span> 的马尔可夫链将永远保持在该平稳分布中。</p>
+<p>直观思考马尔可夫链平稳分布的一种方法是，想象大量的粒子，每个粒子都根据转移概率独立地在各状态之间跳转。一段时间后，粒子系统将趋于一种平衡状态：在每个时间段内，离开某个状态的粒子数量将被进入该状态的粒子数量所抵消，且这对所有状态都成立。在这种平衡状态下，系统整体看起来是静止的（平稳的），而每个状态中粒子的比例将由平稳分布给出。我们将在定义 11.4.1 之后进一步探讨平稳分布的这一视角。</p>
+<p><strong>11.3.2（平稳分布是边缘分布，而非条件分布）。</strong> <strong>当马尔可夫链处于平稳分布时，对于所有 <span class="math inline">\(n\)</span>，<span class="math inline">\(X_n\)</span> 的无条件 PMF 都等于 <span class="math inline">\(\mathbf{s}\)</span>，但在给定 <span class="math inline">\(X_{n-1} = i\)</span> 的条件下，<span class="math inline">\(X_n\)</span> 的条件 PMF 仍然由转移矩阵 <span class="math inline">\(Q\)</span> 的第 <span class="math inline">\(i\)</span> 行编码。</strong></p>
+<blockquote>
+<p>个人注：以上这句话很重要。</p>
+</blockquote>
+<p>如果马尔可夫链从平稳分布开始，那么所有的 <span class="math inline">\(X_n\)</span> 都是同分布的（因为它们具有相同的边缘分布 <span class="math inline">\(\mathbf{s}\)</span>），但它们不一定是相互独立的，因为在给定 <span class="math inline">\(X_{n-1} = i\)</span> 时 <span class="math inline">\(X_n\)</span> 的条件分布通常与 <span class="math inline">\(X_n\)</span> 的边缘分布不同。</p>
+<p><strong>11.3.3（交感巫术 Sympathetic magic）。</strong> 如果马尔可夫链从平稳分布开始，那么 <span class="math inline">\(X_n\)</span> 的边缘分布全部相等。这并不等同于说 <span class="math inline">\(X_n\)</span> 它们本身全部相等；将随机变量 <span class="math inline">\(X_n\)</span> 与它们的分布混为一谈是“交感巫术”的一个例子。</p>
+<blockquote>
+<p>个人注：“交感巫术”原本是一个人类学概念，指的是一种原始思维：<strong>认为对某个事物的象征（如玩偶、照片）施加影响，就能作用于事物本身。</strong></p>
+<p><strong>概念对比表</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th><strong>维度</strong></th>
+<th><strong>边缘分布相等 (<span class="math inline">\(Xn∼π\)</span>)</strong></th>
+<th><strong>随机变量相等 (<span class="math inline">\(X1=X2\)</span>)</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>含义</strong></td>
+<td>长期来看，它们取各个值的频率一致</td>
+<td>在任何观测时刻，它们的值完全同步</td>
+</tr>
+<tr class="even">
+<td><strong>独立性</strong></td>
+<td>变量之间通常存在转移关系（不独立）</td>
+<td>变量之间完全相关（相关系数为 1）</td>
+</tr>
+<tr class="odd">
+<td><strong>直观比喻</strong></td>
+<td>两支球队在不同年份的夺冠概率一样</td>
+<td>两个球员在同一秒做了完全相同的动作</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<p>对于非常小的马尔可夫链，我们可以利用定义手动求解平稳分布。接下来的例子展示了如何求解一个二状态链的平稳分布。</p>
+<p><strong>例 11.3.4（双状态链的平稳分布</strong> Stationary distribution for a two-state chain）。令 <span class="math display">\[
+Q = \begin{pmatrix} 1/3 &amp; 2/3 \\ 1/2 &amp; 1/2 \end{pmatrix}
+\]</span></p>
+<p>平稳分布的形式为 <span class="math inline">\(\mathbf{s} = (s, 1-s)\)</span>，我们必须求解如下方程中的 <span class="math inline">\(s\)</span>： <span class="math display">\[
+(s, 1-s) \begin{pmatrix} 1/3 &amp; 2/3 \\ 1/2 &amp; 1/2 \end{pmatrix} = (s, 1-s)
+\]</span></p>
+<p>这等价于 <span class="math display">\[
+\frac{1}{3}s + \frac{1}{2}(1-s) = s
+\]</span> <span class="math display">\[
+\frac{2}{3}s + \frac{1}{2}(1-s) = 1-s
+\]</span></p>
+<p>这些方程的唯一解是 <span class="math inline">\(s = 3/7\)</span>，因此 <span class="math inline">\((3/7, 4/7)\)</span> 是该马尔可夫链唯一的平稳分布。</p>
+<p>更一般地，假设 <span class="math inline">\(q_{12} = a\)</span> 且 <span class="math inline">\(q_{21} = b\)</span>，其中 <span class="math inline">\(0 &lt; a &lt; 1\)</span> 且 <span class="math inline">\(0 &lt; b &lt; 1\)</span>。那么转移矩阵为 <span class="math display">\[
+Q = \begin{pmatrix} 1-a &amp; a \\ b &amp; 1-b \end{pmatrix}
+\]</span></p>
+<p>设 <span class="math inline">\(\mathbf{s} = (s_1, s_2)\)</span>，方程 <span class="math inline">\(\mathbf{s}Q = \mathbf{s}\)</span> 变为线性方程组 <span class="math display">\[
+(1-a)s_1 + bs_2 = s_1
+\]</span> <span class="math display">\[
+as_1 + (1-b)s_2 = s_2
+\]</span></p>
+<p>该方程组中的两个方程均可简化为 <span class="math display">\[
+as_1 = bs_2
+\]</span></p>
+<p>代入 <span class="math inline">\(s_2 = 1-s_1\)</span>，可知该方程组的唯一解为 <span class="math display">\[
+\mathbf{s} = \left( \frac{b}{a+b}, \frac{a}{a+b} \right)
+\]</span></p>
+<p>简而言之，<span class="math inline">\(\mathbf{s} \propto (b, a)\)</span>，即 <span class="math inline">\(\mathbf{s}\)</span> 是 <span class="math inline">\((b, a)\)</span> 的常数倍。该常数是为了使 <span class="math inline">\(\mathbf{s}\)</span> 的分量之和等于 1 而确定的。作为检查，注意对于前面给出的带有具体数字的 <span class="math inline">\(Q\)</span>，该结果表明平稳分布应与 <span class="math inline">\((b, a) = (1/2, 2/3)\)</span> 成正比；通过乘以 6 以消除分母，这等价于与 <span class="math inline">\((3, 4)\)</span> 成正比。我们之前求得的平稳分布是 <span class="math inline">\((3/7, 4/7)\)</span>，这确实与 <span class="math inline">\((3, 4)\)</span> 成正比。</p>
+<p>用线性代数的术语来说，方程 <span class="math inline">\(\mathbf{s}Q = \mathbf{s}\)</span> 表明 <span class="math inline">\(\mathbf{s}\)</span> 是 <span class="math inline">\(Q\)</span> 的特征值为 1 的<strong>左特征向量</strong>（见数学附录 A.3 节）。若要得到通常类型的特征向量（右特征向量），请进行转置：<span class="math inline">\(Q^T \mathbf{s}^T = \mathbf{s}^T\)</span>，其中符号 <span class="math inline">\(T\)</span> 表示转置。</p>
+<h3 id="存在性与唯一性">11.3.1 存在性与唯一性</h3>
+<p>Existence and uniqueness</p>
+<p><strong>平稳分布是否总是存在？它是否是唯一的？事实证明，对于有限状态空间，平稳分布总是存在的。此外，在不可约（irreducible）马尔可夫链中，平稳分布是唯一的。</strong></p>
+<p><strong>定理 11.3.5（平稳分布的存在性与唯一性）</strong>。对于任何不可约马尔可夫链，存在唯一的平稳分布。在该分布中，每个状态的概率均为正。</p>
+<p>该定理是线性代数中一个被称为 <strong>Perron-Frobenius 定理</strong>的结果的推论，该定理在数学附录的 A.3 节中给出。</p>
+<p>图 11.3 左侧的 4 状态链是不可约的：从图像上看，可以沿着箭头从任何地方到达任何地方；从转移矩阵 <span class="math inline">\(Q\)</span> 来看，<span class="math inline">\(Q^5\)</span> 的所有项均为正。因此，根据定理 11.3.5，该链具有唯一的平稳分布。</p>
+<p>另一方面，例 11.2.6 中的赌徒破产链是可约的，因此该定理不适用。事实证明，这条链有无穷多个平稳分布。从长远来看，该链要么最终停留在状态 0（并永远留在那里），要么最终停留在状态 <span class="math inline">\(N\)</span>（并永远留在那里）。这表明（且易于验证），退化分布 <span class="math inline">\(s = (1, 0, \dots, 0)\)</span> 和 <span class="math inline">\(t = (0, 0, \dots, 1)\)</span> 都是平稳分布。由此可知，任何加权组合 <span class="math inline">\(ps + (1-p)t\)</span>（其中 <span class="math inline">\(0 \le p \le 1\)</span>）也是平稳分布，因为它的和为 1，且： <span class="math display">\[
+(ps + (1-p)t)Q = psQ + (1-p)tQ = ps + (1-p)t
+\]</span></p>
+<p>其中，<span class="math inline">\(Q\)</span> 一如既往地表示转移矩阵。</p>
+<blockquote>
+<p>个人注：在现实中，如果一个系统（马尔可夫链）是<strong>不连通</strong>的（非不可约），那么<strong>初始状态决定了最终结局</strong>。系统不会自发地把概率从一个孤岛转移到另一个孤岛，因此初始的概率分配 <span class="math inline">\(p\)</span> 就像被“冷冻”了一样，永远保持不变。</p>
+</blockquote>
+<h3 id="收敛性">11.3.2 收敛性</h3>
+<p>Convergence</p>
+<p>我们已经非正式地说明了平稳分布描述了马尔可夫链的长期行为，即如果我们让链运行很长时间，<span class="math inline">\(X_n\)</span> 的边缘分布会收敛到平稳分布 <span class="math inline">\(s\)</span>。下一个定理指出，只要链同时满足<strong>不可约性</strong>和<strong>非周期性</strong>（aperiodic），这一点就是成立的。那么，无论链的初始条件如何，当 <span class="math inline">\(n \to \infty\)</span> 时，<span class="math inline">\(X_n\)</span> 的概率质量函数（PMF）都将收敛到平稳分布。这便将平稳性的概念与马尔可夫链的长期行为联系了起来。证明略。</p>
+<p><strong>定理 11.3.6（收敛至平稳分布）</strong>。设 <span class="math inline">\(X_0, X_1, \dots\)</span> 为一个具有平稳分布 <span class="math inline">\(s\)</span> 和转移矩阵 <span class="math inline">\(Q\)</span> 的<strong>不可约、非周期</strong>马尔可夫链。则当 <span class="math inline">\(n \to \infty\)</span> 时，<span class="math inline">\(P(X_n = i)\)</span> 收敛到 <span class="math inline">\(s_i\)</span>。就转移矩阵而言，<span class="math inline">\(Q^n\)</span> 收敛到一个每一行均为 <span class="math inline">\(\mathbf s\)</span> 的矩阵。</p>
+<p>因此，在经过大量的步骤后，链处于状态 <span class="math inline">\(i\)</span> 的概率接近于平稳概率 <span class="math inline">\(s_i\)</span>，而与链的初始条件无关。这使得不可约、非周期链处理起来特别方便。不可约性意味着对于每一对 <span class="math inline">\((i, j)\)</span>，都存在某个幂次 <span class="math inline">\(Q^m\)</span> 使得其 <span class="math inline">\((i, j)\)</span> 项为正；但如果我们同时假设非周期性，事实证明我们可以找到一个对所有 <span class="math inline">\(i, j\)</span> 都通用的 <span class="math inline">\(m\)</span> 值。更准确地说，一个链是不可约且非周期的，当且仅当 <span class="math inline">\(Q\)</span> 的某个幂次 <span class="math inline">\(Q^m\)</span> 的所有项均为正。</p>
+<p>直观上，非周期性这一额外条件是为了排除那些只会循环往复的链（如下例中的链），或者是那些某些状态只能在偶数步后到达、而另一些状态只能在奇数步后到达的链。</p>
+<p><strong>例 11.3.7（周期链）</strong>。下图展示了一个每个状态的周期均为 5 的周期马尔可夫链。</p>
+<p><img src="/img3/Introduction to Probability/F11.4.png" alt="F11.4" style="zoom:60%;" /></p>
+<p>该链的转移矩阵 <span class="math inline">\(Q\)</span> 为：</p>
+<p><img src="/img3/Introduction to Probability/F11.012.png" alt="F11.012" style="zoom:50%;" /></p>
+<p>不难验证，<span class="math inline">\(s = (1/5, 1/5, 1/5, 1/5, 1/5)\)</span> 是该链的平稳分布，且根据定理 11.3.5，<span class="math inline">\(s\)</span> 是唯一的。然而，假设该链从 <span class="math inline">\(X_0 = 1\)</span> 开始。那么 <span class="math inline">\(X_n\)</span> 的概率质量函数（PMF）给状态 <span class="math inline">\((n \bmod 5) + 1\)</span> 分配概率 1，而给所有其他状态分配概率 0。特别地，当 <span class="math inline">\(n \to \infty\)</span> 时，它并不收敛于 <span class="math inline">\(s\)</span>。<span class="math inline">\(Q^n\)</span> 同样不会收敛到一个每一行均为 <span class="math inline">\(s\)</span> 的矩阵：该链的转移是确定性的，因此 <span class="math inline">\(Q^n\)</span> 始终由 0 和 1 组成。</p>
+<p>最后，平稳分布告诉了我们访问任何特定状态之间的平均时间。</p>
+<p><strong>定理 11.3.8（期望返回时间）</strong>。设 <span class="math inline">\(X_0, X_1, \dots\)</span> 为一个具有平稳分布 <span class="math inline">\(s\)</span> 的不可约马尔可夫链。令 <span class="math inline">\(r_i\)</span> 为该链在从状态 <span class="math inline">\(i\)</span> 开始的情况下，返回状态 <span class="math inline">\(i\)</span> 所需时间的期望值。则 <span class="math inline">\(s_i = 1/r_i\)</span>。</p>
+<blockquote>
+<p>个人注：<strong>物理意义</strong>：如果一个状态出现的频率是 <span class="math inline">\(1/10\)</span>，那么直觉上你平均每隔 <span class="math inline">\(10\)</span> 步就会遇到它一次。</p>
+</blockquote>
+<p>以下是这些定理在例 11.3.4 中的双状态链上的应用。</p>
+<p><strong>例 11.3.9（双状态链的长期行为）</strong>。从长远来看，例 11.3.4 中的链将有 <span class="math inline">\(3/7\)</span> 的时间处于状态 1，<span class="math inline">\(4/7\)</span> 的时间处于状态 2。从状态 1 开始，平均需要 <span class="math inline">\(7/3\)</span> 步返回状态 1。转移矩阵的幂次收敛到一个每一行均为平稳分布的矩阵： <span class="math display">\[
+\begin{pmatrix} 1/3 &amp; 2/3 \\ 1/2 &amp; 1/2 \end{pmatrix}^n \to \begin{pmatrix} 3/7 &amp; 4/7 \\ 3/7 &amp; 4/7 \end{pmatrix} \quad \text{当 } n \to \infty \text{ 时。}
+\]</span></p>
+<h3 id="google-pagerank">11.3.3 Google PageRank</h3>
+<p>接下来，我们考虑一个规模大得多的平稳分布示例，它应用于一个拥有数十亿个相互连接节点的马尔可夫链：万维网（World Wide Web）。接下来的例子将解释 Google 的创始人如何将网页浏览建模为马尔可夫链，并利用其平稳分布来对网页的相关性进行排序。多年来，Google 一直将这种被称为 <strong>PageRank</strong> 的方法描述为“我们软件的核心”。</p>
+<p>假设你对某个话题感兴趣，比如象棋（chess），于是你使用搜索引擎寻找有关象棋的有用网页。有数百万个网页提到了“象棋”这个词，因此搜索引擎需要处理的一个核心问题是按什么顺序显示搜索结果。如果在找到有价值的内容之前，必须费力地翻阅数千个提到“象棋”的垃圾页面，那将是一场灾难。</p>
+<p>在万维网的早期，人们使用了各种方法来解决这个排序问题。例如，一些搜索引擎雇佣人员像博物馆馆员一样手动决定哪些页面最有用。但除了主观且昂贵之外，随着网络的增长，这很快就变得不可行了。另一些方法则侧重于搜索词在网站上出现的次数。但是，一个反复提到“象棋”的页面很容易比一个简明扼要的参考页面或一个不重复提及该词的象棋页面更没用。此外，这种方法非常容易被滥用：垃圾页面只需包含一长串反复出现的词，就能提升自己的排名。</p>
+<p>上述两种方法都忽略了网络的结构：哪些页面链接到了哪些其他页面？将链接结构考虑在内，使搜索引擎得到了巨大的改进。作为初步尝试，人们可以根据有多少其他页面链接到该页面来进行排序。也就是说，如果网页 A 链接到网页 B，我们就将其视为对 B 的投的一票，并根据网页获得的票数进行排序。</p>
+<p>但这种方法同样非常容易被滥用：垃圾页面可以通过创建数千个链接到它的其他垃圾页面来提升排名。而且，尽管每个页面拥有平等的投票权似乎很民主，但来自可靠页面的入站链接比来自无用页面的链接更有意义。由谢尔盖·布林（Sergey Brin）和名字恰如其分的拉里·佩奇（Larry Page）于 1998 年推出的 <strong>Google PageRank</strong>，不仅通过有多少页面链接到该页面，还通过这些页面的重要性来衡量一个页面的重要程度。</p>
+<p>将万维网视为一个有向网络——事实也确实如此。网络上的每个页面都是一个节点，节点之间的链接代表页面之间的链接。例如，为了简单起见，假设万维网只有 4 个页面，其连接方式如下图所示。</p>
+<p><img src="/img3/Introduction to Probability/F11.5.png" alt="F11.5" style="zoom:60%;" /></p>
+<p>想象有人在网上随机浏览，从某个页面开始，然后随机点击链接从一个页面跳转到下一个页面（当前页面上的所有链接被点击的概率相等）。PageRank 的思想是通过在该页面停留时间的长期比例来衡量该页面的重要性。</p>
+<p>当然，有些页面可能根本没有出站链接，例如上面的页面 4。当网络浏览者遇到这样的页面时，他们不会绝望，而是会打开一个新的浏览器窗口，访问一个均匀随机选取的页面。因此，没有链接的页面被转换为链接到每个页面（包括其自身）的页面。对于上述示例，得到的转移矩阵为： <span class="math display">\[
+Q = \begin{pmatrix} 0 &amp; 1/2 &amp; 0 &amp; 1/2 \\ 1/2 &amp; 0 &amp; 1/2 &amp; 0 \\ 0 &amp; 0 &amp; 0 &amp; 1 \\ 1/4 &amp; 1/4 &amp; 1/4 &amp; 1/4 \end{pmatrix}
+\]</span></p>
+<p>一般而言，令 <span class="math inline">\(M\)</span> 为网络上的网页数量，令 <span class="math inline">\(Q\)</span> 为上述马尔可夫链的 <span class="math inline">\(M \times M\)</span> 转移矩阵，并令 <span class="math inline">\(s\)</span> 为平稳分布（假设其存在且唯一）。将 <span class="math inline">\(s_j\)</span> 视为衡量网页 <span class="math inline">\(j\)</span> 重要程度的一个指标。直觉上，方程 <span class="math display">\[
+s_j = \sum_i s_i q_{ij}
+\]</span></p>
+<p>说明网页 <span class="math inline">\(j\)</span> 的分值不应仅取决于有多少其他网页链接到它，还取决于这些网页的分值。此外，如果一个网页有很多出站链接，它的“投票权”就会被稀释：如果网页 <span class="math inline">\(i\)</span> 唯一的链接是到网页 <span class="math inline">\(j\)</span>（即 <span class="math inline">\(q_{ij} = 1\)</span>），那么这比网页 <span class="math inline">\(i\)</span> 有数千个链接而其中一个恰好是到网页 <span class="math inline">\(j\)</span> 的分量更重。</p>
+<p>对于此链条，目前尚不清楚是否存在唯一的平稳分布，因为它可能不是不可约且非周期的。即使它是不可约且非周期的，由于互联网极其庞大，收敛到平稳分布的速度可能会非常缓慢。为了解决这些问题，假设在每次移动之前，网络浏览者都会抛一枚硬币，正面朝上的概率为 <span class="math inline">\(\alpha\)</span>。如果是正面，浏览者从当前页面随机点击一个链接；如果是反面，浏览者则“传送到”一个均匀随机选取的页面。由此产生的链具有 <strong>Google 转移矩阵</strong>： <span class="math display">\[
+G = \alpha Q + (1-\alpha) \frac{J}{M}
+\]</span></p>
+<p>其中 <span class="math inline">\(J\)</span> 是一个所有元素均为 1 的 <span class="math inline">\(M \times M\)</span> 矩阵。请注意，<span class="math inline">\(G\)</span> 的行和为 1，且所有项均为正，因此 <span class="math inline">\(G\)</span> 是一个有效的不可约、非周期马尔可夫链的转移矩阵。这意味着存在唯一的平稳分布 <span class="math inline">\(s\)</span>（称为 <strong>PageRank</strong>），且该链将收敛于此！<span class="math inline">\(\alpha\)</span> 的选择是一个重要的权衡：选择接近 1 的 <span class="math inline">\(\alpha\)</span> 有助于尽可能尊重互联网的原始结构，但存在权衡，因为事实证明较小的 <span class="math inline">\(\alpha\)</span> 值会使链的收敛速度快得多。作为折中，Brin 和 Page 最初的建议是 <span class="math inline">\(\alpha = 0.85\)</span>。</p>
+<blockquote>
+<p>个人注：<strong>非周期的定义</strong>：状态不会陷入固定的、机械的循环（比如只能在偶数步回到自身）。</p>
+<ul>
+<li><strong>判定准则</strong>：如果一个不可约矩阵存在自环（即存在 <span class="math inline">\(G_{ii} &gt; 0\)</span>），那么它就一定是非周期的。</li>
+<li><strong>验证 <span class="math inline">\(G\)</span></strong>：同样是因为 <span class="math inline">\(G_{ij} &gt; 0\)</span> 对所有 <span class="math inline">\(i, j\)</span> 都成立，所以 <span class="math inline">\(G_{ii} &gt; 0\)</span> 也成立。</li>
+<li><strong>直观理解</strong>：这意味着你在任何一个网页时，都有一定的概率（哪怕很小）点击刷新或者通过“随机跳转”停留在当前网页。这种“原地踏步”的可能性打破了任何可能的固定周期循环。</li>
+</ul>
+</blockquote>
+<p>PageRank 在概念上很完美，但计算它听起来极其困难，因为 <span class="math inline">\(sG = s\)</span> 可能是一个包含 1000 亿个方程和 1000 亿个未知数的方程组。与其将其视为一个庞大的代数问题，我们可以利用马尔可夫链的解释：对于任何初始分布 <span class="math inline">\(t\)</span>，当 <span class="math inline">\(n \to \infty\)</span> 时，<span class="math inline">\(tG^n \to s\)</span>。而且 <span class="math inline">\(tG\)</span> 的计算比最初看起来要容易： <span class="math display">\[
+tG = \alpha(tQ) + \frac{1-\alpha}{M}(tJ)
+\]</span></p>
+<p>其中，计算第一项并不太难，因为 <span class="math inline">\(Q\)</span> 非常稀疏（大部分为 0），而计算第二项很容易，因为 <span class="math inline">\(tJ\)</span> 是一个所有分量均为 1 的向量。接着 <span class="math inline">\(tG\)</span> 成为新的 <span class="math inline">\(t\)</span>，我们可以继续计算 <span class="math inline">\(tG^2 = (tG)G\)</span>，依此类推，直到序列看起来已经收敛（尽管很难确定它是否真的已经收敛）。这给出了 PageRank 的近似值，并且具有直观的解释：即网络浏览者在经过大量步数后所处位置的分布。</p>
+<h2 id="可逆性">11.4 可逆性</h2>
+<p>Reversibility</p>
+<p>我们已经看到，马尔可夫链的平稳分布对于理解其长期行为极其有用。不幸的是，当状态空间很大时，寻找平稳分布在计算上通常是困难的。本节将介绍一种重要的特殊情况，在这种情况下，可以避免处理大型矩阵的特征值方程。</p>
+<p><strong>定义 11.4.1（可逆性）</strong>。令 <span class="math inline">\(Q = (q_{ij})\)</span> 为马尔可夫链的转移矩阵。假设存在 <span class="math inline">\(\mathbf s = (s_1, \dots, s_M)\)</span> 满足 <span class="math inline">\(s_i \ge 0\)</span> 且 <span class="math inline">\(\sum_i s_i = 1\)</span>，使得对于所有状态 <span class="math inline">\(i\)</span> 和 <span class="math inline">\(j\)</span>，均有： <span class="math display">\[
+s_i q_{ij} = s_j q_{ji}
+\]</span></p>
+<p>该方程被称为<strong>可逆性条件</strong>（reversibility）或<strong>细致平衡条件</strong>（detailed balance condition）。如果该方程成立，我们称该链关于 <span class="math inline">\(s\)</span> 是可逆的。</p>
+<p>“可逆”一词源于这样一个事实：一个按其平稳分布开始运行的可逆链，无论时间正向运行还是反向运行，其行为表现都是相同的。如果你录制一段按平稳分布开始的可逆链的视频，然后展示给朋友看，无论是正常播放还是倒放，你的朋友都无法通过观看视频来判断时间是在正向运行还是反向运行。</p>
+<p>正如在定义 11.3.1 之后所讨论的，我们可以直观地将马尔可夫链的平稳分布想象为一个由大量粒子组成的系统，这些粒子根据转移概率独立地四处跳动。从长远来看，处于任何状态 <span class="math inline">\(j\)</span> 的粒子比例即为状态 <span class="math inline">\(j\)</span> 的平稳概率，且流出状态 <span class="math inline">\(j\)</span> 的粒子流与流入状态 <span class="math inline">\(j\)</span> 的粒子流相抵消。为了更详细地观察这一点，令 <span class="math inline">\(n\)</span> 为粒子数量，<span class="math inline">\(s\)</span> 为概率向量，使得 <span class="math inline">\(s_j\)</span> 是当前处于状态 <span class="math inline">\(j\)</span> 的粒子比例。根据定义，<span class="math inline">\(s\)</span> 是该链的平稳分布当且仅当对于所有状态 <span class="math inline">\(j\)</span>： <span class="math display">\[
+s_j = \sum_i s_i q_{ij} = s_j q_{jj} + \sum_{i: i \neq j} s_i q_{ij}
+\]</span></p>
+<p>该方程可以改写为： <span class="math display">\[
+n s_j (1 - q_{jj}) = \sum_{i: i \neq j} n s_i q_{ij}
+\]</span></p>
+<p>等号左侧是下一步将从状态 <span class="math inline">\(j\)</span> 离开的粒子的大致数量，因为状态 <span class="math inline">\(j\)</span> 有 <span class="math inline">\(n s_j\)</span> 个粒子，每个粒子以概率 <span class="math inline">\(q_{jj}\)</span> 留在 <span class="math inline">\(j\)</span>，以概率 <span class="math inline">\(1 - q_{jj}\)</span> 离开。等号右侧是下一步将进入状态 <span class="math inline">\(j\)</span> 的粒子的大致数量，因为对于每个 <span class="math inline">\(i \neq j\)</span>，状态 <span class="math inline">\(i\)</span> 有 <span class="math inline">\(n s_i\)</span> 个粒子，每个粒子以概率 <span class="math inline">\(q_{ij}\)</span> 进入状态 <span class="math inline">\(j\)</span>。因此，离开状态 <span class="math inline">\(j\)</span> 的粒子与进入状态 <span class="math inline">\(j\)</span> 的粒子之间达到了平衡。</p>
+<p><strong>可逆性条件施加了一种更为严格的平衡形式，即对于每一对状态 <span class="math inline">\(i, j\)</span>（<span class="math inline">\(i \neq j\)</span>），从状态 <span class="math inline">\(i\)</span> 到状态 <span class="math inline">\(j\)</span> 的粒子流被从状态 <span class="math inline">\(j\)</span> 到状态 <span class="math inline">\(i\)</span> 的粒子流所抵消。</strong>为了观察这一点，将状态 <span class="math inline">\(i\)</span> 和 <span class="math inline">\(j\)</span> 的可逆性方程写为： <span class="math display">\[
+n s_i q_{ij} = n s_j q_{ji}
+\]</span></p>
+<p>等号左侧是下一步将从状态 <span class="math inline">\(i\)</span> 移动到状态 <span class="math inline">\(j\)</span> 的粒子的大致数量，因为状态 <span class="math inline">\(i\)</span> 有 <span class="math inline">\(n s_i\)</span> 个粒子，每个粒子有 <span class="math inline">\(q_{ij}\)</span> 的概率移动到状态 <span class="math inline">\(j\)</span>。类似地，等号右侧是下一步将从状态 <span class="math inline">\(j\)</span> 移动到状态 <span class="math inline">\(i\)</span> 的粒子的大致数量。因此，可逆性意味着从状态 <span class="math inline">\(i\)</span> 到状态 <span class="math inline">\(j\)</span> 的粒子与从状态 <span class="math inline">\(j\)</span> 到状态 <span class="math inline">\(i\)</span> 的粒子之间存在平衡。</p>
+<p>给定一个转移矩阵，如果我们能找到一个满足可逆性条件的概率向量 <span class="math inline">\(s\)</span>，那么 <span class="math inline">\(s\)</span> 自动就是一个平稳分布。根据上述讨论，这并不令人意外。</p>
+<p><strong>命题 11.4.2（可逆蕴含平稳）</strong>。假设 <span class="math inline">\(Q = (q_{ij})\)</span> 是一个马尔可夫链的转移矩阵，该链关于非负向量 <span class="math inline">\(\mathbf s = (s_1, \dots, s_M)\)</span>（其分量之和为 1）是可逆的。那么 <span class="math inline">\(s\)</span> 是该链的一个平稳分布。</p>
+<p><strong>证明</strong>：我们有 <span class="math display">\[
+\sum_i s_i q_{ij} = \sum_i s_j q_{ji} = s_j \sum_i q_{ji} = s_j
+\]</span></p>
+<p>其中最后一个等号是因为 <span class="math inline">\(Q\)</span> 的每一行之和为 1。因此 <span class="math inline">\(s\)</span> 是平稳的。</p>
+<p>这是一个非常强大的结果，因为验证可逆性条件通常比求解整个方程组 <span class="math inline">\(sQ = s\)</span> 要容易得多。然而，一般情况下我们可能无法预先知道是否存在满足可逆性条件的 <span class="math inline">\(s\)</span>，即便存在，寻找一个合适的 <span class="math inline">\(s\)</span> 可能也需要付出很大的努力。在本节的剩余部分，我们将探讨三类可以找到满足可逆性条件的 <span class="math inline">\(s\)</span> 的马尔可夫链。这类马尔可夫链被称为<strong>可逆的</strong>（reversible）。</p>
+<p><strong>首先，如果 <span class="math inline">\(Q\)</span> 是一个对称矩阵 ( symmetric matrix)</strong>，那么平稳分布在状态空间上是均匀分布的：<span class="math inline">\(s = (1/M, 1/M, \dots, 1/M)\)</span>。显而易见，如果 <span class="math inline">\(q_{ij} = q_{ji}\)</span>，那么当所有 <span class="math inline">\(i\)</span> 和 <span class="math inline">\(j\)</span> 的 <span class="math inline">\(s_i = s_j\)</span> 时，可逆性条件 <span class="math inline">\(s_i q_{ij} = s_j q_{ji}\)</span> 得到满足。</p>
+<p>这是下面所述的一个更普遍事实的特例：如果 <span class="math inline">\(Q\)</span> 的每一列之和也为 1，那么平稳分布在状态空间上就是均匀的。</p>
+<p><strong>命题 11.4.3</strong>。如果转移矩阵 <span class="math inline">\(Q\)</span> 的每一列之和为 1，那么所有状态上的均匀分布 <span class="math inline">\((1/M, 1/M, \dots, 1/M)\)</span> 就是一个平稳分布。（行和与列和均为 1 的非负矩阵被称为<strong>双随机矩阵</strong> doubly stochastic matrix.。）</p>
+<p><strong>证明</strong>。假设每一列之和为 1，则行向量 <span class="math inline">\(v = (1, 1, \dots, 1)\)</span> 满足 <span class="math inline">\(vQ = v\)</span>。由此可知 <span class="math inline">\((1/M, 1/M, \dots, 1/M)\)</span> 是平稳的。</p>
+<p><strong>其次，如果马尔可夫链是无向网络上的随机游走</strong>，那么平稳分布有一个简单的公式。</p>
+<p><strong>例 11.4.4（无向网络上的随机游走）</strong>。网络是由边连接的节点的集合；如果边可以双向通行（即没有单行道），则该网络是无向的。假设一个漫步者在无向网络的边上随机移动。从节点 <span class="math inline">\(i\)</span> 出发，漫步者以相等的概率随机选择连接在 <span class="math inline">\(i\)</span> 上的任何一条边，然后穿过所选的边。例如，在下图中所示的网络中，从节点 3 出发，漫步者将前往节点 1 或节点 2，概率各为 <span class="math inline">\(1/2\)</span>。</p>
+<p><img src="/img3/Introduction to Probability/F11.013.png" alt="F11.013" style="zoom:60%;" /></p>
+<p>节点的<strong>度</strong>（degree）是与其相连的边的数量。对于一个拥有节点 <span class="math inline">\(1, 2, \dots, n\)</span> 的网络，其<strong>度序列</strong>是列出所有度的向量 <span class="math inline">\((d_1, \dots, d_n)\)</span>，其中 <span class="math inline">\(d_j\)</span> 是节点 <span class="math inline">\(j\)</span> 的度。允许存在从节点指向自身的边（这种边称为自环），并计入该节点度数 1。</p>
+<p>例如，上述网络的度序列为 <span class="math inline">\(d = (4, 3, 2, 3, 2)\)</span>。注意，对于所有 <span class="math inline">\(i, j\)</span>， <span class="math display">\[
+d_i q_{ij} = d_j q_{ji}
+\]</span></p>
+<p>因为对于 <span class="math inline">\(i \neq j\)</span>，如果 <span class="math inline">\(\{i, j\}\)</span> 是一条边，则 <span class="math inline">\(q_{ij}\)</span> 为 <span class="math inline">\(1/d_i\)</span>，否则为 0。因此，根据命题 11.4.2，平稳分布与度序列成正比。直观上看，度数最高的节点连接最广，因此从长远来看，链在这些状态下花费的时间最多是合理的。在上述例子中，这意味着 <span class="math display">\[
+s = \left( \frac{4}{14}, \frac{3}{14}, \frac{2}{14}, \frac{3}{14}, \frac{2}{14} \right)
+\]</span></p>
+<p>是该随机游走的平稳分布。</p>
+<p>习题 20 探讨了加权无向网络上的随机游走；每条边都被分配了一个权重，漫步者从 <span class="math inline">\(i\)</span> 出发选择去向的概率与可用边上的权重成正比。事实证明，这是一个可逆马尔可夫链。<strong>更令人惊讶的是，每一个可逆马尔可夫链都可以表示为加权无向网络上的随机游走！</strong></p>
+<p>这里有一个关于无向网络随机游走的具体例子。</p>
+<p><strong>例 11.4.5（棋盘上的马）</strong>。考虑一匹马（Knight）在 <span class="math inline">\(4 \times 4\)</span> 的棋盘上随机移动。</p>
+<p><img src="/img3/Introduction to Probability/F11.014.png" alt="F11.014" style="zoom:60%;" /></p>
+<p>16 个方格被标记在网格中，例如，马当前位于方格 B3，左上角的方格是 A4。马的每一步都是一个 L 形跳跃：水平移动两格后垂直移动一格，或者反之。例如，从 B3 出发，马可以移动到 A1、C1、D2 或 D4；从 A4 出发，它可以移动到 B2 或 C3。注意，马总是从浅色方格移动到深色方格，反之亦然。</p>
+<p>假设在每一步中，马都是随机移动的，且每种可能性等概率。这创建了一个状态为 16 个方格的马尔可夫链。计算该链的平稳分布。</p>
+<p><strong>解：</strong></p>
+<p>棋盘上只有三类方格：4 个中心格、4 个角格（如 A4）和 8 个边缘格（如 B4；角格不计入边缘格）。我们可以将棋盘看作一个无向网络，如果两个方格可以通过马的一步跳跃到达，则它们之间由一条边连接。那么，中心格的度为 4，角格的度为 2，边缘格的度为 3。因此，对于某个常数 <span class="math inline">\(a\)</span>，它们的平稳概率分别为 <span class="math inline">\(4a\)</span>、<span class="math inline">\(2a\)</span> 和 <span class="math inline">\(3a\)</span>。</p>
+<p>为了求出 <span class="math inline">\(a\)</span>，计算每类方格的数量，得到 <span class="math inline">\(4a \cdot 4 + 2a \cdot 4 + 3a \cdot 8 = 1\)</span>，解得 <span class="math inline">\(a = 1/48\)</span>。因此，每个中心格的平稳概率为 <span class="math inline">\(4/48 = 1/12\)</span>，每个角格为 <span class="math inline">\(2/48 = 1/24\)</span>，每个边缘格为 <span class="math inline">\(3/48 = 1/16\)</span>。</p>
+<p><strong>第三点，也是最后一点：如果在每个时间周期内，一个马尔可夫链只能向左移动一步、向右移动一步或停留在原地，那么它被称为生灭链（birth-death chain）。所有的生灭链都是可逆的。</strong></p>
+<p><strong>例 11.4.6（生灭链）</strong>。状态集合 <span class="math inline">\(\{1, 2, \dots, M\}\)</span> 上的生灭链是一个转移矩阵为 <span class="math inline">\(Q = (q_{ij})\)</span> 的马尔可夫链，满足：当 <span class="math inline">\(|i - j| = 1\)</span> 时 <span class="math inline">\(q_{ij} &gt; 0\)</span>，当 <span class="math inline">\(|i - j| \ge 2\)</span> 时 <span class="math inline">\(q_{ij} = 0\)</span>。这意味着可以向左走一步，也可以向右走一步（边界除外），但不可能在一步内跳得更远。这个名字源于人口增长或减少的应用，其中向右走被视为人口的“出生”，向左走被视为“死亡”。</p>
+<p>例如，下图中显示的链是一个生灭链（假设标记出的转移概率为正，状态到自身的自环概率允许为 0）。</p>
+<p><img src="/img3/Introduction to Probability/F11.015.png" alt="F11.015" style="zoom:60%;" /></p>
+<p>我们现在证明任何生灭链都是可逆的，并构造其平稳分布。令 <span class="math inline">\(s_1\)</span> 为一个正数（稍后确定）。由于我们希望满足 <span class="math inline">\(s_1 q_{12} = s_2 q_{21}\)</span>，令： <span class="math display">\[
+s_2 = s_1 q_{12} / q_{21}
+\]</span></p>
+<p>接着，由于我们希望满足 <span class="math inline">\(s_2 q_{23} = s_3 q_{32}\)</span>，令： <span class="math display">\[
+s_3 = s_2 q_{23} / q_{32} = s_1 q_{12} q_{23} / (q_{32} q_{21})
+\]</span></p>
+<p>以此类推，对于所有满足 <span class="math inline">\(2 \le j \le M\)</span> 的状态 <span class="math inline">\(j\)</span>，令： <span class="math display">\[
+s_j = \frac{s_1 q_{12} q_{23} \dots q_{j-1, j}}{q_{j, j-1} q_{j-1, j-2} \dots q_{21}}
+\]</span></p>
+<p>选择 <span class="math inline">\(s_1\)</span> 使得 <span class="math inline">\(s_j\)</span> 之和为 1。那么该链关于 <span class="math inline">\(s\)</span> 是可逆的，因为当 <span class="math inline">\(|i - j| \ge 2\)</span> 时 <span class="math inline">\(q_{ij} = q_{ji} = 0\)</span>，而根据构造，当 <span class="math inline">\(|i - j| = 1\)</span> 时 <span class="math inline">\(s_i q_{ij} = s_j q_{ji}\)</span>。因此，<span class="math inline">\(s\)</span> 即为平稳分布。</p>
+<p>埃伦费斯特链（Ehrenfest chain）是一种生灭链，可用作气体分子扩散的简单模型。其平稳分布经证明为二项分布。</p>
+<p><strong>例 11.4.7（埃伦费斯特）</strong>。有两个容器，共有 <span class="math inline">\(M\)</span> 个可区分的粒子。通过随机选择一个粒子并将其从当前容器移动到另一个容器来进行状态转移。最初，所有粒子都在第二个容器中。令 <span class="math inline">\(X_n\)</span> 为时间 <span class="math inline">\(n\)</span> 时第一个容器中的粒子数，因此 <span class="math inline">\(X_0 = 0\)</span>，且从 <span class="math inline">\(X_n\)</span> 到 <span class="math inline">\(X_{n+1}\)</span> 的转移按上述方式进行。这是一个状态空间为 <span class="math inline">\(\{0, 1, \dots, M\}\)</span> 的周期马尔可夫链。</p>
+<p><img src="/img3/Introduction to Probability/F11.016.png" alt="F11.016" style="zoom:60%;" /></p>
+<p>如上所述，第一个容器有 <span class="math inline">\(X_n\)</span> 个粒子，第二个容器有 <span class="math inline">\(M - X_n\)</span> 个粒子。我们将利用可逆性条件证明： <span class="math display">\[
+s_i = \binom{M}{i} \left( \frac{1}{2} \right)^M
+\]</span></p>
+<p>组成的 <span class="math inline">\(\mathbf s = (s_0, s_1, \dots, s_M)\)</span> 是平稳分布。请注意，这就是 <span class="math inline">\(Bin(M, 1/2)\)</span> 的概率质量函数（PMF）。</p>
+<p>设 <span class="math inline">\(s_i\)</span> 如上所述，检查是否满足 <span class="math inline">\(s_i q_{ij} = s_j q_{ji}\)</span>。如果 <span class="math inline">\(j = i + 1\)</span>（且 <span class="math inline">\(i &lt; M\)</span>），则： <span class="math display">\[
+s_i q_{ij} = \binom{M}{i} \left( \frac{1}{2} \right)^M \frac{M-i}{M} = \frac{M!}{(M-i)! i!} \left( \frac{1}{2} \right)^M \frac{M-i}{M} = \binom{M-1}{i} \left( \frac{1}{2} \right)^M
+\]</span> <span class="math display">\[
+s_j q_{ji} = \binom{M}{j} \left( \frac{1}{2} \right)^M \frac{j}{M} = \frac{M!}{(M-j)! j!} \left( \frac{1}{2} \right)^M \frac{j}{M} = \binom{M-1}{j-1} \left( \frac{1}{2} \right)^M
+\]</span></p>
+<p>由于当 <span class="math inline">\(j = i+1\)</span> 时，<span class="math inline">\(\binom{M-1}{i} = \binom{M-1}{j-1}\)</span>，因此 <span class="math inline">\(s_i q_{ij} = s_j q_{ji}\)</span>。通过类似的计算可知，如果 <span class="math inline">\(j = i - 1\)</span>（且 <span class="math inline">\(i &gt; 0\)</span>），同样有 <span class="math inline">\(s_i q_{ij} = s_j q_{ji}\)</span>。对于所有其他的 <span class="math inline">\(i\)</span> 和 <span class="math inline">\(j\)</span> 值，<span class="math inline">\(q_{ij} = q_{ji} = 0\)</span>。因此，<span class="math inline">\(\mathbf s\)</span> 是平稳的。</p>
+<p>二项分布是一个自然的平稳分布猜测，因为在马尔可夫链运行很长时间后，每个粒子处于任一容器中的概率大致相等。然而，由于该链的周期为 2（当 <span class="math inline">\(n\)</span> 为偶数时 <span class="math inline">\(X_n\)</span> 保证为偶数，当 <span class="math inline">\(n\)</span> 为奇数时 <span class="math inline">\(X_n\)</span> 保证为奇数），其概率质量函数并不收敛于二项分布。</p>
+<p>令人欣慰的是，事实证明平稳分布的另一种解释在这里依然有效：<span class="math inline">\(s_i\)</span> 是链处于状态 <span class="math inline">\(i\)</span> 的长期时间比例。更准确地说，令 <span class="math inline">\(I_k\)</span> 为链在时间 <span class="math inline">\(k\)</span> 处于状态 <span class="math inline">\(i\)</span> 的指示函数，可以证明： <span class="math display">\[
+\frac{1}{n} \sum_{k=0}^{n-1} I_k \to s_i
+\]</span></p>
+<p>当 <span class="math inline">\(n \to \infty\)</span> 时，该结论以概率 1 成立。</p>
+<h2 id="本章回顾">11.5 本章回顾</h2>
+<p>马尔可夫链是一个随机变量序列 <span class="math inline">\(X_0, X_1, X_2, \dots\)</span>，它满足<strong>马尔可夫性质</strong>，即：给定现在，过去与未来是条件独立的： <span class="math display">\[
+P(X_{n+1} = j \mid X_n = i, X_{n-1} = i_{n-1}, \dots, X_0 = i_0) = P(X_{n+1} = j \mid X_n = i) = q_{ij}
+\]</span></p>
+<p>转移矩阵 <span class="math inline">\(Q = (q_{ij})\)</span> 给出了从任意状态经过一步转移到任意其他状态的概率。转移矩阵的第 <span class="math inline">\(i\)</span> 行是给定 <span class="math inline">\(X_n = i\)</span> 条件下 <span class="math inline">\(X_{n+1}\)</span> 的条件概率质量函数（PMF）。转移矩阵的 <span class="math inline">\(n\)</span> 次幂给出了 <span class="math inline">\(n\)</span> 步转移概率。如果我们指定初始条件 <span class="math inline">\(s_i = P(X_0 = i)\)</span> 并令 <span class="math inline">\(s = (s_1, \dots, s_M)\)</span>，那么 <span class="math inline">\(X_n\)</span> 的边缘 PMF 为 <span class="math inline">\(sQ^n\)</span>。</p>
+<p>马尔可夫链的状态可以被分类为<strong>常返</strong>（recurrent）或<strong>非常返/瞬时</strong>（transient）：如果链会一次又一次地返回该状态，则为常返；如果链最终会永远离开该状态，则为非常返。状态还可以根据其<strong>周期</strong>进行分类；状态 <span class="math inline">\(i\)</span> 的周期是其从 <span class="math inline">\(i\)</span> 出发返回 <span class="math inline">\(i\)</span> 所需步数集合的最大公约数。如果从任意状态出发都能在有限步内到达任意其他状态，则称该链是<strong>不可约</strong>的；如果每个状态的周期均为 1，则称该链是<strong>非周期</strong>的。</p>
+<p>有限马尔可夫链的<strong>平稳分布</strong>是一个满足 <span class="math inline">\(sQ = s\)</span> 的 PMF <span class="math inline">\(s\)</span>。在各种条件下，有限马尔可夫链的平稳分布存在且唯一，并且 <span class="math inline">\(X_n\)</span> 的 PMF 会在 <span class="math inline">\(n \to \infty\)</span> 时收敛到 <span class="math inline">\(s\)</span>。如果状态 <span class="math inline">\(i\)</span> 的平稳概率为 <span class="math inline">\(s_i\)</span>，那么链从 <span class="math inline">\(i\)</span> 开始返回 <span class="math inline">\(i\)</span> 的期望时间为 <span class="math inline">\(r_i = 1/s_i\)</span>。</p>
+<p>如果一个 PMF <span class="math inline">\(s\)</span> 对所有 <span class="math inline">\(i\)</span> 和 <span class="math inline">\(j\)</span> 满足<strong>可逆性条件</strong> <span class="math inline">\(s_i q_{ij} = s_j q_{ji}\)</span>，它能保证 <span class="math inline">\(s\)</span> 是转移矩阵为 <span class="math inline">\(Q = (q_{ij})\)</span> 的马尔可夫链的平稳分布。存在满足可逆性条件的 <span class="math inline">\(s\)</span> 的马尔可夫链被称为<strong>可逆链</strong>。我们讨论了三种类型的可逆链：</p>
+<ol type="1">
+<li><p>如果转移矩阵是对称的，那么平稳分布在所有状态上是均匀分布的。</p></li>
+<li><p>如果链是无向网络上的随机游走，那么平稳分布与度序列成正比，即： <span class="math display">\[
+s_j = \frac{d_j}{\sum_i d_i}
+\]</span></p></li>
+<li><p>如果链是生灭链，那么平稳分布满足：</p>
+<p>当 <span class="math inline">\(j &gt; 1\)</span> 时， <span class="math display">\[
+s_j = \frac{s_1 q_{12} q_{23} \dots q_{j-1, j}}{q_{j, j-1} q_{j-1, j-2} \dots q_{21}}
+\]</span></p>
+<p>其中 <span class="math inline">\(s_1\)</span> 在最后通过令 <span class="math inline">\(s_1 + \dots + s_M = 1\)</span> 解出。</p></li>
+</ol>
+<p>图 11.6 对比了运行转移矩阵为 <span class="math inline">\(Q\)</span> 的马尔可夫链的两种方式：一种是根据状态上的任意分布 <span class="math inline">\(t\)</span> 选择初始状态，另一种是根据平稳分布 <span class="math inline">\(s\)</span> 选择初始状态。在前一种情况下，<span class="math inline">\(n\)</span> 步后的精确 PMF 可以通过 <span class="math inline">\(Q\)</span> 和 <span class="math inline">\(t\)</span> 求得，且该 PMF（在本章讨论的一些非常普遍的条件下）会收敛到 <span class="math inline">\(s\)</span>。在后一种情况下，该链将永远保持平稳。</p>
+<p><img src="/img3/Introduction to Probability/F11.6.png" alt="F11.6" style="zoom:80%;" /></p>
+<h2 id="r-语言实现">11.6 R 语言实现</h2>
+<p><strong>矩阵计算</strong></p>
+<p>我们以例 11.1.5 中的 4 状态马尔可夫链为例，练习在 R 中处理转移矩阵。首先，我们需要指定转移矩阵 <span class="math inline">\(Q\)</span>。这可以通过 <code>matrix</code> 命令完成：我们将矩阵的各项按行输入为一个长向量，然后告诉 R 矩阵的行数和列数（<code>nrow</code> 和 <code>ncol</code>），以及我们是按行输入的（<code>byrow=TRUE</code>）：</p>
+<p>R</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Q &lt;- matrix(c(1/3, 1/3, 1/3, 0,</span><br><span class="line">              0, 0, 1/2, 1/2,</span><br><span class="line">              0, 1, 0, 0,</span><br><span class="line">              1/2, 0, 0, 1/2), nrow=4, ncol=4, byrow=TRUE)</span><br></pre></td></tr></table></figure>
+<p>为了获得更高阶的转移概率，我们可以让 <span class="math inline">\(Q\)</span> 自乘。R 中的矩阵乘法命令是 <code>%*%</code>（而不仅仅是 <code>*</code>）。因此：</p>
+<p>R</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Q2 &lt;- Q %*% Q</span><br><span class="line">Q3 &lt;- Q2 %*% Q</span><br><span class="line">Q4 &lt;- Q2 %*% Q2</span><br><span class="line">Q5 &lt;- Q3 %*% Q2</span><br></pre></td></tr></table></figure>
+<p>这将生成 <span class="math inline">\(Q^2\)</span> 到 <span class="math inline">\(Q^5\)</span>。如果我们想知道在恰好 5 步内从状态 3 移动到状态 4 的概率，可以提取 <span class="math inline">\(Q^5\)</span> 的第 (3, 4) 项：</p>
+<p>R</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Q5[3,4]</span><br></pre></td></tr></table></figure>
+<p>结果为 0.229，与例 11.1.5 中所示的 <span class="math inline">\(11/48\)</span> 一致。</p>
+<p>为了不通过重复矩阵乘法来计算 <span class="math inline">\(Q^n\)</span>，我们可以在安装并加载 <code>expm</code> 包后使用 <code>Q %^% n</code> 命令。例如，<code>Q %^% 42</code> 会生成 <span class="math inline">\(Q^{42}\)</span>。通过观察 <span class="math inline">\(Q^n\)</span> 随 <span class="math inline">\(n\)</span> 增大时的行为，我们可以直观看到定理 11.3.6 的作用（并感知链需要多长时间才能非常接近其平稳分布）。</p>
+<p>特别地，当 <span class="math inline">\(n\)</span> 很大时，<span class="math inline">\(Q^n\)</span> 的每一行大约都是 <span class="math inline">\((0.214, 0.286, 0.214, 0.286)\)</span>，这便是近似的平稳分布。另一种数值获取平稳分布的方法是使用：</p>
+<p>R</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">eigen(t(Q))</span><br></pre></td></tr></table></figure>
+<p>来计算 <span class="math inline">\(Q\)</span> 转置的特征值和特征向量；然后选择对应于特征值 1 的特征向量，并对其进行归一化，使各分量之和为 1。</p>
+<hr />
+<p><strong>赌徒破产问题</strong></p>
+<p>要模拟例 11.2.6 中的赌徒破产链，我们首先确定总金额 <span class="math inline">\(N\)</span>、赌徒 A 在给定回合中获胜的概率 <span class="math inline">\(p\)</span> 以及我们希望模拟的时间步数 <code>nsim</code>。</p>
+<p>R</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">N &lt;- 10</span><br><span class="line">p &lt;- 1/2</span><br><span class="line">nsim &lt;- 80</span><br></pre></td></tr></table></figure>
+<p>接下来，我们分配一个长度为 <code>nsim</code> 且名为 <code>x</code> 的向量，用于存储马尔可夫链的值。对于初始条件，我们将 <code>x</code> 的第一个元素设为 5；这意味着两位赌徒开始时各有 5 美元。</p>
+<p>R</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">x &lt;- rep(0, nsim)</span><br><span class="line">x[1] &lt;- 5</span><br></pre></td></tr></table></figure>
+<p>现在我们准备模拟马尔可夫链的后续数值。通过以下代码块实现，我们将逐步解释。</p>
+<p>R</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">for (i in 2:nsim)&#123;</span><br><span class="line">  if (x[i-1] == 0 || x[i-1] == N)&#123;</span><br><span class="line">    x[i] &lt;- x[i-1]</span><br><span class="line">  &#125;</span><br><span class="line">  else&#123;</span><br><span class="line">    x[i] &lt;- x[i-1] + sample(c(1, -1), 1, prob=c(p, 1-p))</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>第一行和外层的大括号构成了一个 <code>for</code> 循环：<code>for (i in 2:nsim)</code> 意味着循环内部的所有代码将反复执行，<code>i</code> 的值先设为 2，然后是 3，依此类推，直到 <code>i</code> 达到 <code>nsim</code>。每次循环代表马尔可夫链的一个步骤。</p>
+<p>在循环内部，我们首先使用 <code>if</code> 语句检查链是否已经处于终点 0 或 <span class="math inline">\(N\)</span>。如果链已处于 0 或 <span class="math inline">\(N\)</span>，则将其新值设为前一个值，因为不允许链脱离 0 或 <span class="math inline">\(N\)</span>。否则，如果链不在 0 或 <span class="math inline">\(N\)</span>，它可以自由向左或向右移动。我们使用 <code>sample</code> 命令以概率 <span class="math inline">\(p\)</span> 向右移动 1 个单位，或以概率 <span class="math inline">\(1-p\)</span> 向左移动 1 个单位。</p>
+<p>为了查看模拟过程中马尔可夫链的路径，我们可以将 <code>x</code> 的值随时间的变化绘制出来：</p>
+<p>R</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">plot(x, type=&#x27;l&#x27;, ylim=c(0, N))</span><br></pre></td></tr></table></figure>
+<p>你应该会看到一条从 5 开始、上下波动，最后被吸收进状态 0 或状态 <span class="math inline">\(N\)</span> 的路径。</p>
+<hr />
+<p><strong>模拟有限状态马尔可夫链</strong></p>
+<p>只需稍作修改，我们就可以模拟有限状态空间上的任意马尔可夫链。具体而言，我们将演示如何模拟例 11.1.5 中的 4 状态马尔可夫链。</p>
+<p>如前所述，我们可以输入：</p>
+<p>R</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Q &lt;- matrix(c(1/3, 1/3, 1/3, 0,</span><br><span class="line">              0, 0, 1/2, 1/2,</span><br><span class="line">              0, 1, 0, 0,</span><br><span class="line">              1/2, 0, 0, 1/2), nrow=4, ncol=4, byrow=TRUE)</span><br></pre></td></tr></table></figure>
+<p>来指定转移矩阵 <span class="math inline">\(Q\)</span>。</p>
+<p>接下来，选择状态数和要模拟的时间步数，为模拟结果分配空间，并为链选择初始条件。在本例中，<code>x[1] &lt;- sample(1:M, 1)</code> 表示链的初始分布在所有状态上是均匀的。</p>
+<p>R</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">M &lt;- nrow(Q)</span><br><span class="line">nsim &lt;- 10^4</span><br><span class="line">x &lt;- rep(0, nsim)</span><br><span class="line">x[1] &lt;- sample(1:M, 1)</span><br></pre></td></tr></table></figure>
+<p>对于模拟本身，我们再次使用 <code>sample</code> 从 1 到 <span class="math inline">\(M\)</span> 中选择一个数字。在时间 <span class="math inline">\(i\)</span>，链之前处于状态 <code>x[i-1]</code>，因此我们必须使用转移矩阵的第 <code>x[i-1]</code> 行来确定抽取 1, 2, ..., <span class="math inline">\(M\)</span> 的概率。符号 <code>Q[x[i-1], ]</code> 表示矩阵 <span class="math inline">\(Q\)</span> 的第 <code>x[i-1]</code> 行。</p>
+<p>R</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">for (i in 2:nsim)&#123;</span><br><span class="line">  x[i] &lt;- sample(M, 1, prob=Q[x[i-1], ])</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>由于我们将 <code>nsim</code> 设为一个很大的数字，可以合理地认为链在模拟的后期已经接近平稳状态。为了验证这一点，我们排除前一半的模拟结果，给链留出达到平稳的时间：</p>
+<p>R</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">x &lt;- x[-(1:(nsim/2))]</span><br></pre></td></tr></table></figure>
+<p>然后，我们使用 <code>table</code> 命令计算链访问每个状态的次数；除以 <code>length(x)</code> 将计数转换为比例。结果是对平稳分布的近似。</p>
+<p>R</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">table(x) / length(x)</span><br></pre></td></tr></table></figure>
+<p>作为对比，该链真实的平稳分布约为 <span class="math inline">\((0.214, 0.286, 0.214, 0.286)\)</span>。这与你通过模拟得到的结果接近吗？</p>
+]]></content>
+      <categories>
+        <category>书籍翻译</category>
+      </categories>
+  </entry>
+  <entry>
     <title>《Introduction to Probability》第10章 不等式与极限理论</title>
     <url>/2026/01/20/Introduction%20to%20Probability%20%E7%AC%AC10%E7%AB%A0%20%E4%B8%8D%E7%AD%89%E5%BC%8F%E4%B8%8E%E6%9E%81%E9%99%90%E7%90%86%E8%AE%BA/</url>
     <content><![CDATA[<h2 id="第10章-不等式与极限理论">第10章 不等式与极限理论</h2>
