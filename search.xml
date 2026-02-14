@@ -1,6 +1,379 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>《Introduction to Probability》第12章 马尔可夫链蒙特卡罗</title>
+    <url>/2026/01/22/Introduction%20to%20Probability%20%E7%AC%AC12%E7%AB%A0%20%E9%A9%AC%E5%B0%94%E5%8F%AF%E5%A4%AB%E9%93%BE%E8%92%99%E7%89%B9%E5%8D%A1%E7%BD%97/</url>
+    <content><![CDATA[<h1 id="第12章-马尔可夫链蒙特卡罗">第12章 马尔可夫链蒙特卡罗</h1>
+<p>Markov chain Monte Carlo</p>
+<p>贯穿本书，我们已经看到<strong>模拟是概率论中一项强大的技术</strong>。如果你无法说服你的朋友在三门问题（Monty Hall problem）中换门是一个好主意，你可以在一秒钟内模拟玩几千次这个游戏，你的朋友就会看到换门的成功率约为 2/3。如果你不确定如何计算随机变量 <span class="math inline">\(X\)</span> 的期望和方差，但你知道如何从该分布中生成独立同分布（i.i.d.）的抽取值 <span class="math inline">\(X_1, X_2, \dots, X_n\)</span>，你可以使用模拟抽取值的样本均值和样本方差来近似真实的期望和真实的方差： <span class="math display">\[
+E(X) \approx \bar{X}_n = \frac{1}{n}(X_1 + \dots + X_n),
+\]</span> <span class="math display">\[
+Var(X) \approx \frac{1}{n-1} \sum_{j=1}^{n} (X_j - \bar{X}_n)^2.
+\]</span></p>
+<p>大数定律告诉我们，如果 <span class="math inline">\(n\)</span> 很大，这些近似将会很好。通过增加 <span class="math inline">\(n\)</span>，即仅仅通过让计算机运行更长时间（而不是不得不挣扎于一个可能无法处理的求和或积分），我们可以得到越来越好的近似。正如第 10 章所讨论的，这种<strong>通过生成随机值来近似某个数值的模拟方法被称为蒙特卡罗方法（Monte Carlo method）</strong>。 <span id="more"></span></p>
+<p>上述蒙特卡罗思想的一个主要局限是，我们需要知道如何生成 <span class="math inline">\(X_1, X_2, \dots, X_n\)</span>（希望能高效地生成，因为我们希望 <span class="math inline">\(n\)</span> 很大）。例如，假设我们要从一个连续分布中进行随机抽取，其概率密度函数（PDF）<span class="math inline">\(f\)</span> 为：</p>
+<p><span class="math display">\[
+f(x) \propto x^{3.1}(1-x)^{4.2}
+\]</span></p>
+<p>对于 <span class="math inline">\(0 &lt; x &lt; 1\)</span>，（其他情况为 0）。盯着一个密度函数看并不能立即暗示如何获得一个具有该密度的随机变量。在这种情况下，我们能识别出这是 <span class="math inline">\(Beta(4.1, 5.2)\)</span> 分布的 PDF，因此假设我们可以使用 <span class="math inline">\(Unif(0, 1)\)</span> 随机变量，理论上我们可以利用均匀分布的普适性（universality of the Uniform）。不幸的是，求 Beta 分布的累积分布函数（CDF）都很困难，更不用说 CDF 的逆函数了。关于 Beta 模拟问题的更多内容，请参见例 12.1.4。</p>
+<p>当然，在现实应用中出现的分布往往比 Beta 分布复杂得多。对于 Beta 分布，我们知道如何用伽马函数来表达归一化常数。但对于许多其他具有科学意义的分布，PDF 或 PMF 中的归一化常数是未知的，超出了目前最快的计算机和最精妙的数学技术所能触及的范围。</p>
+<p>本章介绍了<strong>马尔可夫链蒙特卡罗（MCMC），这是一组强大的算法，使我们能够利用马尔可夫链从复杂的分布中进行模拟</strong>。<strong>MCMC 的发展极大地扩展了我们可以模拟的分布范围（包括高维联合分布），从而彻底改变了统计学和科学计算。其基本思想是构建你自己的马尔可夫链，使感兴趣的分布成为该链的平稳分布。</strong></p>
+<p><strong>在前一章中，我们研究了转移矩阵 <span class="math inline">\(Q\)</span> 已知的马尔可夫链，并试图找到该链的平稳分布 <span class="math inline">\(s\)</span>。在本章中，我们反其道而行之：从一个我们想要模拟的分布 <span class="math inline">\(s\)</span> 出发，我们将设计一个平稳分布为 <span class="math inline">\(s\)</span> 的马尔可夫链。如果我们随后运行这个设计好的马尔可夫链很长时间，该链的分布将接近我们想要的 <span class="math inline">\(s\)</span>。</strong></p>
+<p>但是，是否可能创建一个具有我们所期望的平稳分布的转移矩阵 <span class="math inline">\(Q\)</span>？即使可能，解决这个问题是否比原始的如何从该分布中随机抽取的问题更容易？在令人惊讶的通用性下，MCMC 表明，以一种易于描述的方式创建一个具有所需平稳分布的马尔可夫链是可能的，且无需知道该分布的归一化常数！</p>
+<p>MCMC 现在正被应用于生物、自然和物理科学中的大量问题，并且已经开发出了许多不同的 MCMC 算法。在这里，我们将介绍<strong>两种最重要且应用最广泛的 MCMC 算法：Metropolis-Hastings 算法和 Gibbs 采样。</strong>MCMC 是统计计算中一个巨大且不断增长的领域；关于其理论、方法和应用的更多内容，请参见 Brooks、Gelman、Jones 和 Meng [2]。</p>
+<h2 id="metropolis-hastings">12.1 Metropolis-Hastings</h2>
+<p><strong>Metropolis-Hastings 算法是一个通用的配方，它允许我们从感兴趣的状态空间上的任何不可约马尔可夫链开始，然后将其修改为一个具有所需平稳分布的新马尔可夫链。这种修改包括在原始链中引入一些选择性：根据原始链提出跳转建议（proposals），但该建议可能会被接受，也可能不会被接受。例如，假设原始链处于名为“波士顿”的状态，并且即将转换到“旧金山”。那么对于新链，我们要么接受建议并前往旧金山，要么拒绝建议并在下一步保持在波士顿。通过仔细选择接受建议的概率，这种简单的修改保证了新链具有所需的平稳分布。</strong></p>
+<p><strong>算法 12.1.1 (Metropolis-Hastings)</strong>。令 <span class="math inline">\(s = (s_1, \dots, s_M)\)</span> 为状态空间 <span class="math inline">\(\{1, \dots, M\}\)</span> 上理想的平稳分布。假设对所有 <span class="math inline">\(i\)</span> 都有 <span class="math inline">\(s_i &gt; 0\)</span>（如果不是，只需从状态空间中删除任何 <span class="math inline">\(s_i = 0\)</span> 的状态 <span class="math inline">\(i\)</span>）。假设 <span class="math inline">\(P = (p_{ij})\)</span> 是状态空间 <span class="math inline">\(\{1, \dots, M\}\)</span> 上某个马尔可夫链的转移矩阵。直观地说，<span class="math inline">\(P\)</span> 是一个我们知道如何运行但其平稳分布并非我们所期望的马尔可夫链。</p>
+<p>我们的目标是修改 <span class="math inline">\(P\)</span> 以构造一个平稳分布为 <span class="math inline">\(s\)</span> 的马尔可夫链 <span class="math inline">\(X_0, X_1, \dots\)</span>。我们将为此给出一个 Metropolis-Hastings 算法。从任何状态 <span class="math inline">\(X_0\)</span> 开始（随机选择或确定性选择），并假设新链当前处于 <span class="math inline">\(X_n\)</span>。为了让新链移动一步，请执行以下操作。</p>
+<ol type="1">
+<li><p>如果 <span class="math inline">\(X_n = i\)</span>，使用原始转移矩阵 <span class="math inline">\(P\)</span> 的第 <span class="math inline">\(i\)</span> 行中的转移概率提出一个新状态 <span class="math inline">\(j\)</span>。</p></li>
+<li><p>计算接受概率： <span class="math display">\[
+a_{ij} = \min\left( \frac{s_j p_{ji}}{s_i p_{ij}}, 1 \right)
+\]</span></p></li>
+<li><p>抛一枚概率为 <span class="math inline">\(a_{ij}\)</span> 出现正面（Heads）的硬币。</p></li>
+<li><p>如果硬币出现正面，接受该建议（即前往 <span class="math inline">\(j\)</span>），令 <span class="math inline">\(X_{n+1} = j\)</span>。否则，拒绝该建议（即留在 <span class="math inline">\(i\)</span>），令 <span class="math inline">\(X_{n+1} = i\)</span>。</p></li>
+</ol>
+<blockquote>
+<p>个人注：在计算机科学和概率模拟中，“生成一个 <span class="math inline">\([0, 1]\)</span> 之间的随机数 <span class="math inline">\(u\)</span> 并与 <span class="math inline">\(a_{ij}\)</span> 比较”<strong>，就是实现</strong>“抛一枚正面概率为 <span class="math inline">\(a_{ij}\)</span> 的硬币”最标准、最通用的物理手段。</p>
+</blockquote>
+<p>也就是说，Metropolis-Hastings 链使用原始转移概率 <span class="math inline">\(p_{ij}\)</span> 来提出下一步去哪里的建议，然后以概率 <span class="math inline">\(a_{ij}\)</span> 接受该建议，在拒绝的情况下保持在其当前状态。该算法一个特别好的方面是，不需要知道 <span class="math inline">\(s\)</span> 的归一化常数，因为无论如何它在 <span class="math inline">\(s_j/s_i\)</span> 中都会被消掉。例如，在某些问题中，我们可能希望平稳分布在所有状态上是均匀的（即 <span class="math inline">\(s = (1/M, 1/M, \dots, 1/M)\)</span>），但状态数 <span class="math inline">\(M\)</span> 很大且未知，而计算 <span class="math inline">\(M\)</span> 将是一个非常困难的计数问题。幸运的是，无论 <span class="math inline">\(M\)</span> 是多少，<span class="math inline">\(s_j/s_i = 1\)</span>，因此我们可以简单地令 <span class="math inline">\(s \propto (1, 1, \dots, 1)\)</span>，并且我们可以在不必知道 <span class="math inline">\(M\)</span> 的情况下计算 <span class="math inline">\(a_{ij}\)</span>。</p>
+<p>当算法运行时，<span class="math inline">\(a_{ij}\)</span> 分母中的 <span class="math inline">\(p_{ij}\)</span> 永远不会为 0，因为如果 <span class="math inline">\(p_{ij} = 0\)</span>，原始链将永远不会提出从 <span class="math inline">\(i\)</span> 到 <span class="math inline">\(j\)</span> 的建议。此外，如果 <span class="math inline">\(p_{ii} &gt; 0\)</span>，建议的状态 <span class="math inline">\(j\)</span> 有可能等于当前状态 <span class="math inline">\(i\)</span>；在这种情况下，无论建议是否被接受，链都会留在 <span class="math inline">\(i\)</span>。（拒绝留在 <span class="math inline">\(i\)</span> 的建议但仍然留在那里，就像一个刚被禁足的孩子说：“是的，我会待在我的房间里，但不是因为你让我这么做的！”）</p>
+<blockquote>
+<p>个人注：<strong>Metropolis-Hastings (MH)</strong> 算法的核心机制：<strong>“提议” (Proposal)</strong> 与 <strong>“接受” (Acceptance)</strong> 的两步走策略。</p>
+<p><strong>拆解公式：<span class="math inline">\(q_{ij} = p_{ij} a_{ij}\)</span></strong></p>
+<p>在 MH 算法中，从状态 <span class="math inline">\(i\)</span> 转移到状态 <span class="math inline">\(j\)</span>（且 <span class="math inline">\(i \neq j\)</span>）的实际转移概率 <span class="math inline">\(q_{ij}\)</span> 是由两个独立事件的概率相乘得到的：</p>
+<ol type="1">
+<li><p><strong><span class="math inline">\(p_{ij}\)</span> (提议概率)</strong>：</p>
+<p>算法首先从当前的<strong>提议分布</strong>（Proposal Distribution）中采样。它决定了：“如果我在 <span class="math inline">\(i\)</span>，我有多少概率<strong>想要</strong>跳到 <span class="math inline">\(j\)</span>？”。</p></li>
+<li><p><strong><span class="math inline">\(a_{ij}\)</span> (接受概率)</strong>：</p>
+<p>一旦提议了 <span class="math inline">\(j\)</span>，算法会根据目标分布 <span class="math inline">\(s\)</span> 进行计算，决定：“我是否<strong>同意</strong>这次跳转？”。</p></li>
+</ol>
+<p><strong>只有当“提议了 <span class="math inline">\(j\)</span>”且“接受了 <span class="math inline">\(j\)</span>”同时发生时，状态才会发生转移。</strong> 因此，根据概率的乘法公式，实际的转移概率就是两者的乘积。</p>
+<p>具体的采样例子见《MCMC算法的例子.md》</p>
+<p>如果你不进行这个随机判定，而是强行每次都按比例“劈开”状态（比如把 0.25 个自己挪过去，0.75 个自己留下来），那你做的就不是<strong>采样（Sampling）</strong>，而是在做<strong>数值计算（Numerical Computing）</strong>去解平稳分布了。<strong>采样算法的精髓就在于：通过大量的“跳”或“不跳”的随机实验，在宏观统计上逼近那个理论概率。</strong></p>
+</blockquote>
+<p>现在我们将证明 Metropolis-Hastings 链是可逆的，且平稳分布为 <span class="math inline">\(s\)</span>。</p>
+<p><strong>证明</strong>。令 <span class="math inline">\(Q\)</span> 为 Metropolis-Hastings 链的转移矩阵。我们只需要检查所有 <span class="math inline">\(i\)</span> 和 <span class="math inline">\(j\)</span> 的可逆性条件 <span class="math inline">\(s_i q_{ij} = s_j q_{ji}\)</span>。对于 <span class="math inline">\(i = j\)</span> 这是显而易见的，所以假设 <span class="math inline">\(i \neq j\)</span>。如果 <span class="math inline">\(q_{ij} &gt; 0\)</span>，那么 <span class="math inline">\(p_{ij} &gt; 0\)</span>（如果链甚至不能提出从 <span class="math inline">\(i\)</span> 到 <span class="math inline">\(j\)</span> 的建议，它就无法从 <span class="math inline">\(i\)</span> 到 <span class="math inline">\(j\)</span>）且 <span class="math inline">\(p_{ji} &gt; 0\)</span>（否则接受概率将为 0）。反之，如果 <span class="math inline">\(p_{ij} &gt; 0\)</span> 且 <span class="math inline">\(p_{ji} &gt; 0\)</span>，则 <span class="math inline">\(q_{ji} &gt; 0\)</span>。因此 <span class="math inline">\(q_{ij}\)</span> 和 <span class="math inline">\(q_{ji}\)</span> 要么同为零，要么同为非零。我们可以假设它们都非零。</p>
+<p>那么有： <span class="math display">\[
+q_{ij} = p_{ij} a_{ij}
+\]</span></p>
+<p>因为从 <span class="math inline">\(i\)</span> 开始，到达 <span class="math inline">\(j\)</span> 的唯一方法是先提出这样做，然后接受该建议。首先考虑 <span class="math inline">\(s_j p_{ji} \leq s_i p_{ij}\)</span> 的情况。我们有： <span class="math display">\[
+a_{ij} = \frac{s_j p_{ji}}{s_i p_{ij}}, \quad a_{ji} = 1
+\]</span></p>
+<p>因此： <span class="math display">\[
+s_i q_{ij} = s_i p_{ij} a_{ij} = s_i p_{ij} \frac{s_j p_{ji}}{s_i p_{ij}} = s_j p_{ji} = s_j p_{ji} a_{ji} = s_j q_{ji}
+\]</span></p>
+<p>对称地，如果 <span class="math inline">\(s_j p_{ji} &gt; s_i p_{ij}\)</span>，通过在上述计算中交换 <span class="math inline">\(i\)</span> 和 <span class="math inline">\(j\)</span> 的角色，我们再次得到 <span class="math inline">\(s_i q_{ij} = s_j q_{ji}\)</span>。由于可逆性条件成立，因此 <span class="math inline">\(s\)</span> 是转移矩阵为 <span class="math inline">\(Q\)</span> 的链的平稳分布。</p>
+<blockquote>
+<p>个人注：太牛了！</p>
+</blockquote>
+<p><strong>12.1.2.</strong> <strong>Metropolis-Hastings 算法</strong>是构造具有所需平稳分布的马尔可夫链的一种极其通用的方法。<strong>在上述表述中，<span class="math inline">\(s\)</span> 和 <span class="math inline">\(P\)</span> 都是非常通用的，除了要求它们在同一个状态空间上之外，没有规定它们之间有任何联系。然而在实践中，建议分布（proposal distribution）的选择极其重要，因为它会对链收敛到平稳分布的速度产生巨大影响。</strong></p>
+<p>如何选择一个好的建议分布是一个复杂的主题，这里不作详细讨论。直观地说，接受率非常低的建议分布收敛速度会很慢（因为链很少移动）。但高接受率也可能并不理想，因为它可能表明该链倾向于做出微小、胆怯的建议。在一个巨大的状态空间中，这样的链将需要非常长的时间才能探索整个空间。</p>
+<p>以下是几个关于如何使用 Metropolis-Hastings 算法从分布中进行模拟的例子。</p>
+<p><strong>例 12.1.3 (Zipf 分布模拟)</strong>。令 <span class="math inline">\(M \geq 2\)</span> 为一个整数。如果随机变量 <span class="math inline">\(X\)</span> 的 PMF 为： <span class="math display">\[
+P(X=k) = \frac{1/k^a}{\sum_{j=1}^{M}(1/j^a)}
+\]</span></p>
+<p>对于 <span class="math inline">\(k=1, 2, \dots, M\)</span>（其他情况为 0），则称 <span class="math inline">\(X\)</span> 服从参数为 <span class="math inline">\(a &gt; 0\)</span> 的 Zipf 分布。该分布在语言学中广泛用于研究单词出现的频率。</p>
+<p>创建一个马尔可夫链 <span class="math inline">\(X_0, X_1, \dots\)</span>，其平稳分布为 Zipf 分布，且对所有 <span class="math inline">\(n\)</span> 满足 <span class="math inline">\(|X_{n+1}-X_n| \leq 1\)</span>。你的回答应提供关于如何获得链的每一步移动的简单、精确的描述，即如何对每个 <span class="math inline">\(n\)</span> 从 <span class="math inline">\(X_n\)</span> 转移到 <span class="math inline">\(X_{n+1}\)</span>。</p>
+<p><strong>解：</strong></p>
+<p>在确定建议分布后，我们可以使用 Metropolis-Hastings 算法。有许多可能的建议分布，但一个简单的选择是以下在 <span class="math inline">\(\{1, 2, \dots, M\}\)</span> 上的随机游走。对于状态 <span class="math inline">\(i\)</span> 且 <span class="math inline">\(i \neq 1, i \neq M\)</span>，以 <span class="math inline">\(1/2\)</span> 的概率移动到状态 <span class="math inline">\(i-1\)</span> 或 <span class="math inline">\(i+1\)</span>。对于状态 1，以 <span class="math inline">\(1/2\)</span> 的概率留在原处或移动到状态 2。对于状态 <span class="math inline">\(M\)</span>，以 <span class="math inline">\(1/2\)</span> 的概率留在原处或移动到状态 <span class="math inline">\(M-1\)</span>。该链如下图所示。</p>
+<p><img src="/img3/Introduction to Probability/F12.1.png" alt="F12.1" style="zoom:60%;" /></p>
+<p>令 <span class="math inline">\(P\)</span> 为该链的转移矩阵。由于 <span class="math inline">\(P\)</span> 是对称矩阵，根据命题 11.4.3，<span class="math inline">\(P\)</span> 的平稳分布是均匀分布。Metropolis-Hastings 允许我们将 <span class="math inline">\(P\)</span> 转化（transmogrify）为一个平稳分布为 Zipf 分布的链。</p>
+<p>令 <span class="math inline">\(X_0\)</span> 为任意起始状态，按如下方式生成序列 <span class="math inline">\(X_0, X_1, \dots\)</span>。如果链当前处于状态 <span class="math inline">\(i\)</span>，则：</p>
+<ol type="1">
+<li>根据建议链 <span class="math inline">\(P\)</span> 生成一个建议状态 <span class="math inline">\(j\)</span>。</li>
+<li>以概率 <span class="math inline">\(\min(i^a/j^a, 1)\)</span> 接受该建议。如果建议被接受，则前往 <span class="math inline">\(j\)</span>；否则，留在 <span class="math inline">\(i\)</span>。</li>
+</ol>
+<p>这个链易于实现，且每步移动所需的计算量非常小；请注意，运行该链并不需要知道归一化常数 <span class="math inline">\(\sum_{j=1}^{M}(1/j^a)\)</span>。</p>
+<blockquote>
+<p>个人注：知道Q之后：</p>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>对应的下一步操作</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>“系统稳定后是什么样子？”</strong></td>
+<td>解 <span class="math inline">\(sQ=s\)</span> 得到平稳分布。</td>
+</tr>
+<tr class="even">
+<td><strong>“走 <span class="math inline">\(n\)</span> 步后会在哪？”</strong></td>
+<td>计算 <span class="math inline">\(Q^n\)</span>。</td>
+</tr>
+<tr class="odd">
+<td><strong>“平均多少步能回到起点？”</strong></td>
+<td>求平稳分布后取倒数 <span class="math inline">\(1/s_i\)</span>。</td>
+</tr>
+<tr class="even">
+<td><strong>“平均多少步会被‘吸收’？”</strong></td>
+<td>计算基本矩阵 <span class="math inline">\((I-T)^{-1}\)</span>。</td>
+</tr>
+</tbody>
+</table>
+<p>采样流程图：</p>
+<p><span class="math display">\[\text{初始状态 } X_0 \xrightarrow{\text{运行 } Q} \underbrace{X_1, \dots, X_k}_{\text{丢弃(Burn-in)}} \rightarrow \underbrace{X_{k+1}, \dots, X_N}_{\text{保留(采样)}} \xrightarrow{\text{稀疏化}} \text{最终样本}\]</span></p>
+<p>MCMC 采样：得到的是一串模拟出的“实际经历”（比如得到一份包含 300 个雨天、700 个晴天的 1000 天天气记录）。</p>
+</blockquote>
+<p><strong>例 12.1.4 (Beta 分布模拟)</strong>。现在让我们回到本章开头介绍的 Beta 分布模拟问题。假设我们想要生成 <span class="math inline">\(W \sim \text{Beta}(a, b)\)</span>，但我们不知道 R 语言中的 <code>rbeta</code> 命令。相反，我们拥有的是独立同分布的 <span class="math inline">\(\text{Unif}(0, 1)\)</span> 随机变量。</p>
+<ol type="a">
+<li><p>如果 <span class="math inline">\(a\)</span> 和 <span class="math inline">\(b\)</span> 是正整数，如何利用“故事”和均匀分布的普适性来精确生成 <span class="math inline">\(W\)</span>？</p></li>
+<li><p>如果 <span class="math inline">\(a\)</span> 和 <span class="math inline">\(b\)</span> 是任何正实数，如何借助状态空间 <span class="math inline">\((0, 1)\)</span> 上的马尔可夫链生成近似服从 <span class="math inline">\(\text{Beta}(a, b)\)</span> 的 <span class="math inline">\(W\)</span>？</p></li>
+</ol>
+<p><strong>解：</strong></p>
+<ol type="a">
+<li>直接对 Beta 分布应用均匀分布普适性较难，所以我们先使用“银行-邮局故事”：如果 <span class="math inline">\(X \sim \text{Gamma}(a, 1)\)</span> 和 <span class="math inline">\(Y \sim \text{Gamma}(b, 1)\)</span> 是独立的，那么 <span class="math inline">\(X/(X + Y) \sim \text{Beta}(a, b)\)</span>。因此，如果我们能模拟 Gamma 分布，就能模拟 Beta 分布！</li>
+</ol>
+<p>为了模拟 <span class="math inline">\(X \sim \text{Gamma}(a, 1)\)</span>，我们可以使用 <span class="math inline">\(X_1 + X_2 + \dots + X_a\)</span>，其中 <span class="math inline">\(X_j\)</span> 是独立同分布的 <span class="math inline">\(\text{Expo}(1)\)</span>；类似地，我们可以将 <span class="math inline">\(Y \sim \text{Gamma}(b, 1)\)</span> 模拟为 <span class="math inline">\(b\)</span> 个独立同分布的 <span class="math inline">\(\text{Expo}(1)\)</span> 随机变量之和。最后，通过对 <span class="math inline">\(\text{Expo}(1)\)</span> 的 CDF 求逆并应用均匀分布普适性，对于 <span class="math inline">\(U \sim \text{Unif}(0, 1)\)</span>，<span class="math inline">\(-\log(1-U) \sim \text{Expo}(1)\)</span>，因此我们可以根据需要轻松构造任意数量的 <span class="math inline">\(\text{Expo}(1)\)</span> 随机变量。</p>
+<ol start="2" type="a">
+<li>让我们<strong>使用 Metropolis-Hastings 算法</strong>。虽然我们只介绍了针对有限状态空间的 Metropolis-Hastings，但对于无限状态空间，其思想是类似的。我们可用的一个简单建议链由独立的 <span class="math inline">\(\text{Unif}(0, 1)\)</span> 随机变量组成。也就是说，在区间 <span class="math inline">\((0, 1)\)</span> 上建议的状态始终是一个全新的、独立于当前状态的 <span class="math inline">\(\text{Unif}(0, 1)\)</span> 变量。由此产生的 Metropolis-Hastings 链被称为独立采样器（independence sampler）。</li>
+</ol>
+<p>令 <span class="math inline">\(W_0\)</span> 为任何起始状态，并按如下方式生成链 <span class="math inline">\(W_0, W_1, \dots\)</span>。如果链当前处于状态 <span class="math inline">\(w\)</span>，则：</p>
+<ol type="1">
+<li>通过抽取一个 <span class="math inline">\(\text{Unif}(0, 1)\)</span> 随机变量生成一个建议 <span class="math inline">\(u\)</span>。</li>
+<li>以概率 <span class="math inline">\(\min\left( \frac{u^{a-1}(1-u)^{b-1}}{w^{a-1}(1-w)^{b-1}}, 1 \right)\)</span> 接受该建议。如果建议被接受，则前往 <span class="math inline">\(u\)</span>；否则，留在 <span class="math inline">\(w\)</span>。</li>
+</ol>
+<p>同样，运行该链不需要归一化常数。在获得接受概率时，<span class="math inline">\(\text{Beta}(a, b)\)</span> 的 PDF 扮演了 <span class="math inline">\(s\)</span> 的角色（因为它是所需的平稳分布），而 <span class="math inline">\(\text{Unif}(0, 1)\)</span> 的 PDF 扮演了 <span class="math inline">\(p_{ij}\)</span>（以及 <span class="math inline">\(p_{ji}\)</span>）的角色，因为建议是独立于当前状态的 <span class="math inline">\(\text{Unif}(0, 1)\)</span> 随机变量。</p>
+<p>通过运行该马尔可夫链，当 <span class="math inline">\(n\)</span> 很大时，<span class="math inline">\(W_n, W_{n+1}, W_{n+2}, \dots\)</span> 近似服从 <span class="math inline">\(\text{Beta}(a, b)\)</span>。请注意，这些是相关的随机变量，而不是独立同分布的抽取。</p>
+<p><strong>12.1.5（MCMC 生成相关的样本）</strong>。在为蒙特卡罗计算运行马尔可夫链 <span class="math inline">\(X_0, X_1, \dots\)</span> 时，一个主要问题是运行多长时间。部分原因在于，通常很难知道在时间 <span class="math inline">\(n\)</span> 时链的分布与平稳分布有多接近。另一个问题是 <span class="math inline">\(X_0, X_1, \dots\)</span> 通常是相关的。有些链倾向于陷入状态空间的某些区域，而不是探索整个空间。如果一个链很容易被困住，那么 <span class="math inline">\(X_n\)</span> 与 <span class="math inline">\(X_{n+1}\)</span> 之间可能存在高度的正相关。滞后 <span class="math inline">\(k\)</span> 的自相关性（autocorrelation at lag <span class="math inline">\(k\)</span>）是指当 <span class="math inline">\(n\)</span> 增长到极限时，<span class="math inline">\(X_n\)</span> 与其 <span class="math inline">\(k\)</span> 步之后的值 <span class="math inline">\(X_{n+k}\)</span> 之间的相关性。我们希望滞后 <span class="math inline">\(k\)</span> 的自相关性随着 <span class="math inline">\(k\)</span> 的增加而迅速趋于 0。高自相关性往往意味着蒙特卡罗近似的方差较大。关于运行链多长时间的分析以及寻找判断链是否运行足够长的诊断方法是目前活跃的研究领域。一些通用的建议是将你的链运行非常大的步数，并尝试从不同的起点运行多条链，以观察结果的稳定性。</p>
+<p>Metropolis-Hastings 即使对于巨大的状态空间也通常是有用的。它甚至可以用于一些起初听起来与模拟分布毫无关系的课题，例如破译密码。</p>
+<p><strong>例 12.1.6（破译密码）</strong>。马尔可夫链最近已被应用于破译密码；本例将介绍实现这一目标的一种方式。（有关此类应用的进一步信息，请参阅 Diaconis [6] 以及 Chen 和 Rosenthal [3]。）代换密码（substitution cipher）是字母 a 到 z 的一个置换 <span class="math inline">\(g\)</span>，通过将每个字母 <span class="math inline">\(\alpha\)</span> 替换为 <span class="math inline">\(g(\alpha)\)</span> 来对消息进行加密。例如，如果 <span class="math inline">\(g\)</span> 是由下式给出的置换：</p>
+<blockquote>
+<p>abcdefghijklmnopqrstuvwxyz</p>
+<p>zyxwvutsrqponmlkjihgfedcba</p>
+</blockquote>
+<p>其中第二行顺序列出了 <span class="math inline">\(g(a), g(b), \dots, g(z)\)</span> 的值，那么我们会将单词“statistics”加密为“hgzgrhgrxh”。（如果需要，我们还可以包括大写字母、空格和标点符号。）状态空间是字母 a 到 z 的所有 <span class="math inline">\(26! \approx 4 \cdot 10^{26}\)</span> 种置换。这是一个极其巨大的空间：如果我们必须尝试使用这些置换中的每一个来解码一段文本，并且每纳秒能处理一个置换，那么处理完所有置换仍需要超过 120 亿年。因此，一个一个检查每个置换的暴力研究是不可行的；相反，我们将研究随机置换。</p>
+<ol type="a">
+<li>考虑这样一个马尔可夫链：在 1 到 26 之间随机选取两个不同的坐标，并交换第二行的对应项。例如，如果我们选取 7 和 20，那么：</li>
+</ol>
+<blockquote>
+<p>abcdefghijklmnopqrstuvwxyz</p>
+<p>zyxwvutsrqponmlkjihgfedcba</p>
+</blockquote>
+<p>变为：</p>
+<blockquote>
+<p>abcdefghijklmnopqrstuvwxyz</p>
+<p>zyxwvu<strong>g</strong>srqponmlkjih<strong>t</strong>fedcba</p>
+</blockquote>
+<p>求从置换 <span class="math inline">\(g\)</span> 经过一步转移到置换 <span class="math inline">\(h\)</span> 的概率（对所有 <span class="math inline">\(g, h\)</span>），并求该链的平稳分布。</p>
+<ol start="2" type="a">
+<li>假设我们有一个系统为每个置换 <span class="math inline">\(g\)</span> 分配一个正的“评分”<span class="math inline">\(s(g)\)</span>。直观地说，这可以衡量在已知 <span class="math inline">\(g\)</span> 为所用密码的前提下，获得观察到的加密文本的可能性。使用 Metropolis-Hastings 算法构造一个马尔可夫链，其平稳分布与所有评分 <span class="math inline">\(s(g)\)</span> 的列表成正比。</li>
+</ol>
+<p><strong>解：</strong></p>
+<ol type="a">
+<li><p>从 <span class="math inline">\(g\)</span> 到 <span class="math inline">\(h\)</span> 经过一步转移的概率为 0，除非 <span class="math inline">\(h\)</span> 可以通过交换 <span class="math inline">\(g\)</span> 第二行的两个项得到。假设 <span class="math inline">\(h\)</span> 可以通过这种方式得到，由于共有 <span class="math inline">\(\binom{26}{2}\)</span> 种此类交换且概率均等，故概率为 <span class="math inline">\(1/\binom{26}{2}\)</span>。由于通过执行足够多的交换可以从任何置换变到任何其他置换，因此该马尔可夫链是不可约的。（想象一下通过每次交换两张牌来重新排列一副扑克牌；通过这样做足够多次，可以将牌重新排序为任何想要的配置。）注意 <span class="math inline">\(p(g,h) = p(h,g)\)</span>，其中 <span class="math inline">\(p(g,h)\)</span> 是从 <span class="math inline">\(g\)</span> 到 <span class="math inline">\(h\)</span> 的转移概率。由于转移矩阵是对称的，平稳分布在字母 a 到 z 的所有 <span class="math inline">\(26!\)</span> 个置换上是均匀分布的。</p></li>
+<li><p>对于我们的建议链，我们将使用 (a) 中的链。从任何状态 <span class="math inline">\(g\)</span> 开始，使用 (a) 中的链生成一个建议 <span class="math inline">\(h\)</span>。抛一枚正面朝上概率为 <span class="math inline">\(\min(s(h)/s(g), 1)\)</span> 的硬币。如果正面朝上，前往 <span class="math inline">\(h\)</span>；如果是反面，留在 <span class="math inline">\(g\)</span>。</p></li>
+</ol>
+<p>为了证明这具有所需的平稳分布，我们可以援引算法 12.1.1 的一般性证明，或者直接检查可逆性条件。作为练习，我们进行后者：我们需要对所有 <span class="math inline">\(g\)</span> 和 <span class="math inline">\(h\)</span> 满足 <span class="math inline">\(s(g)q(g,h) = s(h)q(h,g)\)</span>，其中 <span class="math inline">\(q(g,h)\)</span> 是修改后的链中从 <span class="math inline">\(g\)</span> 到 <span class="math inline">\(h\)</span> 的转移概率。如果 <span class="math inline">\(g=h\)</span> 或 <span class="math inline">\(q(g,h) = 0\)</span>，等式显然成立，所以假设 <span class="math inline">\(i \neq j\)</span> 且 <span class="math inline">\(q(g,h) \neq 0\)</span>。令 <span class="math inline">\(p(g,h)\)</span> 为 (a) 中的转移概率（即处于 <span class="math inline">\(g\)</span> 时建议 <span class="math inline">\(h\)</span> 的概率）。</p>
+<p>首先考虑 <span class="math inline">\(s(g) \leq s(h)\)</span> 的情况。则 <span class="math inline">\(q(g,h) = p(g,h)\)</span> 且 <span class="math display">\[
+q(h,g) = p(h,g) \frac{s(g)}{s(h)} = p(g,h) \frac{s(g)}{s(h)} = q(g,h) \frac{s(g)}{s(h)},
+\]</span></p>
+<p>故 <span class="math inline">\(s(g)q(g,h) = s(h)q(h,g)\)</span>。现在考虑 <span class="math inline">\(s(h) &lt; s(g)\)</span> 的情况。通过对称参数（交换 <span class="math inline">\(g\)</span> 和 <span class="math inline">\(h\)</span> 的角色），我们再次得到 <span class="math inline">\(s(g)q(g,h) = s(h)q(h,g)\)</span>。因此，<span class="math inline">\(g\)</span> 的平稳概率与它的评分 <span class="math inline">\(s(g)\)</span> 成正比。</p>
+<p>换句话说，通过使用 Metropolis-Hastings 算法，我们从一个长期来看访问所有密码概率均等的马尔可夫链开始，创建了一个新的马尔可夫链，其平稳分布会根据评分对密码进行排序，在长期运行中访问最有希望的密码的频率最高。</p>
+<p>这是另一个具有巨大状态空间的 MCMC 示例，乍一看似乎与模拟分布没有太大关系。这个例子指出了一个事实：MCMC 不仅可以用于采样，还可以用于优化。</p>
+<p><strong>例 12.1.7（背包问题）</strong>。窃贼比尔博在史矛革的巢穴中发现了 <span class="math inline">\(m\)</span> 件宝物。比尔博正在决定偷走哪些宝物（或者说是公正地收回，这取决于一个人的视角）；由于他能携带的最大重量为 <span class="math inline">\(w\)</span> 磅，他无法一次性带走所有东西。将宝物标记为 1 到 <span class="math inline">\(m\)</span>，并假设第 <span class="math inline">\(j\)</span> 件宝物价值 <span class="math inline">\(g_j\)</span> 枚金币，重 <span class="math inline">\(w_j\)</span> 磅。因此，比尔博必须选择一个向量 <span class="math inline">\(x = (x_1, \dots, x_m)\)</span>，如果他偷走第 <span class="math inline">\(j\)</span> 件宝物，则 <span class="math inline">\(x_j\)</span> 为 1，否则为 0，且满足 <span class="math inline">\(x_j = 1\)</span> 的宝物总重量不超过 <span class="math inline">\(w\)</span>。令 <span class="math inline">\(C\)</span> 为所有此类向量的空间，因此 <span class="math inline">\(C\)</span> 由所有满足 <span class="math inline">\(\sum_{j=1}^{m} x_j w_j \leq w\)</span> 的二元向量 <span class="math inline">\((x_1, \dots, x_m)\)</span> 组成。</p>
+<p>比尔博希望将带走的宝物总价值最大化。寻找最优解是一个极其困难的问题，被称为背包问题（knapsack problem），它在计算机科学领域有着悠久的历史。通常情况下，暴力破解法是完全不可行的。比尔博决定改用 MCMC 来探索空间 <span class="math inline">\(C\)</span>——幸运的是，他随身带着一台运行 R 语言的笔记本电脑。</p>
+<ol type="a">
+<li><p>考虑以下马尔可夫链。从 <span class="math inline">\((0, 0, \dots, 0)\)</span> 开始。该链的一步移动如下：假设当前状态为 <span class="math inline">\(x = (x_1, \dots, x_m)\)</span>。在 <span class="math inline">\(\{1, 2, \dots, m\}\)</span> 中均匀随机地选择一个 <span class="math inline">\(J\)</span>，并将 <span class="math inline">\(x_J\)</span> 替换为 <span class="math inline">\(1-x_J\)</span>（即切换是否带走该宝物）从而得到 <span class="math inline">\(y\)</span>。如果 <span class="math inline">\(y\)</span> 不在 <span class="math inline">\(C\)</span> 中，则留在 <span class="math inline">\(x\)</span>；如果 <span class="math inline">\(y\)</span> 在 <span class="math inline">\(C\)</span> 中，则移动到 <span class="math inline">\(y\)</span>。证明在该链中，<span class="math inline">\(C\)</span> 上的均匀分布是平稳的。</p></li>
+<li><p>证明 (a) 中的链是不可约的，并且它可能是非周期的，也可能不是（取决于 <span class="math inline">\(w, w_1, \dots, w_m\)</span>）。</p></li>
+<li><ol type="a">
+<li>中的链是获得近似均匀解的有效方法，但比尔博更感兴趣的是找到那些（以金币计）价值较高的解。在本部分中，目标是构造一个马尔可夫链，其平稳分布赋予任何特定的高价值解的概率远高于任何特定的低价值解。具体而言，假设我们想要从如下分布中进行模拟： <span class="math display">\[
+s(x) \propto e^{\beta V(x)}
+\]</span></li>
+</ol></li>
+</ol>
+<p>其中 <span class="math inline">\(V(x) = \sum_{j=1}^{m} x_j g_j\)</span> 是以金币计的 <span class="math inline">\(x\)</span> 的价值，而 <span class="math inline">\(\beta\)</span> 是一个正数常数。该分布背后的思想是赋予每个高价值解比每个低价值解指数级更多的概率。创建一个平稳分布符合要求的马尔可夫链。</p>
+<p><strong>解：</strong></p>
+<ol type="a">
+<li><p>转移矩阵是对称的，因为对于 <span class="math inline">\(x \neq y\)</span>，从 <span class="math inline">\(x\)</span> 到 <span class="math inline">\(y\)</span> 以及从 <span class="math inline">\(y\)</span> 到 <span class="math inline">\(x\)</span> 的转移概率要么同为 0，要么同为 <span class="math inline">\(1/m\)</span>。因此，平稳分布在 <span class="math inline">\(C\)</span> 上是均匀的。</p></li>
+<li><p>我们可以通过一次丢弃一件宝物，从任何 <span class="math inline">\(x \in C\)</span> 到达 <span class="math inline">\((0, 0, \dots, 0)\)</span>。我们可以通过一次捡起一件宝物，从 <span class="math inline">\((0, 0, \dots, 0)\)</span> 到达任何 <span class="math inline">\(y \in C\)</span>。结合这两点，我们可以从任何地方到达任何地方，因此该链是不可约的。</p></li>
+</ol>
+<p>为了研究周期性，让我们看一些简单的情况。首先考虑 <span class="math inline">\(w_1 + \dots + w_m &lt; w\)</span> 的简单情况，即比尔博可以同时带走所有宝物。此时允许所有长度为 <span class="math inline">\(m\)</span> 的二元向量。那么 <span class="math inline">\((0, 0, \dots, 0)\)</span> 的周期为 2，因为从该状态出发，比尔博需要捡起然后再放下宝物才能回到该状态。事实上，如果比尔博从 <span class="math inline">\((0, 0, \dots, 0)\)</span> 开始，经过任何奇数步移动后，他携带的宝物数量都将是奇数。</p>
+<p>现在考虑 <span class="math inline">\(w_1 &gt; w\)</span> 的情况，即第一件宝物对比尔博来说太重了。从任何 <span class="math inline">\(x \in C\)</span> 出发，都有 <span class="math inline">\(1/m\)</span> 的机会尝试捡起第一件宝物，如果发生这种情况，链将停留在 <span class="math inline">\(x\)</span>。因此每个状态的周期为 1。</p>
+<ol start="3" type="a">
+<li>我们可以应用 Metropolis-Hastings 算法，利用 (a) 中的链来提出建议。从 <span class="math inline">\((0, 0, \dots, 0)\)</span> 开始。假设当前状态为 <span class="math inline">\(x = (x_1, \dots, x_m)\)</span>。那么：</li>
+</ol>
+<ol type="1">
+<li>在 <span class="math inline">\(\{1, 2, \dots, m\}\)</span> 中均匀随机地选择一个 <span class="math inline">\(J\)</span>，并通过将 <span class="math inline">\(x_J\)</span> 替换为 <span class="math inline">\(1-x_J\)</span> 从 <span class="math inline">\(x\)</span> 得到 <span class="math inline">\(y\)</span>。</li>
+<li>如果 <span class="math inline">\(y\)</span> 不在 <span class="math inline">\(C\)</span> 中，留在 <span class="math inline">\(x\)</span>。如果 <span class="math inline">\(y\)</span> 在 <span class="math inline">\(C\)</span> 中，抛一枚正面朝上概率为 <span class="math inline">\(\min(1, e^{\beta(V(y)-V(x))})\)</span> 的硬币。如果硬币正面朝上，前往 <span class="math inline">\(y\)</span>；否则，留在 <span class="math inline">\(x\)</span>。</li>
+</ol>
+<p>该链将收敛到所需的平稳分布。但是应该如何选择 <span class="math inline">\(\beta\)</span> 呢？如果 <span class="math inline">\(\beta\)</span> 非常大，那么最佳解会被赋予非常高的概率，但链收敛到平稳分布的速度可能会非常慢，因为它很容易陷入局部众数（local modes）：链可能会发现自己处于一个状态，该状态虽然不是全局最优的，但仍优于通过一步移动可以到达的其他状态，那么拒绝前往别处的建议的概率可能会非常高。另一方面，如果 <span class="math inline">\(\beta\)</span> 接近 0，那么链很容易探索整个空间，但链发现优秀解的动力却不足。</p>
+<p><strong>一种被称为模拟退火（simulated annealing）的优化技术避免了必须选择单一 <span class="math inline">\(\beta\)</span> 值的麻烦。相反，人们指定一个 <span class="math inline">\(\beta\)</span> 值的序列，使得 <span class="math inline">\(\beta\)</span> 随时间逐渐增加。起初，<span class="math inline">\(\beta\)</span> 很小，可以广泛探索空间 <span class="math inline">\(C\)</span>。随着 <span class="math inline">\(\beta\)</span> 变得越来越大，平稳分布越来越集中在最佳的一个或多个解上。“模拟退火”这个名字来源于与金属退火的类比，金属退火是将金属加热到高温，然后逐渐冷却，直到达到非常坚固、稳定的状态的过程；<span class="math inline">\(\beta\)</span> 对应于温度的倒数。</strong></p>
+<p>正如例 12.1.4 中提到的，Metropolis-Hastings 算法也可以应用于连续状态空间，只需将概率质量函数（PMF）替换为概率密度函数（PDF）。这在贝叶斯推断中极其有用，因为我们经常需要研究未知参数的后验分布。该后验分布在分析上可能非常复杂，且可能具有未知的归一化常数。</p>
+<p>MCMC 方法是获取大量来自某个马尔可夫链的抽取值，而该链的平稳分布正是所需的后验分布。然后，我们可以利用这些抽取值来近似真实的后验分布。例如，我们可以使用这些抽取值的样本均值来估计后验均值，使用样本中位数来估计后验中位数。</p>
+<p>Gelman 等人 [10] 和 McElreath [18] 对贝叶斯思维和贝叶斯数据分析进行了详尽的介绍，涵盖了广泛的应用，并侧重于统计建模和模拟。这两本书的各种补充材料可以分别在 和 找到。</p>
+<p><strong>例 12.1.8（正态-正态共轭性）</strong>。令 <span class="math inline">\(Y|\theta \sim N(\theta, \sigma^2)\)</span>，其中 <span class="math inline">\(\sigma^2\)</span> 已知但 <span class="math inline">\(\theta\)</span> 未知。在贝叶斯框架下，我们将 <span class="math inline">\(\theta\)</span> 视为随机变量，其先验分布由 <span class="math inline">\(\theta \sim N(\mu, \tau^2)\)</span> 给出（<span class="math inline">\(\mu\)</span> 和 <span class="math inline">\(\tau^2\)</span> 为已知常数）。也就是说，我们有如下双层模型： <span class="math display">\[
+\theta \sim N(\mu, \tau^2)
+\]</span> <span class="math display">\[
+Y|\theta \sim N(\theta, \sigma^2)
+\]</span></p>
+<p>描述在观测到 <span class="math inline">\(Y\)</span> 的值后，如何使用 Metropolis-Hastings 算法找到 <span class="math inline">\(\theta\)</span> 的后验均值和方差。</p>
+<p><strong>解：</strong></p>
+<p>在观测到 <span class="math inline">\(Y=y\)</span> 后，我们可以根据贝叶斯法则更新我们对 <span class="math inline">\(\theta\)</span> 的先验不确定性。由于我们感兴趣的是 <span class="math inline">\(\theta\)</span> 的后验分布，任何不依赖于 <span class="math inline">\(\theta\)</span> 的项都可以被视为归一化常数的一部分。因此：</p>
+<p><img src="/img3/Introduction to Probability/F12.01.png" alt="F12.01" style="zoom:50%;" /></p>
+<p>由于指数部分是关于 <span class="math inline">\(\theta\)</span> 的二次函数，我们认出 <span class="math inline">\(\theta\)</span> 的后验 PDF 是一个正态分布的 PDF。后验分布仍保持在正态族中，这告诉我们正态分布是正态分布的共轭先验。事实上，通过配方（这是一项相当乏味的计算，我们在此省略），我们可以得到 <span class="math inline">\(\theta\)</span> 后验分布的显式公式：</p>
+<p><img src="/img3/Introduction to Probability/F12.02.png" alt="F12.02" style="zoom:50%;" /></p>
+<p>让我们来理解一下这个公式：</p>
+<ul>
+<li>它说明 <span class="math inline">\(\theta\)</span> 的<strong>后验均值 <span class="math inline">\(E(\theta|Y=y)\)</span> 是先验均值 <span class="math inline">\(\mu\)</span> 和观测数据 <span class="math inline">\(y\)</span> 的加权平均</strong>。权重取决于我们在获取数据之前对 <span class="math inline">\(\theta\)</span> 的确定程度，以及数据的测量精度。如果我们在获取数据前就已经非常确定 <span class="math inline">\(\theta\)</span> 的值，那么 <span class="math inline">\(\tau^2\)</span> 会很小，<span class="math inline">\(1/\tau^2\)</span> 会很大，这会给先验均值 <span class="math inline">\(\mu\)</span> 赋予很大权重。另一方面，如果数据非常精确，那么 <span class="math inline">\(\sigma^2\)</span> 会很小，<span class="math inline">\(1/\sigma^2\)</span> 会很大，这会给数据 <span class="math inline">\(y\)</span> 赋予很大权重。</li>
+<li>对于后验方差，如果我们<strong>定义“精度”为方差的倒数</strong>，那么结果简单地说明 <span class="math inline">\(\theta\)</span> 的后验精度是先验精度 <span class="math inline">\(1/\tau^2\)</span> 与数据精度 <span class="math inline">\(1/\sigma^2\)</span> 之和。</li>
+</ul>
+<p>这一切都很好，但假设我们不知道如何配方，或者我们想针对 <span class="math inline">\(y, \sigma^2, \mu, \tau^2\)</span> 的特定值来检查我们的计算。我们可以通过从 <span class="math inline">\(\theta\)</span> 的后验分布中进行模拟来实现这一点，即利用 Metropolis-Hastings 算法构造一个平稳分布为 <span class="math inline">\(f_{\theta|Y}(\theta|y)\)</span> 的马尔可夫链。同样的方法也可以应用于许多在分析上比正态分布复杂得多的分布。用于生成 <span class="math inline">\(\theta_0, \theta_1, \dots\)</span> 的 Metropolis-Hastings 算法如下：</p>
+<ol type="1">
+<li><p>如果 <span class="math inline">\(\theta_n = x\)</span>，根据某种转移规则提出一个新状态 <span class="math inline">\(x&#39;\)</span>。在连续状态空间中执行此操作的一种方法是生成一个均值为 0 的正态随机变量 <span class="math inline">\(\epsilon_n\)</span>，并将其加到当前状态以获得建议状态：换句话说，我们生成 <span class="math inline">\(\epsilon_n \sim N(0, d^2)\)</span>（<span class="math inline">\(d\)</span> 为常数），然后设置 <span class="math inline">\(x&#39; = x + \epsilon_n\)</span>。这是连续状态空间中转移矩阵的类似物。唯一的额外细节是确定 <span class="math inline">\(d\)</span>；在实践中，我们尝试选择一个既不太大也不太小的适中值。</p></li>
+<li><p>接受概率为： <span class="math display">\[
+a(x, x&#39;) = \min\left( \frac{s(x&#39;)p(x&#39;, x)}{s(x)p(x, x&#39;)}, 1 \right)
+\]</span></p>
+<p>其中 <span class="math inline">\(s\)</span> 是所需的平稳 PDF（离散情况下为 PMF），而 <span class="math inline">\(p(x, x&#39;)\)</span> 是从 <span class="math inline">\(x\)</span> 提出 <span class="math inline">\(x&#39;\)</span> 的概率密度（离散情况下为 <span class="math inline">\(p_{ij}\)</span>）。</p>
+<p>在本题中，我们希望平稳 PDF 是 <span class="math inline">\(f_{\theta|Y}\)</span>，因此我们将其用作 <span class="math inline">\(s\)</span>。至于 <span class="math inline">\(p(x, x&#39;)\)</span>，从 <span class="math inline">\(x\)</span> 提出 <span class="math inline">\(x&#39;\)</span> 等同于 <span class="math inline">\(\epsilon_n = x&#39; - x\)</span>，因此我们在 <span class="math inline">\(x&#39; - x\)</span> 处评估 <span class="math inline">\(\epsilon_n\)</span> 的 PDF，得到： <span class="math display">\[
+p(x, x&#39;) = \frac{1}{\sqrt{2\pi}d} e^{-\frac{1}{2d^2}(x&#39;-x)^2}
+\]</span></p>
+<p>然而，由于 <span class="math inline">\(p(x&#39;, x) = p(x, x&#39;)\)</span>，这些项在接受概率中会被消去，剩下： <span class="math display">\[
+a(x, x&#39;) = \min\left( \frac{f_{\theta|Y}(x&#39;|y)}{f_{\theta|Y}(x|y)}, 1 \right)
+\]</span></p>
+<p>归一化常数再次在接受概率的分子和分母中被消去。</p></li>
+<li><p>抛一枚独立于马尔可夫链的硬币，其正面朝上的概率为 <span class="math inline">\(a(x, x&#39;)\)</span>。</p></li>
+<li><p>如果硬币正面朝上，接受建议并设置 <span class="math inline">\(\theta_{n+1} = x&#39;\)</span>。否则，保持在原位并设置 <span class="math inline">\(\theta_{n+1} = x\)</span>。</p></li>
+</ol>
+<p><img src="/img3/Introduction to Probability/F12.2.png" alt="F12.2" style="zoom:60%;" /></p>
+<p>我们以 <span class="math inline">\(Y=3, \mu=0, \sigma^2=1, \tau^2=4\)</span> 以及 <span class="math inline">\(d=1\)</span> 为设置，将该算法运行了 <span class="math inline">\(10^4\)</span> 次迭代。图 12.2 显示了所得 <span class="math inline">\(\theta\)</span> 后验分布抽取值的直方图。后验分布看起来确实像一条正态曲线。我们可以使用样本均值和样本方差来估计后验均值和方差。在我们获得的抽取值中，样本均值为 2.4，样本方差为 0.8。这些结果与理论值非常吻合： <span class="math display">\[
+E(\theta|Y = 3) = \frac{\frac{1}{\sigma^2}y + \frac{1}{\tau^2}\mu}{\frac{1}{\sigma^2} + \frac{1}{\tau^2}} = \frac{1 \cdot 3 + \frac{1}{4} \cdot 0}{1 + \frac{1}{4}} = 2.4
+\]</span> <span class="math display">\[
+Var(\theta|Y = 3) = \frac{1}{\frac{1}{\sigma^2} + \frac{1}{\tau^2}} = \frac{1}{1 + \frac{1}{4}} = 0.8
+\]</span></p>
+<p>（注：原文中期望计算结果 2.8 疑似笔误，按公式计算应为 2.4）。后验均值比先验均值更接近观测数据，这是合理的，因为 <span class="math inline">\(\tau^2\)</span> 大于 <span class="math inline">\(\sigma^2\)</span>，对应于相对较高的先验不确定性水平。使用本章 R 语言部分提供的代码，你可以观察后验分布如何随 <span class="math inline">\(y, \mu, \sigma^2\)</span> 和 <span class="math inline">\(\tau^2\)</span> 的不同取值而变化。</p>
+<p><img src="/img3/Introduction to Probability/F12.3.png" alt="F12.3" style="zoom:60%;" /></p>
+<p>为了帮助诊断我们的马尔可夫链是否充分探索了状态空间，我们可以制作<strong>迹图（trace plot）</strong>，即样本 <span class="math inline">\(\theta_n\)</span> 随 <span class="math inline">\(n\)</span> 变化的图形。图 12.3 显示了对应于建议分布标准差 <span class="math inline">\(d\)</span> 的三种不同选择（即 <span class="math inline">\(d = 100, d = 1, d = 0.01\)</span>）的三张迹图。<span class="math inline">\(d = 100\)</span> 的迹图有许多平坦区域，说明链停留在原位。这表明 <span class="math inline">\(d\)</span> 太大了，导致建议经常被拒绝。另一方面，<span class="math inline">\(d = 0.01\)</span> 又太小了；从迹图中我们可以看到，链每步移动极其微小，无法从起点探索到很远的地方。<span class="math inline">\(d = 1\)</span> 的迹图恰到好处，既没有 <span class="math inline">\(d = 100\)</span> 时的低接受率，也没有 <span class="math inline">\(d = 0.01\)</span> 时的移动受限。</p>
+<p>在这个例子中，<span class="math inline">\(\theta\)</span> 的后验分布可以通过解析方法获得，因此我们使用 MCMC 是出于演示目的，以展示 MCMC 获得的结果与其理论对应值是一致的。但同样的技术也适用于先验不共轭且后验不是已知分布的问题。</p>
+<h2 id="吉布斯采样">12.2 吉布斯采样</h2>
+<p>Gibbs sampling</p>
+<p>吉布斯采样是一种用于从联合分布中获取近似抽取值的 MCMC 算法，其基础是每次从一个条件分布中进行采样：在每个阶段，通过从该变量给定所有其他变量的条件分布中进行抽取，来更新其中一个变量（保持所有其他变量固定）。在这些条件分布易于处理的问题中，这种方法特别有用。</p>
+<p>首先，我们将了解吉布斯采样器在二元情况下的工作原理，其中理想的平稳分布是离散随机变量 <span class="math inline">\(X\)</span> 和 <span class="math inline">\(Y\)</span> 的联合 PMF。根据更新执行的顺序，吉布斯采样器有几种形式。我们将介绍两种主要的吉布斯采样器：<strong>系统扫描（systematic scan）</strong>，即更新按确定的顺序扫描各分量；以及<strong>随机扫描（random scan）</strong>，即在每个阶段更新随机选择的分量。</p>
+<p><strong>算法 12.2.1（系统扫描吉布斯采样器 Systematic scan Gibbs sampler）</strong>。令 <span class="math inline">\(X\)</span> 和 <span class="math inline">\(Y\)</span> 为离散随机变量，联合 PMF 为 <span class="math inline">\(p_{X,Y}(x,y) = P(X=x, Y=y)\)</span>。我们希望构造一个二维马尔可夫链 <span class="math inline">\((X_n, Y_n)\)</span>，其平稳分布为 <span class="math inline">\(p_{X,Y}\)</span>。系统扫描吉布斯采样器通过交替更新 <span class="math inline">\(X\)</span> 分量和 <span class="math inline">\(Y\)</span> 分量来运行。如果当前状态为 <span class="math inline">\((X_n, Y_n) = (x_n, y_n)\)</span>，则我们在保持 <span class="math inline">\(Y\)</span> 分量固定的情况下更新 <span class="math inline">\(X\)</span> 分量，然后在保持 <span class="math inline">\(X\)</span> 分量固定的情况下更新 <span class="math inline">\(Y\)</span> 分量：</p>
+<ol type="1">
+<li>从 <span class="math inline">\(X\)</span> 给定 <span class="math inline">\(Y=y_n\)</span> 的条件分布中抽取 <span class="math inline">\(x_{n+1}\)</span>，并设置 <span class="math inline">\(X_{n+1} = x_{n+1}\)</span>。</li>
+<li>从 <span class="math inline">\(Y\)</span> 给定 <span class="math inline">\(X=x_{n+1}\)</span> 的条件分布中抽取 <span class="math inline">\(y_{n+1}\)</span>，并设置 <span class="math inline">\(Y_{n+1} = y_{n+1}\)</span>。</li>
+</ol>
+<p>不断重复步骤 1 和 2，链 <span class="math inline">\((X_0, Y_0), (X_1, Y_1), (X_2, Y_2), \dots\)</span> 的平稳分布即为 <span class="math inline">\(p_{X,Y}\)</span>。</p>
+<p><strong>算法 12.2.2（随机扫描吉布斯采样器Random scan Gibbs sampler）</strong>。同上，令 <span class="math inline">\(X\)</span> 和 <span class="math inline">\(Y\)</span> 为离散随机变量，联合 PMF 为 <span class="math inline">\(p_{X,Y}(x,y)\)</span>。我们希望构造一个二维马尔可夫链 <span class="math inline">\((X_n, Y_n)\)</span>，其平稳分布为 <span class="math inline">\(p_{X,Y}\)</span>。随机扫描吉布斯采样器的每一步移动都会均匀随机地选取一个分量，并根据给定另一个分量的条件分布来更新它：</p>
+<ol type="1">
+<li><p>以相等的概率选择要更新的分量。</p></li>
+<li><p>如果选择了 <span class="math inline">\(X\)</span> 分量，则从 <span class="math inline">\(X\)</span> 给定 <span class="math inline">\(Y=y_n\)</span> 的条件分布中抽取一个值 <span class="math inline">\(x_{n+1}\)</span>，并设置 <span class="math inline">\(X_{n+1} = x_{n+1}, Y_{n+1} = y_n\)</span>。</p>
+<p>同样，如果选择了 <span class="math inline">\(Y\)</span> 分量，则从 <span class="math inline">\(Y\)</span> 给定 <span class="math inline">\(X=x_n\)</span> 的条件分布中抽取一个值 <span class="math inline">\(y_{n+1}\)</span>，并设置 <span class="math inline">\(X_{n+1} = x_n, Y_{n+1} = y_{n+1}\)</span>。</p></li>
+</ol>
+<p>不断重复步骤 1 和 2，链 <span class="math inline">\((X_0, Y_0), (X_1, Y_1), (X_2, Y_2), \dots\)</span> 的平稳分布即为 <span class="math inline">\(p_{X,Y}\)</span>。</p>
+<p>吉布斯采样可以自然地推广到高维。如果我们想从 <span class="math inline">\(d\)</span> 维联合分布中采样，我们构造的马尔可夫链将是一个 <span class="math inline">\(d\)</span> 维随机向量序列。在每个阶段，我们选择向量的一个分量进行更新，并从该分量给定其他分量最新值的条件分布中进行抽取。我们可以按系统顺序循环更新向量的分量，也可以每次随机选择一个分量进行更新。</p>
+<blockquote>
+<p>个人注：直观类比：走迷宫</p>
+<p>想象你在一个二维坐标系上移动：</p>
+<ul>
+<li><strong>系统扫描</strong>：规定你必须“先向右走，再向上走”。每一步完成后，你的 <span class="math inline">\(x\)</span> 和 <span class="math inline">\(y\)</span> 通常都变了。</li>
+<li><strong>随机扫描</strong>：你掷硬币。
+<ul>
+<li>正面：你只能左右走（更新 <span class="math inline">\(X\)</span>），<strong>高度（<span class="math inline">\(Y\)</span>）不能变</strong>。</li>
+<li>反面：你只能上下走（更新 <span class="math inline">\(Y\)</span>），<strong>水平位置（<span class="math inline">\(X\)</span>）不能变</strong>。</li>
+</ul></li>
+</ul>
+<p>因此，在随机扫描的序列中，你会观察到一种“阶梯状”或“锯齿状”的移动，每一步都只改动一个坐标轴的值。</p>
+<p>如果此时你把 <span class="math inline">\(Y\)</span> 也顺便更新了，那就不叫“随机扫描”了，而退化成了某种形式的系统扫描或全块更新。保持 <span class="math inline">\(y_{n+1} = y_n\)</span> 是为了确保这一步转移<strong>严格限制在选定的维度上</strong>。</p>
+</blockquote>
+<p><strong>吉布斯采样器在无法选择建议分布的意义上不如 Metropolis-Hastings 算法灵活；但这在不需要选择建议分布的意义上也使它更简单。吉布斯采样和 Metropolis-Hastings 的风格相当不同，吉布斯侧重于条件分布，而 Metropolis-Hastings 侧重于接受概率。但如下所示，这两种算法是紧密联系的。</strong></p>
+<p><strong>定理 12.2.3（作为 Metropolis-Hastings 特例的随机扫描吉布斯）</strong>。随机扫描吉布斯采样器是 Metropolis-Hastings 算法的一个特例，其中建议总是被接受。特别地，由此推导出随机扫描吉布斯采样器的平稳分布符合要求。</p>
+<p><strong>证明</strong>。我们将在二维空间中证明这一点，但在任何维度上的证明都是相似的。令 <span class="math inline">\(X\)</span> 和 <span class="math inline">\(Y\)</span> 为离散随机变量，其联合 PMF 为理想的平稳分布。让我们看看 Metropolis-Hastings 算法在使用以下建议分布时会做什么：从 <span class="math inline">\((x,y)\)</span> 开始，通过运行一步随机扫描吉布斯采样器来随机更新一个坐标。</p>
+<p>为了简化符号，记：</p>
+<p><span class="math display">\[
+P(X=x, Y=y) = p(x,y), P(Y=y|X=x) = p(y|x), P(X=x|Y=y) = p(x|y)
+\]</span></p>
+<p>更正式地说，我们应该写 <span class="math inline">\(p_{Y|X}(y|x)\)</span> 而不是 <span class="math inline">\(p(y|x)\)</span>，以避免诸如疑惑 <span class="math inline">\(p(5|3)\)</span> 是什么意思之类的问题。但写成 <span class="math inline">\(p(y|x)\)</span> 更简洁，且在此证明中不会产生歧义。</p>
+<p>让我们计算从 <span class="math inline">\((x,y)\)</span> 到 <span class="math inline">\((x&#39;,y&#39;)\)</span> 的 Metropolis-Hastings 接受概率。状态 <span class="math inline">\((x,y)\)</span> 和 <span class="math inline">\((x&#39;,y&#39;)\)</span> 必须至少有一个分量相等，因为建议只更新一个分量。假设 <span class="math inline">\(x = x&#39;\)</span>（<span class="math inline">\(y = y&#39;\)</span> 的情况可以对称处理）。那么接受概率为： <span class="math display">\[
+\frac{p(x, y&#39;) p(y|x) \frac{1}{2}}{p(x, y) p(y&#39;|x) \frac{1}{2}} = \frac{p(x) p(y&#39;|x) p(y|x)}{p(x) p(y|x) p(y&#39;|x)} = 1
+\]</span></p>
+<p>因此，这个 Metropolis-Hastings 算法总是接受建议！所以它就是在不加修改地运行随机扫描吉布斯采样器。</p>
+<p>让我们研究一些吉布斯采样器的具体例子。</p>
+<p><strong>例 12.2.4（图着色Graph coloring）</strong>。令 <span class="math inline">\(G\)</span> 为一个网络（也称为图）：有 <span class="math inline">\(n\)</span> 个节点，对于每一对不同的节点，要么有边相连，要么没有。我们有一组 <span class="math inline">\(k\)</span> 种颜色，例如，如果 <span class="math inline">\(k=7\)</span>，颜色集可以是 {红、橙、黄、绿、蓝、靛、紫}。网络的 <span class="math inline">\(k\)</span>-着色是指为每个节点分配一种颜色，使得由边连接的两个节点颜色不能相同。例如，下图展示了一个网络的 3-着色。图着色是计算机科学中的一个重要课题，具有广泛的应用，如任务调度和数独游戏。</p>
+<p><img src="/img3/Introduction to Probability/F112.4.png" alt="F112.4" style="zoom:60%;" /></p>
+<p>假设对 <span class="math inline">\(G\)</span> 进行 <span class="math inline">\(k\)</span>-着色是可能的。在 <span class="math inline">\(G\)</span> 的所有 <span class="math inline">\(k\)</span>-着色空间上形成一个马尔可夫链，转移方式如下：从 <span class="math inline">\(G\)</span> 的一个 <span class="math inline">\(k\)</span>-着色开始，随机均匀地选取一个节点，找出该节点所有合法的颜色，然后用随机均匀选取的一种合法颜色对该节点重新着色（注意，这种随机颜色可能与当前颜色相同）。证明这个马尔可夫链是可逆的，并求出其平稳分布。</p>
+<p><strong>解：</strong></p>
+<p>令 <span class="math inline">\(C\)</span> 为 <span class="math inline">\(G\)</span> 的所有 <span class="math inline">\(k\)</span>-着色集合，<span class="math inline">\(q_{ij}\)</span> 为从 <span class="math inline">\(C\)</span> 中任意 <span class="math inline">\(k\)</span>-着色 <span class="math inline">\(i\)</span> 转移到 <span class="math inline">\(j\)</span> 的概率。我们将证明 <span class="math inline">\(q_{ij} = q_{ji}\)</span>，这意味着平稳分布在 <span class="math inline">\(C\)</span> 上是均匀的。</p>
+<p>对于任何 <span class="math inline">\(k\)</span>-着色 <span class="math inline">\(i\)</span> 和节点 <span class="math inline">\(v\)</span>，令 <span class="math inline">\(L(i,v)\)</span> 为节点 <span class="math inline">\(v\)</span> 的合法着色数量（保持所有其他节点的颜色与 <span class="math inline">\(i\)</span> 中相同）。如果 <span class="math inline">\(k\)</span>-着色 <span class="math inline">\(i\)</span> 和 <span class="math inline">\(j\)</span> 有超过一个节点不同，则 <span class="math inline">\(q_{ij} = 0 = q_{ji}\)</span>。如果 <span class="math inline">\(i=j\)</span>，显然 <span class="math inline">\(q_{ij} = q_{ji}\)</span>。如果 <span class="math inline">\(i\)</span> 和 <span class="math inline">\(j\)</span> 恰好在节点 <span class="math inline">\(v\)</span> 上不同，那么 <span class="math inline">\(L(i,v) = L(j,v)\)</span>，因此： <span class="math display">\[
+q_{ij} = \frac{1}{n} \cdot \frac{1}{L(i,v)} = \frac{1}{n} \cdot \frac{1}{L(j,v)} = q_{ji}
+\]</span></p>
+<p>因此，转移矩阵是对称的，这表明平稳分布在状态空间上是均匀分布。</p>
+<blockquote>
+<p>个人注：这个公式完美体现了<strong>随机扫描</strong>的逻辑：</p>
+<ul>
+<li>外层的 <span class="math inline">\(1/n\)</span> 是<strong>扫描策略</strong>（随机选一个点）；</li>
+<li>内层的 <span class="math inline">\(1/L(i,v)\)</span> 是<strong>条件概率抽样</strong>（在约束下选颜色）。</li>
+</ul>
+</blockquote>
+<p>这如何成为吉布斯采样的例子？将图中的每个节点视为一个可以取 <span class="math inline">\(k\)</span> 个可能值的离散随机变量。这些节点具有联合分布，且“相连节点不能颜色相同”的约束在节点之间施加了复杂的依赖结构。</p>
+<p>我们希望对整个图的一个随机 <span class="math inline">\(k\)</span>-着色进行采样；也就是说，我们想从所有节点的联合分布中进行抽取。由于这很困难，我们转而以除一个节点外的所有节点为条件。如果联合分布在所有合法图中是均匀的，那么一个节点给定所有其他节点的条件分布在它的合法颜色上就是均匀的。因此，在算法的每个阶段，我们都在从一个节点给定所有其他节点的条件分布中进行抽取：我们运行的是一个随机扫描吉布斯采样器！</p>
+<p><strong>例 12.2.5（达尔文的雀鸟Darwin’s finches）</strong>。当查尔斯·达尔文访问加拉帕戈斯群岛时，他记录了在每个岛屿上观察到的雀鸟物种。表 12.1 总结了达尔文的数据，每一行对应一个物种，每一列对应一个岛屿。表中条目 <span class="math inline">\((i,j)\)</span> 出现 1 表示在岛屿 <span class="math inline">\(j\)</span> 上观察到了物种 <span class="math inline">\(i\)</span>。</p>
+<p><img src="/img3/Introduction to Probability/T12.1.png" alt="T12.1" style="zoom:60%;" /></p>
+<p>给定这些数据，我们可能感兴趣的是：表中观察到的 0 和 1 的模式在某种程度上是否异常？例如，行和列之间是否存在依赖关系？是否某些物种对经常一起出现在同一个岛屿上，其频率超过了随机情况下的预期？这些模式可能揭示物种间合作或竞争的动态。<strong>测试此类模式的一种方法是观察大量具有与观测表相同行和列和的随机表，看看观测表与这些随机表相比如何。这在统计学中是一种常见的技术，被称为拟合优度检验。</strong></p>
+<p>Given these data, we might be interested in knowing whether the pattern of 0’s and 1’s observed in the table is anomalous in some way. For example, does there appear to be dependence between the rows and columns? Do some pairs of species frequently occur together on the same islands, more often than one would expect by chance? These patterns may shed light on the dynamics of inter-species cooperation or competition. One way to test for such patterns is by looking at a lot of random tables with the same row and column sums as the observed table, to see how the observed table compares to the random ones. This is a common technique in statistics known as <strong>a goodness-of-fit test.</strong></p>
+<p>但是我们如何生成与表 12.1 具有相同行和列和的随机表呢？满足这些约束的表数量是无法穷举的。MCMC 前来救援：我们将在所有具有这些行和列和的表空间上创建一个马尔可夫链，其平稳分布在所有此类表上是均匀的。</p>
+<p>为了构造马尔可夫链，我们需要一种在不改变行或列和的情况下从一个表转移到另一个表的方法。从观测表开始，随机选择两行和两列。如果它们交叉处的四个条目具有以下两种模式之一：</p>
+<p><img src="/img3/Introduction to Probability/F12.03.png" alt="F12.03" style="zoom:50%;" /></p>
+<p>则以 1/2 的概率切换到相反的模式；否则保持原地。例如，如果我们选择了第 1 行和第 3 行以及第 1 栏和第 17 栏，我们将以 1/2 的概率将它们交叉处的四个条目从 <code>0 1 / 1 0</code> 切换为 <code>1 0 / 0 1</code>。这是一个对称的转移规则（对于所有表 <span class="math inline">\(t\)</span> 和 <span class="math inline">\(t&#39;\)</span>，从 <span class="math inline">\(t\)</span> 到 <span class="math inline">\(t&#39;\)</span> 的转移概率等于从 <span class="math inline">\(t&#39;\)</span> 到 <span class="math inline">\(t\)</span> 的转移概率），转移永远不会改变行或列和，并且可以证明以此方式定义的马尔可夫链是不可约的。因此，平稳分布在具有给定行和列和的所有表上是均匀的，符合要求。</p>
+<p>要将此过程解释为吉布斯采样器，请考虑以表中除第 1、3 行和第 1、17 列交叉处的四个条目以外的所有条目为条件。如果平稳分布在具有给定行和列和的所有表上是均匀的，那么这四个条目的条件分布必须在不改变行和列和的所有配置上是均匀的，即在 <code>0 1 / 1 0</code> 和 <code>1 0 / 0 1</code> 上是均匀的。因此，在每个阶段，我们都在从给定其余所有条目时这四个条目的条件分布中进行抽取。</p>
+<p>与 Metropolis-Hastings 一样，吉布斯采样也适用于连续分布，只需将条件 PMF 替换为条件 PDF。</p>
+<p><strong>例 12.2.6（参数未知的鸡兔同笼/鸡蛋问题 Chicken-egg with unknown parameter）</strong>。一只母鸡产下 <span class="math inline">\(N\)</span> 枚蛋，其中 <span class="math inline">\(N \sim Pois(\lambda)\)</span>。每枚蛋孵化的概率为 <span class="math inline">\(p\)</span>，其中 <span class="math inline">\(p\)</span> 是未知的；我们令 <span class="math inline">\(p \sim Beta(a,b)\)</span>。常数 <span class="math inline">\(\lambda, a, b\)</span> 是已知的。</p>
+<p>难点在于：我们无法观测到 <span class="math inline">\(N\)</span>。相反，我们只能观测到孵化出的蛋的数量 <span class="math inline">\(X\)</span>。描述如何使用吉布斯采样来求 <span class="math inline">\(E(p|X=x)\)</span>，即在观测到 <span class="math inline">\(x\)</span> 个孵化出的蛋后，<span class="math inline">\(p\)</span> 的后验均值。</p>
+<p><strong>解：</strong></p>
+<p>根据“鸡蛋问题”的故事，<span class="math inline">\(X\)</span> 在给定 <span class="math inline">\(p\)</span> 时的分布为 <span class="math inline">\(Pois(\lambda p)\)</span>。<span class="math inline">\(p\)</span> 的后验 PDF 与下式成正比： <span class="math display">\[
+f(p|X=x) \propto P(X=x|p)f(p) \propto e^{-\lambda p}(\lambda p)^x p^{a-1}q^{b-1},
+\]</span></p>
+<p>此处我们省去了所有不依赖于 <span class="math inline">\(p\)</span> 的项。</p>
+<p>这并不是一个已命名的分布，所以看起来我们似乎陷入了困境，但我们可以通过条件思维走出这种困局。我们希望知道什么？蛋的总数！在观测到 <span class="math inline">\(N=n\)</span> 且已知 <span class="math inline">\(p\)</span> 的真实值的前提下，<span class="math inline">\(X\)</span> 的分布将是 <span class="math inline">\(Bin(n,p)\)</span>。通过以蛋的总数为条件，我们恢复了 <span class="math inline">\(p\)</span> 和 <span class="math inline">\(X\)</span> 之间的 Beta-Binomial 共轭性。这使我们能够利用故事 8.3.3 立即写出后验分布： <span class="math display">\[
+p|X=x, N=n \sim Beta(x+a, n-x+b).
+\]</span></p>
+<p>“以 <span class="math inline">\(N\)</span> 为条件会让事情变得如此美好”这一事实启发我们使用吉布斯采样来解决这个问题。<strong>我们在“以 <span class="math inline">\(N\)</span> 为条件对 <span class="math inline">\(p\)</span> 进行采样”和“以 <span class="math inline">\(p\)</span> 为条件对 <span class="math inline">\(N\)</span> 进行采样”之间交替进行</strong>，如下文所述。在整个过程中，我们还必须以 <span class="math inline">\(X=x\)</span> 为条件，因为我们寻求学习的是在证据给定的前提下参数的后验分布。</p>
+<p>我们对 <span class="math inline">\(p\)</span> 和 <span class="math inline">\(N\)</span> 做一个初始猜测，然后迭代以下步骤：</p>
+<ol type="1">
+<li>在给定 <span class="math inline">\(N=n\)</span> 且 <span class="math inline">\(X=x\)</span> 的条件下，从 <span class="math inline">\(Beta(x+a, n-x+b)\)</span> 分布中抽取一个新的 <span class="math inline">\(p\)</span> 的猜测值。</li>
+<li>在给定 <span class="math inline">\(p\)</span> 且 <span class="math inline">\(X=x\)</span> 的条件下，根据鸡蛋问题的故事，未孵化的蛋的数量为 <span class="math inline">\(Y \sim Pois(\lambda(1-p))\)</span>，因此我们可以从 <span class="math inline">\(Pois(\lambda(1-p))\)</span> 分布中抽取 <span class="math inline">\(Y\)</span>，并设置 <span class="math inline">\(N\)</span> 的新猜测值为 <span class="math inline">\(N=x+Y\)</span>。</li>
+</ol>
+<p>经过多次迭代后，我们得到了 <span class="math inline">\(p\)</span> 和 <span class="math inline">\(N\)</span> 的抽取值。如果愿意，我们可以忽略 <span class="math inline">\(N\)</span> 的抽取值，因为 <span class="math inline">\(N\)</span> 仅仅是帮助我们采样 <span class="math inline">\(p\)</span> 的一种手段。但为了趣味性，我们会将两者都绘出：图 12.5 显示了当 <span class="math inline">\(\lambda=10, a=b=1\)</span>（对应于 <span class="math inline">\(p\)</span> 的 <span class="math inline">\(Unif(0,1)\)</span> 先验），且我们观测到 <span class="math inline">\(X=7\)</span> 个孵化出的蛋时，<span class="math inline">\(p\)</span> 和 <span class="math inline">\(N\)</span> 后验抽取值的直方图。</p>
+<p><img src="/img3/Introduction to Probability/F12.5.png" alt="F12.5" style="zoom:60%;" /></p>
+<p>至于题目最初要求的后验均值 <span class="math inline">\(E(p|X=x)\)</span>，我们可以对 <span class="math inline">\(p\)</span> 的抽取值取样本均值来获得良好的近似。在这种情况下，样本均值为 0.68。利用本章 R 语言部分提供的代码，你可以尝试更改 <span class="math inline">\(\lambda, a, b\)</span> 和 <span class="math inline">\(x\)</span> 的值，看看直方图和后验均值如何受到影响。解决这个问题的关键策略是将未观测到的蛋数 <span class="math inline">\(N\)</span> 添加到模型中，以便我们拥有易于处理的条件分布，从而可以方便地使用吉布斯采样。</p>
+<h2 id="总结recap">12.3 总结（Recap）</h2>
+<p><strong>马尔可夫链蒙特卡罗（MCMC）允许我们利用马尔可夫链从复杂的分布中进行采样。</strong>近年来，MCMC 已被应用于极其广泛的问题中。<strong>MCMC 算法背后的核心思想是构造一个马尔可夫链，使其平稳分布正是我们希望采样的分布。在运行该马尔可夫链较长时间后，马尔可夫链所取的值就可以作为来自理想分布的抽取值。</strong></p>
+<p>本章讨论的<strong>两种 MCMC 算法是 Metropolis-Hastings 和吉布斯采样（Gibbs sampling）</strong>。Metropolis-Hastings 算法利用状态空间上的任何不可约马尔可夫链来生成建议，然后接受或拒绝这些建议，从而产生一个具有所需平稳分布的修改后的马尔可夫链。此外，所得的链是可逆的。在实践中，建议分布的选择极其重要，因为糟糕的建议分布可能导致收敛到平稳分布的速度非常缓慢。</p>
+<p>吉布斯采样是一种通过每次更新一个分量（在给定所有其他分量的条件下）来从 <span class="math inline">\(d\)</span> 维联合分布中抽取样本的方法。这可以通过<strong>系统扫描</strong>（按固定顺序确定性地循环更新各分量）或<strong>随机扫描</strong>（在每个阶段随机选择要更新的分量）来完成。</p>
+<h2 id="r">12.4 R</h2>
+<p><strong>Metropolis-Hastings</strong></p>
+<p>以下是例 12.1.8 中正态-正态模型的 Metropolis-Hastings 算法实现方法。首先，我们选择观测值 <span class="math inline">\(Y\)</span> 并确定常数 <span class="math inline">\(\sigma\)</span>、<span class="math inline">\(\mu\)</span> 和 <span class="math inline">\(\tau\)</span> 的取值：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">y &lt;- 3</span><br><span class="line">sigma &lt;- 1</span><br><span class="line">mu &lt;- 0</span><br><span class="line">tau &lt;- 2</span><br></pre></td></tr></table></figure>
+<p>我们还需要根据例 12.1.8 中的说明，为算法第 1 步选择提议分布的标准差；针对本问题，我们令 <span class="math inline">\(d = 1\)</span>。我们设定运行的迭代次数，并分配一个长度为 <span class="math inline">\(10^4\)</span> 的向量 <code>theta</code>，用于存放模拟抽样：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">d &lt;- 1</span><br><span class="line">niter &lt;- 10^4</span><br><span class="line">theta &lt;- rep(0,niter)</span><br></pre></td></tr></table></figure>
+<p>现在进入主循环。我们将 <span class="math inline">\(\theta\)</span> 初始化为观测值 <span class="math inline">\(y\)</span>，然后运行例 12.1.8 中描述的算法：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">theta[1] &lt;- y</span><br><span class="line">for (i in 2:niter)&#123;</span><br><span class="line">  theta.p &lt;- theta[i-1] + rnorm(1,0,d)</span><br><span class="line">  r &lt;- dnorm(y,theta.p,sigma) * dnorm(theta.p,mu,tau) /</span><br><span class="line">       (dnorm(y,theta[i-1],sigma) * dnorm(theta[i-1],mu,tau))</span><br><span class="line">  flip &lt;- rbinom(1,1,min(r,1))</span><br><span class="line">  theta[i] &lt;- if(flip==1) theta.p else theta[i-1]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>让我们逐步解析循环内部的每一行。<span class="math inline">\(\theta\)</span> 的建议值是 <code>theta.p</code>，它等于 <span class="math inline">\(\theta\)</span> 的前一个值加上一个均值为 0、标准差为 <span class="math inline">\(d\)</span> 的正态随机变量（注意 <code>rnorm</code> 的输入是标准差而非方差）。比率 <span class="math inline">\(r\)</span> 是： <span class="math display">\[
+\frac{f_{\theta|Y}(x&#39;|y)}{f_{\theta|Y}(x|y)} = \frac{e^{-\frac{1}{2\sigma^2}(y-x&#39;)^2} e^{-\frac{1}{2\tau^2}(x&#39;-\mu)^2}}{e^{-\frac{1}{2\sigma^2}(y-x)^2} e^{-\frac{1}{2\tau^2}(x-\mu)^2}}
+\]</span></p>
+<p>其中 <code>theta.p</code> 扮演 <span class="math inline">\(x&#39;\)</span> 的角色，<code>theta[i-1]</code> 扮演 <span class="math inline">\(x\)</span> 的角色。用于决定接受还是拒绝建议的硬币投掷结果是 <code>flip</code>，这是一个正面朝上概率为 <span class="math inline">\(\min(r, 1)\)</span> 的随机试验（将正面编码为 1，反面编码为 0）。最后，如果硬币为正面，我们将 <code>theta[i]</code> 设为建议值，否则保持为前一个值。</p>
+<p>向量 <code>theta</code> 现在包含了我们所有的模拟抽样。我们通常会丢弃一些初始抽样，以便给链一些时间来接近平稳分布。以下这行代码丢弃了前一半的抽样：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">theta &lt;- theta[-(1:(niter/2))]</span><br></pre></td></tr></table></figure>
+<p>要查看剩余抽取值的情况，我们可以使用 <code>hist(theta)</code> 创建直方图。我们还可以计算汇总统计量，如 <code>mean(theta)</code> 和 <code>var(theta)</code>，从而得到样本均值和样本方差。</p>
+<p><strong>吉布斯采样 (Gibbs)</strong></p>
+<p>现在让我们针对例 12.2.6 实现吉布斯采样，即孵化概率未知且未孵化鸡蛋不可见的鸡兔同笼（鸡蛋与小鸡）故事。第一步是确定观测值 <span class="math inline">\(X\)</span> 以及常数 <span class="math inline">\(\lambda\)</span>、<span class="math inline">\(a\)</span>、<span class="math inline">\(b\)</span>：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">x &lt;- 7</span><br><span class="line">lambda &lt;- 10</span><br><span class="line">a &lt;- 1</span><br><span class="line">b &lt;- 1</span><br></pre></td></tr></table></figure>
+<p>接下来，我们决定运行的迭代次数，并为结果分配空间，创建两个长度为 <span class="math inline">\(10^4\)</span> 的向量 <span class="math inline">\(p\)</span> 和 <span class="math inline">\(N\)</span>，用于存放模拟抽样：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">niter &lt;- 10^4</span><br><span class="line">p &lt;- rep(0,niter)</span><br><span class="line">N &lt;- rep(0,niter)</span><br></pre></td></tr></table></figure>
+<p>最后，我们准备好运行吉布斯采样器。我们将 <span class="math inline">\(p\)</span> 和 <span class="math inline">\(N\)</span> 分别初始化为 <span class="math inline">\(0.5\)</span> 和 <span class="math inline">\(2x\)</span>，然后按照例 12.2.6 中解释的算法运行：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">p[1] &lt;- 0.5</span><br><span class="line">N[1] &lt;- 2*x</span><br><span class="line">for (i in 2:niter)&#123;</span><br><span class="line">  p[i] &lt;- rbeta(1,x+a,N[i-1]-x+b)</span><br><span class="line">  N[i] &lt;- x + rpois(1,lambda*(1-p[i-1]))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>同样地，我们丢弃初始抽样：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">p &lt;- p[-(1:(niter/2))]</span><br><span class="line">N &lt;- N[-(1:(niter/2))]</span><br></pre></td></tr></table></figure>
+<p>（注：原文代码 <code>N[-1:(niter/2))]</code> 括号不匹配且有误，应为 <code>N[-(1:(niter/2))]</code>）。要查看剩余抽取值的情况，可以使用 <code>hist(p)</code> 和 <code>hist(N)</code> 创建直方图，这正是我们创建图 12.5 的方法。我们还可以计算汇总统计量，如 <code>mean(p)</code> 或 <code>median(p)</code>。</p>
+]]></content>
+      <categories>
+        <category>书籍翻译</category>
+      </categories>
+  </entry>
+  <entry>
     <title>《Introduction to Probability》第11章 马尔可夫链</title>
     <url>/2026/01/21/Introduction%20to%20Probability%20%E7%AC%AC11%E7%AB%A0%20%E9%A9%AC%E5%B0%94%E5%8F%AF%E5%A4%AB%E9%93%BE/</url>
     <content><![CDATA[<h1 id="第-11-章-马尔可夫链">第 11 章 马尔可夫链</h1>
