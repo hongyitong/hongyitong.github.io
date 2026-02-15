@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"enable":true,"style":"tabs","active":"giscus","storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+
+
+    <meta name="description" content="第13章 泊松过程 Poisson processes 泊松过程是事件在时间或空间中发生的简单模型：在一维中，它可以是汽车经过公路检查站；在二维中，是草地上的花朵；在三维中，是星系某个区域内的恒星。泊松过程是更复杂的时间和空间过程的首要构建模块，而这些过程是统计学的一个分支——空间统计学（spatial statistics）的焦点。 泊松过程在概率论中也非常有用，因为它们将许多命名分布联系在一起">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《Introduction to Probability》第13章 泊松过程">
+<meta property="og:url" content="http://hongyitong.github.io/2026/01/23/Introduction%20to%20Probability%20%E7%AC%AC13%E7%AB%A0%20%E6%B3%8A%E6%9D%BE%E8%BF%87%E7%A8%8B/index.html">
+<meta property="og:site_name" content="墨语浮生">
+<meta property="og:description" content="第13章 泊松过程 Poisson processes 泊松过程是事件在时间或空间中发生的简单模型：在一维中，它可以是汽车经过公路检查站；在二维中，是草地上的花朵；在三维中，是星系某个区域内的恒星。泊松过程是更复杂的时间和空间过程的首要构建模块，而这些过程是统计学的一个分支——空间统计学（spatial statistics）的焦点。 泊松过程在概率论中也非常有用，因为它们将许多命名分布联系在一起">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Introduction%20to%20Probability/F13.1.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Introduction%20to%20Probability/F13.2.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Introduction%20to%20Probability/F13.3.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Introduction%20to%20Probability/F13.4.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Introduction%20to%20Probability/F13.5.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Introduction%20to%20Probability/F13.6.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Introduction%20to%20Probability/F13.01.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Introduction%20to%20Probability/F13.7.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Introduction%20to%20Probability/F13.8.png">
+<meta property="article:published_time" content="2026-01-22T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-02-15T03:49:32.266Z">
+<meta property="article:author" content="Rayman.hung">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hongyitong.github.io/img3/Introduction%20to%20Probability/F13.1.png">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2026/01/23/Introduction%20to%20Probability%20%E7%AC%AC13%E7%AB%A0%20%E6%B3%8A%E6%9D%BE%E8%BF%87%E7%A8%8B/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2026/01/23/Introduction%20to%20Probability%20%E7%AC%AC13%E7%AB%A0%20%E6%B3%8A%E6%9D%BE%E8%BF%87%E7%A8%8B/","path":"2026/01/23/Introduction to Probability 第13章 泊松过程/","title":"《Introduction to Probability》第13章 泊松过程"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>《Introduction to Probability》第13章 泊松过程 | 墨语浮生</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZXGEJDXQ33"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-ZXGEJDXQ33","only_pageview":false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?ff358b9c7e949787b074bfc9c8019a9d"></script>
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">墨语浮生</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC13%E7%AB%A0-%E6%B3%8A%E6%9D%BE%E8%BF%87%E7%A8%8B"><span class="nav-text">第13章 泊松过程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E7%BB%B4%E6%B3%8A%E6%9D%BE%E8%BF%87%E7%A8%8B"><span class="nav-text">13.1 一维泊松过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9D%A1%E4%BB%B6%E5%8F%A0%E5%8A%A0%E4%B8%8E%E7%A8%80%E7%96%8F"><span class="nav-text">13.2 条件、叠加与稀疏</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9D%A1%E4%BB%B6%E6%80%A7%E8%B4%A8"><span class="nav-text">13.2.1 条件性质</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%A0%E5%8A%A0%E6%80%A7%E8%B4%A8"><span class="nav-text">13.2.2 叠加性质</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%A8%80%E7%96%8F%E6%80%A7%E8%B4%A8"><span class="nav-text">13.2.3 稀疏性质</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E7%BB%B4%E6%B3%8A%E6%9D%BE%E8%BF%87%E7%A8%8B"><span class="nav-text">13.3 多维泊松过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93recap"><span class="nav-text">13.4 总结（Recap）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#r"><span class="nav-text">13.5 R</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、心情记录</div>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/01/23/Introduction%20to%20Probability%20%E7%AC%AC13%E7%AB%A0%20%E6%B3%8A%E6%9D%BE%E8%BF%87%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="《Introduction to Probability》第13章 泊松过程 | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《Introduction to Probability》第13章 泊松过程
+        </h1>
+
+        </h1>
+          
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-01-23 00:00:00" itemprop="dateCreated datePublished" datetime="2026-01-23T00:00:00+08:00">2026-01-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="第13章-泊松过程">第13章 泊松过程</h2>
+<p>Poisson processes</p>
+<p>泊松过程是事件在时间或空间中发生的简单模型：在<strong>一维</strong>中，它可以是汽车经过公路检查站；在<strong>二维</strong>中，是草地上的花朵；在<strong>三维</strong>中，是星系某个区域内的恒星。<strong>泊松过程是更复杂的时间和空间过程的首要构建模块，而这些过程是统计学的一个分支——空间统计学（spatial statistics）的焦点。</strong></p>
+<p><strong>泊松过程在概率论中也非常有用，因为它们将许多命名分布联系在一起，并为一些原本推导过程乏味的结果提供了富有洞察力的故事证明。</strong>这引出了一种我们将要展示的新解题策略：即使一个问题没有提到泊松过程，有时也可以通过假定随机变量来自某个泊松过程，从而利用便利的泊松过程性质来解题。</p>
+<p>在本章中，我们将回顾已经熟悉的一维泊松过程定义，推导并讨论一维泊松过程的三个重要性质，然后将这些性质扩展到更高维度的泊松过程。</p>
+<span id="more"></span>
+<h3 id="一维泊松过程">13.1 一维泊松过程</h3>
+<p>Poisson processes in one dimension</p>
+<p>在 5.6 节中，我们定义了一维泊松过程并证明了其到达间隔时间（interarrival times）是独立同分布的指数分布。在第 8 章中，我们证明了第 <span class="math inline">\(j\)</span> 次到达的时间（相对于某个固定的起始时间）服从 Gamma 分布。让我们回顾一下这些结果，并使用有助于推广到高维的符号。</p>
+<p><strong>定义 13.1.1（一维泊松过程）</strong>。如果满足以下条件，则连续时间内的序列到达是速率为 <span class="math inline">\(\lambda\)</span> 的泊松过程：</p>
+<ol type="1">
+<li>长度为 <span class="math inline">\(t\)</span> 的区间内的到达次数服从 <span class="math inline">\(Pois(\lambda t)\)</span> 分布。</li>
+<li>不相交时间区间内的到达次数是相互独立的。</li>
+</ol>
+<p>通常我们假设时间轴始于 <span class="math inline">\(t = 0\)</span>，在这种情况下，我们在 <span class="math inline">\((0, \infty)\)</span> 上有一个泊松过程；但如果我们需要时间轴双向无限，也可以使用相同的条件在 <span class="math inline">\((-\infty, \infty)\)</span> 上定义泊松过程。</p>
+<p>考虑 <span class="math inline">\((0, \infty)\)</span> 上的一个泊松过程。稍微偏离前几章的符号，令 <span class="math inline">\(N(t)\)</span> 为 <span class="math inline">\((0, t]\)</span> 内的到达次数。那么对于 <span class="math inline">\(0 &lt; t_1 &lt; t_2\)</span>，<span class="math inline">\((t_1, t_2]\)</span> 内的到达次数为 <span class="math inline">\(N(t_2) - N(t_1)\)</span>。令 <span class="math inline">\(T_j\)</span> 为第 <span class="math inline">\(j\)</span> 次到达的时间。由于 <span class="math inline">\(T_1 &gt; t\)</span> 与 <span class="math inline">\(N(t) = 0\)</span> 是同一个事件（根据 5.6 节讨论的计数-时间二元性）： <span class="math display">\[
+P(T_1 &gt; t) = P(N(t) = 0) = e^{-\lambda t}
+\]</span></p>
+<p>因此 <span class="math inline">\(T_1 \sim Expo(\lambda)\)</span>。接着，让我们以第一次到达时间 <span class="math inline">\(T_1\)</span> 为条件，观察直到第二次到达所需的额外时间 <span class="math inline">\(T_2 - T_1\)</span>。那么： <span class="math display">\[
+(T_2 - T_1) | T_1 \sim Expo(\lambda)
+\]</span></p>
+<p>根据同样的论证，因为在 <span class="math inline">\(T_1\)</span> 处开始了一个全新的泊松过程。由于 <span class="math inline">\((T_2 - T_1) | T_1\)</span> 的条件分布不依赖于 <span class="math inline">\(T_1\)</span>，我们得到 <span class="math inline">\(T_2 - T_1\)</span> 独立于 <span class="math inline">\(T_1\)</span>，因此 <span class="math inline">\(T_2 - T_1\)</span> 无条件地也服从 <span class="math inline">\(Expo(\lambda)\)</span>。</p>
+<p>以此类推，到达间隔时间 <span class="math inline">\(T_j - T_{j-1}\)</span> 是相互独立的，且 <span class="math inline">\(T_j - T_{j-1} \sim Expo(\lambda)\)</span>。</p>
+<p>因此，泊松过程可以从两方面描述：既是到达计数服从泊松分布的过程，也是到达间隔时间服从指数分布的过程。还要注意，由于 <span class="math inline">\(T_j\)</span> 是 <span class="math inline">\(j\)</span> 个独立同分布的 <span class="math inline">\(Expo(\lambda)\)</span> 随机变量之和： <span class="math display">\[
+T_j \sim Gamma(j, \lambda)
+\]</span></p>
+<p>这种与指数分布的联系为我们提供了一种生成泊松过程 <span class="math inline">\(n\)</span> 次到达的简单方法。</p>
+<p><strong>故事 13.1.2（一维泊松过程的生成故事）</strong>。要在速率为 <span class="math inline">\(\lambda\)</span> 的 <span class="math inline">\((0, \infty)\)</span> 泊松过程中生成 <span class="math inline">\(n\)</span> 次到达：</p>
+<ol type="1">
+<li><p>生成 <span class="math inline">\(n\)</span> 个独立同分布的 <span class="math inline">\(Expo(\lambda)\)</span> 随机变量 <span class="math inline">\(X_1, \dots, X_n\)</span>。</p></li>
+<li><p>对于 <span class="math inline">\(j = 1, \dots, n\)</span>，设置 <span class="math inline">\(T_j = X_1 + \dots + X_j\)</span>。</p>
+<p>那么我们可以将 <span class="math inline">\(T_1, \dots, T_n\)</span> 作为到达时间。</p></li>
+</ol>
+<p>图 13.1 描绘了速率分别为 1、2 和 5 的三个泊松过程的实现，绘制时间截至时间 10。在这三种情况下，我们都可以看到，尽管到达间隔时间是独立同分布的，但到达并不是均匀分布的。相反，到达间隔时间存在很大的波动性，这产生了到达的簇。这种现象被称为<strong>泊松丛集（Poisson clumping）</strong>。观察到几个在时间上靠得很近的到达簇似乎是一个惊人的巧合，但泊松丛集理论认为，在泊松过程中出现这样的簇是很常见的。</p>
+<p><img src="/img3/Introduction to Probability/F13.1.png" alt="F13.1" style="zoom:60%;" /></p>
+<h3 id="条件叠加与稀疏">13.2 条件、叠加与稀疏</h3>
+<p>Conditioning, superposition, and thinning</p>
+<p>理解泊松过程最重要的三个性质是条件、叠加和稀疏。这些性质与我们已经见过的泊松分布的性质相对应，因此它们应该是易于理解的。</p>
+<h4 id="条件性质">13.2.1 条件性质</h4>
+<p>Conditioning</p>
+<p>当我们选取一个泊松过程并以一个区间内的事件总数为条件时会发生什么？我们的第一个结果是：<strong>在给定一个区间内事件总数的条件下，固定子区间内的事件数量服从二项分布</strong>。这遵循定理 4.8.2，我们在那里证明了通过条件化可以从泊松分布得到二项分布。</p>
+<p><strong>定理 13.2.1（条件计数 Conditional counts）</strong>。令 <span class="math inline">\((N(t) : t &gt; 0)\)</span> 为速率为 <span class="math inline">\(\lambda\)</span> 的泊松过程，且 <span class="math inline">\(t_1 &lt; t_2\)</span>。在给定 <span class="math inline">\(N(t_2) = n\)</span> 的条件下，<span class="math inline">\(N(t_1)\)</span> 的条件分布为： <span class="math display">\[
+N(t_1) | N(t_2) = n \sim Bin\left(n, \frac{t_1}{t_2}\right)
+\]</span></p>
+<p><strong>证明</strong>。图 13.2 展示了这一设定。该主张是：在已知 <span class="math inline">\((0, t_2]\)</span> 内共有 <span class="math inline">\(n\)</span> 次到达的条件下，<span class="math inline">\((0, t_1]\)</span> 内的到达次数服从二项分布，试验次数为 <span class="math inline">\(n\)</span>，成功概率正比于 <span class="math inline">\(t_1\)</span>。</p>
+<p><img src="/img3/Introduction to Probability/F13.2.png" alt="F13.2" style="zoom:60%;" /></p>
+<p>由于 <span class="math inline">\((0, t_1]\)</span> 和 <span class="math inline">\((t_1, t_2]\)</span> 是不相交的，<span class="math inline">\(N(t_1)\)</span> 独立于 <span class="math inline">\(N(t_2) - N(t_1)\)</span>。前者服从 <span class="math inline">\(Pois(\lambda t_1)\)</span>，后者服从 <span class="math inline">\(Pois(\lambda(t_2 - t_1))\)</span>，它们的和即为 <span class="math inline">\((0, t_2]\)</span> 内的到达总数 <span class="math inline">\(N(t_2)\)</span>。根据定理 4.8.2： <span class="math display">\[
+N(t_1) | N(t_2) = n \sim Bin\left(n, \frac{\lambda t_1}{\lambda t_1 + \lambda(t_2 - t_1)}\right)
+\]</span></p>
+<p>这恰好是我们想要证明的。</p>
+<p><strong>进一步深化对到达次数进行条件化的想法，我们得到了以下惊人的结果：在一个泊松过程中，给定 <span class="math inline">\(N(t) = n\)</span>，到达时间的分布表现得就像我们在 <span class="math inline">\((0, t)\)</span> 上随机投下了 <span class="math inline">\(n\)</span> 个独立同分布的 <span class="math inline">\(Unif(0, t)\)</span> 点。</strong></p>
+<p>首先来看只有一个到达的简单情况。</p>
+<p><strong>命题 13.2.2</strong>。在速率为 <span class="math inline">\(\lambda\)</span> 的泊松过程中，在给定 <span class="math inline">\(N(t) = 1\)</span> 的条件下，第一次到达时间 <span class="math inline">\(T_1\)</span> 服从 <span class="math inline">\(Unif(0, t)\)</span> 分布。</p>
+<p><strong>证明</strong>。令 <span class="math inline">\(0 &lt; s &lt; t\)</span>。根据计数-时间二元性的一种形式： <span class="math display">\[
+P(T_1 \leq s | N(t) = 1) = \frac{P(T_1 \leq s, N(t) = 1)}{P(N(t) = 1)} = \frac{P(N(s) = 1, N(t) - N(s) = 0)}{P(N(t) = 1)}
+\]</span> <span class="math display">\[
+= \frac{(e^{-\lambda s} \lambda s)(e^{-\lambda(t-s)})}{e^{-\lambda t} \lambda t} = \frac{s}{t}
+\]</span></p>
+<p>因此，<span class="math inline">\(T_1\)</span> 给定 <span class="math inline">\(N(t) = 1\)</span> 的条件累积分布函数（CDF）即为 <span class="math inline">\(Unif(0, t)\)</span> 的 CDF。</p>
+<p>更一般地，给定 <span class="math inline">\(N(t) = n\)</span>，到达时间 <span class="math inline">\(T_j\)</span> 的表现就像 <span class="math inline">\(n\)</span> 个独立同分布的 <span class="math inline">\(Unif(0, t)\)</span> 随机变量的<strong>顺序统计量</strong>。我们略去证明，因为在第 8 章引入顺序统计量时，我们专注于它们的边缘分布。</p>
+<p><strong>定理 13.2.3（条件时间Conditional times）</strong>。在速率为 <span class="math inline">\(\lambda\)</span> 的泊松过程中，在给定 <span class="math inline">\(N(t) = n\)</span> 的条件下，到达时间 <span class="math inline">\(T_1, \dots, T_n\)</span> 的联合分布与 <span class="math inline">\(n\)</span> 个独立同分布的 <span class="math inline">\(Unif(0, t)\)</span> 随机变量的顺序统计量的联合分布相同。</p>
+<p>从第 8 章我们知道，<span class="math inline">\(Unif(0, 1)\)</span> 随机变量的顺序统计量服从 Beta 分布，因此 <span class="math inline">\(T_j\)</span> 的条件分布是缩放后的 Beta 分布；为了得到标准的 Beta 分布，我们只需将 <span class="math inline">\(T_j\)</span> 除以 <span class="math inline">\(t\)</span>，使其支撑集变为 <span class="math inline">\((0, 1)\)</span>： <span class="math display">\[
+t^{-1} T_j | N(t) = n \sim Beta(j, n - j + 1)
+\]</span></p>
+<p>现在我们有了另一种生成泊松过程到达的方法，这次是针对特定区间而不是特定的到达次数。</p>
+<p><strong>故事 13.2.4（泊松过程生成故事，版本 2）</strong>。要在区间 <span class="math inline">\((0, t]\)</span> 内生成速率为 <span class="math inline">\(\lambda\)</span> 的泊松过程到达：</p>
+<ol type="1">
+<li>生成该区间内的事件总数 <span class="math inline">\(N(t) \sim Pois(\lambda t)\)</span>。</li>
+<li>给定 <span class="math inline">\(N(t) = n\)</span>，生成 <span class="math inline">\(n\)</span> 个独立同分布的 <span class="math inline">\(Unif(0, t)\)</span> 随机变量 <span class="math inline">\(U_1, \dots, U_n\)</span>。</li>
+<li>对于 <span class="math inline">\(j = 1, \dots, n\)</span>，令 <span class="math inline">\(T_j = U_{(j)}\)</span>（即第 <span class="math inline">\(j\)</span> 小的 <span class="math inline">\(U\)</span> 值）。</li>
+</ol>
+<p>这实际上是我们用来创建图 13.1 的生成故事，因为我们知道要在区间 <span class="math inline">\((0, 10]\)</span> 内进行模拟。</p>
+<p><strong>例 13.2.5（网站用户）</strong>。用户根据速率为 <span class="math inline">\(\lambda_1\)</span> 人/分钟的泊松过程访问某个网站。在特定时间“到达”意味着此时有人开始浏览该网站。到达网站后，每个用户浏览网站的时间服从 <span class="math inline">\(Expo(\lambda_2)\)</span>（然后离开），且各用户之间相互独立。</p>
+<p>假设在时间 0 时，没有人在使用该网站。令 <span class="math inline">\(N_t\)</span> 为在区间 <span class="math inline">\((0, t]\)</span> 内到达的用户数量，<span class="math inline">\(C_t\)</span> 为在时间 <span class="math inline">\(t\)</span> 正在浏览网站的用户数量。</p>
+<ol type="a">
+<li><p>令 <span class="math inline">\(X\)</span> 为在 <span class="math inline">\([0, t]\)</span> 均匀分布的时间点到达的用户的到达时间，<span class="math inline">\(Y\)</span> 为其离开时间。求 <span class="math inline">\(X\)</span> 和 <span class="math inline">\(Y\)</span> 的联合 PDF。</p></li>
+<li><p>令 <span class="math inline">\(p_t\)</span> 为在 <span class="math inline">\((0, t]\)</span> 内均匀分布的时间点到达的用户在时间 <span class="math inline">\(t\)</span> 仍在浏览网站的概率。求 <span class="math inline">\(p_t\)</span>。</p></li>
+<li><p>根据 <span class="math inline">\(\lambda_1, \lambda_2\)</span> 和 <span class="math inline">\(t\)</span> 求 <span class="math inline">\(C_t\)</span> 的分布。</p></li>
+<li><p><strong>利特尔法则（Little's law）是一个非常通用的结果，表述如下：一个稳定系统中的长期平均客户数等于长期平均到达率乘以客户在系统中的平均停留时间。</strong>解释当 <span class="math inline">\(t\)</span> 很大时 <span class="math inline">\(E(C_t)\)</span> 的变化，以及如何根据利特尔法则来解释这一结果。</p></li>
+</ol>
+<p><strong>解：</strong></p>
+<ol type="a">
+<li><p>我们有 <span class="math inline">\(X \sim Unif(0, t)\)</span>。给定 <span class="math inline">\(X=x\)</span>，<span class="math inline">\(Y\)</span> 是从 <span class="math inline">\(x\)</span> 开始偏移的 <span class="math inline">\(Expo(\lambda_2)\)</span> 随机变量，即 <span class="math inline">\((Y-x)|(X=x) \sim Expo(\lambda_2)\)</span>。因此 <span class="math inline">\(X\)</span> 和 <span class="math inline">\(Y\)</span> 的联合 PDF 为： <span class="math display">\[
+f(x, y) = f_X(x)f_{Y|X}(y|x) = \frac{1}{t} \lambda_2 e^{-\lambda_2(y-x)}, \text{ 对于 } 0 &lt; x &lt; t \text{ 且 } x &lt; y
+\]</span></p></li>
+<li><p>使用 (a) 中的符号，我们想求 <span class="math inline">\(p_t = P(Y &gt; t)\)</span>。这可以通过在所有满足 <span class="math inline">\(y &gt; t\)</span> 的 <span class="math inline">\((x, y)\)</span> 区域上对联合 PDF 进行积分得到： <span class="math display">\[
+P(Y &gt; t) = \int_{0}^{t} \int_{t}^{\infty} \frac{1}{t} \lambda_2 e^{-\lambda_2(y-x)} dy dx = \frac{1}{t} \int_{0}^{t} e^{\lambda_2 x} \left[ \int_{t}^{\infty} \lambda_2 e^{-\lambda_2 y} dy \right] dx
+\]</span> <span class="math display">\[
+= \frac{1}{t} \int_{0}^{t} e^{\lambda_2 x} e^{-\lambda_2 t} dx = \frac{e^{-\lambda_2 t}}{t} \int_{0}^{t} e^{\lambda_2 x} dx = \frac{1 - e^{-\lambda_2 t}}{\lambda_2 t}
+\]</span></p></li>
+<li><p>根据定理 13.2.3，给定 <span class="math inline">\(N_t = n\)</span>，我们在 <span class="math inline">\((0, t]\)</span> 内的 <span class="math inline">\(n\)</span> 个到达时间在该区间内是独立同分布且均匀分布的。因此，<span class="math inline">\(C_t | N_t \sim Bin(N_t, p_t)\)</span>，其中 <span class="math inline">\(p_t\)</span> 如上所述，且 <span class="math inline">\(N_t \sim Pois(\lambda_1 t)\)</span>。根据“鸡蛋问题”故事（故事 7.1.9）： <span class="math display">\[
+C_t \sim Pois(\lambda_1 p_t t)
+\]</span></p></li>
+</ol>
+<p>即： <span class="math display">\[
+C_t \sim Pois\left( \frac{\lambda_1(1 - e^{-\lambda_2 t})}{\lambda_2} \right)
+\]</span></p>
+<ol start="4" type="a">
+<li>当 <span class="math inline">\(t \to \infty\)</span> 时，<span class="math inline">\(E(C_t) \to \lambda_1/\lambda_2\)</span>。<strong>这与利特尔法则一致，因为该法则指出系统中（正在浏览网站）的长期平均用户数等于用户到达率 (<span class="math inline">\(\lambda_1\)</span>) 乘以用户单次会话的平均浏览时间 (<span class="math inline">\(1/\lambda_2\)</span>)。</strong></li>
+</ol>
+<h4 id="叠加性质">13.2.2 叠加性质</h4>
+<p>Superposition</p>
+<p>我们要研究的下一个性质是<strong>叠加</strong>：如果我们将两个独立的泊松过程重叠在一起，我们会得到另一个泊松过程。（合并后的过程本身就是一个泊松过程，但我们可以想象这些到达被贴上了标签，以指示它们来自哪一个基础过程。）</p>
+<p><strong>定理 13.2.6（叠加）</strong>。令 <span class="math inline">\((N_1(t) : t &gt; 0)\)</span> 和 <span class="math inline">\((N_2(t) : t &gt; 0)\)</span> 是速率分别为 <span class="math inline">\(\lambda_1\)</span> 和 <span class="math inline">\(\lambda_2\)</span> 的独立泊松过程。那么合并过程 <span class="math inline">\(N(t) = N_1(t) + N_2(t)\)</span> 是一个速率为 <span class="math inline">\(\lambda_1 + \lambda_2\)</span> 的泊松过程。</p>
+<p><strong>证明：</strong> 让我们验证泊松过程定义中的两个性质。</p>
+<ol type="1">
+<li>对于所有 <span class="math inline">\(t &gt; 0\)</span>，<span class="math inline">\(N_1(t) \sim Pois(\lambda_1 t)\)</span> 且 <span class="math inline">\(N_2(t) \sim Pois(\lambda_2 t)\)</span>，且两者独立，所以根据定理 4.8.1，<span class="math inline">\(N(t) \sim Pois((\lambda_1 + \lambda_2)t)\)</span>。同样的论证适用于任何长度为 <span class="math inline">\(t\)</span> 的区间。</li>
+<li>合并过程中不相交区间的到达是独立的，因为它们在两个单独的过程中是独立的，且这两个过程本身也是相互独立的。</li>
+</ol>
+<p>生成叠加过程有一种非常自然的方法。</p>
+<p><strong>故事 13.2.7（叠加生成的生成故事）</strong>。要生成速率为 <span class="math inline">\(\lambda_1\)</span> 的独立泊松过程 <span class="math inline">\((N_1(t) : t &gt; 0)\)</span> 和速率为 <span class="math inline">\(\lambda_2\)</span> 的 <span class="math inline">\((N_2(t) : t &gt; 0)\)</span> 的叠加：</p>
+<ol type="1">
+<li>从泊松过程 <span class="math inline">\((N_1(t) : t &gt; 0)\)</span> 中生成到达。</li>
+<li>从泊松过程 <span class="math inline">\((N_2(t) : t &gt; 0)\)</span> 中生成到达。</li>
+<li>将步骤 1 和 2 的结果叠加。</li>
+</ol>
+<p>图 13.3 描绘了一个由 × 和 ⋄ 组成的叠加泊松过程。让我们称 × 为“1 类事件”，⋄ 为“2 类事件”。一个自然的问题是：观测到 1 类事件先于 2 类事件发生的概率是多少？</p>
+<p><img src="/img3/Introduction to Probability/F13.3.png" alt="F13.3" style="zoom:60%;" /></p>
+<p><strong>定理 13.2.8（1 类事件先于 2 类事件发生的概率）</strong>。考虑两个独立的泊松过程：速率为 <span class="math inline">\(\lambda_1\)</span> 的 1 类到达过程，以及速率为 <span class="math inline">\(\lambda_2\)</span> 的 2 类到达过程。在两个过程的叠加中，第一次到达是 1 类的概率为 <span class="math inline">\(\lambda_1/(\lambda_1 + \lambda_2)\)</span>。</p>
+<p><strong>证明</strong>。令 <span class="math inline">\(T\)</span> 为直到第一次 1 类事件发生的时间，<span class="math inline">\(V\)</span> 为直到第一次 2 类事件发生的时间。我们要求 <span class="math inline">\(P(T \leq V)\)</span>。我们可以利用二维 LOTUS 算法在二维平面上的相关区域对 <span class="math inline">\(T\)</span> 和 <span class="math inline">\(V\)</span> 的联合 PDF 进行积分。但事实证明，我们可以完全避开微积分。</p>
+<p>我们已知 <span class="math inline">\(T \sim Expo(\lambda_1)\)</span> 且 <span class="math inline">\(V \sim Expo(\lambda_2)\)</span>，两者独立。进行缩放，令 <span class="math inline">\(\tilde{T} = \lambda_1 T, \tilde{V} = \lambda_2 V\)</span>。那么 <span class="math inline">\(\tilde{T}, \tilde{V}\)</span> 是独立同分布的 <span class="math inline">\(Expo(1)\)</span>。</p>
+<p>令 <span class="math inline">\(U = \tilde{T}/(\tilde{T} + \tilde{V})\)</span>，我们有： <span class="math display">\[
+P(T \leq V) = P\left(\frac{\tilde{T}}{\lambda_1} \leq \frac{\tilde{V}}{\lambda_2}\right) = P\left(\frac{\tilde{T} + \tilde{V}}{\lambda_1} \frac{\tilde{T}}{\tilde{T} + \tilde{V}} \leq \frac{\tilde{V}}{\lambda_2}\right)
+\]</span> <span class="math display">\[
+= P\left( \frac{U}{\lambda_1} \leq \frac{1-U}{\lambda_2} \right) = P\left( U \leq \frac{\lambda_1}{\lambda_1 + \lambda_2} \right)
+\]</span></p>
+<p>由于 <span class="math inline">\(\tilde{T}, \tilde{V} \sim Expo(1)\)</span>，根据“银行-邮局故事”，<span class="math inline">\(U \sim Beta(1,1)\)</span>。换句话说，<span class="math inline">\(U\)</span> 是标准的均匀分布 <span class="math inline">\(Unif(0,1)\)</span>！因此，<span class="math inline">\(P(T \leq V) = \lambda_1/(\lambda_1 + \lambda_2)\)</span>。注意当 <span class="math inline">\(\lambda_1 = \lambda_2\)</span> 时，由于对称性，概率退化为 <span class="math inline">\(1/2\)</span>。</p>
+<p>上述结果适用于合并过程中的第一次到达。然而，第一次到达之后，同样的逻辑也适用于第二次到达：由于<strong>无记忆性</strong>，距离下一次 1 类事件的时间仍为 <span class="math inline">\(Expo(\lambda_1)\)</span>，距离下一次 2 类事件的时间仍为 <span class="math inline">\(Expo(\lambda_2)\)</span>，且与过去无关。因此，第二次到达是 1 类的概率也是 <span class="math inline">\(\lambda_1/(\lambda_1 + \lambda_2)\)</span>，且独立于第一次。类似地，所有的到达类型都可以看作是独立同分布的抛硬币，正面（1 类）概率为 <span class="math inline">\(\lambda_1/(\lambda_1 + \lambda_2)\)</span>。</p>
+<p>这引出了<strong>两个独立泊松过程叠加的另一种生成故事：我们可以先生成一个 <span class="math inline">\(Expo(\lambda_1 + \lambda_2)\)</span> 随机变量来决定下一次到达何时发生，然后独立地抛一枚正面概率为 <span class="math inline">\(\lambda_1/(\lambda_1 + \lambda_2)\)</span> 的硬币来决定是哪种类型的到达。</strong></p>
+<p><strong>故事 13.2.9（叠加生成的生成故事，版本 2）</strong>。要生成速率为 <span class="math inline">\(\lambda_1\)</span> 和 <span class="math inline">\(\lambda_2\)</span> 的两个独立泊松过程的叠加：</p>
+<ol type="1">
+<li>生成独立同分布的 <span class="math inline">\(Expo(\lambda_1 + \lambda_2)\)</span> 随机变量 <span class="math inline">\(X_1, X_2, \dots\)</span>，令第 <span class="math inline">\(j\)</span> 次到达的时间为 <span class="math inline">\(T_j = X_1 + \dots + X_j\)</span>。</li>
+<li>生成独立同分布的随机变量 <span class="math inline">\(I_1, I_2, \dots \sim Bern(\lambda_1/(\lambda_1 + \lambda_2))\)</span>，且独立于 <span class="math inline">\(X_1, X_2, \dots\)</span>。如果 <span class="math inline">\(I_j = 1\)</span>，则第 <span class="math inline">\(j\)</span> 次到达为 1 类，否则为 2 类。</li>
+</ol>
+<p>这个故事为我们提供了一个被称为<strong>竞争风险定理（competing risks theorem）</strong>的快速证明。该定理单独陈述时似乎是一个令人惊讶的独立性结果，但放在泊松过程的背景下就会变得非常直观。</p>
+<p><strong>例 13.2.10（竞争风险）</strong>。弗雷德的冰箱寿命为 <span class="math inline">\(Y_1 \sim Expo(\lambda_1)\)</span>，洗碗机寿命为 <span class="math inline">\(Y_2 \sim Expo(\lambda_2)\)</span>，两者独立。证明：第一次家电故障的时间 <span class="math inline">\(\min(Y_1, Y_2)\)</span> 与“冰箱先坏”的指示变量 <span class="math inline">\(I(Y_1 &lt; Y_2)\)</span> 是相互独立的。这可能看起来很奇怪。例如，如果冰箱平均寿命 15 年，洗碗机平均 7 年，其中一个在 7 年后坏了，自然会猜测是洗碗机坏了。但事实上，我们将证明：知道第一次故障的时间，并不能提供关于“哪个电器坏了”的任何信息。</p>
+<p><strong>解</strong>：我们将使用<strong>嵌入策略</strong>（embedding strategy），即使题目没提到泊松过程，我们也要借用它的思想！我们将 <span class="math inline">\(Y_1\)</span> 和 <span class="math inline">\(Y_2\)</span> 嵌入到我们自己虚构的一个泊松过程中。想象有一个速率为 <span class="math inline">\(\lambda_1\)</span> 的冰箱故障泊松过程，和一个速率为 <span class="math inline">\(\lambda_2\)</span> 的洗碗机故障泊松过程。</p>
+<p>我们可以将 <span class="math inline">\(Y_1\)</span> 解释为冰箱过程中第一次到达的等待时间，将 <span class="math inline">\(Y_2\)</span> 解释为洗碗机过程中第一次到达的等待时间。这种方法是有效的，因为 <span class="math inline">\((\min(Y_1, Y_2), I(Y_1 &lt; Y_2))\)</span> 是 <span class="math inline">\((Y_1, Y_2)\)</span> 的函数，所以重要的是 <span class="math inline">\((Y_1, Y_2)\)</span> 的联合分布，而我们构造出的联合分布正是正确的。</p>
+<p>此外，<span class="math inline">\(\min(Y_1, Y_2)\)</span> 是两个泊松过程叠加后的第一次到达等待时间，而 <span class="math inline">\(I(Y_1 &lt; Y_2)\)</span> 是这次到达属于 1 类事件的指示变量。但在上述生成故事中，叠加过程的<strong>到达时间</strong>和<strong>事件类型</strong>是完全独立生成的！因此，<span class="math inline">\(\min(Y_1, Y_2)\)</span> 和 <span class="math inline">\(I(Y_1 &lt; Y_2)\)</span> 是独立的，且 <span class="math inline">\(\min(Y_1, Y_2) \sim Expo(\lambda_1 + \lambda_2)\)</span>，<span class="math inline">\(I(Y_1 &lt; Y_2) \sim Bern(\lambda_1/(\lambda_1 + \lambda_2))\)</span>。</p>
+<p>故事 13.2.9 的一个直接推论是：如果我们把叠加后的泊松过程投影到离散时间中（即保留 1 类和 2 类到达的顺序，但丢弃具体的到达时间），我们剩下的就是独立同分布的 <span class="math inline">\(Bern(\lambda_1/(\lambda_1 + \lambda_2))\)</span> 序列。图 13.4 展示了从泊松过程中移除连续时间信息的含义，定理 13.2.11 正式阐述了这一结果。</p>
+<p><img src="/img3/Introduction to Probability/F13.4.png" alt="F13.4" style="zoom:60%;" /></p>
+<p><strong>定理 13.2.11（叠加过程投影至离散时间）</strong>。考虑两个速率分别为 <span class="math inline">\(\lambda_1\)</span> 和 <span class="math inline">\(\lambda_2\)</span> 的独立泊松过程的叠加过程 <span class="math inline">\((N(t) : t &gt; 0)\)</span>。对于 <span class="math inline">\(j = 1, 2, \dots\)</span>，令 <span class="math inline">\(I_j\)</span> 为第 <span class="math inline">\(j\)</span> 个事件来自速率为 <span class="math inline">\(\lambda_1\)</span> 的过程的指示变量。那么 <span class="math inline">\(I_j\)</span> 是独立同分布的 <span class="math inline">\(Bern(\lambda_1/(\lambda_1 + \lambda_2))\)</span>。</p>
+<p>利用这一结果，我们可以通过“故事”来证明：泊松分布的 Gamma 混合分布是负二项分布。我们曾在布洛奇维尔的弗雷德历险记中首次学到这一点（故事 8.4.5）。我们先看一个特例。</p>
+<p><strong>定理 13.2.12（泊松分布的指数混合是几何分布）</strong>。假设 <span class="math inline">\(X \sim Expo(\lambda)\)</span> 且 <span class="math inline">\(Y|X = x \sim Pois(x)\)</span>。那么 <span class="math inline">\(Y \sim Geom(\lambda/(\lambda + 1))\)</span>。</p>
+<p><strong>证明</strong>。与竞争风险定理一样，我们将 <span class="math inline">\(X\)</span> 和 <span class="math inline">\(Y\)</span> 嵌入到泊松过程中。考虑两个独立的泊松过程：一个是以速率 1 到达的“失败”过程，另一个是以速率 <span class="math inline">\(\lambda\)</span> 到达的“成功”过程。令 <span class="math inline">\(X\)</span> 为第一次成功的时间，则 <span class="math inline">\(X \sim Expo(\lambda)\)</span>。令 <span class="math inline">\(Y\)</span> 为第一次成功之前的失败次数。根据速率为 1 的泊松过程定义，已知 <span class="math inline">\(X = x\)</span> 时，<span class="math inline">\(Y\)</span> 的分布为 <span class="math inline">\(Pois(x)\)</span>。因此 <span class="math inline">\(X\)</span> 和 <span class="math inline">\(Y\)</span> 满足定理的条件。</p>
+<p>为了得到 <span class="math inline">\(Y\)</span> 的边缘分布，剔除连续时间信息！在离散时间中，我们拥有成功概率为 <span class="math inline">\(\lambda/(\lambda + 1)\)</span> 的独立同分布伯努利试验，而 <span class="math inline">\(Y\)</span> 被定义为第一次成功前的失败次数。根据几何分布的故事，<span class="math inline">\(Y \sim Geom(\lambda/(\lambda + 1))\)</span>。</p>
+<p>一般情况的推理是类似的：</p>
+<p><strong>定理 13.2.13（泊松分布的 Gamma 混合是负二项分布）</strong>。假设 <span class="math inline">\(X \sim Gamma(r, \lambda)\)</span> 且 <span class="math inline">\(Y|X = x \sim Pois(x)\)</span>。那么 <span class="math inline">\(Y \sim NBin(r, \lambda/(\lambda + 1))\)</span>。</p>
+<p><strong>证明</strong>。考虑两个独立的泊松过程，失败速率为 1，成功速率为 <span class="math inline">\(\lambda\)</span>。令 <span class="math inline">\(X\)</span> 为第 <span class="math inline">\(r\)</span> 次成功的时间，因此 <span class="math inline">\(X \sim Gamma(r, \lambda)\)</span>。令 <span class="math inline">\(Y\)</span> 为第 <span class="math inline">\(r\)</span> 次成功之前的失败次数。根据泊松过程的定义，仍有 <span class="math inline">\(Y|X = x \sim Pois(x)\)</span>。由于 <span class="math inline">\(Y\)</span> 是独立同分布伯努利试验序列（成功概率 <span class="math inline">\(\lambda/(\lambda + 1)\)</span>）中第 <span class="math inline">\(r\)</span> 次成功前的失败次数，因此 <span class="math inline">\(Y \sim NBin(r, \lambda/(\lambda + 1))\)</span>。</p>
+<h4 id="稀疏性质">13.2.3 稀疏性质</h4>
+<p>Thinning</p>
+<p>我们要讨论的泊松过程最后一个性质是<strong>稀疏</strong>：如果我们取一个泊松过程，并对每次到达独立地抛硬币来决定它是 1 类事件还是 2 类事件，最终会得到两个独立的泊松过程。</p>
+<p><strong>定理 13.2.14（稀疏）</strong>。令 <span class="math inline">\((N(t) : t &gt; 0)\)</span> 为速率为 <span class="math inline">\(\lambda\)</span> 的泊松过程。将每次到达以概率 <span class="math inline">\(p\)</span> 归类为 1 类事件，以概率 <span class="math inline">\(1-p\)</span> 归类为 2 类事件，分类过程相互独立且独立于到达时间。那么，1 类事件构成速率为 <span class="math inline">\(\lambda p\)</span> 的泊松过程，2 类事件构成速率为 <span class="math inline">\(\lambda(1-p)\)</span> 的泊松过程，且这两个过程相互独立。</p>
+<p><strong>证明</strong>。令 <span class="math inline">\(\lambda_1 = \lambda p\)</span> 且 <span class="math inline">\(\lambda_2 = \lambda(1-p)\)</span>，则 <span class="math inline">\(\lambda = \lambda_1 + \lambda_2\)</span> 且 <span class="math inline">\(p = \lambda_1/(\lambda_1 + \lambda_2)\)</span>。这让我们回到了故事 13.2.9。然而，故事 13.2.7 和 13.2.9 是叠加过程的两个等效生成故事！由于输出的概率结构完全相同，我们可以假定是使用故事 13.2.7 生成的过程。在这种情况下，我们从一开始就知道 1 类过程与 2 类过程是独立的。</p>
+<p>因此，我们可以通过叠加独立的泊松过程得到一个合并的泊松过程，也可以将一个泊松过程拆分为独立的泊松过程。图 13.5 是稀疏性质的插图。我们只需将图 13.3 倒过来，这是非常恰当的，<strong>因为稀疏正是叠加的另一面！</strong></p>
+<p><img src="/img3/Introduction to Probability/F13.5.png" alt="F13.5" style="zoom:60%;" /></p>
+<p>稀疏性质是“鸡蛋问题”在泊松过程中的对应物。假设我们按照定理 13.2.14 稀疏一个速率为 <span class="math inline">\(\lambda\)</span> 的泊松过程，令 <span class="math inline">\((N_i(t) : t &gt; 0)\)</span> 为 <span class="math inline">\(i\)</span> 类到达过程。将 1 类到达视为孵化的蛋，根据鸡蛋故事可以直接得出：<span class="math inline">\(N_1(t) \sim Pois(\lambda pt)\)</span>，<span class="math inline">\(N_2(t) \sim Pois(\lambda(1-p)t)\)</span>，且两者独立。</p>
+<p>为了练习并感受稀疏性质的优雅，让我们用两种不同的方法来求随机和（random sum）的分布：使用 MGF 和条件期望，以及使用稀疏性质。</p>
+<p><strong>例 13.2.15（首个成功前的指数分布随机和）</strong>。令 <span class="math inline">\(X_1, X_2, \dots\)</span> 为独立同分布的 <span class="math inline">\(Expo(\lambda)\)</span> 随机变量，且 <span class="math inline">\(N \sim FS(p)\)</span>（首个成功分布），<span class="math inline">\(N\)</span> 与 <span class="math inline">\(X_j\)</span> 相互独立。求随机和 <span class="math inline">\(Y = \sum_{j=1}^N X_j\)</span> 的分布。</p>
+<p><strong>解：</strong></p>
+<p>我们将用两种方法解决这个问题：首先使用第 9 章的工具，然后使用涉及稀疏性质的泊松过程故事。</p>
+<p><strong>方法一：MGF 与条件期望</strong></p>
+<p>我们认出 <span class="math inline">\(Y\)</span> 是随机个数个随机变量之和。我们可以通过以 <span class="math inline">\(N\)</span> 为条件并使用亚当法则（Adam's Law）来求 <span class="math inline">\(Y\)</span> 的矩生成函数（MGF）。回忆 <span class="math inline">\(Expo(\lambda)\)</span> 的 MGF 为 <span class="math inline">\(\frac{\lambda}{\lambda - t}\)</span>（对于 <span class="math inline">\(t &lt; \lambda\)</span>），我们有： <span class="math display">\[
+E(e^{tY}) = E(E(e^{t \sum_{j=1}^N X_j} | N))
+\]</span> <span class="math display">\[
+= E(E(e^{tX_1}) E(e^{tX_2}) \dots E(e^{tX_N}) | N)
+\]</span> <span class="math display">\[
+= E\left( \left( \frac{\lambda}{\lambda - t} \right)^N \right)
+\]</span></p>
+<p>利用 LOTUS 算法和 <span class="math inline">\(FS(p)\)</span> 的 PMF（<span class="math inline">\(P(N=k) = q^{k-1}p\)</span>，其中 <span class="math inline">\(k=1,2,\dots\)</span>），求和式为： <span class="math display">\[
+\sum_{k=1}^\infty \left( \frac{\lambda}{\lambda - t} \right)^k q^{k-1}p
+\]</span></p>
+<p>经过代数运算并求几何级数之和，简化结果为 <span class="math inline">\(\frac{\lambda p}{\lambda p - t}\)</span>（对于 <span class="math inline">\(t &lt; \lambda p\)</span>）。这是 <span class="math inline">\(Expo(\lambda p)\)</span> 的 MGF，因此 <span class="math inline">\(Y \sim Expo(\lambda p)\)</span>。</p>
+<p><strong>方法二：泊松过程故事（稀疏性质）</strong></p>
+<p>现在让我们看看泊松过程如何免去代数运算，并提供关于为何 <span class="math inline">\(Y\)</span> 服从指数分布的深刻见解。使用<strong>嵌入策略</strong>：由于 <span class="math inline">\(X_j\)</span> 是独立同分布的 <span class="math inline">\(Expo(\lambda)\)</span>，我们可以自由地将 <span class="math inline">\(X_j\)</span> 解释为速率为 <span class="math inline">\(\lambda\)</span> 的泊松过程的到达间隔时间。</p>
+<p>想象这样一个泊松过程，并进一步想象每次到达都有概率 <span class="math inline">\(p\)</span> 被独立地标记为“特殊到达”。那么我们可以将 <span class="math inline">\(N\)</span> 解释为直到出现第一个特殊到达前的总到达次数，而 <span class="math inline">\(Y\)</span> 正是<strong>第一个特殊到达出现的等待时间</strong>。根据稀疏性质，特殊到达构成一个速率为 <span class="math inline">\(\lambda p\)</span> 的泊松过程。因此，第一个特殊到达的等待时间服从 <span class="math inline">\(Expo(\lambda p)\)</span> 分布。</p>
+<p>当存在两种以上类型时，稀疏性质同样适用。在这种情境下，<strong>稀疏性质有时被称为着色定理（Coloring Theorem）</strong>。</p>
+<p><strong>定理 13.2.16（着色）</strong>。令 <span class="math inline">\((N(t) : t &gt; 0)\)</span> 为速率为 <span class="math inline">\(\lambda\)</span> 的泊松过程，<span class="math inline">\(C\)</span> 为一组有限的“颜色”，标记为 <span class="math inline">\(1\)</span> 到 <span class="math inline">\(c\)</span>。假设每次到达都被随机分配 <span class="math inline">\(C\)</span> 中的一种颜色，颜色 <span class="math inline">\(i\)</span> 的概率为 <span class="math inline">\(p_i\)</span>。颜色分配相互独立，且独立于到达时间。令 <span class="math inline">\((N_i(t) : t &gt; 0)\)</span> 为颜色 <span class="math inline">\(i\)</span> 的过程。那么 <span class="math inline">\((N_i(t) : t &gt; 0)\)</span> 是速率为 <span class="math inline">\(\lambda p_i\)</span> 的泊松过程（<span class="math inline">\(i = 1, 2, \dots, c\)</span>），且这 <span class="math inline">\(c\)</span> 个单色过程相互独立。</p>
+<p><strong>证明</strong>。我们对 <span class="math inline">\(c\)</span> 使用数学归纳法。</p>
+<ol type="1">
+<li>当 <span class="math inline">\(c = 1\)</span> 时，无需证明。</li>
+<li>当 <span class="math inline">\(c = 2\)</span> 时，结论即为我们已经证明的稀疏定理。</li>
+<li>假设结论对 <span class="math inline">\(c\)</span> 种颜色成立，证明它对 <span class="math inline">\(c+1\)</span> 种颜色也成立。</li>
+</ol>
+<p>我们将颜色 1 称为“绿色”。利用稀疏性质，将每次到达以概率 <span class="math inline">\(p_1\)</span> 分类为绿色，以概率 <span class="math inline">\(1 - p_1\)</span> 分类为“非绿色”。这会将泊松过程分解为两个独立过程：速率为 <span class="math inline">\(\lambda p_1\)</span> 的绿色过程和速率为 <span class="math inline">\(\lambda(1 - p_1)\)</span> 的非绿色过程。根据归纳假设，我们可以进一步将非绿色过程分解为 <span class="math inline">\(c\)</span> 个独立过程（对应颜色 <span class="math inline">\(2, 3, \dots, c+1\)</span>），其中颜色 <span class="math inline">\(j\)</span> 在非绿色过程中的条件概率为： <span class="math display">\[
+\tilde{p}_j = \frac{p_j}{1 - p_1} = \frac{p_j}{p_2 + p_3 + \dots + p_{c+1}}
+\]</span></p>
+<p>由此，我们得到了 <span class="math inline">\(c+1\)</span> 个独立的泊松过程，且颜色 <span class="math inline">\(j\)</span> 的过程速率为 <span class="math inline">\(\lambda p_j\)</span>。</p>
+<p>接下来的例子展示了如何通过“着色”将复杂的泊松过程分解为更容易处理的组成部分。</p>
+<p><strong>例 13.2.17（高速公路上的车辆）</strong>。假设汽车从同一个入口进入一条单向高速公路，进入过程服从速率为 <span class="math inline">\(\lambda\)</span> 的泊松过程。第 <span class="math inline">\(i\)</span> 辆车的速度为 <span class="math inline">\(V_i\)</span>，并始终以该速度行驶；车辆超车时不损失时间。假设 <span class="math inline">\(V_i\)</span> 是独立同分布的离散随机变量，其支撑集是一组有限的正值。该过程从时间 0 开始，我们将高速公路入口视为位置 0。</p>
+<p>对于高速公路上固定的位置 <span class="math inline">\(a\)</span> 和 <span class="math inline">\(b\)</span>（满足 <span class="math inline">\(0 &lt; a &lt; b\)</span>），令 <span class="math inline">\(Z_t\)</span> 为在时间 <span class="math inline">\(t\)</span> 位于区间 <span class="math inline">\([a, b]\)</span> 内的车辆数量。（例如，在一条从西向东横穿美国中西部的州际公路上，<span class="math inline">\(a\)</span> 可以是堪萨斯城，<span class="math inline">\(b\)</span> 可以是圣路易斯；那么 <span class="math inline">\(Z_t\)</span> 就是在时间 <span class="math inline">\(t\)</span> 位于密苏里州境内高速公路上的车辆数。）图 13.6 展示了问题的设定和 <span class="math inline">\(Z_t\)</span> 的定义。</p>
+<p><img src="/img3/Introduction to Probability/F13.6.png" alt="F13.6" style="zoom:60%;" /></p>
+<p>假设 <span class="math inline">\(t\)</span> 足够大，使得对于 <span class="math inline">\(V_i\)</span> 的所有可能取值均有 <span class="math inline">\(t &gt; b/V_i\)</span>。证明 <span class="math inline">\(Z_t\)</span> 服从泊松分布，其均值为 <span class="math inline">\(\lambda(b - a)E(V_i^{-1})\)</span>。</p>
+<p><strong>解：</strong></p>
+<p>由于 <span class="math inline">\(V_i\)</span> 是具有有限支撑集的离散随机变量，我们可以枚举所有可能的速度 <span class="math inline">\(v_1, \dots, v_m\)</span> 及其对应的概率 <span class="math inline">\(p_1, \dots, p_m\)</span>。完成枚举后，我们意识到进入高速公路的车辆代表了 <span class="math inline">\(m\)</span> 种类型的到达，每种类型对应不同的速度。这启发我们将整体泊松过程分解为更简单的过程。让我们根据车辆的速度对泊松过程进行 <span class="math inline">\(m\)</span> 路着色，从而得到：速度为 <span class="math inline">\(v_1\)</span> 的车辆对应的泊松过程速率为 <span class="math inline">\(\lambda p_1\)</span>，速度为 <span class="math inline">\(v_2\)</span> 的车辆对应的泊松过程速率为 <span class="math inline">\(\lambda p_2\)</span>，依此类推。</p>
+<p>对于这 <span class="math inline">\(m\)</span> 个独立的泊松过程，我们可以分别询问：来自该过程的车辆必须在哪个时间区间内进入高速公路，才能在时间 <span class="math inline">\(t\)</span> 处于 <span class="math inline">\([a, b]\)</span> 之间？这是一个物理问题，而非统计问题： <span class="math display">\[
+\text{距离} = \text{速度} \times \text{时间}
+\]</span></p>
+<p>因此，一辆在时间 <span class="math inline">\(s\)</span> 以速度 <span class="math inline">\(v\)</span> 进入高速公路的汽车，在时间 <span class="math inline">\(t\)</span> 的位置将是 <span class="math inline">\((t - s)v\)</span>。为了让汽车的位置处于 <span class="math inline">\(a\)</span> 和 <span class="math inline">\(b\)</span> 之间，我们要求其到达时间 <span class="math inline">\(s\)</span> 满足： <span class="math display">\[
+a \leq (t - s)v \leq b \implies t - \frac{b}{v} \leq s \leq t - \frac{a}{v}
+\]</span></p>
+<p>（根据 <span class="math inline">\(t\)</span> 足够大的假设，我们不必担心 <span class="math inline">\(t - b/v\)</span> 为负数。）如果汽车在 <span class="math inline">\(t - b/v\)</span> 之前到达，它在时间 <span class="math inline">\(t\)</span> 已经驶过了 <span class="math inline">\(b\)</span> 点；如果汽车在 <span class="math inline">\(t - a/v\)</span> 之后到达，它在时间 <span class="math inline">\(t\)</span> 尚未到达 <span class="math inline">\(a\)</span> 点。</p>
+<p>现在我们得到了每个独立泊松过程的答案。在速度为 <span class="math inline">\(v_j\)</span> 的过程中，于 <span class="math inline">\([t - b/v_j, t - a/v_j]\)</span> 之间到达的车辆数（我们称之为 <span class="math inline">\(Z_{tj}\)</span>）服从 <span class="math inline">\(Pois(\lambda p_j (b-a)/v_j)\)</span> 分布：因为该过程的速率是 <span class="math inline">\(\lambda p_j\)</span>，且时间区间的长度是 <span class="math inline">\((b - a)/v_j\)</span>。</p>
+<p>由于各分支过程是相互独立的，因此 <span class="math inline">\(Z_{t1}, \dots, Z_{tm}\)</span> 是独立的泊松随机变量。从而： <span class="math display">\[
+Z_t = Z_{t1} + \dots + Z_{tm} \sim Pois \left( \lambda(b-a) \sum_{j=1}^m \frac{p_j}{v_j} \right)
+\]</span></p>
+<p>根据 LOTUS 算法，<span class="math inline">\(\sum_{j=1}^m p_j/v_j\)</span> 正是 <span class="math inline">\(V_i^{-1}\)</span> 的期望。这正是我们想要证明的结论。</p>
+<p>为了总结本节内容，下表描述了泊松过程的性质与泊松分布的性质之间的对应关系。在第二列中，<span class="math inline">\(Y_1 \sim Pois(\lambda_1)\)</span> 和 <span class="math inline">\(Y_2 \sim Pois(\lambda_2)\)</span> 是相互独立的。</p>
+<p><img src="/img3/Introduction to Probability/F13.01.png" alt="F13.01" style="zoom:60%;" /></p>
+<h3 id="多维泊松过程">13.3 多维泊松过程</h3>
+<p>Poisson processes in multiple dimensions</p>
+<p>多维泊松过程的定义与一维泊松过程类似：我们只需将“长度”的概念替换为“面积”或“体积”。为了具体起见，我们现在定义二维泊松过程，之后通过类比，如何定义更高维度的泊松过程也就显而易见了。</p>
+<p><strong>定义 13.3.1（二维泊松过程）</strong>。如果满足以下条件，则平面 <span class="math inline">\(\mathbb{R}^2\)</span> 上的事件构成强度为 <span class="math inline">\(\lambda\)</span> 的二维泊松过程：</p>
+<ol type="1">
+<li>区域 <span class="math inline">\(A\)</span> 内的事件数量服从 <span class="math inline">\(Pois(\lambda \cdot \text{area}(A))\)</span> 分布。</li>
+<li>不相交区域内的事件数量相互独立。</li>
+</ol>
+<p>正如人们所料，条件、叠加和稀疏性质同样适用于二维泊松过程。令 <span class="math inline">\(N(A)\)</span> 为区域 <span class="math inline">\(A\)</span> 内的事件数量，并令 <span class="math inline">\(B \subseteq A\)</span>。给定 <span class="math inline">\(N(A) = n\)</span>，<span class="math inline">\(N(B)\)</span> 的条件分布为二项分布： <span class="math display">\[
+N(B) | N(A) = n \sim Bin\left(n, \frac{\text{area}(B)}{\text{area}(A)}\right)
+\]</span></p>
+<p>在给定较大区域 <span class="math inline">\(A\)</span> 内事件总数的条件下，事件落入子区域的概率与该子区域的面积成正比；因此，事件的位置在条件上是均匀分布的（Uniform）。<strong>我们可以这样生成区域 <span class="math inline">\(A\)</span> 内的二维泊松过程：首先生成事件总数 <span class="math inline">\(N(A) \sim Pois(\lambda \cdot \text{area}(A))\)</span>，然后将这些事件随机均匀地放置在 <span class="math inline">\(A\)</span> 中。</strong>图 13.7 显示了在正方形 <span class="math inline">\([0, 5] \times [0, 5]\)</span> 内，强度分别为 <span class="math inline">\(\lambda = 1, 2, 5\)</span> 的模拟二维泊松过程。</p>
+<p><img src="/img3/Introduction to Probability/F13.7.png" alt="F13.7" style="zoom:60%;" /></p>
+<p>与一维情况一样，独立二维泊松过程的叠加仍是二维泊松过程，且强度相加。我们也可以通过稀疏一个二维泊松过程来得到独立的二维泊松过程。</p>
+<p>对于一维泊松过程，我们尚未给出其高维类比的一个性质是“计数-时间二元性”。接下来的例子（本章最后一个例子）将引导我们找到一个空间的类比：<strong>计数-距离二元性</strong>。</p>
+<p><strong>例 13.3.2（最近的恒星）</strong>。某个宇宙中的恒星根据强度为 <span class="math inline">\(\lambda\)</span> 的三维泊松过程分布。如果你生活在这个宇宙中，你距离最近恒星的距离分布是怎样的？</p>
+<p><strong>解：</strong></p>
+<p>在强度为 <span class="math inline">\(\lambda\)</span> 的三维泊松过程中，空间区域 <span class="math inline">\(V\)</span> 内的事件数量服从均值为 <span class="math inline">\(\lambda \cdot \text{volume}(V)\)</span> 的泊松分布。令 <span class="math inline">\(R\)</span> 为你到最近恒星的距离。关键的观察是：为了使事件 <span class="math inline">\(R &gt; r\)</span> 发生，在你周围半径为 <span class="math inline">\(r\)</span> 的球体内必须没有恒星；事实上，这两个事件是等价的。对于任何 <span class="math inline">\(r &gt; 0\)</span>，令 <span class="math inline">\(N_r\)</span> 为距离你半径 <span class="math inline">\(r\)</span> 范围内的事件数量，则 <span class="math inline">\(N_r \sim Pois(\lambda \cdot \frac{4}{3}\pi r^3)\)</span>。于是我们有了计数-距离二元性： <span class="math display">\[
+R &gt; r \text{ 与 } N_r = 0 \text{ 是同一个事件}
+\]</span></p>
+<p>因此： <span class="math display">\[
+P(R &gt; r) = P(N_r = 0) = e^{-\frac{4}{3}\lambda \pi r^3}
+\]</span></p>
+<p>由此得到 <span class="math inline">\(R\)</span> 的累积分布函数（CDF）为： <span class="math display">\[
+P(R \leq r) = 1 - e^{-\frac{4}{3}\lambda \pi r^3}
+\]</span></p>
+<p>对于 <span class="math inline">\(r &gt; 0\)</span>（否则为 0）。这是一个韦伯分布（Weibull，见例 6.5.5）。具体来说： <span class="math display">\[
+R \sim \text{Wei}\left(\frac{4\pi \lambda}{3}, 3\right)
+\]</span></p>
+<p>泊松过程有许多扩展，其中一些在习题中有所探讨。我们可以允许 <span class="math inline">\(\lambda\)</span> 随时间或空间变化，而不是保持常数，这被称为<strong>非齐次泊松过程（inhomogeneous Poisson process）</strong>。我们也可以允许 <span class="math inline">\(\lambda\)</span> 本身是一个随机变量，这被称为<strong>考克斯过程（Cox process）</strong>。最后，我们可以允许速率在每次连续到达后增加 <span class="math inline">\(\lambda\)</span>，这被称为<strong>尤尔过程（Yule process）</strong>。</p>
+<h3 id="总结recap">13.4 总结（Recap）</h3>
+<p>一维泊松过程是一个到达序列，其满足：任何区间内的到达次数均服从泊松分布（均值与区间长度成正比），且不相交区间内的到达次数相互独立。我们可以对泊松过程进行几种基本操作：<strong>条件化（Conditioning）</strong>、<strong>叠加（Superposition）和稀疏（Thinning）</strong>。</p>
+<ul>
+<li><strong>条件化</strong>：以区间内到达总数为条件，可以将这些到达视为在该区间上独立同分布的均匀分布点。</li>
+<li><strong>叠加与稀疏</strong>：这两者是互补的，允许我们在方便时拆分或合并泊松过程。</li>
+</ul>
+<p>这些性质在更高维度中也都有对应的类比。</p>
+<p>泊松过程将本书研究过的许多命名分布紧密联系在了一起：</p>
+<ul>
+<li><strong>泊松分布</strong>：描述到达次数。</li>
+<li><strong>指数分布与 Gamma 分布</strong>：描述到达间隔时间和到达时刻。</li>
+<li><strong>二项分布</strong>：描述给定总数时的条件计数。</li>
+<li><strong>均匀分布与（缩放后的）Beta 分布</strong>：描述给定的条件到达时刻。</li>
+<li><strong>几何分布与负二项分布</strong>：描述特殊到达出现前的离散等待时间。</li>
+</ul>
+<p>此外，泊松过程特别适用于<strong>故事证明</strong>。我们在本章中多次使用的一种解题策略是将随机变量<strong>嵌入</strong>到泊松过程中，以期发现某种故事证明，即使原始问题看起来与泊松过程毫无关联。</p>
+<p><strong>泊松过程以一种自然的方式，将本书的两个重要主题——“命名分布”和“故事”统一在了一起。</strong>我们认为，用一个能够交织全书故事线索的课题作为结尾是非常合适的。</p>
+<h3 id="r">13.5 R</h3>
+<p><strong>一维泊松过程</strong></p>
+<p>在第5章中，我们讨论了如何通过利用到达间隔时间是独立同分布（i.i.d.）的指数分布这一事实，来模拟一维泊松过程中指定数量的到达事件。在本章中，故事 13.2.4 告诉我们如何在指定区间 <span class="math inline">\((0, L]\)</span> 内模拟泊松过程。我们首先生成到达次数 <span class="math inline">\(N(L)\)</span>，它服从 <span class="math inline">\(Pois(\lambda L)\)</span> 分布。在给定 <span class="math inline">\(N(L) = n\)</span> 的条件下，到达时间服从 <span class="math inline">\(n\)</span> 个独立同分布的 <span class="math inline">\(Unif(0, L)\)</span> 随机变量的顺序统计量分布。以下代码模拟了在区间 <span class="math inline">\((0, 5]\)</span> 上速率为 10 的泊松过程的到达情况：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">L &lt;- 5</span><br><span class="line">lambda &lt;- 10</span><br><span class="line">n &lt;- rpois(1,lambda*L)</span><br><span class="line">t &lt;- sort(runif(n,0,L))</span><br></pre></td></tr></table></figure>
+<p>为了直观展示我们生成的泊松过程，我们可以绘制累计到达次数 <span class="math inline">\(N(t)\)</span> 随时间 <span class="math inline">\(t\)</span> 变化的函数图：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">plot(t,1:n,type=&quot;s&quot;)</span><br></pre></td></tr></table></figure>
+<p>这会产生如图 13.8 所示的阶梯图。</p>
+<p><img src="/img3/Introduction to Probability/F13.8.png" alt="F13.8" style="zoom:60%;" /></p>
+<p><strong>筛选（Thinning）</strong></p>
+<p>在 R 中对泊松过程进行筛选是非常直接的。以下代码从如上生成的速率为 <span class="math inline">\(\lambda\)</span> 的某区间内的到达时间向量 <code>t</code> 和相应的到达次数 <code>n</code> 开始。对于每一次到达，我们抛一枚正面概率为 <span class="math inline">\(p\)</span> 的硬币；这些硬币抛掷的结果存储在向量 <code>y</code> 中。最后，硬币为正面的到达被标记为类型 1；其余的被标记为类型 2。根据定理 13.2.14，所得的到达时间向量 <code>t1</code> 和 <code>t2</code> 是速率分别为 <span class="math inline">\(\lambda p\)</span> 和 <span class="math inline">\(\lambda(1-p)\)</span> 的独立泊松过程的实现。</p>
+<p>我们可以按如下方式执行 <span class="math inline">\(p = 0.3\)</span> 的操作：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">p &lt;- 0.3</span><br><span class="line">y &lt;- rbinom(n,1,p)</span><br><span class="line">t1 &lt;- t[y==1]</span><br><span class="line">t2 &lt;- t[y==0]</span><br></pre></td></tr></table></figure>
+<p><strong>二维泊松过程</strong></p>
+<p>在正方形区域内模拟速率为 <span class="math inline">\(\lambda\)</span> 的二维泊松过程几乎与模拟一维泊松过程一样简单。在正方形 <span class="math inline">\((0, L] \times (0, L]\)</span> 中，到达次数服从 <span class="math inline">\(Pois(\lambda L^2)\)</span> 分布。在给定到达次数的条件下，到达的位置是该正方形内独立同分布的均匀分布点。根据示例 7.1.23，这些点中每一个点的坐标都是独立同分布的 <span class="math inline">\(Unif(0, L)\)</span>。因此，对于 <span class="math inline">\(L = 5\)</span>，$ = 10$，我们可以输入：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">L &lt;- 5</span><br><span class="line">lambda &lt;- 10</span><br><span class="line">n &lt;- rpois(1,lambda*L^2)</span><br><span class="line">x &lt;- runif(n,0,L)</span><br><span class="line">y &lt;- runif(n,0,L)</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/01/22/Introduction%20to%20Probability%20%E7%AC%AC12%E7%AB%A0%20%E9%A9%AC%E5%B0%94%E5%8F%AF%E5%A4%AB%E9%93%BE%E8%92%99%E7%89%B9%E5%8D%A1%E7%BD%97/" rel="prev" title="《Introduction to Probability》第12章 马尔可夫链蒙特卡罗">
+                  <i class="fa fa-chevron-left"></i> 《Introduction to Probability》第12章 马尔可夫链蒙特卡罗
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
