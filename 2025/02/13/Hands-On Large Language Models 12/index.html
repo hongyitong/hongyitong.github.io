@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"enable":true,"style":"tabs","active":"giscus","storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+
+
+    <meta name="description" content="第 \(\text{12}\) 章 生成模型的微调 Fine-Tuning Generation Models 在本章中，我们将采用一个预训练文本生成模型，并介绍微调它的过程。这一微调步骤是产生高质量模型的关键，也是我们工具箱中用于使模型适应特定期望行为的重要工具。微调使我们能够将模型适应特定的数据集或领域。 在本章中，我们将指导您了解微调文本生成模型最常用的两种方法：有监督微调 (\(\text">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《Hands-On Large Language Models》第12章 生成模型的微调">
+<meta property="og:url" content="http://hongyitong.github.io/2025/02/13/Hands-On%20Large%20Language%20Models%2012/index.html">
+<meta property="og:site_name" content="墨语浮生">
+<meta property="og:description" content="第 \(\text{12}\) 章 生成模型的微调 Fine-Tuning Generation Models 在本章中，我们将采用一个预训练文本生成模型，并介绍微调它的过程。这一微调步骤是产生高质量模型的关键，也是我们工具箱中用于使模型适应特定期望行为的重要工具。微调使我们能够将模型适应特定的数据集或领域。 在本章中，我们将指导您了解微调文本生成模型最常用的两种方法：有监督微调 (\(\text">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F12.1.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F12.2.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F12.3.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F12.4.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F12.5.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F12.6.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F12.7.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F12.8.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F12.9.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F12.10.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F12.11.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F12.12.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F12.13.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F12.14.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F12.15.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F12.16.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F12.17.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F12.18.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F12.19.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F12.20.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/T12.1.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F12.21.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F12.22.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F12.23.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F12.24.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F12.25.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F12.26.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F12.27.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F12.28.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F12.29.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F12.30.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F12.31.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F12.32.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F12.33.png">
+<meta property="article:published_time" content="2025-02-12T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-02-26T02:39:41.471Z">
+<meta property="article:author" content="Rayman.hung">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F12.1.png">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2025/02/13/Hands-On%20Large%20Language%20Models%2012/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2025/02/13/Hands-On%20Large%20Language%20Models%2012/","path":"2025/02/13/Hands-On Large Language Models 12/","title":"《Hands-On Large Language Models》第12章 生成模型的微调"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>《Hands-On Large Language Models》第12章 生成模型的微调 | 墨语浮生</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZXGEJDXQ33"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-ZXGEJDXQ33","only_pageview":false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?ff358b9c7e949787b074bfc9c8019a9d"></script>
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">墨语浮生</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC-text12-%E7%AB%A0-%E7%94%9F%E6%88%90%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%BE%AE%E8%B0%83"><span class="nav-text">第 \(\text{12}\) 章 生成模型的微调</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B-textllm-%E7%9A%84%E4%B8%89%E4%B8%AA%E8%AE%AD%E7%BB%83%E6%AD%A5%E9%AA%A4%E9%A2%84%E8%AE%AD%E7%BB%83%E6%9C%89%E7%9B%91%E7%9D%A3%E5%BE%AE%E8%B0%83%E5%92%8C%E5%81%8F%E5%A5%BD%E8%B0%83%E6%95%B4"><span class="nav-text">大语言模型 (\(\text{LLM}\)) 的三个训练步骤：预训练、有监督微调和偏好调整</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%89%E7%9B%91%E7%9D%A3%E5%BE%AE%E8%B0%83"><span class="nav-text">有监督微调</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%8C%E5%85%A8%E5%BE%AE%E8%B0%83"><span class="nav-text">完全微调</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%82%E6%95%B0%E9%AB%98%E6%95%88%E5%BE%AE%E8%B0%83"><span class="nav-text">参数高效微调</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-textqlora-%E8%BF%9B%E8%A1%8C%E6%8C%87%E4%BB%A4%E8%B0%83%E6%95%B4"><span class="nav-text">使用 \(\text{QLoRA}\) 进行指令调整</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A8%A1%E6%9D%BF%E5%8C%96%E6%8C%87%E4%BB%A4%E6%95%B0%E6%8D%AE"><span class="nav-text">模板化指令数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E9%87%8F%E5%8C%96"><span class="nav-text">模型量化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#textlora-%E9%85%8D%E7%BD%AE"><span class="nav-text">\(\text{LoRA}\) 配置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%AD%E7%BB%83%E9%85%8D%E7%BD%AE"><span class="nav-text">训练配置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%AD%E7%BB%83"><span class="nav-text">训练</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%90%88%E5%B9%B6%E6%9D%83%E9%87%8D"><span class="nav-text">合并权重</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%84%E4%BC%B0%E7%94%9F%E6%88%90%E6%A8%A1%E5%9E%8B"><span class="nav-text">评估生成模型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%8D%E6%B1%87%E7%BA%A7%E5%88%AB%E6%8C%87%E6%A0%87"><span class="nav-text">词汇级别指标</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95"><span class="nav-text">基准测试</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8E%92%E8%A1%8C%E6%A6%9C"><span class="nav-text">排行榜</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%87%AA%E5%8A%A8%E5%8C%96%E8%AF%84%E4%BC%B0"><span class="nav-text">自动化评估</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BA%BA%E5%B7%A5%E8%AF%84%E4%BC%B0"><span class="nav-text">人工评估</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%81%8F%E5%A5%BD%E8%B0%83%E6%95%B4%E5%AF%B9%E9%BD%90%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0%E8%87%AA%E4%BA%BA%E7%B1%BB%E5%8F%8D%E9%A6%88"><span class="nav-text">偏好调整&#x2F;对齐&#x2F;强化学习自人类反馈</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%A5%96%E5%8A%B1%E6%A8%A1%E5%9E%8B%E5%AE%9E%E7%8E%B0%E5%81%8F%E5%A5%BD%E8%AF%84%E4%BC%B0%E8%87%AA%E5%8A%A8%E5%8C%96"><span class="nav-text">使用奖励模型实现偏好评估自动化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A5%96%E5%8A%B1%E6%A8%A1%E5%9E%8B%E7%9A%84%E8%BE%93%E5%85%A5%E5%92%8C%E8%BE%93%E5%87%BA"><span class="nav-text">奖励模型的输入和输出</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%AD%E7%BB%83%E5%A5%96%E5%8A%B1%E6%A8%A1%E5%9E%8B"><span class="nav-text">训练奖励模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%97%A0%E9%9C%80%E8%AE%AD%E7%BB%83%E5%A5%96%E5%8A%B1%E6%A8%A1%E5%9E%8B"><span class="nav-text">无需训练奖励模型</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-textdpo-%E8%BF%9B%E8%A1%8C%E5%81%8F%E5%A5%BD%E8%B0%83%E6%95%B4"><span class="nav-text">使用 \(\text{DPO}\) 进行偏好调整</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A8%A1%E6%9D%BF%E5%8C%96%E5%AF%B9%E9%BD%90%E6%95%B0%E6%8D%AE"><span class="nav-text">模板化对齐数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E9%87%8F%E5%8C%96-1"><span class="nav-text">模型量化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%AD%E7%BB%83%E9%85%8D%E7%BD%AE-1"><span class="nav-text">训练配置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%AD%E7%BB%83-1"><span class="nav-text">训练</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#afterword"><span class="nav-text">Afterword</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、心情记录</div>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2025/02/13/Hands-On%20Large%20Language%20Models%2012/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="《Hands-On Large Language Models》第12章 生成模型的微调 | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《Hands-On Large Language Models》第12章 生成模型的微调
+        </h1>
+
+        </h1>
+          
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-02-13 00:00:00" itemprop="dateCreated datePublished" datetime="2025-02-13T00:00:00+08:00">2025-02-13</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="第-text12-章-生成模型的微调"><strong>第 <span class="math inline">\(\text{12}\)</span> 章</strong> <strong>生成模型的微调</strong></h2>
+<p>Fine-Tuning Generation Models</p>
+<p>在本章中，我们将采用一个<strong>预训练文本生成模型</strong>，并介绍<strong>微调</strong>它的过程。这一微调步骤是<strong>产生高质量模型的关键</strong>，也是我们<strong>工具箱中</strong>用于使模型<strong>适应特定期望行为</strong>的重要工具。微调使我们能够将模型<strong>适应特定的数据集或领域</strong>。</p>
+<p>在本章中，我们将指导您了解<strong>微调文本生成模型最常用的两种方法</strong>：<strong>有监督微调</strong> (<span class="math inline">\(\text{supervised fine-tuning}\)</span>) 和<strong>偏好调整</strong> (<span class="math inline">\(\text{preference tuning}\)</span>)。我们将探索<strong>微调预训练文本生成模型的变革潜力</strong>，使其成为您应用程序的更有效工具。</p>
+<h3 id="大语言模型-textllm-的三个训练步骤预训练有监督微调和偏好调整">大语言模型 (<span class="math inline">\(\text{LLM}\)</span>) 的三个训练步骤：预训练、有监督微调和偏好调整</h3>
+<p>The Three LLM Training Steps: Pretraining, Supervised Fine-Tuning, and Preference Tuning</p>
+<p>创建高质量大语言模型 (<span class="math inline">\(\text{LLM}\)</span>) 通常有<strong>三个常见步骤</strong>：</p>
+<ol type="1">
+<li><p><strong>语言建模</strong></p>
+<p><span class="math inline">\(\text{Language modeling}\)</span></p>
+<p>创建高质量 <span class="math inline">\(\text{LLM}\)</span> 的<strong>第一步</strong>是使用<strong>一个或多个海量文本数据集</strong>对其进行<strong>预训练</strong>（图 <span class="math inline">\(\text{12}-1\)</span>）。在训练过程中，它尝试<strong>预测下一个词元</strong> (<span class="math inline">\(\text{token}\)</span>)，以准确学习文本中发现的<strong>语言和语义表征</strong>。正如我们在第 <span class="math inline">\(\text{3}\)</span> 章和第 <span class="math inline">\(\text{11}\)</span> 章中看到的那样，这被称为<strong>语言建模</strong>，是一种<strong>自监督方法</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.1.png" alt="F12.1" style="zoom:67%;" /></p></li>
+</ol>
+<p>这会产生一个<strong>基础模型</strong> (<span class="math inline">\(\text{base model}\)</span>)，通常也称为<strong>预训练模型</strong> (<span class="math inline">\(\text{pretrained}\)</span>) 或<strong>基础模型</strong> (<span class="math inline">\(\text{foundation model}\)</span>)。基础模型是训练过程中的一个<strong>关键产物</strong>，但<strong>终端用户</strong>处理起来<strong>比较困难</strong>。这就是为什么<strong>下一步很重要</strong>。</p>
+<ol start="2" type="1">
+<li><p><strong>微调 <span class="math inline">\(\text{1}\)</span> (有监督微调)</strong></p>
+<p><span class="math inline">\(\text{Fine-tuning 1 (supervised fine-tuning)}\)</span></p>
+<p>如果 <span class="math inline">\(\text{LLM}\)</span> 对<strong>指令反应良好并尝试遵循它们</strong>，它们就会更有用。当人类要求模型写一篇文章时，他们期望模型<strong>生成文章</strong>，而不是<strong>列出其他指令</strong>（这可能是基础模型会做的事情）。</p>
+<p>通过<strong>有监督微调 (<span class="math inline">\(\text{SFT}\)</span>)</strong>，我们可以使基础模型<strong>适应遵循指令</strong>。在此微调过程中，<strong>基础模型的参数会更新</strong>，使其<strong>更符合我们的目标任务</strong>，例如<strong>遵循指令</strong>。与预训练模型一样，它也是<strong>使用下一个词元预测进行训练</strong>，但它<strong>不是仅预测下一个词元</strong>，而是<strong>基于用户输入进行预测</strong>（图 <span class="math inline">\(\text{12}-2\)</span>）。</p></li>
+</ol>
+<p><img src="/img3/Hands-On Large Language Models/F12.2.png" alt="F12.1" style="zoom:67%;" /></p>
+<p><span class="math inline">\(\text{SFT}\)</span> 也可用于<strong>其他任务</strong>，例如分类，但<strong>通常用于将基础生成模型转换为指令（或聊天）生成模型</strong>。</p>
+<ol start="3" type="1">
+<li><p><strong>微调 <span class="math inline">\(\text{2}\)</span> (偏好调整)</strong></p>
+<p><span class="math inline">\(\text{Fine-tuning 2 (preference tuning)}\)</span></p>
+<p><strong>最后一步</strong>是<strong>进一步提高模型的质量</strong>，使其<strong>更符合 <span class="math inline">\(\text{AI}\)</span> 安全或人类偏好的预期行为</strong>。这被称为<strong>偏好调整</strong> (<span class="math inline">\(\text{preference tuning}\)</span>)。<strong>偏好调整</strong>是微调的一种形式，顾名思义，它使模型的输出<strong>与我们的偏好对齐</strong>，这些偏好由我们提供给它的数据定义。与 <span class="math inline">\(\text{SFT}\)</span> 一样，它可以<strong>改进原始模型</strong>，但<strong>增加了在训练过程中提炼输出偏好</strong>的好处。这<strong>三个步骤</strong>如图 <span class="math inline">\(\text{12}-3\)</span> 所示，展示了<strong>从一个未经训练的架构开始到以一个经过偏好调整的 <span class="math inline">\(\text{LLM}\)</span> 结束</strong>的整个过程。</p></li>
+</ol>
+<p><img src="/img3/Hands-On Large Language Models/F12.3.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>在本章中，我们使用一个<strong>已经在海量数据集上训练过的基础模型</strong>，并探索如何使用<strong>这两种微调策略</strong>对其进行微调。对于每种方法，我们都从<strong>理论基础</strong>开始，然后将其<strong>应用于实践</strong>。</p>
+<h3 id="有监督微调"><strong>有监督微调</strong></h3>
+<p>Supervised Fine-Tuning (SFT)</p>
+<p>在<strong>大型数据集</strong>上<strong>预训练模型</strong>的目的是使其能够<strong>再现语言及其含义</strong>。在这个过程中，模型学习<strong>完成输入短语</strong>，如图 <span class="math inline">\(\text{12}-4\)</span> 所示。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.4.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>这个例子也说明模型<strong>没有经过遵循指令的训练</strong>，而是会<strong>尝试完成一个问题</strong>而不是回答它（图 <span class="math inline">\(\text{12}-5\)</span>）。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.5.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>我们可以使用这个<strong>基础模型</strong>，并通过<strong>微调</strong>将其<strong>适应某些用例</strong>，例如<strong>遵循指令</strong>。</p>
+<h4 id="完全微调"><strong>完全微调</strong></h4>
+<p>Full Fine-Tuning</p>
+<p>最常见的微调过程是<strong>完全微调</strong> (<span class="math inline">\(\text{full fine-tuning}\)</span>)。与预训练 <span class="math inline">\(\text{LLM}\)</span> 一样，这个过程涉及<strong>更新模型的所有参数</strong>，使其<strong>与您的目标任务保持一致</strong>。主要的区别在于我们现在使用<strong>更小但有标签的数据集</strong>，而预训练过程是在<strong>没有标签的</strong>大型数据集上完成的（图 <span class="math inline">\(\text{12}-6\)</span>）。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.6.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>您可以将<strong>任何有标签的数据</strong>用于完全微调，这也使其成为<strong>学习特定领域表征</strong>的绝佳技术。为了让我们的 <span class="math inline">\(\text{LLM}\)</span> <strong>遵循指令</strong>，我们将需要<strong>问题-回答数据</strong>。如图 <span class="math inline">\(\text{12}-7\)</span> 所示，这些数据是<strong>用户查询</strong>及其<strong>对应的答案</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.7.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>在<strong>完全微调</strong>过程中，模型接收<strong>输入</strong>（指令），并对<strong>输出</strong>（回答）应用<strong>下一个词元预测</strong>。反过来，它将<strong>遵循指令</strong>，而不是生成新的问题。</p>
+<h4 id="参数高效微调"><strong>参数高效微调</strong></h4>
+<p>Parameter-Efficient Fine-Tuning (PEFT)</p>
+<p><strong>更新模型的所有参数</strong>具有<strong>提高其性能的巨大潜力</strong>，但也伴随着<strong>几个缺点</strong>。它<strong>训练成本高昂</strong>，<strong>训练时间缓慢</strong>，并且需要<strong>大量的存储空间</strong>。为了解决这些问题，人们将注意力转向了<strong>参数高效微调 (<span class="math inline">\(\text{PEFT}\)</span>) 替代方案</strong>，这些方案<strong>专注于以更高的计算效率微调预训练模型</strong>。</p>
+<p><strong>适配器</strong></p>
+<p>Adapters</p>
+<p><strong>适配器</strong>是许多基于 <span class="math inline">\(\text{PEFT}\)</span> 的技术的核心组件。该方法提出了 <strong><span class="math inline">\(\text{Transformer}\)</span> 内部的一组附加的模块化组件</strong>，可以对其进行<strong>微调</strong>以<strong>提高模型在特定任务上的性能</strong>，而<strong>无需微调所有模型权重</strong>。这节省了大量的时间和计算资源。</p>
+<p>适配器在论文<strong>《Parameter-efficient transfer learning for NLP》</strong>中得到了描述，该论文表明，<strong>仅微调 <span class="math inline">\(\text{BERT}\)</span> <span class="math inline">\(\text{3.6\%}\)</span> 的参数</strong>即可在任务上<strong>产生与微调所有模型权重相当的性能</strong>。在 <span class="math inline">\(\text{GLUE}\)</span> 基准测试中，作者表明他们的性能达到了<strong>完全微调性能的 <span class="math inline">\(\text{0.4\%}\)</span> 以内</strong>。在一<strong>个 <span class="math inline">\(\text{Transformer}\)</span> 块</strong>中，该论文提出的架构将<strong>适配器</strong>放置在<strong>注意力层</strong>和<strong>前馈神经网络</strong>之后，如图 <span class="math inline">\(\text{12}-8\)</span> 所示。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.8.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>然而，<strong>仅更改一个 <span class="math inline">\(\text{Transformer}\)</span> 块是不够的</strong>，因此这些组件是<strong>模型中每个块的一部分</strong>，如图 <span class="math inline">\(\text{12}-9\)</span> 所示。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.9.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>像这样查看<strong>模型中所有的适配器组件</strong>，使我们能够看到<strong>单个适配器</strong>，如图 <span class="math inline">\(\text{12}-10\)</span> 所示，它是<strong>跨越模型所有块的这些组件的集合</strong>。<strong>适配器 <span class="math inline">\(\text{1}\)</span></strong> 可以是<strong>医学文本分类的专家</strong>，而<strong>适配器 <span class="math inline">\(\text{2}\)</span></strong> 可以<strong>专注于命名实体识别 (<span class="math inline">\(\text{NER}\)</span>)</strong>。您可以从 <a target="_blank" rel="noopener" href="https://oreil.ly/XraXg">https://oreil.ly/XraXg</a> 下载专业适配器。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.10.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>论文<strong>《AdapterHub: A framework for adapting transformers》</strong>引入了 <strong><span class="math inline">\(\text{Adapter Hub}\)</span></strong> 作为<strong>共享适配器的中央存储库</strong>。许多早期的适配器<strong>更侧重于 <span class="math inline">\(\text{BERT}\)</span> 架构</strong>。最近，这个概念已被应用于文本生成 <span class="math inline">\(\text{Transformer}\)</span> 模型中，例如论文<strong>《LLaMA-Adapter: Efficient fine-tuning of language models with zero-init attention》</strong>。</p>
+<p><strong>低秩适应</strong></p>
+<p>Low-Rank Adaptation (LoRA)</p>
+<p>作为<strong>适配器</strong>的一种替代方案，<strong>低秩适应 (<span class="math inline">\(\text{LoRA}\)</span>)</strong> 被引入，并且在撰写本文时是一种<strong>广泛使用且有效</strong>的 <span class="math inline">\(\text{PEFT}\)</span> 技术。<span class="math inline">\(\text{LoRA}\)</span> 是一种（像适配器一样）<strong>只需要更新一小组参数</strong>的技术。如图 <span class="math inline">\(\text{12}-11\)</span> 所示，它<strong>创建了基础模型的一个小子集</strong>进行微调，<strong>而不是向模型添加层</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.11.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>与<strong>适配器</strong> (<span class="math inline">\(\text{adapters}\)</span>) 类似，这个<strong>子集</strong>使得微调<strong>快得多</strong>，因为我们<strong>只需要更新基础模型的一小部分</strong>。我们通过用<strong>较小的矩阵</strong>来<strong>近似</strong>伴随原始 <span class="math inline">\(\text{LLM}\)</span> 的<strong>大矩阵</strong>，从而创建这个<strong>参数子集</strong>。然后，我们可以使用这些<strong>较小的矩阵作为替代品</strong>，并<strong>微调它们</strong>而不是原始的大矩阵。以我们在图 <span class="math inline">\(\text{12}-12\)</span> 中看到的 <span class="math inline">\(\text{10} \times \text{10}\)</span> 矩阵为例。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.12.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>我们可以设计出<strong>两个较小的矩阵</strong>，当它们相乘时，可以<strong>重构一个 <span class="math inline">\(\text{10} \times \text{10}\)</span> 矩阵</strong>。这是一个<strong>主要的效率胜利</strong>，因为我们现在<strong>只有 <span class="math inline">\(\text{20}\)</span> 个权重</strong> (<span class="math inline">\(\text{10}\)</span> 加 <span class="math inline">\(\text{10}\)</span>)，而<strong>不是使用 <span class="math inline">\(\text{100}\)</span> 个权重</strong> (<span class="math inline">\(\text{10}\)</span> 乘以 <span class="math inline">\(\text{10}\)</span>)，如图 <span class="math inline">\(\text{12}-13\)</span> 所示。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.13.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>在训练过程中，我们<strong>只需要更新这些较小的矩阵</strong>，而<strong>不需要更新完整的权重变化</strong>。然后，<strong>更新后的变化矩阵</strong>（较小的矩阵）会<strong>与完整的（冻结的）权重结合</strong>，如图 <span class="math inline">\(\text{12}-14\)</span> 所示。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.14.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>但您可能会怀疑<strong>性能会下降</strong>。您猜对了。但这种<strong>权衡在什么地方是合理的</strong>呢？</p>
+<p>像<strong>《Intrinsic dimensionality explains the effectiveness of language model fine-tuning》</strong>这样的论文表明，语言模型“<strong>具有非常低的内在维度</strong>。”这意味着我们可以找到<strong>小的秩</strong> (<span class="math inline">\(\text{ranks}\)</span>) 来<strong>近似</strong> <span class="math inline">\(\text{LLM}\)</span> 中<strong>即使是巨大的矩阵</strong>。例如，像 <span class="math inline">\(\text{GPT-3}\)</span> 这样的 <span class="math inline">\(\text{175B}\)</span> 模型，在其 <strong><span class="math inline">\(\text{96}\)</span> 个 <span class="math inline">\(\text{Transformer}\)</span> 块</strong>中的每个块中都会有一个 <span class="math inline">\(\text{12,288} \times \text{12,288}\)</span> 的权重矩阵。这是 <span class="math inline">\(\text{1.5}\)</span> 亿个参数<strong>。如果我们可以成功地将该矩阵</strong>适应到秩 <span class="math inline">\(\text{8}\)</span><strong>，那么</strong>每个块<strong>将只需要</strong>两个 <span class="math inline">\(\text{12,288} \times \text{8}\)</span> 的矩阵<strong>，从而产生 </strong><span class="math inline">\(\text{197K}\)</span> 个参数<strong>。正如之前引用的 <span class="math inline">\(\text{LoRA}\)</span> 论文中进一步解释的那样，这在</strong>速度<strong>、</strong>存储<strong>和</strong>计算<strong>方面</strong>节省了大量资源。</p>
+<p>这种<strong>较小的表征</strong>非常<strong>灵活</strong>，您可以<strong>选择基础模型的哪些部分进行微调</strong>。例如，我们可以<strong>只微调每个 <span class="math inline">\(\text{Transformer}\)</span> 层中的 <span class="math inline">\(\text{Query}\)</span> 和 <span class="math inline">\(\text{Value}\)</span> 权重矩阵</strong>。</p>
+<p><strong>压缩模型以实现（更）高效的训练</strong></p>
+<p>Compressing the model for (more) efficient training</p>
+<p>我们可以通过在<strong>将模型的原始权重投影到较小的矩阵之前</strong>，<strong>减少其内存需求</strong>，从而使 <span class="math inline">\(\text{LoRA}\)</span> <strong>更加高效</strong>。<span class="math inline">\(\text{LLM}\)</span> 的权重是具有给定精度的<strong>数值</strong>，可以用<strong>浮点数（如 <span class="math inline">\(\text{float64}\)</span> 或 <span class="math inline">\(\text{float32}\)</span>）</strong>来表示。如图 <span class="math inline">\(\text{12}-15\)</span> 所示，如果我们<strong>降低表示一个值的位数</strong>，我们得到的<strong>结果准确性就会降低</strong>。然而，如果<strong>降低位数</strong>，我们也会<strong>降低该模型的内存需求</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.15.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>通过<strong>量化</strong> (<span class="math inline">\(\text{quantization}\)</span>)，我们的目标是<strong>在准确表示原始权重值的同时降低位数</strong>。然而，如图 <span class="math inline">\(\text{12}-16\)</span> 所示，当<strong>直接将更高精度值映射到更低精度值</strong>时，<strong>多个更高精度值</strong>最终可能<strong>被同一个更低精度值表示</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.16.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>相反，<span class="math inline">\(\text{LoRA}\)</span> 的量化版本 <span class="math inline">\(\text{QLoRA}\)</span> 的作者找到了一种方法，可以在<strong>不与原始权重产生太大差异</strong>的情况下，<strong>从较高的位数转换到较低的值</strong>，反之亦然。</p>
+<p>他们使用了<strong>块状量化</strong> (<span class="math inline">\(\text{blockwise quantization}\)</span>) 将<strong>某些块的较高精度值</strong>映射到<strong>较低精度值</strong>。不是直接将较高精度映射到较低精度值，而是<strong>创建额外的块</strong>，<strong>允许量化相似的权重</strong>。如图 <span class="math inline">\(\text{12}-17\)</span> 所示，这使得<strong>值可以用较低的精度准确表示</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.17.png" alt="F12.1" style="zoom:67%;" /></p>
+<p><strong>神经网络</strong>的一个<strong>很好的特性</strong>是它们的<strong>值通常呈正态分布</strong>在 <span class="math inline">\(\text{-1}\)</span> 和 <span class="math inline">\(\text{1}\)</span> 之间。正如<strong>图 <span class="math inline">\(\text{12}-18\)</span></strong> 所示，这种特性允许我们<strong>根据权重的相对密度</strong>将原始权重<strong>分箱到较低的位数</strong>。<strong>权重之间的映射效率更高</strong>，因为它<strong>考虑了权重的相对频率</strong>。这也<strong>减少了异常值的问题</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.18.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>结合<strong>块状量化</strong> (<span class="math inline">\(\text{blockwise quantization}\)</span>)，这种<strong>归一化过程</strong>允许<strong>低精度值准确表示高精度值</strong>，而<strong>大语言模型的性能只会略有下降</strong>。因此，我们可以从 <strong><span class="math inline">\(\text{16}\)</span> 位浮点表示</strong>转换为<strong>区区 <span class="math inline">\(\text{4}\)</span> 位归一化浮点表示</strong>。<strong><span class="math inline">\(\text{4}\)</span> 位表示</strong>可以<strong>显著减少 <span class="math inline">\(\text{LLM}\)</span> 在训练期间的内存需求</strong>。请注意，<strong><span class="math inline">\(\text{LLM}\)</span> 的量化</strong>通常也<strong>有助于推理</strong>，因为<strong>量化后的 <span class="math inline">\(\text{LLM}\)</span> 体积更小</strong>，因此<strong>需要的 <span class="math inline">\(\text{VRAM}\)</span> 也更少</strong>。</p>
+<p>还有<strong>更多优雅的方法</strong>可以进一步优化这一点，例如<strong>双重量化</strong> (<span class="math inline">\(\text{double quantization}\)</span>) 和<strong>分页优化器</strong> (<span class="math inline">\(\text{paged optimizers}\)</span>)，您可以在前面讨论的 <strong><span class="math inline">\(\text{QLoRA}\)</span> 论文</strong>中阅读更多相关内容。如需完整的、高度可视化的量化指南，请参阅<strong>这篇博客文章</strong>。</p>
+<h3 id="使用-textqlora-进行指令调整"><strong>使用 <span class="math inline">\(\text{QLoRA}\)</span> 进行指令调整</strong></h3>
+<p>Instruction Tuning with QLoRA</p>
+<p>现在我们已经探索了 <strong><span class="math inline">\(\text{QLoRA}\)</span> 的工作原理</strong>，让我们将这些知识付诸实践！在本节中，我们将<strong>微调 <span class="math inline">\(\text{Llama}\)</span> 的一个完全开源和更小版本 <span class="math inline">\(\text{TinyLlama}\)</span></strong>，以使用 <strong><span class="math inline">\(\text{QLoRA}\)</span> 流程</strong>来<strong>遵循指令</strong>。将该模型视为<strong>一个基础或预训练模型</strong>，它<strong>经过语言建模训练</strong>，但<strong>尚不能遵循指令</strong>。</p>
+<h4 id="模板化指令数据"><strong>模板化指令数据</strong></h4>
+<p>Templating Instruction Data</p>
+<p>为了让 <span class="math inline">\(\text{LLM}\)</span> 遵循指令，我们需要准备<strong>遵循聊天模板的指令数据</strong>。正如<strong>图 <span class="math inline">\(\text{12}-19\)</span></strong> 所示，这个<strong>聊天模板</strong>区分了 <strong><span class="math inline">\(\text{LLM}\)</span> 生成的内容</strong>和<strong>用户生成的内容</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.19.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>我们选择在<strong>整个示例中使用这个聊天模板</strong>，因为 <span class="math inline">\(\text{TinyLlama}\)</span> 的聊天版本<strong>使用了相同的格式</strong>。我们使用的数据是 <strong><span class="math inline">\(\text{UltraChat}\)</span> 数据集的一个小规模子集</strong>。该数据集是原始 <span class="math inline">\(\text{UltraChat}\)</span> 数据集的<strong>过滤版本</strong>，其中包含<strong>近 <span class="math inline">\(\text{200,000}\)</span> 个用户和 <span class="math inline">\(\text{LLM}\)</span> 之间的对话</strong>。</p>
+<p>我们创建一个名为 <strong><span class="math inline">\(\text{format\_prompt}\)</span></strong> 的函数，以确保对话<strong>遵循此模板</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> AutoTokenizer</span><br><span class="line"><span class="keyword">from</span> datasets <span class="keyword">import</span> load_dataset</span><br><span class="line"><span class="comment"># Load a tokenizer to use its chat template</span></span><br><span class="line">template_tokenizer = AutoTokenizer.from_pretrained(</span><br><span class="line"><span class="string">&quot;TinyLlama/TinyLlama-1.1BChat-v1.0&quot;</span></span><br><span class="line">)</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">format_prompt</span>(<span class="params">example</span>):</span><br><span class="line"><span class="string">&quot;&quot;&quot;Format the prompt to using the &lt;|user|&gt; template TinyLLama is using&quot;&quot;&quot;</span></span><br><span class="line"><span class="comment"># Format answers</span></span><br><span class="line">chat = example[<span class="string">&quot;messages&quot;</span>]</span><br><span class="line">prompt = template_tokenizer.apply_chat_template(chat, tokenize=<span class="literal">False</span>)</span><br><span class="line"><span class="keyword">return</span> &#123;<span class="string">&quot;text&quot;</span>: prompt&#125;</span><br><span class="line"><span class="comment"># Load and format the data using the template TinyLLama is using</span></span><br><span class="line">dataset = (</span><br><span class="line">load_dataset(<span class="string">&quot;HuggingFaceH4/ultrachat_200k&quot;</span>, split=<span class="string">&quot;test_sft&quot;</span>)</span><br><span class="line">.shuffle(seed=<span class="number">42</span>)</span><br><span class="line">.select(<span class="built_in">range</span>(<span class="number">3_000</span>))</span><br><span class="line">)</span><br><span class="line">dataset = dataset.<span class="built_in">map</span>(format_prompt)</span><br></pre></td></tr></table></figure>
+<p>我们选择了 <strong><span class="math inline">\(\text{3,000}\)</span> 个文档的子集</strong>来<strong>减少训练时间</strong>，但您可以<strong>增加这个值</strong>以获得<strong>更准确的结果</strong>。</p>
+<p>使用 <strong><span class="math inline">\(\text{&quot;text&quot;}\)</span> 列</strong>，我们可以探索这些<strong>格式化的提示</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Example of formatted prompt</span></span><br><span class="line"><span class="built_in">print</span>(dataset[<span class="string">&quot;text&quot;</span>][<span class="number">2576</span>])</span><br><span class="line">&lt;|user|&gt;</span><br><span class="line">Given the text: Knock, knock. Who<span class="string">&#x27;s there? Hike.</span></span><br><span class="line"><span class="string">Can you continue the joke based on the given text material &quot;Knock, knock.</span></span><br><span class="line"><span class="string">Who&#x27;</span>s there? Hike<span class="string">&quot;?&lt;/s&gt;</span></span><br><span class="line"><span class="string">&lt;|assistant|&gt;</span></span><br><span class="line"><span class="string">Sure! Knock, knock. Who&#x27;s there? Hike. Hike who? Hike up your pants, it&#x27;s cold</span></span><br><span class="line"><span class="string">outside!&lt;/s&gt;</span></span><br><span class="line"><span class="string">&lt;|user|&gt;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Can you tell me another knock-knock joke based on the same text material</span></span><br><span class="line"><span class="string">&quot;</span>Knock, knock. Who<span class="string">&#x27;s there? Hike&quot;?&lt;/s&gt;</span></span><br><span class="line"><span class="string">&lt;|assistant|&gt;</span></span><br><span class="line"><span class="string">Of course! Knock, knock. Who&#x27;</span>s there? Hike. Hike who? Hike your way over here</span><br><span class="line"><span class="keyword">and</span> let<span class="string">&#x27;s go for a walk!&lt;/s&gt;</span></span><br></pre></td></tr></table></figure>
+<h4 id="模型量化"><strong>模型量化</strong></h4>
+<p>Model Quantization</p>
+<p>现在我们有了数据，就可以开始<strong>加载我们的模型</strong>了。这就是我们应用 <strong><span class="math inline">\(\text{QLoRA}\)</span> 中的 <span class="math inline">\(\text{Q}\)</span></strong>，即<strong>量化</strong> (<span class="math inline">\(\text{quantization}\)</span>) 的地方。我们使用 <strong><span class="math inline">\(\text{bitsandbytes}\)</span> 包</strong>将预训练模型<strong>压缩为 <span class="math inline">\(\text{4}\)</span> 位表示</strong>。</p>
+<p>在 <span class="math inline">\(\text{BitsAndBytesConfig}\)</span> 中，您可以定义<strong>量化方案</strong>。我们遵循<strong>原始 <span class="math inline">\(\text{QLoRA}\)</span> 论文中使用的步骤</strong>，以 <strong><span class="math inline">\(\text{4}\)</span> 位</strong>加载模型（<span class="math inline">\(\text{load\_in\_4bit}\)</span>），使用<strong>归一化浮点表示</strong>（<span class="math inline">\(\text{bnb\_4bit\_quant\_type}\)</span>）和<strong>双重量化</strong>（<span class="math inline">\(\text{bnb\_4bit\_use\_double\_quant}\)</span>）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig</span><br><span class="line">model_name = <span class="string">&quot;TinyLlama/TinyLlama-1.1B-intermediate-step-1431k-3T&quot;</span></span><br><span class="line"><span class="comment"># 4-bit quantization configuration - Q in QLoRA</span></span><br><span class="line">bnb_config = BitsAndBytesConfig(</span><br><span class="line">load_in_4bit=<span class="literal">True</span>, <span class="comment"># Use 4-bit precision model loading</span></span><br><span class="line">bnb_4bit_quant_type=<span class="string">&quot;nf4&quot;</span>, <span class="comment"># Quantization type</span></span><br><span class="line">bnb_4bit_compute_dtype=<span class="string">&quot;float16&quot;</span>, <span class="comment"># Compute dtype</span></span><br><span class="line">bnb_4bit_use_double_quant=<span class="literal">True</span>, <span class="comment"># Apply nested quantization</span></span><br><span class="line">)</span><br><span class="line"><span class="comment"># Load the model to train on the GPU</span></span><br><span class="line">model = AutoModelForCausalLM.from_pretrained(</span><br><span class="line">model_name,</span><br><span class="line">device_map=<span class="string">&quot;auto&quot;</span>,</span><br><span class="line"><span class="comment"># Leave this out for regular SFT</span></span><br><span class="line">quantization_config=bnb_config,</span><br><span class="line">)</span><br><span class="line">model.config.use_cache = <span class="literal">False</span></span><br><span class="line">model.config.pretraining_tp = <span class="number">1</span></span><br><span class="line"><span class="comment"># Load LLaMA tokenizer</span></span><br><span class="line">tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=<span class="literal">True</span>)</span><br><span class="line">tokenizer.pad_token = <span class="string">&quot;&lt;PAD&gt;&quot;</span></span><br><span class="line">tokenizer.padding_side = <span class="string">&quot;left&quot;</span></span><br></pre></td></tr></table></figure>
+<p>这种<strong>量化过程</strong>使我们能够<strong>减小原始模型的尺寸</strong>，同时<strong>保留大部分原始权重的精度</strong>。现在加载模型<strong>只需要 <span class="math inline">\(\sim 1 GB\)</span> 的显存 (<span class="math inline">\(\text{VRAM}\)</span>)</strong>，而<strong>不进行量化</strong>则需要 <strong><span class="math inline">\(\sim 4 GB\)</span> 的显存</strong>。请注意，在<strong>微调期间</strong>，将需要<strong>更多的显存</strong>，因此它<strong>不会限制</strong>在加载模型所需的 <span class="math inline">\(\sim 1 GB\)</span> 显存上。</p>
+<h4 id="textlora-配置"><span class="math inline">\(\text{LoRA}\)</span> 配置</h4>
+<p>LoRA Configuration</p>
+<p>接下来，我们需要使用 <strong><span class="math inline">\(\text{peft}\)</span> 库</strong>来定义我们的 <strong><span class="math inline">\(\text{LoRA}\)</span> 配置</strong>，它代表了<strong>微调过程的超参数</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> peft <span class="keyword">import</span> LoraConfig, prepare_model_for_kbit_training, get_peft_model</span><br><span class="line"><span class="comment"># Prepare LoRA Configuration</span></span><br><span class="line">peft_config = LoraConfig(</span><br><span class="line">lora_alpha=<span class="number">32</span>, <span class="comment"># LoRA Scaling</span></span><br><span class="line">lora_dropout=<span class="number">0.1</span>, <span class="comment"># Dropout for LoRA Layers</span></span><br><span class="line">r=<span class="number">64</span>, <span class="comment"># Rank</span></span><br><span class="line">bias=<span class="string">&quot;none&quot;</span>,</span><br><span class="line">task_type=<span class="string">&quot;CAUSAL_LM&quot;</span>,</span><br><span class="line">target_modules= <span class="comment"># Layers to target</span></span><br><span class="line">[<span class="string">&quot;k_proj&quot;</span>, <span class="string">&quot;gate_proj&quot;</span>, <span class="string">&quot;v_proj&quot;</span>, <span class="string">&quot;up_proj&quot;</span>, <span class="string">&quot;q_proj&quot;</span>, <span class="string">&quot;o_proj&quot;</span>,</span><br><span class="line"><span class="string">&quot;down_proj&quot;</span>]</span><br><span class="line">)</span><br><span class="line"><span class="comment"># Prepare model for training</span></span><br><span class="line">model = prepare_model_for_kbit_training(model)</span><br><span class="line">model = get_peft_model(model, peft_config)</span><br></pre></td></tr></table></figure>
+<p>有几个参数值得一提：</p>
+<ul>
+<li><strong><span class="math inline">\(\text{r}\)</span></strong> 这是<strong>压缩矩阵的秩</strong>（回想图 <span class="math inline">\(\text{12}-13\)</span> 中的内容）。<strong>增加这个值</strong>也会<strong>增加压缩矩阵的大小</strong>，从而<strong>降低压缩率</strong>，进而<strong>提高代表能力</strong>。该值通常在 <span class="math inline">\(\text{4}\)</span> 到 <span class="math inline">\(\text{64}\)</span> 之间。</li>
+<li><strong><span class="math inline">\(\text{lora\_alpha}\)</span></strong> <strong>控制添加到原始权重的变化量</strong>。本质上，它<strong>平衡了原始模型的知识与新任务的知识</strong>。一个经验法则是<strong>选择 <span class="math inline">\(\text{r}\)</span> 两倍大小的值</strong>。</li>
+<li><strong><span class="math inline">\(\text{target\_modules}\)</span></strong> <strong>控制要针对哪些层</strong>。<span class="math inline">\(\text{LoRA}\)</span> 过程可以选择<strong>忽略特定层</strong>，例如特定的投影层。这可以<strong>加快训练速度，但会降低性能</strong>，反之亦然。</li>
+</ul>
+<p><strong>尝试调整这些参数</strong>是一个<strong>有价值的实验</strong>，可以<strong>直观地理解哪些值有效，哪些值无效</strong>。您可以在 <strong><span class="math inline">\(\text{Sebastian Raschka}\)</span> 的 <span class="math inline">\(\text{Ahead of AI}\)</span> 时事通讯</strong>中找到关于 <span class="math inline">\(\text{LoRA}\)</span> 微调的<strong>额外技巧</strong>的精彩资源。</p>
+<blockquote>
+<p>本示例展示了<strong>高效微调模型的形式</strong>。如果您想进行<strong>完全微调</strong> (<span class="math inline">\(\text{full fine-tuning}\)</span>)，您可以在<strong>加载模型时移除 <span class="math inline">\(\text{quantization\_config}\)</span> 参数</strong>，并<strong>跳过 <span class="math inline">\(\text{peft\_config}\)</span> 的创建</strong>。通过移除这些内容，我们将从“<strong>使用 <span class="math inline">\(\text{QLoRA}\)</span> 进行指令调整</strong>”转变为“<strong>完全指令调整</strong>” (<span class="math inline">\(\text{full instruction tuning}\)</span>)。</p>
+</blockquote>
+<h4 id="训练配置"><strong>训练配置</strong></h4>
+<p>Training Configuration</p>
+<p>最后，我们需要像<strong>第 <span class="math inline">\(\text{11}\)</span> 章</strong>中那样<strong>配置我们的训练参数</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> TrainingArguments</span><br><span class="line">output_dir = <span class="string">&quot;./results&quot;</span></span><br><span class="line"><span class="comment"># Training arguments</span></span><br><span class="line">training_arguments = TrainingArguments(</span><br><span class="line">output_dir=output_dir,</span><br><span class="line">per_device_train_batch_size=<span class="number">2</span>,</span><br><span class="line">gradient_accumulation_steps=<span class="number">4</span>,</span><br><span class="line">optim=<span class="string">&quot;paged_adamw_32bit&quot;</span>,</span><br><span class="line">learning_rate=<span class="number">2e-4</span>,</span><br><span class="line">lr_scheduler_type=<span class="string">&quot;cosine&quot;</span>,</span><br><span class="line">num_train_epochs=<span class="number">1</span>,</span><br><span class="line">logging_steps=<span class="number">10</span>,</span><br><span class="line">fp16=<span class="literal">True</span>,</span><br><span class="line">gradient_checkpointing=<span class="literal">True</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>有几个参数值得一提：</p>
+<ul>
+<li><strong><span class="math inline">\(\text{num\_train\_epochs}\)</span></strong> <strong>总训练轮数</strong>。较高的值往往会<strong>降低性能</strong>，因此我们通常倾向于<strong>保持较低</strong>。</li>
+<li><strong><span class="math inline">\(\text{learning\_rate}\)</span></strong> <strong>决定了权重更新的每一步的大小</strong>。<span class="math inline">\(\text{QLoRA}\)</span> 的作者发现<strong>较高的学习率</strong>更适用于<strong>更大的模型</strong>（<span class="math inline">\(&gt;\)</span> <span class="math inline">\(\text{33B}\)</span> 参数）。</li>
+<li><strong><span class="math inline">\(\text{lr\_scheduler\_type}\)</span></strong> 一种<strong>基于余弦的调度器</strong>，用于<strong>动态调整学习率</strong>。它将从零开始<strong>线性增加学习率</strong>，直到达到<strong>设定的值</strong>。之后，学习率将<strong>遵循余弦函数的值进行衰减</strong>。</li>
+<li><strong><span class="math inline">\(\text{optim}\)</span></strong> <strong>原始 <span class="math inline">\(\text{QLoRA}\)</span> 论文中使用的分页优化器</strong> (<span class="math inline">\(\text{paged optimizers}\)</span>)。</li>
+</ul>
+<p><strong>优化这些参数是一项困难的任务</strong>，并且<strong>没有固定的指导方针</strong>。它需要<strong>进行实验</strong>才能找出<strong>最适合特定数据集、模型大小和目标任务的方案</strong>。</p>
+<blockquote>
+<p>尽管本节描述的是<strong>指令调整</strong> (<span class="math inline">\(\text{instruction tuning}\)</span>)，我们也可以<strong>使用 <span class="math inline">\(\text{QLoRA}\)</span> 来微调一个指令模型</strong>。例如，我们可以<strong>微调一个聊天模型</strong>来生成<strong>特定的 <span class="math inline">\(\text{SQL}\)</span> 代码</strong>，或<strong>创建遵循特定格式的 <span class="math inline">\(\text{JSON}\)</span> 输出</strong>。只要您<strong>有可用的数据</strong>（带有适当的查询-回答项），<span class="math inline">\(\text{QLoRA}\)</span> 就是一种<strong>极好的技术</strong>，可以<strong>推动现有聊天模型更适合您的用例</strong>。</p>
+</blockquote>
+<h4 id="训练"><strong>训练</strong></h4>
+<p>Training</p>
+<p>现在我们已经<strong>准备好所有的模型和参数</strong>，就可以开始<strong>微调我们的模型</strong>了。我们加载 <strong><span class="math inline">\(\text{SFTTrainer}\)</span></strong> 并简单地运行 <span class="math inline">\(\text{trainer.train()}\)</span>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> trl <span class="keyword">import</span> SFTTrainer</span><br><span class="line"><span class="comment"># Set supervised fine-tuning parameters</span></span><br><span class="line">trainer = SFTTrainer(</span><br><span class="line">model=model,</span><br><span class="line">train_dataset=dataset,</span><br><span class="line">dataset_text_field=<span class="string">&quot;text&quot;</span>,</span><br><span class="line">tokenizer=tokenizer,</span><br><span class="line">args=training_arguments,</span><br><span class="line">max_seq_length=<span class="number">512</span>,</span><br><span class="line"><span class="comment"># Leave this out for regular SFT</span></span><br><span class="line">peft_config=peft_config,</span><br><span class="line">)</span><br><span class="line"><span class="comment"># Train model</span></span><br><span class="line">trainer.train()</span><br><span class="line"><span class="comment"># Save QLoRA weights</span></span><br><span class="line">trainer.model.save_pretrained(<span class="string">&quot;TinyLlama-1.1B-qlora&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p>在训练过程中，损失将根据 <span class="math inline">\(\text{logging\_steps}\)</span> 参数<strong>每 <span class="math inline">\(\text{10}\)</span> 步打印一次</strong>。如果您使用的是 <strong><span class="math inline">\(\text{Google Colab}\)</span> 提供的免费 <span class="math inline">\(\text{GPU}\)</span></strong>（在撰写本文时是 <strong><span class="math inline">\(\text{Tesla T4}\)</span></strong>），那么<strong>训练可能需要长达一个小时</strong>。是时候休息一下了！</p>
+<h4 id="合并权重"><strong>合并权重</strong></h4>
+<p>Merge Weights</p>
+<p>在训练完我们的 <strong><span class="math inline">\(\text{QLoRA}\)</span> 权重</strong>后，我们仍然需要<strong>将它们与原始权重结合</strong>起来才能使用。我们<strong>以 <span class="math inline">\(\text{16}\)</span> 位</strong>（而不是量化后的 <span class="math inline">\(\text{4}\)</span> 位）<strong>重新加载模型</strong>以合并权重。尽管 <span class="math inline">\(\text{tokenizer}\)</span> 在训练期间<strong>没有更新</strong>，但我们将其<strong>保存到与模型相同的文件夹中</strong>，以便于访问：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> peft <span class="keyword">import</span> AutoPeftModelForCausalLM</span><br><span class="line">model = AutoPeftModelForCausalLM.from_pretrained(</span><br><span class="line"><span class="string">&quot;TinyLlama-1.1B-qlora&quot;</span>,</span><br><span class="line">low_cpu_mem_usage=<span class="literal">True</span>,</span><br><span class="line">device_map=<span class="string">&quot;auto&quot;</span>,</span><br><span class="line">)</span><br><span class="line"><span class="comment"># Merge LoRA and base model</span></span><br><span class="line">merged_model = model.merge_and_unload()</span><br></pre></td></tr></table></figure>
+<p>将<strong>适配器与基础模型合并</strong>后，我们就可以使用我们<strong>之前定义的提示模板</strong>来使用它：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> pipeline</span><br><span class="line"><span class="comment"># Use our predefined prompt template</span></span><br><span class="line">prompt = <span class="string">&quot;&quot;&quot;&lt;|user|&gt;</span></span><br><span class="line"><span class="string">Tell me something about Large Language Models.&lt;/s&gt;</span></span><br><span class="line"><span class="string">&lt;|assistant|&gt;</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="comment"># Run our instruction-tuned model</span></span><br><span class="line">pipe = pipeline(task=<span class="string">&quot;text-generation&quot;</span>, model=merged_model, tokenizer=tokenizer)</span><br><span class="line"><span class="built_in">print</span>(pipe(prompt)[<span class="number">0</span>][<span class="string">&quot;generated_text&quot;</span>])</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Large Language Models (LLMs) are artificial intelligence (AI) models that</span><br><span class="line">learn language and understand what it means to say things in a particular</span><br><span class="line">language. They are trained on huge amounts of text…</span><br></pre></td></tr></table></figure>
+<p><strong>汇总输出</strong>显示模型现在<strong>密切遵循我们的指令</strong>，这在<strong>基础模型</strong>中是<strong>不可能</strong>的。</p>
+<h3 id="评估生成模型"><strong>评估生成模型</strong></h3>
+<p>Evaluating Generative Models</p>
+<p><strong>评估生成模型</strong>提出了一个<strong>重大挑战</strong>。生成模型用于<strong>许多不同的用例</strong>，这使得<strong>依赖单一指标进行判断</strong>成为一个挑战。与更专业的模型不同，<strong>生成模型解决数学问题的能力</strong>并<strong>不保证</strong>在解决<strong>编码问题</strong>上也能成功。</p>
+<p>与此同时，<strong>评估这些模型至关重要</strong>，尤其是在<strong>一致性很重要的生产环境</strong>中。鉴于它们的<strong>概率性质</strong>，生成模型<strong>不一定会产生一致的输出</strong>；因此需要<strong>稳健的评估</strong>。</p>
+<p>在本节中，我们将<strong>探索几种常见的评估方法</strong>，但我们想要强调<strong>当前缺乏黄金标准</strong>。<strong>没有一个指标</strong>是<strong>适用于所有用例的完美衡量标准</strong>。</p>
+<h4 id="词汇级别指标"><strong>词汇级别指标</strong></h4>
+<p>Word-Level Metrics</p>
+<p>一种<strong>常见的比较生成模型的指标类别</strong>是<strong>词汇级别评估</strong> (<span class="math inline">\(\text{word-level evaluation}\)</span>)。这些<strong>经典技术</strong>在<strong>词元（集）级别</strong>上<strong>比较参考数据集和生成的词元</strong>。常见的词汇级别指标包括<strong>困惑度</strong> (<span class="math inline">\(\text{perplexity}\)</span>)、<span class="math inline">\(\text{ROUGE}\)</span>、<span class="math inline">\(\text{BLEU}\)</span> 和 <span class="math inline">\(\text{BERTScore}\)</span>。</p>
+<p>值得注意的是<strong>困惑度</strong>，它<strong>衡量语言模型预测文本的准确程度</strong>。给定输入文本，模型<strong>预测下一个词元的可能性</strong>。使用困惑度，我们假设如果模型<strong>赋予下一个词元高概率</strong>，则<strong>性能更好</strong>。换句话说，当呈现<strong>一篇写得好的文档</strong>时，模型<strong>不应该感到“困惑”</strong>。</p>
+<p>如图 <span class="math inline">\(\text{12}-20\)</span> 所示，当呈现输入 “<span class="math inline">\(\text{When a measure becomes a}\)</span>” 时，模型被问及“<span class="math inline">\(\text{target}\)</span>” 作为下一个词的可能性有多大。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.20.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>尽管<strong>困惑度</strong>以及其他<strong>词汇级别指标</strong>是<strong>理解模型置信度的有用指标</strong>，但它们<strong>并非完美的衡量标准</strong>。它们<strong>没有考虑到生成文本的一致性、流畅性、创造性，甚至正确性</strong>。</p>
+<h4 id="基准测试"><strong>基准测试</strong></h4>
+<p>Benchmarks</p>
+<p><strong>评估生成模型</strong>在<strong>语言生成和理解任务</strong>上性能的一种<strong>常用方法</strong>是使用<strong>众所周知的公共基准测试</strong> (<span class="math inline">\(\text{benchmarks}\)</span>)，例如 <strong><span class="math inline">\(\text{MMLU}\)</span></strong>、<strong><span class="math inline">\(\text{GLUE}\)</span></strong>、<strong><span class="math inline">\(\text{TruthfulQA}\)</span></strong>、<strong><span class="math inline">\(\text{GSM8k}\)</span></strong> 和 <strong><span class="math inline">\(\text{HellaSwag}\)</span></strong>。这些基准测试为我们提供了<strong>基础语言理解</strong>以及<strong>复杂分析回答</strong>（例如数学问题）的<strong>信息</strong>。</p>
+<p>除了<strong>自然语言任务</strong>，一些模型<strong>专注于其他领域</strong>，例如<strong>编程</strong>。这些模型通常在<strong>不同的基准测试</strong>上进行评估，例如 <strong><span class="math inline">\(\text{HumanEval}\)</span></strong>，它包含<strong>具有挑战性的编程任务</strong>供模型解决。<strong>表 <span class="math inline">\(\text{12}-1\)</span></strong> 概述了<strong>生成模型的常见公共基准测试</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/T12.1.png" alt="F12.1" style="zoom:67%;" /></p>
+<p><strong>基准测试</strong>是<strong>了解模型在各种任务上表现如何</strong>的好方法。公共基准测试的一个<strong>缺点</strong>是，模型可能会<strong>过度拟合</strong> (<span class="math inline">\(\text{overfitted}\)</span>) 这些基准测试以<strong>生成最佳回复</strong>。此外，这些仍然是<strong>广泛的基准测试</strong>，可能<strong>无法涵盖非常具体的用例</strong>。最后，另一个缺点是，有些基准测试需要<strong>强大的 <span class="math inline">\(\text{GPU}\)</span></strong> 才能计算，并且<strong>运行时间长</strong>（超过数小时），这使得<strong>迭代变得困难</strong>。</p>
+<h4 id="排行榜">排行榜</h4>
+<p>Leaderboards</p>
+<p>有如此多不同的基准测试，<strong>很难选择哪个基准测试最适合您的模型</strong>。每当模型发布时，您通常会看到它在<strong>多个基准测试上进行评估</strong>，以展示其<strong>全面表现</strong>。</p>
+<p>因此，开发了<strong>包含多个基准测试的排行榜</strong> (<span class="math inline">\(\text{leaderboards}\)</span>)。一个常见的排行榜是 <strong><span class="math inline">\(\text{Open LLM Leaderboard}\)</span></strong>，在撰写本文时，它<strong>包括六个基准测试</strong>，其中包括 <span class="math inline">\(\text{HellaSwag}\)</span>、<span class="math inline">\(\text{MMLU}\)</span>、<span class="math inline">\(\text{TruthfulQA}\)</span> 和 <span class="math inline">\(\text{GSM8k}\)</span>。位居<strong>排行榜榜首</strong>的模型（假设它们<strong>没有在数据上过度拟合</strong>）通常被认为是“<strong>最好的</strong>”模型。然而，由于这些排行榜通常包含<strong>公开可用的基准测试</strong>，因此存在<strong>在排行榜上过度拟合的风险</strong>。</p>
+<h4 id="自动化评估"><strong>自动化评估</strong></h4>
+<p>Automated Evaluation</p>
+<p>评估<strong>生成输出</strong>的一部分是其<strong>文本的质量</strong>。例如，即使两个模型对一个问题给出了<strong>相同的正确答案</strong>，它们<strong>得出该答案的方式</strong>也可能不同。这通常<strong>不仅仅是最终答案的问题</strong>，还关乎<strong>其构造</strong>。类似地，尽管两个摘要可能相似，但<strong>其中一个可能明显短于另一个</strong>，这对于一个好的摘要来说<strong>通常很重要</strong>。</p>
+<p>为了<strong>评估生成文本的质量</strong>而<strong>不仅仅是最终答案的正确性</strong>，引入了<strong>“<span class="math inline">\(\text{LLM}\)</span> 即评审”</strong> (<span class="math inline">\(\text{LLM-as-a-judge}\)</span>) 的方法。实质上，<strong>一个单独的 <span class="math inline">\(\text{LLM}\)</span> 被要求判断待评估 <span class="math inline">\(\text{LLM}\)</span> 的质量</strong>。这种方法的一个<strong>有趣的变体</strong>是<strong>成对比较</strong> (<span class="math inline">\(\text{pairwise comparison}\)</span>)。<strong>两个不同的 <span class="math inline">\(\text{LLM}\)</span></strong> 将生成一个问题的答案，而<strong>第三个 <span class="math inline">\(\text{LLM}\)</span> 将充当评委</strong>来裁定<strong>哪个更好</strong>。</p>
+<p>因此，这种方法论<strong>允许对开放式问题进行自动化评估</strong>。一个<strong>主要优势</strong>是，随着 <span class="math inline">\(\text{LLM}\)</span> 的改进，它们<strong>判断输出质量的能力也会提高</strong>。换句话说，这种<strong>评估方法与该领域共同发展</strong>。</p>
+<h4 id="人工评估"><strong>人工评估</strong></h4>
+<p>Human Evaluation</p>
+<p>尽管<strong>基准测试很重要</strong>，但<strong>评估的黄金标准</strong>通常被认为是<strong>人工评估</strong> (<span class="math inline">\(\text{human evaluation}\)</span>)。即使一个 <span class="math inline">\(\text{LLM}\)</span> 在<strong>广泛的基准测试上得分很高</strong>，它<strong>仍可能在领域特定的任务上得分不高</strong>。此外，<strong>基准测试并不能完全捕捉人类偏好</strong>，而<strong>之前讨论的所有方法都仅仅是人类偏好的替代指标</strong>。</p>
+<p>一个<strong>基于人工评估技术的绝佳示例</strong>是 <strong><span class="math inline">\(\text{Chatbot Arena}\)</span></strong>（https://lmarena.ai/）。当您进入这个排行榜时，您会看到<strong>两个（匿名）<span class="math inline">\(\text{LLM}\)</span></strong>，您可以与之互动。您提出的<strong>任何问题或提示</strong>都将发送给<strong>这两个模型</strong>，并且您将<strong>收到它们的输出</strong>。然后，您可以<strong>决定您更喜欢哪个输出</strong>。这个过程允许<strong>社区对他们更喜欢的模型进行投票</strong>，而<strong>不知道呈现给他们的是哪个模型</strong>。<strong>只有在您投票后</strong>，您才会看到<strong>哪个模型生成了哪个文本</strong>。</p>
+<p>在撰写本文时，这种方法已经<strong>产生了 <span class="math inline">\(\text{800,000}\)</span> 多次人工投票</strong>，用于计算<strong>排行榜</strong>。这些投票用于<strong>根据 <span class="math inline">\(\text{LLM}\)</span> 的胜率</strong>来计算其<strong>相对技能水平</strong>。例如，如果一个<strong>低排名的 <span class="math inline">\(\text{LLM}\)</span> 击败了一个高排名的 <span class="math inline">\(\text{LLM}\)</span></strong>，它的<strong>排名就会显著变化</strong>。在国际象棋中，这被称为 <strong><span class="math inline">\(\text{Elo}\)</span> 等级分系统</strong>。</p>
+<p>因此，这种方法论使用了<strong>众包投票</strong>（crowdsourced vote），这有助于我们<strong>了解 <span class="math inline">\(\text{LLM}\)</span> 的质量</strong>。然而，它仍然是<strong>广泛用户群体的聚合意见</strong>，<strong>可能与您的用例不相关</strong>。</p>
+<p>因此，<strong>没有一种完美的 <span class="math inline">\(\text{LLM}\)</span> 评估方法</strong>。所有提到的方法论和基准测试都提供了<strong>重要但有限的评估视角</strong>。我们的建议是<strong>根据预期的用例来评估您的 <span class="math inline">\(\text{LLM}\)</span></strong>。对于<strong>编码</strong>，<strong><span class="math inline">\(\text{HumanEval}\)</span></strong> 会比 <span class="math inline">\(\text{GSM8k}\)</span> 更合乎逻辑。</p>
+<p>但最重要的是，我们相信<strong>您是最好的评估者</strong>。<strong>人工评估</strong>仍然是<strong>黄金标准</strong>，因为<strong>最终由您决定 <span class="math inline">\(\text{LLM}\)</span> 是否适用于您预期的用例</strong>。与本章中的示例一样，我们<strong>强烈建议您也尝试这些模型</strong>，并<strong>自己设计一些问题</strong>。例如，本书的作者是阿拉伯人 (<span class="math inline">\(\text{Jay Alammar}\)</span>) 和荷兰人 (<span class="math inline">\(\text{Maarten Grootendorst}\)</span>)，当我们接触新模型时，我们经常<strong>用我们的母语提问</strong>。</p>
+<p>关于这个主题的<strong>最后一点</strong>是我们<strong>珍视的一句话</strong>：</p>
+<blockquote>
+<p><strong>当一个衡量标准变成一个目标时，它就不再是一个好的衡量标准了。</strong> — <strong>古德哈特定律</strong> (<span class="math inline">\(\text{Goodhart’s Law}\)</span>)</p>
+</blockquote>
+<p>在 <span class="math inline">\(\text{LLM}\)</span> 的背景下，当使用<strong>特定的基准测试</strong>时，我们倾向于<strong>为该基准测试进行优化，而不顾后果</strong>。例如，如果我们<strong>纯粹专注于优化生成语法正确的句子</strong>，模型可能会学会<strong>只输出一个句子</strong>：“<span class="math inline">\(\text{This is a sentence.}\)</span>”（这是一个句子。）它在语法上是正确的，但<strong>没有告诉你任何关于其语言理解能力的信息</strong>。因此，模型可能<strong>擅长某个特定的基准测试</strong>，但<strong>可能会牺牲其他有用的能力</strong>。</p>
+<h3 id="偏好调整对齐强化学习自人类反馈"><strong>偏好调整/对齐/强化学习自人类反馈</strong></h3>
+<p>Preference-Tuning / Alignment / RLHF</p>
+<p>尽管我们的模型现在可以<strong>遵循指令</strong>，但我们可以通过<strong>最后的训练阶段</strong>进一步<strong>改进其行为</strong>，使其<strong>与我们期望它在不同场景下的行为保持一致</strong>。例如，当被问到“<span class="math inline">\(\text{What is an LLM?}\)</span>”（什么是 <span class="math inline">\(\text{LLM}\)</span>？）时，我们可能<strong>更喜欢一个详细描述 <span class="math inline">\(\text{LLM}\)</span> 内部结构的答案</strong>，而不是<strong>没有进一步解释的“<span class="math inline">\(\text{It is a large language model}\)</span>”（它是一个大型语言模型）</strong>这样的答案。我们究竟<strong>如何将我们（人类）对一个答案的偏好（优于另一个答案）与 <span class="math inline">\(\text{LLM}\)</span> 的输出对齐</strong>呢？</p>
+<p>首先，回想一下 <span class="math inline">\(\text{LLM}\)</span> <strong>接受一个提示并输出一个生成结果</strong>，如图 <span class="math inline">\(\text{12}-21\)</span> 所示。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.21.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>我们可以要求<strong>一个人</strong>（<strong>偏好评估者</strong> <span class="math inline">\(\text{preference evaluator}\)</span>）<strong>评估该模型生成的质量</strong>。假设他们给它分配了<strong>某个分数</strong>，比如 <span class="math inline">\(\text{4}\)</span> 分（参见图 <span class="math inline">\(\text{12}-22\)</span>）。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.22.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>图 <span class="math inline">\(\text{12}-23\)</span> 显示了<strong>基于该分数更新模型</strong>的<strong>偏好调整步骤</strong>：</p>
+<ul>
+<li>如果<strong>分数很高</strong>，则<strong>更新模型</strong>以<strong>鼓励</strong>它生成<strong>更多此类生成结果</strong>。</li>
+<li>如果<strong>分数很低</strong>，则<strong>更新模型</strong>以<strong>阻止</strong>此类生成结果。</li>
+</ul>
+<p><img src="/img3/Hands-On Large Language Models/F12.23.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>一如既往，我们需要<strong>许多训练示例</strong>。那么，我们<strong>能否将偏好评估自动化</strong>呢？是的，我们可以通过<strong>训练一个不同的模型</strong>，称为<strong>奖励模型</strong> (<span class="math inline">\(\text{reward model}\)</span>)，来实现。</p>
+<h3 id="使用奖励模型实现偏好评估自动化"><strong>使用奖励模型实现偏好评估自动化</strong></h3>
+<p>Automating Preference Evaluation Using Reward Models</p>
+<p>为了<strong>实现偏好评估的自动化</strong>，我们需要在<strong>偏好调整步骤之前</strong>增加一个步骤，即<strong>训练一个奖励模型</strong> (<span class="math inline">\(\text{reward model}\)</span>)，如图 <span class="math inline">\(\text{12}-24\)</span> 所示。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.24.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>图 <span class="math inline">\(\text{12}-25\)</span> 显示，为了创建<strong>奖励模型</strong>，我们<strong>复制了经过指令调整的模型</strong> (<span class="math inline">\(\text{instruction-tuned model}\)</span>)，并对其进行了<strong>微小改动</strong>，使其<strong>不再生成文本</strong>，而是<strong>输出一个单一的分数</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.25.png" alt="F12.1" style="zoom:67%;" /></p>
+<h4 id="奖励模型的输入和输出"><strong>奖励模型的输入和输出</strong></h4>
+<p>The Inputs and Outputs of a Reward Model</p>
+<p>我们期望这个<strong>奖励模型</strong>的工作方式是：我们<strong>给它一个提示和一个生成结果</strong>，它会<strong>输出一个单一的数字</strong>，表明该生成结果<strong>对该提示的偏好/质量</strong>。图 <span class="math inline">\(\text{12}-26\)</span> 显示了<strong>奖励模型生成这个单一数字</strong>的过程。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.26.png" alt="F12.1" style="zoom:67%;" /></p>
+<h4 id="训练奖励模型"><strong>训练奖励模型</strong></h4>
+<p>Training a Reward Model</p>
+<p>我们<strong>不能直接使用奖励模型</strong>。它需要<strong>先经过训练</strong>才能正确地给生成结果评分。因此，让我们<strong>获取一个模型可以学习的偏好数据集</strong>。</p>
+<p><strong>奖励模型训练数据集</strong></p>
+<p>Reward model training dataset</p>
+<p>偏好数据集的一种<strong>常见形式</strong>是，一个训练示例包含<strong>一个提示</strong>、<strong>一个被接受的生成结果</strong> (<span class="math inline">\(\text{accepted generation}\)</span>) 和<strong>一个被拒绝的生成结果</strong> (<span class="math inline">\(\text{rejected generation}\)</span>)。(细微差别：它<strong>不总是好与坏的生成结果</strong>；它可能是<strong>两个生成结果都很好</strong>，但<strong>其中一个比另一个更好</strong>)。图 <span class="math inline">\(\text{12}-27\)</span> 显示了一个包含<strong>两个训练示例</strong>的偏好训练集。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.27.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>生成<strong>偏好数据</strong>的一种方法是<strong>向 <span class="math inline">\(\text{LLM}\)</span> 呈现一个提示</strong>，让它<strong>生成两个不同的结果</strong>。如图 <span class="math inline">\(\text{12}-28\)</span> 所示，我们可以<strong>询问人类标注者</strong>他们<strong>更喜欢哪一个</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.28.png" alt="F12.1" style="zoom:67%;" /></p>
+<p><strong>奖励模型训练步骤</strong> (<span class="math inline">\(\text{Reward model training step}\)</span>)</p>
+<p>现在我们有了<strong>偏好训练数据集</strong>，我们就可以继续<strong>训练奖励模型</strong>了。</p>
+<p>一个简单的步骤是<strong>我们使用奖励模型来</strong>：</p>
+<ol type="1">
+<li>给<strong>被接受的生成结果</strong>评分。</li>
+<li>给<strong>被拒绝的生成结果</strong>评分。</li>
+</ol>
+<p>图 <span class="math inline">\(\text{12}-29\)</span> 显示了<strong>训练目标</strong>：<strong>确保被接受的生成结果得分高于被拒绝的生成结果</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.29.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>当我们将所有内容组合在一起时（如图 <span class="math inline">\(\text{12}-30\)</span> 所示），我们就得到了<strong>偏好调整的三个阶段</strong>：</p>
+<ol type="1">
+<li><strong>收集偏好数据</strong></li>
+<li><strong>训练奖励模型</strong></li>
+<li><strong>使用奖励模型微调 <span class="math inline">\(\text{LLM}\)</span></strong>（作为偏好评估者）</li>
+</ol>
+<p><img src="/img3/Hands-On Large Language Models/F12.30.png" alt="F12.1" style="zoom:67%;" /></p>
+<p><strong>奖励模型是一个绝妙的想法</strong>，可以<strong>进一步扩展和发展</strong>。例如，<strong><span class="math inline">\(\text{Llama 2}\)</span> 训练了两个奖励模型</strong>：一个<strong>对有用性进行评分</strong>，另一个<strong>对安全性进行评分</strong>（图 <span class="math inline">\(\text{12}-31\)</span>）。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.31.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>使用<strong>训练好的奖励模型</strong>来微调 <span class="math inline">\(\text{LLM}\)</span> 的一种<strong>常用方法</strong>是<strong>近端策略优化 (<span class="math inline">\(\text{Proximal Policy Optimization, PPO}\)</span>)</strong>。<span class="math inline">\(\text{PPO}\)</span> 是一种<strong>流行的强化学习技术</strong>，它通过<strong>确保 <span class="math inline">\(\text{LLM}\)</span> 不会偏离预期奖励太多</strong>来<strong>优化经过指令调整的 <span class="math inline">\(\text{LLM}\)</span></strong>。它甚至被用于<strong>训练 <span class="math inline">\(\text{2022}\)</span> 年 <span class="math inline">\(\text{11}\)</span> 月发布的最初 <span class="math inline">\(\text{ChatGPT}\)</span></strong>。</p>
+<h4 id="无需训练奖励模型"><strong>无需训练奖励模型</strong></h4>
+<p>Training No Reward Model</p>
+<p><span class="math inline">\(\text{PPO}\)</span> 的一个<strong>缺点</strong>是它是一种<strong>复杂的方法</strong>，需要<strong>训练至少两个模型</strong>：<strong>奖励模型</strong>和 <strong><span class="math inline">\(\text{LLM}\)</span></strong>，这可能<strong>比必要的更昂贵</strong>。</p>
+<p><strong>直接偏好优化 (<span class="math inline">\(\text{Direct Preference Optimization, DPO}\)</span>)</strong> 是 <span class="math inline">\(\text{PPO}\)</span> 的<strong>一种替代方案</strong>，它<strong>摒弃了基于强化学习的过程</strong>。<strong>我们不再使用奖励模型来判断生成结果的质量</strong>，而是<strong>让 <span class="math inline">\(\text{LLM}\)</span> 本身来做这件事</strong>。如图 <span class="math inline">\(\text{12}-32\)</span> 所示，我们使用 <strong><span class="math inline">\(\text{LLM}\)</span> 的一个副本作为参考模型</strong> (<span class="math inline">\(\text{reference model}\)</span>)，来<strong>判断被接受的生成结果和被拒绝的生成结果的质量</strong>在<strong>参考模型</strong>和<strong>可训练模型</strong> (<span class="math inline">\(\text{trainable model}\)</span>) 之间的<strong>偏移</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.32.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>通过在训练期间<strong>计算这种偏移</strong>，我们可以通过<strong>跟踪参考模型和可训练模型之间的差异</strong>，来<strong>优化被接受的生成结果的似然性</strong>（优于被拒绝的生成结果）。</p>
+<blockquote>
+<p>个人注：参考模型 是为了防止模型在对齐过程中偏离得太远，从而避免生成无意义的文本。</p>
+</blockquote>
+<p>为了<strong>计算这种偏移及其相关分数</strong>，需要从<strong>两个模型</strong>中提取<strong>被拒绝生成结果和被接受生成结果的对数概率</strong> (<span class="math inline">\(\text{log probabilities}\)</span>)。如图 <span class="math inline">\(\text{12}-33\)</span> 所示，这个过程在<strong>词元级别</strong> (<span class="math inline">\(\text{token level}\)</span>) 进行，其中<strong>概率被组合起来计算参考模型和可训练模型之间的偏移</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.33.png" alt="F12.1" style="zoom:67%;" /></p>
+<blockquote>
+<p>个人注：你看到的那两组输出（上面是 <em>“I got no clue !”</em>，下面是 <em>“I have no idea !”</em>）分别对应模型生成的两种候选回答，而图中列出 <code>"I"</code>, <code>"have"</code>, <code>"no"</code>, <code>"idea"</code>, <code>"!"</code> 的 token，其实是为了 <strong>展示模型在“较优回答”这条序列上的逐词概率变化</strong>。</p>
+</blockquote>
+<p>利用这些分数，我们可以<strong>优化可训练模型的参数</strong>，使其<strong>对生成被接受的生成结果更有信心</strong>，而<strong>对生成被拒绝的生成结果信心不足</strong>。与 <span class="math inline">\(\text{PPO}\)</span> 相比，作者发现 <span class="math inline">\(\text{DPO}\)</span> 在训练期间<strong>更稳定</strong>且<strong>更准确</strong>。由于其稳定性，我们将<strong>使用它作为我们偏好调整</strong>之前经过指令调整的模型的<strong>主要模型</strong>。</p>
+<h3 id="使用-textdpo-进行偏好调整"><strong>使用 <span class="math inline">\(\text{DPO}\)</span> 进行偏好调整</strong></h3>
+<p>Preference Tuning with DPO</p>
+<p>当我们使用 <strong><span class="math inline">\(\text{Hugging Face}\)</span> 堆栈</strong>时，<strong>偏好调整</strong>与我们之前介绍的<strong>指令调整非常相似</strong>，只有一些<strong>细微差别</strong>。我们将<strong>继续使用 <span class="math inline">\(\text{TinyLlama}\)</span></strong>，但这次是<strong>一个经过指令调整的版本</strong>，它<strong>首先使用完全微调进行训练</strong>，然后<strong>使用 <span class="math inline">\(\text{DPO}\)</span> 进一步对齐</strong>。与我们最初经过指令调整的模型相比，这个 <span class="math inline">\(\text{LLM}\)</span> 是在<strong>更大的数据集</strong>上进行训练的。</p>
+<p>在本节中，我们将演示<strong>如何使用 <span class="math inline">\(\text{DPO}\)</span> 和基于奖励的数据集</strong>来<strong>进一步对齐该模型</strong>。</p>
+<h4 id="模板化对齐数据"><strong>模板化对齐数据</strong></h4>
+<p>Templating Alignment Data</p>
+<p>我们将使用一个<strong>对于每个提示都包含一个被接受的生成结果和一个被拒绝的生成结果的数据集</strong>。该数据集<strong>部分由 <span class="math inline">\(\text{ChatGPT}\)</span> 生成</strong>，并附带了关于<strong>哪个输出应该被接受、哪个应该被拒绝的评分</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> datasets <span class="keyword">import</span> load_dataset</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">format_prompt</span>(<span class="params">example</span>):</span><br><span class="line"><span class="string">&quot;&quot;&quot;Format the prompt to using the &lt;|user|&gt; template TinyLLama is using&quot;&quot;&quot;</span></span><br><span class="line"><span class="comment"># Format answers</span></span><br><span class="line">system = <span class="string">&quot;&lt;|system|&gt;\n&quot;</span> + example[<span class="string">&quot;system&quot;</span>] + <span class="string">&quot;&lt;/s&gt;\n&quot;</span></span><br><span class="line">prompt = <span class="string">&quot;&lt;|user|&gt;\n&quot;</span> + example[<span class="string">&quot;input&quot;</span>] + <span class="string">&quot;&lt;/s&gt;\n&lt;|assistant|&gt;\n&quot;</span></span><br><span class="line">chosen = example[<span class="string">&quot;chosen&quot;</span>] + <span class="string">&quot;&lt;/s&gt;\n&quot;</span></span><br><span class="line">rejected = example[<span class="string">&quot;rejected&quot;</span>] + <span class="string">&quot;&lt;/s&gt;\n&quot;</span></span><br><span class="line"><span class="keyword">return</span> &#123;</span><br><span class="line"><span class="string">&quot;prompt&quot;</span>: system + prompt,</span><br><span class="line"><span class="string">&quot;chosen&quot;</span>: chosen,</span><br><span class="line"><span class="string">&quot;rejected&quot;</span>: rejected,</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment"># Apply formatting to the dataset and select relatively short answers</span></span><br><span class="line">dpo_dataset = load_dataset(</span><br><span class="line"><span class="string">&quot;argilla/distilabel-intel-orca-dpo-pairs&quot;</span>, split=<span class="string">&quot;train&quot;</span></span><br><span class="line">)</span><br><span class="line">dpo_dataset = dpo_dataset.<span class="built_in">filter</span>(</span><br><span class="line"><span class="keyword">lambda</span> r:</span><br><span class="line">r[<span class="string">&quot;status&quot;</span>] != <span class="string">&quot;tie&quot;</span> <span class="keyword">and</span></span><br><span class="line">r[<span class="string">&quot;chosen_score&quot;</span>] &gt;= <span class="number">8</span> <span class="keyword">and</span></span><br><span class="line"><span class="keyword">not</span> r[<span class="string">&quot;in_gsm8k_train&quot;</span>]</span><br><span class="line">)</span><br><span class="line">dpo_dataset = dpo_dataset.<span class="built_in">map</span>(</span><br><span class="line">format_prompt, remove_columns=dpo_dataset.column_names</span><br><span class="line">)</span><br><span class="line">dpo_dataset</span><br></pre></td></tr></table></figure>
+<p>请注意，我们应用了额外的过滤，将数据的规模从原来的 <strong><span class="math inline">\(\text{13,000}\)</span> 个示例进一步减少到大约 <span class="math inline">\(\text{6,000}\)</span> 个示例</strong>。</p>
+<h4 id="模型量化-1"><strong>模型量化</strong></h4>
+<p>Model Quantization</p>
+<p>我们加载<strong>基础模型</strong>，并加载我们<strong>先前创建的 <span class="math inline">\(\text{LoRA}\)</span></strong>。和以前一样，我们<strong>对模型进行量化</strong>以<strong>减少训练所需的 <span class="math inline">\(\text{VRAM}\)</span></strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> peft <span class="keyword">import</span> AutoPeftModelForCausalLM</span><br><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> BitsAndBytesConfig, AutoTokenizer</span><br><span class="line"><span class="comment"># 4-bit quantization configuration - Q in QLoRA</span></span><br><span class="line">bnb_config = BitsAndBytesConfig(</span><br><span class="line">load_in_4bit=<span class="literal">True</span>, <span class="comment"># Use 4-bit precision model loading</span></span><br><span class="line"></span><br><span class="line">bnb_4bit_quant_type=<span class="string">&quot;nf4&quot;</span>, <span class="comment"># Quantization type</span></span><br><span class="line">bnb_4bit_compute_dtype=<span class="string">&quot;float16&quot;</span>, <span class="comment"># Compute dtype</span></span><br><span class="line">bnb_4bit_use_double_quant=<span class="literal">True</span>, <span class="comment"># Apply nested quantization</span></span><br><span class="line">)</span><br><span class="line"><span class="comment"># Merge LoRA and base model</span></span><br><span class="line">model = AutoPeftModelForCausalLM.from_pretrained(</span><br><span class="line"><span class="string">&quot;TinyLlama-1.1B-qlora&quot;</span>,</span><br><span class="line">low_cpu_mem_usage=<span class="literal">True</span>,</span><br><span class="line">device_map=<span class="string">&quot;auto&quot;</span>,</span><br><span class="line">quantization_config=bnb_config,</span><br><span class="line">)</span><br><span class="line">merged_model = model.merge_and_unload()</span><br><span class="line"><span class="comment"># Load LLaMA tokenizer</span></span><br><span class="line">model_name = <span class="string">&quot;TinyLlama/TinyLlama-1.1B-intermediate-step-1431k-3T&quot;</span></span><br><span class="line">tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=<span class="literal">True</span>)</span><br><span class="line">tokenizer.pad_token = <span class="string">&quot;&lt;PAD&gt;&quot;</span></span><br><span class="line">tokenizer.padding_side = <span class="string">&quot;left&quot;</span></span><br></pre></td></tr></table></figure>
+<p>接下来，我们使用<strong>与之前相同的 <span class="math inline">\(\text{LoRA}\)</span> 配置</strong>来执行 <span class="math inline">\(\text{DPO}\)</span> 训练：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> peft <span class="keyword">import</span> LoraConfig, prepare_model_for_kbit_training, get_peft_model</span><br><span class="line"><span class="comment"># Prepare LoRA configuration</span></span><br><span class="line">peft_config = LoraConfig(</span><br><span class="line">lora_alpha=<span class="number">32</span>, <span class="comment"># LoRA Scaling</span></span><br><span class="line">lora_dropout=<span class="number">0.1</span>, <span class="comment"># Dropout for LoRA Layers</span></span><br><span class="line">r=<span class="number">64</span>, <span class="comment"># Rank</span></span><br><span class="line">bias=<span class="string">&quot;none&quot;</span>,</span><br><span class="line">task_type=<span class="string">&quot;CAUSAL_LM&quot;</span>,</span><br><span class="line">target_modules= <span class="comment"># Layers to target</span></span><br><span class="line">[<span class="string">&quot;k_proj&quot;</span>, <span class="string">&quot;gate_proj&quot;</span>, <span class="string">&quot;v_proj&quot;</span>, <span class="string">&quot;up_proj&quot;</span>, <span class="string">&quot;q_proj&quot;</span>, <span class="string">&quot;o_proj&quot;</span>,</span><br><span class="line"><span class="string">&quot;down_proj&quot;</span>]</span><br><span class="line">)</span><br><span class="line"><span class="comment"># prepare model for training</span></span><br><span class="line">model = prepare_model_for_kbit_training(model)</span><br><span class="line">model = get_peft_model(model, peft_config)</span><br></pre></td></tr></table></figure>
+<h4 id="训练配置-1"><strong>训练配置</strong></h4>
+<p>Training Configuration</p>
+<p>为了<strong>简单起见</strong>，我们将使用<strong>与之前相同的训练参数</strong>，但有<strong>一个区别</strong>。为了说明目的，我们<strong>运行 <span class="math inline">\(\text{200}\)</span> 步</strong>，而<strong>不是运行一个 <span class="math inline">\(\text{epoch}\)</span></strong>（可能需要长达两小时）。此外，我们<strong>添加了 <span class="math inline">\(\text{warmup\_ratio}\)</span> 参数</strong>，它在<strong>前 <span class="math inline">\(\text{10\%}\)</span> 的步骤</strong>中将<strong>学习率</strong>从 <span class="math inline">\(\text{0}\)</span> 增加到我们设定的 <span class="math inline">\(\text{learning\_rate}\)</span> 值。通过在<strong>开始时保持较小的学习率</strong>（即<strong>预热期</strong> <span class="math inline">\(\text{warmup period}\)</span>），我们允许模型在应用较大的学习率之前<strong>调整以适应数据</strong>，从而<strong>避免有害的发散</strong> (<span class="math inline">\(\text{divergence}\)</span>):</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> trl <span class="keyword">import</span> DPOConfig</span><br><span class="line">output_dir = <span class="string">&quot;./results&quot;</span></span><br><span class="line"><span class="comment"># Training arguments</span></span><br><span class="line">training_arguments = DPOConfig(</span><br><span class="line">output_dir=output_dir,</span><br><span class="line">per_device_train_batch_size=<span class="number">2</span>,</span><br><span class="line">gradient_accumulation_steps=<span class="number">4</span>,</span><br><span class="line">optim=<span class="string">&quot;paged_adamw_32bit&quot;</span>,</span><br><span class="line">learning_rate=<span class="number">1e-5</span>,</span><br><span class="line">lr_scheduler_type=<span class="string">&quot;cosine&quot;</span>,</span><br><span class="line">max_steps=<span class="number">200</span>,</span><br><span class="line">logging_steps=<span class="number">10</span>,</span><br><span class="line">fp16=<span class="literal">True</span>,</span><br><span class="line">gradient_checkpointing=<span class="literal">True</span>,</span><br><span class="line">warmup_ratio=<span class="number">0.1</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<h4 id="训练-1"><strong>训练</strong></h4>
+<p>Training</p>
+<p>现在我们已经<strong>准备好所有的模型和参数</strong>，就可以开始<strong>微调我们的模型</strong>了：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> trl <span class="keyword">import</span> DPOTrainer</span><br><span class="line"><span class="comment"># Create DPO trainer</span></span><br><span class="line">dpo_trainer = DPOTrainer(</span><br><span class="line">model,</span><br><span class="line">args=training_arguments,</span><br><span class="line">train_dataset=dpo_dataset,</span><br><span class="line">tokenizer=tokenizer,</span><br><span class="line">peft_config=peft_config,</span><br><span class="line">beta=<span class="number">0.1</span>,</span><br><span class="line">max_prompt_length=<span class="number">512</span>,</span><br><span class="line">max_length=<span class="number">512</span>,</span><br><span class="line">)</span><br><span class="line"><span class="comment"># Fine-tune model with DPO</span></span><br><span class="line">dpo_trainer.train()</span><br><span class="line"><span class="comment"># Save adapter</span></span><br><span class="line">dpo_trainer.model.save_pretrained(<span class="string">&quot;TinyLlama-1.1B-dpo-qlora&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p>我们<strong>创建了第二个适配器</strong>。为了<strong>合并这两个适配器</strong>，我们<strong>迭代地将适配器与基础模型合并</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> peft <span class="keyword">import</span> PeftModel</span><br><span class="line"><span class="comment"># Merge LoRA and base model</span></span><br><span class="line">model = AutoPeftModelForCausalLM.from_pretrained(</span><br><span class="line"><span class="string">&quot;TinyLlama-1.1B-qlora&quot;</span>,</span><br><span class="line"></span><br><span class="line">low_cpu_mem_usage=<span class="literal">True</span>,</span><br><span class="line">device_map=<span class="string">&quot;auto&quot;</span>,</span><br><span class="line">)</span><br><span class="line">sft_model = model.merge_and_unload()</span><br><span class="line"><span class="comment"># Merge DPO LoRA and SFT model</span></span><br><span class="line">dpo_model = PeftModel.from_pretrained(</span><br><span class="line">sft_model,</span><br><span class="line"><span class="string">&quot;TinyLlama-1.1B-dpo-qlora&quot;</span>,</span><br><span class="line">device_map=<span class="string">&quot;auto&quot;</span>,</span><br><span class="line">)</span><br><span class="line">dpo_model = dpo_model.merge_and_unload()</span><br></pre></td></tr></table></figure>
+<p>这种 <strong><span class="math inline">\(\text{SFT}\)</span> + <span class="math inline">\(\text{DPO}\)</span> 的组合</strong>是<strong>首先微调模型以执行基本聊天</strong>，然后<strong>将其答案与人类偏好对齐</strong>的<strong>绝佳方式</strong>。然而，它确实<strong>需要付出代价</strong>，因为我们需要<strong>执行两个训练循环</strong>，并且可能需要<strong>调整两个过程中的参数</strong>。</p>
+<p>自从 <span class="math inline">\(\text{DPO}\)</span> 发布以来，<strong>新的对齐偏好的方法</strong>不断被开发出来。值得注意的是<strong>赔率比偏好优化 (<span class="math inline">\(\text{Odds Ratio Preference Optimization, ORPO}\)</span>)</strong>，这是一个<strong>将 <span class="math inline">\(\text{SFT}\)</span> 和 <span class="math inline">\(\text{DPO}\)</span> 结合到一个单一训练过程中的流程</strong>。它<strong>消除了执行两个独立训练循环的需要</strong>，<strong>进一步简化了训练过程</strong>，同时<strong>允许使用 <span class="math inline">\(\text{QLoRA}\)</span></strong>。</p>
+<h3 id="总结"><strong>总结</strong></h3>
+<p>在本章中，我们探索了<strong>微调预训练 <span class="math inline">\(\text{LLM}\)</span> 的不同步骤</strong>。我们通过<strong>低秩适应 (<span class="math inline">\(\text{LoRA}\)</span>) 技术</strong>，利用<strong>参数高效微调 (<span class="math inline">\(\text{PEFT}\)</span>)</strong> 来执行微调。我们解释了<strong>如何通过量化</strong> (<span class="math inline">\(\text{quantization}\)</span>) <strong>扩展 <span class="math inline">\(\text{LoRA}\)</span></strong>，量化是一种在<strong>表示模型和适配器的参数时减少内存限制的技术</strong>。</p>
+<p>我们探索的<strong>微调过程包含两个步骤</strong>。</p>
+<p>在<strong>第一步</strong>中，我们使用<strong>指令数据</strong>对<strong>预训练 <span class="math inline">\(\text{LLM}\)</span></strong> 执行了<strong>有监督微调</strong> (<span class="math inline">\(\text{supervised fine-tuning}\)</span>)，这通常称为<strong>指令调整</strong> (<span class="math inline">\(\text{instruction tuning}\)</span>)。这产生了一个<strong>具有聊天式行为</strong>并能<strong>密切遵循指令的模型</strong>。</p>
+<p>在<strong>第二步</strong>中，我们通过使用<strong>对齐数据</strong>（即表示<strong>哪种类型的答案优于其他答案</strong>的数据）对其进行微调，进一步改进了模型。这个过程被称为<strong>偏好调整</strong> (<span class="math inline">\(\text{preference tuning}\)</span>)，它将<strong>人类偏好</strong>提炼到<strong>先前经过指令调整的模型</strong>中。</p>
+<p>总而言之，本章展示了<strong>微调预训练 <span class="math inline">\(\text{LLM}\)</span> 的两个主要步骤</strong>，以及这<strong>如何能够产生更准确、信息更丰富的输出</strong>。</p>
+<h2 id="afterword"><strong>Afterword</strong></h2>
+<p>感谢所有加入我们，一同完成这次穿越大型语言模型世界的迷人旅程的读者。我们感激您致力于学习这些功能强大、彻底革新了语言处理领域的模型。</p>
+<p>在整本书中，我们看到了 <span class="math inline">\(\text{LLM}\)</span> 的工作原理，以及如何利用它们来创建各种应用，从简单的聊天机器人到更复杂的系统，例如搜索引擎。我们还探索了各种方法，用于针对特定任务（包括分类、生成和语言表示）对预训练的 <span class="math inline">\(\text{LLM}\)</span> 进行微调。通过掌握这些技术，读者将能够释放 <span class="math inline">\(\text{LLM}\)</span> 的潜力，并创建可从其能力中受益的创新解决方案。这些知识将使读者能够保持领先地位，并适应该领域的新发展。</p>
+<p>在本书即将结束之际，我们要强调，我们对 <span class="math inline">\(\text{LLM}\)</span> 的探索仅仅是一个开始。未来还有更多激动人心的发展，我们鼓励您继续关注该领域的进展。为了协助这个过程，请继续关注本书的存储库，我们会在其中持续添加资源。</p>
+<p>我们希望通过阅读本书，您对 <span class="math inline">\(\text{LLM}\)</span> 如何应用于各种应用程序以及它们如何具备改变各行各业的潜力，有了更深入的理解。</p>
+<p>以本书为指导，我们相信您将有充足的准备来驾驭 <span class="math inline">\(\text{LLM}\)</span> 这一令人兴奋的领域，并为这个快速发展的领域做出有意义的贡献。</p>
+<p>书籍各章的机翻md文件：<br />
+<a href="/2025/02/01/Hands-On%20Large%20Language%20Models%20%E7%9B%AE%E5%BD%95%20%E5%89%8D%E8%A8%80/" title="《Hands-On Large Language Models》前言">《Hands-On Large Language Models》前言</a><br />
+<a href="/2025/02/02/Hands-On%20Large%20Language%20Models%201/" title="《Hands-On Large Language Models》第1章 大型语言模型简介">《Hands-On Large Language Models》第1章 大型语言模型简介</a><br />
+<a href="/2025/02/03/Hands-On%20Large%20Language%20Models%202/" title="《Hands-On Large Language Models》第2章 词元与嵌入">《Hands-On Large Language Models》第2章 词元与嵌入</a><br />
+<a href="/2025/02/04/Hands-On%20Large%20Language%20Models%203/" title="《Hands-On Large Language Models》第3章 深入了解大型语言模型">《Hands-On Large Language Models》第3章 深入了解大型语言模型</a><br />
+<a href="/2025/02/05/Hands-On%20Large%20Language%20Models%204/" title="《Hands-On Large Language Models》第4章 文本分类">《Hands-On Large Language Models》第4章 文本分类</a><br />
+<a href="/2025/02/06/Hands-On%20Large%20Language%20Models%205/" title="《Hands-On Large Language Models》第5章 文本聚类和主题建模">《Hands-On Large Language Models》第5章 文本聚类和主题建模</a><br />
+<a href="/2025/02/07/Hands-On%20Large%20Language%20Models%206/" title="《Hands-On Large Language Models》第6章 提示工程">《Hands-On Large Language Models》第6章 提示工程</a><br />
+<a href="/2025/02/08/Hands-On%20Large%20Language%20Models%207/" title="《Hands-On Large Language Models》第7章 高级文本生成技术与工具">《Hands-On Large Language Models》第7章 高级文本生成技术与工具</a><br />
+<a href="/2025/02/09/Hands-On%20Large%20Language%20Models%208/" title="《Hands-On Large Language Models》第8章 语义搜索与检索增强生成">《Hands-On Large Language Models》第8章 语义搜索与检索增强生成</a><br />
+<a href="/2025/02/10/Hands-On%20Large%20Language%20Models%209/" title="《Hands-On Large Language Models》第9章 多模态大型语言模型">《Hands-On Large Language Models》第9章 多模态大型语言模型</a><br />
+<a href="/2025/02/11/Hands-On%20Large%20Language%20Models%2010/" title="《Hands-On Large Language Models》第10章 创建文本嵌入模型">《Hands-On Large Language Models》第10章 创建文本嵌入模型</a><br />
+<a href="/2025/02/12/Hands-On%20Large%20Language%20Models%2011/" title="《Hands-On Large Language Models》第11章 微调用于分类的表征模型">《Hands-On Large Language Models》第11章 微调用于分类的表征模型</a><br />
+<a href="/2025/02/13/Hands-On%20Large%20Language%20Models%2012/" title="《Hands-On Large Language Models》第12章 生成模型的微调">《Hands-On Large Language Models》第12章 生成模型的微调</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/02/12/Hands-On%20Large%20Language%20Models%2011/" rel="prev" title="《Hands-On Large Language Models》第11章 微调用于分类的表征模型">
+                  <i class="fa fa-chevron-left"></i> 《Hands-On Large Language Models》第11章 微调用于分类的表征模型
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/06/25/%E3%80%8A%E7%BB%9F%E8%AE%A1%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80%E3%80%8B%E8%AF%BB%E4%B9%A6%E5%BF%83%E5%BE%97%E4%B9%8B%E5%85%AD/" rel="next" title="《统计学习基础》 (6/6)">
+                  《统计学习基础》 (6/6) <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
