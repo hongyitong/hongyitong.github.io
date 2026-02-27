@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"enable":true,"style":"tabs","active":"giscus","storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+
+
+    <meta name="description" content="第 \(\text{9}\) 章 多模态大型语言模型 Multimodal Large Language Models 当您想到大型语言模型（\(\text{LLM}\)）时，多模态（\(\text{multimodality}\)）可能不会是您首先想到的。毕竟，它们是语言模型！但是我们可以很快看到，如果模型能够处理文本以外的其他类型的数据，它们会更有用。例如，如果一个语言模型能够看一眼图片并回答">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《Hands-On Large Language Models》第9章 多模态大型语言模型">
+<meta property="og:url" content="http://hongyitong.github.io/2025/04/10/Hands-On%20Large%20Language%20Models%209/index.html">
+<meta property="og:site_name" content="墨语浮生">
+<meta property="og:description" content="第 \(\text{9}\) 章 多模态大型语言模型 Multimodal Large Language Models 当您想到大型语言模型（\(\text{LLM}\)）时，多模态（\(\text{multimodality}\)）可能不会是您首先想到的。毕竟，它们是语言模型！但是我们可以很快看到，如果模型能够处理文本以外的其他类型的数据，它们会更有用。例如，如果一个语言模型能够看一眼图片并回答">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F9.1.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F9.2.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F9.3.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F9.4.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F9.5.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F9.6.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F9.7.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F9.8.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F9.9.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F9.10.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F9.11.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F9.12.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F9.13.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F9.14.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F9.15.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F9.16.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F9.17.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F9.18.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F9.19.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F9.20.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F0.91.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F0.92.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F9.21.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F0.93.png">
+<meta property="article:published_time" content="2025-04-09T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-02-27T02:50:57.483Z">
+<meta property="article:author" content="Rayman.hung">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F9.1.png">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2025/04/10/Hands-On%20Large%20Language%20Models%209/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2025/04/10/Hands-On%20Large%20Language%20Models%209/","path":"2025/04/10/Hands-On Large Language Models 9/","title":"《Hands-On Large Language Models》第9章 多模态大型语言模型"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>《Hands-On Large Language Models》第9章 多模态大型语言模型 | 墨语浮生</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZXGEJDXQ33"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-ZXGEJDXQ33","only_pageview":false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?ff358b9c7e949787b074bfc9c8019a9d"></script>
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">墨语浮生</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC-text9-%E7%AB%A0-%E5%A4%9A%E6%A8%A1%E6%80%81%E5%A4%A7%E5%9E%8B%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B"><span class="nav-text">第 \(\text{9}\) 章 多模态大型语言模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%A8%E4%BA%8E%E8%A7%86%E8%A7%89%E7%9A%84-texttransformer-%E6%A8%A1%E5%9E%8B"><span class="nav-text">用于视觉的 \(\text{Transformer}\) 模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E6%A8%A1%E6%80%81%E5%B5%8C%E5%85%A5%E6%A8%A1%E5%9E%8B"><span class="nav-text">多模态嵌入模型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#textclip%E8%BF%9E%E6%8E%A5%E6%96%87%E6%9C%AC%E5%92%8C%E5%9B%BE%E5%83%8F"><span class="nav-text">\(\text{CLIP}\)：连接文本和图像</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#textclip-%E5%A6%82%E4%BD%95%E7%94%9F%E6%88%90%E5%A4%9A%E6%A8%A1%E6%80%81%E5%B5%8C%E5%85%A5"><span class="nav-text">\(\text{CLIP}\) 如何生成多模态嵌入？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#textopenclip"><span class="nav-text">\(\text{OpenCLIP}\)</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E6%96%87%E6%9C%AC%E7%94%9F%E6%88%90%E6%A8%A1%E5%9E%8B%E5%85%B7%E5%A4%87%E5%A4%9A%E6%A8%A1%E6%80%81%E8%83%BD%E5%8A%9B"><span class="nav-text">使文本生成模型具备多模态能力</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#textblip-2%E5%BC%A5%E5%90%88%E6%A8%A1%E6%80%81%E9%B8%BF%E6%B2%9F"><span class="nav-text">\(\text{BLIP-2}\)：弥合模态鸿沟</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%A2%84%E5%A4%84%E7%90%86%E5%A4%9A%E6%A8%A1%E6%80%81%E8%BE%93%E5%85%A5"><span class="nav-text">预处理多模态输入</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%94%A8%E4%BE%8B-text1%E5%9B%BE%E5%83%8F%E5%8A%A0%E6%A0%87%E9%A2%98"><span class="nav-text">用例 \(\text{1}\)：图像加标题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%94%A8%E4%BE%8B-text2%E5%9F%BA%E4%BA%8E%E8%81%8A%E5%A4%A9%E7%9A%84%E5%A4%9A%E6%A8%A1%E6%80%81%E6%8F%90%E7%A4%BA"><span class="nav-text">用例 \(\text{2}\)：基于聊天的多模态提示</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、心情记录</div>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2025/04/10/Hands-On%20Large%20Language%20Models%209/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="《Hands-On Large Language Models》第9章 多模态大型语言模型 | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《Hands-On Large Language Models》第9章 多模态大型语言模型
+        </h1>
+
+        </h1>
+          
+             <p class="post-subtitle">第9章 多模态大型语言模型</p>
+          
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-04-10 00:00:00" itemprop="dateCreated datePublished" datetime="2025-04-10T00:00:00+08:00">2025-04-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="第-text9-章-多模态大型语言模型"><strong>第 <span class="math inline">\(\text{9}\)</span> 章</strong> <strong>多模态大型语言模型</strong></h2>
+<p>Multimodal Large Language Models</p>
+<p>当您想到大型语言模型（<span class="math inline">\(\text{LLM}\)</span>）时，<strong>多模态</strong>（<span class="math inline">\(\text{multimodality}\)</span>）可能不会是您首先想到的。毕竟，它们是<strong>语言模型</strong>！但是我们可以很快看到，如果模型能够处理<strong>文本以外</strong>的<strong>其他类型的数据</strong>，它们会<strong>更有用</strong>。例如，如果一个语言模型能够<strong>看一眼图片</strong>并<strong>回答关于它的问题</strong>，那就非常有用。一个能够同时处理<strong>文本和图像</strong>（每种都称为一种<strong>模态</strong>）的模型被称为<strong>多模态模型</strong>（<span class="math inline">\(\text{multimodal}\)</span>），如图 <span class="math inline">\(\text{9}-1\)</span> 所示。</p>
+<p><img src="/img3/Hands-On Large Language Models/F9.1.png" alt="F9.1" style="zoom:67%;" /></p>
+<p>我们已经看到了各种从 <span class="math inline">\(\text{LLM}\)</span> 中涌现出的<strong>新兴行为</strong>，从<strong>泛化能力</strong>和<strong>推理</strong>到<strong>算术</strong>和<strong>语言学</strong>。随着模型的规模变得更大、更智能，它们的<strong>技能集</strong>也在增加。</p>
+<p>接收和使用<strong>多模态输入</strong>进行推理的能力可能会<strong>进一步增强</strong>，并有助于<strong>解锁</strong>以前被限制的能力。在实践中，语言并不仅仅存在于<strong>真空中</strong>。例如，您的<strong>肢体语言、面部表情、语调</strong>等都是<strong>增强口头表达</strong>的交流方式。同样的事情也适用于 <span class="math inline">\(\text{LLM}\)</span>；如果我们可以使它们能够对<strong>多模态信息</strong>进行推理，它们的<strong>能力可能会增加</strong>，并且我们能够部署它们来<strong>解决新型问题</strong>。</p>
+<p>在本章中，我们将探讨一些具有<strong>多模态能力</strong>的 <span class="math inline">\(\text{LLM}\)</span>，以及这对<strong>实际用例</strong>意味着什么。我们将首先探索如何使用<strong>对原始 <span class="math inline">\(\text{Transformer}\)</span> 技术的改编</strong>，将<strong>图像转换为数值表示</strong>。然后，我们将展示如何使用这种 <span class="math inline">\(\text{Transformer}\)</span> 来<strong>扩展 <span class="math inline">\(\text{LLM}\)</span></strong> 以包括<strong>视觉任务</strong>。</p>
+<h3 id="用于视觉的-texttransformer-模型"><strong>用于视觉的 <span class="math inline">\(\text{Transformer}\)</span> 模型</strong></h3>
+<p>Transformers for Vision</p>
+<p>贯穿本书各章，我们看到了基于 <strong><span class="math inline">\(\text{Transformer}\)</span></strong> 的模型在各种<strong>语言建模任务</strong>中取得的成功，从<strong>分类和聚类</strong>到<strong>搜索和生成建模</strong>。因此，研究人员一直在寻找一种将 <span class="math inline">\(\text{Transformer}\)</span> 的部分成功<strong>泛化到计算机视觉领域</strong>的方法，这可能不会让人感到惊讶。</p>
+<p>他们提出的方法被称为 <strong>视觉 <span class="math inline">\(\text{Transformer}\)</span> (<span class="math inline">\(\text{Vision Transformer}\)</span>, <span class="math inline">\(\text{ViT}\)</span>)</strong>，与之前默认的<strong>卷积神经网络</strong>（<span class="math inline">\(\text{CNNs}\)</span>）相比，它在<strong>图像识别任务</strong>中表现出了<strong>巨大的优势</strong>。就像<strong>原始的 <span class="math inline">\(\text{Transformer}\)</span></strong> 一样，<span class="math inline">\(\text{ViT}\)</span> 用于将<strong>非结构化数据</strong>（一张图像）<strong>转换</strong>为可用于各种任务（如分类）的<strong>表示</strong>，如图 <span class="math inline">\(\text{9}-2\)</span> 所示。</p>
+<p><img src="/img3/Hands-On Large Language Models/F9.2.png" alt="F9.1" style="zoom:67%;" /></p>
+<p><span class="math inline">\(\text{ViT}\)</span> 依赖于 <span class="math inline">\(\text{Transformer}\)</span> 架构的一个重要组件，即<strong>编码器</strong>（<span class="math inline">\(\text{encoder}\)</span>）。正如我们在第 <span class="math inline">\(\text{1}\)</span> 章中所见，编码器负责在将文本输入传递给解码器之前，将其<strong>转换为数值表示</strong>。然而，在编码器执行其职责之前，文本输入需要<strong>首先被分词</strong>（<span class="math inline">\(\text{tokenized}\)</span>），如图 <span class="math inline">\(\text{9}-3\)</span> 所示。</p>
+<p><img src="/img3/Hands-On Large Language Models/F9.3.png" alt="F9.1" style="zoom:67%;" /></p>
+<p>由于图像<strong>不包含单词</strong>，因此这种<strong>分词过程</strong>不能用于视觉数据。相反，<span class="math inline">\(\text{ViT}\)</span> 的作者提出了一种将图像<strong>分词为“单词”</strong>的方法，这使他们能够使用<strong>原始的编码器结构</strong>。</p>
+<p>想象您有一张<strong>猫的图像</strong>。这张图像由<strong>许多像素</strong>组成，比方说 <span class="math inline">\(512 \times 512\)</span> 像素。<strong>单个像素</strong>不能传达太多信息，但是当您<strong>组合像素块</strong>时，您会逐渐开始看到<strong>更多的信息</strong>。</p>
+<p><span class="math inline">\(\text{ViT}\)</span> 使用的原理与此非常相似。它不是将文本<strong>分割成词元</strong>，而是将<strong>原始图像转换成图像块</strong>（<span class="math inline">\(\text{patches of images}\)</span>）。换句话说，它会<strong>水平和垂直地将图像切割成许多片段</strong>，如图 <span class="math inline">\(\text{9}-4\)</span> 所示。</p>
+<p><img src="/img3/Hands-On Large Language Models/F9.4.png" alt="F9.1" style="zoom:67%;" /></p>
+<p>就像我们将文本<strong>转换为文本词元</strong>一样，我们将图像<strong>转换为图像块</strong>。<strong>展平后的图像块输入</strong>可以被视为<strong>一段文本中的词元</strong>。然而，与词元不同，我们不能简单地为每个图像块<strong>分配一个 <span class="math inline">\(\text{ID}\)</span></strong>，因为这些图像块<strong>很少会出现在其他图像中</strong>，这与文本的<strong>词汇表</strong>不同。</p>
+<p>相反，这些图像块被<strong>线性嵌入</strong>（<span class="math inline">\(\text{linearly embedded}\)</span>）以创建<strong>数值表示</strong>，即<strong>嵌入</strong>。然后，这些嵌入可以用作 <strong><span class="math inline">\(\text{Transformer}\)</span> 模型的输入</strong>。这样，<strong>图像块</strong>就被视为与<strong>词元</strong>相同的方式。完整的流程如图 <span class="math inline">\(\text{9}-5\)</span> 所示。</p>
+<p><img src="/img3/Hands-On Large Language Models/F9.5.png" alt="F9.1" style="zoom:67%;" /></p>
+<blockquote>
+<p>个人注：线性嵌入 (Linearly Embedded)：</p>
+<p>每个小的图像块都会被输入到一个线性层（linear layer，即一个全连接层）中进行处理。这个线性层的作用是将图像块的原始像素值（例如 RGB 通道的数值）投射（project）到一个新的、低维或高维的特征空间中。“线性”表示这个转换过程是一个简单的矩阵乘法。</p>
+</blockquote>
+<p>出于说明目的，示例中的图像被分成了 <span class="math inline">\(3 \times 3\)</span> 个块，但<strong>原始实现</strong>使用的是 <span class="math inline">\(16 \times 16\)</span> 个块。毕竟，这篇论文名为<strong>《一张图像值得 <span class="math inline">\(\text{16}\times\text{16}\)</span> 个词》（<span class="math inline">\(\text{An Image is Worth 16x16 Words}\)</span>）</strong>。</p>
+<p>这种方法的<strong>有趣之处</strong>在于，当嵌入被传递给<strong>编码器</strong>的那一刻，它们就被视为<strong>文本词元</strong>。从那时起，<strong>文本和图像的训练方式就没有区别</strong>。</p>
+<p>由于这些相似性，<span class="math inline">\(\text{ViT}\)</span> 经常被用来使<strong>各种语言模型具备多模态能力</strong>。使用它的最直接方法之一是在<strong>嵌入模型的训练期间</strong>。</p>
+<h3 id="多模态嵌入模型"><strong>多模态嵌入模型</strong></h3>
+<p>Multimodal Embedding Models</p>
+<p>在前面的章节中，我们使用<strong>嵌入模型</strong>来捕获<strong>文本表示</strong>（例如论文和文档）的<strong>语义内容</strong>。我们看到，我们可以使用这些<strong>嵌入或数值表示</strong>来<strong>查找相似文档、应用分类任务</strong>，甚至执行<strong>主题建模</strong>。</p>
+<p>正如我们之前多次看到的，<strong>嵌入</strong>通常是 <strong><span class="math inline">\(\text{LLM}\)</span> 应用背后的重要驱动力</strong>。它们是<strong>捕获大规模信息</strong>和在信息<strong>大海捞针</strong>中进行搜索的<strong>高效方法</strong>。</p>
+<p>尽管如此，到目前为止，我们只研究了<strong>纯文本嵌入模型</strong>，它们专注于为<strong>文本表示</strong>生成嵌入。虽然也存在<strong>专门用于嵌入图像</strong>的模型，但我们将研究可以<strong>同时捕获文本和视觉表示</strong>的嵌入模型。我们在图 <span class="math inline">\(\text{9}-6\)</span> 中对此进行了说明。</p>
+<p><img src="/img3/Hands-On Large Language Models/F9.6.png" alt="F9.1" style="zoom:67%;" /></p>
+<p>一个优势是，这允许<strong>比较多模态表示</strong>，因为<strong>生成的嵌入位于相同的向量空间中</strong>（图 <span class="math inline">\(\text{9}-7\)</span>）。例如，使用这样的<strong>多模态嵌入模型</strong>，我们可以根据<strong>输入文本</strong>查找图像。如果我们搜索与“<span class="math inline">\(\text{pictures of a puppy}\)</span>”（小狗的照片）相似的图像，我们会找到哪些图像？反之亦然也是可能的。哪些文档与这个问题最相关？</p>
+<p><img src="/img3/Hands-On Large Language Models/F9.7.png" alt="F9.1" style="zoom:67%;" /></p>
+<p>有多款<strong>多模态嵌入模型</strong>，但最知名且目前使用最广泛的模型是<strong>对比语言-图像预训练</strong>（<span class="math inline">\(\text{Contrastive Language-Image Pre-training}\)</span>, <strong><span class="math inline">\(\text{CLIP}\)</span></strong>）。</p>
+<h4 id="textclip连接文本和图像"><strong><span class="math inline">\(\text{CLIP}\)</span>：连接文本和图像</strong></h4>
+<p>CLIP: Connecting Text and Images</p>
+<p><span class="math inline">\(\text{CLIP}\)</span> 是一种<strong>嵌入模型</strong>，可以计算<strong>图像和文本的嵌入</strong>。生成的嵌入位于<strong>相同的向量空间</strong>中，这意味着<strong>图像的嵌入可以与文本的嵌入进行比较</strong>。这种比较能力使得 <span class="math inline">\(\text{CLIP}\)</span> 和类似模型可用于以下任务：</p>
+<ul>
+<li><strong>零样本分类 (<span class="math inline">\(\text{Zero-shot classification}\)</span>)</strong> 我们可以将<strong>图像的嵌入</strong>与其<strong>可能类别的描述的嵌入</strong>进行比较，以找到哪个类别最相似。</li>
+<li><strong>聚类 (<span class="math inline">\(\text{Clustering}\)</span>)</strong> 对<strong>图像和关键词集合</strong>进行聚类，以找到哪些关键词属于哪些图像集合。</li>
+<li><strong>搜索 (<span class="math inline">\(\text{Search}\)</span>)</strong> 在<strong>数十亿文本或图像</strong>中，我们可以快速找到与<strong>输入文本或图像</strong>相关的内容。</li>
+<li><strong>生成 (<span class="math inline">\(\text{Generation}\)</span>)</strong> 利用多模态嵌入来驱动图像生成（例如，stable diffusion）。</li>
+</ul>
+<h4 id="textclip-如何生成多模态嵌入"><strong><span class="math inline">\(\text{CLIP}\)</span> 如何生成多模态嵌入？</strong></h4>
+<p>How Can CLIP Generate Multimodal Embeddings?</p>
+<p><span class="math inline">\(\text{CLIP}\)</span> 的过程实际上非常<strong>简单直观</strong>。想象您有一个包含<strong>数百万张图像及其对应说明文字（<span class="math inline">\(\text{captions}\)</span>）</strong>的数据集，如图 <span class="math inline">\(\text{9}-8\)</span> 所示。</p>
+<p><img src="/img3/Hands-On Large Language Models/F9.8.png" alt="F9.1" style="zoom:67%;" /></p>
+<p>这个数据集可以用于为<strong>每对数据</strong>（图像及其说明文字）创建<strong>两种表示</strong>。为此，<span class="math inline">\(\text{CLIP}\)</span> 使用一个<strong>文本编码器</strong>来<strong>嵌入文本</strong>，并使用一个<strong>图像编码器</strong>来<strong>嵌入图像</strong>。如图 <span class="math inline">\(\text{9}-9\)</span> 所示，结果就是<strong>图像及其相应说明文字的嵌入</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F9.9.png" alt="F9.1" style="zoom:67%;" /></p>
+<p>生成的这对嵌入通过<strong>余弦相似度</strong>进行比较。正如我们在第 <span class="math inline">\(\text{4}\)</span> 章中所见，<strong>余弦相似度</strong>是向量之间夹角的余弦值，通过<strong>嵌入的点积</strong>除以<strong>它们的长度的乘积</strong>来计算。</p>
+<p>当我们开始训练时，<strong>图像嵌入和文本嵌入之间的相似度会很低</strong>，因为它们尚未优化到<strong>同一向量空间</strong>中。在训练过程中，我们<strong>优化嵌入之间的相似度</strong>，并希望<strong>最大化相似图像/说明文字对的相似度</strong>，而<strong>最小化不相似图像/说明文字对的相似度</strong>（图 <span class="math inline">\(\text{9}-10\)</span>）。</p>
+<p><img src="/img3/Hands-On Large Language Models/F9.10.png" alt="F9.1" style="zoom:67%;" /></p>
+<p>在计算它们的相似度后，模型会<strong>更新</strong>，然后<strong>重新开始</strong>新的数据批次和更新后的表示（图 <span class="math inline">\(\text{9}-11\)</span>）。这种方法被称为<strong>对比学习</strong>（<span class="math inline">\(\text{contrastive learning}\)</span>），我们将在第 <span class="math inline">\(\text{10}\)</span> 章中深入探讨其内部工作原理，届时我们将创建我们自己的嵌入模型。</p>
+<p><img src="/img3/Hands-On Large Language Models/F9.11.png" alt="F9.1" style="zoom:67%;" /></p>
+<p>最终，我们期望<strong>猫的图像的嵌入</strong>将与<strong>“一只猫的图片”这句话的嵌入相似</strong>。正如我们将在第 <span class="math inline">\(\text{10}\)</span> 章中看到的，为了确保表示尽可能准确，<strong>不相关的图像和说明文字的负面示例</strong>也应该包含在训练过程中。<strong>建模相似性</strong>不仅是知道<strong>是什么让事物彼此相似</strong>，也是知道<strong>是什么让它们不同和不相似</strong>。</p>
+<h4 id="textopenclip"><strong><span class="math inline">\(\text{OpenCLIP}\)</span></strong></h4>
+<p>OpenCLIP</p>
+<p>对于我们的下一个示例，我们将使用 <strong><span class="math inline">\(\text{CLIP}\)</span> 的开源变体</strong>——即 <strong><span class="math inline">\(\text{OpenCLIP}\)</span></strong> 中的模型。使用 <span class="math inline">\(\text{OpenCLIP}\)</span> 或任何 <span class="math inline">\(\text{CLIP}\)</span> 模型，归结为两件事：在将文本和图像输入传递给<strong>主模型</strong>之前，<strong>对它们进行处理</strong>。</p>
+<p>在此之前，让我们看一个<strong>小示例</strong>，其中我们将使用我们以前看过的一张图像，即一张 <strong><span class="math inline">\(\text{AI}\)</span> 生成的</strong>（通过stable diffusion）<strong>在雪中玩耍的小狗的图像</strong>，如图 <span class="math inline">\(\text{9}-12\)</span> 所示：</p>
+<p><img src="/img3/Hands-On Large Language Models/F9.12.png" alt="F9.1" style="zoom:67%;" /></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> urllib.request <span class="keyword">import</span> urlopen</span><br><span class="line"><span class="keyword">from</span> PIL <span class="keyword">import</span> Image</span><br><span class="line"><span class="comment"># Load an AI-generated image of a puppy playing in the snow</span></span><br><span class="line">puppy_path = <span class="string">&quot;https://raw.githubusercontent.com/HandsOnLLM/Hands-On-Large-</span></span><br><span class="line"><span class="string">Language-Models/main/chapter09/images/puppy.png&quot;</span></span><br><span class="line">image = Image.<span class="built_in">open</span>(urlopen(puppy_path)).convert(<span class="string">&quot;RGB&quot;</span>)</span><br><span class="line">caption = <span class="string">&quot;a puppy playing in the snow&quot;</span></span><br></pre></td></tr></table></figure>
+<p>由于我们有这张图像的<strong>说明文字</strong>，我们可以使用 <span class="math inline">\(\text{OpenCLIP}\)</span> 来为<strong>两者生成嵌入</strong>。</p>
+<p>为此，我们<strong>加载了三个模型</strong>：</p>
+<ul>
+<li>一个用于<strong>分词文本输入</strong>的<strong>分词器</strong>（<span class="math inline">\(\text{tokenizer}\)</span>）</li>
+<li>一个用于<strong>预处理和调整图像大小</strong>的<strong>预处理器</strong>（<span class="math inline">\(\text{preprocessor}\)</span>）</li>
+<li>一个用于将<strong>前两个输出转换为嵌入</strong>的<strong>主模型</strong></li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> CLIPTokenizerFast, CLIPProcessor, CLIPModel</span><br><span class="line">model_id = <span class="string">&quot;openai/clip-vit-base-patch32&quot;</span></span><br><span class="line"><span class="comment"># Load a tokenizer to preprocess the text</span></span><br><span class="line">clip_tokenizer = CLIPTokenizerFast.from_pretrained(model_id)</span><br><span class="line"><span class="comment"># Load a processor to preprocess the images</span></span><br><span class="line">clip_processor = CLIPProcessor.from_pretrained(model_id)</span><br><span class="line"><span class="comment"># Main model for generating text and image embeddings</span></span><br><span class="line">model = CLIPModel.from_pretrained(model_id)</span><br></pre></td></tr></table></figure>
+<p>加载模型后，<strong>预处理我们的输入</strong>就很简单了。让我们从分词器开始，看看如果我们预处理输入会发生什么：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Tokenize our input</span></span><br><span class="line">inputs = clip_tokenizer(caption, return_tensors=<span class="string">&quot;pt&quot;</span>)</span><br><span class="line">inputs</span><br></pre></td></tr></table></figure>
+<p>这将输出一个包含<strong>输入 <span class="math inline">\(\text{ID}\)</span></strong> 的字典：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#x27;input_ids&#x27;: tensor([[49406, 320, 6829, 1629, 530, 518, 2583, 49407]]), &#x27;at-</span><br><span class="line">tention_mask&#x27;: tensor([[1, 1, 1, 1, 1, 1, 1, 1]])&#125;</span><br></pre></td></tr></table></figure>
+<p>为了查看这些 <span class="math inline">\(\text{ID}\)</span> 代表什么，我们可以使用恰当命名的 <strong><span class="math inline">\(\text{convert\_ids\_to\_tokens}\)</span> 函数</strong>将它们<strong>转换回词元</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Convert our input back to tokens</span></span><br><span class="line">clip_tokenizer.convert_ids_to_tokens(inputs[<span class="string">&quot;input_ids&quot;</span>][<span class="number">0</span>])</span><br></pre></td></tr></table></figure>
+<p>这将给出以下输出：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[&#x27;&lt;|startoftext|&gt;&#x27;,</span><br><span class="line">&#x27;a&lt;/w&gt;&#x27;,</span><br><span class="line">&#x27;puppy&lt;/w&gt;&#x27;,</span><br><span class="line">&#x27;playing&lt;/w&gt;&#x27;,</span><br><span class="line">&#x27;in&lt;/w&gt;&#x27;,</span><br><span class="line">&#x27;the&lt;/w&gt;&#x27;,</span><br><span class="line">&#x27;snow&lt;/w&gt;&#x27;,</span><br><span class="line">&#x27;&lt;|endoftext|&gt;&#x27;]</span><br></pre></td></tr></table></figure>
+<p>正如我们之前经常看到的，文本被<strong>拆分成词元</strong>。此外，我们现在还看到文本的<strong>开始和结束</strong>被指示出来，以将其与<strong>潜在的图像嵌入</strong>分开。您可能还会注意到 <strong><span class="math inline">\(\text{[CLS]}\)</span> 词元缺失了</strong>。在 <span class="math inline">\(\text{CLIP}\)</span> 中，<strong><span class="math inline">\(\text{[CLS]}\)</span> 词元实际上用于表示图像嵌入</strong>。</p>
+<p>现在我们已经<strong>预处理</strong>了我们的<strong>说明文字</strong>，我们可以创建嵌入了：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Create a text embedding</span></span><br><span class="line">text_embedding = model.get_text_features(**inputs)</span><br><span class="line">text_embedding.shape</span><br></pre></td></tr></table></figure>
+<p>这产生了一个<strong>单字符串</strong>的嵌入，它有 <strong><span class="math inline">\(\text{512}\)</span> 个值</strong>：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">torch.Size([1, 512])</span><br></pre></td></tr></table></figure>
+<p>在我们可以像创建文本嵌入一样创建<strong>图像嵌入</strong>之前，我们需要先<strong>对其进行预处理</strong>，因为模型期望输入图像具有<strong>特定的特征</strong>，例如它的大小和形状。</p>
+<p>为此，我们可以使用我们之前创建的<strong>处理器</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Preprocess image</span></span><br><span class="line">processed_image = clip_processor(</span><br><span class="line">text=<span class="literal">None</span>, images=image, return_tensors=<span class="string">&quot;pt&quot;</span></span><br><span class="line">)[<span class="string">&quot;pixel_values&quot;</span>]</span><br><span class="line">processed_image.shape</span><br></pre></td></tr></table></figure>
+<p>原始图像是 <span class="math inline">\(512 \times 512\)</span> 像素。请注意，该图像的预处理将其大小<strong>缩小到 <span class="math inline">\(224 \times 224\)</span> 像素</strong>，因为这是<strong>它所期望的大小</strong>：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">torch.Size([1, 3, 224, 224])</span><br></pre></td></tr></table></figure>
+<p>让我们<strong>可视化</strong>这个预处理的结果，如图 <span class="math inline">\(\text{9}-13\)</span> 所示：</p>
+<p><img src="/img3/Hands-On Large Language Models/F9.13.png" alt="F9.1" style="zoom:67%;" /></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="comment"># Prepare image for visualization</span></span><br><span class="line">img = processed_image.squeeze(<span class="number">0</span>)</span><br><span class="line">img = img.permute(*torch.arange(img.ndim - <span class="number">1</span>,</span><br><span class="line">img = np.einsum(<span class="string">&quot;ijk-&gt;jik&quot;</span>, img)</span><br><span class="line">-<span class="number">1</span>,</span><br><span class="line">-<span class="number">1</span>))</span><br><span class="line"><span class="comment"># Visualize preprocessed image</span></span><br><span class="line">plt.imshow(img)</span><br><span class="line">plt.axis(<span class="string">&quot;off&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p>要将这个<strong>预处理后的图像</strong>转换为<strong>嵌入</strong>，我们可以像以前一样调用模型，并查看它返回的形状：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Create the image embedding</span></span><br><span class="line">image_embedding = model.get_image_features(processed_image)</span><br><span class="line">image_embedding.shape</span><br></pre></td></tr></table></figure>
+<p>这给了我们以下形状：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">torch.Size([1, 512])</span><br></pre></td></tr></table></figure>
+<p>请注意，生成的<strong>图像嵌入的形状</strong>与<strong>文本嵌入的形状相同</strong>。这很重要，因为它允许我们<strong>比较它们的嵌入</strong>并查看它们是否相似。</p>
+<p>我们可以使用这些嵌入来<strong>计算它们的相似度</strong>。为此，我们首先<strong>对嵌入进行归一化</strong>，然后计算<strong>点积</strong>以得到一个<strong>相似度分数</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Normalize the embeddings</span></span><br><span class="line">text_embedding /= text_embedding.norm(dim=-<span class="number">1</span>, keepdim=<span class="literal">True</span>)</span><br><span class="line">image_embedding /= image_embedding.norm(dim=-<span class="number">1</span>, keepdim=<span class="literal">True</span>)</span><br><span class="line"><span class="comment"># Calculate their similarity</span></span><br><span class="line">text_embedding = text_embedding.detach().cpu().numpy()</span><br><span class="line">image_embedding = image_embedding.detach().cpu().numpy()</span><br><span class="line">score = np.dot(text_embedding, image_embedding.T)</span><br><span class="line">score</span><br></pre></td></tr></table></figure>
+<p>这给了我们以下分数：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">array([[0.33149648]], dtype=float32)</span><br></pre></td></tr></table></figure>
+<p>我们得到了一个 <strong><span class="math inline">\(\text{0.33}\)</span> 的相似度分数</strong>，鉴于我们不知道模型认为<strong>低相似度</strong>和<strong>高相似度</strong>的界限在哪里，这个分数<strong>很难解释</strong>。相反，让我们用<strong>更多的图像和说明文字</strong>来扩展这个例子，如图 <span class="math inline">\(\text{9}-14\)</span> 所示。</p>
+<p><img src="/img3/Hands-On Large Language Models/F9.14.png" alt="F9.1" style="zoom:67%;" /></p>
+<p>考虑到与其他图像的相似度<strong>要低得多</strong>，<strong><span class="math inline">\(\text{0.33}\)</span> 的分数似乎确实很高</strong>。</p>
+<p><strong>使用 <span class="math inline">\(\text{sentence-transformers}\)</span> 加载 <span class="math inline">\(\text{CLIP}\)</span></strong></p>
+<p><strong><span class="math inline">\(\text{sentence-transformers}\)</span></strong> 实现了几种<strong>基于 <span class="math inline">\(\text{CLIP}\)</span> 的模型</strong>，这使得创建嵌入<strong>更加容易</strong>。它只需要几行代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sentence_transformers <span class="keyword">import</span> SentenceTransformer, util</span><br><span class="line"><span class="comment"># Load SBERT-compatible CLIP model</span></span><br><span class="line">model = SentenceTransformer(<span class="string">&quot;clip-ViT-B-32&quot;</span>)</span><br><span class="line"><span class="comment"># Encode the images</span></span><br><span class="line">image_embeddings = model.encode(images)</span><br><span class="line"><span class="comment"># Encode the captions</span></span><br><span class="line">text_embeddings = model.encode(captions)</span><br><span class="line"><span class="comment">#Compute cosine similarities</span></span><br><span class="line">sim_matrix = util.cos_sim(</span><br><span class="line">image_embeddings, text_embeddings</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<h3 id="使文本生成模型具备多模态能力"><strong>使文本生成模型具备多模态能力</strong></h3>
+<p>Making Text Generation Models Multimodal</p>
+<p>传统上，正如您所料，<strong>文本生成模型</strong>是<strong>解释文本表示的模型</strong>。像 <span class="math inline">\(\text{Llama 2}\)</span> 和 <span class="math inline">\(\text{ChatGPT}\)</span> 这样的模型擅长于对<strong>文本信息进行推理</strong>并用<strong>自然语言</strong>进行回应。</p>
+<p>然而，它们<strong>局限于</strong>它们所训练的<strong>模态</strong>，即<strong>文本</strong>。正如我们之前在<strong>多模态嵌入模型</strong>中所见，<strong>增加视觉</strong>可以<strong>增强模型的能力</strong>。</p>
+<p>对于<strong>文本生成模型</strong>，我们希望它能够对<strong>特定的输入图像进行推理</strong>。例如，我们可以给它一张<strong>披萨的图片</strong>，然后问它包含哪些配料。您可以给它看一张<strong>埃菲尔铁塔的照片</strong>，然后问它是何时建造的或位于何处。这种<strong>对话能力</strong>在图 <span class="math inline">\(\text{9}-15\)</span> 中得到了进一步说明。</p>
+<p><img src="/img3/Hands-On Large Language Models/F9.15.png" alt="F9.1" style="zoom:67%;" /></p>
+<p>为了<strong>弥合这两个领域之间的差距</strong>，人们已经尝试为现有模型引入<strong>某种形式的多模态</strong>。其中一种方法被称为 <strong><span class="math inline">\(\text{BLIP-2}\)</span>：用于统一视觉-语言理解和生成的自举语言-图像预训练 <span class="math inline">\(\text{2}\)</span></strong>（<span class="math inline">\(\text{BLIP-2: Bootstrapping Language-Image Pre-training for Unified Vision-Language Understanding and Generation 2}\)</span>）。<span class="math inline">\(\text{BLIP-2}\)</span> 是一种<strong>易于使用且模块化的技术</strong>，允许为<strong>现有语言模型引入视觉能力</strong>。</p>
+<h4 id="textblip-2弥合模态鸿沟"><strong><span class="math inline">\(\text{BLIP-2}\)</span>：弥合模态鸿沟</strong></h4>
+<p>BLIP-2: Bridging the Modality Gap</p>
+<p>从头开始创建一个<strong>多模态语言模型</strong>需要<strong>大量的计算能力和数据</strong>。我们将不得不使用<strong>数十亿张图像、文本和图像-文本对</strong>来创建这样一个模型。正如您所想象的，这<strong>不容易实现</strong>！</p>
+<p><span class="math inline">\(\text{BLIP-2}\)</span> 没有从头开始构建架构，而是通过构建一座名为<strong>查询 <span class="math inline">\(\text{Transformer}\)</span> (<span class="math inline">\(\text{Querying Transformer}\)</span>, <span class="math inline">\(\text{Q-Former}\)</span>)</strong> 的<strong>桥梁</strong>来<strong>弥合视觉-语言鸿沟</strong>，这座桥梁<strong>连接</strong>了一个<strong>预训练的图像编码器</strong>和<strong>一个预训练的 <span class="math inline">\(\text{LLM}\)</span></strong>。</p>
+<p>通过<strong>利用预训练的模型</strong>，<span class="math inline">\(\text{BLIP-2}\)</span> <strong>只需要训练这座桥梁</strong>，而<strong>不需要从头开始训练图像编码器和 <span class="math inline">\(\text{LLM}\)</span></strong>。它充分利用了<strong>现有</strong>的技术和模型！这座桥梁如图 <span class="math inline">\(\text{9}-16\)</span> 所示。</p>
+<p><img src="/img3/Hands-On Large Language Models/F9.16.png" alt="F9.1" style="zoom:67%;" /></p>
+<p>为了连接这两个预训练模型，<span class="math inline">\(\text{Q-Former}\)</span> <strong>模仿了它们的架构</strong>。它有<strong>两个共享注意力层</strong>的模块：</p>
+<ul>
+<li>一个<strong>图像 <span class="math inline">\(\text{Transformer}\)</span></strong>，用于与<strong>冻结的 <span class="math inline">\(\text{Vision Transformer}\)</span></strong> 交互以进行<strong>特征提取</strong>。</li>
+<li>一个<strong>文本 <span class="math inline">\(\text{Transformer}\)</span></strong>，可以与 <span class="math inline">\(\text{LLM}\)</span> 交互。</li>
+</ul>
+<p><span class="math inline">\(\text{Q-Former}\)</span> 的训练分为<strong>两个阶段</strong>，每个模态一个阶段，如图 <span class="math inline">\(\text{9}-17\)</span> 所示。</p>
+<p><img src="/img3/Hands-On Large Language Models/F9.17.png" alt="F9.1" style="zoom:67%;" /></p>
+<p>在<strong>第一步</strong>中，使用<strong>图像-文档对</strong>来训练 <span class="math inline">\(\text{Q-Former}\)</span>，使其能够表示<strong>图像和文本</strong>。这些对通常是<strong>图像的说明文字</strong>（<span class="math inline">\(\text{captions}\)</span>），就像我们之前在训练 <span class="math inline">\(\text{CLIP}\)</span> 时看到的那样。</p>
+<p>图像被馈送到<strong>冻结的 <span class="math inline">\(\text{ViT}\)</span></strong> 以提取<strong>视觉嵌入</strong>。这些嵌入被用作 <strong><span class="math inline">\(\text{Q-Former}\)</span> 的 <span class="math inline">\(\text{ViT}\)</span> 的输入</strong>。说明文字被用作 <strong><span class="math inline">\(\text{Q-Former}\)</span> 的文本 <span class="math inline">\(\text{Transformer}\)</span> 的输入</strong>。</p>
+<p>有了这些输入，<span class="math inline">\(\text{Q-Former}\)</span> 随后在<strong>三个任务</strong>上进行训练：</p>
+<ul>
+<li><strong>图像-文本对比学习 (<span class="math inline">\(\text{Image-text contrastive learning}\)</span>)</strong> 此任务试图对齐图像和文本嵌入对，以<strong>最大化它们的互信息</strong>。</li>
+<li><strong>图像-文本匹配 (<span class="math inline">\(\text{Image-text matching}\)</span>)</strong> 这是一个<strong>分类任务</strong>，用于预测图像和文本对是<strong>正向的</strong>（匹配 matched）还是<strong>负向的</strong>（不匹配 unmatched）。</li>
+<li><strong>以图像为基础的文本生成 (<span class="math inline">\(\text{Image-grounded text generation}\)</span>)</strong> 训练模型根据从<strong>输入图像中提取的信息</strong>生成文本。</li>
+</ul>
+<p>这<strong>三个目标是联合优化的</strong>，以改进从<strong>冻结的 <span class="math inline">\(\text{ViT}\)</span> 中提取的视觉表示</strong>。从某种意义上说，我们正在尝试<strong>将文本信息注入到冻结 <span class="math inline">\(\text{ViT}\)</span> 的嵌入中</strong>，以便我们可以在 <span class="math inline">\(\text{LLM}\)</span> 中使用它们。<span class="math inline">\(\text{BLIP-2}\)</span> 的这<strong>第一步</strong>如图 <span class="math inline">\(\text{9}-18\)</span> 所示。</p>
+<p><img src="/img3/Hands-On Large Language Models/F9.18.png" alt="F9.1" style="zoom:67%;" /></p>
+<p>在<strong>第二步</strong>中，从第一步中获得的<strong>可学习嵌入</strong>现在在<strong>与相应文本信息相同的维度空间</strong>中包含<strong>视觉信息</strong>。然后，这些<strong>可学习嵌入</strong>被传递给 <span class="math inline">\(\text{LLM}\)</span>。从某种意义上说，这些嵌入充当了<strong>软视觉提示</strong>（<span class="math inline">\(\text{soft visual prompts}\)</span>），用于<strong>以 <span class="math inline">\(\text{Q-Former}\)</span> 提取的视觉表示为条件</strong>来<strong>调节 <span class="math inline">\(\text{LLM}\)</span></strong>。</p>
+<p>在它们之间还有一个<strong>全连接线性层</strong>，以确保<strong>可学习嵌入</strong>具有 <span class="math inline">\(\text{LLM}\)</span> 所期望的<strong>相同形状</strong>。将视觉转换为语言的<strong>这第二步</strong>如图 <span class="math inline">\(\text{9}-19\)</span> 所示。</p>
+<p><img src="/img3/Hands-On Large Language Models/F9.19.png" alt="F9.1" style="zoom:67%;" /></p>
+<p>当我们将这些步骤<strong>组合在一起</strong>时，它们使 <strong><span class="math inline">\(\text{Q-Former}\)</span></strong> 能够学习<strong>相同维度空间中的视觉和文本表示</strong>，这些表示可以用作 <span class="math inline">\(\text{LLM}\)</span> 的<strong>软提示</strong>（<span class="math inline">\(\text{soft prompt}\)</span>）。结果是，<span class="math inline">\(\text{LLM}\)</span> 将获得关于图像的信息，其方式类似于您在<strong>进行提示时</strong>向 <span class="math inline">\(\text{LLM}\)</span> 提供<strong>上下文</strong>。完整的深入过程如图 <span class="math inline">\(\text{9}-20\)</span> 所示。</p>
+<p><img src="/img3/Hands-On Large Language Models/F9.20.png" alt="F9.1" style="zoom:67%;" /></p>
+<p>自 <strong><span class="math inline">\(\text{BLIP-2}\)</span></strong> 问世以来，许多其他<strong>视觉 <span class="math inline">\(\text{LLM}\)</span></strong> 也相继发布，它们具有相似的过程，例如 <strong><span class="math inline">\(\text{LLaVA}\)</span></strong>（一个使<strong>文本 <span class="math inline">\(\text{LLM}\)</span> 具备多模态能力</strong>的框架）或 <strong><span class="math inline">\(\text{Idefics 2}\)</span></strong>（一个基于 <strong><span class="math inline">\(\text{Mistral 7B LLM}\)</span></strong> 的<strong>高效视觉 <span class="math inline">\(\text{LLM}\)</span></strong>）。尽管这些视觉 <span class="math inline">\(\text{LLM}\)</span> 具有不同的架构，但它们都将<strong>预训练的类似 <span class="math inline">\(\text{CLIP}\)</span> 的视觉编码器</strong>与<strong>文本 <span class="math inline">\(\text{LLM}\)</span> 连接</strong>起来。这些架构的目标是将<strong>输入图像中的视觉特征</strong>投射到<strong>语言嵌入</strong>中，以便它们可以用作 <strong><span class="math inline">\(\text{LLM}\)</span> 的输入</strong>。与 <span class="math inline">\(\text{Q-Former}\)</span> 类似，它们试图<strong>弥合图像和文本之间的鸿沟</strong>。</p>
+<h4 id="预处理多模态输入"><strong>预处理多模态输入</strong></h4>
+<p>Preprocessing Multimodal Inputs</p>
+<p>既然我们知道 <strong><span class="math inline">\(\text{BLIP-2}\)</span> 是如何创建的</strong>，那么这种模型就有许多有趣的用例，不仅限于<strong>图像加标题</strong>（<span class="math inline">\(\text{captioning images}\)</span>）、<strong>回答视觉问题</strong>，甚至<strong>执行提示</strong>（<span class="math inline">\(\text{performing prompting}\)</span>）。</p>
+<p>在我们介绍一些用例之前，让我们先<strong>加载模型</strong>并探索如何使用它：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> AutoProcessor, Blip2ForConditionalGeneration</span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="comment"># Load processor and main model</span></span><br><span class="line">blip_processor = AutoProcessor.from_pretrained(<span class="string">&quot;Salesforce/blip2-opt-2.7b&quot;</span>)</span><br><span class="line">model = Blip2ForConditionalGeneration.from_pretrained(</span><br><span class="line"><span class="string">&quot;Salesforce/blip2-opt-2.7b&quot;</span>,</span><br><span class="line">torch_dtype=torch.float16</span><br><span class="line">)</span><br><span class="line"><span class="comment"># Send the model to GPU to speed up inference</span></span><br><span class="line">device = <span class="string">&quot;cuda&quot;</span> <span class="keyword">if</span> torch.cuda.is_available() <span class="keyword">else</span> <span class="string">&quot;cpu&quot;</span></span><br><span class="line">model.to(device)</span><br></pre></td></tr></table></figure>
+<p>使用 <strong><span class="math inline">\(\text{model.vision\_model}\)</span></strong> 和 <strong><span class="math inline">\(\text{model.language\_model}\)</span></strong>，我们可以分别查看我们加载的 <strong><span class="math inline">\(\text{BLIP-2}\)</span> 模型</strong>中使用了<strong>哪个 <span class="math inline">\(\text{ViT}\)</span> 和生成模型</strong>。</p>
+<p>我们加载了<strong>构成我们完整管线的两个组件</strong>：一个<strong>处理器</strong>和一<strong>个模型</strong>。<strong>处理器</strong>可以与语言模型的<strong>分词器</strong>进行比较。它将<strong>非结构化输入</strong>，例如<strong>图像和文本</strong>，转换为模型通常<strong>期望的表示</strong>。</p>
+<p><strong>预处理图像</strong></p>
+<p>Preprocessing images</p>
+<p>让我们先从<strong>探索处理器对图像的作用</strong>开始。我们首先加载一张<strong>非常宽</strong>的图像进行演示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Load image of a supercar</span></span><br><span class="line">car_path = <span class="string">&quot;https://raw.githubusercontent.com/HandsOnLLM/Hands-On-Large-</span></span><br><span class="line"><span class="string">Language-Models/main/chapter09/images/car.png&quot;</span></span><br><span class="line">image = Image.<span class="built_in">open</span>(urlopen(car_path)).convert(<span class="string">&quot;RGB&quot;</span>)</span><br><span class="line">image</span><br></pre></td></tr></table></figure>
+<p><img src="/img3/Hands-On Large Language Models/F0.91.png" alt="F9.1" style="zoom:67%;" /></p>
+<p>这张图像有 <span class="math inline">\(520 \times 492\)</span> 像素，这通常是一种<strong>不常见的格式</strong>。那么我们来看看我们的处理器对它做了什么：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Preprocess the image</span></span><br><span class="line">inputs = blip_processor(image, return_tensors=<span class="string">&quot;pt&quot;</span>).to(device, torch.float16)</span><br><span class="line">inputs[<span class="string">&quot;pixel_values&quot;</span>].shape</span><br></pre></td></tr></table></figure>
+<p>这给了我们以下形状：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">torch.Size([1, 3, 224, 224])</span><br></pre></td></tr></table></figure>
+<p>结果是一张 <strong><span class="math inline">\(224 \times 224\)</span> 大小的图像</strong>。比我们最初的图像<strong>小了很多</strong>！这也意味着所有<strong>原始的不同形状的图像</strong>都将被处理成<strong>正方形</strong>。所以，输入<strong>非常宽或非常高</strong>的图像时要小心，因为它们<strong>可能会失真</strong>。</p>
+<p><strong>预处理文本</strong></p>
+<p>Preprocessing text</p>
+<p>让我们继续用<strong>文本</strong>来探索处理器的功能。首先，我们可以访问用于<strong>分词输入文本</strong>的<strong>分词器</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">blip_processor.tokenizer</span><br></pre></td></tr></table></figure>
+<p>这给了我们以下输出：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">GPT2TokenizerFast(name_or_path=&#x27;Salesforce/blip2-opt-2.7b&#x27;, vocab_size=50265,</span><br><span class="line">model_max_length=1000000000000000019884624838656, is_fast=True, pad-</span><br><span class="line">ding_side=&#x27;right&#x27;, truncation_side=&#x27;right&#x27;, special_tokens=&#123;&#x27;bos_token&#x27;: &#x27;&lt;/</span><br><span class="line">s&gt;&#x27;, &#x27;eos_token&#x27;: &#x27;&lt;/s&gt;&#x27;, &#x27;unk_token&#x27;: &#x27;&lt;/s&gt;&#x27;, &#x27;pad_token&#x27;: &#x27;&lt;pad&gt;&#x27;&#125;,</span><br><span class="line">clean_up_tokenization_spaces=True), added_tokens_decoder=&#123;</span><br><span class="line">1: AddedToken(&quot;&lt;pad&gt;&quot;, rstrip=False, lstrip=False, single_word=False, normal-</span><br><span class="line">ized=True, special=True),</span><br><span class="line">2: AddedToken(&quot;&lt;/s&gt;&quot;, rstrip=False, lstrip=False, single_word=False, normal-</span><br><span class="line">ized=True, special=True),</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里的 <strong><span class="math inline">\(\text{BLIP-2}\)</span> 模型使用了一个 <span class="math inline">\(\text{GPT2Tokenizer}\)</span></strong>。正如我们在第 <span class="math inline">\(\text{2}\)</span> 章中探讨的，<strong>分词器处理输入文本的方式可能大不相同</strong>。</p>
+<p>为了探究 <span class="math inline">\(\text{GPT2Tokenizer}\)</span> 的工作方式，我们可以用一个<strong>小句子来试用它</strong>。我们首先将句子<strong>转换为词元 <span class="math inline">\(\text{ID}\)</span></strong>，然后再将它们<strong>转换回词元</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Preprocess the text</span></span><br><span class="line">text = <span class="string">&quot;Her vocalization was remarkably melodic&quot;</span></span><br><span class="line">token_ids = blip_processor(image, text=text, return_tensors=<span class="string">&quot;pt&quot;</span>)</span><br><span class="line">token_ids = token_ids.to(device, torch.float16)[<span class="string">&quot;input_ids&quot;</span>][<span class="number">0</span>]</span><br><span class="line"><span class="comment"># Convert input ids back to tokens</span></span><br><span class="line">tokens = blip_processor.tokenizer.convert_ids_to_tokens(token_ids)</span><br><span class="line">tokens</span><br></pre></td></tr></table></figure>
+<p>这给了我们以下词元：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[&#x27;&lt;/s&gt;&#x27;, &#x27;Her&#x27;, &#x27;Ġvocal&#x27;, &#x27;ization&#x27;, &#x27;Ġwas&#x27;, &#x27;Ġremarkably&#x27;, &#x27;Ġmel&#x27;, &#x27;odic&#x27;]</span><br></pre></td></tr></table></figure>
+<p>当我们检查这些词元时，您可能会注意到在某些词元的开头有一个<strong>奇怪的符号</strong>，即 <strong><span class="math inline">\(\text{Ġ}\)</span> 符号</strong>。这实际上<strong>应该是一个空格</strong>。然而，一个<strong>内部函数</strong>会获取特定<strong>代码点</strong>中的字符并将它们<strong>上移 <span class="math inline">\(\text{256}\)</span> 位</strong>，以使它们<strong>可打印</strong>。因此，<strong>空格</strong>（代码点 <span class="math inline">\(\text{32}\)</span>）变成了 <strong><span class="math inline">\(\text{Ġ}\)</span></strong>（代码点 <span class="math inline">\(\text{288}\)</span>）。</p>
+<p>为了便于说明，我们将它们<strong>转换为下划线</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Replace the space token with an underscore</span></span><br><span class="line">tokens = [token.replace(<span class="string">&quot;Ġ&quot;</span>, <span class="string">&quot;_&quot;</span>) <span class="keyword">for</span> token <span class="keyword">in</span> tokens]</span><br><span class="line">tokens</span><br></pre></td></tr></table></figure>
+<p>这给了我们一个<strong>更美观的输出</strong>：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[&#x27;&lt;/s&gt;&#x27;, &#x27;Her&#x27;, &#x27;_vocal&#x27;, &#x27;ization&#x27;, &#x27;_was&#x27;, &#x27;_remarkably&#x27;, &#x27;_mel&#x27;, &#x27;odic&#x27;]</span><br></pre></td></tr></table></figure>
+<p>输出显示<strong>下划线指示了一个单词的开始</strong>。这样，由<strong>多个词元组成</strong>的单词就可以被识别出来。</p>
+<h4 id="用例-text1图像加标题"><strong>用例 <span class="math inline">\(\text{1}\)</span>：图像加标题</strong></h4>
+<p>Use Case 1: Image Captioning</p>
+<p>像 <strong><span class="math inline">\(\text{BLIP-2}\)</span></strong> 这样的模型<strong>最直接的用法</strong>是为您数据中的图像<strong>创建说明文字（<span class="math inline">\(\text{captions}\)</span>）</strong>。您可能是一家想要创建<strong>服装描述</strong>的商店，或者您可能是一位没有时间<strong>手动标记一场婚礼的 <span class="math inline">\(\text{1,000}\)</span> 多张照片</strong>的摄影师。</p>
+<p><strong>为图像加标题的过程</strong>与<strong>处理过程</strong>紧密相随。图像被转换为模型可以读取的<strong>像素值</strong>。这些像素值被传递给 <strong><span class="math inline">\(\text{BLIP-2}\)</span></strong>，转换为<strong>软视觉提示</strong>（<span class="math inline">\(\text{soft visual prompts}\)</span>），<span class="math inline">\(\text{LLM}\)</span> 可以利用这些提示来决定<strong>合适的说明文字</strong>。</p>
+<p>让我们以上面那张<strong>超级跑车的图像</strong>为例，并使用处理器来导出<strong>预期形状的像素</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Load an AI-generated image of a supercar</span></span><br><span class="line">image = Image.<span class="built_in">open</span>(urlopen(car_path)).convert(<span class="string">&quot;RGB&quot;</span>)</span><br><span class="line"><span class="comment"># Convert an image into inputs and preprocess it</span></span><br><span class="line">inputs = blip_processor(image, return_tensors=<span class="string">&quot;pt&quot;</span>).to(device, torch.float16)</span><br><span class="line">image</span><br></pre></td></tr></table></figure>
+<p><img src="/img3/Hands-On Large Language Models/F0.92.png" alt="F9.1" style="zoom:67%;" /></p>
+<p>下一步是使用 <strong><span class="math inline">\(\text{BLIP-2}\)</span> 模型</strong>将图像转换为<strong>词元 <span class="math inline">\(\text{ID}\)</span></strong>。完成此操作后，我们可以将 <span class="math inline">\(\text{ID}\)</span> 转换为文本（即<strong>生成的说明文字</strong>）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Generate image ids to be passed to the decoder (LLM)</span></span><br><span class="line">generated_ids = model.generate(**inputs, max_new_tokens=<span class="number">20</span>)</span><br><span class="line"><span class="comment"># Generate text from the image ids</span></span><br><span class="line">generated_text = blip_processor.batch_decode(</span><br><span class="line">generated_ids, skip_special_tokens=<span class="literal">True</span></span><br><span class="line">)</span><br><span class="line">generated_text = generated_text[<span class="number">0</span>].strip()</span><br><span class="line">generated_text</span><br></pre></td></tr></table></figure>
+<p><strong><span class="math inline">\(\text{generated\_text}\)</span></strong> 包含的说明文字是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">an orange supercar driving on the road at sunset</span><br></pre></td></tr></table></figure>
+<p>这看起来是这张图像的<strong>完美描述</strong>！</p>
+<p><strong>图像加标题</strong>是在进入更复杂的用例之前<strong>学习这个模型的一个很好的方式</strong>。您可以自己用一些图像试一试，看看它在哪些方面表现良好，哪些方面表现不佳。<strong>特定领域的图像</strong>，例如<strong>特定卡通人物</strong>或<strong>想象中的创作</strong>的图片，可能会失败，因为模型主要是在<strong>公共数据</strong>上训练的。</p>
+<p>让我们以一个<strong>有趣的例子</strong>来结束这个用例，即一张来自<strong>罗夏墨迹测验</strong>（<span class="math inline">\(\text{Rorschach test}\)</span>）的图像，如图 <span class="math inline">\(\text{9}-21\)</span> 所示。它是<strong>一项古老的心理实验</strong>的一部分，用于测试个人对<strong>墨迹</strong>的感知。据说一个人在墨迹中看到了什么，可以<strong>说明</strong>这个人的<strong>个性特征</strong>。这是一个<strong>相当主观的测试</strong>，但这只会让它更有趣！</p>
+<p><img src="/img3/Hands-On Large Language Models/F9.21.png" alt="F9.1" style="zoom:67%;" /></p>
+<p>让我们以上面图 <span class="math inline">\(\text{9}-21\)</span> 所示的图像作为我们的输入：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Load Rorschach image</span></span><br><span class="line">url = <span class="string">&quot;https://upload.wikimedia.org/wikipedia/commons/7/70/Ror</span></span><br><span class="line"><span class="string">schach_blot_01.jpg&quot;</span></span><br><span class="line">image = Image.<span class="built_in">open</span>(urlopen(url)).convert(<span class="string">&quot;RGB&quot;</span>)</span><br><span class="line"><span class="comment"># Generate caption</span></span><br><span class="line">inputs = blip_processor(image, return_tensors=<span class="string">&quot;pt&quot;</span>).to(device, torch.float16)</span><br><span class="line">generated_ids = model.generate(**inputs, max_new_tokens=<span class="number">20</span>)</span><br><span class="line">generated_text = blip_processor.batch_decode(</span><br><span class="line">generated_ids, skip_special_tokens=<span class="literal">True</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">generated_text = generated_text[<span class="number">0</span>].strip()</span><br><span class="line">generated_text</span><br></pre></td></tr></table></figure>
+<p>像以前一样，当我们检查 <strong><span class="math inline">\(\text{generated\_text}\)</span> 变量</strong>时，可以看到说明文字：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">a black and white ink drawing of a bat</span><br></pre></td></tr></table></figure>
+<p>我完全可以理解模型会用这样的描述来为这张图像添加说明文字。既然这是一个罗夏测验（ Rorschach test），<strong>您认为这说明了模型具有什么样的特性呢？</strong> 🤔</p>
+<h4 id="用例-text2基于聊天的多模态提示"><strong>用例 <span class="math inline">\(\text{2}\)</span>：基于聊天的多模态提示</strong></h4>
+<p>Use Case 2: Multimodal Chat-Based Prompting</p>
+<p>虽然<strong>加标题</strong>（<span class="math inline">\(\text{captioning}\)</span>）是一项重要的任务，但我们可以将它的用例<strong>进一步扩展</strong>。在前面的例子中，我们展示了从一种模态（<strong>视觉/图像</strong>）到另一种模态（<strong>文本/标题</strong>）的<strong>线性转换</strong>。</p>
+<p>我们可以尝试通过执行所谓的<strong>视觉问答</strong>（<span class="math inline">\(\text{visual question answering}\)</span>），来<strong>同时呈现</strong>这两种模态，而不是遵循这种线性结构。在这个特殊的用例中，我们给模型一张图像以及一个关于<strong>该特定图像</strong>的问题，让它来回答。模型需要<strong>同时处理图像和问题</strong>。</p>
+<p>为了演示，让我们从<strong>汽车的图片</strong>开始，并要求 <span class="math inline">\(\text{BLIP-2}\)</span> 描述这张图片。为此，我们首先需要像以前一样多次<strong>预处理图像</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Load an AI-generated image of a supercar</span></span><br><span class="line">image = Image.<span class="built_in">open</span>(urlopen(car_path)).convert(<span class="string">&quot;RGB&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p>要执行我们的<strong>视觉问答</strong>，我们需要给 <span class="math inline">\(\text{BLIP-2}\)</span> 不仅仅是图像，还需要<strong>提示</strong>（<span class="math inline">\(\text{prompt}\)</span>）。没有提示，模型将像以前一样生成一个<strong>说明文字</strong>。我们将要求模型描述我们刚刚处理的图像：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Visual question answering</span></span><br><span class="line">prompt = <span class="string">&quot;Question: Write down what you see in this picture. Answer:&quot;</span></span><br><span class="line"><span class="comment"># Process both the image and the prompt</span></span><br><span class="line">inputs = blip_processor(image, text=prompt, return_tensors=<span class="string">&quot;pt&quot;</span>).to(device,</span><br><span class="line">torch.float16)</span><br><span class="line"><span class="comment"># Generate text</span></span><br><span class="line">generated_ids = model.generate(**inputs, max_new_tokens=<span class="number">30</span>)</span><br><span class="line">generated_text = blip_processor.batch_decode(</span><br><span class="line">generated_ids, skip_special_tokens=<span class="literal">True</span></span><br><span class="line">)</span><br><span class="line">generated_text = generated_text[<span class="number">0</span>].strip()</span><br><span class="line">generated_text</span><br></pre></td></tr></table></figure>
+<p>这给了我们以下输出：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">A sports car driving on the road at sunset</span><br></pre></td></tr></table></figure>
+<p>它<strong>正确地描述了图像</strong>。然而，这是一个<strong>相当简单的例子</strong>，因为我们的问题<strong>本质上是要求模型创建一个说明文字</strong>。相反，我们可以以<strong>基于聊天的方式</strong>提出<strong>后续问题</strong>。</p>
+<p>为此，我们可以将我们<strong>先前的对话</strong>（包括它对我们问题的回答）提供给模型。然后我们问它一个<strong>后续问题</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Chat-like prompting</span></span><br><span class="line">prompt = <span class="string">&quot;Question: Write down what you see in this picture. Answer: A sports car driving on the road at sunset. Question: What would it cost me to drive that car? Answer:&quot;</span></span><br><span class="line"><span class="comment"># Generate output</span></span><br><span class="line">inputs = blip_processor(image, text=prompt, return_tensors=<span class="string">&quot;pt&quot;</span>).to(device,</span><br><span class="line">torch.float16)</span><br><span class="line">generated_ids = model.generate(**inputs, max_new_tokens=<span class="number">30</span>)</span><br><span class="line">generated_text = blip_processor.batch_decode(</span><br><span class="line">generated_ids, skip_special_tokens=<span class="literal">True</span></span><br><span class="line">)</span><br><span class="line">generated_text = generated_text[<span class="number">0</span>].strip()</span><br><span class="line">generated_text</span><br></pre></td></tr></table></figure>
+<p>这给了我们以下答案：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$1,000,000</span><br></pre></td></tr></table></figure>
+<p><span class="math inline">\(\text{\$1,000,000}\)</span> 是<strong>高度具体</strong>的！这显示了 <span class="math inline">\(\text{BLIP-2}\)</span> 具有<strong>更像聊天的行为</strong>，这使得一些<strong>有趣的对话</strong>成为可能。</p>
+<p>最后，我们可以通过使用 <strong><span class="math inline">\(\text{ipywidgets}\)</span></strong>（一个允许我们制作<strong>交互式按钮、输入文本</strong>等的 <span class="math inline">\(\text{Jupyter}\)</span> 笔记本扩展）来创建<strong>一个交互式聊天机器人</strong>，从而使这个过程<strong>更顺畅</strong>一些：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> IPython.display <span class="keyword">import</span> HTML, display</span><br><span class="line"><span class="keyword">import</span> ipywidgets <span class="keyword">as</span> widgets</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">text_eventhandler</span>(<span class="params">*args</span>):</span><br><span class="line">question = args[<span class="number">0</span>][<span class="string">&quot;new&quot;</span>]</span><br><span class="line"><span class="keyword">if</span> question:</span><br><span class="line">args[<span class="number">0</span>][<span class="string">&quot;owner&quot;</span>].value =</span><br><span class="line"><span class="string">&quot;&quot;</span></span><br><span class="line"><span class="comment"># Create prompt</span></span><br><span class="line"><span class="keyword">if</span> <span class="keyword">not</span> memory:</span><br><span class="line">prompt = <span class="string">&quot; Question: &quot;</span> + question + <span class="string">&quot; Answer:&quot;</span></span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">template = <span class="string">&quot;Question: &#123;&#125; Answer: &#123;&#125;.&quot;</span></span><br><span class="line">prompt = <span class="string">&quot; &quot;</span>.join(</span><br><span class="line">[</span><br><span class="line">template.<span class="built_in">format</span>(memory[i][<span class="number">0</span>], memory[i][<span class="number">1</span>])</span><br><span class="line"></span><br><span class="line">) + <span class="string">&quot; Question: &quot;</span> + question + <span class="string">&quot; Answer:&quot;</span></span><br><span class="line"><span class="comment"># Generate text</span></span><br><span class="line">inputs = blip_processor(image, text=prompt, return_tensors=<span class="string">&quot;pt&quot;</span>)</span><br><span class="line">inputs = inputs.to(device, torch.float16)</span><br><span class="line">generated_ids = model.generate(**inputs, max_new_tokens=<span class="number">100</span>)</span><br><span class="line">generated_text = blip_processor.batch_decode(</span><br><span class="line">generated_ids,</span><br><span class="line">skip_special_tokens=<span class="literal">True</span></span><br><span class="line">)</span><br><span class="line">generated_text = generated_text[<span class="number">0</span>].strip().split(<span class="string">&quot;Question&quot;</span>)[<span class="number">0</span>]</span><br><span class="line"><span class="comment"># Update memory</span></span><br><span class="line">memory.append((question, generated_text))</span><br><span class="line"><span class="comment"># Assign to output</span></span><br><span class="line">output.append_display_data(HTML(<span class="string">&quot;&lt;b&gt;USER:&lt;/b&gt; &quot;</span> + question))</span><br><span class="line">output.append_display_data(HTML(<span class="string">&quot;&lt;b&gt;BLIP-2:&lt;/b&gt; &quot;</span> + generated_text))</span><br><span class="line">output.append_display_data(HTML(<span class="string">&quot;&lt;br&gt;&quot;</span>))</span><br><span class="line"><span class="comment"># Prepare widgets</span></span><br><span class="line">in_text = widgets.Text()</span><br><span class="line">in_text.continuous_update = <span class="literal">False</span></span><br><span class="line">in_text.observe(text_eventhandler, <span class="string">&quot;value&quot;</span>)</span><br><span class="line">output = widgets.Output()</span><br><span class="line">memory = []</span><br><span class="line"><span class="comment"># Display chat box</span></span><br><span class="line">display(</span><br><span class="line">widgets.VBox(</span><br><span class="line">children=[output, in_text],</span><br><span class="line">layout=widgets.Layout(display=<span class="string">&quot;inline-flex&quot;</span>, flex_flow=<span class="string">&quot;column-</span></span><br><span class="line"><span class="string">reverse&quot;</span>),</span><br><span class="line">)</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><img src="/img3/Hands-On Large Language Models/F0.93.png" alt="F9.1" style="zoom:67%;" /></p>
+<p>看来我们可以继续对话并提出一堆问题。使用这种<strong>基于聊天的</strong>方法，我们<strong>本质上创建了一个可以对图像进行推理的聊天机器人</strong>！</p>
+<h3 id="总结"><strong>总结</strong></h3>
+<p>在本章中，我们探讨了<strong>各种使 <span class="math inline">\(\text{LLM}\)</span> 具备多模态能力的方法</strong>，通过<strong>弥合文本和视觉表示之间的鸿沟</strong>。我们首先讨论了<strong>用于视觉的 <span class="math inline">\(\text{Transformer}\)</span> 模型</strong>，这些模型将<strong>图像转换为数值表示</strong>。这是通过使用<strong>图像编码器</strong>和<strong>图像块嵌入</strong>来实现的，这使得模型能够处理<strong>不同尺度的图像</strong>。</p>
+<p>然后，我们探讨了如何使用 <strong><span class="math inline">\(\text{CLIP}\)</span></strong> 创建可以<strong>将图像和文本都转换为数值表示的嵌入模型</strong>。我们看到了 <span class="math inline">\(\text{CLIP}\)</span> 如何利用<strong>对比学习</strong>将<strong>图像和文本嵌入</strong>对齐到<strong>一个共享空间</strong>中，从而实现<strong>零样本分类、聚类和搜索</strong>等任务。本章还介绍了 <strong><span class="math inline">\(\text{OpenCLIP}\)</span></strong>，它是 <span class="math inline">\(\text{CLIP}\)</span> 的<strong>开源变体</strong>，易于用于<strong>多模态嵌入任务</strong>。</p>
+<p>最后，我们探索了<strong>文本生成模型如何具备多模态能力</strong>，并深入研究了 <strong><span class="math inline">\(\text{BLIP-2}\)</span> 模型</strong>。这些<strong>多模态文本生成模型</strong>的核心思想涉及将<strong>输入图像中的视觉特征</strong>投射到<strong>文本嵌入</strong>中，然后 <span class="math inline">\(\text{LLM}\)</span> 可以使用这些嵌入。我们看到了该模型如何用于<strong>图像加标题</strong>和<strong>基于聊天的多模态提示</strong>，其中<strong>两种模态被结合起来生成响应</strong>。总而言之，本章强调了 <span class="math inline">\(\text{LLM}\)</span> 中<strong>多模态的力量</strong>，并展示了其在<strong>图像加标题、搜索和基于聊天的提示</strong>等各种领域的应用。</p>
+<p>在本书的<strong>第三部分</strong>中，我们将介绍<strong>训练和微调技术</strong>。在<strong>第 <span class="math inline">\(\text{10}\)</span> 章</strong>中，我们将探讨<strong>如何创建和微调一个文本嵌入模型</strong>，这是驱动许多语言建模应用的核心技术。这下一章将作为<strong>训练和微调语言模型</strong>的介绍。</p>
+<p>书籍各章的机翻md文件：<br />
+<a href="/2025/04/01/Hands-On%20Large%20Language%20Models%20%E7%9B%AE%E5%BD%95%20%E5%89%8D%E8%A8%80/" title="《Hands-On Large Language Models》目录及前言">《Hands-On Large Language Models》目录及前言</a><br />
+<a href="/2025/04/02/Hands-On%20Large%20Language%20Models%201/" title="《Hands-On Large Language Models》第1章 大型语言模型简介">《Hands-On Large Language Models》第1章 大型语言模型简介</a><br />
+<a href="/2025/04/03/Hands-On%20Large%20Language%20Models%202/" title="《Hands-On Large Language Models》第2章 词元与嵌入">《Hands-On Large Language Models》第2章 词元与嵌入</a><br />
+<a href="/2025/04/04/Hands-On%20Large%20Language%20Models%203/" title="《Hands-On Large Language Models》第3章 深入了解大型语言模型">《Hands-On Large Language Models》第3章 深入了解大型语言模型</a><br />
+<a href="/2025/04/05/Hands-On%20Large%20Language%20Models%204/" title="《Hands-On Large Language Models》第4章 文本分类">《Hands-On Large Language Models》第4章 文本分类</a><br />
+<a href="/2025/04/06/Hands-On%20Large%20Language%20Models%205/" title="《Hands-On Large Language Models》第5章 文本聚类和主题建模">《Hands-On Large Language Models》第5章 文本聚类和主题建模</a><br />
+<a href="/2025/04/07/Hands-On%20Large%20Language%20Models%206/" title="《Hands-On Large Language Models》第6章 提示工程">《Hands-On Large Language Models》第6章 提示工程</a><br />
+<a href="/2025/04/08/Hands-On%20Large%20Language%20Models%207/" title="《Hands-On Large Language Models》第7章 高级文本生成技术与工具">《Hands-On Large Language Models》第7章 高级文本生成技术与工具</a><br />
+<a href="/2025/04/09/Hands-On%20Large%20Language%20Models%208/" title="《Hands-On Large Language Models》第8章 语义搜索与检索增强生成">《Hands-On Large Language Models》第8章 语义搜索与检索增强生成</a><br />
+<a href="/2025/04/10/Hands-On%20Large%20Language%20Models%209/" title="《Hands-On Large Language Models》第9章 多模态大型语言模型">《Hands-On Large Language Models》第9章 多模态大型语言模型</a><br />
+<a href="/2025/04/11/Hands-On%20Large%20Language%20Models%2010/" title="《Hands-On Large Language Models》第10章 创建文本嵌入模型">《Hands-On Large Language Models》第10章 创建文本嵌入模型</a><br />
+<a href="/2025/04/12/Hands-On%20Large%20Language%20Models%2011/" title="《Hands-On Large Language Models》第11章 微调用于分类的表征模型">《Hands-On Large Language Models》第11章 微调用于分类的表征模型</a><br />
+<a href="/2025/04/13/Hands-On%20Large%20Language%20Models%2012/" title="《Hands-On Large Language Models》第12章 生成模型的微调">《Hands-On Large Language Models》第12章 生成模型的微调</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/04/09/Hands-On%20Large%20Language%20Models%208/" rel="prev" title="《Hands-On Large Language Models》第8章 语义搜索与检索增强生成">
+                  <i class="fa fa-chevron-left"></i> 《Hands-On Large Language Models》第8章 语义搜索与检索增强生成
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/04/11/Hands-On%20Large%20Language%20Models%2010/" rel="next" title="《Hands-On Large Language Models》第10章 创建文本嵌入模型">
+                  《Hands-On Large Language Models》第10章 创建文本嵌入模型 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

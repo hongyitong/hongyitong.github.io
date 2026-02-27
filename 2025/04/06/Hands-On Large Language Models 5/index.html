@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"enable":true,"style":"tabs","active":"giscus","storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+
+
+    <meta name="description" content="第 \(\text{5}\) 章 文本聚类和主题建模 Text Clustering and Topic Modeling 尽管在过去几年中，监督式技术（例如分类）在业界占据了主导地位，但无监督式技术（例如文本聚类 (\(\text{Text clustering}\))）的潜力不容低估。 文本聚类旨在根据文本的语义内容、含义和关系将相似的文本进行分组。如图 \(\text{5}-1\) 所示，由">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《Hands-On Large Language Models》第5章 文本聚类和主题建模">
+<meta property="og:url" content="http://hongyitong.github.io/2025/04/06/Hands-On%20Large%20Language%20Models%205/index.html">
+<meta property="og:site_name" content="墨语浮生">
+<meta property="og:description" content="第 \(\text{5}\) 章 文本聚类和主题建模 Text Clustering and Topic Modeling 尽管在过去几年中，监督式技术（例如分类）在业界占据了主导地位，但无监督式技术（例如文本聚类 (\(\text{Text clustering}\))）的潜力不容低估。 文本聚类旨在根据文本的语义内容、含义和关系将相似的文本进行分组。如图 \(\text{5}-1\) 所示，由">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F5.1.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F5.2.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F5.3.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F5.4.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F5.5.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F5.6.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F5.7.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F5.8.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F5.9.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F5.10.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F5.11.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F5.12.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F5.13.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F5.14.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F5.15.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F5.16.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F5.17.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F0.24.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F5.18.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F5.19.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F5.20.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F5.21.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F5.22.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F0.25.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F0.26.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F5.23.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F0.27.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F0.28.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F5.24.png">
+<meta property="article:published_time" content="2025-04-05T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-02-27T02:50:31.604Z">
+<meta property="article:author" content="Rayman.hung">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F5.1.png">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2025/04/06/Hands-On%20Large%20Language%20Models%205/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2025/04/06/Hands-On%20Large%20Language%20Models%205/","path":"2025/04/06/Hands-On Large Language Models 5/","title":"《Hands-On Large Language Models》第5章 文本聚类和主题建模"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>《Hands-On Large Language Models》第5章 文本聚类和主题建模 | 墨语浮生</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZXGEJDXQ33"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-ZXGEJDXQ33","only_pageview":false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?ff358b9c7e949787b074bfc9c8019a9d"></script>
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">墨语浮生</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC-text5-%E7%AB%A0-%E6%96%87%E6%9C%AC%E8%81%9A%E7%B1%BB%E5%92%8C%E4%B8%BB%E9%A2%98%E5%BB%BA%E6%A8%A1"><span class="nav-text">第 \(\text{5}\) 章 文本聚类和主题建模</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#textarxiv-%E6%96%87%E7%AB%A0%E8%AE%A1%E7%AE%97%E4%B8%8E%E8%AF%AD%E8%A8%80"><span class="nav-text">\(\text{ArXiv}\) 文章：计算与语言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%87%E6%9C%AC%E8%81%9A%E7%B1%BB%E7%9A%84%E9%80%9A%E7%94%A8%E7%AE%A1%E7%BA%BF"><span class="nav-text">文本聚类的通用管线</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B5%8C%E5%85%A5%E6%96%87%E6%A1%A3"><span class="nav-text">嵌入文档</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%87%8F%E5%B0%91%E5%B5%8C%E5%85%A5%E7%9A%84%E7%BB%B4%E5%BA%A6"><span class="nav-text">减少嵌入的维度</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%81%9A%E7%B1%BB%E9%99%8D%E7%BB%B4%E5%90%8E%E7%9A%84%E5%B5%8C%E5%85%A5"><span class="nav-text">聚类降维后的嵌入</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A3%80%E6%9F%A5%E8%81%9A%E7%B1%BB"><span class="nav-text">检查聚类</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%8E%E6%96%87%E6%9C%AC%E8%81%9A%E7%B1%BB%E5%88%B0%E4%B8%BB%E9%A2%98%E5%BB%BA%E6%A8%A1"><span class="nav-text">从文本聚类到主题建模</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#textbertopic%E6%A8%A1%E5%9D%97%E5%8C%96%E4%B8%BB%E9%A2%98%E5%BB%BA%E6%A8%A1%E6%A1%86%E6%9E%B6"><span class="nav-text">\(\text{BERTopic}\)：模块化主题建模框架</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E4%B8%80%E4%B8%AA%E7%89%B9%E6%AE%8A%E7%9A%84%E4%B9%90%E9%AB%98%E7%A7%AF%E6%9C%A8%E4%B8%BB%E9%A2%98%E8%A1%A8%E5%BE%81%E5%A2%9E%E5%BC%BA"><span class="nav-text">添加一个特殊的乐高积木（主题表征增强）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%96%87%E6%9C%AC%E7%94%9F%E6%88%90%E4%B9%90%E9%AB%98%E7%A7%AF%E6%9C%A8"><span class="nav-text">文本生成乐高积木</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、心情记录</div>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2025/04/06/Hands-On%20Large%20Language%20Models%205/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="《Hands-On Large Language Models》第5章 文本聚类和主题建模 | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《Hands-On Large Language Models》第5章 文本聚类和主题建模
+        </h1>
+
+        </h1>
+          
+             <p class="post-subtitle">第5章 文本聚类和主题建模</p>
+          
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-04-06 00:00:00" itemprop="dateCreated datePublished" datetime="2025-04-06T00:00:00+08:00">2025-04-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="第-text5-章-文本聚类和主题建模"><strong>第 <span class="math inline">\(\text{5}\)</span> 章</strong> <strong>文本聚类和主题建模</strong></h2>
+<p>Text Clustering and Topic Modeling</p>
+<p>尽管在过去几年中，<strong>监督式技术</strong>（例如分类）在业界占据了主导地位，但<strong>无监督式技术</strong>（例如<strong>文本聚类</strong> (<span class="math inline">\(\text{Text clustering}\)</span>)）的潜力<strong>不容低估</strong>。</p>
+<p><strong>文本聚类</strong>旨在根据文本的<strong>语义内容、含义和关系</strong>将<strong>相似的文本</strong>进行分组。如图 <span class="math inline">\(\text{5}-1\)</span> 所示，由此产生的<strong>语义相似文档的簇</strong>（<span class="math inline">\(\text{clusters}\)</span>）不仅有助于<strong>对大量非结构化文本进行高效分类</strong>，还能实现<strong>快速的探索性数据分析</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F5.1.png" alt="F5.1" style="zoom:67%;" /></p>
+<p>语言模型的最新发展使得文本的<strong>上下文和语义表征</strong>成为可能，从而<strong>增强了文本聚类的有效性</strong>。语言<strong>不仅仅是词袋</strong>（<span class="math inline">\(\text{bag of words}\)</span>），最近的语言模型已证明<strong>非常有能力捕捉这一概念</strong>。<strong>不受监督约束的文本聚类</strong>，允许创造性的解决方案和多样的应用，例如<strong>发现异常值</strong>、<strong>加速标记</strong>和<strong>查找错误标记的数据</strong>。</p>
+<p><strong>文本聚类</strong>也进入了<strong>主题建模</strong>（<span class="math inline">\(\text{topic modeling}\)</span>）的领域，我们在其中想要<strong>发现大量文本数据中出现的（抽象）主题</strong>。如图 <span class="math inline">\(\text{5}-2\)</span> 所示，我们通常使用<strong>关键词或关键短语</strong>来描述一个主题，理想情况下，它会有一个<strong>单一的总括标签</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F5.2.png" alt="F5.1" style="zoom:67%;" /></p>
+<p>在本章中，我们将首先探讨如何使用<strong>嵌入模型</strong>进行<strong>聚类</strong>，然后转向一种<strong>受文本聚类启发的</strong>主题建模方法，即 <strong><span class="math inline">\(\text{BERTopic}\)</span></strong>。</p>
+<p><strong>文本聚类和主题建模</strong>在本书中占有重要地位，因为它们探索了<strong>结合各种不同语言模型的创造性方式</strong>。我们将探索如何结合<strong>仅编码器</strong>（嵌入）、<strong>仅解码器</strong>（生成）甚至<strong>经典方法</strong>（词袋）可以产生<strong>惊人的新技术和管线</strong>。</p>
+<h3 id="textarxiv-文章计算与语言"><strong><span class="math inline">\(\text{ArXiv}\)</span> 文章：计算与语言</strong></h3>
+<p>ArXiv’s Articles: Computation and Language</p>
+<p>在本章中，我们将对 <strong><span class="math inline">\(\text{ArXiv}\)</span> 文章</strong>运行聚类和主题建模算法。<span class="math inline">\(\text{ArXiv}\)</span> (https://arxiv.org/)是一个<strong>开放获取的学术文章平台</strong>，主要涉及<strong>计算机科学、数学和物理</strong>领域。为了与本书的主题保持一致，我们将探索<strong>计算与语言领域</strong>的文章。该数据集包含 <span class="math inline">\(\text{1991}\)</span> 年到 <span class="math inline">\(\text{2024}\)</span> 年间来自 <span class="math inline">\(\text{ArXiv}\)</span> 的 <strong><span class="math inline">\(\text{cs.CL}\)</span>（计算与语言）部分</strong>的 <span class="math inline">\(\text{44,949}\)</span> 篇摘要。</p>
+<p>我们加载数据，并为每篇文章的<strong>摘要、标题和年份</strong>创建单独的变量：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Load data from Hugging Face</span></span><br><span class="line"><span class="keyword">from</span> datasets <span class="keyword">import</span> load_dataset</span><br><span class="line">dataset = load_dataset(<span class="string">&quot;maartengr/arxiv_nlp&quot;</span>)[<span class="string">&quot;train&quot;</span>]</span><br><span class="line"><span class="comment"># Extract metadata</span></span><br><span class="line">abstracts = dataset[<span class="string">&quot;Abstracts&quot;</span>]</span><br><span class="line">titles = dataset[<span class="string">&quot;Titles&quot;</span>]</span><br></pre></td></tr></table></figure>
+<h3 id="文本聚类的通用管线"><strong>文本聚类的通用管线</strong></h3>
+<p>A Common Pipeline for Text Clustering</p>
+<p><strong>文本聚类</strong>允许您发现<strong>可能熟悉或不熟悉的数据模式</strong>。它有助于对任务（例如分类任务）及其复杂性<strong>获得直观的理解</strong>。因此，<strong>文本聚类</strong>不仅仅是一种<strong>探索性数据分析的快速方法</strong>。</p>
+<p>虽然文本聚类有许多方法，从<strong>基于图的神经网络</strong>到<strong>基于中心点的聚类技术</strong>，但一个<strong>日益流行的通用管线</strong>涉及<strong>三个步骤和算法</strong>：</p>
+<ol type="1">
+<li><strong>使用嵌入模型将输入文档转换为嵌入。</strong></li>
+<li><strong>使用降维模型减少嵌入的维度。</strong></li>
+<li><strong>使用聚类模型找到语义相似文档的群组。</strong></li>
+</ol>
+<h4 id="嵌入文档"><strong>嵌入文档</strong></h4>
+<p>Embedding Documents</p>
+<p>第一步是<strong>将我们的文本数据转换为嵌入</strong>，如图 <span class="math inline">\(\text{5}-3\)</span> 所示。回顾前几章，<strong>嵌入</strong>是<strong>文本的数值表征</strong>，旨在<strong>捕捉其含义</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F5.3.png" alt="F5.1" style="zoom:67%;" /></p>
+<p>选择<strong>针对语义相似性任务进行优化</strong>的嵌入模型对于聚类尤其重要，因为我们试图<strong>找到语义相似文档的群组</strong>。幸运的是，在撰写本文时，大多数嵌入模型都专注于这一点：<strong>语义相似性</strong>。</p>
+<p>正如我们在上一章中所做的那样，我们将使用 <strong><span class="math inline">\(\text{MTEB}\)</span> 排行榜</strong>来选择一个嵌入模型。我们需要一个在<strong>聚类任务上得分不错</strong>但又<strong>足够小以至于能快速运行</strong>的嵌入模型。我们不使用上一章中使用的 <strong>“<span class="math inline">\(\text{sentence}-\text{transformers/all}-\text{mpnet}-\text{base}-\text{v}2\)</span>”</strong> 模型，而是改用 <strong>“<span class="math inline">\(\text{thenlper/gte}-\text{small}\)</span>”</strong> 模型。这是一个<strong>更新的模型</strong>，在<strong>聚类任务上表现优于前一个模型</strong>，并且由于其<strong>体积小</strong>，<strong>推理速度甚至更快</strong>。不过，请随意尝试自发布以来更新的模型！</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sentence_transformers <span class="keyword">import</span> SentenceTransformer</span><br><span class="line"><span class="comment"># Create an embedding for each abstract</span></span><br><span class="line">embedding_model = SentenceTransformer(<span class="string">&quot;thenlper/gte-small&quot;</span>)</span><br><span class="line">embeddings = embedding_model.encode(abstracts, show_progress_bar=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+<p>让我们检查每个文档嵌入包含多少个值：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Check the dimensions of the resulting embeddings</span></span><br><span class="line">embeddings.shape</span><br></pre></td></tr></table></figure>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(44949, 384)</span><br></pre></td></tr></table></figure>
+<p>每个嵌入有 <strong><span class="math inline">\(\text{384}\)</span> 个值</strong>，它们共同代表了文档的<strong>语义表征</strong>。您可以将这些嵌入视为我们想要聚类的<strong>特征</strong>。</p>
+<h4 id="减少嵌入的维度"><strong>减少嵌入的维度</strong></h4>
+<p>Reducing the Dimensionality of Embeddings</p>
+<p>在对嵌入进行<strong>聚类</strong>之前，我们首先需要考虑它们的<strong>高维度</strong>。随着<strong>维度数量的增加</strong>，<strong>每个维度内可能值的数量会呈指数级增长</strong>。<strong>在每个维度内找到所有子空间</strong>变得<strong>越来越复杂</strong>。</p>
+<p>因此，<strong>高维数据</strong>可能会给许多<strong>聚类技术</strong>带来麻烦，因为它使得<strong>识别有意义的簇</strong>变得更加困难。相反，我们可以利用<strong>降维</strong>（<span class="math inline">\(\text{dimensionality reduction}\)</span>）。如图 <span class="math inline">\(\text{5}-4\)</span> 所示，这项技术允许我们<strong>缩小维度空间的大小</strong>，并用<strong>更少的维度</strong>来表示<strong>相同的数据</strong>。<strong>降维技术</strong>旨在通过寻找<strong>低维表征</strong>来<strong>保留高维数据的全局结构</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F5.4.png" alt="F5.1" style="zoom:67%;" /></p>
+<p>请注意，这是一种<strong>压缩技术</strong>，底层算法<strong>并非随意移除维度</strong>。因此，我们聚类管线中的第二步是<strong>降维</strong>，如图 <span class="math inline">\(\text{5}-5\)</span> 所示，以帮助聚类模型创建<strong>有意义的簇</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F5.5.png" alt="F5.1" style="zoom:67%;" /></p>
+<p>著名的降维方法有<strong>主成分分析</strong>（<span class="math inline">\(\text{Principal Component Analysis, PCA}\)</span>）和<strong>均匀流形近似与投影</strong>（<span class="math inline">\(\text{Uniform Manifold Approximation and Projection, UMAP}\)</span>）。对于这个管线，我们选择 <strong><span class="math inline">\(\text{UMAP}\)</span></strong>，因为它往往比 <span class="math inline">\(\text{PCA}\)</span> <strong>更好地处理非线性关系和结构</strong>。</p>
+<blockquote>
+<p>💡 然而，<strong>降维技术并非完美无缺</strong>。它们<strong>不能将高维数据完美地捕获到低维表征中</strong>。在这个过程中<strong>信息总是会丢失</strong>。在<strong>减少维度</strong>和<strong>保留尽可能多的信息</strong>之间存在一种<strong>平衡</strong>。</p>
+</blockquote>
+<p>为了执行降维，我们需要实例化我们的 <strong><span class="math inline">\(\text{UMAP}\)</span> 类</strong>，并将生成的嵌入传递给它：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> umap <span class="keyword">import</span> UMAP</span><br><span class="line"><span class="comment"># We reduce the input embeddings from 384 dimensions to 5 dimensions</span></span><br><span class="line">umap_model = UMAP(</span><br><span class="line">n_components=<span class="number">5</span>, min_dist=<span class="number">0.0</span>, metric=<span class="string">&#x27;cosine&#x27;</span>, random_state=<span class="number">42</span></span><br><span class="line">)</span><br><span class="line">reduced_embeddings = umap_model.fit_transform(embeddings)</span><br></pre></td></tr></table></figure>
+<p>我们可以使用 <strong><span class="math inline">\(\text{n\_components}\)</span></strong> 参数来决定<strong>低维空间的形状</strong>，即 <strong><span class="math inline">\(\text{5}\)</span> 个维度</strong>。通常，<strong><span class="math inline">\(\text{5}\)</span> 到 <span class="math inline">\(\text{10}\)</span> 之间的值</strong>能很好地捕获高维全局结构。</p>
+<p><strong><span class="math inline">\(\text{min\_dist}\)</span></strong> 参数是<strong>嵌入点之间的最小距离</strong>。我们将此设置为 <strong><span class="math inline">\(\text{0}\)</span></strong>，因为这通常会导致<strong>更紧密的簇</strong>。我们将 <strong><span class="math inline">\(\text{metric}\)</span></strong> 设置为 <strong>‘<span class="math inline">\(\text{cosine}\)</span>’</strong>，因为基于<strong>欧几里得</strong>的方法在处理高维数据时存在问题。</p>
+<p>请注意，在 <span class="math inline">\(\text{UMAP}\)</span> 中设置 <strong><span class="math inline">\(\text{random\_state}\)</span></strong> 将使结果在不同会话中<strong>可重现</strong>，但会<strong>禁用并行性</strong>，因此会<strong>减慢训练速度</strong>。</p>
+<h4 id="聚类降维后的嵌入"><strong>聚类降维后的嵌入</strong></h4>
+<p>Cluster the Reduced Embeddings</p>
+<p>第三步是<strong>对降维后的嵌入进行聚类</strong>，如图 <span class="math inline">\(\text{5}-6\)</span> 所示。</p>
+<p><img src="/img3/Hands-On Large Language Models/F5.6.png" alt="F5.1" style="zoom:67%;" /></p>
+<p>尽管常见的选择是像 <strong><span class="math inline">\(\text{k}-\text{means}\)</span></strong> 这样的<strong>基于中心点</strong>的算法（它<strong>要求事先设定要生成的簇的数量</strong>），但我们<strong>事先不知道簇的数量</strong>。相反，<strong>基于密度</strong>的算法可以<strong>自由计算簇的数量</strong>，并且<strong>不会强制所有数据点都属于一个簇</strong>，如图 <span class="math inline">\(\text{5}-7\)</span> 所示。</p>
+<p><img src="/img3/Hands-On Large Language Models/F5.7.png" alt="F5.1" style="zoom:67%;" /></p>
+<p>一种常见的<strong>基于密度</strong>的模型是 <strong><span class="math inline">\(\text{HDBSCAN}\)</span></strong>（<strong>基于密度的带噪声应用的层次聚类</strong>）。<span class="math inline">\(\text{HDBSCAN}\)</span> 是一种称为 <span class="math inline">\(\text{DBSCAN}\)</span> 的聚类算法的<strong>层次变体</strong>，它允许在<strong>不必明确指定簇数量</strong>的情况下找到<strong>密集（微观）簇</strong>。作为一种<strong>基于密度的方法</strong>，<span class="math inline">\(\text{HDBSCAN}\)</span> 还可以检测数据中的<strong>异常值</strong>（<span class="math inline">\(\text{outliers}\)</span>），即<strong>不属于任何簇的数据点</strong>。这些异常值<strong>不会被分配或强制属于任何簇</strong>。换句话说，它们<strong>会被忽略</strong>。由于 <span class="math inline">\(\text{ArXiv}\)</span> 文章可能包含一些<strong>小众论文</strong>，使用一个<strong>可以检测异常值</strong>的模型可能会有所帮助。</p>
+<p>与之前的软件包一样，使用 <span class="math inline">\(\text{HDBSCAN}\)</span> 非常简单。我们只需要<strong>实例化模型</strong>并将我们的<strong>降维后的嵌入</strong>传递给它：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> hdbscan <span class="keyword">import</span> HDBSCAN</span><br><span class="line"><span class="comment"># We fit the model and extract the clusters</span></span><br><span class="line">hdbscan_model = HDBSCAN(</span><br><span class="line">min_cluster_size=<span class="number">50</span>, metric=<span class="string">&quot;euclidean&quot;</span>, cluster_selection_method=<span class="string">&quot;eom&quot;</span></span><br><span class="line">).fit(reduced_embeddings)</span><br><span class="line">clusters = hdbscan_model.labels_</span><br><span class="line"><span class="comment"># How many clusters did we generate?</span></span><br><span class="line"><span class="built_in">len</span>(<span class="built_in">set</span>(clusters))</span><br></pre></td></tr></table></figure>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">156</span><br></pre></td></tr></table></figure>
+<p>使用 <strong><span class="math inline">\(\text{HDBSCAN}\)</span></strong>，我们在数据集中生成了 <strong><span class="math inline">\(\text{156}\)</span> 个簇</strong>。要创建更多簇，我们将需要<strong>减小 <span class="math inline">\(\text{min\_cluster\_size}\)</span> 的值</strong>，因为它代表了一个簇可以采用的<strong>最小规模</strong>。</p>
+<h4 id="检查聚类"><strong>检查聚类</strong></h4>
+<p>Inspecting the Clusters</p>
+<p>现在我们已经生成了<strong>簇</strong>（<span class="math inline">\(\text{clusters}\)</span>），我们可以<strong>手动检查每个簇</strong>并探索<strong>分配给它的文档</strong>，以了解其内容。例如，让我们从<strong>第 <span class="math inline">\(\text{0}\)</span> 簇</strong>中随机抽取一些文档：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="comment"># Print first three documents in cluster 0</span></span><br><span class="line">cluster = <span class="number">0</span></span><br><span class="line"><span class="keyword">for</span> index <span class="keyword">in</span> np.where(clusters==cluster)[<span class="number">0</span>][:<span class="number">3</span>]:</span><br><span class="line"><span class="built_in">print</span>(abstracts[index][:<span class="number">300</span>] + <span class="string">&quot;... \n&quot;</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">This works aims to design a statistical machine translation from English text</span><br><span class="line">to American Sign Language (ASL). The system is based on Moses tool with some</span><br><span class="line">modifications and the results are synthesized through a 3D avatar for</span><br><span class="line">interpretation. First, we translate the input text to gloss, a written fo...</span><br><span class="line"></span><br><span class="line">Researches on signed languages still strongly dissociate lin- guistic issues</span><br><span class="line">related on phonological and phonetic aspects, and gesture studies for</span><br><span class="line">recognition and synthesis purposes. This paper focuses on the imbrication of</span><br><span class="line">motion and meaning for the analysis, synthesis and evaluation of sign lang...</span><br><span class="line"></span><br><span class="line">Modern computational linguistic software cannot produce important aspects of</span><br><span class="line">sign language translation. Using some researches we deduce that the majority of</span><br><span class="line">automatic sign language translation systems ignore many aspects when they</span><br><span class="line">generate animation; therefore the interpretation lost the truth inf...</span><br></pre></td></tr></table></figure>
+<p>从这些文档来看，这个簇中的文档主要关于<strong>从英语文本到美国手语 (<span class="math inline">\(\text{ASL}\)</span>) 的翻译</strong>，很有趣！</p>
+<p>我们可以更进一步，尝试<strong>可视化我们的结果</strong>，而不是手动浏览所有文档。为此，我们需要将文档嵌入<strong>降维到二维</strong>，因为这样我们就可以在 <span class="math inline">\(\text{x}/\text{y}\)</span> 平面上绘制文档：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="comment"># Reduce 384-dimensional embeddings to two dimensions for easier visualization</span></span><br><span class="line">reduced_embeddings = UMAP(</span><br><span class="line">n_components=<span class="number">2</span>, min_dist=<span class="number">0.0</span>, metric=<span class="string">&quot;cosine&quot;</span>, random_state=<span class="number">42</span></span><br><span class="line">).fit_transform(embeddings)</span><br><span class="line"><span class="comment"># Create dataframe</span></span><br><span class="line">df = pd.DataFrame(reduced_embeddings, columns=[<span class="string">&quot;x&quot;</span>, <span class="string">&quot;y&quot;</span>])</span><br><span class="line">df[<span class="string">&quot;title&quot;</span>] = titles</span><br><span class="line">df[<span class="string">&quot;cluster&quot;</span>] = [<span class="built_in">str</span>(c) <span class="keyword">for</span> c <span class="keyword">in</span> clusters]</span><br><span class="line"><span class="comment"># Select outliers and non-outliers (clusters)</span></span><br><span class="line">to_plot = df.loc[df.cluster != <span class="string">&quot;-1&quot;</span>, :]</span><br><span class="line">outliers = df.loc[df.cluster == <span class="string">&quot;-1&quot;</span>, :]</span><br></pre></td></tr></table></figure>
+<p>我们还分别为<strong>簇</strong>（<span class="math inline">\(\text{clusters\_df}\)</span>）和<strong>异常值</strong>（<span class="math inline">\(\text{outliers\_df}\)</span>）创建了一个数据框，因为我们通常希望<strong>专注于簇并突出显示它们</strong>。</p>
+<blockquote>
+<p>💡 <strong>用于可视化目的</strong>的任何<strong>降维技术</strong>都会造成<strong>信息损失</strong>。它仅仅是对我们原始嵌入外观的<strong>近似</strong>。虽然它具有<strong>信息性</strong>，但它可能会将簇<strong>推得更近或拉得更远</strong>，与它们的实际距离不符。因此，<strong>人工评估</strong>（即我们自己检查簇）是<strong>聚类分析的关键组成部分</strong>！</p>
+</blockquote>
+<p>为了生成一个<strong>静态图</strong>，我们将使用著名的绘图库 <span class="math inline">\(\text{matplotlib}\)</span>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="comment"># Plot outliers and non-outliers separately</span></span><br><span class="line">plt.scatter(outliers_df.x, outliers_df.y, alpha=<span class="number">0.05</span>, s=<span class="number">2</span>, c=<span class="string">&quot;grey&quot;</span>)</span><br><span class="line">plt.scatter(</span><br><span class="line">clusters_df.x, clusters_df.y, c=clusters_df.cluster.astype(<span class="built_in">int</span>),</span><br><span class="line">alpha=<span class="number">0.6</span>, s=<span class="number">2</span>, cmap=<span class="string">&quot;tab20b&quot;</span></span><br><span class="line">)</span><br><span class="line">plt.axis(<span class="string">&quot;off&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p>正如我们在图 <span class="math inline">\(\text{5}-8\)</span> 中所看到的，它往往能很好地<strong>捕捉主要的簇</strong>。 请注意<strong>点的簇是如何以相同的颜色着色</strong>的，这表明 <span class="math inline">\(\text{HDBSCAN}\)</span> 将它们归为一组。由于我们有<strong>大量的簇</strong>，绘图库会<strong>在簇之间循环使用颜色</strong>，所以不要认为所有的绿点都是一个簇，例如。</p>
+<p><img src="/img3/Hands-On Large Language Models/F5.8.png" alt="F5.1" style="zoom:67%;" /></p>
+<p>这在视觉上很吸引人，但<strong>尚不能让我们看到簇内部正在发生什么</strong>。相反，我们可以通过从<strong>文本聚类</strong>转向<strong>主题建模</strong>来扩展这种可视化。</p>
+<h3 id="从文本聚类到主题建模"><strong>从文本聚类到主题建模</strong></h3>
+<p>From Text Clustering to Topic Modeling</p>
+<p><strong>文本聚类</strong>是<strong>在大规模文档集合中寻找结构</strong>的强大工具。在我们前面的示例中，我们可以<strong>手动检查每个簇</strong>，并根据其文档集合来<strong>识别它们</strong>。例如，我们探讨了一个包含<strong>手语</strong>相关文档的簇。我们可以说，该簇的<strong>主题是“手语”</strong>。</p>
+<p>这种在<strong>文本数据集合中寻找主题或潜在主题</strong>的想法通常被称为<strong>主题建模</strong>（<span class="math inline">\(\text{Topic Modeling}\)</span>）。如图 <span class="math inline">\(\text{5}-9\)</span> 所示，传统上，它涉及<strong>寻找一组最能代表和捕捉主题含义的关键词或短语</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F5.9.png" alt="F5.1" style="zoom:67%;" /></p>
+<p>这些技术<strong>没有</strong>将主题标记为“手语”，而是使用<strong>关键词</strong>，例如“<span class="math inline">\(\text{sign}\)</span>”（手语）、“<span class="math inline">\(\text{language}\)</span>”（语言）和“<span class="math inline">\(\text{translation}\)</span>”（翻译）来描述主题。因此，这<strong>并没有给主题一个单一的标签</strong>，而是<strong>要求用户通过这些关键词来理解主题的含义</strong>。</p>
+<p><strong>经典方法</strong>，如<strong>潜在狄利克雷分配</strong>（<span class="math inline">\(\text{latent Dirichlet allocation, LDA}\)</span>），假设<strong>每个主题都由语料库词汇表中单词的概率分布来表征</strong>。如图 <span class="math inline">\(\text{5}-10\)</span> 所示，它演示了<strong>词汇表中的每个单词</strong>如何根据其<strong>与每个主题的相关性</strong>进行评分。</p>
+<p><img src="/img3/Hands-On Large Language Models/F5.10.png" alt="F5.1" style="zoom:67%;" /></p>
+<p>这些方法通常使用<strong>词袋</strong>（<span class="math inline">\(\text{bag}-\text{of}-\text{words}\)</span>）技术作为文本数据的主要特征，这<strong>没有</strong>考虑到<strong>单词和短语的上下文或含义</strong>。相比之下，我们的<strong>文本聚类示例</strong>确实考虑了这两点，因为它依赖于<strong>基于 <span class="math inline">\(\text{Transformer}\)</span> 的嵌入</strong>，这些嵌入通过<strong>注意力机制</strong>针对<strong>语义相似性和上下文含义</strong>进行了优化。</p>
+<p>在本节中，我们将通过一个<strong>高度模块化的文本聚类和主题建模框架</strong>，即 <strong><span class="math inline">\(\text{BERTopic}\)</span></strong>，将<strong>文本聚类</strong>扩展到<strong>主题建模领域</strong>。</p>
+<h4 id="textbertopic模块化主题建模框架"><strong><span class="math inline">\(\text{BERTopic}\)</span>：模块化主题建模框架</strong></h4>
+<p>BERTopic: A Modular Topic Modeling Framework</p>
+<p><strong><span class="math inline">\(\text{BERTopic}\)</span></strong> 是一种<strong>主题建模技术</strong>，它利用<strong>语义相似文本的簇</strong>来提取<strong>各种类型的主题表征</strong>。其底层算法可以分为<strong>两个步骤</strong>。</p>
+<p>首先，如图 <span class="math inline">\(\text{5}-11\)</span> 所示，我们遵循与<strong>文本聚类示例</strong>中相同的程序。我们<strong>嵌入文档</strong>，<strong>减少它们的维度</strong>，最后<strong>聚类降维后的嵌入</strong>，以创建<strong>语义相似文档的群组</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F5.11.png" alt="F5.1" style="zoom:67%;" /></p>
+<p>其次，它通过利用一种<strong>经典方法</strong>——即<strong>词袋</strong>（<span class="math inline">\(\text{bag}-\text{of}-\text{words}\)</span>），来<strong>对语料库词汇表中的单词进行建模</strong>。正如我们在<strong>第 <span class="math inline">\(\text{1}\)</span> 章</strong>中简要讨论并如图 <span class="math inline">\(\text{5}-12\)</span> 所示，<strong>词袋</strong>的作用<strong>正如其名称所暗示</strong>：<strong>计算每个单词在文档中出现的次数</strong>。由此产生的表征可用于<strong>提取文档中最常出现的单词</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F5.12.png" alt="F5.1" style="zoom:67%;" /></p>
+<p>然而，这里有两个注意事项。首先，这是一个<strong>文档级别</strong>的表征，而我们感兴趣的是<strong>簇级别</strong>的视角。为了解决这个问题，单词的频率是<strong>在整个簇内</strong>计算的，而<strong>不仅仅是在单个文档中</strong>，如图 <span class="math inline">\(\text{5}-13\)</span> 所示。</p>
+<p><img src="/img3/Hands-On Large Language Models/F5.13.png" alt="F5.1" style="zoom:67%;" /></p>
+<p>其次，像“<span class="math inline">\(\text{the}\)</span>”和“<span class="math inline">\(\text{I}\)</span>”这样的<strong>停用词</strong>（<span class="math inline">\(\text{stop words}\)</span>）往往频繁出现在文档中，但对实际文档提供的<strong>意义很少</strong>。<span class="math inline">\(\text{BERTopic}\)</span> 使用<strong>术语频率-逆文档频率</strong>（<span class="math inline">\(\text{term frequency–inverse document frequency, TF}-\text{IDF}\)</span>）的<strong>基于类别</strong>的变体（<strong><span class="math inline">\(\text{c}-\text{TF}-\text{IDF}\)</span></strong>），以便<strong>赋予对簇更有意义的单词更高的权重</strong>，并<strong>降低在所有簇中都使用的单词的权重</strong>。</p>
+<p>词袋中的<strong>每个单词</strong>（<span class="math inline">\(\text{c}-\text{TF}-\text{IDF}\)</span> 中的 <strong><span class="math inline">\(\text{c}-\text{TF}\)</span></strong> 部分）都乘以<strong>每个单词的 <span class="math inline">\(\text{IDF}\)</span> 值</strong>。如图 <span class="math inline">\(\text{5}-14\)</span> 所示，<span class="math inline">\(\text{IDF}\)</span> 值是通过取<strong>所有簇中所有单词的平均频率</strong>除以<strong>每个单词的总频率</strong>的<strong>对数</strong>来计算的。</p>
+<p><img src="/img3/Hands-On Large Language Models/F5.14.png" alt="F5.1" style="zoom:67%;" /></p>
+<p>结果是每个单词的<strong>权重</strong>（“<span class="math inline">\(\text{IDF}\)</span>”），我们可以用它乘以它们的<strong>频率</strong>（“<span class="math inline">\(\text{c}-\text{TF}\)</span>”）来获得<strong>加权值</strong>（“<span class="math inline">\(\text{c}-\text{TF}-\text{IDF}\)</span>”）。</p>
+<p>如图 <span class="math inline">\(\text{5}-15\)</span> 所示，过程的<strong>第二部分</strong>允许我们像以前一样<strong>生成单词上的分布</strong>。我们可以使用 <strong><span class="math inline">\(\text{scikit}-\text{learn}\)</span> 的 <span class="math inline">\(\text{CountVectorizer}\)</span></strong> 来生成<strong>词袋</strong>（或<strong>术语频率</strong>）表征。在这里，<strong>每个簇</strong>被视为一个<strong>主题</strong>，它对语料库的词汇表有一个<strong>特定的排名</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F5.15.png" alt="F5.1" style="zoom:67%;" /></p>
+<p>将这两步（<strong>聚类</strong>和<strong>表征主题</strong>）结合起来，就形成了 <strong><span class="math inline">\(\text{BERTopic}\)</span></strong> 的完整管线，如图 <span class="math inline">\(\text{5}-16\)</span> 所示。通过这个管线，我们可以<strong>聚类语义相似的文档</strong>，并从这些簇中<strong>生成由多个关键词代表的主题</strong>。<strong>一个单词在一个主题中的权重越高，它就越能代表该主题</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F5.16.png" alt="F5.1" style="zoom:67%;" /></p>
+<p>这种<strong>管线</strong>的一个主要优势在于，<strong>聚类</strong>和<strong>主题表征</strong>这两个步骤在很大程度上<strong>相互独立</strong>。例如，对于 <strong><span class="math inline">\(\text{c}-\text{TF}-\text{IDF}\)</span></strong>，我们<strong>不依赖于</strong>用于文档聚类的模型。这使得整个管线中的<strong>每个组件</strong>都具有<strong>显著的模块化</strong>。正如我们将在本章后面探讨的那样，这也是<strong>微调主题表征</strong>的一个绝佳起点。</p>
+<p>如图 <span class="math inline">\(\text{5}-17\)</span> 所示，虽然 <strong><span class="math inline">\(\text{sentence}-\text{transformers}\)</span></strong> 被用作<strong>默认的嵌入模型</strong>，但我们可以将其替换为<strong>任何其他嵌入技术</strong>。同样的道理也适用于所有其他步骤。如果你不希望使用 <strong><span class="math inline">\(\text{HDBSCAN}\)</span></strong> 生成<strong>异常值</strong>，你可以改用 <strong><span class="math inline">\(\text{k}-\text{means}\)</span></strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F5.17.png" alt="F5.1" style="zoom:67%;" /></p>
+<p>你可以将这种<strong>模块化</strong>视为使用<strong>乐高积木</strong>进行构建；<strong>管线的每个部分</strong>都可以被另一个<strong>类似算法完全替换</strong>。通过这种模块化，<strong>新发布的模型</strong>可以被整合到其架构中。随着<strong>语言 <span class="math inline">\(\text{AI}\)</span> 领域</strong>的发展，<strong><span class="math inline">\(\text{BERTopic}\)</span></strong> 也在不断成长！</p>
+<p><strong><span class="math inline">\(\text{BERTopic}\)</span> 的模块化</strong>：</p>
+<p><span class="math inline">\(\text{BERTopic}\)</span> 的<strong>模块化</strong>还有另一个优势：它允许使用<strong>相同的基本模型</strong>来<strong>应用于和适应不同的用例</strong>。例如，<span class="math inline">\(\text{BERTopic}\)</span> 支持<strong>各种算法变体</strong>：</p>
+<ul>
+<li>引导式主题建模（<span class="math inline">\(\text{Guided topic modeling}\)</span>）</li>
+<li>（半）监督式主题建模（<span class="math inline">\((\text{Semi})-\text{supervised topic modeling}\)</span>）</li>
+<li>分层主题建模（<span class="math inline">\(\text{Hierarchical topic modeling}\)</span>）</li>
+<li>动态主题建模（<span class="math inline">\(\text{Dynamic topic modeling}\)</span>）</li>
+<li>多模态主题建模（<span class="math inline">\(\text{Multimodal topic modeling}\)</span>）</li>
+<li>多视角主题建模（<span class="math inline">\(\text{Multi}-\text{aspect topic modeling}\)</span>）</li>
+<li>在线和增量主题建模（<span class="math inline">\(\text{Online and incremental topic modeling}\)</span>）</li>
+<li>零样本主题建模（<span class="math inline">\(\text{Zero}-\text{shot topic modeling}\)</span>）</li>
+<li>等等。</li>
+</ul>
+<p>这种<strong>模块化</strong>和<strong>算法灵活性</strong>是作者旨在让 <strong><span class="math inline">\(\text{BERTopic}\)</span> 成为主题建模的一站式商店</strong>的基础。您可以在<strong>文档</strong>或<strong>代码库</strong>中找到其功能的完整概述。</p>
+<p>要使用我们的 <span class="math inline">\(\text{ArXiv}\)</span> 数据集运行 <strong><span class="math inline">\(\text{BERTopic}\)</span></strong>，我们可以使用我们<strong>先前定义的模型和嵌入</strong>（尽管这不是强制性的）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> bertopic <span class="keyword">import</span> BERTopic</span><br><span class="line"><span class="comment"># Train our model with our previously defined models</span></span><br><span class="line">topic_model = BERTopic(</span><br><span class="line">embedding_model=embedding_model,</span><br><span class="line">umap_model=umap_model,</span><br><span class="line">hdbscan_model=hdbscan_model,</span><br><span class="line">verbose=<span class="literal">True</span></span><br><span class="line">).fit(abstracts, embeddings)</span><br></pre></td></tr></table></figure>
+<p>让我们从<strong>探索创建的主题</strong>开始。<strong><span class="math inline">\(\text{get\_topic\_info()}\)</span> 方法</strong>有助于快速<strong>获取我们发现的主题的描述</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">topic_model.get_topic_info()</span><br></pre></td></tr></table></figure>
+<p><img src="/img3/Hands-On Large Language Models/F0.24.png" alt="F5.1" style="zoom:67%;" /></p>
+<p>这些<strong>主题中的每一个</strong>都由几个<strong>关键词</strong>代表，这些关键词在 <strong><span class="math inline">\(\text{Name}\)</span> 栏位</strong>中用 <strong>“<span class="math inline">\(\_\)</span>”</strong> 连接起来。这个 <strong><span class="math inline">\(\text{Name}\)</span> 栏位</strong>使我们能够<strong>快速了解主题的内容</strong>，因为它显示了最能代表该主题的<strong>四个关键词</strong>。</p>
+<p>您可能还注意到，<strong>第一个主题</strong>被标记为 <strong><span class="math inline">\(-1\)</span></strong>。该主题包含<strong>所有无法归入任何主题的文档</strong>，并被视为<strong>异常值</strong>（<span class="math inline">\(\text{outliers}\)</span>）。这是<strong>聚类算法 <span class="math inline">\(\text{HDBSCAN}\)</span></strong> 的结果，它<strong>不强制所有点都必须聚类</strong>。要<strong>移除异常值</strong>，我们可以使用像 <strong><span class="math inline">\(\text{k}-\text{means}\)</span></strong> 这样的<strong>非异常值算法</strong>，或者使用 <strong><span class="math inline">\(\text{BERTopic}\)</span> 的 <span class="math inline">\(\text{reduce\_outliers()}\)</span> 函数</strong>将异常值<strong>重新分配</strong>给主题。</p>
+<p>我们可以使用 <strong><span class="math inline">\(\text{get\_topic}\)</span> 函数</strong>来<strong>检查单个主题</strong>，并探索<strong>哪些关键词最能代表它们</strong>。例如，<strong>主题 <span class="math inline">\(\text{0}\)</span></strong> 包含以下关键词：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">topic_model.get_topic(<span class="number">0</span>)</span><br><span class="line">[(<span class="string">&#x27;speech&#x27;</span>, <span class="number">0.028177697715245358</span>),</span><br><span class="line">(<span class="string">&#x27;asr&#x27;</span>, <span class="number">0.018971184497453525</span>),</span><br><span class="line">(<span class="string">&#x27;recognition&#x27;</span>, <span class="number">0.013457745472471012</span>),</span><br><span class="line">(<span class="string">&#x27;end&#x27;</span>, <span class="number">0.00980445092749381</span>),</span><br><span class="line">(<span class="string">&#x27;acoustic&#x27;</span>, <span class="number">0.009452082794507863</span>),</span><br><span class="line">(<span class="string">&#x27;speaker&#x27;</span>, <span class="number">0.0068822647060204885</span>),</span><br><span class="line">(<span class="string">&#x27;audio&#x27;</span>, <span class="number">0.006807649923681604</span>),</span><br><span class="line">(<span class="string">&#x27;the&#x27;</span>, <span class="number">0.0063343444687017645</span>),</span><br><span class="line">(<span class="string">&#x27;error&#x27;</span>, <span class="number">0.006320144717019838</span>),</span><br><span class="line">(<span class="string">&#x27;automatic&#x27;</span>, <span class="number">0.006290216996043161</span>)]</span><br></pre></td></tr></table></figure>
+<p>例如，<strong>主题 <span class="math inline">\(\text{0}\)</span></strong> 包含关键词 “<span class="math inline">\(\text{speech}\)</span>”、“<span class="math inline">\(\text{asr}\)</span>”和 “<span class="math inline">\(\text{recognition}\)</span>”。根据这些关键词，该主题似乎是关于<strong>自动语音识别</strong>（<span class="math inline">\(\text{ASR}\)</span>）的。</p>
+<p>我们可以使用 <strong><span class="math inline">\(\text{find\_topics()}\)</span> 函数</strong>根据<strong>搜索词</strong>来<strong>搜索特定主题</strong>。让我们搜索一个关于<strong>主题建模</strong>的主题：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">topic_model.find_topics(<span class="string">&quot;topic modeling&quot;</span>)</span><br><span class="line">([<span class="number">22</span>, -<span class="number">1</span>, <span class="number">1</span>, <span class="number">47</span>, <span class="number">32</span>],</span><br><span class="line">[<span class="number">0.95456535</span>, <span class="number">0.91173744</span>, <span class="number">0.9074769</span>, <span class="number">0.9067007</span>, <span class="number">0.90510106</span>])</span><br></pre></td></tr></table></figure>
+<p>这表明<strong>主题 <span class="math inline">\(\text{22}\)</span></strong> 与我们的搜索词有<strong>相对较高的相似度</strong>（<span class="math inline">\(\text{0.95}\)</span>）。如果我们接着检查该主题，我们可以看到它确实是关于<strong>主题建模</strong>的：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">topic_model.get_topic(<span class="number">22</span>)</span><br><span class="line">[(<span class="string">&#x27;topic&#x27;</span>, <span class="number">0.06634619076655907</span>),</span><br><span class="line">(<span class="string">&#x27;topics&#x27;</span>, <span class="number">0.035308535091932707</span>),</span><br><span class="line">(<span class="string">&#x27;lda&#x27;</span>, <span class="number">0.016386314730705634</span>),</span><br><span class="line">(<span class="string">&#x27;latent&#x27;</span>, <span class="number">0.013372311924864435</span>),</span><br><span class="line">(<span class="string">&#x27;document&#x27;</span>, <span class="number">0.012973600191120576</span>),</span><br><span class="line">(<span class="string">&#x27;documents&#x27;</span>, <span class="number">0.012383715497143821</span>),</span><br><span class="line">(<span class="string">&#x27;modeling&#x27;</span>, <span class="number">0.011978375291037142</span>),</span><br><span class="line">(<span class="string">&#x27;dirichlet&#x27;</span>, <span class="number">0.010078277589545706</span>),</span><br><span class="line">(<span class="string">&#x27;word&#x27;</span>, <span class="number">0.008505619415413312</span>),</span><br><span class="line">(<span class="string">&#x27;allocation&#x27;</span>, <span class="number">0.007930890698168108</span>)]</span><br></pre></td></tr></table></figure>
+<p>虽然我们知道这个主题是关于<strong>主题建模</strong>的，但让我们看看 <strong><span class="math inline">\(\text{BERTopic}\)</span> 摘要</strong>是否也分配给了这个主题：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">topic_model.topics_[titles.index(<span class="string">&quot;BERTopic: Neural topic modeling with a class-</span></span><br><span class="line"><span class="string">based TF-IDF procedure&quot;</span>)]</span><br><span class="line"><span class="number">22</span></span><br></pre></td></tr></table></figure>
+<p>确实如此！这些功能使我们能够<strong>快速找到我们感兴趣的主题</strong>。</p>
+<blockquote>
+<p>💡 <strong><span class="math inline">\(\text{BERTopic}\)</span> 的模块化</strong>为您提供了<strong>很多选择</strong>，这可能会让人感到不知所措。为此，作者创建了一份<strong>最佳实践指南</strong>（https://maartengr.github.io/BERTopic/getting_started/best_practices/best_practices.html），其中介绍了<strong>加速训练、改进表征</strong>等<strong>常见实践</strong>。</p>
+</blockquote>
+<p>为了让主题探索更容易一些，我们可以回顾我们的<strong>文本聚类示例</strong>。在那里，我们创建了一个<strong>静态可视化</strong>来查看所创建主题的<strong>总体结构</strong>。使用 <strong><span class="math inline">\(\text{BERTopic}\)</span></strong>，我们可以创建一个<strong>交互式变体</strong>，使我们能够<strong>快速探索存在哪些主题</strong>以及<strong>它们包含哪些文档</strong>。</p>
+<p>这样做要求我们使用我们用 <strong><span class="math inline">\(\text{UMAP}\)</span></strong> 创建的<strong>二维嵌入</strong> <strong><span class="math inline">\(\text{reduced\_embeddings}\)</span></strong>。此外，当我们<strong>悬停</strong>在文档上时，我们将显示<strong>标题</strong>而不是摘要，以便快速了解主题中的文档：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Visualize topics and documents</span></span><br><span class="line">fig = topic_model.visualize_documents(</span><br><span class="line">titles,</span><br><span class="line">reduced_embeddings=reduced_embeddings,</span><br><span class="line">width=<span class="number">1200</span>,</span><br><span class="line">hide_annotations=<span class="literal">True</span></span><br><span class="line">)</span><br><span class="line"><span class="comment"># Update fonts of legend for easier visualization</span></span><br><span class="line">fig.update_layout(font=<span class="built_in">dict</span>(size=<span class="number">16</span>))</span><br></pre></td></tr></table></figure>
+<p>正如我们在图 <span class="math inline">\(\text{5}-18\)</span> 中所看到的，这个<strong>交互式图表</strong>可以让我们<strong>快速了解所创建的主题</strong>。您可以<strong>放大</strong>查看单个文档，或<strong>双击</strong>右侧的主题以<strong>仅查看该主题</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F5.18.png" alt="F5.1" style="zoom:67%;" /></p>
+<p><span class="math inline">\(\text{BERTopic}\)</span> 中有<strong>多种可视化选项</strong>。有<strong>三种</strong>值得探索，以便了解<strong>主题之间的关系</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Visualize barchart with ranked keywords</span></span><br><span class="line">topic_model.visualize_barchart()</span><br><span class="line"><span class="comment"># Visualize relationships between topics</span></span><br><span class="line">topic_model.visualize_heatmap(n_clusters=<span class="number">30</span>)</span><br><span class="line"><span class="comment"># Visualize the potential hierarchical structure of topics</span></span><br><span class="line">topic_model.visualize_hierarchy()</span><br></pre></td></tr></table></figure>
+<h4 id="添加一个特殊的乐高积木主题表征增强"><strong>添加一个特殊的乐高积木（主题表征增强）</strong></h4>
+<p>Adding a Special Lego Block</p>
+<p>到目前为止我们探索的 <strong><span class="math inline">\(\text{BERTopic}\)</span> 管线</strong>，尽管速度快且模块化，但有一个<strong>缺点</strong>：它仍然通过<strong>词袋</strong>来表示主题，而<strong>没有考虑到语义结构</strong>。</p>
+<p>解决方案是<strong>利用词袋表征的优势</strong>（即<strong>生成有意义表征的速度</strong>）。我们可以使用这<strong>第一个有意义的表征</strong>，并使用<strong>更强大但更慢的技术</strong>（如<strong>嵌入模型</strong>）对其进行<strong>调整</strong>。如图 <span class="math inline">\(\text{5}-19\)</span> 所示，我们可以<strong>对初始的词语分布进行重新排序</strong>，以改进生成的表征。请注意，这种<strong>对初始结果集进行重新排序</strong>的想法是<strong>神经搜索</strong>中的主要方法，我们将在<strong>第 <span class="math inline">\(\text{8}\)</span> 章</strong>中介绍这个主题。</p>
+<p><img src="/img3/Hands-On Large Language Models/F5.19.png" alt="F5.1" style="zoom:67%;" /></p>
+<p>因此，我们可以设计一个新的<strong>乐高积木</strong>，如图 <span class="math inline">\(\text{5}-20\)</span> 所示，它<strong>接受这个第一个主题表征</strong>并<strong>输出一个改进的表征</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F5.20.png" alt="F5.1" style="zoom:67%;" /></p>
+<p>在 <span class="math inline">\(\text{BERTopic}\)</span> 中，此类<strong>重新排序模型</strong>被称为<strong>表征模型</strong>（<span class="math inline">\(\text{representation models}\)</span>）。这种方法的一个主要优势是<strong>主题表征的优化</strong>只需要<strong>对主题的数量执行相应的次数</strong>。例如，如果我们有数百万文档和一百个主题，<strong>表征模块</strong>只需要<strong>对每个主题应用一次</strong>，而<strong>不是对每个文档应用一次</strong>。</p>
+<p>如图 <span class="math inline">\(\text{5}-21\)</span> 所示，<strong><span class="math inline">\(\text{BERTopic}\)</span></strong> 已经设计了<strong>各种表征模块</strong>，允许您<strong>微调表征</strong>。<strong>表征模块</strong>甚至可以<strong>多次堆叠</strong>，使用<strong>不同的方法</strong>来微调表征。</p>
+<p><img src="/img3/Hands-On Large Language Models/F5.21.png" alt="F5.1" style="zoom:67%;" /></p>
+<p>在我们探索如何使用这些<strong>表征模块</strong>之前，我们首先需要做两件事。</p>
+<p>首先，我们将<strong>保存我们原始的主题表征</strong>，以便更容易地<strong>与使用和不使用表征模型的版本进行比较</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Save original representations</span></span><br><span class="line"><span class="keyword">from</span> copy <span class="keyword">import</span> deepcopy</span><br><span class="line">original_topics = deepcopy(topic_model.topic_representations_)</span><br></pre></td></tr></table></figure>
+<p>其次，让我们创建一个<strong>简短的包装函数</strong>，我们可以用它来快速<strong>可视化主题词的差异</strong>，以便与使用和不使用表征模型进行比较：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">topic_differences</span>(<span class="params">model, original_topics, nr_topics=<span class="number">5</span></span>):</span><br><span class="line"><span class="string">&quot;&quot;&quot;Show the differences in topic representations between two models &quot;&quot;&quot;</span></span><br><span class="line">df = pd.DataFrame(columns=[<span class="string">&quot;Topic&quot;</span>, <span class="string">&quot;Original&quot;</span>, <span class="string">&quot;Updated&quot;</span>])</span><br><span class="line"><span class="keyword">for</span> topic <span class="keyword">in</span> <span class="built_in">range</span>(nr_topics):</span><br><span class="line"><span class="comment"># Extract top 5 words per topic per model</span></span><br><span class="line">og_words = <span class="string">&quot; | &quot;</span>.join(<span class="built_in">list</span>(<span class="built_in">zip</span>(*original_topics[topic]))[<span class="number">0</span>][:<span class="number">5</span>])</span><br><span class="line">new_words = <span class="string">&quot; | &quot;</span>.join(<span class="built_in">list</span>(<span class="built_in">zip</span>(*model.get_topic(topic)))[<span class="number">0</span>][:<span class="number">5</span>])</span><br><span class="line">df.loc[<span class="built_in">len</span>(df)] = [topic, og_words, new_words]</span><br><span class="line"><span class="keyword">return</span> df</span><br></pre></td></tr></table></figure>
+<p>我们将探索的<strong>第一个表征模块</strong>是 <strong><span class="math inline">\(\text{KeyBERTInspired}\)</span></strong>。正如您可能猜到的，<strong><span class="math inline">\(\text{KeyBERTInspired}\)</span></strong> 是一种<strong>受关键词提取软件包 <span class="math inline">\(\text{KeyBERT}\)</span> 启发的方法</strong>。<span class="math inline">\(\text{KeyBERT}\)</span> 通过<strong>余弦相似度</strong>比较<strong>单词和文档嵌入</strong>来提取文本中的<strong>关键词</strong>。</p>
+<p><strong><span class="math inline">\(\text{BERTopic}\)</span></strong> 采用了类似的方法。<strong><span class="math inline">\(\text{KeyBERTInspired}\)</span></strong> 使用 <strong><span class="math inline">\(\text{c}-\text{TF}-\text{IDF}\)</span></strong>，通过计算<strong>文档的 <span class="math inline">\(\text{c}-\text{TF}-\text{IDF}\)</span> 值</strong>与其<strong>对应主题的 <span class="math inline">\(\text{c}-\text{TF}-\text{IDF}\)</span> 值</strong>之间的相似性，来<strong>提取每个主题最具代表性的文档</strong>。如图 <span class="math inline">\(\text{5}-22\)</span> 所示，它<strong>计算每个主题的平均文档嵌入</strong>，并将其与<strong>候选关键词的嵌入进行比较</strong>，以<strong>重新排序关键词</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F5.22.png" alt="F5.1" style="zoom:67%;" /></p>
+<p>由于 <strong><span class="math inline">\(\text{BERTopic}\)</span> 的模块化特性</strong>，我们可以使用 <strong><span class="math inline">\(\text{KeyBERTInspired}\)</span></strong> 来<strong>更新我们最初的主题表征</strong>，而<strong>无需执行降维和聚类步骤</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> bertopic.representation <span class="keyword">import</span> KeyBERTInspired</span><br><span class="line"><span class="comment"># Update our topic representations using KeyBERTInspired</span></span><br><span class="line">representation_model = KeyBERTInspired()</span><br><span class="line">topic_model.update_topics(abstracts, representation_model=representation_model)</span><br><span class="line"><span class="comment"># Show topic differences</span></span><br><span class="line">topic_differences(topic_model, original_topics)</span><br></pre></td></tr></table></figure>
+<p><img src="/img3/Hands-On Large Language Models/F0.25.png" alt="F5.1" style="zoom:67%;" /></p>
+<p>更新后的模型显示，与原始模型相比，<strong>主题更易于阅读</strong>。它也展示了使用<strong>基于嵌入的技术</strong>的<strong>缺点</strong>。原始模型中的词语，例如 <strong><span class="math inline">\(\text{nmt}\)</span></strong>（主题 <span class="math inline">\(\text{3}\)</span>，代表<strong>神经机器翻译</strong>），<strong>被移除</strong>了，因为模型<strong>无法正确地表示这个实体</strong>。对于<strong>领域专家</strong>来说，这些缩写<strong>信息量非常大</strong>。</p>
+<p>使用 <strong><span class="math inline">\(\text{c}-\text{TF}-\text{IDF}\)</span></strong> 和前面展示的 <strong><span class="math inline">\(\text{KeyBERTInspired}\)</span></strong> 技术，我们<strong>仍然</strong>在生成的主题表征中存在<strong>显著的冗余</strong>。例如，在一个主题表征中同时拥有“<span class="math inline">\(\text{summaries}\)</span>”和“<span class="math inline">\(\text{summary}\)</span>”这两个词会引入<strong>冗余</strong>，因为它们<strong>非常相似</strong>。</p>
+<p>我们可以使用<strong>最大边缘相关性</strong>（<span class="math inline">\(\text{Maximal Marginal Relevance, MMR}\)</span>）来<strong>使我们的主题表征多样化</strong>。该算法试图找到一组<strong>彼此多样化</strong>但<strong>仍与被比较的文档相关联</strong>的关键词。它通过<strong>嵌入一组候选关键词</strong>并<strong>迭代计算要添加的下一个最佳关键词</strong>来实现这一点。这样做需要设置一个<strong>多样性参数</strong>，该参数指示关键词需要的<strong>多样化程度</strong>。</p>
+<p>在 <strong><span class="math inline">\(\text{BERTopic}\)</span></strong> 中，我们使用 <span class="math inline">\(\text{MMR}\)</span> 将一组<strong>初始关键词</strong>（假设 <span class="math inline">\(\text{30}\)</span> 个）<strong>缩小</strong>为一组<strong>更小但更多样化</strong>的关键词（假设 <span class="math inline">\(\text{10}\)</span> 个）。它<strong>过滤掉冗余词</strong>，只保留那些<strong>对主题表征有新贡献</strong>的词语。</p>
+<p>这样做相当简单：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> bertopic.representation <span class="keyword">import</span> MaximalMarginalRelevance</span><br><span class="line"><span class="comment"># Update our topic representations to MaximalMarginalRelevance</span></span><br><span class="line">representation_model = MaximalMarginalRelevance(diversity=<span class="number">0.2</span>)</span><br><span class="line">topic_model.update_topics(abstracts, representation_model=representation_model)</span><br><span class="line"><span class="comment"># Show topic differences</span></span><br><span class="line">topic_differences(topic_model, original_topics)</span><br></pre></td></tr></table></figure>
+<p><img src="/img3/Hands-On Large Language Models/F0.26.png" alt="F5.1" style="zoom:67%;" /></p>
+<p>由此产生的主题在其表征中表现出<strong>更高的多样性</strong>。例如，<strong>主题 <span class="math inline">\(\text{4}\)</span></strong> 只显示一个“<span class="math inline">\(\text{summary}\)</span>”类的词语，而是添加了<strong>其他可能对整体表征贡献更大</strong>的词语。</p>
+<blockquote>
+<p>💡 <strong><span class="math inline">\(\text{KeyBERTInspired}\)</span></strong> 和 <strong><span class="math inline">\(\text{MMR}\)</span></strong> 都是<strong>改进第一组主题表征</strong>的绝佳技术。<strong><span class="math inline">\(\text{KeyBERTInspired}\)</span></strong> 尤其倾向于<strong>移除几乎所有停用词</strong>，因为它侧重于<strong>单词和文档之间的语义关系</strong>。</p>
+</blockquote>
+<h4 id="文本生成乐高积木"><strong>文本生成乐高积木</strong></h4>
+<p>The Text Generation Lego Block</p>
+<p>在我们前面的示例中，<strong><span class="math inline">\(\text{BERTopic}\)</span> 中的表征模块</strong>一直充当<strong>重新排序模块</strong>。然而，正如我们在上一章中已经探讨过的，<strong>生成模型</strong>在各种任务中具有巨大的潜力。</p>
+<p>我们可以通过遵循<strong>重新排序过程的一部分</strong>，在 <strong><span class="math inline">\(\text{BERTopic}\)</span></strong> 中非常高效地使用<strong>生成模型</strong>。我们<strong>不使用生成模型来识别所有文档的主题</strong>（这可能涉及数百万文档），而是使用模型来为我们的<strong>主题生成一个标签</strong>。如图 <span class="math inline">\(\text{5}-23\)</span> 所示，我们<strong>不生成或重新排序关键词</strong>，而是要求模型根据<strong>先前生成的关键词</strong>和<strong>一小部分代表性文档</strong>来<strong>生成一个简短的标签</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F5.23.png" alt="F5.1" style="zoom:67%;" /></p>
+<p>所展示的<strong>提示</strong>包含两个组成部分。</p>
+<p>首先，使用 <strong><span class="math inline">\(\text{[DOCUMENTS]}\)</span> 标签</strong>插入的<strong>文档</strong>是<strong>最能代表该主题的一小部分文档</strong>（通常是四个）。系统会选择<strong>其 <span class="math inline">\(\text{c}-\text{TF}-\text{IDF}\)</span> 值</strong>与<strong>主题 <span class="math inline">\(\text{c}-\text{TF}-\text{IDF}\)</span> 值</strong>具有<strong>最高余弦相似度</strong>的文档。</p>
+<p>其次，<strong>构成主题的关键词</strong>也会被传递给提示，并使用 <strong><span class="math inline">\(\text{[KEYWORDS]}\)</span> 标签</strong>引用。这些关键词可以由 <strong><span class="math inline">\(\text{c}-\text{TF}-\text{IDF}\)</span></strong> 或我们迄今为止讨论的<strong>任何其他表征</strong>生成。</p>
+<p>因此，我们<strong>只需要对每个主题</strong>（可能多达数百个）<strong>使用一次生成模型</strong>，而不是对每个文档（可能多达数百万个）使用一次。我们可以选择许多生成模型，包括<strong>开源</strong>和<strong>专有</strong>模型。让我们从我们在上一章中探讨过的模型 <strong><span class="math inline">\(\text{Flan}-\text{T5}\)</span> 模型</strong>开始。</p>
+<p>我们创建一个<strong>与该模型配合良好</strong>的提示，并通过 <strong><span class="math inline">\(\text{representation\_model}\)</span> 参数</strong>在 <strong><span class="math inline">\(\text{BERTopic}\)</span></strong> 中使用它：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> pipeline</span><br><span class="line"><span class="keyword">from</span> bertopic.representation <span class="keyword">import</span> TextGeneration</span><br><span class="line">prompt = <span class="string">&quot;&quot;&quot;I have a topic that contains the following documents:</span></span><br><span class="line"><span class="string">[DOCUMENTS]</span></span><br><span class="line"><span class="string">The topic is described by the following keywords: &#x27;[KEYWORDS]&#x27;.</span></span><br><span class="line"><span class="string">Based on the documents and keywords, what is this topic about?&quot;&quot;&quot;</span></span><br><span class="line"><span class="comment"># Update our topic representations using Flan-T5</span></span><br><span class="line">generator = pipeline(<span class="string">&quot;text2text-generation&quot;</span>, model=<span class="string">&quot;google/flan-t5-small&quot;</span>)</span><br><span class="line">representation_model = TextGeneration(</span><br><span class="line"></span><br><span class="line">)</span><br><span class="line">topic_model.update_topics(abstracts, representation_model=representation_model)</span><br><span class="line"><span class="comment"># Show topic differences</span></span><br><span class="line">topic_differences(topic_model, original_topics)</span><br></pre></td></tr></table></figure>
+<p><img src="/img3/Hands-On Large Language Models/F0.27.png" alt="F5.1" style="zoom:67%;" /></p>
+<p>其中一些标签，例如“<span class="math inline">\(\text{Summarization}\)</span>”（摘要），在与原始表征进行比较时<strong>似乎是合乎逻辑的</strong>。然而，<strong>其他一些标签</strong>，例如“<span class="math inline">\(\text{Science/Tech}\)</span>”（科学/技术），<strong>看起来相当宽泛</strong>，<strong>没有公正地体现原始主题</strong>。让我们转而探索 <strong><span class="math inline">\(\text{OpenAI}\)</span> 的 <span class="math inline">\(\text{GPT}-\text{3.5}\)</span></strong> 模型的表现，考虑到该模型<strong>不仅更大</strong>，而且<strong>预期具有更强的语言能力</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> openai</span><br><span class="line"><span class="keyword">from</span> bertopic.representation <span class="keyword">import</span> OpenAI</span><br><span class="line">prompt =</span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">I have a topic that contains the following documents:</span></span><br><span class="line"><span class="string">[DOCUMENTS]</span></span><br><span class="line"><span class="string">The topic is described by the following keywords: [KEYWORDS]</span></span><br><span class="line"><span class="string">Based on the information above, extract a short topic label in the following</span></span><br><span class="line"><span class="string">format:</span></span><br><span class="line"><span class="string">topic: &lt;short topic label&gt;</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="comment"># Update our topic representations using GPT-3.5</span></span><br><span class="line">client = openai.OpenAI(api_key=<span class="string">&quot;YOUR_KEY_HERE&quot;</span>)</span><br><span class="line">representation_model = OpenAI(</span><br><span class="line">client, model=<span class="string">&quot;gpt-3.5-turbo&quot;</span>, exponential_backoff=<span class="literal">True</span>, chat=<span class="literal">True</span>,</span><br><span class="line">prompt=prompt</span><br><span class="line">)</span><br><span class="line">topic_model.update_topics(abstracts, representation_model=representation_model)</span><br><span class="line"><span class="comment"># Show topic differences</span></span><br><span class="line">topic_differences(topic_model, original_topics)</span><br></pre></td></tr></table></figure>
+<p><img src="/img3/Hands-On Large Language Models/F0.28.png" alt="F5.1" style="zoom:67%;" /></p>
+<p>生成的标签<strong>相当令人印象深刻</strong>！我们甚至<strong>没有使用 <span class="math inline">\(\text{GPT}-\text{4}\)</span></strong>，但生成的标签似乎比我们上一个例子<strong>更具信息量</strong>。请注意，<strong><span class="math inline">\(\text{BERTopic}\)</span> 并不局限于只使用 <span class="math inline">\(\text{OpenAI}\)</span> 的服务</strong>，它也<strong>支持本地后端</strong>。</p>
+<blockquote>
+<p>💡 尽管看起来我们<strong>不再需要关键词</strong>了，但它们<strong>仍然代表着输入文档</strong>。<strong>没有模型是完美的</strong>，通常建议<strong>生成多个主题表征</strong>。<span class="math inline">\(\text{BERTopic}\)</span> 允许<strong>所有主题</strong>由<strong>不同的表征</strong>来表示。例如，您可以<strong>同时使用 <span class="math inline">\(\text{KeyBERTInspired}\)</span>、<span class="math inline">\(\text{MMR}\)</span> 和 <span class="math inline">\(\text{GPT}-\text{3.5}\)</span></strong>，以获得关于同一主题的<strong>不同视角</strong>。</p>
+</blockquote>
+<p>有了这些 <strong><span class="math inline">\(\text{GPT}-\text{3.5}\)</span> 生成的标签</strong>，我们可以使用 <strong><span class="math inline">\(\text{datamapplot}\)</span> 软件包</strong>创建精美的<strong>插图</strong>（图 <span class="math inline">\(\text{5}-24\)</span>）：</p>
+<p><img src="/img3/Hands-On Large Language Models/F5.24.png" alt="F5.1" style="zoom:67%;" /></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Visualize topics and documents</span></span><br><span class="line">fig = topic_model.visualize_document_datamap(</span><br><span class="line">titles,</span><br><span class="line">topics=<span class="built_in">list</span>(<span class="built_in">range</span>(<span class="number">20</span>)),</span><br><span class="line">reduced_embeddings=reduced_embeddings,</span><br><span class="line">width=<span class="number">1200</span>,</span><br><span class="line">label_font_size=<span class="number">11</span>,</span><br><span class="line">label_wrap_width=<span class="number">20</span>,</span><br><span class="line">use_medoids=<span class="literal">True</span>,</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<h3 id="总结"><strong>总结</strong></h3>
+<p>在本章中，我们探讨了<strong>大型语言模型</strong>（<span class="math inline">\(\text{LLM}\)</span>），无论是<strong>生成式</strong>还是<strong>表征式</strong>的，如何应用于<strong>无监督学习领域</strong>。尽管近年来像<strong>分类</strong>这样的<strong>监督方法</strong>非常流行，但<strong>文本聚类</strong>等<strong>无监督方法</strong>因其<strong>无需事先标记即可根据语义内容对文本进行分组</strong>的能力而具有<strong>巨大的潜力</strong>。</p>
+<p>我们介绍了一个<strong>聚类文本文档的通用管线</strong>，它首先将输入文本<strong>转换为数值表征</strong>，我们称之为<strong>嵌入</strong>。然后，对这些嵌入应用<strong>降维</strong>（<span class="math inline">\(\text{dimensionality reduction}\)</span>），以简化高维数据，从而获得更好的聚类结果。最后，将<strong>聚类算法</strong>应用于<strong>降维后的嵌入</strong>，对输入文本进行聚类。<strong>手动检查</strong>这些簇帮助我们理解它们包含哪些文档以及如何解释这些簇。</p>
+<p>为了摆脱这种手动检查，我们探索了 <strong><span class="math inline">\(\text{BERTopic}\)</span></strong> 如何通过一种<strong>自动表征簇</strong>的方法来<strong>扩展文本聚类管线</strong>。这种方法通常被称为<strong>主题建模</strong>（<span class="math inline">\(\text{topic modeling}\)</span>），它试图<strong>揭示大量文档中的主题</strong>。<span class="math inline">\(\text{BERTopic}\)</span> 通过<strong>词袋方法</strong>（并辅以 <strong><span class="math inline">\(\text{c}-\text{TF}-\text{IDF}\)</span></strong> 进行增强）来生成这些主题表征，该方法根据单词的<strong>簇相关性</strong>和在<strong>所有簇中的频率</strong>来<strong>加权单词</strong>。</p>
+<p><span class="math inline">\(\text{BERTopic}\)</span> 的一个主要优势是其<strong>模块化特性</strong>。在 <span class="math inline">\(\text{BERTopic}\)</span> 中，您可以<strong>选择管线中的任何模型</strong>，这允许对主题进行<strong>额外的表征</strong>，从而为<strong>同一主题创建多个视角</strong>。我们探讨了<strong>最大边缘相关性</strong>（<span class="math inline">\(\text{MMR}\)</span>）和 <strong><span class="math inline">\(\text{KeyBERTInspired}\)</span></strong> 作为<strong>微调 <span class="math inline">\(\text{c}-\text{TF}-\text{IDF}\)</span> 生成的主题表征</strong>的方法。此外，我们使用了与上一章相同的<strong>生成式 <span class="math inline">\(\text{LLM}\)</span></strong>（<span class="math inline">\(\text{Flan}-\text{T5}\)</span> 和 <span class="math inline">\(\text{GPT}-\text{3.5}\)</span>）来<strong>生成高度可解释的标签</strong>，从而进一步<strong>提高主题的可解释性</strong>。</p>
+<p>在下一章中，我们将转移焦点，探索一种<strong>改进生成模型输出的常用方法</strong>，即<strong>提示工程</strong>（<span class="math inline">\(\text{prompt engineering}\)</span>）。</p>
+<p>书籍各章的机翻md文件：<br />
+<a href="/2025/04/01/Hands-On%20Large%20Language%20Models%20%E7%9B%AE%E5%BD%95%20%E5%89%8D%E8%A8%80/" title="《Hands-On Large Language Models》目录及前言">《Hands-On Large Language Models》目录及前言</a><br />
+<a href="/2025/04/02/Hands-On%20Large%20Language%20Models%201/" title="《Hands-On Large Language Models》第1章 大型语言模型简介">《Hands-On Large Language Models》第1章 大型语言模型简介</a><br />
+<a href="/2025/04/03/Hands-On%20Large%20Language%20Models%202/" title="《Hands-On Large Language Models》第2章 词元与嵌入">《Hands-On Large Language Models》第2章 词元与嵌入</a><br />
+<a href="/2025/04/04/Hands-On%20Large%20Language%20Models%203/" title="《Hands-On Large Language Models》第3章 深入了解大型语言模型">《Hands-On Large Language Models》第3章 深入了解大型语言模型</a><br />
+<a href="/2025/04/05/Hands-On%20Large%20Language%20Models%204/" title="《Hands-On Large Language Models》第4章 文本分类">《Hands-On Large Language Models》第4章 文本分类</a><br />
+<a href="/2025/04/06/Hands-On%20Large%20Language%20Models%205/" title="《Hands-On Large Language Models》第5章 文本聚类和主题建模">《Hands-On Large Language Models》第5章 文本聚类和主题建模</a><br />
+<a href="/2025/04/07/Hands-On%20Large%20Language%20Models%206/" title="《Hands-On Large Language Models》第6章 提示工程">《Hands-On Large Language Models》第6章 提示工程</a><br />
+<a href="/2025/04/08/Hands-On%20Large%20Language%20Models%207/" title="《Hands-On Large Language Models》第7章 高级文本生成技术与工具">《Hands-On Large Language Models》第7章 高级文本生成技术与工具</a><br />
+<a href="/2025/04/09/Hands-On%20Large%20Language%20Models%208/" title="《Hands-On Large Language Models》第8章 语义搜索与检索增强生成">《Hands-On Large Language Models》第8章 语义搜索与检索增强生成</a><br />
+<a href="/2025/04/10/Hands-On%20Large%20Language%20Models%209/" title="《Hands-On Large Language Models》第9章 多模态大型语言模型">《Hands-On Large Language Models》第9章 多模态大型语言模型</a><br />
+<a href="/2025/04/11/Hands-On%20Large%20Language%20Models%2010/" title="《Hands-On Large Language Models》第10章 创建文本嵌入模型">《Hands-On Large Language Models》第10章 创建文本嵌入模型</a><br />
+<a href="/2025/04/12/Hands-On%20Large%20Language%20Models%2011/" title="《Hands-On Large Language Models》第11章 微调用于分类的表征模型">《Hands-On Large Language Models》第11章 微调用于分类的表征模型</a><br />
+<a href="/2025/04/13/Hands-On%20Large%20Language%20Models%2012/" title="《Hands-On Large Language Models》第12章 生成模型的微调">《Hands-On Large Language Models》第12章 生成模型的微调</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/04/05/Hands-On%20Large%20Language%20Models%204/" rel="prev" title="《Hands-On Large Language Models》第4章 文本分类">
+                  <i class="fa fa-chevron-left"></i> 《Hands-On Large Language Models》第4章 文本分类
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/04/07/Hands-On%20Large%20Language%20Models%206/" rel="next" title="《Hands-On Large Language Models》第6章 提示工程">
+                  《Hands-On Large Language Models》第6章 提示工程 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

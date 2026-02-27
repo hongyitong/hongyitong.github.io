@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"enable":true,"style":"tabs","active":"giscus","storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+
+
+    <meta name="description" content="第二部分 使用预训练语言模型 Using Pretrained Language Models 第 \(\text{4}\) 章 文本分类 Text Classification 分类是自然语言处理中一个常见的任务。该任务的目标是训练一个模型，为某些输入文本分配一个标签或类别（参见图 \(\text{4}-1\)）。文本分类被世界各地广泛应用于各种应用程序，从情感分析和意图检测到实体提取和语言检测">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《Hands-On Large Language Models》第4章 文本分类">
+<meta property="og:url" content="http://hongyitong.github.io/2025/04/05/Hands-On%20Large%20Language%20Models%204/index.html">
+<meta property="og:site_name" content="墨语浮生">
+<meta property="og:description" content="第二部分 使用预训练语言模型 Using Pretrained Language Models 第 \(\text{4}\) 章 文本分类 Text Classification 分类是自然语言处理中一个常见的任务。该任务的目标是训练一个模型，为某些输入文本分配一个标签或类别（参见图 \(\text{4}-1\)）。文本分类被世界各地广泛应用于各种应用程序，从情感分析和意图检测到实体提取和语言检测">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F4.1.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F4.2.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F4.3.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F4.4.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F4.5.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F4.6.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F4.7.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F0.18a.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F4.8.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F4.9.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F4.10.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F4.11.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F4.12.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F0.19.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F4.13.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F4.14.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F4.15.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F4.16.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F0.20.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F4.17.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F4.18.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F4.19.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F4.20.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F4.21.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F0.21.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F0.22.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F4.22.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F4.23.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F0.23.png">
+<meta property="article:published_time" content="2025-04-04T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-02-27T02:50:24.769Z">
+<meta property="article:author" content="Rayman.hung">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F4.1.png">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2025/04/05/Hands-On%20Large%20Language%20Models%204/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2025/04/05/Hands-On%20Large%20Language%20Models%204/","path":"2025/04/05/Hands-On Large Language Models 4/","title":"《Hands-On Large Language Models》第4章 文本分类"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>《Hands-On Large Language Models》第4章 文本分类 | 墨语浮生</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZXGEJDXQ33"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-ZXGEJDXQ33","only_pageview":false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?ff358b9c7e949787b074bfc9c8019a9d"></script>
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">墨语浮生</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E9%83%A8%E5%88%86-%E4%BD%BF%E7%94%A8%E9%A2%84%E8%AE%AD%E7%BB%83%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B"><span class="nav-text">第二部分 使用预训练语言模型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC-text4-%E7%AB%A0-%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB"><span class="nav-text">第 \(\text{4}\) 章 文本分类</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%B5%E5%BD%B1%E8%AF%84%E8%AE%BA%E7%9A%84%E6%83%85%E6%84%9F"><span class="nav-text">电影评论的情感</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E8%A1%A8%E5%BE%81%E6%A8%A1%E5%9E%8B%E8%BF%9B%E8%A1%8C%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB"><span class="nav-text">使用表征模型进行文本分类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E9%80%89%E6%8B%A9"><span class="nav-text">模型选择</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E4%BB%BB%E5%8A%A1%E7%89%B9%E5%AE%9A%E6%A8%A1%E5%9E%8B"><span class="nav-text">使用任务特定模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%A9%E7%94%A8%E5%B5%8C%E5%85%A5%E7%9A%84%E5%88%86%E7%B1%BB%E4%BB%BB%E5%8A%A1"><span class="nav-text">利用嵌入的分类任务</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%9B%91%E7%9D%A3%E5%88%86%E7%B1%BB"><span class="nav-text">监督分类</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A6%82%E6%9E%9C%E6%88%91%E4%BB%AC%E6%B2%A1%E6%9C%89%E5%B8%A6%E6%A0%87%E7%AD%BE%E7%9A%84%E6%95%B0%E6%8D%AE%E6%80%8E%E4%B9%88%E5%8A%9E"><span class="nav-text">如果我们没有带标签的数据怎么办？</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E7%94%9F%E6%88%90%E6%A8%A1%E5%9E%8B%E8%BF%9B%E8%A1%8C%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB"><span class="nav-text">使用生成模型进行文本分类</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%96%87%E6%9C%AC%E5%88%B0%E6%96%87%E6%9C%AC%E4%BC%A0%E8%BE%93-texttransformer"><span class="nav-text">使用文本到文本传输 \(\text{Transformer}\)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#textchatgpt-%E7%94%A8%E4%BA%8E%E5%88%86%E7%B1%BB"><span class="nav-text">\(\text{ChatGPT}\) 用于分类</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、心情记录</div>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2025/04/05/Hands-On%20Large%20Language%20Models%204/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="《Hands-On Large Language Models》第4章 文本分类 | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《Hands-On Large Language Models》第4章 文本分类
+        </h1>
+
+        </h1>
+          
+             <p class="post-subtitle">第4章 文本分类</p>
+          
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-04-05 00:00:00" itemprop="dateCreated datePublished" datetime="2025-04-05T00:00:00+08:00">2025-04-05</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="第二部分-使用预训练语言模型"><strong>第二部分</strong> <strong>使用预训练语言模型</strong></h1>
+<p>Using Pretrained Language Models</p>
+<h2 id="第-text4-章-文本分类"><strong>第 <span class="math inline">\(\text{4}\)</span> 章</strong> <strong>文本分类</strong></h2>
+<p>Text Classification</p>
+<p><strong>分类</strong>是<strong>自然语言处理</strong>中一个常见的任务。该任务的目标是训练一个模型，为某些<strong>输入文本</strong>分配一个<strong>标签或类别</strong>（参见图 <span class="math inline">\(\text{4}-1\)</span>）。<strong>文本分类</strong>被世界各地广泛应用于各种应用程序，从<strong>情感分析</strong>和<strong>意图检测</strong>到<strong>实体提取</strong>和<strong>语言检测</strong>。<strong>语言模型</strong>（无论是<strong>表征型</strong>还是<strong>生成型</strong>）对分类的影响是不可低估的。</p>
+<p><img src="/img3/Hands-On Large Language Models/F4.1.png" alt="F4.1" style="zoom:67%;" /></p>
+<p>在本章中，我们将讨论使用<strong>语言模型</strong>进行<strong>文本分类</strong>的几种方法。它将作为<strong>使用已经训练过的语言模型</strong>的入门介绍。鉴于文本分类领域的广泛性，我们将讨论几种技术，并用它们来探索语言模型领域：</p>
+<ul>
+<li><strong>第 <span class="math inline">\(\text{113}\)</span> 页的“使用表征模型进行文本分类”</strong> 演示了<strong>非生成模型</strong>用于分类的灵活性。我们将涵盖<strong>任务特定模型</strong>和<strong>嵌入模型</strong>。</li>
+<li><strong>第 <span class="math inline">\(\text{127}\)</span> 页的“使用生成模型进行文本分类”</strong> 是对<strong>生成语言模型</strong>的介绍，因为它们中的大多数都可以用于分类。我们将涵盖一个<strong>开源</strong>和一个<strong>闭源</strong>的语言模型。</li>
+</ul>
+<p>在本章中，我们将专注于利用<strong>预训练语言模型</strong>，即<strong>已经在大数据量上训练过</strong>并可用于文本分类的模型。如图 <span class="math inline">\(\text{4}-2\)</span> 所示，我们将研究<strong>表征模型</strong>和<strong>语言模型</strong>，并探讨它们的区别。</p>
+<p><img src="/img3/Hands-On Large Language Models/F4.2.png" alt="F4.1" style="zoom:67%;" /></p>
+<p>本章将作为各种语言模型（包括<strong>生成型</strong>和<strong>非生成型</strong>）的介绍。我们将遇到用于加载和使用这些模型的<strong>常见软件包</strong>。</p>
+<blockquote>
+<p>💡 尽管本书侧重于 <span class="math inline">\(\text{LLM}\)</span>，但强烈建议将这些示例与<strong>经典但强大的基线</strong>进行比较，例如使用 <strong><span class="math inline">\(\text{TF}-\text{IDF}\)</span> 表征文本</strong>，并在此基础上<strong>训练一个逻辑回归分类器</strong>。</p>
+</blockquote>
+<h3 id="电影评论的情感"><strong>电影评论的情感</strong></h3>
+<p>The Sentiment of Movie Reviews</p>
+<p>您可以在 <span class="math inline">\(\text{Hugging Face Hub}\)</span> 上找到我们用于探索文本分类技术的数据，这是一个托管模型也托管数据的平台。我们将使用著名的 <strong>“<span class="math inline">\(\text{rotten\_tomatoes}\)</span>”数据集</strong>来训练和评估我们的模型。它包含了来自烂番茄的 <strong><span class="math inline">\(\text{5,331}\)</span> 条正面</strong>和 <strong><span class="math inline">\(\text{5,331}\)</span> 条负面</strong>电影评论。</p>
+<p>为了加载这些数据，我们使用了 <strong><span class="math inline">\(\text{datasets}\)</span> 软件包</strong>，该软件包将在本书中一直使用：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> datasets <span class="keyword">import</span> load_dataset</span><br><span class="line"><span class="comment"># Load our data</span></span><br><span class="line">data = load_dataset(<span class="string">&quot;rotten_tomatoes&quot;</span>)</span><br><span class="line">data</span><br></pre></td></tr></table></figure>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">DatasetDict(&#123;</span><br><span class="line">train: Dataset(&#123;</span><br><span class="line">features: [&#x27;text&#x27;, &#x27;label&#x27;],</span><br><span class="line">num_rows: 8530</span><br><span class="line">&#125;)</span><br><span class="line">validation: Dataset(&#123;</span><br><span class="line">features: [&#x27;text&#x27;, &#x27;label&#x27;],</span><br><span class="line">num_rows: 1066</span><br><span class="line">&#125;)</span><br><span class="line">test: Dataset(&#123;</span><br><span class="line">features: [&#x27;text&#x27;, &#x27;label&#x27;],</span><br><span class="line">num_rows: 1066</span><br><span class="line">&#125;)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>数据被分割成<strong>训练集 (<span class="math inline">\(\text{train}\)</span>)、测试集 (<span class="math inline">\(\text{test}\)</span>) 和验证集 (<span class="math inline">\(\text{validation}\)</span>)</strong>。在本章中，我们在<strong>训练模型</strong>时将使用<strong>训练集</strong>，在<strong>验证结果</strong>时将使用<strong>测试集</strong>。请注意，如果您使用训练集和测试集进行<strong>超参数调整</strong>，可以利用额外的<strong>验证集</strong>来进一步验证<strong>泛化能力</strong>。</p>
+<p>The data is split up into train, test, and validation splits. Throughout this chapter, we will use the train split when we train a model and the test split for validating the results. Note that the additional validation split can be used to further validate generalization if you used the train and test splits to perform hyperparameter tuning.</p>
+<blockquote>
+<p>个人注：train用来训练模型，validattion用来测试训练过程中不同轮次的效果；test用来测试模型的泛化能力。</p>
+</blockquote>
+<p>让我们看一下训练集中的一些示例：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data[<span class="string">&quot;train&quot;</span>][<span class="number">0</span>, -<span class="number">1</span>]</span><br></pre></td></tr></table></figure>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#x27;text&#x27;: [&#x27;the rock is destined to be the 21st century\&#x27;s new &quot; conan &quot; and</span><br><span class="line">that he\&#x27;s going to make a splash even greater than arnold schwarzenegger ,</span><br><span class="line">jean-claud van damme or steven segal .&#x27;,</span><br><span class="line">&#x27;things really get weird , though not particularly scary : the movie is all</span><br><span class="line">portent and no content .&#x27;],</span><br><span class="line">&#x27;label&#x27;: [1, 0]&#125;</span><br></pre></td></tr></table></figure>
+<p>这些简短的评论要么被标记为<strong>正面 (<span class="math inline">\(\text{1}\)</span>)</strong>，要么被标记为<strong>负面 (<span class="math inline">\(\text{0}\)</span>)</strong>。这意味着我们将专注于<strong>二元情感分类</strong>。</p>
+<h3 id="使用表征模型进行文本分类"><strong>使用表征模型进行文本分类</strong></h3>
+<p>Text Classification with Representation Models</p>
+<p>使用<strong>预训练表征模型</strong>进行分类通常有两种形式，即使用<strong>任务特定模型</strong>或<strong>嵌入模型</strong>。正如我们在上一章中探讨的那样，这些模型是通过将<strong>基础模型</strong>（如 <span class="math inline">\(\text{BERT}\)</span>）在<strong>特定的下游任务</strong>上进行<strong>微调</strong>而创建的，如图 <span class="math inline">\(\text{4}-3\)</span> 所示。</p>
+<p><img src="/img3/Hands-On Large Language Models/F4.3.png" alt="F4.1" style="zoom:67%;" /></p>
+<p><strong>任务特定模型</strong>是一个<strong>表征模型</strong>，例如 <span class="math inline">\(\text{BERT}\)</span>，它是为<strong>特定任务</strong>（如情感分析）训练的。正如我们在<strong>第 <span class="math inline">\(\text{1}\)</span> 章</strong>中探讨的那样，<strong>嵌入模型</strong>生成<strong>通用嵌入</strong>，可用于各种任务，不限于分类，例如<strong>语义搜索</strong>（参见<strong>第 <span class="math inline">\(\text{8}\)</span> 章</strong>）。</p>
+<p><strong>用于分类的 <span class="math inline">\(\text{BERT}\)</span> 模型</strong>的微调过程将在<strong>第 <span class="math inline">\(\text{11}\)</span> 章</strong>中介绍，而<strong>创建嵌入模型</strong>将在<strong>第 <span class="math inline">\(\text{10}\)</span> 章</strong>中介绍。在本章中，我们将<strong>保持这两个模型是冻结的</strong>（<strong>不可训练</strong>），<strong>仅使用它们的输出</strong>，如图 <span class="math inline">\(\text{4}-4\)</span> 所示。</p>
+<p><img src="/img3/Hands-On Large Language Models/F4.4.png" alt="F4.1" style="zoom:67%;" /></p>
+<p>我们将利用<strong>其他人已经为我们微调好的预训练模型</strong>，并探索如何使用它们来分类我们选定的电影评论。</p>
+<h3 id="模型选择"><strong>模型选择</strong></h3>
+<p>Model Selection</p>
+<p>选择合适的模型<strong>并非</strong>您想象的那么简单，因为在撰写本文时，<strong><span class="math inline">\(\text{Hugging Face Hub}\)</span></strong> 上有<strong>超过 <span class="math inline">\(\text{60,000}\)</span> 个文本分类模型</strong>和<strong>超过 <span class="math inline">\(\text{8,000}\)</span> 个生成嵌入的模型</strong>。此外，选择一个<strong>适合您的用例</strong>的模型至关重要，并且需要考虑其<strong>语言兼容性</strong>、<strong>底层架构</strong>、<strong>大小</strong>和<strong>性能</strong>。</p>
+<p>让我们从<strong>底层架构</strong>开始。正如我们在<strong>第 <span class="math inline">\(\text{1}\)</span> 章</strong>中探讨的那样，<strong><span class="math inline">\(\text{BERT}\)</span></strong>（一个著名的<strong>仅编码器</strong> (<span class="math inline">\(\text{encoder-only}\)</span>) 架构）是创建<strong>任务特定模型</strong>和<strong>嵌入模型</strong>的<strong>热门选择</strong>。虽然像 <strong><span class="math inline">\(\text{GPT}\)</span> 家族</strong>这样的<strong>生成模型</strong>令人难以置信，但<strong>仅编码器模型</strong>在<strong>任务特定的用例</strong>中同样表现出色，并且往往<strong>规模显著更小</strong>。</p>
+<p>多年来，<span class="math inline">\(\text{BERT}\)</span> 的许多变体已被开发出来，包括 <strong><span class="math inline">\(\text{RoBERTa}\)</span>、<span class="math inline">\(\text{DistilBERT}\)</span>、<span class="math inline">\(\text{ALBERT}\)</span> 和 <span class="math inline">\(\text{DeBERTa}\)</span></strong>，每个都在各种上下文中进行训练。您可以在图 <span class="math inline">\(\text{4}-5\)</span> 中找到一些著名的类 <span class="math inline">\(\text{BERT}\)</span> 模型的概述。</p>
+<p><img src="/img3/Hands-On Large Language Models/F4.5.png" alt="F4.1" style="zoom:67%;" /></p>
+<p>为工作选择合适的模型本身可以算作一门艺术。尝试 <span class="math inline">\(\text{Hugging Face}\)</span> <span class="math inline">\(\text{Hub}\)</span> 上可以找到的<strong>数千个预训练模型</strong>是<strong>不可行</strong>的，因此我们需要<strong>高效地选择模型</strong>。话虽如此，有几个模型是<strong>很好的起点</strong>，并能让您了解<strong>这类模型的基线性能</strong>。请将它们视为<strong>可靠的基线</strong>：</p>
+<ul>
+<li><strong><span class="math inline">\(\text{BERT}\)</span> 基础模型</strong> (<span class="math inline">\(\text{uncased}\)</span>)</li>
+<li><strong><span class="math inline">\(\text{RoBERTa}\)</span> 基础模型</strong></li>
+<li><strong><span class="math inline">\(\text{DistilBERT}\)</span> 基础模型</strong> (<span class="math inline">\(\text{uncased}\)</span>)</li>
+<li><strong><span class="math inline">\(\text{DeBERTa}\)</span> 基础模型</strong></li>
+<li><strong><span class="math inline">\(\text{bert-tiny}\)</span></strong></li>
+<li><strong><span class="math inline">\(\text{ALBERT}\)</span> 基础 <span class="math inline">\(\text{v}2\)</span></strong></li>
+</ul>
+<p>对于<strong>任务特定模型</strong>，我们选择 <strong><span class="math inline">\(\text{Twitter-RoBERTa-base}\)</span></strong> <strong>用于情感分析的模型</strong>。这是一个在 <strong><span class="math inline">\(\text{tweets}\)</span></strong> 上为<strong>情感分析微调</strong>的 <span class="math inline">\(\text{RoBERTa}\)</span> 模型。虽然它不是专门为电影评论训练的，但探索这个模型如何<strong>泛化</strong>是很有趣的。</p>
+<p>在选择用于<strong>生成嵌入</strong>的模型时，<strong><span class="math inline">\(\text{MTEB}\)</span> 排行榜</strong>（https://huggingface.co/spaces/mteb/leaderboard）是一个很好的起点。它包含了在<strong>多项任务</strong>上进行<strong>基准测试</strong>的<strong>开源和闭源模型</strong>。请确保<strong>不仅考虑性能</strong>。在实际解决方案中，<strong>推理速度的重要性</strong>不容低估。因此，在本节中，我们将使用 <strong><span class="math inline">\(\text{sentence-transformers/all-mpnet-base-v2}\)</span></strong> 作为<strong>嵌入模型</strong>。它是一个<strong>小巧但性能出色</strong>的模型。</p>
+<h3 id="使用任务特定模型"><strong>使用任务特定模型</strong></h3>
+<p>Using a Task-Specific Model</p>
+<p>既然我们已经选择了<strong>任务特定的表征模型</strong>，让我们从加载模型开始：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> pipeline</span><br><span class="line"><span class="comment"># Path to our HF model</span></span><br><span class="line">model_path = <span class="string">&quot;cardiffnlp/twitter-roberta-base-sentiment-latest&quot;</span></span><br><span class="line"><span class="comment"># Load model into pipeline</span></span><br><span class="line">pipe = pipeline(</span><br><span class="line">model=model_path,</span><br><span class="line">tokenizer=model_path,</span><br><span class="line">return_all_scores=<span class="literal">True</span>,</span><br><span class="line">device=<span class="string">&quot;cuda:0&quot;</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>在加载模型时，我们也加载了<strong>分词器</strong>（<span class="math inline">\(\text{tokenizer}\)</span>），它负责将<strong>输入文本</strong>转换为<strong>单个词元</strong>（<span class="math inline">\(\text{token}\)</span>），如图 <span class="math inline">\(\text{4}-6\)</span> 所示。虽然加载时并非必须指定此参数，因为它会自动加载，但它说明了<strong>底层发生的情况</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F4.6.png" alt="F4.1" style="zoom:67%;" /></p>
+<p>正如<strong>第 <span class="math inline">\(\text{2}\)</span> 章</strong>深入探讨的那样，这些词元是大多数语言模型的<strong>核心</strong>。这些词元的一个主要好处是，即使它们<strong>不在训练数据中</strong>，也可以将它们<strong>组合起来生成表征</strong>，如图 <span class="math inline">\(\text{4}-7\)</span> 所示。</p>
+<p><img src="/img3/Hands-On Large Language Models/F4.7.png" alt="F4.1" style="zoom:67%;" /></p>
+<p>加载所有必需的组件后，我们就可以继续在数据的<strong>测试集</strong>上使用我们的模型：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">from</span> tqdm <span class="keyword">import</span> tqdm</span><br><span class="line"><span class="keyword">from</span> transformers.pipelines.pt_utils <span class="keyword">import</span> KeyDataset</span><br><span class="line"><span class="comment"># Run inference</span></span><br><span class="line">y_pred = []</span><br><span class="line"><span class="keyword">for</span> output <span class="keyword">in</span> tqdm(pipe(KeyDataset(data[<span class="string">&quot;test&quot;</span>], <span class="string">&quot;text&quot;</span>)),</span><br><span class="line">total=<span class="built_in">len</span>(data[<span class="string">&quot;test&quot;</span>])):</span><br><span class="line">negative_score = output[<span class="number">0</span>][<span class="string">&quot;score&quot;</span>]</span><br><span class="line">positive_score = output[<span class="number">2</span>][<span class="string">&quot;score&quot;</span>]</span><br><span class="line">assignment = np.argmax([negative_score, positive_score])</span><br><span class="line">y_pred.append(assignment)</span><br></pre></td></tr></table></figure>
+<p>现在我们已经生成了预测结果，剩下的就是<strong>评估</strong>。我们创建一个小的函数，可以在本章中轻松使用：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> classification_report</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">evaluate_performance</span>(<span class="params">y_true, y_pred</span>):</span><br><span class="line"><span class="string">&quot;&quot;&quot;Create and print the classification report&quot;&quot;&quot;</span></span><br><span class="line">performance = classification_report(</span><br><span class="line">y_true, y_pred,</span><br><span class="line">target_names=[<span class="string">&quot;Negative Review&quot;</span>, <span class="string">&quot;Positive Review&quot;</span>]</span><br><span class="line"></span><br><span class="line">)</span><br><span class="line"><span class="built_in">print</span>(performance)</span><br></pre></td></tr></table></figure>
+<p>接下来，让我们创建<strong>分类报告</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">evaluate_performance(data[<span class="string">&quot;test&quot;</span>][<span class="string">&quot;label&quot;</span>], y_pred)</span><br></pre></td></tr></table></figure>
+<p><img src="/img3/Hands-On Large Language Models/F0.18a.png" alt="F4.1" style="zoom:67%;" /></p>
+<p>要解读生成的<strong>分类报告</strong>，我们首先探讨如何识别正确和不正确的预测。根据我们的预测是<strong>正确</strong>（<span class="math inline">\(\text{True}\)</span>）还是<strong>不正确</strong>（<span class="math inline">\(\text{False}\)</span>），以及我们预测的类别是<strong>正确类别</strong>（<span class="math inline">\(\text{Positive}\)</span>）还是<strong>不正确类别</strong>（<span class="math inline">\(\text{Negative}\)</span>），共有<strong>四种组合</strong>。我们可以将这些组合表示为一个矩阵，通常称为<strong>混淆矩阵</strong>（<span class="math inline">\(\text{confusion matrix}\)</span>），如图 <span class="math inline">\(\text{4}-8\)</span> 所示。</p>
+<p><img src="/img3/Hands-On Large Language Models/F4.8.png" alt="F4.1" style="zoom:67%;" /></p>
+<p>利用<strong>混淆矩阵</strong>，我们可以推导出几种公式来描述模型的质量。在前面生成的分类报告中，我们可以看到<strong>四种</strong>这样的度量方法，即<strong>精确率</strong>（<span class="math inline">\(\text{precision}\)</span>）、<strong>召回率</strong>（<span class="math inline">\(\text{recall}\)</span>）、<strong>准确率</strong>（<span class="math inline">\(\text{accuracy}\)</span>）和 <strong><span class="math inline">\(\text{F}1\)</span> 分数</strong>：</p>
+<ul>
+<li><strong>精确率</strong>（<span class="math inline">\(\text{Precision}\)</span>）衡量的是<strong>找到的项目中有多少是相关的</strong>，这表明了相关结果的<strong>准确性</strong>。</li>
+<li><strong>召回率</strong>（<span class="math inline">\(\text{Recall}\)</span>）指的是<strong>找到了多少相关的类别</strong>，这表明了其<strong>发现所有相关结果的能力</strong>。</li>
+<li><strong>准确率</strong>（<span class="math inline">\(\text{Accuracy}\)</span>）指的是模型在<strong>所有预测中做出正确预测的次数</strong>，这表明了模型的<strong>总体正确性</strong>。</li>
+<li><strong><span class="math inline">\(\text{F}1\)</span> 分数</strong>（<span class="math inline">\(\text{The F1 score}\)</span>）<strong>平衡了精确率和召回率</strong>，以创建模型的<strong>总体性能指标</strong>。</li>
+</ul>
+<p>这四个指标如图 <span class="math inline">\(\text{4}-9\)</span> 所示，该图使用前面提到的分类报告来描述它们。</p>
+<p><img src="/img3/Hands-On Large Language Models/F4.9.png" alt="F4.1" style="zoom:67%;" /></p>
+<p>在本书的示例中，我们将考虑 <strong><span class="math inline">\(\text{F}1\)</span> 分数的加权平均值</strong>（<span class="math inline">\(\text{weighted average of the F1 score}\)</span>），以确保每个类别都得到<strong>平等对待</strong>。我们<strong>预训练的 <span class="math inline">\(\text{BERT}\)</span> 模型</strong>为我们提供了 <strong><span class="math inline">\(\text{0.80}\)</span> 的 <span class="math inline">\(\text{F}1\)</span> 分数</strong>（我们是从 <strong><span class="math inline">\(\text{weighted avg}\)</span> 行</strong>和 <strong><span class="math inline">\(\text{f1-score}\)</span> 列</strong>读取的），这对于一个<strong>不是专门针对我们领域数据训练</strong>的模型来说是<strong>非常出色</strong>的！</p>
+<p>为了提高我们所选模型的性能，我们可以做几件不同的事情，包括选择一个<strong>在我们领域数据</strong>（在本例中是电影评论）上训练的模型，比如 <strong><span class="math inline">\(\text{DistilBERT base uncased finetuned SST}-2\)</span></strong>。我们也可以将重点转向<strong>另一种风味的表征模型</strong>，即<strong>嵌入模型</strong>。</p>
+<h3 id="利用嵌入的分类任务"><strong>利用嵌入的分类任务</strong></h3>
+<p>Classification Tasks That Leverage Embeddings</p>
+<p>在前面的示例中，我们使用了<strong>预训练的任务特定模型</strong>进行情感分析。但是，如果我们找不到一个<strong>针对该特定任务进行预训练</strong>的模型怎么办？我们是否需要自己微调一个表征模型？<strong>答案是否定的！</strong></p>
+<p>如果您拥有足够的计算资源，有时您可能希望<strong>自己微调模型</strong>（参见<strong>第 <span class="math inline">\(\text{11}\)</span> 章</strong>）。然而，并非每个人都能获得<strong>大量计算资源</strong>。这就是<strong>通用嵌入模型</strong>发挥作用的地方。</p>
+<h4 id="监督分类"><strong>监督分类</strong></h4>
+<p>Supervised Classification</p>
+<p>与前面的示例不同，我们可以从一个<strong>更经典的视角</strong>入手，<strong>自己完成部分训练过程</strong>。我们<strong>不直接</strong>使用<strong>表征模型</strong>进行分类，而是使用<strong>嵌入模型</strong>来<strong>生成特征</strong>。然后，这些特征可以<strong>输入到分类器</strong>中，从而创建一个<strong>两步法</strong>，如图 <span class="math inline">\(\text{4}-10\)</span> 所示。</p>
+<p><img src="/img3/Hands-On Large Language Models/F4.10.png" alt="F4.1" style="zoom:67%;" /></p>
+<p>这种分离的一个主要好处是，我们<strong>不需要微调我们的嵌入模型</strong>，这可能是昂贵的。相比之下，我们可以<strong>在 <span class="math inline">\(\text{CPU}\)</span> 上训练一个分类器</strong>，比如<strong>逻辑回归</strong>。</p>
+<p>在<strong>第一步</strong>中，我们使用<strong>嵌入模型</strong>将<strong>文本输入</strong>转换为<strong>嵌入</strong>，如图 <span class="math inline">\(\text{4}-11\)</span> 所示。请注意，该模型同样<strong>保持冻结</strong>，<strong>在训练过程中不会被更新</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F4.11.png" alt="F4.1" style="zoom:67%;" /></p>
+<p>我们可以使用 <strong><span class="math inline">\(\text{sentence-transformer}\)</span></strong>（一个用于利用预训练嵌入模型的流行软件包）来执行此步骤。创建嵌入非常简单：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sentence_transformers <span class="keyword">import</span> SentenceTransformer</span><br><span class="line"><span class="comment"># Load model</span></span><br><span class="line">model = SentenceTransformer(<span class="string">&quot;sentence-transformers/all-mpnet-base-v2&quot;</span>)</span><br><span class="line"><span class="comment"># Convert text to embeddings</span></span><br><span class="line">train_embeddings = model.encode(data[<span class="string">&quot;train&quot;</span>][<span class="string">&quot;text&quot;</span>], show_progress_bar=<span class="literal">True</span>)</span><br><span class="line">test_embeddings = model.encode(data[<span class="string">&quot;test&quot;</span>][<span class="string">&quot;text&quot;</span>], show_progress_bar=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+<p>正如我们在<strong>第 <span class="math inline">\(\text{1}\)</span> 章</strong>中介绍的那样，这些<strong>嵌入</strong>是<strong>输入文本的数值表征</strong>。嵌入的<strong>数值数量</strong>或<strong>维度</strong>取决于底层的嵌入模型。让我们探究我们模型的维度：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">train_embeddings.shape</span><br></pre></td></tr></table></figure>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(8530, 768)</span><br></pre></td></tr></table></figure>
+<p>这表明我们 <strong><span class="math inline">\(\text{8,530}\)</span> 个输入文档</strong>中的<strong>每个</strong>都有一个 <strong><span class="math inline">\(\text{768}\)</span> 的嵌入维度</strong>，因此每个嵌入包含 <strong><span class="math inline">\(\text{768}\)</span> 个数值</strong>。</p>
+<p>在<strong>第二步</strong>中，这些嵌入作为<strong>分类器</strong>的<strong>输入特征</strong>，如图 <span class="math inline">\(\text{4}-12\)</span> 所示。该分类器是<strong>可训练的</strong>，<strong>不限于逻辑回归</strong>，只要它执行分类，就可以采用<strong>任何形式</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F4.12.png" alt="F4.1" style="zoom:67%;" /></p>
+<p>我们将使这一步骤保持<strong>简单</strong>，并使用<strong>逻辑回归</strong>作为分类器。要训练它，我们只需使用<strong>生成的嵌入</strong>以及我们的<strong>标签</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.linear_model <span class="keyword">import</span> LogisticRegression</span><br><span class="line"><span class="comment"># Train a logistic regression on our train embeddings</span></span><br><span class="line">clf = LogisticRegression(random_state=<span class="number">42</span>)</span><br><span class="line">clf.fit(train_embeddings, data[<span class="string">&quot;train&quot;</span>][<span class="string">&quot;label&quot;</span>])</span><br></pre></td></tr></table></figure>
+<p>接下来，让我们评估我们的模型：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Predict previously unseen instances</span></span><br><span class="line">y_pred = clf.predict(test_embeddings)</span><br><span class="line">evaluate_performance(data[<span class="string">&quot;test&quot;</span>][<span class="string">&quot;label&quot;</span>], y_pred)</span><br></pre></td></tr></table></figure>
+<p><img src="/img3/Hands-On Large Language Models/F0.19.png" alt="F4.1" style="zoom:67%;" /></p>
+<p>通过在我们的<strong>嵌入</strong>之上训练一个<strong>分类器</strong>，我们设法获得了 <strong><span class="math inline">\(\text{0.85}\)</span> 的 <span class="math inline">\(\text{F}1\)</span> 分数</strong>！这证明了在<strong>保持底层嵌入模型冻结</strong>的情况下，训练一个<strong>轻量级分类器</strong>的可能性。</p>
+<blockquote>
+<p>💡 在本例中，我们使用 <strong><span class="math inline">\(\text{sentence}-\text{transformers}\)</span></strong> 来提取我们的嵌入，它<strong>受益于 <span class="math inline">\(\text{GPU}\)</span> 来加速推理</strong>。然而，我们可以通过使用<strong>外部 <span class="math inline">\(\text{API}\)</span> 来创建嵌入</strong>从而<strong>移除这种 <span class="math inline">\(\text{GPU}\)</span> 依赖</strong>。生成嵌入的流行选择是 <strong><span class="math inline">\(\text{Cohere}\)</span> 和 <span class="math inline">\(\text{OpenAI}\)</span></strong> 提供的服务。因此，这将允许整个管线<strong>完全在 <span class="math inline">\(\text{CPU}\)</span> 上运行</strong>。</p>
+</blockquote>
+<h4 id="如果我们没有带标签的数据怎么办"><strong>如果我们没有带标签的数据怎么办？</strong></h4>
+<p>What If We Do Not Have Labeled Data?</p>
+<p>在我们之前的例子中，我们有可以利用的<strong>带标签的数据</strong>，但在实践中<strong>并非总是如此</strong>。获取带标签的数据是一项<strong>资源密集型任务</strong>，可能需要大量的人力。此外，收集这些标签<strong>是否真的值得</strong>？</p>
+<p>为了验证这一点，我们可以执行<strong>零样本分类</strong>（<span class="math inline">\(\text{zero-shot classification}\)</span>），即<strong>我们没有带标签的数据</strong>，来探索该任务是否可行。尽管我们<strong>知道标签的定义</strong>（它们的名称），但我们<strong>没有带标签的数据</strong>来支持它们。<strong>零样本分类</strong>尝试预测输入文本的标签，<strong>即使它没有经过这些标签的训练</strong>，如图 <span class="math inline">\(\text{4}-13\)</span> 所示。</p>
+<p><img src="/img3/Hands-On Large Language Models/F4.13.png" alt="F4.1" style="zoom:67%;" /></p>
+<p>要使用<strong>嵌入</strong>进行<strong>零样本分类</strong>，我们可以使用一个<strong>巧妙的技巧</strong>。我们可以根据<strong>标签应代表的内容</strong>来<strong>描述它们</strong>。例如，电影评论的<strong>负面标签</strong>可以被描述为“<span class="math inline">\(\text{This is a negative movie review}\)</span>”（这是一条负面电影评论）。通过<strong>描述和嵌入</strong>（<span class="math inline">\(\text{embedding}\)</span>）<strong>标签和文档</strong>，我们就有可以处理的数据了。如图 <span class="math inline">\(\text{4}-14\)</span> 所示，这个过程允许我们<strong>生成自己的目标标签</strong>，而<strong>无需实际拥有任何带标签的数据</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F4.14.png" alt="F4.1" style="zoom:67%;" /></p>
+<p>我们可以像前面那样使用 <strong><span class="math inline">\(\text{.encode}\)</span> 函数</strong>来创建这些<strong>标签嵌入</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Create embeddings for our labels</span></span><br><span class="line">label_embeddings = model.encode([<span class="string">&quot;A negative review&quot;</span>, <span class="string">&quot;A positive review&quot;</span>])</span><br></pre></td></tr></table></figure>
+<p>为了给文档分配标签，我们可以对<strong>文档-标签对</strong>应用<strong>余弦相似度</strong>（<span class="math inline">\(\text{cosine similarity}\)</span>）。这是<strong>向量之间夹角的余弦值</strong>，通过<strong>嵌入的点积</strong>除以<strong>它们的长度的乘积</strong>来计算，如图 <span class="math inline">\(\text{4}-15\)</span> 所示。</p>
+<p><img src="/img3/Hands-On Large Language Models/F4.15.png" alt="F4.1" style="zoom:67%;" /></p>
+<p>我们可以使用<strong>余弦相似度</strong>来检查给定文档与<strong>候选标签描述</strong>的相似程度。<strong>与文档相似度最高的标签</strong>被选中，如图 <span class="math inline">\(\text{4}-16\)</span> 所示。</p>
+<p><img src="/img3/Hands-On Large Language Models/F4.16.png" alt="F4.1" style="zoom:67%;" /></p>
+<p>要在嵌入上执行<strong>余弦相似度</strong>，我们只需比较<strong>文档嵌入</strong>与<strong>标签嵌入</strong>并找到<strong>最匹配的对</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.metrics.pairwise <span class="keyword">import</span> cosine_similarity</span><br><span class="line"><span class="comment"># Find the best matching label for each document</span></span><br><span class="line">sim_matrix = cosine_similarity(test_embeddings, label_embeddings)</span><br><span class="line">y_pred = np.argmax(sim_matrix, axis=<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+<p>就这样！我们<strong>只需要为我们的标签想出名称</strong>就可以执行我们的分类任务。让我们看看这种方法的效果如何：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">evaluate_performance(data[<span class="string">&quot;test&quot;</span>][<span class="string">&quot;label&quot;</span>], y_pred)</span><br></pre></td></tr></table></figure>
+<p><img src="/img3/Hands-On Large Language Models/F0.20.png" alt="F4.1" style="zoom:67%;" /></p>
+<p>如果您熟悉使用基于 <span class="math inline">\(\text{Transformer}\)</span> 的模型进行<strong>零样本分类</strong>，您可能会想知道为什么我们选择用<strong>嵌入</strong>而不是 <span class="math inline">\(\text{Transformer}\)</span> 模型来演示它。虽然<strong>自然语言推理模型</strong>在零样本分类方面表现出色，但这里的示例旨在展示<strong>嵌入在各种任务中的灵活性</strong>。正如您将在本书中看到的那样，<strong>嵌入</strong>几乎存在于所有<strong>语言 <span class="math inline">\(\text{AI}\)</span> 用例</strong>中，而且通常是一个<strong>被低估但极其重要的组件</strong>。</p>
+<p>考虑到我们<strong>根本没有使用任何带标签的数据</strong>，<span class="math inline">\(\text{0.78}\)</span> 的 <strong><span class="math inline">\(\text{F}1\)</span> 分数</strong>是<strong>相当令人印象深刻</strong>的！这正好说明了<strong>嵌入</strong>是多么<strong>通用和有用</strong>，特别是如果你在使用它们时能<strong>发挥一点创意</strong>。</p>
+<p>让我们来测试一下这种创意。我们决定使用“<strong>一个负面/正面评论</strong>”作为标签名称，但这可以改进。相反，我们可以通过使用“<strong>一个非常负面/正面的电影评论</strong>”来使它们<strong>更具体、更贴近我们的数据</strong>。这样，嵌入将捕捉到它是一个<strong>电影评论</strong>，并将更关注<strong>两个标签的极端</strong>。<strong>请尝试一下</strong>，探索它如何影响结果。</p>
+<h3 id="使用生成模型进行文本分类"><strong>使用生成模型进行文本分类</strong></h3>
+<p>Text Classification with Generative Models</p>
+<p>使用<strong>生成语言模型</strong>（例如 <span class="math inline">\(\text{OpenAI}\)</span> 的 <span class="math inline">\(\text{GPT}\)</span> 模型）进行分类，与我们迄今为止所做的工作<strong>略有不同</strong>。这些模型将<strong>文本作为输入</strong>并<strong>生成文本</strong>，因此被恰当地命名为<strong>序列到序列模型</strong>（<span class="math inline">\(\text{sequence}-\text{to}-\text{sequence models}\)</span>）。这与我们的<strong>任务特定模型</strong>形成了<strong>鲜明对比</strong>，后者输出的是一个<strong>类别</strong>，如图 <span class="math inline">\(\text{4}-17\)</span> 所示。</p>
+<p><img src="/img3/Hands-On Large Language Models/F4.17.png" alt="F4.1" style="zoom:67%;" /></p>
+<p>这些<strong>生成模型</strong>通常在<strong>各种任务</strong>上进行训练，并且通常<strong>不能直接执行</strong>您的用例。例如，如果我们给一个生成模型一个<strong>没有任何上下文</strong>的电影评论，它<strong>不知道</strong>该如何处理。</p>
+<p>相反，我们需要<strong>帮助它理解上下文</strong>并<strong>引导它找到我们正在寻找的答案</strong>。如图 <span class="math inline">\(\text{4}-18\)</span> 所示，这个<strong>引导过程</strong>主要是通过您提供给模型的<strong>指令</strong>或<strong>提示</strong>（<span class="math inline">\(\text{prompt}\)</span>）来完成的。<strong>迭代地改进您的提示</strong>以获得您偏好的输出被称为<strong>提示工程</strong>（<span class="math inline">\(\text{prompt engineering}\)</span>）。</p>
+<p><img src="/img3/Hands-On Large Language Models/F4.18.png" alt="F4.1" style="zoom:67%;" /></p>
+<p>在本节中，我们将演示如何利用<strong>不同类型的生成模型</strong>来使用我们的<strong>烂番茄数据集</strong>进行分类。</p>
+<h4 id="使用文本到文本传输-texttransformer"><strong>使用文本到文本传输 <span class="math inline">\(\text{Transformer}\)</span></strong></h4>
+<p>Using the Text-to-Text Transfer Transformer</p>
+<p>在本书中，我们将主要探讨<strong>仅编码器</strong>（表征）模型（如 <span class="math inline">\(\text{BERT}\)</span>）和<strong>仅解码器</strong>（生成）模型（如 <span class="math inline">\(\text{ChatGPT}\)</span>）。然而，正如<strong>第 <span class="math inline">\(\text{1}\)</span> 章</strong>所讨论的，<strong>原始 <span class="math inline">\(\text{Transformer}\)</span> 架构</strong>实际上由<strong>编码器-解码器架构</strong>组成。与仅解码器模型一样，这些<strong>编码器-解码器模型</strong>是<strong>序列到序列模型</strong>，通常属于<strong>生成模型</strong>的范畴。</p>
+<p>利用这种架构的一个有趣的<strong>模型家族</strong>是<strong>文本到文本传输 <span class="math inline">\(\text{Transformer}\)</span></strong> 或 <strong><span class="math inline">\(\text{T5}\)</span> 模型</strong>。如图 <span class="math inline">\(\text{4}-19\)</span> 所示，它的架构类似于<strong>原始 <span class="math inline">\(\text{Transformer}\)</span></strong>，其中<strong><span class="math inline">\(\text{12}\)</span> 个解码器和 <span class="math inline">\(\text{12}\)</span> 个编码器</strong>堆叠在一起。</p>
+<p><img src="/img3/Hands-On Large Language Models/F4.19.png" alt="F4.1" style="zoom:67%;" /></p>
+<p>借助这种架构，这些模型首先使用<strong>掩码语言建模</strong>（<span class="math inline">\(\text{masked language modeling}\)</span>）进行<strong>预训练</strong>。如图 <span class="math inline">\(\text{4}-20\)</span> 所示，在训练的<strong>第一步</strong>中，在预训练期间，<strong>被掩盖的不是单个词元，而是词元集</strong>（或<strong>词元跨度</strong>）。</p>
+<p><img src="/img3/Hands-On Large Language Models/F4.20.png" alt="F4.1" style="zoom:67%;" /></p>
+<p>训练的<strong>第二步</strong>，即<strong>对基础模型进行微调</strong>，才是<strong>真正神奇</strong>的地方。<strong>不是</strong>针对一个特定任务对模型进行微调，而是将<strong>每个任务都转换为序列到序列任务并同时进行训练</strong>。如图 <span class="math inline">\(\text{4}-21\)</span> 所示，这使得模型能够在<strong>各种任务</strong>上进行训练。</p>
+<p><img src="/img3/Hands-On Large Language Models/F4.21.png" alt="F4.1" style="zoom:67%;" /></p>
+<p>这种<strong>微调方法</strong>在论文《扩展指令微调语言模型》 中得到了扩展，该论文在微调过程中引入了<strong>一千多个任务</strong>，使其<strong>更紧密地遵循</strong>我们从 <span class="math inline">\(\text{GPT}\)</span> 模型中了解到的<strong>指令</strong>。这产生了 <strong><span class="math inline">\(\text{Flan-T5}\)</span> 家族的模型</strong>，它们受益于这种<strong>广泛的任务多样性</strong>。</p>
+<p>为了使用这个<strong>预训练的 <span class="math inline">\(\text{Flan-T5}\)</span> 模型</strong>进行分类，我们将首先通过 <strong>“<span class="math inline">\(\text{text}2\text{text}-\text{generation}\)</span>”任务</strong>来加载它，该任务通常是为这些<strong>编码器-解码器模型</strong>保留的：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Load our model</span></span><br><span class="line">pipe = pipeline(</span><br><span class="line"><span class="string">&quot;text2text-generation&quot;</span>,</span><br><span class="line">model=<span class="string">&quot;google/flan-t5-small&quot;</span>,</span><br><span class="line">device=<span class="string">&quot;cuda:0&quot;</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><span class="math inline">\(\text{Flan-T5}\)</span> 模型有各种尺寸（<span class="math inline">\(\text{flan}-\text{t5}-\text{small}/\text{base}/\text{large}/\text{xl}/\text{xxl}\)</span>），我们将使用<strong>最小的</strong>来稍微加快速度。不过，您可以随意尝试更大的模型，看看是否可以改进结果。</p>
+<p>与我们的<strong>任务特定模型</strong>相比，我们<strong>不能</strong>只是给模型一些文本，然后希望它能输出情感。相反，我们必须<strong>指示</strong>模型这样做。</p>
+<p>因此，我们为每个文档<strong>加上</strong>“<span class="math inline">\(\text{Is the following sentence positive or negative?}\)</span>”的提示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Prepare our data</span></span><br><span class="line">prompt = <span class="string">&quot;Is the following sentence positive or negative? &quot;</span></span><br><span class="line">data = data.<span class="built_in">map</span>(<span class="keyword">lambda</span> example: &#123;<span class="string">&quot;t5&quot;</span>: prompt + example[<span class="string">&#x27;text&#x27;</span>]&#125;)</span><br><span class="line">data</span><br></pre></td></tr></table></figure>
+<p><img src="/img3/Hands-On Large Language Models/F0.21.png" alt="F4.1" style="zoom:67%;" /></p>
+<p>在创建了我们<strong>更新后的数据</strong>之后，我们可以运行<strong>管线</strong>，类似于<strong>任务特定模型</strong>的示例：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Run inference</span></span><br><span class="line">y_pred = []</span><br><span class="line"><span class="keyword">for</span> output <span class="keyword">in</span> tqdm(pipe(KeyDataset(data[<span class="string">&quot;test&quot;</span>], <span class="string">&quot;t5&quot;</span>)),</span><br><span class="line">total=<span class="built_in">len</span>(data[<span class="string">&quot;test&quot;</span>])):</span><br><span class="line">text = output[<span class="number">0</span>][<span class="string">&quot;generated_text&quot;</span>]</span><br><span class="line">y_pred.append(<span class="number">0</span> <span class="keyword">if</span> text == <span class="string">&quot;negative&quot;</span> <span class="keyword">else</span> <span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+<p>由于这个模型<strong>生成文本</strong>，我们确实需要将<strong>文本输出转换为数值</strong>。输出词“<span class="math inline">\(\text{negative}\)</span>”被映射为 <strong><span class="math inline">\(\text{0}\)</span></strong>，而“<span class="math inline">\(\text{positive}\)</span>”被映射为 <strong><span class="math inline">\(\text{1}\)</span></strong>。</p>
+<p>现在，这些数值允许我们以<strong>与之前相同的方式</strong>测试模型的质量：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">evaluate_performance(data[<span class="string">&quot;test&quot;</span>][<span class="string">&quot;label&quot;</span>], y_pred)</span><br></pre></td></tr></table></figure>
+<p><img src="/img3/Hands-On Large Language Models/F0.22.png" alt="F4.1" style="zoom:67%;" /></p>
+<p><strong><span class="math inline">\(\text{F}1\)</span> 分数为 <span class="math inline">\(\text{0.84}\)</span></strong>，显然这款 <strong><span class="math inline">\(\text{Flan}-\text{T5}\)</span> 模型</strong>是<strong>生成模型能力</strong>的<strong>惊人初探</strong>。</p>
+<h4 id="textchatgpt-用于分类"><strong><span class="math inline">\(\text{ChatGPT}\)</span> 用于分类</strong></h4>
+<p>ChatGPT for Classification</p>
+<p>尽管我们在本书中主要关注<strong>开源模型</strong>，但<strong>语言 <span class="math inline">\(\text{AI}\)</span> 领域的另一个主要组成部分</strong>是<strong>闭源模型</strong>，特别是 <strong><span class="math inline">\(\text{ChatGPT}\)</span></strong>。虽然<strong>原始 <span class="math inline">\(\text{ChatGPT}\)</span> 模型 (<span class="math inline">\(\text{GPT}-3.5\)</span>) 的底层架构</strong>并未公开，但从它的名称我们可以推断，它基于我们迄今为止在 <span class="math inline">\(\text{GPT}\)</span> 模型中看到的<strong>仅解码器架构</strong>。</p>
+<p>幸运的是，<span class="math inline">\(\text{OpenAI}\)</span> 分享了训练过程的概述，其中涉及一个重要组成部分，即<strong>偏好调优</strong>（<span class="math inline">\(\text{preference tuning}\)</span>）。如图 <span class="math inline">\(\text{4}-22\)</span> 所示，<span class="math inline">\(\text{OpenAI}\)</span> 首先<strong>手动创建了对输入提示（</strong>instruction data <strong>指令数据</strong>）的期望输出<strong>，并使用该数据创建了其模型的</strong>第一个变体。</p>
+<p><img src="/img3/Hands-On Large Language Models/F4.22.png" alt="F4.1" style="zoom:67%;" /></p>
+<p><span class="math inline">\(\text{OpenAI}\)</span> 使用由此产生的模型生成了<strong>多个输出</strong>，并<strong>手动将其从最好到最差进行排名</strong>。如图 <span class="math inline">\(\text{4}-23\)</span> 所示，这个排名展示了对某些输出的<strong>偏好</strong>（<strong>偏好数据</strong>），并被用于创建其<strong>最终模型</strong> <span class="math inline">\(\text{ChatGPT}\)</span>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F4.23.png" alt="F4.1" style="zoom:67%;" /></p>
+<p>使用<strong>偏好数据</strong>（preference data）而非<strong>指令数据</strong>（instruction data）的一个主要好处是它所代表的<strong>细微差别</strong>。通过展示<strong>好输出和更好输出之间的区别</strong>，生成模型学会了生成<strong>符合人类偏好</strong>的文本。在<strong>第 <span class="math inline">\(\text{12}\)</span> 章</strong>中，我们将探讨这些<strong>微调</strong>和<strong>偏好调优</strong>方法的工作原理，以及如何<strong>自己进行</strong>。</p>
+<p>使用<strong>闭源模型</strong>的过程与我们迄今为止看到的<strong>开源示例</strong>大不相同。<strong>我们不加载模型</strong>，而是通过 <strong><span class="math inline">\(\text{OpenAI}\)</span> 的 <span class="math inline">\(\text{API}\)</span></strong> 来访问模型。</p>
+<p>在我们深入研究分类示例之前，您首先需要在 <a target="_blank" rel="noopener" href="https://oreil.ly/AEXvA">https://oreil.ly/AEXvA</a> 上创建一个<strong>免费账户</strong>，并在 <a target="_blank" rel="noopener" href="https://oreil.ly/lrTXl">https://oreil.ly/lrTXl</a> 创建一个 <strong><span class="math inline">\(\text{API}\)</span> 密钥</strong>。完成之后，您就可以使用您的 <span class="math inline">\(\text{API}\)</span> 与 <span class="math inline">\(\text{OpenAI}\)</span> 的服务器进行通信。</p>
+<p>我们可以使用此密钥来创建<strong>客户端</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> openai</span><br><span class="line"><span class="comment"># Create client</span></span><br><span class="line">client = openai.OpenAI(api_key=<span class="string">&quot;YOUR_KEY_HERE&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p>使用这个客户端，我们创建了 <strong><span class="math inline">\(\text{chatgpt\_generation}\)</span> 函数</strong>，它允许我们根据<strong>特定的提示、输入文档</strong>和<strong>选定的模型</strong>来<strong>生成文本</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">chatgpt_generation</span>(<span class="params">prompt, document, model=<span class="string">&quot;gpt-3.5-turbo-0125&quot;</span></span>):</span><br><span class="line"><span class="string">&quot;&quot;&quot;Generate an output based on a prompt and an input document.&quot;&quot;&quot;</span></span><br><span class="line">messages=[</span><br><span class="line">&#123;</span><br><span class="line"><span class="string">&quot;role&quot;</span>: <span class="string">&quot;system&quot;</span>,</span><br><span class="line"><span class="string">&quot;content&quot;</span>: <span class="string">&quot;You are a helpful assistant.&quot;</span></span><br><span class="line">&#125;,</span><br><span class="line">&#123;</span><br><span class="line"><span class="string">&quot;role&quot;</span>: <span class="string">&quot;user&quot;</span>,</span><br><span class="line"><span class="string">&quot;content&quot;</span>: prompt.replace(<span class="string">&quot;[DOCUMENT]&quot;</span>, document)</span><br><span class="line">&#125;</span><br><span class="line">]</span><br><span class="line">chat_completion = client.chat.completions.create(</span><br><span class="line">messages=messages,</span><br><span class="line">model=model,</span><br><span class="line">temperature=<span class="number">0</span></span><br><span class="line">)</span><br><span class="line"><span class="keyword">return</span> chat_completion.choices[<span class="number">0</span>].message.content</span><br></pre></td></tr></table></figure>
+<p>接下来，我们将需要创建一个<strong>模板</strong>来要求模型执行分类：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Define a prompt template as a base</span></span><br><span class="line">prompt = <span class="string">&quot;&quot;&quot;Predict whether the following document is a positive or negative</span></span><br><span class="line"><span class="string">movie review:</span></span><br><span class="line"><span class="string">[DOCUMENT]</span></span><br><span class="line"><span class="string">If it is positive return 1 and if it is negative return 0. Do not give any</span></span><br><span class="line"><span class="string">other answers.</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="comment"># Predict the target using GPT</span></span><br><span class="line">document = <span class="string">&quot;unpretentious , charming , quirky , original&quot;</span></span><br><span class="line">chatgpt_generation(prompt, document)</span><br></pre></td></tr></table></figure>
+<p>这个<strong>模板只是一个示例</strong>，您可以随意更改。目前，我们将其保持<strong>尽可能简单</strong>，以说明如何使用这样的模板。</p>
+<p>在您将此方法用于一个<strong>潜在的大数据集</strong>之前，始终<strong>跟踪您的使用量</strong>非常重要。如果您执行<strong>大量请求</strong>，像 <strong><span class="math inline">\(\text{OpenAI}\)</span></strong> 提供的<strong>外部 <span class="math inline">\(\text{API}\)</span></strong> 可能会<strong>很快变得昂贵</strong>。在撰写本文时，使用 <strong>“<span class="math inline">\(\text{gpt}-\text{3.5}-\text{turbo}-\text{0125}\)</span>”模型</strong>运行我们的测试数据集成本为 <strong><span class="math inline">\(\text{3}\)</span> 美分</strong>，这包含在<strong>免费账户</strong>内，但未来可能会有所变化。</p>
+<blockquote>
+<p>💡 在处理外部 <span class="math inline">\(\text{API}\)</span> 时，您可能会遇到<strong>速率限制错误</strong>（<span class="math inline">\(\text{rate limit errors}\)</span>）。当您<strong>过于频繁地调用 <span class="math inline">\(\text{API}\)</span></strong> 时，就会出现这些错误，因为某些 <span class="math inline">\(\text{API}\)</span> 可能会限制您<strong>每分钟或每小时的使用速率</strong>。为了防止这些错误，我们可以实现几种<strong>重试请求</strong>的方法，包括一种称为<strong>指数退避</strong>（<span class="math inline">\(\text{exponential backoff}\)</span>）的方法。它会在<strong>每次遇到速率限制错误时执行短暂的休眠</strong>，然后<strong>重试失败的请求</strong>。如果再次失败，<strong>休眠时间会增加</strong>，直到请求成功或达到<strong>最大重试次数</strong>。</p>
+<p>要将其与 <span class="math inline">\(\text{OpenAI}\)</span> 配合使用，有一个很好的指南可以帮助您入门。</p>
+</blockquote>
+<p>接下来，我们可以对测试数据集中的<strong>所有评论</strong>运行此函数，以获取其预测结果。如果您想<strong>节省</strong>您的（免费）<strong>额度</strong>用于其他任务，可以跳过此步骤。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># You can skip this if you want to save your (free) credits</span></span><br><span class="line">predictions = [</span><br><span class="line">chatgpt_generation(prompt, doc) <span class="keyword">for</span> doc <span class="keyword">in</span> tqdm(data[<span class="string">&quot;test&quot;</span>][<span class="string">&quot;text&quot;</span>])</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<p>与前面的示例一样，我们需要将输出从<strong>字符串转换为整数</strong>以评估其性能：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Extract predictions</span></span><br><span class="line">y_pred = [<span class="built_in">int</span>(pred) <span class="keyword">for</span> pred <span class="keyword">in</span> predictions]</span><br><span class="line"><span class="comment"># Evaluate performance</span></span><br><span class="line">evaluate_performance(data[<span class="string">&quot;test&quot;</span>][<span class="string">&quot;label&quot;</span>], y_pred)</span><br></pre></td></tr></table></figure>
+<p><img src="/img3/Hands-On Large Language Models/F0.23.png" alt="F4.1" style="zoom:67%;" /></p>
+<p><strong><span class="math inline">\(\text{0.91}\)</span> 的 <span class="math inline">\(\text{F}1\)</span> 分数</strong>已经让我们<strong>一睹将生成式 <span class="math inline">\(\text{AI}\)</span> 带给大众的模型</strong>的性能。然而，由于我们<strong>不知道该模型是在什么数据上训练的</strong>，我们不能轻易使用这些类型的指标来评估模型。据我们所知，它<strong>很可能</strong>在我们的数据集上进行过训练！</p>
+<p>在<strong>第 <span class="math inline">\(\text{12}\)</span> 章</strong>中，我们将探讨如何在一<strong>些更具普遍性的任务</strong>上<strong>评估开源和闭源模型</strong>。</p>
+<h3 id="总结"><strong>总结</strong></h3>
+<p>在本章中，我们讨论了执行各种<strong>分类任务</strong>的许多不同技术，从<strong>微调整个模型</strong>到<strong>完全不进行调优</strong>！<strong>对文本数据进行分类</strong>并非表面上看起来那么简单，其中蕴含着<strong>令人难以置信的创意技术</strong>。</p>
+<p>在本章中，我们探索了使用<strong>生成式</strong>和<strong>表征式语言模型</strong>进行<strong>文本分类</strong>。我们的目标是为输入文本分配一个<strong>标签或类别</strong>，以进行<strong>评论情感的分类</strong>。</p>
+<p>我们探索了<strong>两种类型的表征模型</strong>：<strong>任务特定模型</strong>和<strong>嵌入模型</strong>。<strong>任务特定模型</strong>是在一个<strong>大型数据集</strong>上专门为<strong>情感分析</strong>预训练的，并向我们展示了预训练模型是<strong>分类文档</strong>的绝佳技术。<strong>嵌入模型</strong>用于生成<strong>多用途嵌入</strong>，我们将其用作<strong>训练分类器</strong>的输入。</p>
+<p>类似地，我们探索了<strong>两种类型的生成模型</strong>：一个<strong>开源编码器-解码器模型</strong>（<span class="math inline">\(\text{Flan}-\text{T5}\)</span>）和一个<strong>闭源仅解码器模型</strong>（<span class="math inline">\(\text{GPT}-\text{3.5}\)</span>）。我们在文本分类中使用了这些生成模型，而<strong>不需要对领域数据或带标签的数据集进行特定（额外）的训练</strong>。</p>
+<p>在下一章中，我们将继续进行分类，但重点将转向<strong>无监督分类</strong>。如果我们的文本数据<strong>没有任何标签</strong>，我们可以做些什么？我们可以提取什么信息？我们将专注于<strong>对数据进行聚类</strong>以及使用<strong>主题建模技术</strong>为聚类进行命名。</p>
+<p>书籍各章的机翻md文件：<br />
+<a href="/2025/04/01/Hands-On%20Large%20Language%20Models%20%E7%9B%AE%E5%BD%95%20%E5%89%8D%E8%A8%80/" title="《Hands-On Large Language Models》目录及前言">《Hands-On Large Language Models》目录及前言</a><br />
+<a href="/2025/04/02/Hands-On%20Large%20Language%20Models%201/" title="《Hands-On Large Language Models》第1章 大型语言模型简介">《Hands-On Large Language Models》第1章 大型语言模型简介</a><br />
+<a href="/2025/04/03/Hands-On%20Large%20Language%20Models%202/" title="《Hands-On Large Language Models》第2章 词元与嵌入">《Hands-On Large Language Models》第2章 词元与嵌入</a><br />
+<a href="/2025/04/04/Hands-On%20Large%20Language%20Models%203/" title="《Hands-On Large Language Models》第3章 深入了解大型语言模型">《Hands-On Large Language Models》第3章 深入了解大型语言模型</a><br />
+<a href="/2025/04/05/Hands-On%20Large%20Language%20Models%204/" title="《Hands-On Large Language Models》第4章 文本分类">《Hands-On Large Language Models》第4章 文本分类</a><br />
+<a href="/2025/04/06/Hands-On%20Large%20Language%20Models%205/" title="《Hands-On Large Language Models》第5章 文本聚类和主题建模">《Hands-On Large Language Models》第5章 文本聚类和主题建模</a><br />
+<a href="/2025/04/07/Hands-On%20Large%20Language%20Models%206/" title="《Hands-On Large Language Models》第6章 提示工程">《Hands-On Large Language Models》第6章 提示工程</a><br />
+<a href="/2025/04/08/Hands-On%20Large%20Language%20Models%207/" title="《Hands-On Large Language Models》第7章 高级文本生成技术与工具">《Hands-On Large Language Models》第7章 高级文本生成技术与工具</a><br />
+<a href="/2025/04/09/Hands-On%20Large%20Language%20Models%208/" title="《Hands-On Large Language Models》第8章 语义搜索与检索增强生成">《Hands-On Large Language Models》第8章 语义搜索与检索增强生成</a><br />
+<a href="/2025/04/10/Hands-On%20Large%20Language%20Models%209/" title="《Hands-On Large Language Models》第9章 多模态大型语言模型">《Hands-On Large Language Models》第9章 多模态大型语言模型</a><br />
+<a href="/2025/04/11/Hands-On%20Large%20Language%20Models%2010/" title="《Hands-On Large Language Models》第10章 创建文本嵌入模型">《Hands-On Large Language Models》第10章 创建文本嵌入模型</a><br />
+<a href="/2025/04/12/Hands-On%20Large%20Language%20Models%2011/" title="《Hands-On Large Language Models》第11章 微调用于分类的表征模型">《Hands-On Large Language Models》第11章 微调用于分类的表征模型</a><br />
+<a href="/2025/04/13/Hands-On%20Large%20Language%20Models%2012/" title="《Hands-On Large Language Models》第12章 生成模型的微调">《Hands-On Large Language Models》第12章 生成模型的微调</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/04/04/Hands-On%20Large%20Language%20Models%203/" rel="prev" title="《Hands-On Large Language Models》第3章 深入了解大型语言模型">
+                  <i class="fa fa-chevron-left"></i> 《Hands-On Large Language Models》第3章 深入了解大型语言模型
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/04/06/Hands-On%20Large%20Language%20Models%205/" rel="next" title="《Hands-On Large Language Models》第5章 文本聚类和主题建模">
+                  《Hands-On Large Language Models》第5章 文本聚类和主题建模 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

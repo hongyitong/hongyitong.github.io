@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"enable":true,"style":"tabs","active":"giscus","storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+
+
+    <meta name="description" content="第 \(\text{11}\) 章 微调用于分类的表征模型 Fine-Tuning Representation Models for Classification 在第 \(\text{4}\) 章中，我们使用预训练模型来对文本进行分类。我们保持了预训练模型，没有进行任何修改。这可能会让您思考，如果我们对它们进行微调会发生什么？ 如果我们有足够的数据，微调往往会带来性能最佳的模型。在本章中，我们">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《Hands-On Large Language Models》第11章 微调用于分类的表征模型">
+<meta property="og:url" content="http://hongyitong.github.io/2025/04/12/Hands-On%20Large%20Language%20Models%2011/index.html">
+<meta property="og:site_name" content="墨语浮生">
+<meta property="og:description" content="第 \(\text{11}\) 章 微调用于分类的表征模型 Fine-Tuning Representation Models for Classification 在第 \(\text{4}\) 章中，我们使用预训练模型来对文本进行分类。我们保持了预训练模型，没有进行任何修改。这可能会让您思考，如果我们对它们进行微调会发生什么？ 如果我们有足够的数据，微调往往会带来性能最佳的模型。在本章中，我们">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F11.1.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F11.2.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F11.3.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F11.4.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F11.5.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F11.6.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F11.7.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F11.8.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F11.9.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F11.10.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F11.11.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F11.12.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F11.13.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F11.14.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F11.15.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F11.16.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F11.17.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F11.18.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F11.19.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F11.20.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F11.21.png">
+<meta property="article:published_time" content="2025-04-11T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-02-27T02:51:10.539Z">
+<meta property="article:author" content="Rayman.hung">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F11.1.png">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2025/04/12/Hands-On%20Large%20Language%20Models%2011/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2025/04/12/Hands-On%20Large%20Language%20Models%2011/","path":"2025/04/12/Hands-On Large Language Models 11/","title":"《Hands-On Large Language Models》第11章 微调用于分类的表征模型"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>《Hands-On Large Language Models》第11章 微调用于分类的表征模型 | 墨语浮生</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZXGEJDXQ33"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-ZXGEJDXQ33","only_pageview":false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?ff358b9c7e949787b074bfc9c8019a9d"></script>
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">墨语浮生</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC-text11-%E7%AB%A0-%E5%BE%AE%E8%B0%83%E7%94%A8%E4%BA%8E%E5%88%86%E7%B1%BB%E7%9A%84%E8%A1%A8%E5%BE%81%E6%A8%A1%E5%9E%8B"><span class="nav-text">第 \(\text{11}\) 章 微调用于分类的表征模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%89%E7%9B%91%E7%9D%A3%E5%88%86%E7%B1%BB"><span class="nav-text">有监督分类</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BE%AE%E8%B0%83%E9%A2%84%E8%AE%AD%E7%BB%83-textbert-%E6%A8%A1%E5%9E%8B"><span class="nav-text">微调预训练 \(\text{BERT}\) 模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%86%BB%E7%BB%93%E5%B1%82"><span class="nav-text">冻结层</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B0%91%E6%A0%B7%E6%9C%AC%E5%88%86%E7%B1%BB"><span class="nav-text">少样本分类</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#textsetfit-%E4%BD%BF%E7%94%A8%E5%B0%91%E9%87%8F%E8%AE%AD%E7%BB%83%E7%A4%BA%E4%BE%8B%E8%BF%9B%E8%A1%8C%E9%AB%98%E6%95%88%E5%BE%AE%E8%B0%83"><span class="nav-text">\(\text{SetFit}\): 使用少量训练示例进行高效微调</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B0%91%E6%A0%B7%E6%9C%AC%E5%88%86%E7%B1%BB%E7%9A%84%E5%BE%AE%E8%B0%83"><span class="nav-text">少样本分类的微调</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%8E%A9%E7%A0%81%E8%AF%AD%E8%A8%80%E5%BB%BA%E6%A8%A1%E8%BF%9B%E8%A1%8C%E6%8C%81%E7%BB%AD%E9%A2%84%E8%AE%AD%E7%BB%83"><span class="nav-text">使用掩码语言建模进行持续预训练</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%91%BD%E5%90%8D%E5%AE%9E%E4%BD%93%E8%AF%86%E5%88%AB"><span class="nav-text">命名实体识别</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%BA%E5%91%BD%E5%90%8D%E5%AE%9E%E4%BD%93%E8%AF%86%E5%88%AB%E5%87%86%E5%A4%87%E6%95%B0%E6%8D%AE"><span class="nav-text">为命名实体识别准备数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%91%BD%E5%90%8D%E5%AE%9E%E4%BD%93%E8%AF%86%E5%88%AB%E7%9A%84%E5%BE%AE%E8%B0%83"><span class="nav-text">命名实体识别的微调</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、心情记录</div>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2025/04/12/Hands-On%20Large%20Language%20Models%2011/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="《Hands-On Large Language Models》第11章 微调用于分类的表征模型 | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《Hands-On Large Language Models》第11章 微调用于分类的表征模型
+        </h1>
+
+        </h1>
+          
+             <p class="post-subtitle">第11章 微调用于分类的表征模型</p>
+          
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-04-12 00:00:00" itemprop="dateCreated datePublished" datetime="2025-04-12T00:00:00+08:00">2025-04-12</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="第-text11-章-微调用于分类的表征模型"><strong>第 <span class="math inline">\(\text{11}\)</span> 章</strong> <strong>微调用于分类的表征模型</strong></h2>
+<p>Fine-Tuning Representation Models for Classification</p>
+<p>在第 <span class="math inline">\(\text{4}\)</span> 章中，我们使用<strong>预训练模型</strong>来对文本进行<strong>分类</strong>。我们<strong>保持</strong>了预训练模型，<strong>没有进行任何修改</strong>。这可能会让您思考，如果我们对它们进行<strong>微调</strong>会发生什么？</p>
+<p>如果我们有<strong>足够的数据</strong>，<strong>微调</strong>往往会带来<strong>性能最佳</strong>的模型。在本章中，我们将介绍几种<strong>微调 <span class="math inline">\(\text{BERT}\)</span> 模型</strong>的方法和应用。“<span class="math inline">\(\text{Supervised Classification}\)</span>”（第 <span class="math inline">\(\text{323}\)</span> 页）将演示<strong>微调分类模型的一般过程</strong>。然后，在“<span class="math inline">\(\text{Few-Shot Classification}\)</span>”（第 <span class="math inline">\(\text{333}\)</span> 页）中，我们将研究 <strong><span class="math inline">\(\text{SetFit}\)</span></strong>，这是一种使用<strong>少量训练示例</strong>高效微调高性能模型的方法。在“<span class="math inline">\(\text{Continued Pretraining with Masked Language Modeling}\)</span>”（第 <span class="math inline">\(\text{340}\)</span> 页）中，我们将探索<strong>如何继续训练</strong>一个预训练模型。最后，将在“<span class="math inline">\(\text{Named-Entity Recognition}\)</span>”（第 <span class="math inline">\(\text{345}\)</span> 页）中探讨<strong>词元级别</strong>的分类。</p>
+<p>我们将<strong>重点关注非生成性任务</strong>，因为<strong>生成模型</strong>将在第 <span class="math inline">\(\text{12}\)</span> 章中介绍。</p>
+<h3 id="有监督分类"><strong>有监督分类</strong></h3>
+<p>Supervised Classification</p>
+<p>在第 <span class="math inline">\(\text{4}\)</span> 章中，我们通过利用<strong>预训练的表征模型</strong>探索了<strong>有监督分类任务</strong>，这些模型要么经过<strong>预测情感的训练</strong>（<strong>任务特定模型</strong> <span class="math inline">\(\text{task-specific model}\)</span>），要么经过<strong>生成嵌入的训练</strong>（<strong>嵌入模型</strong> <span class="math inline">\(\text{embedding model}\)</span>），如图 <span class="math inline">\(\text{11}-1\)</span> 所示。</p>
+<p><img src="/img3/Hands-On Large Language Models/F11.1.png" alt="F11.1" style="zoom:67%;" /></p>
+<p>这两个模型都<strong>保持冻结</strong>（<span class="math inline">\(\text{frozen}\)</span>，即<strong>不可训练</strong>），以展示<strong>利用预训练模型进行分类任务的潜力</strong>。<strong>嵌入模型</strong>使用一个<strong>单独的可训练分类头</strong>（<span class="math inline">\(\text{classifier}\)</span>）来预测电影评论的<strong>情感</strong>。</p>
+<p>在本节中，我们将采取类似的方法，但<strong>允许模型和分类头在训练期间都得到更新</strong>。如图 <span class="math inline">\(\text{11}-2\)</span> 所示，我们将<strong>微调</strong>一个<strong>预训练的 <span class="math inline">\(\text{BERT}\)</span> 模型</strong>来创建一个<strong>任务特定模型</strong>，而不是使用嵌入模型，这类似于我们在第 <span class="math inline">\(\text{2}\)</span> 章中使用的模型。与嵌入模型的方法相比，我们将<strong>作为一个单一架构</strong>对<strong>表征模型和分类头</strong>进行<strong>微调</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F11.2.png" alt="F11.1" style="zoom:67%;" /></p>
+<p>为此，我们<strong>不冻结模型</strong>，而是<strong>允许它可训练</strong>并在训练期间<strong>更新其参数</strong>。如图 <span class="math inline">\(\text{11}-3\)</span> 所示，我们将使用一个<strong>预训练的 <span class="math inline">\(\text{BERT}\)</span> 模型</strong>并添加一个<strong>神经网络</strong>作为<strong>分类头</strong>，两者都将为分类进行<strong>微调</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F11.3.png" alt="F11.1" style="zoom:67%;" /></p>
+<p>在实践中，这意味着<strong>预训练的 <span class="math inline">\(\text{BERT}\)</span> 模型和分类头</strong>会<strong>联合更新</strong>。它们<strong>不是独立的流程</strong>，而是<strong>相互学习</strong>，并允许产生<strong>更准确的表征</strong>。</p>
+<h4 id="微调预训练-textbert-模型"><strong>微调预训练 <span class="math inline">\(\text{BERT}\)</span> 模型</strong></h4>
+<p>Fine-Tuning a Pretrained BERT Model</p>
+<p>我们将使用<strong>与第 <span class="math inline">\(\text{4}\)</span> 章中相同的</strong> <span class="math inline">\(\text{Rotten Tomatoes}\)</span> <strong>数据集</strong>来微调我们的模型，该数据集包含来自 <strong><span class="math inline">\(\text{Rotten Tomatoes}\)</span> 的 <span class="math inline">\(\text{5,331}\)</span> 条正面和 <span class="math inline">\(\text{5,331}\)</span> 条负面电影评论</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> datasets <span class="keyword">import</span> load_dataset</span><br><span class="line"><span class="comment"># Prepare data and splits</span></span><br><span class="line">tomatoes = load_dataset(<span class="string">&quot;rotten_tomatoes&quot;</span>)</span><br><span class="line">train_data, test_data = tomatoes[<span class="string">&quot;train&quot;</span>], tomatoes[<span class="string">&quot;test&quot;</span>]</span><br></pre></td></tr></table></figure>
+<p>我们分类任务的<strong>第一步</strong>是<strong>选择我们要使用的底层模型</strong>。我们使用 <strong><span class="math inline">\(\text{&quot;bert-base-cased&quot;}\)</span></strong>，它是在<strong>英文维基百科</strong>以及一个包含<strong>未出版书籍的大型数据集</strong>上<strong>预训练</strong>的。</p>
+<p>我们<strong>预先定义</strong>了我们想要预测的<strong>标签数量</strong>。这对于创建<strong>应用于我们预训练模型顶部的</strong> <strong>前馈神经网络</strong>是必要的：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> AutoTokenizer, AutoModelForSequenceClassification</span><br><span class="line"><span class="comment"># Load model and tokenizer</span></span><br><span class="line">model_id = <span class="string">&quot;bert-base-cased&quot;</span></span><br><span class="line">model = AutoModelForSequenceClassification.from_pretrained(</span><br><span class="line">model_id, num_labels=<span class="number">2</span></span><br><span class="line">)</span><br><span class="line">tokenizer = AutoTokenizer.from_pretrained(model_id)</span><br></pre></td></tr></table></figure>
+<p>接下来，我们将对数据进行<strong>词元化</strong>（<span class="math inline">\(\text{tokenize}\)</span>）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> DataCollatorWithPadding</span><br><span class="line"><span class="comment"># Pad to the longest sequence in the batch</span></span><br><span class="line">data_collator = DataCollatorWithPadding(tokenizer=tokenizer)</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">preprocess_function</span>(<span class="params">examples</span>):</span><br><span class="line"><span class="string">&quot;&quot;&quot;Tokenize input data&quot;&quot;&quot;</span></span><br><span class="line"><span class="keyword">return</span> tokenizer(examples[<span class="string">&quot;text&quot;</span>], truncation=<span class="literal">True</span>)</span><br><span class="line"><span class="comment"># Tokenize train/test data</span></span><br><span class="line">tokenized_train = train_data.<span class="built_in">map</span>(preprocess_function, batched=<span class="literal">True</span>)</span><br><span class="line">tokenized_test = test_data.<span class="built_in">map</span>(preprocess_function, batched=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+<p>在创建 <span class="math inline">\(\text{Trainer}\)</span> 之前，我们需要准备一个<strong>特殊的数据整理器</strong> (<span class="math inline">\(\text{DataCollator}\)</span>)。<span class="math inline">\(\text{DataCollator}\)</span> 是一个<strong>帮助我们构建数据批次</strong>的类，但也允许我们<strong>应用数据增强</strong>。</p>
+<p>在这个<strong>词元化过程</strong>中，正如第 <span class="math inline">\(\text{9}\)</span> 章所示，我们将在输入文本中<strong>添加填充</strong> (<span class="math inline">\(\text{padding}\)</span>) 以创建<strong>大小相等的表征</strong>。我们为此使用了 <strong><span class="math inline">\(\text{DataCollatorWithPadding}\)</span></strong>。</p>
+<p>当然，一个示例<strong>不会在没有定义一些指标的情况下完成</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">from</span> datasets <span class="keyword">import</span> load_metric</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">compute_metrics</span>(<span class="params">eval_pred</span>):</span><br><span class="line"><span class="string">&quot;&quot;&quot;Calculate F1 score&quot;&quot;&quot;</span></span><br><span class="line">logits, labels = eval_pred</span><br><span class="line"></span><br><span class="line">predictions = np.argmax(logits, axis=-<span class="number">1</span>)</span><br><span class="line">load_f1 = load_metric(<span class="string">&quot;f1&quot;</span>)</span><br><span class="line">f1 = load_f1.compute(predictions=predictions, references=labels)[<span class="string">&quot;f1&quot;</span>]</span><br><span class="line"><span class="keyword">return</span> &#123;<span class="string">&quot;f1&quot;</span>: f1&#125;</span><br></pre></td></tr></table></figure>
+<p>通过 <strong><span class="math inline">\(\text{compute\_metrics}\)</span></strong>，我们可以定义我们感兴趣的<strong>任意数量的指标</strong>，这些指标可以在训练期间<strong>打印或记录</strong>。这在训练期间<strong>特别有帮助</strong>，因为它允许<strong>检测过拟合行为</strong>。</p>
+<p>接下来，我们<strong>实例化</strong>我们的 <span class="math inline">\(\text{Trainer}\)</span>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> TrainingArguments, Trainer</span><br><span class="line"><span class="comment"># Training arguments for parameter tuning</span></span><br><span class="line">training_args = TrainingArguments(</span><br><span class="line"><span class="string">&quot;model&quot;</span>,</span><br><span class="line">learning_rate=<span class="number">2e-5</span>,</span><br><span class="line">per_device_train_batch_size=<span class="number">16</span>,</span><br><span class="line">per_device_eval_batch_size=<span class="number">16</span>,</span><br><span class="line">num_train_epochs=<span class="number">1</span>,</span><br><span class="line">weight_decay=<span class="number">0.01</span>,</span><br><span class="line">save_strategy=<span class="string">&quot;epoch&quot;</span>,</span><br><span class="line">report_to=<span class="string">&quot;none&quot;</span></span><br><span class="line">)</span><br><span class="line"><span class="comment"># Trainer which executes the training process</span></span><br><span class="line">trainer = Trainer(</span><br><span class="line">model=model,</span><br><span class="line">args=training_args,</span><br><span class="line">train_dataset=tokenized_train,</span><br><span class="line">eval_dataset=tokenized_test,</span><br><span class="line">tokenizer=tokenizer,</span><br><span class="line">data_collator=data_collator,</span><br><span class="line">compute_metrics=compute_metrics,</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><span class="math inline">\(\text{TrainingArguments}\)</span> 类定义了我们想要<strong>调整的超参数</strong>，例如<strong>学习率</strong>以及我们想要训练的<strong>轮数</strong> (<span class="math inline">\(\text{epochs}\)</span>)。<span class="math inline">\(\text{Trainer}\)</span> 用于<strong>执行训练过程</strong>。</p>
+<p>最后，我们可以<strong>训练我们的模型并进行评估</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">trainer.evaluate()</span><br><span class="line">&#123;<span class="string">&#x27;eval_loss&#x27;</span>: <span class="number">0.3663691282272339</span>,</span><br><span class="line"><span class="string">&#x27;eval_f1&#x27;</span>: <span class="number">0.8492366412213741</span>,</span><br><span class="line"><span class="string">&#x27;eval_runtime&#x27;</span>: <span class="number">4.5792</span>,</span><br><span class="line"><span class="string">&#x27;eval_samples_per_second&#x27;</span>: <span class="number">232.791</span>,</span><br><span class="line"><span class="string">&#x27;eval_steps_per_second&#x27;</span>: <span class="number">14.631</span>,</span><br><span class="line"><span class="string">&#x27;epoch&#x27;</span>: <span class="number">1.0</span>&#125;</span><br></pre></td></tr></table></figure>
+<p>我们获得了 <strong><span class="math inline">\(\text{0.85}\)</span> 的 <span class="math inline">\(\text{F1}\)</span> 分数</strong>，这比我们在第 <span class="math inline">\(\text{4}\)</span> 章中使用的<strong>任务特定模型</strong> (<span class="math inline">\(\text{task-specific model}\)</span>)，即 <span class="math inline">\(\text{F1}\)</span> 分数为 <span class="math inline">\(\text{0.80}\)</span>，要<strong>高出不少</strong>。这表明<strong>自己微调模型</strong>可能比使用预训练模型<strong>更有优势</strong>。它只花费了我们<strong>几分钟的训练时间</strong>。</p>
+<h4 id="冻结层"><strong>冻结层</strong></h4>
+<p>Freezing Layers</p>
+<p>为了进一步展示<strong>训练整个网络的重要性</strong>，下一个示例将演示如何使用 <span class="math inline">\(\text{Hugging Face Transformers}\)</span> 来<strong>冻结网络的某些层</strong>。</p>
+<p>我们将<strong>冻结主要的 <span class="math inline">\(\text{BERT}\)</span> 模型</strong>，并且<strong>只允许更新通过分类头</strong>。这将是一个很好的比较，因为我们将<strong>保持所有其他设置相同</strong>，只是<strong>冻结了特定的层</strong>。</p>
+<p>首先，让我们<strong>重新初始化模型</strong>，以便可以从头开始：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Load model and tokenizer</span></span><br><span class="line">model = AutoModelForSequenceClassification.from_pretrained(</span><br><span class="line">model_id, num_labels=<span class="number">2</span></span><br><span class="line">)</span><br><span class="line">tokenizer = AutoTokenizer.from_pretrained(model_id)</span><br></pre></td></tr></table></figure>
+<p>我们的<strong>预训练 <span class="math inline">\(\text{BERT}\)</span> 模型</strong>包含许多我们<strong>可能想要冻结的层</strong>。<strong>检查这些层</strong>可以深入了解<strong>网络的结构</strong>以及我们<strong>可能想要冻结的部分</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Print layer names</span></span><br><span class="line"><span class="keyword">for</span> name, param <span class="keyword">in</span> model.named_parameters():</span><br><span class="line"><span class="built_in">print</span>(name)</span><br><span class="line">bert.embeddings.word_embeddings.weight</span><br><span class="line">bert.embeddings.position_embeddings.weight</span><br><span class="line">bert.embeddings.token_type_embeddings.weight</span><br><span class="line">bert.embeddings.LayerNorm.weight</span><br><span class="line">bert.embeddings.LayerNorm.bias</span><br><span class="line">bert.encoder.layer<span class="number">.0</span>.attention.self.query.weight</span><br><span class="line">bert.encoder.layer<span class="number">.0</span>.attention.self.query.bias</span><br><span class="line">...</span><br><span class="line">bert.encoder.layer<span class="number">.11</span>.output.LayerNorm.weight</span><br><span class="line">bert.encoder.layer<span class="number">.11</span>.output.LayerNorm.bias</span><br><span class="line">bert.pooler.dense.weight</span><br><span class="line">bert.pooler.dense.bias</span><br><span class="line">classifier.weight</span><br><span class="line">classifier.bias</span><br></pre></td></tr></table></figure>
+<p>有 <strong><span class="math inline">\(\text{12}\)</span> 个 (<span class="math inline">\(\text{0}-\text{11}\)</span>) 编码器块</strong>，它们由<strong>注意力头</strong>、<strong>密集网络</strong>和<strong>层归一化</strong>组成。我们在图 <span class="math inline">\(\text{11}-4\)</span> 中进一步说明了这种架构，以展示<strong>所有可能被冻结的部分</strong>。除此之外，我们还有<strong>分类头</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F11.4.png" alt="F11.1" style="zoom:67%;" /></p>
+<p>我们可以选择<strong>只冻结某些层</strong>以加快计算速度，但仍允许<strong>主模型</strong>从分类任务中学习。一般来说，我们希望<strong>可训练层</strong>位于<strong>冻结层之后</strong>。</p>
+<p>我们将<strong>冻结除分类头之外的所有内容</strong>，就像我们在第 <span class="math inline">\(\text{2}\)</span> 章中所做的那样：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> name, param <span class="keyword">in</span> model.named_parameters():</span><br><span class="line"><span class="comment"># Trainable classification head</span></span><br><span class="line"><span class="keyword">if</span> name.startswith(<span class="string">&quot;classifier&quot;</span>):</span><br><span class="line">param.requires_grad = <span class="literal">True</span></span><br><span class="line"><span class="comment"># Freeze everything else</span></span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">param.requires_grad = <span class="literal">False</span></span><br></pre></td></tr></table></figure>
+<p>如图 <span class="math inline">\(\text{11}-5\)</span> 所示，我们<strong>冻结了除前馈神经网络</strong>（即我们的分类头）<strong>之外的所有内容</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F11.5.png" alt="F11.1" style="zoom:67%;" /></p>
+<p>现在我们已经成功<strong>冻结了除分类头之外的所有内容</strong>，我们可以继续<strong>训练我们的模型</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> TrainingArguments, Trainer</span><br><span class="line"><span class="comment"># Trainer which executes the training process</span></span><br><span class="line">trainer = Trainer(</span><br><span class="line">model=model,</span><br><span class="line">args=training_args,</span><br><span class="line">train_dataset=tokenized_train,</span><br><span class="line">eval_dataset=tokenized_test,</span><br><span class="line">tokenizer=tokenizer,</span><br><span class="line">data_collator=data_collator,</span><br><span class="line">compute_metrics=compute_metrics,</span><br><span class="line">)</span><br><span class="line">trainer.train()</span><br></pre></td></tr></table></figure>
+<p>您可能会注意到<strong>训练速度已经快得多</strong>了。这是因为我们<strong>只训练分类头</strong>，与微调整个模型相比，这为我们提供了<strong>显著的提速</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">trainer.evaluate()</span><br><span class="line">&#123;<span class="string">&#x27;eval_loss&#x27;</span>: <span class="number">0.6821751594543457</span>,</span><br><span class="line"><span class="string">&#x27;eval_f1&#x27;</span>: <span class="number">0.6331058020477816</span>,</span><br><span class="line"><span class="string">&#x27;eval_runtime&#x27;</span>: <span class="number">4.0175</span>,</span><br><span class="line"><span class="string">&#x27;eval_samples_per_second&#x27;</span>: <span class="number">265.337</span>,</span><br><span class="line"><span class="string">&#x27;eval_steps_per_second&#x27;</span>: <span class="number">16.677</span>,</span><br><span class="line"><span class="string">&#x27;epoch&#x27;</span>: <span class="number">1.0</span>&#125;</span><br></pre></td></tr></table></figure>
+<p>当我们评估模型时，我们得到的 <span class="math inline">\(\text{F1}\)</span> 分数只有 <strong><span class="math inline">\(\text{0.63}\)</span></strong>，这比我们最初的 <span class="math inline">\(\text{0.85}\)</span> 分数要<strong>低得多</strong>。与其冻结几乎所有层，不如像图 <span class="math inline">\(\text{11}-6\)</span> 所展示的那样，<strong>冻结直到编码器块 <span class="math inline">\(\text{10}\)</span> 之前的所有内容</strong>，看看这对性能有何影响。一个主要的好处是这<strong>减少了计算量</strong>，但仍然允许<strong>更新流经部分预训练模型</strong>：</p>
+<p><img src="/img3/Hands-On Large Language Models/F11.6.png" alt="F11.1" style="zoom:67%;" /></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Load model</span></span><br><span class="line">model_id = <span class="string">&quot;bert-base-cased&quot;</span></span><br><span class="line">model = AutoModelForSequenceClassification.from_pretrained(</span><br><span class="line">model_id, num_labels=<span class="number">2</span></span><br><span class="line">)</span><br><span class="line">tokenizer = AutoTokenizer.from_pretrained(model_id)</span><br><span class="line"><span class="comment"># Encoder block 11 starts at index 165 and</span></span><br><span class="line"><span class="comment"># we freeze everything before that block</span></span><br><span class="line"><span class="keyword">for</span> index, (name, param) <span class="keyword">in</span> <span class="built_in">enumerate</span>(model.named_parameters()):</span><br><span class="line"><span class="keyword">if</span> index &lt; <span class="number">165</span>:</span><br><span class="line">param.requires_grad = <span class="literal">False</span></span><br><span class="line"><span class="comment"># Trainer which executes the training process</span></span><br><span class="line">trainer = Trainer(</span><br><span class="line">model=model,</span><br><span class="line">args=training_args,</span><br><span class="line">train_dataset=tokenized_train,</span><br><span class="line">eval_dataset=tokenized_test,</span><br><span class="line"></span><br><span class="line">tokenizer=tokenizer,</span><br><span class="line">data_collator=data_collator,</span><br><span class="line">compute_metrics=compute_metrics,</span><br><span class="line">)</span><br><span class="line">trainer.train()</span><br></pre></td></tr></table></figure>
+<p>训练后，我们评估结果：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">trainer.evaluate()</span><br><span class="line">&#123;<span class="string">&#x27;eval_loss&#x27;</span>: <span class="number">0.40812647342681885</span>,</span><br><span class="line"><span class="string">&#x27;eval_f1&#x27;</span>: <span class="number">0.8</span>,</span><br><span class="line"><span class="string">&#x27;eval_runtime&#x27;</span>: <span class="number">3.7125</span>,</span><br><span class="line"><span class="string">&#x27;eval_samples_per_second&#x27;</span>: <span class="number">287.137</span>,</span><br><span class="line"><span class="string">&#x27;eval_steps_per_second&#x27;</span>: <span class="number">18.047</span>,</span><br><span class="line"><span class="string">&#x27;epoch&#x27;</span>: <span class="number">1.0</span>&#125;</span><br></pre></td></tr></table></figure>
+<p>我们得到了 <strong><span class="math inline">\(\text{0.8}\)</span> 的 <span class="math inline">\(\text{F1}\)</span> 分数</strong>，这比我们之前<strong>冻结所有层</strong>时的 <span class="math inline">\(\text{0.63}\)</span> 分数要<strong>高得多</strong>。这表明，尽管我们通常希望<strong>训练尽可能多的层</strong>，但如果您<strong>没有必要的计算能力</strong>，<strong>训练更少的层</strong>也是可以接受的。</p>
+<p>为了进一步说明这种效果，我们测试了<strong>迭代冻结编码器块</strong>并进行微调的影响。如图 <span class="math inline">\(\text{11}-7\)</span> 所示，<strong>只训练前五个编码器块</strong>（<strong>红色垂直线</strong>）就<strong>足以</strong>几乎达到训练所有编码器块的性能。</p>
+<p><img src="/img3/Hands-On Large Language Models/F11.7.png" alt="F11.1" style="zoom:67%;" /></p>
+<blockquote>
+<p>当您进行<strong>多轮训练</strong>（<span class="math inline">\(\text{epochs}\)</span>）时，<strong>冻结与不冻结</strong>之间的<strong>差异</strong>（在<strong>训练时间和资源</strong>方面）通常会<strong>变得更大</strong>。因此，建议<strong>尝试找到适合您的平衡点</strong>。</p>
+</blockquote>
+<h3 id="少样本分类"><strong>少样本分类</strong></h3>
+<p>Few-Shot Classification</p>
+<p><strong>少样本分类</strong>（<span class="math inline">\(\text{Few-shot classification}\)</span>）是一种<strong>有监督分类</strong>中的技术，在这种技术中，您让分类器仅根据<strong>少数几个已标注的示例</strong>来学习目标标签。当您有一个<strong>分类任务</strong>但<strong>没有大量现成的标注数据点</strong>时，这种技术非常有用。换句话说，这种方法允许您为<strong>每个类别</strong>标注<strong>少量高质量的数据点</strong>来训练模型。图 <span class="math inline">\(\text{11}-8\)</span> 展示了<strong>使用少量标注数据点</strong>来训练模型的想法。</p>
+<p><img src="/img3/Hands-On Large Language Models/F11.8.png" alt="F11.1" style="zoom:67%;" /></p>
+<h4 id="textsetfit-使用少量训练示例进行高效微调"><strong><span class="math inline">\(\text{SetFit}\)</span>: 使用少量训练示例进行高效微调</strong></h4>
+<p>SetFit: Efficient Fine-Tuning with Few Training Examples</p>
+<p>为了执行<strong>少样本文本分类</strong>，我们使用了一个名为 <strong><span class="math inline">\(\text{SetFit}\)</span></strong> 的<strong>高效框架</strong>。它构建在 <strong><span class="math inline">\(\text{sentence-transformers}\)</span> 的架构之上</strong>，用于生成在训练期间会更新的<strong>高质量文本表征</strong>。对于这个框架来说，只需要<strong>少量标注示例</strong>就可以与我们在上一个示例中探索的<strong>在大型标注数据集上微调 <span class="math inline">\(\text{BERT}\)</span> 类模型</strong>相媲美。</p>
+<p><strong><span class="math inline">\(\text{SetFit}\)</span> 的底层算法</strong>由<strong>三个步骤</strong>组成：</p>
+<ol type="1">
+<li><strong>采样训练数据</strong> (<span class="math inline">\(\text{Sampling training data}\)</span>) 基于<strong>已标注数据的类内和类间选择</strong>，它会生成<strong>正向</strong>（相似）和<strong>负向</strong>（不相似）的<strong>句子对</strong>。</li>
+<li><strong>微调嵌入</strong> (<span class="math inline">\(\text{Fine-tuning embeddings}\)</span>) 基于<strong>先前生成的训练数据</strong>来<strong>微调预训练嵌入模型</strong>。</li>
+<li><strong>训练分类器</strong> (<span class="math inline">\(\text{Training a classifier}\)</span>) 在<strong>嵌入模型之上</strong>创建一个<strong>分类头</strong>，并使用<strong>先前生成的训练数据</strong>对其进行训练。</li>
+</ol>
+<p>在微调嵌入模型之前，我们需要<strong>生成训练数据</strong>。模型假设训练数据是<strong>正向</strong>（相似）和<strong>负向</strong>（不相似）<strong>句子对的样本</strong>。然而，当我们处理<strong>分类任务</strong>时，我们的输入数据<strong>通常没有以这种方式标注</strong>。</p>
+<p>例如，假设我们有图 <span class="math inline">\(\text{11}-9\)</span> 中的训练数据集，它将文本分为<strong>两类</strong>：关于<strong>编程语言的文本</strong>和关于<strong>宠物的文本</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F11.9.png" alt="F11.1" style="zoom:67%;" /></p>
+<p>在<strong>步骤 <span class="math inline">\(\text{1}\)</span></strong> 中，<span class="math inline">\(\text{SetFit}\)</span> 通过基于<strong>类内</strong>（<span class="math inline">\(\text{in-class}\)</span>）和<strong>类间</strong>（<span class="math inline">\(\text{out-class}\)</span>）选择来生成必需的数据，从而<strong>处理这个问题</strong>，如图 <span class="math inline">\(\text{11}-10\)</span> 所示。例如，当我们有 <strong><span class="math inline">\(\text{16}\)</span> 个关于运动的句子</strong>时，我们可以创建 <strong><span class="math inline">\(\text{16} \times (\text{16} – \text{1}) / \text{2} = \text{120}\)</span> 个句子对</strong>，我们将它们标注为<strong>正向对</strong>。我们可以使用这个过程通过<strong>收集来自不同类别的句子对</strong>来生成<strong>负向对</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F11.10.png" alt="F11.1" style="zoom:67%;" /></p>
+<p>在<strong>步骤 <span class="math inline">\(\text{2}\)</span></strong> 中，我们可以使用<strong>生成的句子对</strong>来<strong>微调嵌入模型</strong>。这利用了一种称为<strong>对比学习</strong>的方法来<strong>微调预训练的 <span class="math inline">\(\text{BERT}\)</span> 模型</strong>。正如我们在第 <span class="math inline">\(\text{10}\)</span> 章中所回顾的，<strong>对比学习</strong>允许从<strong>相似</strong>（正向）和<strong>不相似</strong>（负向）<strong>句子对</strong>中学习<strong>准确的句子嵌入</strong>。</p>
+<p>由于我们在上一步中生成了这些句子对，我们可以使用它们来<strong>微调 <span class="math inline">\(\text{SentenceTransformers}\)</span> 模型</strong>。尽管我们之前讨论过对比学习，但我们再次在图 <span class="math inline">\(\text{11}-11\)</span> 中说明该方法以供回顾。</p>
+<p><img src="/img3/Hands-On Large Language Models/F11.11.png" alt="F11.1" style="zoom:67%;" /></p>
+<p>微调这个<strong>嵌入模型</strong>的目标是使其能够创建<strong>针对分类任务进行调整的嵌入</strong>。<strong>类别之间的相关性</strong>及其<strong>相对含义</strong>通过<strong>微调嵌入模型</strong>被<strong>提炼</strong>到嵌入中。</p>
+<p>在<strong>步骤 <span class="math inline">\(\text{3}\)</span></strong> 中，我们<strong>生成所有句子的嵌入</strong>，并将其用作<strong>分类器的输入</strong>。我们可以使用<strong>微调后的 <span class="math inline">\(\text{SentenceTransformers}\)</span> 模型</strong>将我们的句子转换为<strong>嵌入</strong>，我们可以将其用作<strong>特征</strong>。<strong>分类器</strong>从我们<strong>微调后的嵌入</strong>中学习，以<strong>准确预测未见过的句子</strong>。这最后一步如图 <span class="math inline">\(\text{11}-12\)</span> 所示。</p>
+<p><img src="/img3/Hands-On Large Language Models/F11.12.png" alt="F11.1" style="zoom:67%;" /></p>
+<p>当我们把<strong>所有步骤结合在一起</strong>时，就得到了一个<strong>高效且优雅的流程</strong>，用于在您<strong>每个类别只有少数标签</strong>时执行分类。它巧妙地利用了我们拥有<strong>标注数据</strong>的这个想法，尽管标注的形式<strong>并非我们所希望的那样</strong>。图 <span class="math inline">\(\text{11}-13\)</span> <strong>将这三个步骤结合在一起</strong>，给出了<strong>整个过程的单一概览</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F11.13.png" alt="F11.1" style="zoom:67%;" /></p>
+<p>首先，根据<strong>类内和类间选择</strong>生成<strong>句子对</strong>。其次，使用这些句子对<strong>微调</strong>一个<strong>预训练的 <span class="math inline">\(\text{SentenceTransformer}\)</span> 模型</strong>。第三，使用<strong>微调后的模型</strong>对句子进行<strong>嵌入</strong>，并在这些嵌入上训练一个<strong>分类器</strong>来预测类别。</p>
+<h4 id="少样本分类的微调"><strong>少样本分类的微调</strong></h4>
+<p>Fine-Tuning for Few-Shot Classification</p>
+<p>我们之前训练了一个包含大约 <strong><span class="math inline">\(\text{8,500}\)</span> 条电影评论</strong>的数据集。然而，由于这是一个<strong>少样本环境</strong>，我们将<strong>只采样每个类别 <span class="math inline">\(\text{16}\)</span> 个示例</strong>。对于两个类别，我们<strong>只有 <span class="math inline">\(\text{32}\)</span> 个文档</strong>进行训练，而我们之前使用了 <span class="math inline">\(\text{8,500}\)</span> 条电影评论！</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> setfit <span class="keyword">import</span> sample_dataset</span><br><span class="line"><span class="comment"># We simulate a few-shot setting by sampling 16 examples per class</span></span><br><span class="line">sampled_train_data = sample_dataset(tomatoes[<span class="string">&quot;train&quot;</span>], num_samples=<span class="number">16</span>)</span><br></pre></td></tr></table></figure>
+<p>在采样数据后，我们选择一个<strong>预训练的 <span class="math inline">\(\text{SentenceTransformer}\)</span> 模型</strong>进行微调。官方文档包含一个<strong>预训练 <span class="math inline">\(\text{SentenceTransformer}\)</span> 模型</strong>的概览，我们将使用 <strong><span class="math inline">\(\text{&quot;sentence-transformers/all-mpnet-base-v2&quot;}\)</span></strong>。它是 <span class="math inline">\(\text{MTEB}\)</span> 排行榜上<strong>性能最佳的模型之一</strong>，该排行榜展示了嵌入模型在各种任务上的性能：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> setfit <span class="keyword">import</span> SetFitModel</span><br><span class="line"><span class="comment"># Load a pretrained SentenceTransformer model</span></span><br><span class="line">model = SetFitModel.from_pretrained(<span class="string">&quot;sentence-transformers/all-mpnet-base-v2&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p>在加载预训练的 <span class="math inline">\(\text{SentenceTransformer}\)</span> 模型后，我们可以开始定义我们的 <strong><span class="math inline">\(\text{SetFitTrainer}\)</span></strong>。默认情况下，<strong>逻辑回归模型</strong>被选作要训练的分类器。</p>
+<p>类似于我们使用 <span class="math inline">\(\text{Hugging Face Transformers}\)</span> 所做的那样，我们可以使用 <span class="math inline">\(\text{trainer}\)</span> 来<strong>定义和调整相关参数</strong>。例如，我们将 <strong><span class="math inline">\(\text{num\_epochs}\)</span></strong> 设置为 <span class="math inline">\(\text{3}\)</span>，以便<strong>对比学习</strong>将执行<strong>三个 <span class="math inline">\(\text{epoch}\)</span></strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> setfit <span class="keyword">import</span> TrainingArguments <span class="keyword">as</span> SetFitTrainingArguments</span><br><span class="line"><span class="keyword">from</span> setfit <span class="keyword">import</span> Trainer <span class="keyword">as</span> SetFitTrainer</span><br><span class="line"><span class="comment"># Define training arguments</span></span><br><span class="line">args = SetFitTrainingArguments(</span><br><span class="line">num_epochs=<span class="number">3</span>, <span class="comment"># The number of epochs to use for contrastive learning</span></span><br><span class="line">num_iterations=<span class="number">20</span> <span class="comment"># The number of text pairs to generate</span></span><br><span class="line">)</span><br><span class="line">args.eval_strategy = args.evaluation_strategy</span><br><span class="line"><span class="comment"># Create trainer</span></span><br><span class="line">trainer = SetFitTrainer(</span><br><span class="line">model=model,</span><br><span class="line">args=args,</span><br><span class="line">train_dataset=sampled_train_data,</span><br><span class="line">eval_dataset=test_data,</span><br><span class="line">metric=<span class="string">&quot;f1&quot;</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>我们只需要调用 <strong><span class="math inline">\(\text{train}\)</span></strong> 来<strong>开始训练循环</strong>。当我们这样做时，我们应该得到以下输出：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Training loop</span></span><br><span class="line">trainer.train()</span><br><span class="line">***** Running training *****</span><br><span class="line">Num unique pairs = <span class="number">1280</span></span><br><span class="line">Batch size = <span class="number">16</span></span><br><span class="line">Num epochs = <span class="number">3</span></span><br><span class="line">Total optimization steps = <span class="number">240</span></span><br></pre></td></tr></table></figure>
+<p>请注意，输出中提到为<strong>微调 <span class="math inline">\(\text{SentenceTransformer}\)</span> 模型</strong>生成了 <strong><span class="math inline">\(\text{1,280}\)</span> 个句子对</strong>。默认情况下，为我们数据中的<strong>每个样本</strong>生成 <span class="math inline">\(\text{20}\)</span> 个句子对组合，即 <span class="math inline">\(\text{20} \times \text{32} = \text{680}\)</span> 个样本。我们需要将此值<strong>乘以 <span class="math inline">\(\text{2}\)</span></strong>，因为生成了<strong>每个正向和负向对</strong>，即 <span class="math inline">\(\text{680} \times \text{2} = \text{1,280}\)</span> 个句子对。考虑到我们最初<strong>只有 <span class="math inline">\(\text{32}\)</span> 个标注句子</strong>，生成 <span class="math inline">\(\text{1,280}\)</span> 个句子对<strong>相当令人印象深刻</strong>！</p>
+<blockquote>
+<p>当我们<strong>没有明确定义分类头</strong>时，<strong>默认</strong>使用的是<strong>逻辑回归</strong>。如果我们要<strong>自己指定一个分类头</strong>，可以通过在 <span class="math inline">\(\text{SetFitTrainer}\)</span> 中指定以下模型来实现：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Load a SetFit model from Hub</span></span><br><span class="line">model = SetFitModel.from_pretrained(</span><br><span class="line"><span class="string">&quot;sentence-transformers/all-mpnet-base-v2&quot;</span>,</span><br><span class="line">use_differentiable_head=<span class="literal">True</span>,</span><br><span class="line">head_params=&#123;<span class="string">&quot;out_features&quot;</span>: num_classes&#125;,</span><br><span class="line">)</span><br><span class="line"><span class="comment"># Create trainer</span></span><br><span class="line">trainer = SetFitTrainer(</span><br><span class="line">model=model,</span><br><span class="line">...</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>这里的 <strong><span class="math inline">\(\text{num\_classes}\)</span></strong> 指的是我们想要预测的<strong>类别数量</strong>。</p>
+</blockquote>
+<p>接下来，我们评估模型以感受其性能：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Evaluate the model on our test data</span></span><br><span class="line">trainer.evaluate()</span><br><span class="line">&#123;<span class="string">&#x27;f1&#x27;</span>: <span class="number">0.8363988383349468</span>&#125;</span><br></pre></td></tr></table></figure>
+<p>仅用 <strong><span class="math inline">\(\text{32}\)</span> 个标注文档</strong>，我们就获得了 <strong><span class="math inline">\(\text{0.85}\)</span> 的 <span class="math inline">\(\text{F1}\)</span> 分数</strong>。考虑到该模型是在原始数据的<strong>极小一部分子集</strong>上训练的，这<strong>非常令人印象深刻</strong>！此外，在第 <span class="math inline">\(\text{2}\)</span> 章中，我们获得了<strong>相同的性能</strong>，但却是<strong>在完整数据的嵌入上训练了一个逻辑回归模型</strong>。因此，这个流程展示了<strong>花费时间仅标注少量实例的潜力</strong>。</p>
+<p><span class="math inline">\(\text{SetFit}\)</span> <strong>不仅可以执行少样本分类任务</strong>，它还<strong>支持您完全没有标签</strong>的情况，这也被称为<strong>零样本分类</strong> (<span class="math inline">\(\text{zero-shot classification}\)</span>)。<span class="math inline">\(\text{SetFit}\)</span> 从<strong>标签名称中生成合成示例</strong>，以模拟分类任务，然后在其上训练一个 <span class="math inline">\(\text{SetFit}\)</span> 模型。例如，如果目标标签是“<span class="math inline">\(\text{happy}\)</span>”和“<span class="math inline">\(\text{sad}\)</span>”，那么合成数据可以是“<span class="math inline">\(\text{The example is happy}\)</span>”和“<span class="math inline">\(\text{This example is sad}\)</span>”。</p>
+<h3 id="使用掩码语言建模进行持续预训练"><strong>使用掩码语言建模进行持续预训练</strong></h3>
+<p>Continued Pretraining with Masked Language Modeling</p>
+<p>在到目前为止的示例中，我们<strong>利用</strong>了一个<strong>预训练模型</strong>并对其进行了<strong>微调</strong>以执行分类。这个过程描述了一个<strong>两步过程</strong>：<strong>首先预训练一个模型</strong>（这已经为我们完成），然后针对<strong>特定任务对其进行微调</strong>。我们在图 <span class="math inline">\(\text{11}-14\)</span> 中说明了这一过程。</p>
+<p><img src="/img3/Hands-On Large Language Models/F11.14.png" alt="F11.1" style="zoom:67%;" /></p>
+<p>这种<strong>两步法</strong>通常用于许多应用程序中。当面临<strong>特定领域的数据</strong>时，它有其局限性。<strong>预训练模型</strong>通常在<strong>非常通用的数据</strong>（如<strong>维基百科页面</strong>）上训练，可能<strong>未针对您的领域特定词汇进行调整</strong>。</p>
+<p>我们可以<strong>不采用这种两步法</strong>，而是在它们之间<strong>挤入另一个步骤</strong>，即<strong>继续预训练</strong>一个<strong>已经预训练过的 <span class="math inline">\(\text{BERT}\)</span> 模型</strong>。换句话说，我们可以<strong>简单地继续</strong>使用<strong>掩码语言建模 (<span class="math inline">\(\text{MLM}\)</span>)</strong> 来训练 <span class="math inline">\(\text{BERT}\)</span> 模型，但<strong>改为使用我们领域的数据</strong>。这就像是从一个<strong>通用 <span class="math inline">\(\text{BERT}\)</span> 模型</strong>，到一个<strong>专用于医学领域的 <span class="math inline">\(\text{BioBERT}\)</span> 模型</strong>，再到一个<strong>微调后的 <span class="math inline">\(\text{BioBERT}\)</span> 模型</strong>来对药物进行分类。</p>
+<p>这将<strong>更新子词表征</strong>，使其<strong>更适应它以前未见过的词汇</strong>。这个过程如图 <span class="math inline">\(\text{11}-15\)</span> 所示，并展示了<strong>这个额外步骤如何更新掩码语言建模任务</strong>。事实证明，在一个<strong>预训练 <span class="math inline">\(\text{BERT}\)</span> 模型上继续预训练</strong>可以<strong>提高模型在分类任务中的性能</strong>，是<strong>微调流程中值得添加的一步</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F11.15.png" alt="F11.1" style="zoom:67%;" /></p>
+<p>我们<strong>不必从头开始预训练整个模型</strong>，只需在将其<strong>微调用于分类之前</strong>，<strong>继续进行预训练</strong>即可。这也有助于模型<strong>适应某个特定领域</strong>，甚至是<strong>特定组织的行话</strong>。一个公司可能希望采用的<strong>模型族谱</strong>如图 <span class="math inline">\(\text{11}-16\)</span> 所示。</p>
+<p><img src="/img3/Hands-On Large Language Models/F11.16.png" alt="F11.1" style="zoom:67%;" /></p>
+<p>在本例中，我们将演示<strong>如何应用第 <span class="math inline">\(\text{2}\)</span> 步</strong>并<strong>继续预训练一个已经预训练的 <span class="math inline">\(\text{BERT}\)</span> 模型</strong>。我们使用我们<strong>最初开始使用</strong>的相同数据，即 <strong><span class="math inline">\(\text{Rotten Tomatoes}\)</span> 评论</strong>。</p>
+<p>我们首先加载我们迄今为止使用的 <strong><span class="math inline">\(\text{&quot;bert-base-cased&quot;}\)</span> 模型</strong>，并为 <strong><span class="math inline">\(\text{MLM}\)</span></strong> 准备它：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> AutoTokenizer, AutoModelForMaskedLM</span><br><span class="line"><span class="comment"># Load model for masked language modeling (MLM)</span></span><br><span class="line">model = AutoModelForMaskedLM.from_pretrained(<span class="string">&quot;bert-base-cased&quot;</span>)</span><br><span class="line">tokenizer = AutoTokenizer.from_pretrained(<span class="string">&quot;bert-base-cased&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p>我们需要对<strong>原始句子</strong>进行<strong>词元化</strong>。我们还将<strong>移除标签</strong>，因为这<strong>不是一个有监督任务</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">preprocess_function</span>(<span class="params">examples</span>):</span><br><span class="line"><span class="keyword">return</span> tokenizer(examples[<span class="string">&quot;text&quot;</span>], truncation=<span class="literal">True</span>)</span><br><span class="line"><span class="comment"># Tokenize data</span></span><br><span class="line">tokenized_train = train_data.<span class="built_in">map</span>(preprocess_function, batched=<span class="literal">True</span>)</span><br><span class="line">tokenized_train = tokenized_train.remove_columns(<span class="string">&quot;label&quot;</span>)</span><br><span class="line">tokenized_test = test_data.<span class="built_in">map</span>(preprocess_function, batched=<span class="literal">True</span>)</span><br><span class="line">tokenized_test = tokenized_test.remove_columns(<span class="string">&quot;label&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p>之前，我们使用了 <strong><span class="math inline">\(\text{DataCollatorWithPadding}\)</span></strong>，它会<strong>动态填充</strong>接收到的输入。</p>
+<p>相反，我们将使用一个 <strong><span class="math inline">\(\text{DataCollator}\)</span></strong> 来为我们<strong>执行词元掩码</strong> (<span class="math inline">\(\text{masking of tokens}\)</span>)。通常使用两种方法：<strong>词元掩码</strong> (<span class="math inline">\(\text{token masking}\)</span>) 和<strong>整词掩码</strong> (<span class="math inline">\(\text{whole-word masking}\)</span>)。使用<strong>词元掩码</strong>，我们<strong>随机掩盖句子中 <span class="math inline">\(\text{15\%}\)</span> 的词元</strong>。可能会发生<strong>一个词的一部分被掩盖</strong>的情况。为了实现<strong>对整个词的掩盖</strong>，我们可以应用<strong>整词掩码</strong>，如图 <span class="math inline">\(\text{11}-17\)</span> 所示。</p>
+<p><img src="/img3/Hands-On Large Language Models/F11.17.png" alt="F11.1" style="zoom:67%;" /></p>
+<p>一般来说，<strong>预测整个词汇</strong>往往比<strong>词元</strong>更复杂，这使得模型在训练期间需要学习<strong>更准确和精确的表征</strong>，从而<strong>表现更好</strong>。然而，它往往需要<strong>更多时间才能收敛</strong>。</p>
+<p>在本例中，我们将使用 <strong><span class="math inline">\(\text{DataCollatorForLanguageModeling}\)</span></strong> 进行<strong>词元掩码</strong>，以实现<strong>更快的收敛</strong>。不过，我们可以通过将 <span class="math inline">\(\text{DataCollatorForLanguageModeling}\)</span> 替换为 <strong><span class="math inline">\(\text{DataCollatorForWholeWordMask}\)</span></strong> 来使用<strong>整词掩码</strong>。最后，我们将给定句子中<strong>词元被掩码的概率</strong>设置为 <strong><span class="math inline">\(\text{15\%}\)</span></strong> (<span class="math inline">\(\text{mlm\_probability}\)</span>)：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> DataCollatorForLanguageModeling</span><br><span class="line"><span class="comment"># Masking Tokens</span></span><br><span class="line">data_collator = DataCollatorForLanguageModeling(</span><br><span class="line">tokenizer=tokenizer,</span><br><span class="line">mlm=<span class="literal">True</span>,</span><br><span class="line">mlm_probability=<span class="number">0.15</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>接下来，我们将创建用于运行 <span class="math inline">\(\text{MLM}\)</span> 任务的 <strong><span class="math inline">\(\text{Trainer}\)</span></strong> 并指定某些参数：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Training arguments for parameter tuning</span></span><br><span class="line">training_args = TrainingArguments(</span><br><span class="line"><span class="string">&quot;model&quot;</span>,</span><br><span class="line">learning_rate=<span class="number">2e-5</span>,</span><br><span class="line">per_device_train_batch_size=<span class="number">16</span>,</span><br><span class="line">per_device_eval_batch_size=<span class="number">16</span>,</span><br><span class="line">num_train_epochs=<span class="number">10</span>,</span><br><span class="line">weight_decay=<span class="number">0.01</span>,</span><br><span class="line">save_strategy=<span class="string">&quot;epoch&quot;</span>,</span><br><span class="line">report_to=<span class="string">&quot;none&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Initialize Trainer</span></span><br><span class="line">trainer = Trainer(</span><br><span class="line">model=model,</span><br><span class="line">args=training_args,</span><br><span class="line">train_dataset=tokenized_train,</span><br><span class="line">eval_dataset=tokenized_test,</span><br><span class="line">tokenizer=tokenizer,</span><br><span class="line">data_collator=data_collator</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>有几个参数值得注意。我们训练了 <strong><span class="math inline">\(\text{20}\)</span> 个 <span class="math inline">\(\text{epoch}\)</span></strong> 并保持任务简短。您可以<strong>尝试学习率和权重衰减</strong>，以确定它们是否有助于微调模型。</p>
+<p>在我们开始训练循环之前，我们首先会<strong>保存我们预训练的 <span class="math inline">\(\text{tokenizer}\)</span></strong>。<span class="math inline">\(\text{tokenizer}\)</span> 在训练期间<strong>不会更新</strong>，因此没有必要在训练后保存它。但是，我们将在<strong>继续预训练后保存我们的模型</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Save pre-trained tokenizer</span></span><br><span class="line">tokenizer.save_pretrained(<span class="string">&quot;mlm&quot;</span>)</span><br><span class="line"><span class="comment"># Train model</span></span><br><span class="line">trainer.train()</span><br><span class="line"><span class="comment"># Save updated model</span></span><br><span class="line">model.save_pretrained(<span class="string">&quot;mlm&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p>这为我们在 <strong><span class="math inline">\(\text{mlm}\)</span> 文件夹</strong>中提供了一个<strong>更新后的模型</strong>。要评估其性能，我们通常会<strong>在各种任务上微调该模型</strong>。然而，出于我们的目的，我们可以运行一些<strong>掩码任务</strong>，看看它是否从<strong>持续训练</strong>中有所学习。</p>
+<p>我们将通过<strong>加载在我们继续预训练之前的预训练模型</strong>来完成此操作。使用句子 “<span class="math inline">\(\text{What a horrible [MASK]!}\)</span>” 模型将预测哪个词将取代 <strong><span class="math inline">\(\text{[MASK]}\)</span></strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> pipeline</span><br><span class="line"><span class="comment"># Load and create predictions</span></span><br><span class="line">mask_filler = pipeline(<span class="string">&quot;fill-mask&quot;</span>, model=<span class="string">&quot;bert-base-cased&quot;</span>)</span><br><span class="line">preds = mask_filler(<span class="string">&quot;What a horrible [MASK]!&quot;</span>)</span><br><span class="line"><span class="comment"># Print results</span></span><br><span class="line"><span class="keyword">for</span> pred <span class="keyword">in</span> preds:</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;&gt;&gt;&gt; <span class="subst">&#123;pred[<span class="string">&quot;sequence&quot;</span>]&#125;</span>&quot;</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>What a horrible idea!</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>What a horrible dream!</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>What a horrible thing!</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>What a horrible day!</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>What a horrible thought!</span><br></pre></td></tr></table></figure>
+<p>输出展示了像 “<span class="math inline">\(\text{idea}\)</span>”、“<span class="math inline">\(\text{dream}\)</span>” 和 “<span class="math inline">\(\text{day}\)</span>” 这样的概念，这<strong>绝对合理</strong>。接下来，让我们看看我们<strong>更新后的模型</strong>预测了什么：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Load and create predictions</span></span><br><span class="line">mask_filler = pipeline(<span class="string">&quot;fill-mask&quot;</span>, model=<span class="string">&quot;mlm&quot;</span>)</span><br><span class="line">preds = mask_filler(<span class="string">&quot;What a horrible [MASK]!&quot;</span>)</span><br><span class="line"><span class="comment"># Print results</span></span><br><span class="line"><span class="keyword">for</span> pred <span class="keyword">in</span> preds:</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;&gt;&gt;&gt; <span class="subst">&#123;pred[<span class="string">&quot;sequence&quot;</span>]&#125;</span>&quot;</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>What a horrible movie!</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>What a horrible film!</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>What a horrible mess!</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>What a horrible comedy!</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>What a horrible story!</span><br></pre></td></tr></table></figure>
+<p>一个“<span class="math inline">\(\text{horrible movie}\)</span>”（可怕的电影）、“<span class="math inline">\(\text{film}\)</span>”（影片）、“<span class="math inline">\(\text{mess}\)</span>”（烂摊子）等<strong>清楚地表明</strong>，与预训练模型相比，<strong>该模型更偏向于我们提供给它的数据</strong>。</p>
+<p>下一步将是<strong>微调</strong>这个模型以进行我们在本章开头所做的<strong>分类任务</strong>。只需按如下方式加载模型，即可开始：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> AutoModelForSequenceClassification</span><br><span class="line"><span class="comment"># Fine-tune for classification</span></span><br><span class="line">model = AutoModelForSequenceClassification.from_pretrained(<span class="string">&quot;mlm&quot;</span>, num_labels=<span class="number">2</span>)</span><br><span class="line">tokenizer = AutoTokenizer.from_pretrained(<span class="string">&quot;mlm&quot;</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="命名实体识别"><strong>命名实体识别</strong></h3>
+<p>Named-Entity Recognition</p>
+<p>在本节中，我们将深入探讨<strong>专门针对命名实体识别 (<span class="math inline">\(\text{NER}\)</span>) 微调预训练 <span class="math inline">\(\text{BERT}\)</span> 模型</strong>的过程。这项过程<strong>不是对整个文档进行分类</strong>，而是允许对<strong>单个词元 (<span class="math inline">\(\text{token}\)</span>) 和/或词汇</strong>进行分类，包括人名和地点。当涉及<strong>敏感数据</strong>时，这对于<strong>去识别化</strong> (<span class="math inline">\(\text{de-identification}\)</span>) 和<strong>匿名化</strong>任务<strong>特别有帮助</strong>。</p>
+<p><span class="math inline">\(\text{NER}\)</span> 与我们在本章开头探讨的<strong>分类示例</strong>有相似之处。然而，一个<strong>关键的区别</strong>在于<strong>数据的预处理和分类</strong>。鉴于我们专注于<strong>对单个词汇进行分类</strong>而不是整个文档，我们必须<strong>对数据进行预处理</strong>以考虑这种<strong>细粒度的结构</strong>。图 <span class="math inline">\(\text{11}-18\)</span> 提供了这种<strong>词汇级别方法</strong>的视觉表示。</p>
+<p><img src="/img3/Hands-On Large Language Models/F11.18.png" alt="F11.18" style="zoom:67%;" /></p>
+<p>微调预训练 <span class="math inline">\(\text{BERT}\)</span> 模型遵循<strong>类似于我们观察到的文档分类的架构</strong>。然而，<strong>分类方法</strong>发生了<strong>根本性的转变</strong>。模型现在<strong>不是依赖于词元嵌入的聚合或池化</strong>，而是对<strong>序列中的单个词元</strong>进行预测。至关重要的是要强调，我们的<strong>词汇级别分类任务</strong>并<strong>不意味着对整个词汇进行分类</strong>，而是<strong>对共同构成这些词汇的词元进行分类</strong>。图 <span class="math inline">\(\text{11}-19\)</span> 提供了这种<strong>词元级别分类</strong>的视觉表示。</p>
+<p><img src="/img3/Hands-On Large Language Models/F11.19.png" alt="F11.19" style="zoom:67%;" /></p>
+<h4 id="为命名实体识别准备数据"><strong>为命名实体识别准备数据</strong></h4>
+<p>Preparing Data for Named-Entity Recognition</p>
+<p>在本例中，我们将使用 <span class="math inline">\(\text{CoNLL-2003}\)</span> 数据集的<strong>英文版本</strong>，该数据集包含<strong>几种不同类型的命名实体</strong>（<strong>人名</strong>、<strong>组织</strong>、<strong>地点</strong>、<strong>杂项</strong>和<strong>无实体</strong>），并有大约 <strong><span class="math inline">\(\text{14,000}\)</span> 个训练样本</strong>。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># The CoNLL-2003 dataset for NER</span></span><br><span class="line">dataset = load_dataset(<span class="string">&quot;conll2003&quot;</span>, trust_remote_code=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>在研究本示例要使用的数据集时，我们还想分享另外几个： <strong><span class="math inline">\(\text{wnut\_17}\)</span></strong> 是一个专注于<strong>新兴和稀有实体</strong>的任务，这些实体<strong>更难发现</strong>。此外，<strong><span class="math inline">\(\text{tner/mit\_movie\_trivia}\)</span></strong> 和 <strong><span class="math inline">\(\text{tner/mit\_restaurant}\)</span></strong> 数据集也很有趣。 <span class="math inline">\(\text{tner/mit\_movie\_trivia}\)</span> 用于检测<strong>演员</strong>、<strong>情节</strong>和<strong>配乐</strong>等实体，而 <span class="math inline">\(\text{tner/mit\_restaurant}\)</span> 旨在检测<strong>设施</strong>、<strong>菜肴</strong>和<strong>美食</strong>等实体。</p>
+</blockquote>
+<p>让我们通过一个示例来<strong>检查数据的结构</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">example = dataset[<span class="string">&quot;train&quot;</span>][<span class="number">848</span>]</span><br><span class="line">example</span><br><span class="line">&#123;<span class="string">&#x27;id&#x27;</span>: <span class="string">&#x27;848&#x27;</span>,</span><br><span class="line"><span class="string">&#x27;tokens&#x27;</span>: [<span class="string">&#x27;Dean&#x27;</span>,</span><br><span class="line"><span class="string">&#x27;Palmer&#x27;</span>,</span><br><span class="line"><span class="string">&#x27;hit&#x27;</span>,</span><br><span class="line"><span class="string">&#x27;his&#x27;</span>,</span><br><span class="line"><span class="string">&#x27;30th&#x27;</span>,</span><br><span class="line"><span class="string">&#x27;homer&#x27;</span>,</span><br><span class="line"><span class="string">&#x27;for&#x27;</span>,</span><br><span class="line"><span class="string">&#x27;the&#x27;</span>,</span><br><span class="line"><span class="string">&#x27;Rangers&#x27;</span>,</span><br><span class="line"><span class="string">&#x27;.&#x27;</span>],</span><br><span class="line"><span class="string">&#x27;pos_tags&#x27;</span>: [<span class="number">22</span>, <span class="number">22</span>, <span class="number">38</span>, <span class="number">29</span>, <span class="number">16</span>, <span class="number">21</span>, <span class="number">15</span>, <span class="number">12</span>, <span class="number">23</span>, <span class="number">7</span>],</span><br><span class="line"><span class="string">&#x27;chunk_tags&#x27;</span>: [<span class="number">11</span>, <span class="number">12</span>, <span class="number">21</span>, <span class="number">11</span>, <span class="number">12</span>, <span class="number">12</span>, <span class="number">13</span>, <span class="number">11</span>, <span class="number">12</span>, <span class="number">0</span>],</span><br><span class="line"><span class="string">&#x27;ner_tags&#x27;</span>: [<span class="number">1</span>, <span class="number">2</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">3</span>, <span class="number">0</span>]&#125;</span><br></pre></td></tr></table></figure>
+<p>该数据集为<strong>句子中给出的每个词</strong>提供了<strong>标签</strong>。这些标签可以在 <strong><span class="math inline">\(\text{ner\_tags}\)</span> 键</strong>中找到，它指的是以下可能的实体：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">label2id = &#123;</span><br><span class="line"><span class="string">&quot;O&quot;</span>: <span class="number">0</span>, <span class="string">&quot;B-PER&quot;</span>: <span class="number">1</span>, <span class="string">&quot;I-PER&quot;</span>: <span class="number">2</span>, <span class="string">&quot;B-ORG&quot;</span>: <span class="number">3</span>, <span class="string">&quot;I-ORG&quot;</span>: <span class="number">4</span>,</span><br><span class="line"><span class="string">&quot;B-LOC&quot;</span>: <span class="number">5</span>, <span class="string">&quot;I-LOC&quot;</span>: <span class="number">6</span>, <span class="string">&quot;B-MISC&quot;</span>: <span class="number">7</span>, <span class="string">&quot;I-MISC&quot;</span>: <span class="number">8</span></span><br><span class="line">&#125;</span><br><span class="line">id2label = &#123;index: label <span class="keyword">for</span> label, index <span class="keyword">in</span> label2id.items()&#125;</span><br><span class="line">label2id</span><br><span class="line">&#123;<span class="string">&#x27;O&#x27;</span>: <span class="number">0</span>,</span><br><span class="line"><span class="string">&#x27;B-PER&#x27;</span>: <span class="number">1</span>,</span><br><span class="line"><span class="string">&#x27;I-PER&#x27;</span>: <span class="number">2</span>,</span><br><span class="line"><span class="string">&#x27;B-ORG&#x27;</span>: <span class="number">3</span>,</span><br><span class="line"><span class="string">&#x27;I-ORG&#x27;</span>: <span class="number">4</span>,</span><br><span class="line"><span class="string">&#x27;B-LOC&#x27;</span>: <span class="number">5</span>,</span><br><span class="line"><span class="string">&#x27;I-LOC&#x27;</span>: <span class="number">6</span>,</span><br><span class="line"><span class="string">&#x27;B-MISC&#x27;</span>: <span class="number">7</span>,</span><br><span class="line"><span class="string">&#x27;I-MISC&#x27;</span>: <span class="number">8</span>&#125;</span><br></pre></td></tr></table></figure>
+<p>这些实体对应于<strong>特定的类别</strong>：<strong>人名</strong> (<span class="math inline">\(\text{PER}\)</span>)、<strong>组织</strong> (<span class="math inline">\(\text{ORG}\)</span>)、<strong>地点</strong> (<span class="math inline">\(\text{LOC}\)</span>)、<strong>杂项实体</strong> (<span class="math inline">\(\text{MISC}\)</span>) 和<strong>无实体</strong> (<span class="math inline">\(\text{O}\)</span>)。请注意，这些实体都带有 <strong><span class="math inline">\(\text{B}\)</span></strong> (<strong>起始</strong> <span class="math inline">\(\text{beginning}\)</span>) 或 <strong><span class="math inline">\(\text{I}\)</span></strong> (<strong>内部</strong> <span class="math inline">\(\text{inside}\)</span>) 的<strong>前缀</strong>。如果<strong>连续的两个词元</strong>属于<strong>同一个短语</strong>，则该短语的<strong>起始</strong>用 <strong><span class="math inline">\(\text{B}\)</span></strong> 表示，随后是 <strong><span class="math inline">\(\text{I}\)</span></strong>，以表明它们<strong>相互关联</strong>而<strong>非独立的实体</strong>。</p>
+<p>这个过程在图 <span class="math inline">\(\text{11}-20\)</span> 中得到了进一步的说明。在图例中，由于 “<span class="math inline">\(\text{Dean}\)</span>” 是短语的<strong>起始</strong>，而 “<span class="math inline">\(\text{Palmer}\)</span>” 是<strong>内部</strong>，我们知道 “<span class="math inline">\(\text{Dean Palmer}\)</span>” 是<strong>一个人名</strong>，并且 “<span class="math inline">\(\text{Dean}\)</span>” 和 “<span class="math inline">\(\text{Palmer}\)</span>” <strong>不是独立的个体</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F11.20.png" alt="F11.1" style="zoom:67%;" /></p>
+<p>我们的数据已经<strong>经过预处理并分割成词汇</strong>，但<strong>尚未分割成词元</strong>。为此，我们将使用本章中一直使用的<strong>预训练模型 <span class="math inline">\(\text{bert-base-cased}\)</span> 的 <span class="math inline">\(\text{tokenizer}\)</span></strong> 对其进行<strong>进一步的词元化</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> AutoModelForTokenClassification</span><br><span class="line"><span class="comment"># Load tokenizer</span></span><br><span class="line">tokenizer = AutoTokenizer.from_pretrained(<span class="string">&quot;bert-base-cased&quot;</span>)</span><br><span class="line"><span class="comment"># Load model</span></span><br><span class="line">model = AutoModelForTokenClassification.from_pretrained(</span><br><span class="line"><span class="string">&quot;bert-base-cased&quot;</span>,</span><br><span class="line">num_labels=<span class="built_in">len</span>(id2label),</span><br><span class="line">id2label=id2label,</span><br><span class="line">label2id=label2id</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>让我们探索 <span class="math inline">\(\text{tokenizer}\)</span> 将如何处理我们的示例：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Split individual tokens into sub-tokens</span></span><br><span class="line">token_ids = tokenizer(example[<span class="string">&quot;tokens&quot;</span>], is_split_into_words=<span class="literal">True</span>)[<span class="string">&quot;input_ids&quot;</span>]</span><br><span class="line">sub_tokens = tokenizer.convert_ids_to_tokens(token_ids)</span><br><span class="line">sub_tokens</span><br><span class="line">[<span class="string">&#x27;[CLS]&#x27;</span>,</span><br><span class="line"><span class="string">&#x27;Dean&#x27;</span>,</span><br><span class="line"><span class="string">&#x27;Palmer&#x27;</span>,</span><br><span class="line"><span class="string">&#x27;hit&#x27;</span>,</span><br><span class="line"><span class="string">&#x27;his&#x27;</span>,</span><br><span class="line"><span class="string">&#x27;30th&#x27;</span>,</span><br><span class="line"><span class="string">&#x27;home&#x27;</span>,</span><br><span class="line"><span class="string">&#x27;##r&#x27;</span>,</span><br><span class="line"><span class="string">&#x27;for&#x27;</span>,</span><br><span class="line"><span class="string">&#x27;the&#x27;</span>,</span><br><span class="line"><span class="string">&#x27;Rangers&#x27;</span>,</span><br><span class="line"><span class="string">&#x27;.&#x27;</span>,</span><br><span class="line"><span class="string">&#x27;[SEP]&#x27;</span>]</span><br></pre></td></tr></table></figure>
+<p>正如我们在第 <span class="math inline">\(\text{2}\)</span> 章和第 <span class="math inline">\(\text{3}\)</span> 章中所学到的，<span class="math inline">\(\text{tokenizer}\)</span> 添加了 <span class="math inline">\(\text{[CLS]}\)</span> 和 <span class="math inline">\(\text{[SEP]}\)</span> 词元。请注意，单词 “<span class="math inline">\(\text{homer}\)</span>” 被进一步拆分为词元 “<span class="math inline">\(\text{home}\)</span>” 和 “##r”。</p>
+<p>这给我们带来了一个<strong>小问题</strong>，因为我们在<strong>词汇级别有标注数据</strong>，但在<strong>词元级别没有</strong>。这可以通过在<strong>词元化过程中</strong>将<strong>标签与其子词元对应物对齐</strong>来解决。</p>
+<p>让我们考虑单词 “<span class="math inline">\(\text{Maarten}\)</span>”，它的标签是 <strong><span class="math inline">\(\text{B-PER}\)</span></strong>，表示这是<strong>一个人名</strong>。如果我们将这个词通过 <span class="math inline">\(\text{tokenizer}\)</span>，它会将这个词拆分成词元 “<span class="math inline">\(\text{Ma}\)</span>”、“##arte” 和 “##n”。我们<strong>不能</strong>对所有词元都使用 <span class="math inline">\(\text{B-PER}\)</span> 实体，因为这将<strong>表示这三个词元都是独立的个体</strong>。<strong>每当一个实体被拆分成词元时</strong>，<strong>第一个词元</strong>应该带有 <strong><span class="math inline">\(\text{B}\)</span></strong> (<strong>起始</strong>)，而<strong>后续的词元</strong>应该带有 <strong><span class="math inline">\(\text{I}\)</span></strong> (<strong>内部</strong>)。</p>
+<p>因此，“<span class="math inline">\(\text{Ma}\)</span>” 将获得 <span class="math inline">\(\text{B-PER}\)</span> 来表示<strong>短语的开始</strong>，而 “##arte” 和 “##n” 将获得 <span class="math inline">\(\text{I-PER}\)</span> 来表示它们<strong>属于同一个短语</strong>。这个<strong>对齐过程</strong>如图 <span class="math inline">\(\text{11}-21\)</span> 所示。</p>
+<p><img src="/img3/Hands-On Large Language Models/F11.21.png" alt="F11.1" style="zoom:67%;" /></p>
+<p>我们创建一个名为 <strong><span class="math inline">\(\text{align\_labels}\)</span></strong> 的函数，它将在<strong>词元化</strong>过程中<strong>对输入进行词元化</strong>，并将其<strong>与更新后的标签对齐</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">align_labels</span>(<span class="params">examples</span>):</span><br><span class="line">token_ids = tokenizer(</span><br><span class="line">examples[<span class="string">&quot;tokens&quot;</span>],</span><br><span class="line">truncation=<span class="literal">True</span>,</span><br><span class="line">is_split_into_words=<span class="literal">True</span></span><br><span class="line">)</span><br><span class="line">labels = examples[<span class="string">&quot;ner_tags&quot;</span>]</span><br><span class="line">updated_labels = []</span><br><span class="line"><span class="keyword">for</span> index, label <span class="keyword">in</span> <span class="built_in">enumerate</span>(labels):</span><br><span class="line"><span class="comment"># Map tokens to their respective word</span></span><br><span class="line">word_ids = token_ids.word_ids(batch_index=index)</span><br><span class="line">previous_word_idx = <span class="literal">None</span></span><br><span class="line">label_ids = []</span><br><span class="line"><span class="keyword">for</span> word_idx <span class="keyword">in</span> word_ids:</span><br><span class="line"><span class="comment"># The start of a new word</span></span><br><span class="line"><span class="keyword">if</span> word_idx != previous_word_idx:</span><br><span class="line">previous_word_idx = word_idx</span><br><span class="line">updated_label = -<span class="number">100</span> <span class="keyword">if</span> word_idx <span class="keyword">is</span> <span class="literal">None</span> <span class="keyword">else</span> label[word_idx]</span><br><span class="line">label_ids.append(updated_label)</span><br><span class="line"><span class="comment"># Special token is -100</span></span><br><span class="line"><span class="keyword">elif</span> word_idx <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">label_ids.append(-<span class="number">100</span>)</span><br><span class="line"><span class="comment"># If the label is B-XXX we change it to I-XXX</span></span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">updated_label = label[word_idx]</span><br><span class="line"><span class="keyword">if</span> updated_label % <span class="number">2</span> == <span class="number">1</span>:</span><br><span class="line"></span><br><span class="line">updated_label += <span class="number">1</span></span><br><span class="line">label_ids.append(updated_label)</span><br><span class="line">updated_labels.append(label_ids)</span><br><span class="line">token_ids[<span class="string">&quot;labels&quot;</span>] = updated_labels</span><br><span class="line"><span class="keyword">return</span> token_ids</span><br><span class="line">tokenized = dataset.<span class="built_in">map</span>(align_labels, batched=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+<p>查看我们的示例，请注意 <span class="math inline">\(\text{[CLS]}\)</span> 和 <span class="math inline">\(\text{[SEP]}\)</span> 词元<strong>添加了额外的标签 (<span class="math inline">\(\text{-100}\)</span>)</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Difference between original and updated labels</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;Original: <span class="subst">&#123;example[<span class="string">&quot;ner_tags&quot;</span>]&#125;</span>&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;Updated: <span class="subst">&#123;tokenized[<span class="string">&quot;train&quot;</span>][<span class="number">848</span>][<span class="string">&quot;labels&quot;</span>]&#125;</span>&quot;</span>)</span><br><span class="line">Original: [<span class="number">1</span>, <span class="number">2</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">3</span>, <span class="number">0</span>]</span><br><span class="line">Updated: [-<span class="number">100</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">3</span>, <span class="number">0</span>, -<span class="number">100</span>]</span><br></pre></td></tr></table></figure>
+<p>现在我们已经<strong>对标签进行了词元化和对齐</strong>，我们可以开始考虑<strong>定义我们的评估指标</strong>。这也<strong>不同于我们之前所见</strong>。现在，我们<strong>每个文档有多个预测</strong>（即<strong>每个词元</strong>），而不是<strong>每个文档只有一个预测</strong>。</p>
+<p>我们将使用 <span class="math inline">\(\text{Hugging Face}\)</span> 的 <strong><span class="math inline">\(\text{evaluate}\)</span> 包</strong>来创建一个 <strong><span class="math inline">\(\text{compute\_metrics}\)</span> 函数</strong>，它允许我们<strong>在词元级别评估性能</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> evaluate</span><br><span class="line"><span class="comment"># Load sequential evaluation</span></span><br><span class="line">seqeval = evaluate.load(<span class="string">&quot;seqeval&quot;</span>)</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">compute_metrics</span>(<span class="params">eval_pred</span>):</span><br><span class="line"><span class="comment"># Create predictions</span></span><br><span class="line">logits, labels = eval_pred</span><br><span class="line">predictions = np.argmax(logits, axis=<span class="number">2</span>)</span><br><span class="line">true_predictions = []</span><br><span class="line">true_labels = []</span><br><span class="line"><span class="comment"># Document-level iteration</span></span><br><span class="line"><span class="keyword">for</span> prediction, label <span class="keyword">in</span> <span class="built_in">zip</span>(predictions, labels):</span><br><span class="line"><span class="comment"># Token-level iteration</span></span><br><span class="line"><span class="keyword">for</span> token_prediction, token_label <span class="keyword">in</span> <span class="built_in">zip</span>(prediction, label):</span><br><span class="line"><span class="comment"># We ignore special tokens</span></span><br><span class="line"><span class="keyword">if</span> token_label != -<span class="number">100</span>:</span><br><span class="line">true_predictions.append([id2label[token_prediction]])</span><br><span class="line">true_labels.append([id2label[token_label]])</span><br><span class="line"></span><br><span class="line">results = seqeval.compute(</span><br><span class="line">predictions=true_predictions, references=true_labels</span><br><span class="line">)</span><br><span class="line"><span class="keyword">return</span> &#123;<span class="string">&quot;f1&quot;</span>: results[<span class="string">&quot;overall_f1&quot;</span>]&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="命名实体识别的微调"><strong>命名实体识别的微调</strong></h4>
+<p>Fine-Tuning for Named-Entity Recognition</p>
+<p>我们快完成了。我们<strong>不再使用 <span class="math inline">\(\text{DataCollatorWithPadding}\)</span></strong>，而是需要一个适用于<strong>词元级别分类</strong>的整理器，即 <strong><span class="math inline">\(\text{DataCollatorForTokenClassification}\)</span></strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> DataCollatorForTokenClassification</span><br><span class="line"><span class="comment"># Token-classification DataCollator</span></span><br><span class="line">data_collator = DataCollatorForTokenClassification(tokenizer=tokenizer)</span><br></pre></td></tr></table></figure>
+<p>现在我们已经加载了模型，<strong>剩下的步骤</strong>与本章中<strong>之前的训练过程相似</strong>。我们定义一个带有<strong>可以调整的特定参数</strong>的训练器，并创建一个 <span class="math inline">\(\text{Trainer}\)</span>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Training arguments for parameter tuning</span></span><br><span class="line">training_args = TrainingArguments(</span><br><span class="line"><span class="string">&quot;model&quot;</span>,</span><br><span class="line">learning_rate=<span class="number">2e-5</span>,</span><br><span class="line">per_device_train_batch_size=<span class="number">16</span>,</span><br><span class="line">per_device_eval_batch_size=<span class="number">16</span>,</span><br><span class="line">num_train_epochs=<span class="number">1</span>,</span><br><span class="line">weight_decay=<span class="number">0.01</span>,</span><br><span class="line">save_strategy=<span class="string">&quot;epoch&quot;</span>,</span><br><span class="line">report_to=<span class="string">&quot;none&quot;</span></span><br><span class="line">)</span><br><span class="line"><span class="comment"># Initialize Trainer</span></span><br><span class="line">trainer = Trainer(</span><br><span class="line">model=model,</span><br><span class="line">args=training_args,</span><br><span class="line">train_dataset=tokenized[<span class="string">&quot;train&quot;</span>],</span><br><span class="line">eval_dataset=tokenized[<span class="string">&quot;test&quot;</span>],</span><br><span class="line">tokenizer=tokenizer,</span><br><span class="line">data_collator=data_collator,</span><br><span class="line">compute_metrics=compute_metrics,</span><br><span class="line">)</span><br><span class="line">trainer.train()</span><br></pre></td></tr></table></figure>
+<p>然后，我们<strong>评估</strong>我们创建的模型：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Evaluate the model on our test data</span></span><br><span class="line">trainer.evaluate()</span><br></pre></td></tr></table></figure>
+<p>最后，让我们<strong>保存模型</strong>并将其用于<strong>推理管道</strong> (<span class="math inline">\(\text{pipeline}\)</span>)。这使我们能够<strong>检查某些数据</strong>，从而<strong>手动检查推理过程中发生的情况</strong>以及我们是否<strong>对输出感到满意</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> pipeline</span><br><span class="line"><span class="comment"># Save our fine-tuned model</span></span><br><span class="line">trainer.save_model(<span class="string">&quot;ner_model&quot;</span>)</span><br><span class="line"><span class="comment"># Run inference on the fine-tuned model</span></span><br><span class="line">token_classifier = pipeline(</span><br><span class="line"><span class="string">&quot;token-classification&quot;</span>,</span><br><span class="line">model=<span class="string">&quot;ner_model&quot;</span>,</span><br><span class="line">)</span><br><span class="line">token_classifier(<span class="string">&quot;My name is Maarten.&quot;</span>)</span><br><span class="line">[&#123;<span class="string">&#x27;entity&#x27;</span>: <span class="string">&#x27;B-PER&#x27;</span>,</span><br><span class="line"><span class="string">&#x27;score&#x27;</span>: <span class="number">0.99534035</span>,</span><br><span class="line"><span class="string">&#x27;index&#x27;</span>: <span class="number">4</span>,</span><br><span class="line"><span class="string">&#x27;word&#x27;</span>: <span class="string">&#x27;Ma&#x27;</span>,</span><br><span class="line"><span class="string">&#x27;start&#x27;</span>: <span class="number">11</span>,</span><br><span class="line"><span class="string">&#x27;end&#x27;</span>: <span class="number">13</span>&#125;,</span><br><span class="line">&#123;<span class="string">&#x27;entity&#x27;</span>: <span class="string">&#x27;I-PER&#x27;</span>,</span><br><span class="line"><span class="string">&#x27;score&#x27;</span>: <span class="number">0.9928328</span>,</span><br><span class="line"><span class="string">&#x27;index&#x27;</span>: <span class="number">5</span>,</span><br><span class="line"><span class="string">&#x27;word&#x27;</span>: <span class="string">&#x27;##arte&#x27;</span>,</span><br><span class="line"><span class="string">&#x27;start&#x27;</span>: <span class="number">13</span>,</span><br><span class="line"><span class="string">&#x27;end&#x27;</span>: <span class="number">17</span>&#125;,</span><br><span class="line">&#123;<span class="string">&#x27;entity&#x27;</span>: <span class="string">&#x27;I-PER&#x27;</span>,</span><br><span class="line"><span class="string">&#x27;score&#x27;</span>: <span class="number">0.9954301</span>,</span><br><span class="line"><span class="string">&#x27;index&#x27;</span>: <span class="number">6</span>,</span><br><span class="line"><span class="string">&#x27;word&#x27;</span>: <span class="string">&#x27;##n&#x27;</span>,</span><br><span class="line"><span class="string">&#x27;start&#x27;</span>: <span class="number">17</span>,</span><br><span class="line"><span class="string">&#x27;end&#x27;</span>: <span class="number">18</span>&#125;]</span><br></pre></td></tr></table></figure>
+<p>在句子 “<span class="math inline">\(\text{My name is Maarten}\)</span>” 中，单词 “<span class="math inline">\(\text{Maarten}\)</span>” 及其子词元被<strong>正确地识别为人名</strong> (<span class="math inline">\(\text{person}\)</span>)! ### 总结 Summary</p>
+<p>在本章中，我们探索了几种用于在<strong>特定分类任务</strong>上<strong>微调预训练表征模型</strong>的任务。我们首先演示了<strong>如何微调预训练的 <span class="math inline">\(\text{BERT}\)</span> 模型</strong>，并通过<strong>冻结其架构的某些层</strong>来扩展了这些示例。</p>
+<p>我们尝试了一种名为 <strong><span class="math inline">\(\text{SetFit}\)</span></strong> 的<strong>少样本分类技术</strong>，它涉及使用<strong>有限的标注数据</strong>来<strong>微调预训练的嵌入模型</strong>和<strong>分类头</strong>。该模型仅使用<strong>少量标注数据点</strong>，就产生了与我们在前几章中探索的模型<strong>相似的性能</strong>。</p>
+<p>接下来，我们深入研究了<strong>持续预训练</strong> (<span class="math inline">\(\text{continued pretraining}\)</span>) 的概念，我们<strong>使用预训练的 <span class="math inline">\(\text{BERT}\)</span> 模型作为起点</strong>，并使用<strong>不同的数据</strong>继续训练它。<strong>底层过程</strong>，即<strong>掩码语言建模</strong> (<span class="math inline">\(\text{masked language modeling}\)</span>)，不仅用于创建表征模型，还可以用于<strong>持续预训练模型</strong>。</p>
+<p>最后，我们研究了<strong>命名实体识别</strong> (<span class="math inline">\(\text{named-entity recognition}\)</span>)，这是一项涉及在<strong>非结构化文本中识别特定实体</strong>（例如人名和地点）的任务。与之前的示例相比，这种分类是在<strong>词汇级别</strong>而非<strong>文档级别</strong>上完成的。</p>
+<p>在下一章中，我们将继续探讨<strong>微调语言模型</strong>的领域，但会<strong>转而关注生成模型</strong>。我们将使用<strong>两步法</strong>，探索<strong>如何微调生成模型</strong>以<strong>正确遵循指令</strong>，然后<strong>微调它以符合人类偏好</strong>。</p>
+<p>书籍各章的机翻md文件：<br />
+<a href="/2025/04/01/Hands-On%20Large%20Language%20Models%20%E7%9B%AE%E5%BD%95%20%E5%89%8D%E8%A8%80/" title="《Hands-On Large Language Models》目录及前言">《Hands-On Large Language Models》目录及前言</a><br />
+<a href="/2025/04/02/Hands-On%20Large%20Language%20Models%201/" title="《Hands-On Large Language Models》第1章 大型语言模型简介">《Hands-On Large Language Models》第1章 大型语言模型简介</a><br />
+<a href="/2025/04/03/Hands-On%20Large%20Language%20Models%202/" title="《Hands-On Large Language Models》第2章 词元与嵌入">《Hands-On Large Language Models》第2章 词元与嵌入</a><br />
+<a href="/2025/04/04/Hands-On%20Large%20Language%20Models%203/" title="《Hands-On Large Language Models》第3章 深入了解大型语言模型">《Hands-On Large Language Models》第3章 深入了解大型语言模型</a><br />
+<a href="/2025/04/05/Hands-On%20Large%20Language%20Models%204/" title="《Hands-On Large Language Models》第4章 文本分类">《Hands-On Large Language Models》第4章 文本分类</a><br />
+<a href="/2025/04/06/Hands-On%20Large%20Language%20Models%205/" title="《Hands-On Large Language Models》第5章 文本聚类和主题建模">《Hands-On Large Language Models》第5章 文本聚类和主题建模</a><br />
+<a href="/2025/04/07/Hands-On%20Large%20Language%20Models%206/" title="《Hands-On Large Language Models》第6章 提示工程">《Hands-On Large Language Models》第6章 提示工程</a><br />
+<a href="/2025/04/08/Hands-On%20Large%20Language%20Models%207/" title="《Hands-On Large Language Models》第7章 高级文本生成技术与工具">《Hands-On Large Language Models》第7章 高级文本生成技术与工具</a><br />
+<a href="/2025/04/09/Hands-On%20Large%20Language%20Models%208/" title="《Hands-On Large Language Models》第8章 语义搜索与检索增强生成">《Hands-On Large Language Models》第8章 语义搜索与检索增强生成</a><br />
+<a href="/2025/04/10/Hands-On%20Large%20Language%20Models%209/" title="《Hands-On Large Language Models》第9章 多模态大型语言模型">《Hands-On Large Language Models》第9章 多模态大型语言模型</a><br />
+<a href="/2025/04/11/Hands-On%20Large%20Language%20Models%2010/" title="《Hands-On Large Language Models》第10章 创建文本嵌入模型">《Hands-On Large Language Models》第10章 创建文本嵌入模型</a><br />
+<a href="/2025/04/12/Hands-On%20Large%20Language%20Models%2011/" title="《Hands-On Large Language Models》第11章 微调用于分类的表征模型">《Hands-On Large Language Models》第11章 微调用于分类的表征模型</a><br />
+<a href="/2025/04/13/Hands-On%20Large%20Language%20Models%2012/" title="《Hands-On Large Language Models》第12章 生成模型的微调">《Hands-On Large Language Models》第12章 生成模型的微调</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/04/11/Hands-On%20Large%20Language%20Models%2010/" rel="prev" title="《Hands-On Large Language Models》第10章 创建文本嵌入模型">
+                  <i class="fa fa-chevron-left"></i> 《Hands-On Large Language Models》第10章 创建文本嵌入模型
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/04/13/Hands-On%20Large%20Language%20Models%2012/" rel="next" title="《Hands-On Large Language Models》第12章 生成模型的微调">
+                  《Hands-On Large Language Models》第12章 生成模型的微调 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
