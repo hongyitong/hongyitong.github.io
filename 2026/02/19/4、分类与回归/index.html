@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"enable":true,"style":"tabs","active":"giscus","storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+
+
+    <meta name="description" content="第四章 分类与回归 运行代码 在 Colab 上运行 在 GitHub 上查看 内容电影评论分类：二元分类示例新闻通讯分类：多类别分类示例预测房价：回归分析示例概括 本章内容  您的第一个真实世界机器学习工作流程示例 处理二元分类和类别分类问题 处理连续回归问题  本章旨在引导你开始使用神经网络解决实际问题。你将巩固从第 2 章和第 3 章中获得的知识，并将所学知识应用于三个新任务，这三个任务涵盖">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《DEEP LEARNING with Python》第四章">
+<meta property="og:url" content="http://hongyitong.github.io/2026/02/19/4%E3%80%81%E5%88%86%E7%B1%BB%E4%B8%8E%E5%9B%9E%E5%BD%92/index.html">
+<meta property="og:site_name" content="墨语浮生">
+<meta property="og:description" content="第四章 分类与回归 运行代码 在 Colab 上运行 在 GitHub 上查看 内容电影评论分类：二元分类示例新闻通讯分类：多类别分类示例预测房价：回归分析示例概括 本章内容  您的第一个真实世界机器学习工作流程示例 处理二元分类和类别分类问题 处理连续回归问题  本章旨在引导你开始使用神经网络解决实际问题。你将巩固从第 2 章和第 3 章中获得的知识，并将所学知识应用于三个新任务，这三个任务涵盖">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/3_layer_network.cf1b1cd7.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/The-rectified-linear-unit-function.351095bf.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/The-sigmoid-function.eac1368d.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/imdb_loss_plot.801b28d0.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/imdb_accuracy_plot.bf0cb7ef.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/reuters_loss_plot.6e487e1a.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/reuters_accuracy_plot.b74dee12.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/reuters_top_3_accuracy_plot.a9e13ec0.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/3-fold-cross-validation.40bb5356.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/california_housing_validation_mae_plot.af306c57.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/california_housing_validation_mae_plot_zoomed.928f390d.png">
+<meta property="article:published_time" content="2026-02-18T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-03-01T03:35:19.990Z">
+<meta property="article:author" content="Rayman.hung">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/3_layer_network.cf1b1cd7.png">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2026/02/19/4%E3%80%81%E5%88%86%E7%B1%BB%E4%B8%8E%E5%9B%9E%E5%BD%92/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2026/02/19/4%E3%80%81%E5%88%86%E7%B1%BB%E4%B8%8E%E5%9B%9E%E5%BD%92/","path":"2026/02/19/4、分类与回归/","title":"《DEEP LEARNING with Python》第四章"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>《DEEP LEARNING with Python》第四章 | 墨语浮生</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZXGEJDXQ33"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-ZXGEJDXQ33","only_pageview":false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?ff358b9c7e949787b074bfc9c8019a9d"></script>
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">墨语浮生</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E7%B1%BB%E4%B8%8E%E5%9B%9E%E5%BD%92"><span class="nav-text">分类与回归</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E4%BB%A3%E7%A0%81"><span class="nav-text">运行代码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%B5%E5%BD%B1%E8%AF%84%E8%AE%BA%E5%88%86%E7%B1%BB%E4%BA%8C%E5%85%83%E5%88%86%E7%B1%BB%E7%A4%BA%E4%BE%8B"><span class="nav-text">电影评论分类：二元分类示例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#imdb%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="nav-text">IMDb数据集</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%87%86%E5%A4%87"><span class="nav-text">数据准备</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%84%E5%BB%BA%E4%BD%A0%E7%9A%84%E6%A8%A1%E5%9E%8B"><span class="nav-text">构建你的模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%AA%8C%E8%AF%81%E4%BD%A0%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-text">验证你的方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E8%AE%AD%E7%BB%83%E5%A5%BD%E7%9A%84%E6%A8%A1%E5%9E%8B%E5%AF%B9%E6%96%B0%E6%95%B0%E6%8D%AE%E8%BF%9B%E8%A1%8C%E9%A2%84%E6%B5%8B"><span class="nav-text">使用训练好的模型对新数据进行预测</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%9B%E4%B8%80%E6%AD%A5%E5%AE%9E%E9%AA%8C"><span class="nav-text">进一步实验</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B0%E9%97%BB%E9%80%9A%E8%AE%AF%E5%88%86%E7%B1%BB%E5%A4%9A%E7%B1%BB%E5%88%AB%E5%88%86%E7%B1%BB%E7%A4%BA%E4%BE%8B"><span class="nav-text">新闻通讯分类：多类别分类示例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B7%AF%E9%80%8F%E7%A4%BE%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="nav-text">路透社数据集</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%87%86%E5%A4%87-1"><span class="nav-text">数据准备</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%84%E5%BB%BA%E4%BD%A0%E7%9A%84%E6%A8%A1%E5%9E%8B-1"><span class="nav-text">构建你的模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%AA%8C%E8%AF%81%E4%BD%A0%E7%9A%84%E6%96%B9%E6%B3%95-1"><span class="nav-text">验证你的方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E6%96%B0%E6%95%B0%E6%8D%AE%E7%94%9F%E6%88%90%E9%A2%84%E6%B5%8B"><span class="nav-text">基于新数据生成预测</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%84%E7%90%86%E6%A0%87%E7%AD%BE%E5%92%8C%E6%8D%9F%E5%A4%B1%E7%9A%84%E5%8F%A6%E4%B8%80%E7%A7%8D%E6%96%B9%E6%B3%95"><span class="nav-text">处理标签和损失的另一种方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%AD%E9%97%B4%E5%B1%82%E8%B6%B3%E5%A4%9F%E5%A4%A7%E7%9A%84%E9%87%8D%E8%A6%81%E6%80%A7"><span class="nav-text">中间层足够大的重要性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%9B%E4%B8%80%E6%AD%A5%E5%AE%9E%E9%AA%8C-1"><span class="nav-text">进一步实验</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93-1"><span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A2%84%E6%B5%8B%E6%88%BF%E4%BB%B7%E5%9B%9E%E5%BD%92%E5%88%86%E6%9E%90%E7%A4%BA%E4%BE%8B"><span class="nav-text">预测房价：回归分析示例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%A0%E5%B7%9E%E6%88%BF%E4%BB%B7%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="nav-text">加州房价数据集</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%87%86%E5%A4%87-2"><span class="nav-text">数据准备</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%84%E5%BB%BA%E4%BD%A0%E7%9A%84%E6%A8%A1%E5%9E%8B-2"><span class="nav-text">构建你的模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-k-%E6%8A%98%E4%BA%A4%E5%8F%89%E9%AA%8C%E8%AF%81%E6%9D%A5%E9%AA%8C%E8%AF%81%E4%BD%A0%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-text">使用 K 折交叉验证来验证你的方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E6%96%B0%E6%95%B0%E6%8D%AE%E7%94%9F%E6%88%90%E9%A2%84%E6%B5%8B-1"><span class="nav-text">基于新数据生成预测</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93-2"><span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E6%8B%AC"><span class="nav-text">概括</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、心情记录</div>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/02/19/4%E3%80%81%E5%88%86%E7%B1%BB%E4%B8%8E%E5%9B%9E%E5%BD%92/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="《DEEP LEARNING with Python》第四章 | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《DEEP LEARNING with Python》第四章
+        </h1>
+
+        </h1>
+          
+             <p class="post-subtitle">分类与回归</p>
+          
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-02-19 00:00:00" itemprop="dateCreated datePublished" datetime="2026-02-19T00:00:00+08:00">2026-02-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>第四章</p>
+<h1 id="分类与回归">分类与回归</h1>
+<h3 id="运行代码">运行代码</h3>
+<p><a target="_blank" rel="noopener" href="https://colab.research.google.com/github/fchollet/deep-learning-with-python-notebooks/blob/master/chapter04_classification-and-regression.ipynb">在 Colab 上运行</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/fchollet/deep-learning-with-python-notebooks">在 GitHub 上查看</a></p>
+<p>内容<a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#classifying-movie-reviews-a-binary-classification-example">电影评论分类：二元分类示例</a><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#classifying-newswires-a-multiclass-classification-example">新闻通讯分类：多类别分类示例</a><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#predicting-house-prices-a-regression-example">预测房价：回归分析示例</a><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#summary">概括</a></p>
+<p>本章内容</p>
+<ul>
+<li>您的第一个真实世界机器学习工作流程示例</li>
+<li>处理二元分类和类别分类问题</li>
+<li>处理连续回归问题</li>
+</ul>
+<p>本章旨在引导你开始使用神经网络解决实际问题。你将巩固从第 2 章和第 3 章中获得的知识，并将所学知识应用于三个新任务，这三个任务涵盖了神经网络的三种最常见应用场景——二元分类、类别分类和标量回归：</p>
+<ul>
+<li>将电影评论分类为正面或负面（二元分类）</li>
+<li>按主题对新闻稿进行分类（类别分类）</li>
+<li>利用房地产数据估算房屋价格（标量回归）</li>
+</ul>
+<p>这些示例将是您首次接触端到端机器学习工作流程：您将了解数据预处理、基本模型架构原则和模型评估。</p>
+<p>学完本章后，你将能够使用神经网络处理向量数据的简单分类和回归任务。之后，你将准备好在第五章中开始构建更系统、更具理论基础的机器学习理解。</p>
+<span id="more"></span>
+<p><strong>分类与回归术语表</strong></p>
+<p>分类和回归涉及许多专业术语。您在前面的示例中已经遇到过其中一些，在后面的章节中还会看到更多。它们都有精确的、机器学习特有的定义，您应该熟悉它们：</p>
+<ul>
+<li><p><em>样本或输入</em> ——输入到模型中的一个数据点。</p></li>
+<li><p><em>预测或输出</em> ——模型输出的结果。</p></li>
+<li><p><em>目标</em> ——真相。根据外部数据源，你的模型理想情况下应该预测出的结果。</p></li>
+<li><p><em>预测误差或损失值</em> ——衡量模型预测值与目标值之间距离的指标。</p></li>
+<li><p><em>类别</em> ——分类问题中可供选择的一组标签。例如，在对猫和狗的图片进行分类时，“狗”和“猫”就是两个类别。</p></li>
+<li><p><em>标签</em> ——分类问题中类别标注的具体实例。例如，如果图片 #1234 被标注为包含“狗”这一类别，那么“狗”就是图片 #1234 的标签。</p></li>
+<li><p><em>真实标签或标注</em> — 数据集的所有目标，通常由人类收集。</p></li>
+<li><p><em>二元分类</em> ——一种分类任务，其中每个输入样本应被归类为两个互斥的类别。</p></li>
+<li><p><em>类别分类或多类分类</em> ——一种分类任务，其中每个输入样本应被分类到两个以上的类别中：例如，对手写数字进行分类。</p></li>
+<li><p><em>多标签分类</em> ——一种分类任务，其中每个输入样本可以被赋予多个标签。例如，一张图像可能同时包含猫和狗，因此需要同时标注“猫”标签和“狗”标签。每张图像的标签数量通常是可变的。</p></li>
+<li><p><em>标量回归</em> ——目标值为连续标量值的任务。预测房价就是一个很好的例子：不同的目标价格构成一个连续空间。</p></li>
+<li><p><em>向量回归</em> ——目标是一组连续值的任务：例如，一个连续向量。如果您要对多个值（例如图像中边界框的坐标）进行回归，那么您就是在进行向量回归。</p></li>
+<li><p><em>小批量（或简称批次）</em> ——指模型同时处理的一小批样本（通常介于 8 到 128 个之间）。样本数量通常是 2 的幂，以便于在 GPU 上分配内存。训练时，小批量用于计算应用于模型权重的单次梯度下降更新。</p></li>
+</ul>
+<h2 id="电影评论分类二元分类示例">电影评论分类：二元分类示例</h2>
+<p>二分类，或称二元分类，是机器学习中最常见的问题之一。在这个例子中，你将学习如何根据影评的文本内容，将影评分类为正面或负面。</p>
+<h3 id="imdb数据集">IMDb数据集</h3>
+<p>你将使用 IMDb 数据集：这是一组来自互联网电影数据库的 50,000 条高度两极分化的评论。这些评论被分为 25,000 条用于训练，25,000 条用于测试，每组评论中负面评论和正面评论各占 50%。</p>
+<p>与 MNIST 数据集一样，IMDb 数据集也已包含在 Keras 中。它已经过预处理：评论（单词序列）已被转换为整数序列，其中每个整数代表字典中的一个特定单词。这使我们能够专注于模型的构建、训练和评估。在第 14 章中，您将学习如何从头开始处理原始文本输入。</p>
+<p>以下代码将加载数据集（首次运行时，大约 80 MB 的数据将下载到您的计算机）。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras.datasets <span class="keyword">import</span> imdb</span><br><span class="line"></span><br><span class="line">(train_data, train_labels), (test_data, test_labels) = imdb.load_data(</span><br><span class="line">    num_words=<span class="number">10000</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#listing-4-1">清单 4.1</a>：加载 IMDb 数据集</p>
+<p>这种方法<code>num_words=10000</code>意味着训练数据中只会保留出现频率最高的 10,000 个词，而罕见词将被舍弃。这样一来，就可以处理规模适中的向量数据。如果不设置这个限制，训练数据中就会包含 88,585 个不同的词，这显然过于庞大。其中许多词只在单个样本中出现，因此无法有效地用于分类。</p>
+<p>变量 <code>a``train_data</code>和<code>test_data``b</code> 是 NumPy 数组，存储评论信息；每条评论都是一个单词索引列表（编码一个单词序列）。<code>c``train_labels</code>和 <code>test_labels``d</code> 是 NumPy 数组，包含 0 和 1，其中 0 代表<em>负面</em>评价，1 代表<em>正面评价</em>。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; train_data[0]</span><br><span class="line">[1, 14, 22, 16, ... 178, 32]</span><br><span class="line">&gt;&gt;&gt; train_labels[0]</span><br><span class="line">1</span><br></pre></td></tr></table></figure>
+<p>因为你只选取了使用频率最高的10000个词，所以任何词索引都不会超过10000：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; max([max(sequence) for sequence in train_data])</span><br><span class="line">9999</span><br></pre></td></tr></table></figure>
+<p>为了好玩，我们快速地把其中一条评论解码成英文单词。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># word_index is a dictionary mapping words to an integer index.</span></span><br><span class="line">word_index = imdb.get_word_index()</span><br><span class="line"><span class="comment"># Reverses it, mapping integer indices to words</span></span><br><span class="line">reverse_word_index = <span class="built_in">dict</span>([(value, key) <span class="keyword">for</span> (key, value) <span class="keyword">in</span> word_index.items()])</span><br><span class="line"><span class="comment"># Decodes the review. Note that the indices are offset by 3 because 0,</span></span><br><span class="line"><span class="comment"># 1, and 2 are reserved indices for &quot;padding,&quot; &quot;start of sequence,&quot; and</span></span><br><span class="line"><span class="comment"># &quot;unknown.&quot;</span></span><br><span class="line">decoded_review = <span class="string">&quot; &quot;</span>.join(</span><br><span class="line">    [reverse_word_index.get(i - <span class="number">3</span>, <span class="string">&quot;?&quot;</span>) <span class="keyword">for</span> i <span class="keyword">in</span> train_data[<span class="number">0</span>]]</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#listing-4-2">列表 4.2</a>：将评论解码回文本</p>
+<p>让我们来看看我们得到了什么：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; decoded_review[:100]</span><br><span class="line">? this film was just brilliant casting location scenery story direction everyone</span><br></pre></td></tr></table></figure>
+<p>请注意，开头部分<code>?</code>对应于添加到每条评论前的起始标记。</p>
+<h3 id="数据准备">数据准备</h3>
+<p>你不能直接将整数列表输入神经网络。这些列表长度各不相同，而神经网络需要处理的是连续的数据批次。你必须将列表转换为张量。有两种方法可以做到这一点：</p>
+<ul>
+<li><p>将列表填充到相同长度，然后将它们转换为形状为 的整数张量<code>(samples, max_length)</code>，并使用能够处理此类整数张量的层（ <code>Embedding</code>我们将在本书后面详细介绍的层）来启动模型。</p></li>
+<li><p><em>对列表进行多热编码</em>，将其转换为由 0 和 1 组成的向量，以反映所有可能单词的存在与否。例如，这意味着将序列转换<code>[8, 5]</code>为一个 10,000 维的向量，其中除索引 5 和 8 为 1 外，其余元素均为 0。</p></li>
+</ul>
+<p>我们选择后一种方案来向量化数据。手动操作时，流程如下所示。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">multi_hot_encode</span>(<span class="params">sequences, num_classes</span>):</span><br><span class="line">    <span class="comment"># Creates an all-zero matrix of shape (len(sequences), num_classes)</span></span><br><span class="line">    results = np.zeros((<span class="built_in">len</span>(sequences), num_classes))</span><br><span class="line">    <span class="keyword">for</span> i, sequence <span class="keyword">in</span> <span class="built_in">enumerate</span>(sequences):</span><br><span class="line">        <span class="comment"># Sets specific indices of results[i] to 1s</span></span><br><span class="line">        results[i][sequence] = <span class="number">1.0</span></span><br><span class="line">    <span class="keyword">return</span> results</span><br><span class="line"></span><br><span class="line"><span class="comment"># Vectorized training data</span></span><br><span class="line">x_train = multi_hot_encode(train_data, num_classes=<span class="number">10000</span>)</span><br><span class="line"><span class="comment"># Vectorized test data</span></span><br><span class="line">x_test = multi_hot_encode(test_data, num_classes=<span class="number">10000</span>)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#listing-4-3">清单 4.3</a>：使用多热编码对整数序列进行编码</p>
+<p>以下是样品现在的样子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; x_train[0]</span><br><span class="line">array([ 0.,  1.,  1., ...,  0.,  0.,  0.])</span><br></pre></td></tr></table></figure>
+<p>除了对输入序列进行向量化之外，你也应该对它们的标签进行向量化，这很简单。我们的标签已经是 NumPy 数组了，所以只需将类型从整数转换为浮点数即可：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">y_train = train_labels.astype(<span class="string">&quot;float32&quot;</span>)</span><br><span class="line">y_test = test_labels.astype(<span class="string">&quot;float32&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p>现在数据已经准备好输入神经网络了。</p>
+<h3 id="构建你的模型">构建你的模型</h3>
+<p>输入数据是向量，标签是标量（1 和 0）：这是你所能遇到的最简单的问题设置之一。在这种问题上表现良好的模型是简单的全连接<code>Dense</code>层堆叠，带有<code>relu</code>激活函数。</p>
+<p>对于这种多层架构，需要做出两个关键的架构决策 <code>Dense</code>：</p>
+<ul>
+<li>需要使用多少层？</li>
+<li>每层应该选择多少个单元？</li>
+</ul>
+<p>在第五章中，你将学习一些正式的原则来指导你做出这些选择。目前，你只能相信我们做出的以下架构选择：</p>
+<ul>
+<li>两层中间层，每层16个单元</li>
+<li>第三层将输出关于当前评论情感的标量预测结果</li>
+</ul>
+<p>图 4.1 展示了模型的结构。以下是 Keras 的实现，类似于您之前看到的 MNIST 示例。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> keras</span><br><span class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> layers</span><br><span class="line"></span><br><span class="line">model = keras.Sequential(</span><br><span class="line">    [</span><br><span class="line">        layers.Dense(<span class="number">16</span>, activation=<span class="string">&quot;relu&quot;</span>),</span><br><span class="line">        layers.Dense(<span class="number">16</span>, activation=<span class="string">&quot;relu&quot;</span>),</span><br><span class="line">        layers.Dense(<span class="number">1</span>, activation=<span class="string">&quot;sigmoid&quot;</span>),</span><br><span class="line">    ]</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#listing-4-4">清单 4.4</a>：模型定义</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/3_layer_network.cf1b1cd7.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#figure-4-1">图 4.1</a>：三层模型</p>
+<p>传递给每一层的第一个参数是该层中的<em>单元</em><code>Dense</code>数：即该层表示空间的维度。你可能还记得第 2 章和第 3 章的内容，每个带有激活函数的层都实现了以下一系列张量运算：<code>Dense``relu</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">output = relu(dot(<span class="built_in">input</span>, W) + b)</span><br></pre></td></tr></table></figure>
+<p>拥有 16 个单元意味着权重矩阵的<code>W</code>形状为 <code>(input_dimension, 16)</code>：与的点积<code>W</code>会将输入数据投影到 16 维表示空间（然后加上偏置向量<code>b</code>并应用运算<code>relu</code>）。你可以直观地理解表示空间的维度，即“你允许模型在学习内部表示时拥有多大的自由度”。拥有更多单元（更高维度的表示空间）可以让模型学习更复杂的表示，但这会增加模型的计算成本，并可能导致学习到不必要的模式（这些模式可以提高训练数据上的性能，但对测试数据没有帮助）。</p>
+<p>中间层使用<code>relu</code>作为激活函数，而最后一层使用 sigmoid 激活函数输出概率值（介于 0 和 1 之间的分数，表示评论为正面的可能性）。<code>relu</code>（修正线性单元）函数旨在将负值置零（参见图 4.2），而 sigmoid 函数则将任意值“压缩”到区间内<code>[0, 1]</code>（参见图 4.3），输出可以解释为概率的值。</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/The-rectified-linear-unit-function.351095bf.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#figure-4-2">图 4.2</a>：修正线性单位函数</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/The-sigmoid-function.eac1368d.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#figure-4-3">图 4.3</a>：S 型函数</p>
+<p><strong>什么是激活函数？为什么需要激活函数？</strong></p>
+<p>如果没有激活函数<code>relu</code>（也称为<em>非线性</em>），该<code>Dense</code>层将由两个线性运算组成——点积和加法：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">output = dot(<span class="built_in">input</span>, W) + b</span><br></pre></td></tr></table></figure>
+<p>因此，该层只能学习输入数据的 *线性变换（仿射变换）：该层的**假设空间*是输入数据到 16 维空间的所有可能的线性变换的集合。这样的假设空间过于局限，无法从多层表示中获益，因为即使堆叠多层线性层，最终实现的仍然是线性运算：增加更多层并不会扩展假设空间（正如你在第二章中看到的）。</p>
+<p>为了获得更丰富的假设空间（这将受益于深度表征），你需要一个非线性函数或激活函数。 <code>relu</code>是深度学习中最常用的激活函数，但还有许多其他候选函数，它们的名称都同样奇怪：<code>prelu</code>、 <code>elu</code>等等。</p>
+<p>最后，你需要选择损失函数和优化器。由于你面临的是一个二元分类问题，并且模型的输出是一个概率值（你的模型以一个带有 sigmoid 激活函数的单单元层结尾），因此最好使用交叉熵 <code>binary_crossentropy</code>损失函数。当然，这并非唯一可行的选择：例如，你也可以使用其他方法<code>mean_squared_error</code>。但对于输出概率值的模型，交叉熵通常是最佳选择。<em>交叉熵</em>是信息论领域的一个量，它衡量概率分布之间的距离，在本例中，指的是真实分布与预测分布之间的距离。</p>
+<p>至于优化器的选择，我们将选择<code>adam</code>，这通常是解决几乎所有问题的良好默认选择。</p>
+<p>接下来，您需要配置模型，包括<code>adam</code>优化器和<code>binary_crossentropy</code>损失函数。请注意，您还需要在训练过程中监控准确率。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">model.<span class="built_in">compile</span>(</span><br><span class="line">    optimizer=<span class="string">&quot;adam&quot;</span>,</span><br><span class="line">    loss=<span class="string">&quot;binary_crossentropy&quot;</span>,</span><br><span class="line">    metrics=[<span class="string">&quot;accuracy&quot;</span>],</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#listing-4-5">清单 4.5</a>：编译模型</p>
+<h3 id="验证你的方法">验证你的方法</h3>
+<p>正如你在第三章中学到的，深度学习模型绝不应该直接使用训练数据进行评估——通常的做法是使用“验证集”来监控模型在训练过程中的准确性。在这里，你将通过从原始训练数据中分离出 10,000 个样本来创建一个验证集。</p>
+<p>你可能会问，为什么不直接用<em>测试</em>数据来评估模型呢？那样似乎更简单。原因在于，你需要利用验证集上的结果来指导下一步的训练决策——例如，选择合适的模型大小或训练轮数。一旦你开始这样做，验证集的分数就无法准确反映模型在新数据上的性能，因为模型已经被刻意修改以使其在验证集上表现更佳。因此，最好保留一组从未见过的样本，以便用完全客观的方式进行最终的评估，而测试集正是如此。我们将在下一章详细讨论这一点。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">x_val = x_train[:<span class="number">10000</span>]</span><br><span class="line">partial_x_train = x_train[<span class="number">10000</span>:]</span><br><span class="line">y_val = y_train[:<span class="number">10000</span>]</span><br><span class="line">partial_y_train = y_train[<span class="number">10000</span>:]</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#listing-4-6">清单 4.6</a>：预留验证集</p>
+<p>现在，您将使用 512 个样本的小批量训练模型 20 个 epoch（对训练数据中的所有样本进行 20 次迭代）。同时，您需要监控预留的 10,000 个样本的损失和准确率。您可以通过将验证数据作为<code>validation_data</code>参数传递给<code>model.fit()</code>.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">history = model.fit(</span><br><span class="line">    partial_x_train,</span><br><span class="line">    partial_y_train,</span><br><span class="line">    epochs=<span class="number">20</span>,</span><br><span class="line">    batch_size=<span class="number">512</span>,</span><br><span class="line">    validation_data=(x_val, y_val),</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#listing-4-7">清单 4.7</a>：训练你的模型</p>
+<p><strong>论点<code>validation_split</code></strong></p>
+<p>除了手动从训练数据中分离验证数据并将其作为<code>validation_data</code>参数传递之外，您还可以使用 <code></code>validation_split<code>validationData</code> 参数<code>fit()</code>。它指定要用作验证数据的训练数据比例，如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">history = model.fit(</span><br><span class="line">    x_train,</span><br><span class="line">    y_train,</span><br><span class="line">    epochs=<span class="number">20</span>,</span><br><span class="line">    batch_size=<span class="number">512</span>,</span><br><span class="line">    validation_split=<span class="number">0.2</span>,</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><code>x_train</code>在这个例子中，数组中的 20% 样本<code>y_train</code>被排除在训练之外，用作验证数据。</p>
+<p>在 CPU 上，每个 epoch 的训练时间不到 2 秒——整个训练过程只需 20 秒。每个 epoch 结束时，模型会稍作停顿，以便计算其在 10,000 个验证样本上的损失和准确率。</p>
+<p>请注意，正如您在第 3 章中看到的，该调用会<code>model.fit()</code>返回一个对象。该对象有一个成员，它是一个字典，其中包含有关训练期间发生的所有数据。让我们来看一下：<code>History``history</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; history_dict = history.history</span><br><span class="line">&gt;&gt;&gt; history_dict.keys()</span><br><span class="line">dict_keys([&quot;accuracy&quot;, &quot;loss&quot;, &quot;val_accuracy&quot;, &quot;val_loss&quot;])</span><br></pre></td></tr></table></figure>
+<p>该字典包含四个条目：分别对应训练和验证过程中监测的四个指标。在接下来的两个示例中，我们将使用 Matplotlib 并排绘制训练损失和验证损失（见图 4.4），以及训练准确率和验证准确率（见图 4.5）。请注意，由于模型的随机初始化方式不同，您的结果可能会略有差异。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line">history_dict = history.history</span><br><span class="line">loss_values = history_dict[<span class="string">&quot;loss&quot;</span>]</span><br><span class="line">val_loss_values = history_dict[<span class="string">&quot;val_loss&quot;</span>]</span><br><span class="line">epochs = <span class="built_in">range</span>(<span class="number">1</span>, <span class="built_in">len</span>(loss_values) + <span class="number">1</span>)</span><br><span class="line"><span class="comment"># &quot;r--&quot; is for &quot;dashed red line.&quot;</span></span><br><span class="line">plt.plot(epochs, loss_values, <span class="string">&quot;r--&quot;</span>, label=<span class="string">&quot;Training loss&quot;</span>)</span><br><span class="line"><span class="comment"># &quot;b&quot; is for &quot;solid blue line.&quot;</span></span><br><span class="line">plt.plot(epochs, val_loss_values, <span class="string">&quot;b&quot;</span>, label=<span class="string">&quot;Validation loss&quot;</span>)</span><br><span class="line">plt.title(<span class="string">&quot;[IMDB] Training and validation loss&quot;</span>)</span><br><span class="line">plt.xlabel(<span class="string">&quot;Epochs&quot;</span>)</span><br><span class="line">plt.xticks(epochs)</span><br><span class="line">plt.ylabel(<span class="string">&quot;Loss&quot;</span>)</span><br><span class="line">plt.legend()</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#listing-4-8">清单 4.8</a>：绘制训练损失和验证损失曲线</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/imdb_loss_plot.801b28d0.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#figure-4-4">图 4.4</a>：训练损失和验证损失</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Clears the figure</span></span><br><span class="line">plt.clf()</span><br><span class="line">acc = history_dict[<span class="string">&quot;accuracy&quot;</span>]</span><br><span class="line">val_acc = history_dict[<span class="string">&quot;val_accuracy&quot;</span>]</span><br><span class="line">plt.plot(epochs, acc, <span class="string">&quot;r--&quot;</span>, label=<span class="string">&quot;Training acc&quot;</span>)</span><br><span class="line">plt.plot(epochs, val_acc, <span class="string">&quot;b&quot;</span>, label=<span class="string">&quot;Validation acc&quot;</span>)</span><br><span class="line">plt.title(<span class="string">&quot;[IMDB] Training and validation accuracy&quot;</span>)</span><br><span class="line">plt.xlabel(<span class="string">&quot;Epochs&quot;</span>)</span><br><span class="line">plt.xticks(epochs)</span><br><span class="line">plt.ylabel(<span class="string">&quot;Accuracy&quot;</span>)</span><br><span class="line">plt.legend()</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#listing-4-9">清单 4.9</a>：绘制训练和验证准确率图</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/imdb_accuracy_plot.bf0cb7ef.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#figure-4-5">图 4.5</a>：训练和验证准确率</p>
+<p>正如你所见，训练损失随着每个epoch的增加而减少，训练准确率随着每个epoch的增加而提高。这正是运行梯度下降优化算法的预期结果——你试图最小化的量应该随着每次迭代而减小。但验证损失和准确率并非如此：它们似乎在第四个epoch达到了峰值。这正是我们之前警告过的一个例子：在训练数据上表现良好的模型，并不一定能在它从未见过的数据上表现更好。准确地说，你看到的是<em>过拟合</em>：在第四个epoch之后，你过度优化了训练数据，最终学习到的表征仅适用于训练数据，无法泛化到训练集之外的数据。</p>
+<p>在这种情况下，为了防止过拟合，你可以在训练四个周期后停止训练。一般来说，你可以使用一系列技术来缓解过拟合，我们将在第五章中介绍这些技术。</p>
+<p>让我们从头开始训练一个新模型，训练 4 个周期，然后在测试数据上对其进行评估。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">model = keras.Sequential(</span><br><span class="line">    [</span><br><span class="line">        layers.Dense(<span class="number">16</span>, activation=<span class="string">&quot;relu&quot;</span>),</span><br><span class="line">        layers.Dense(<span class="number">16</span>, activation=<span class="string">&quot;relu&quot;</span>),</span><br><span class="line">        layers.Dense(<span class="number">1</span>, activation=<span class="string">&quot;sigmoid&quot;</span>),</span><br><span class="line">    ]</span><br><span class="line">)</span><br><span class="line">model.<span class="built_in">compile</span>(</span><br><span class="line">    optimizer=<span class="string">&quot;adam&quot;</span>,</span><br><span class="line">    loss=<span class="string">&quot;binary_crossentropy&quot;</span>,</span><br><span class="line">    metrics=[<span class="string">&quot;accuracy&quot;</span>],</span><br><span class="line">)</span><br><span class="line">model.fit(x_train, y_train, epochs=<span class="number">4</span>, batch_size=<span class="number">512</span>)</span><br><span class="line">results = model.evaluate(x_test, y_test)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#listing-4-10">清单 4.10</a>：训练模型四个周期</p>
+<p>最终结果如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; results</span><br><span class="line"># The first number, 0.29, is the test loss, and the second number,</span><br><span class="line"># 0.88, is the test accuracy.</span><br><span class="line">[0.2929924130630493, 0.88327999999999995]</span><br></pre></td></tr></table></figure>
+<p>这种较为简单的方法可以达到 88% 的准确率。采用最先进的方法，准确率应该可以接近 95%。</p>
+<h3 id="使用训练好的模型对新数据进行预测">使用训练好的模型对新数据进行预测</h3>
+<p><code>predict</code>模型训练完成后，您需要将其应用于实际场景。您可以使用第三章中学到的方法来计算评论为正面的可能性：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; model.predict(x_test)</span><br><span class="line">array([[ 0.98006207]</span><br><span class="line">       [ 0.99758697]</span><br><span class="line">       [ 0.99975556]</span><br><span class="line">       ...,</span><br><span class="line">       [ 0.82167041]</span><br><span class="line">       [ 0.02885115]</span><br><span class="line">       [ 0.65371346]], dtype=float32)</span><br></pre></td></tr></table></figure>
+<p>如您所见，该模型对某些样本（0.99 或更高，或 0.01 或更低）具有较高的置信度，但对其他样本（0.6、0.4）的置信度较低。</p>
+<h3 id="进一步实验">进一步实验</h3>
+<p>以下实验将帮助你确信，你所做的架构选择都相当合理，尽管仍有改进的空间：</p>
+<ul>
+<li><p>在最终分类层之前，你使用了两个表征层。尝试使用一个或三个表征层，看看这样做对验证和测试准确率有何影响。</p></li>
+<li><p>尝试使用单元数更多或更少的图层：32 个单元、64 个单元等等。</p></li>
+<li><p>尝试使用<code>mean_squared_error</code>损失函数代替 <code>binary_crossentropy</code>。</p></li>
+<li><p>尝试使用<code>tanh</code>激活函数（一种在神经网络早期流行的激活函数）代替<code>relu</code>。</p></li>
+</ul>
+<h3 id="总结">总结</h3>
+<p>从这个例子中你应该记住以下几点：</p>
+<ul>
+<li><p>通常需要对原始数据进行大量的预处理，才能将其以张量的形式输入神经网络。词序列可以编码为二进制向量，但还有其他编码方式可供选择。</p></li>
+<li><p><code>Dense</code>带有激活函数的多层堆叠<code>relu</code>可以解决各种各样的问题（包括情感分类），你会经常用到它们。</p></li>
+<li><p>在二元分类问题（两个输出类别）中，你的模型应该以一个<code>Dense</code>包含一个单元和一个<code>sigmoid</code> 激活值的层结束：你的模型的输出应该是介于 0 和 1 之间的标量，表示一个概率。</p></li>
+<li><p>对于二元分类问题，如果输出是标量 sigmoid 函数，则应使用损失函数<code>binary_crossentropy</code>。</p></li>
+<li><p>无论你遇到什么问题，优化<code>adam</code>器通常都是一个不错的选择。这样你就少了一件需要操心的事。</p></li>
+<li><p>随着神经网络在训练数据上的表现越来越好，它们最终会开始过拟合，并在从未见过的数据上得到越来越差的结果。务必始终监控神经网络在训练集之外的数据上的性能！</p></li>
+</ul>
+<h2 id="新闻通讯分类多类别分类示例">新闻通讯分类：多类别分类示例</h2>
+<p>在上一节中，您了解了如何使用密集连接的神经网络将向量输入分类到两个互斥的类别中。但是，当类别超过两个时会发生什么呢？</p>
+<p>在本节中，您将构建一个模型，将路透社新闻报道分类为 46 个互斥的主题。由于类别众多，这是一个<em>多分类</em>问题；而由于每个数据点只能被归类到一个类别中，因此更具体地说，这是一个<em>单标签</em>多 <em>分类</em>问题。如果每个数据点可以属于多个类别（在本例中为主题），那么您将面临一个<em>多标签</em>多 <em>分类</em>问题。</p>
+<h3 id="路透社数据集">路透社数据集</h3>
+<p>你将使用路透社数据集，这是一组路透社于 1986 年发布的短篇新闻报道及其主题。这是一个简单且广泛使用的文本分类示例数据集。该数据集包含 46 个不同的主题；某些主题的样本数量较多，但每个主题在训练集中至少有 10 个样本。</p>
+<p>与 IMDb 和 MNIST 一样，路透社数据集也包含在 Keras 的软件包中。我们来看一下。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras.datasets <span class="keyword">import</span> reuters</span><br><span class="line"></span><br><span class="line">(train_data, train_labels), (test_data, test_labels) = reuters.load_data(</span><br><span class="line">    num_words=<span class="number">10000</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#listing-4-11">清单 4.11</a>：加载路透社数据集</p>
+<p>与 IMDb 数据集一样，该参数<code>num_words=10000</code>将数据限制为数据中出现频率最高的 10,000 个单词。</p>
+<p>您有 8,982 个训练样本和 2,246 个测试样本：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; len(train_data)</span><br><span class="line">8982</span><br><span class="line">&gt;&gt;&gt; len(test_data)</span><br><span class="line">2246</span><br></pre></td></tr></table></figure>
+<p>与 IMDb 评论一样，每个示例都是一个整数列表（单词索引）：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; train_data[10]</span><br><span class="line">[1, 245, 273, 207, 156, 53, 74, 160, 26, 14, 46, 296, 26, 39, 74, 2979,</span><br><span class="line">3554, 14, 46, 4689, 4329, 86, 61, 3499, 4795, 14, 61, 451, 4329, 17, 12]</span><br></pre></td></tr></table></figure>
+<p>如果你好奇的话，这里教你如何把它解码回单词。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">word_index = reuters.get_word_index()</span><br><span class="line">reverse_word_index = <span class="built_in">dict</span>([(value, key) <span class="keyword">for</span> (key, value) <span class="keyword">in</span> word_index.items()])</span><br><span class="line">decoded_newswire = <span class="string">&quot; &quot;</span>.join(</span><br><span class="line">    <span class="comment"># The indices are offset by 3 because 0, 1, and 2 are reserved</span></span><br><span class="line">    <span class="comment"># indices for &quot;padding,&quot; &quot;start of sequence,&quot; and &quot;unknown.&quot;</span></span><br><span class="line">    [reverse_word_index.get(i - <span class="number">3</span>, <span class="string">&quot;?&quot;</span>) <span class="keyword">for</span> i <span class="keyword">in</span> train_data[<span class="number">10</span>]]</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#listing-4-12">列表 4.12</a>：将新闻稿解码回文本</p>
+<p>与示例关联的标签是介于 0 和 45 之间的整数——主题索引：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; train_labels[10]</span><br><span class="line">3</span><br></pre></td></tr></table></figure>
+<h3 id="数据准备-1">数据准备</h3>
+<p>您可以使用与上一个示例完全相同的代码对数据进行向量化。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Vectorized training data</span></span><br><span class="line">x_train = multi_hot_encode(train_data, num_classes=<span class="number">10000</span>)</span><br><span class="line"><span class="comment"># Vectorized test data</span></span><br><span class="line">x_test = multi_hot_encode(test_data, num_classes=<span class="number">10000</span>)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#listing-4-13">清单 4.13</a>：输入数据的编码</p>
+<p>要将标签向量化，有两种方法：您可以保留标签的整数形式，也可以使用<em>独热编码</em>。独热编码是一种广泛用于分类数据的格式，也称为<em>分类编码</em>。在这种情况下，标签的独热编码是将每个标签嵌入到一个全零向量中，并在标签索引处填充 1。以下是一个示例。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">one_hot_encode</span>(<span class="params">labels, num_classes=<span class="number">46</span></span>):</span><br><span class="line">    results = np.zeros((<span class="built_in">len</span>(labels), num_classes))</span><br><span class="line">    <span class="keyword">for</span> i, label <span class="keyword">in</span> <span class="built_in">enumerate</span>(labels):</span><br><span class="line">        results[i, label] = <span class="number">1.0</span></span><br><span class="line">    <span class="keyword">return</span> results</span><br><span class="line"></span><br><span class="line"><span class="comment"># Vectorized training labels</span></span><br><span class="line">y_train = one_hot_encode(train_labels)</span><br><span class="line"><span class="comment"># Vectorized test labels</span></span><br><span class="line">y_test = one_hot_encode(test_labels)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#listing-4-14">清单 4.14</a>：标签编码</p>
+<p>请注意，Keras 内置了实现此功能的方法：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras.utils <span class="keyword">import</span> to_categorical</span><br><span class="line"></span><br><span class="line">y_train = to_categorical(train_labels)</span><br><span class="line">y_test = to_categorical(test_labels)</span><br></pre></td></tr></table></figure>
+<h3 id="构建你的模型-1">构建你的模型</h3>
+<p>这个主题分类问题看起来与之前的电影评论分类问题类似：两者都是要对短文本片段进行分类。但这里有一个新的限制：输出类别的数量从 2 个增加到了 46 个。输出空间的维度也大大增加。</p>
+<p>在你使用的这种多层堆叠结构中<code>Dense</code>，每一层只能访问前一层输出中的信息。如果某一层丢失了与分类问题相关的信息，后续层将无法恢复这些信息：每一层都可能成为信息瓶颈。在之前的例子中，你使用了 16 维的中间层，但 16 维的空间可能太小，不足以学习区分 46 个不同的类别：如此小的层可能会成为信息瓶颈，永久性地丢失相关信息。</p>
+<p>因此，你需要使用更大的中间层。我们这里就用64个单元吧。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">model = keras.Sequential(</span><br><span class="line">    [</span><br><span class="line">        layers.Dense(<span class="number">64</span>, activation=<span class="string">&quot;relu&quot;</span>),</span><br><span class="line">        layers.Dense(<span class="number">64</span>, activation=<span class="string">&quot;relu&quot;</span>),</span><br><span class="line">        layers.Dense(<span class="number">46</span>, activation=<span class="string">&quot;softmax&quot;</span>),</span><br><span class="line">    ]</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#listing-4-15">清单 4.15</a>：模型定义</p>
+<p>关于这种建筑风格，还有两点需要注意：</p>
+<ul>
+<li><p>模型最后<code>Dense</code>一层的大小为 46。这意味着对于每个输入样本，网络将输出一个 46 维向量。该向量中的每个元素（每个维度）都将编码一个不同的输出类别。</p></li>
+<li><p>最后一层使用<code>softmax</code>激活函数。您在 MNIST 示例中已经见过这种模式。这意味着模型将输出一个涵盖 46 个不同输出类别的<em>概率分布</em>——对于每个输入样本，模型将生成一个 46 维输出向量，其中<code>output[i]</code>表示样本属于类别 的概率<code>i</code>。这 46 个概率值之和为 1。</p></li>
+</ul>
+<p>在这种情况下，最佳损失函数是<code>categorical_crossentropy</code>。它衡量两个概率分布之间的距离——这里指的是模型输出的概率分布与标签的真实分布之间的距离。通过最小化这两个分布之间的距离，可以训练模型输出尽可能接近真实标签的结果。</p>
+<p>和上次一样，我们也会监测准确率。不过，在这种情况下，准确率是一个比较粗略的指标：如果模型对某个样本的第二选择是正确的类别，而第一选择是错误的，那么该模型在该样本上的准确率仍然为零——即使这样的模型比随机猜测要好得多。在这种情况下，更细致的指标是前k个准确率，例如前3个或前5个准确率。它衡量的是模型的前k个预测结果中是否包含正确的类别。让我们为模型添加前3个准确率。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">top_3_accuracy = keras.metrics.TopKCategoricalAccuracy(</span><br><span class="line">    k=<span class="number">3</span>, name=<span class="string">&quot;top_3_accuracy&quot;</span></span><br><span class="line">)</span><br><span class="line">model.<span class="built_in">compile</span>(</span><br><span class="line">    optimizer=<span class="string">&quot;adam&quot;</span>,</span><br><span class="line">    loss=<span class="string">&quot;categorical_crossentropy&quot;</span>,</span><br><span class="line">    metrics=[<span class="string">&quot;accuracy&quot;</span>, top_3_accuracy],</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#listing-4-16">清单 4.16</a>：编译模型</p>
+<h3 id="验证你的方法-1">验证你的方法</h3>
+<p>让我们从训练数据中取出 1000 个样本作为验证集。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">x_val = x_train[:<span class="number">1000</span>]</span><br><span class="line">partial_x_train = x_train[<span class="number">1000</span>:]</span><br><span class="line">y_val = y_train[:<span class="number">1000</span>]</span><br><span class="line">partial_y_train = y_train[<span class="number">1000</span>:]</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#listing-4-17">清单 4.17</a>：预留验证集</p>
+<p>现在，让我们训练模型 20 个周期。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">history = model.fit(</span><br><span class="line">    partial_x_train,</span><br><span class="line">    partial_y_train,</span><br><span class="line">    epochs=<span class="number">20</span>,</span><br><span class="line">    batch_size=<span class="number">512</span>,</span><br><span class="line">    validation_data=(x_val, y_val),</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#listing-4-18">清单 4.18</a>：训练模型</p>
+<p>最后，让我们展示它的损失曲线和准确率曲线（见图 4.6 和图 4.7）。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">loss = history.history[<span class="string">&quot;loss&quot;</span>]</span><br><span class="line">val_loss = history.history[<span class="string">&quot;val_loss&quot;</span>]</span><br><span class="line">epochs = <span class="built_in">range</span>(<span class="number">1</span>, <span class="built_in">len</span>(loss) + <span class="number">1</span>)</span><br><span class="line">plt.plot(epochs, loss, <span class="string">&quot;r--&quot;</span>, label=<span class="string">&quot;Training loss&quot;</span>)</span><br><span class="line">plt.plot(epochs, val_loss, <span class="string">&quot;b&quot;</span>, label=<span class="string">&quot;Validation loss&quot;</span>)</span><br><span class="line">plt.title(<span class="string">&quot;Training and validation loss&quot;</span>)</span><br><span class="line">plt.xlabel(<span class="string">&quot;Epochs&quot;</span>)</span><br><span class="line">plt.xticks(epochs)</span><br><span class="line">plt.ylabel(<span class="string">&quot;Loss&quot;</span>)</span><br><span class="line">plt.legend()</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#listing-4-19">清单 4.19</a>：绘制训练损失和验证损失曲线</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/reuters_loss_plot.6e487e1a.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#figure-4-6">图 4.6</a>：训练损失和验证损失</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">plt.clf()</span><br><span class="line">acc = history.history[<span class="string">&quot;accuracy&quot;</span>]</span><br><span class="line">val_acc = history.history[<span class="string">&quot;val_accuracy&quot;</span>]</span><br><span class="line">plt.plot(epochs, acc, <span class="string">&quot;r--&quot;</span>, label=<span class="string">&quot;Training accuracy&quot;</span>)</span><br><span class="line">plt.plot(epochs, val_acc, <span class="string">&quot;b&quot;</span>, label=<span class="string">&quot;Validation accuracy&quot;</span>)</span><br><span class="line">plt.title(<span class="string">&quot;Training and validation accuracy&quot;</span>)</span><br><span class="line">plt.xlabel(<span class="string">&quot;Epochs&quot;</span>)</span><br><span class="line">plt.xticks(epochs)</span><br><span class="line">plt.ylabel(<span class="string">&quot;Accuracy&quot;</span>)</span><br><span class="line">plt.legend()</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#listing-4-20">清单 4.20</a>：绘制训练集和验证集前 3 名准确率</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/reuters_accuracy_plot.b74dee12.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#figure-4-7">图 4.7</a>：训练和验证准确率</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">plt.clf()</span><br><span class="line">acc = history.history[<span class="string">&quot;top_3_accuracy&quot;</span>]</span><br><span class="line">val_acc = history.history[<span class="string">&quot;val_top_3_accuracy&quot;</span>]</span><br><span class="line">plt.plot(epochs, acc, <span class="string">&quot;r--&quot;</span>, label=<span class="string">&quot;Training top-3 accuracy&quot;</span>)</span><br><span class="line">plt.plot(epochs, val_acc, <span class="string">&quot;b&quot;</span>, label=<span class="string">&quot;Validation top-3 accuracy&quot;</span>)</span><br><span class="line">plt.title(<span class="string">&quot;Training and validation top-3 accuracy&quot;</span>)</span><br><span class="line">plt.xlabel(<span class="string">&quot;Epochs&quot;</span>)</span><br><span class="line">plt.xticks(epochs)</span><br><span class="line">plt.ylabel(<span class="string">&quot;Top-3 accuracy&quot;</span>)</span><br><span class="line">plt.legend()</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#listing-4-21">清单 4.21</a>：绘制训练集和验证集前 3 名准确率</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/reuters_top_3_accuracy_plot.a9e13ec0.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#figure-4-8">图 4.8</a>：训练和验证准确率</p>
+<p>模型在训练九个周期后开始过拟合。让我们从头开始训练一个新模型，训练九个周期，然后在测试集上进行评估。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">model = keras.Sequential(</span><br><span class="line">    [</span><br><span class="line">        layers.Dense(<span class="number">64</span>, activation=<span class="string">&quot;relu&quot;</span>),</span><br><span class="line">        layers.Dense(<span class="number">64</span>, activation=<span class="string">&quot;relu&quot;</span>),</span><br><span class="line">        layers.Dense(<span class="number">46</span>, activation=<span class="string">&quot;softmax&quot;</span>),</span><br><span class="line">    ]</span><br><span class="line">)</span><br><span class="line">model.<span class="built_in">compile</span>(</span><br><span class="line">    optimizer=<span class="string">&quot;adam&quot;</span>,</span><br><span class="line">    loss=<span class="string">&quot;categorical_crossentropy&quot;</span>,</span><br><span class="line">    metrics=[<span class="string">&quot;accuracy&quot;</span>],</span><br><span class="line">)</span><br><span class="line">model.fit(</span><br><span class="line">    x_train,</span><br><span class="line">    y_train,</span><br><span class="line">    epochs=<span class="number">9</span>,</span><br><span class="line">    batch_size=<span class="number">512</span>,</span><br><span class="line">)</span><br><span class="line">results = model.evaluate(x_test, y_test)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#listing-4-22">清单 4.22</a>：从头开始重新训练模型</p>
+<p>以下是最终结果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; results</span><br><span class="line">[0.9565213431445807, 0.79697239536954589]</span><br></pre></td></tr></table></figure>
+<p>这种方法可以达到大约 80% 的准确率。对于一个平衡的二元分类问题，纯随机分类器的准确率约为 50%。但在这个例子中，我们有 46 个类别，它们的分布可能并不均衡。那么，随机基线模型的准确率会是多少呢？我们可以尝试快速实现一个基线模型来验证这一点：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; import copy</span><br><span class="line">&gt;&gt;&gt; test_labels_copy = copy.copy(test_labels)</span><br><span class="line">&gt;&gt;&gt; np.random.shuffle(test_labels_copy)</span><br><span class="line">&gt;&gt;&gt; hits_array = np.array(test_labels == test_labels_copy)</span><br><span class="line">&gt;&gt;&gt; hits_array.mean()</span><br><span class="line">0.18655387355298308</span><br></pre></td></tr></table></figure>
+<p>如您所见，随机分类器的分类准确率约为 19%，因此从这个角度来看，我们模型的结果似乎相当不错。</p>
+<h3 id="基于新数据生成预测">基于新数据生成预测</h3>
+<p>对新样本调用模型的<code>predict</code>方法，会返回每个样本在所有 46 个主题上的类别概率分布。让我们为所有测试数据生成主题预测：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">predictions = model.predict(x_test)</span><br></pre></td></tr></table></figure>
+<p>“预测”中的每个条目都是一个长度为 46 的向量：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; predictions[0].shape</span><br><span class="line">(46,)</span><br></pre></td></tr></table></figure>
+<p>该向量中的系数之和为 1，因为它们构成了一个概率分布：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; np.sum(predictions[0])</span><br><span class="line">1.0</span><br></pre></td></tr></table></figure>
+<p>最大的条目代表预测类别——即概率最高的类别：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; np.argmax(predictions[0])</span><br><span class="line">4</span><br></pre></td></tr></table></figure>
+<h3 id="处理标签和损失的另一种方法">处理标签和损失的另一种方法</h3>
+<p>我们之前提到过，另一种对标签进行编码的方法是将其保持为整数张量，就像这样：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">y_train = train_labels</span><br><span class="line">y_test = test_labels</span><br></pre></td></tr></table></figure>
+<p>这种方法唯一需要改变的是损失函数的选择。清单 4.22 中使用的损失函数<code>categorical_crossentropy</code>要求标签采用类别编码。对于整数标签，您应该使用<code>sparse_categorical_crossentropy</code>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">model.<span class="built_in">compile</span>(</span><br><span class="line">    optimizer=<span class="string">&quot;adam&quot;</span>,</span><br><span class="line">    loss=<span class="string">&quot;sparse_categorical_crossentropy&quot;</span>,</span><br><span class="line">    metrics=[<span class="string">&quot;accuracy&quot;</span>],</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>这个新的损失函数在数学上仍然与原来的损失函数相同 <code>categorical_crossentropy</code>；它只是接口不同。</p>
+<h3 id="中间层足够大的重要性">中间层足够大的重要性</h3>
+<p>我们之前提到过，由于最终输出是 46 维的，所以应该避免使用单元数远少于 46 的中间层。现在让我们看看，如果中间层维度远小于 46 维（例如 4 维），从而引入信息瓶颈会发生什么情况。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">model = keras.Sequential(</span><br><span class="line">    [</span><br><span class="line">        layers.Dense(<span class="number">64</span>, activation=<span class="string">&quot;relu&quot;</span>),</span><br><span class="line">        layers.Dense(<span class="number">4</span>, activation=<span class="string">&quot;relu&quot;</span>),</span><br><span class="line">        layers.Dense(<span class="number">46</span>, activation=<span class="string">&quot;softmax&quot;</span>),</span><br><span class="line">    ]</span><br><span class="line">)</span><br><span class="line">model.<span class="built_in">compile</span>(</span><br><span class="line">    optimizer=<span class="string">&quot;adam&quot;</span>,</span><br><span class="line">    loss=<span class="string">&quot;categorical_crossentropy&quot;</span>,</span><br><span class="line">    metrics=[<span class="string">&quot;accuracy&quot;</span>],</span><br><span class="line">)</span><br><span class="line">model.fit(</span><br><span class="line">    partial_x_train,</span><br><span class="line">    partial_y_train,</span><br><span class="line">    epochs=<span class="number">20</span>,</span><br><span class="line">    batch_size=<span class="number">128</span>,</span><br><span class="line">    validation_data=(x_val, y_val),</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#listing-4-23">清单 4.23</a>：存在信息瓶颈的模型</p>
+<p>该模型目前的验证准确率峰值约为 71%，绝对值下降了 8%。这一下降主要是由于您试图将大量信息（足以恢复 46 个类别的分离超平面）压缩到一个维度过低的中间空间。该模型能够将<em>大部分</em>必要信息塞进这些 4 维表示中，但并非全部。</p>
+<h3 id="进一步实验-1">进一步实验</h3>
+<p>与之前的例子一样，我们鼓励您尝试以下实验，以训练您对使用此类模型时需要做出的配置决策的直觉：</p>
+<ul>
+<li>尝试使用更大或更小的图层：32 个单位、128 个单位等等。</li>
+<li>在最终的softmax分类层之前，你使用了两个中间层。现在尝试使用一个中间层，或者三个中间层。</li>
+</ul>
+<h3 id="总结-1">总结</h3>
+<p>从这个例子中你应该记住以下几点：</p>
+<ul>
+<li><p>如果你要对<em>N 个</em><code>Dense</code>类别中的数据点进行分类，你的模型应该以大小为<em>N</em>的层结束。</p></li>
+<li><p>在单标签多类分类问题中，你的模型应该以<code>softmax</code>激活函数结束，以便输出<em>N 个</em>输出类别的概率分布。</p></li>
+<li><p>对于这类问题，分类交叉熵几乎总是应该使用的损失函数。它旨在最小化模型输出的概率分布与目标真实分布之间的距离。</p></li>
+<li><p>在多分类问题中，处理标签有两种方法：</p>
+<ul>
+<li>通过类别编码（也称为独热编码）对标签进行编码，并将<code>categorical_crossentropy</code>其用作损失函数。</li>
+<li>将标签编码为整数并使用 <code>sparse_categorical_crossentropy</code>损失函数</li>
+</ul></li>
+<li><p>如果需要将数据分类到大量类别中，则应避免由于中间层过小而导致模型中出现信息瓶颈。</p></li>
+</ul>
+<h2 id="预测房价回归分析示例">预测房价：回归分析示例</h2>
+<p>前两个例子都属于分类问题，其目标是预测输入数据点的单个离散标签。另一种常见的机器学习问题是<em>回归</em>，它预测的是连续值而非离散标签：例如，根据气象数据预测明天的温度，或者根据软件项目的规格预测其完成时间。</p>
+<p>令人困惑的是，逻辑回归并不是回归算法，而是一种分类算法。</p>
+<h3 id="加州房价数据集">加州房价数据集</h3>
+<p>你将尝试根据 1990 年人口普查数据预测加利福尼亚州不同地区的房屋中位价。</p>
+<p>数据集中的每个数据点代表一个“街区组”的信息，街区组是指位于同一区域的一组房屋。您可以将其理解为一个区域。该数据集有两个版本：“小型”版本仅包含 600 个区域，“大型”版本包含 20,640 个区域。我们使用小型版本，因为现实世界中的数据集通常很小，您需要了解如何处理这种情况。</p>
+<p>对于每个地区，我们知道</p>
+<ul>
+<li>该区域大致地理中心的经度和纬度。</li>
+<li>该地区房屋的平均年龄。</li>
+<li>该区的人口。这些区都比较小：平均人口为1425.5人。</li>
+<li>家庭户总数。</li>
+<li>这些家庭的收入中位数。</li>
+<li>该地区所有住宅的房间总数。通常情况下，这个数字在几千间左右。</li>
+<li>该地区卧室总数。</li>
+</ul>
+<p>总共有八个变量（经度和纬度算作两个变量）。目标是利用这些变量预测该地区房屋的中位价。让我们从加载数据开始。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras.datasets <span class="keyword">import</span> california_housing</span><br><span class="line"></span><br><span class="line"><span class="comment"># Make sure to pass version=&quot;small&quot; to get the right dataset.</span></span><br><span class="line">(train_data, train_targets), (test_data, test_targets) = (</span><br><span class="line">    california_housing.load_data(version=<span class="string">&quot;small&quot;</span>)</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#listing-4-24">列表 4.24</a>：正在加载加州房价数据集</p>
+<p>我们来看一下数据：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; train_data.shape</span><br><span class="line">(480, 8)</span><br><span class="line">&gt;&gt;&gt; test_data.shape</span><br><span class="line">(120, 8)</span><br></pre></td></tr></table></figure>
+<p>如您所见，我们有 480 个训练样本和 120 个测试样本，每个样本包含 8 个数值特征。目标是所选区域内房屋价值的中位数（以美元计）：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; train_targets</span><br><span class="line">array([252300., 146900., 290900., ..., 140500., 217100.],</span><br><span class="line">      dtype=float32)</span><br></pre></td></tr></table></figure>
+<p>价格在 6 万美元到 50 万美元之间。如果这听起来很便宜，请记住这是 1990 年的价格，而且这些价格没有根据通货膨胀进行调整。</p>
+<h3 id="数据准备-2">数据准备</h3>
+<p>如果输入到神经网络中的值范围差异极大，就会出现问题。模型或许能够自动适应这种异构数据，但这无疑会增加学习难度。处理此类数据的常用最佳实践是进行特征归一化：对于输入数据中的每个特征（输入数据矩阵中的一列），减去该特征的均值并除以标准差，使该特征以 0 为中心，标准差为 1。这在 NumPy 中很容易实现。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mean = train_data.mean(axis=<span class="number">0</span>)</span><br><span class="line">std = train_data.std(axis=<span class="number">0</span>)</span><br><span class="line">x_train = (train_data - mean) / std</span><br><span class="line">x_test = (test_data - mean) / std</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#listing-4-25">清单 4.25</a>：数据归一化</p>
+<p>请注意，用于归一化测试数据的量是使用训练数据计算的。即使是数据归一化这样简单的操作，您也绝不应该在工作流程中使用任何基于测试数据计算的量。</p>
+<p>此外，我们还应该调整目标值。我们归一化的输入值范围很小，接近于 0，而模型的权重初始化为较小的随机值。这意味着在训练开始时，模型的预测值也会很小。如果目标值在 60,000 到 500,000 之间，模型就需要非常大的权重值才能输出这些值。如果学习率很小，则需要很长时间才能达到这个目标值。最简单的解决方法是将所有目标值除以 100,000，这样最小的目标值就变为 0.6，最大的目标值就变为 5。然后，我们可以将模型的预测值乘以 100,000，从而将其转换回美元值。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">y_train = train_targets / <span class="number">100000</span></span><br><span class="line">y_test = test_targets / <span class="number">100000</span></span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#listing-4-26">清单 4.26</a>：目标规模的调整</p>
+<h3 id="构建你的模型-2">构建你的模型</h3>
+<p>由于可用样本数量极少，您将使用一个非常小的模型，该模型包含两个中间层，每个中间层有 64 个单元。一般来说，训练数据越少，过拟合就越严重，而使用小型模型是缓解过拟合的一种方法。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">get_model</span>():</span><br><span class="line">    <span class="comment"># Because you need to instantiate the same model multiple times,</span></span><br><span class="line">    <span class="comment"># you use a function to construct it.</span></span><br><span class="line">    model = keras.Sequential(</span><br><span class="line">        [</span><br><span class="line">            layers.Dense(<span class="number">64</span>, activation=<span class="string">&quot;relu&quot;</span>),</span><br><span class="line">            layers.Dense(<span class="number">64</span>, activation=<span class="string">&quot;relu&quot;</span>),</span><br><span class="line">            layers.Dense(<span class="number">1</span>),</span><br><span class="line">        ]</span><br><span class="line">    )</span><br><span class="line">    model.<span class="built_in">compile</span>(</span><br><span class="line">        optimizer=<span class="string">&quot;adam&quot;</span>,</span><br><span class="line">        loss=<span class="string">&quot;mean_squared_error&quot;</span>,</span><br><span class="line">        metrics=[<span class="string">&quot;mean_absolute_error&quot;</span>],</span><br><span class="line">    )</span><br><span class="line">    <span class="keyword">return</span> model</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#listing-4-27">清单 4.27</a>：模型定义</p>
+<p>该模型以一个单元结束，且没有激活函数：它将是一个线性层。这是标量回归的典型设置——标量回归旨在预测一个连续值。应用激活函数会限制输出的范围；例如，如果对<code>sigmoid</code>最后一层应用激活函数，模型只能学习预测 0 到 1 之间的值。而在这里，由于最后一层是纯线性层，模型可以自由地学习预测任意范围内的值。</p>
+<p><em>请注意，您需要使用均方误差</em>（即预测值与目标值之差的平方）作为<code>mean_squared_error</code> 损失函数 来构建模型。这是回归问题中广泛使用的损失函数。</p>
+<p>在训练过程中，您还会监控一个新的指标：<em>平均绝对误差</em> (MAE)。它是预测值与目标值之间差异的绝对值。例如，对于这个问题，MAE 为 0.5 意味着您的预测值平均偏差为 5 万美元（请记住目标值的缩放比例为 10 万倍）。</p>
+<h3 id="使用-k-折交叉验证来验证你的方法">使用 K 折交叉验证来验证你的方法</h3>
+<p>为了在不断调整模型参数（例如训练轮数）的同时评估模型，您可以像之前的示例一样，将数据拆分为训练集和验证集。但由于数据点数量有限，验证集最终会非常小（例如，大约只有 100 个样本）。因此，验证分数可能会因您选择哪些数据点用于验证和哪些数据点用于训练而发生很大变化：验证分数可能对验证集的划分方式有很高的 <em>方差</em>。这将使您无法可靠地评估模型。</p>
+<p>在这种情况下，最佳实践是使用<em>K 折</em>交叉验证（参见图 4.9）。它包括将可用数据分成<em>K 个</em>分区（通常<em>K</em> = 4 或 5），实例化*K 个相同的模型，并在**K* – 1个分区上训练每个模型，同时在剩余的分区上进行评估。所用模型的验证分数是获得的<em>K 个</em>验证分数的平均值 。从代码角度来看，这很简单。</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/3-fold-cross-validation.40bb5356.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#figure-4-9">图 4.9</a>：三折交叉验证</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">k = <span class="number">4</span></span><br><span class="line">num_val_samples = <span class="built_in">len</span>(x_train) // k</span><br><span class="line">num_epochs = <span class="number">50</span></span><br><span class="line">all_scores = []</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(k):</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;Processing fold #<span class="subst">&#123;i + <span class="number">1</span>&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="comment"># Prepares the validation data: data from partition #k</span></span><br><span class="line">    fold_x_val = x_train[i * num_val_samples : (i + <span class="number">1</span>) * num_val_samples]</span><br><span class="line">    fold_y_val = y_train[i * num_val_samples : (i + <span class="number">1</span>) * num_val_samples]</span><br><span class="line">    <span class="comment"># Prepares the training data: data from all other partitions</span></span><br><span class="line">    fold_x_train = np.concatenate(</span><br><span class="line">        [x_train[: i * num_val_samples], x_train[(i + <span class="number">1</span>) * num_val_samples :]],</span><br><span class="line">        axis=<span class="number">0</span>,</span><br><span class="line">    )</span><br><span class="line">    fold_y_train = np.concatenate(</span><br><span class="line">        [y_train[: i * num_val_samples], y_train[(i + <span class="number">1</span>) * num_val_samples :]],</span><br><span class="line">        axis=<span class="number">0</span>,</span><br><span class="line">    )</span><br><span class="line">    <span class="comment"># Builds the Keras model (already compiled)</span></span><br><span class="line">    model = get_model()</span><br><span class="line">    <span class="comment"># Trains the model</span></span><br><span class="line">    model.fit(</span><br><span class="line">        fold_x_train,</span><br><span class="line">        fold_y_train,</span><br><span class="line">        epochs=num_epochs,</span><br><span class="line">        batch_size=<span class="number">16</span>,</span><br><span class="line">        verbose=<span class="number">0</span>,</span><br><span class="line">    )</span><br><span class="line">    <span class="comment"># Evaluates the model on the validation data</span></span><br><span class="line">    scores = model.evaluate(fold_x_val, fold_y_val, verbose=<span class="number">0</span>)</span><br><span class="line">    val_loss, val_mae = scores</span><br><span class="line">    all_scores.append(val_mae)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#listing-4-28">清单 4.28</a>：K 折交叉验证</p>
+<p>运行此命令会<code>num_epochs = 50</code>得到以下结果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; [round(value, 3) for value in all_scores]</span><br><span class="line">[0.298, 0.349, 0.232, 0.305]</span><br><span class="line">&gt;&gt;&gt; round(np.mean(all_scores), 3)</span><br><span class="line">0.296</span><br></pre></td></tr></table></figure>
+<p>不同批次的验证结果确实存在显著差异，从 0.232 到 0.349 不等。平均值 (0.296) 比任何单一分数都更可靠——这正是 K 折交叉验证的意义所在。在这种情况下，平均误差为 29,600 美元，考虑到价格区间在 60,000 美元到 500,000 美元之间，这个误差相当大。</p>
+<p>我们来尝试延长模型训练时间：200 个周期。为了记录模型在每个周期的表现，你需要修改训练循环，保存每个周期的验证分数日志。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">k = <span class="number">4</span></span><br><span class="line">num_val_samples = <span class="built_in">len</span>(x_train) // k</span><br><span class="line">num_epochs = <span class="number">200</span></span><br><span class="line">all_mae_histories = []</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(k):</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;Processing fold #<span class="subst">&#123;i + <span class="number">1</span>&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="comment"># Prepares the validation data: data from partition #k</span></span><br><span class="line">    fold_x_val = x_train[i * num_val_samples : (i + <span class="number">1</span>) * num_val_samples]</span><br><span class="line">    fold_y_val = y_train[i * num_val_samples : (i + <span class="number">1</span>) * num_val_samples]</span><br><span class="line">    <span class="comment"># Prepares the training data: data from all other partitions</span></span><br><span class="line">    fold_x_train = np.concatenate(</span><br><span class="line">        [x_train[: i * num_val_samples], x_train[(i + <span class="number">1</span>) * num_val_samples :]],</span><br><span class="line">        axis=<span class="number">0</span>,</span><br><span class="line">    )</span><br><span class="line">    fold_y_train = np.concatenate(</span><br><span class="line">        [y_train[: i * num_val_samples], y_train[(i + <span class="number">1</span>) * num_val_samples :]],</span><br><span class="line">        axis=<span class="number">0</span>,</span><br><span class="line">    )</span><br><span class="line">    <span class="comment"># Builds the Keras model (already compiled)</span></span><br><span class="line">    model = get_model()</span><br><span class="line">    <span class="comment"># Trains the model</span></span><br><span class="line">    history = model.fit(</span><br><span class="line">        fold_x_train,</span><br><span class="line">        fold_y_train,</span><br><span class="line">        validation_data=(fold_x_val, fold_y_val),</span><br><span class="line">        epochs=num_epochs,</span><br><span class="line">        batch_size=<span class="number">16</span>,</span><br><span class="line">        verbose=<span class="number">0</span>,</span><br><span class="line">    )</span><br><span class="line">    mae_history = history.history[<span class="string">&quot;val_mean_absolute_error&quot;</span>]</span><br><span class="line">    all_mae_histories.append(mae_history)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#listing-4-29">清单 4.29</a>：保存每次折叠时的验证日志</p>
+<p>然后，您可以计算所有折叠的每个 epoch 平均绝对误差 (MAE) 分数的平均值。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">average_mae_history = [</span><br><span class="line">    np.mean([x[i] <span class="keyword">for</span> x <span class="keyword">in</span> all_mae_histories]) <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(num_epochs)</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#listing-4-30">清单 4.30</a>：构建连续平均 K 折交叉验证得分的历史记录</p>
+<p>让我们绘制这个图；参见图 4.10。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">epochs = <span class="built_in">range</span>(<span class="number">1</span>, <span class="built_in">len</span>(average_mae_history) + <span class="number">1</span>)</span><br><span class="line">plt.plot(epochs, average_mae_history)</span><br><span class="line">plt.xlabel(<span class="string">&quot;Epochs&quot;</span>)</span><br><span class="line">plt.ylabel(<span class="string">&quot;Validation MAE&quot;</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#listing-4-31">清单 4.31</a>：绘制验证分数</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/california_housing_validation_mae_plot.af306c57.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#figure-4-10">图 4.10</a>：按 epoch 划分的验证 MAE</p>
+<p>由于比例尺问题，图表可能难以解读：前几个 epoch 的验证 MAE 值明显高于后续值。我们省略前 10 个数据点，因为它们的比例尺与其他曲线不同。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">truncated_mae_history = average_mae_history[<span class="number">10</span>:]</span><br><span class="line">epochs = <span class="built_in">range</span>(<span class="number">10</span>, <span class="built_in">len</span>(truncated_mae_history) + <span class="number">10</span>)</span><br><span class="line">plt.plot(epochs, truncated_mae_history)</span><br><span class="line">plt.xlabel(<span class="string">&quot;Epochs&quot;</span>)</span><br><span class="line">plt.ylabel(<span class="string">&quot;Validation MAE&quot;</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#listing-4-32">清单 4.32</a>：绘制验证分数图，排除前 10 个数据点</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/california_housing_validation_mae_plot_zoomed.928f390d.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#figure-4-11">图 4.11</a>：按 epoch 划分的验证 MAE（不包括前 10 个数据点）</p>
+<p>根据这张图（见图 4.11），验证集平均绝对误差 (MAE) 在 120-140 个 epoch 后不再显著改善（该数字包含我们省略的 10 个 epoch）。超过这个点，就开始出现过拟合现象。</p>
+<p>完成模型其他参数的调整（除了训练轮数之外，还可以调整中间层的大小）后，可以使用最佳参数在所有训练数据上训练最终的生产模型，然后查看其在测试数据上的性能。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Gets a fresh, compiled model</span></span><br><span class="line">model = get_model()</span><br><span class="line"><span class="comment"># Trains it on the entirety of the data</span></span><br><span class="line">model.fit(x_train, y_train, epochs=<span class="number">130</span>, batch_size=<span class="number">16</span>, verbose=<span class="number">0</span>)</span><br><span class="line">test_mean_squared_error, test_mean_absolute_error = model.evaluate(</span><br><span class="line">    x_test, y_test</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter04_classification-and-regression/#listing-4-33">清单 4.33</a>：训练最终模型</p>
+<p>最终结果如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; round(test_mean_absolute_error, 3)</span><br><span class="line">0.31</span><br></pre></td></tr></table></figure>
+<p>我们平均还是有大约 31,000 美元的误差。</p>
+<h3 id="基于新数据生成预测-1">基于新数据生成预测</h3>
+<p><code>predict()</code>调用我们的二元分类模型时，我们为每个输入样本获取了一个介于 0 和 1 之间的标量分数。使用我们的多类分类模型时，我们为每个样本获取了所有类别的概率分布。现在，使用这个标量回归模型，<code>predict()</code>返回模型对样本价格的预测值（以数十万美元为单位）：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; predictions = model.predict(x_test)</span><br><span class="line">&gt;&gt;&gt; predictions[0]</span><br><span class="line">array([2.834494], dtype=float32)</span><br></pre></td></tr></table></figure>
+<p>测试集中第一个区域的平均房价预计约为 283,000 美元。</p>
+<h3 id="总结-2">总结</h3>
+<p>从这个标量回归示例中，你应该记住以下几点：</p>
+<ul>
+<li><p>回归分析使用的损失函数与分类分析使用的损失函数不同。均方误差（MSE）是回归分析中常用的损失函数。</p></li>
+<li><p>同样，回归分析所用的评估指标与分类分析所用的评估指标不同；显然，准确率的概念并不适用于回归分析。常用的回归评估指标是平均绝对误差（MAE）。</p></li>
+<li><p>当输入数据中的特征值处于不同范围内时，应在预处理步骤中对每个特征进行独立缩放。</p></li>
+<li><p>当数据较少时，使用 K 折交叉验证是可靠评估模型的好方法。</p></li>
+<li><p>当训练数据较少时，最好使用中间层较少的较小模型（通常只有一到两层），以避免严重的过拟合。</p></li>
+</ul>
+<h2 id="概括">概括</h2>
+<ul>
+<li><p>向量数据上最常见的三种机器学习任务是二分类、多分类和标量回归。每种任务都使用不同的损失函数：</p>
+<ul>
+<li><code>binary_crossentropy</code>二元分类</li>
+<li><code>categorical_crossentropy</code>用于多类分类</li>
+<li><code>mean_squared_error</code>对于标量回归</li>
+</ul></li>
+<li><p>通常需要先对原始数据进行预处理，然后再将其输入神经网络。</p></li>
+<li><p>当你的数据具有不同范围的特征时，在预处理过程中，应分别对每个特征进行缩放。</p></li>
+<li><p>随着训练的进行，神经网络最终会开始过拟合，并在从未见过的数据上获得更差的结果。</p></li>
+<li><p>如果训练数据不多，请使用只有一到两个中间层的小型模型，以避免严重的过拟合。</p></li>
+<li><p>如果你的数据被分成很多类别，而中间层又太小，就可能导致信息瓶颈。</p></li>
+<li><p>当数据量较少时，K折交叉验证可以帮助可靠地评估模型。</p></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/02/18/3%E3%80%81TensorFlow%E3%80%81PyTorch%E3%80%81JAX%20%E5%92%8C%20Keras%20%E7%AE%80%E4%BB%8B/" rel="prev" title="《DEEP LEARNING with Python》第三章">
+                  <i class="fa fa-chevron-left"></i> 《DEEP LEARNING with Python》第三章
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/02/20/5%E3%80%81%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80/" rel="next" title="《DEEP LEARNING with Python》第五章">
+                  《DEEP LEARNING with Python》第五章 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

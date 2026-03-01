@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"enable":true,"style":"tabs","active":"giscus","storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+
+
+    <meta name="description" content="第三章 TensorFlow、PyTorch、JAX 和 Keras 简介 运行代码 在 Colab 上运行 在 GitHub 上查看 内容深度学习框架简史这些框架之间是如何相互关联的TensorFlow 简介PyTorch简介JAX简介Keras简介概括 本章内容  深入了解所有主要的深度学习框架及其关系 概述深度学习核心概念如何在所有框架中转化为代码  本章旨在为您提供开始实践深度学习所需的一">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《DEEP LEARNING with Python》第三章">
+<meta property="og:url" content="http://hongyitong.github.io/2026/02/18/3%E3%80%81TensorFlow%E3%80%81PyTorch%E3%80%81JAX%20%E5%92%8C%20Keras%20%E7%AE%80%E4%BB%8B/index.html">
+<meta property="og:site_name" content="墨语浮生">
+<meta property="og:description" content="第三章 TensorFlow、PyTorch、JAX 和 Keras 简介 运行代码 在 Colab 上运行 在 GitHub 上查看 内容深度学习框架简史这些框架之间是如何相互关联的TensorFlow 简介PyTorch简介JAX简介Keras简介概括 本章内容  深入了解所有主要的深度学习框架及其关系 概述深度学习核心概念如何在所有框架中转化为代码  本章旨在为您提供开始实践深度学习所需的一">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/linear_model_inputs.282fc3b6.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/linear_model_predictions.3e5424ac.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/linear_model_with_plotted_line.fd88e7bc.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/keras_and_backends.7fcf768f.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/transformer.cb3f137f.png">
+<meta property="article:published_time" content="2026-02-17T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-03-01T03:34:58.823Z">
+<meta property="article:author" content="Rayman.hung">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/linear_model_inputs.282fc3b6.png">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2026/02/18/3%E3%80%81TensorFlow%E3%80%81PyTorch%E3%80%81JAX%20%E5%92%8C%20Keras%20%E7%AE%80%E4%BB%8B/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2026/02/18/3%E3%80%81TensorFlow%E3%80%81PyTorch%E3%80%81JAX%20%E5%92%8C%20Keras%20%E7%AE%80%E4%BB%8B/","path":"2026/02/18/3、TensorFlow、PyTorch、JAX 和 Keras 简介/","title":"《DEEP LEARNING with Python》第三章"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>《DEEP LEARNING with Python》第三章 | 墨语浮生</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZXGEJDXQ33"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-ZXGEJDXQ33","only_pageview":false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?ff358b9c7e949787b074bfc9c8019a9d"></script>
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">墨语浮生</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#tensorflowpytorchjax-%E5%92%8C-keras-%E7%AE%80%E4%BB%8B"><span class="nav-text">TensorFlow、PyTorch、JAX 和 Keras 简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E4%BB%A3%E7%A0%81"><span class="nav-text">运行代码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6%E7%AE%80%E5%8F%B2"><span class="nav-text">深度学习框架简史</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%99%E4%BA%9B%E6%A1%86%E6%9E%B6%E4%B9%8B%E9%97%B4%E6%98%AF%E5%A6%82%E4%BD%95%E7%9B%B8%E4%BA%92%E5%85%B3%E8%81%94%E7%9A%84"><span class="nav-text">这些框架之间是如何相互关联的</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#tensorflow-%E7%AE%80%E4%BB%8B"><span class="nav-text">TensorFlow 简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#tensorflow%E5%85%A5%E9%97%A8"><span class="nav-text">TensorFlow入门</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#tensorflow-%E4%B8%AD%E7%9A%84%E5%BC%A0%E9%87%8F%E5%92%8C%E5%8F%98%E9%87%8F"><span class="nav-text">TensorFlow 中的张量和变量</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%B8%B8%E5%BC%A0%E9%87%8F"><span class="nav-text">常张量</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%9A%8F%E6%9C%BA%E5%BC%A0%E9%87%8F"><span class="nav-text">随机张量</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%BC%A0%E9%87%8F%E8%B5%8B%E5%80%BC%E5%92%8C%E5%8F%98%E9%87%8F%E7%B1%BB"><span class="nav-text">张量赋值和变量类</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BC%A0%E9%87%8F%E8%BF%90%E7%AE%97%E5%9C%A8-tensorflow-%E4%B8%AD%E8%BF%9B%E8%A1%8C%E6%95%B0%E5%AD%A6%E8%BF%90%E7%AE%97"><span class="nav-text">张量运算：在 TensorFlow 中进行数学运算</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#tensorflow-%E4%B8%AD%E7%9A%84%E6%A2%AF%E5%BA%A6%E5%86%8D%E6%AC%A1%E5%AE%A1%E8%A7%86-gradienttape-api"><span class="nav-text">TensorFlow 中的梯度：再次审视 GradientTape API</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%A9%E7%94%A8%E7%BC%96%E8%AF%91%E5%8A%A0%E9%80%9F-tensorflow-%E5%87%BD%E6%95%B0"><span class="nav-text">利用编译加速 TensorFlow 函数</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E4%B8%AA%E5%AE%8C%E6%95%B4%E7%9A%84%E7%A4%BA%E4%BE%8B%E7%BA%AF-tensorflow-%E4%B8%AD%E7%9A%84%E7%BA%BF%E6%80%A7%E5%88%86%E7%B1%BB%E5%99%A8"><span class="nav-text">一个完整的示例：纯 TensorFlow 中的线性分类器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tensorflow-%E6%96%B9%E6%B3%95%E7%9A%84%E7%8B%AC%E7%89%B9%E4%B9%8B%E5%A4%84%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-text">TensorFlow 方法的独特之处是什么？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pytorch%E7%AE%80%E4%BB%8B"><span class="nav-text">PyTorch简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#pytorch%E5%85%A5%E9%97%A8"><span class="nav-text">PyTorch入门</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#pytorch-%E4%B8%AD%E7%9A%84%E5%BC%A0%E9%87%8F%E5%92%8C%E5%8F%82%E6%95%B0"><span class="nav-text">PyTorch 中的张量和参数</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%B8%B8%E5%BC%A0%E9%87%8F-1"><span class="nav-text">常张量</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%9A%8F%E6%9C%BA%E5%BC%A0%E9%87%8F-1"><span class="nav-text">随机张量</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%BC%A0%E9%87%8F%E8%B5%8B%E5%80%BC%E5%92%8C%E5%8F%82%E6%95%B0%E7%B1%BB"><span class="nav-text">张量赋值和参数类</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BC%A0%E9%87%8F%E8%BF%90%E7%AE%97%E5%9C%A8-pytorch-%E4%B8%AD%E8%BF%9B%E8%A1%8C%E6%95%B0%E5%AD%A6%E8%BF%90%E7%AE%97"><span class="nav-text">张量运算：在 PyTorch 中进行数学运算</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-pytorch-%E8%AE%A1%E7%AE%97%E6%A2%AF%E5%BA%A6"><span class="nav-text">使用 PyTorch 计算梯度</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E4%B8%AA%E5%AE%8C%E6%95%B4%E7%9A%84%E7%A4%BA%E4%BE%8B%E7%BA%AF-pytorch-%E7%BC%96%E5%86%99%E7%9A%84%E7%BA%BF%E6%80%A7%E5%88%86%E7%B1%BB%E5%99%A8"><span class="nav-text">一个完整的示例：纯 PyTorch 编写的线性分类器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%A8%A1%E5%9D%97%E7%B1%BB%E5%AF%B9%E7%8A%B6%E6%80%81%E5%92%8C%E8%AE%A1%E7%AE%97%E8%BF%9B%E8%A1%8C%E6%89%93%E5%8C%85"><span class="nav-text">使用模块类对状态和计算进行打包</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%A9%E7%94%A8%E7%BC%96%E8%AF%91%E5%8A%A0%E9%80%9F-pytorch-%E6%A8%A1%E5%9D%97"><span class="nav-text">利用编译加速 PyTorch 模块</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pytorch-%E6%96%B9%E6%B3%95%E7%9A%84%E7%8B%AC%E7%89%B9%E4%B9%8B%E5%A4%84%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-text">PyTorch 方法的独特之处是什么？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#jax%E7%AE%80%E4%BB%8B"><span class="nav-text">JAX简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#jax%E5%85%A5%E9%97%A8"><span class="nav-text">JAX入门</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#jax-%E4%B8%AD%E7%9A%84%E5%BC%A0%E9%87%8F"><span class="nav-text">JAX 中的张量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#jax-%E4%B8%AD%E7%9A%84%E9%9A%8F%E6%9C%BA%E6%95%B0%E7%94%9F%E6%88%90"><span class="nav-text">JAX 中的随机数生成</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BC%A0%E9%87%8F%E8%B5%8B%E5%80%BC"><span class="nav-text">张量赋值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BC%A0%E9%87%8F%E8%BF%90%E7%AE%97%E5%9C%A8-jax-%E4%B8%AD%E8%BF%9B%E8%A1%8C%E6%95%B0%E5%AD%A6%E8%BF%90%E7%AE%97"><span class="nav-text">张量运算：在 JAX 中进行数学运算</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-jax-%E8%AE%A1%E7%AE%97%E6%A2%AF%E5%BA%A6"><span class="nav-text">使用 JAX 计算梯度</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#jax%E6%A2%AF%E5%BA%A6%E8%AE%A1%E7%AE%97%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5"><span class="nav-text">JAX梯度计算最佳实践</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%BF%94%E8%BF%98%E6%8D%9F%E5%A4%B1%E5%80%BC"><span class="nav-text">返还损失值</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%B1%82%E5%A4%8D%E6%9D%82%E5%87%BD%E6%95%B0%E7%9A%84%E6%A2%AF%E5%BA%A6"><span class="nav-text">求复杂函数的梯度</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%BF%94%E5%9B%9E%E8%BE%85%E5%8A%A9%E8%BE%93%E5%87%BA"><span class="nav-text">返回辅助输出</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-jax.jit-%E5%8A%A0%E9%80%9F-jax-%E5%87%BD%E6%95%B0"><span class="nav-text">使用 @jax.jit 加速 JAX 函数</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E4%B8%AA%E5%AE%8C%E6%95%B4%E7%9A%84%E7%A4%BA%E4%BE%8B%E7%BA%AF-jax-%E4%B8%AD%E7%9A%84%E7%BA%BF%E6%80%A7%E5%88%86%E7%B1%BB%E5%99%A8"><span class="nav-text">一个完整的示例：纯 JAX 中的线性分类器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#jax-%E6%96%B9%E6%B3%95%E7%9A%84%E7%8B%AC%E7%89%B9%E4%B9%8B%E5%A4%84"><span class="nav-text">JAX 方法的独特之处</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#keras%E7%AE%80%E4%BB%8B"><span class="nav-text">Keras简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#keras%E5%85%A5%E9%97%A8"><span class="nav-text">Keras入门</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%80%89%E6%8B%A9%E5%90%8E%E7%AB%AF%E6%A1%86%E6%9E%B6"><span class="nav-text">选择后端框架</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B1%82%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%9E%84%E5%BB%BA%E6%A8%A1%E5%9D%97"><span class="nav-text">层：深度学习的构建模块</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#layerkeras-%E4%B8%AD%E7%9A%84%E5%9F%BA%E7%A1%80%E7%B1%BB"><span class="nav-text">LayerKeras 中的基础类</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%87%AA%E5%8A%A8%E5%BD%A2%E7%8A%B6%E6%8E%A8%E6%96%AD%E5%8A%A8%E6%80%81%E6%9E%84%E5%BB%BA%E5%9B%BE%E5%B1%82"><span class="nav-text">自动形状推断：动态构建图层</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%8E%E5%9B%BE%E5%B1%82%E5%88%B0%E6%A8%A1%E5%9E%8B"><span class="nav-text">从图层到模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E6%AD%A5%E9%AA%A4%E9%85%8D%E7%BD%AE%E5%AD%A6%E4%B9%A0%E8%BF%87%E7%A8%8B"><span class="nav-text">“编译”步骤：配置学习过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%89%E6%8B%A9%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0"><span class="nav-text">选择损失函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%90%86%E8%A7%A3%E6%8B%9F%E5%90%88%E6%96%B9%E6%B3%95"><span class="nav-text">理解拟合方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%91%E6%B5%8B%E6%8D%9F%E5%A4%B1%E5%92%8C%E9%AA%8C%E8%AF%81%E6%95%B0%E6%8D%AE%E7%9A%84%E6%8C%87%E6%A0%87"><span class="nav-text">监测损失和验证数据的指标</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%A8%E7%90%86%E8%AE%AD%E7%BB%83%E5%90%8E%E4%BD%BF%E7%94%A8%E6%A8%A1%E5%9E%8B"><span class="nav-text">推理：训练后使用模型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E6%8B%AC"><span class="nav-text">概括</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%84%9A%E6%B3%A8"><span class="nav-text">脚注</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、心情记录</div>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/02/18/3%E3%80%81TensorFlow%E3%80%81PyTorch%E3%80%81JAX%20%E5%92%8C%20Keras%20%E7%AE%80%E4%BB%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="《DEEP LEARNING with Python》第三章 | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《DEEP LEARNING with Python》第三章
+        </h1>
+
+        </h1>
+          
+             <p class="post-subtitle">TensorFlow、PyTorch、JAX 和 Keras 简介</p>
+          
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-02-18 00:00:00" itemprop="dateCreated datePublished" datetime="2026-02-18T00:00:00+08:00">2026-02-18</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>第三章</p>
+<h1 id="tensorflowpytorchjax-和-keras-简介">TensorFlow、PyTorch、JAX 和 Keras 简介</h1>
+<h3 id="运行代码">运行代码</h3>
+<p><a target="_blank" rel="noopener" href="https://colab.research.google.com/github/fchollet/deep-learning-with-python-notebooks/blob/master/chapter03_introduction-to-ml-frameworks.ipynb">在 Colab 上运行</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/fchollet/deep-learning-with-python-notebooks">在 GitHub 上查看</a></p>
+<p>内容<a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#a-brief-history-of-deep-learning-frameworks">深度学习框架简史</a><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#how-these-frameworks-relate-to-each-other">这些框架之间是如何相互关联的</a><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#introduction-to-tensorflow">TensorFlow 简介</a><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#introduction-to-pytorch">PyTorch简介</a><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#introduction-to-jax">JAX简介</a><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#introduction-to-keras">Keras简介</a><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#summary">概括</a></p>
+<p>本章内容</p>
+<ul>
+<li>深入了解所有主要的深度学习框架及其关系</li>
+<li>概述深度学习核心概念如何在所有框架中转化为代码</li>
+</ul>
+<p>本章旨在为您提供开始实践深度学习所需的一切。首先，您将熟悉三种可与 Keras 配合使用的常用深度学习框架：</p>
+<ul>
+<li>TensorFlow（<a target="_blank" rel="noopener" href="https://tensorflow.org/">https://tensorflow.org</a>）</li>
+<li>PyTorch ( https://pytorch.org/ )</li>
+<li>JAX（https://jax.readthedocs.io/）</li>
+</ul>
+<p>然后，在第 2 章中你第一次接触 Keras 的基础上，我们将回顾神经网络的核心组件以及它们如何转换为 Keras API。</p>
+<p>读完本章，你就可以开始学习实际的、现实世界的应用了——这将从第 4 章开始。</p>
+<span id="more"></span>
+<h2 id="深度学习框架简史">深度学习框架简史</h2>
+<p>在实际应用中，你不会像第二章结尾那样从零开始编写底层代码。相反，你会使用框架。除了 Keras 之外，目前主要的深度学习框架还有 JAX、TensorFlow 和 PyTorch。本书将介绍这四个框架。</p>
+<p>如果你刚开始接触深度学习，可能会觉得这些框架好像一直都存在。但实际上，它们都相当新，其中 Keras 是四个框架中最古老的（于 2015 年 3 月发布）。然而，这些框架背后的理念却有着悠久的历史——第一篇关于自动微分的论文发表于 1964 年。[<a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#footnote-1">1]</a></p>
+<p>所有这些框架都结合了三个关键特征：</p>
+<ul>
+<li>一种计算任意可微函数梯度的方法（自动微分）</li>
+<li>一种在 CPU 和 GPU（甚至可能在其他专用深度学习硬件）上运行张量计算的方法</li>
+<li>一种将计算任务分布到多个设备或多台计算机上的方法，例如在一台计算机上使用多个 GPU，甚至在多台独立的计算机上使用多个 GPU。</li>
+</ul>
+<p>这三个简单的特性共同解锁了所有现代深度学习。</p>
+<p>该领域花了很长时间才开发出针对这三个问题的稳健解决方案，并将这些解决方案打包成可重用的形式。从 20 世纪 60 年代诞生到 21 世纪初，自微分在机器学习中几乎没有实际应用——从事神经网络研究的人员只能手动编写梯度逻辑，通常使用 C++ 等语言。与此同时，GPU 编程几乎是不可能的。</p>
+<p>2000 年代后期，情况开始缓慢变化。首先，Python 及其生态系统在科学界逐渐流行起来，逐渐超越了 MATLAB 和 C++。其次，NVIDIA 于 2006 年发布了 CUDA，使得构建可在消费级 GPU 上运行的神经网络成为可能。CUDA 最初的应用重点是物理模拟而非机器学习，但这并没有阻止机器学习研究人员从 2009 年开始实现基于 CUDA 的神经网络。这些通常是单次实现，只能在单个 GPU 上运行，且不具备自动微分功能。</p>
+<p>第一个能够利用自动微分和GPU计算来训练深度学习模型的框架是Theano，大约在2009年问世。Theano是所有现代深度学习工具的概念鼻祖。在2013-2014年间，随着ImageNet 2012竞赛结果的公布，全球对深度学习的兴趣日益浓厚，Theano开始在机器学习研究领域获得广泛关注。几乎在同一时期，其他一些支持GPU的深度学习库也开始在计算机视觉领域流行起来，特别是基于Lua的Torch 7和基于C++的Caffe。Keras于2015年初发布，它是一个基于Theano的更高级、更易于使用的深度学习库，并迅速赢得了当时仅有的几千名深度学习爱好者的青睐。</p>
+<p>随后在 2015 年末，谷歌发布了 TensorFlow，它借鉴了 Theano 的许多核心理念，并增加了对大规模分布式计算的支持。TensorFlow 的发布是一个里程碑式的时刻，它推动了深度学习在主流开发者群体中的普及。Keras 立即添加了对 TensorFlow 的支持。到 2016 年年中，超过一半的 TensorFlow 用户都是通过 Keras 使用它的。</p>
+<p>为了应对 TensorFlow，Meta（当时名为 Facebook）大约一年后推出了 PyTorch，其灵感来源于 Chainer（一个于 2015 年中期推出的、小众但创新的框架，现已停止开发）和 NumPy-Autograd，后者是由 Maclaurin 等人于 2014 年发布的 NumPy 专用 CPU 自动微分库。与此同时，谷歌发布了 TPU 作为 GPU 的替代方案，以及 XLA，这是一个为使 TensorFlow 能够在 TPU 上运行而开发的高性能编译器。</p>
+<p>几年后，在谷歌，参与 NumPy-Autograd 开发的 Matthew Johnson 发布了 JAX，作为使用 XLA 进行自动微分的另一种方式。凭借其简洁的 API 和高可扩展性，JAX 迅速获得了研究人员的青睐。如今，Keras、TensorFlow、PyTorch 和 JAX 已成为深度学习领域顶尖的框架。</p>
+<p>回顾这段混乱的历史，我们不禁要问：接下来会发生什么？明天会出现新的框架吗？我们会转向新的编程语言还是新的硬件平台？</p>
+<p>依我看，今天有三件事是确定的：</p>
+<ul>
+<li>Python 已经胜出。它的机器学习和数据科学生态系统目前发展势头强劲，势不可挡。至少在未来 15 年内，不会出现一种全新的语言来取代它。</li>
+<li>我们身处一个多框架并存的世界——这四个框架都已相当成熟，并且在未来几年内不太可能被淘汰。因此，了解每个框架的一些知识是很有必要的。然而，未来很可能会出现<em>新的</em>框架，例如苹果最近发布的 MLX。在这种情况下，使用 Keras 就具有显著优势：您可以通过新的 Keras 后端，在任何新兴框架上运行现有的 Keras 模型。Keras 将继续为机器学习开发者提供面向未来的稳定性，就像自 2015 年以来一直如此——当时 TensorFlow、PyTorch 和 JAX 都还不存在。</li>
+<li>未来肯定会有新的芯片出现，与英伟达的GPU和谷歌的TPU并存。例如，AMD的GPU产品线前景光明。但任何新的芯片都必须与现有框架兼容才能获得市场认可。新硬件不太可能对你的工作流程造成干扰。</li>
+</ul>
+<h2 id="这些框架之间是如何相互关联的">这些框架之间是如何相互关联的</h2>
+<p>Keras、TensorFlow、PyTorch 和 JAX 的功能集并不完全相同，也不能互相替代。它们之间存在一些重叠，但在很大程度上，它们针对不同的应用场景扮演着不同的角色。最大的区别在于 Keras 与其他三者之间。Keras 是一个高级框架，而其他三者则属于底层框架。想象一下建造房屋。Keras 就像一套预制建筑组件：它提供了一个简化的接口，用于设置和训练神经网络。相比之下，TensorFlow、PyTorch 和 JAX 则像是建造房屋所使用的原材料。</p>
+<p>正如你在前几章中看到的，训练神经网络主要围绕以下概念展开：</p>
+<ul>
+<li><em>首先是底层张量操作</em>——这是所有现代机器学习的基础架构。这指的是TensorFlow和PyTorch中的底层API。[<a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#footnote-2">2]</a>以及 JAX：
+<ul>
+<li><em>张量</em>，包括存储网络状态（<em>变量</em>）的特殊张量</li>
+<li><em>张量运算，</em>例如加法、<code>relu</code>乘法或乘法。<code>matmul</code></li>
+<li><em>反向传播</em>是一种计算数学表达式梯度的方法。</li>
+</ul></li>
+<li><em>其次，高阶深度学习概念</em>——这可以转化为 Keras API：
+<ul>
+<li><em>层</em>，它们组合成一个<em>模型</em></li>
+<li><em>损失函数</em>定义了用于学习的反馈信号</li>
+<li><em>优化器</em>决定了学习过程如何进行。</li>
+<li><em>用于评估模型性能的指标</em>，例如准确率</li>
+<li>执行小批量随机梯度下降的训练<em>循环</em></li>
+</ul></li>
+</ul>
+<p>此外，Keras 的独特之处在于它并非一个完全独立的框架。它需要一个<em>后端引擎</em>才能运行（参见图 3.4），就像预制房屋需要从某个地方采购建筑材料一样。TensorFlow、PyTorch 和 JAX 都可以用作 Keras 的后端。另外，Keras 可以在 NumPy 上运行，但由于 NumPy 没有提供梯度 API，因此在 NumPy 上运行的 Keras 工作流仅限于对模型进行预测——无法进行训练。</p>
+<p>现在您已经更清楚地了解了这些框架的由来以及它们之间的关系，接下来让我们深入了解一下使用它们的实际体验。我们将按时间顺序介绍它们：首先是 TensorFlow，然后是 PyTorch，最后是 JAX。</p>
+<h2 id="tensorflow-简介">TensorFlow 简介</h2>
+<p>TensorFlow 是一个基于 Python 的开源机器学习框架，主要由谷歌开发。它最初于 2015 年 11 月发布，随后分别于 2017 年 2 月和 2019 年 10 月发布了 v1 和 v2 版本。TensorFlow 被广泛应用于业界各种生产级机器学习应用中。</p>
+<p>需要注意的是，TensorFlow 不仅仅是一个库，它实际上是一个平台，拥有庞大的组件生态系统，其中一些由 Google 开发，一些由第三方开发。例如，TFX 用于工业级机器学习工作流管理，TF-Serving 用于生产环境部署，TF Optimization Toolkit 用于模型量化和剪枝，以及 TFLite 和 MediaPipe 用于移动应用部署。</p>
+<p>这些组件共同涵盖了非常广泛的应用场景，从尖端研究到大规模生产应用。</p>
+<h3 id="tensorflow入门">TensorFlow入门</h3>
+<p>接下来的段落将带你熟悉TensorFlow的所有基础知识。我们将涵盖以下关键概念：</p>
+<ul>
+<li>张量和变量</li>
+<li>TensorFlow 中的数值运算</li>
+<li>用<code>GradientTape</code></li>
+<li>通过使用即时编译来加快 TensorFlow 函数的运行速度</li>
+</ul>
+<p>最后，我们将以一个完整的示例来结束介绍：一个纯 TensorFlow 实现的线性回归。</p>
+<p>让我们开始处理这些张量吧。</p>
+<h4 id="tensorflow-中的张量和变量">TensorFlow 中的张量和变量</h4>
+<p>要在TensorFlow中做任何事情，我们都需要一些张量。创建张量的方法有很多种。</p>
+<h5 id="常张量">常张量</h5>
+<p>张量需要用一些初始值来创建，因此创建张量的常用方法是通过<code>tf.ones``(等效于</code>np.ones<code>)</code> 和<code>tf.zeros``(等效于</code>np.zeros<code>)</code>。您还可以使用 <code>.</code> 从 Python 或 NumPy 值创建张量 <code>tf.constant</code>。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; import tensorflow as tf</span><br><span class="line">&gt;&gt;&gt; # Equivalent to np.ones(shape=(2, 1))</span><br><span class="line">&gt;&gt;&gt; tf.ones(shape=(2, 1))</span><br><span class="line">tf.Tensor([[1.], [1.]], shape=(2, 1), dtype=float32)</span><br><span class="line">&gt;&gt;&gt; # Equivalent to np.zeros(shape=(2, 1))</span><br><span class="line">&gt;&gt;&gt; tf.zeros(shape=(2, 1))</span><br><span class="line">tf.Tensor([[0.], [0.]], shape=(2, 1), dtype=float32)</span><br><span class="line">&gt;&gt;&gt; # Equivalent to np.array([1, 2, 3], dtype=&quot;float32&quot;)</span><br><span class="line">&gt;&gt;&gt; tf.constant([1, 2, 3], dtype=&quot;float32&quot;)</span><br><span class="line">tf.Tensor([1., 2., 3.], shape=(3,), dtype=float32)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#listing-3-1">列表 3.1</a>：全 1 或全 0 张量</p>
+<h5 id="随机张量">随机张量</h5>
+<p>您还可以通过子模块的方法之一<code>tf.random</code>（等同于<code>np.random</code>子模块）创建填充随机值的张量。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; # Tensor of random values drawn from a normal distribution with</span><br><span class="line">&gt;&gt;&gt; # mean 0 and standard deviation 1. Equivalent to</span><br><span class="line">&gt;&gt;&gt; # np.random.normal(size=(3, 1), loc=0., scale=1.).</span><br><span class="line">&gt;&gt;&gt; x = tf.random.normal(shape=(3, 1), mean=0., stddev=1.)</span><br><span class="line">&gt;&gt;&gt; print(x)</span><br><span class="line">tf.Tensor(</span><br><span class="line">[[-0.14208166]</span><br><span class="line"> [-0.95319825]</span><br><span class="line"> [ 1.1096532 ]], shape=(3, 1), dtype=float32)</span><br><span class="line">&gt;&gt;&gt; # Tensor of random values drawn from a uniform distribution between</span><br><span class="line">&gt;&gt;&gt; # 0 and 1. Equivalent to np.random.uniform(size=(3, 1), low=0.,</span><br><span class="line">&gt;&gt;&gt; # high=1.).</span><br><span class="line">&gt;&gt;&gt; x = tf.random.uniform(shape=(3, 1), minval=0., maxval=1.)</span><br><span class="line">&gt;&gt;&gt; print(x)</span><br><span class="line">tf.Tensor(</span><br><span class="line">[[0.33779848]</span><br><span class="line"> [0.06692922]</span><br><span class="line"> [0.7749394 ]], shape=(3, 1), dtype=float32)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#listing-3-2">列表 3.2</a>：随机张量</p>
+<h5 id="张量赋值和变量类">张量赋值和变量类</h5>
+<p>NumPy 数组和 TensorFlow 张量的一个显著区别在于，TensorFlow 张量不可赋值：它们是常量。例如，在 NumPy 中，你可以执行以下操作。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line">x = np.ones(shape=(<span class="number">2</span>, <span class="number">2</span>))</span><br><span class="line">x[<span class="number">0</span>, <span class="number">0</span>] = <span class="number">0.0</span></span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#listing-3-3">清单 3.3</a>：NumPy 数组可赋值</p>
+<p>尝试在 TensorFlow 中执行相同的操作：你会得到一个错误 <code>EagerTensor object does not support item assignment</code>。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">x = tf.ones(shape=(<span class="number">2</span>, <span class="number">2</span>))</span><br><span class="line"><span class="comment"># This will fail, as a tensor isn&#x27;t assignable.</span></span><br><span class="line">x[<span class="number">0</span>, <span class="number">0</span>] = <span class="number">0.0</span></span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#listing-3-4">清单 3.4</a>：TensorFlow 张量不可赋值</p>
+<p>要训练模型，我们需要更新它的状态，状态是一组张量。如果张量不可赋值，那我们该如何更新呢？这就需要用到变量了。<code>var``tf.Variable</code>类就是用来管理 TensorFlow 中可修改状态的。</p>
+<p>要创建变量，需要提供一些初始值，例如随机张量。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; v = tf.Variable(initial_value=tf.random.normal(shape=(3, 1)))</span><br><span class="line">&gt;&gt;&gt; print(v)</span><br><span class="line">array([[-0.75133973],</span><br><span class="line">       [-0.4872893 ],</span><br><span class="line">       [ 1.6626885 ]], dtype=float32)&gt;</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#listing-3-5">清单 3.5</a>：创建<code>tf.Variable</code></p>
+<p>变量的状态可以通过其<code>assign</code>方法进行修改。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; v.assign(tf.ones((3, 1)))</span><br><span class="line">array([[1.],</span><br><span class="line">       [1.],</span><br><span class="line">       [1.]], dtype=float32)&gt;</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#listing-3-6">清单 3.6</a>：给一个变量赋值<code>Variable</code></p>
+<p>赋值操作也适用于系数的子集。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; v[0, 0].assign(3.)</span><br><span class="line">array([[3.],</span><br><span class="line">       [1.],</span><br><span class="line">       [1.]], dtype=float32)&gt;</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#listing-3-7">清单 3.7</a>：给一个子集赋值<code>Variable</code></p>
+<p>类似地，<code>assign_add</code>和分别是和的<code>assign_sub</code>有效等价物 。<code>+=``-=</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; v.assign_add(tf.ones((3, 1)))</span><br><span class="line">array([[2.],</span><br><span class="line">       [2.],</span><br><span class="line">       [2.]], dtype=float32)&gt;</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#listing-3-8">清单 3.8</a>：使用<code>assign_add</code></p>
+<h4 id="张量运算在-tensorflow-中进行数学运算">张量运算：在 TensorFlow 中进行数学运算</h4>
+<p>与 NumPy 类似，TensorFlow 提供了大量的张量运算来表达数学公式。以下是一些示例。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">a = tf.ones((<span class="number">2</span>, <span class="number">2</span>))</span><br><span class="line"><span class="comment"># Takes the square, same as np.square</span></span><br><span class="line">b = tf.square(a)</span><br><span class="line"><span class="comment"># Takes the square root, same as np.sqrt</span></span><br><span class="line">c = tf.sqrt(a)</span><br><span class="line"><span class="comment"># Adds two tensors (element-wise)</span></span><br><span class="line">d = b + c</span><br><span class="line"><span class="comment"># Takes the product of two tensors (see chapter 2), same as np.matmul</span></span><br><span class="line">e = tf.matmul(a, b)</span><br><span class="line"><span class="comment"># Concatenates a and b along axis 0, same as np.concatenate</span></span><br><span class="line">f = tf.concat((a, b), axis=<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#listing-3-9">清单 3.9</a>：TensorFlow 中的一些基本数学运算</p>
+<p><code>Dense</code>这是与我们在第二章中看到的图层等效的结构：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">dense</span>(<span class="params">inputs, W, b</span>):</span><br><span class="line">    <span class="keyword">return</span> tf.nn.relu(tf.matmul(inputs, W) + b)</span><br></pre></td></tr></table></figure>
+<h4 id="tensorflow-中的梯度再次审视-gradienttape-api">TensorFlow 中的梯度：再次审视 GradientTape API</h4>
+<p>目前来看，TensorFlow 和 NumPy 非常相似。但 NumPy 做不到一点：它无法获取任意可微表达式关于其任意输入的梯度。只需打开一个<code>GradientTape</code>作用域，对一个或多个输入张量进行计算，然后获取结果关于这些输入的梯度即可。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">input_var = tf.Variable(initial_value=<span class="number">3.0</span>)</span><br><span class="line"><span class="keyword">with</span> tf.GradientTape() <span class="keyword">as</span> tape:</span><br><span class="line">    result = tf.square(input_var)</span><br><span class="line">gradient = tape.gradient(result, input_var)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#listing-3-10">清单 3.10</a>：使用<code>GradientTape</code></p>
+<p>这最常用于检索模型损失函数相对于其权重的梯度：<code>gradients = tape.gradient(loss, weights)</code>。</p>
+<p>在第 2 章中，你了解了它如何<code>GradientTape</code>处理单个输入或输入列表，以及输入可以是标量或高维张量。</p>
+<p>到目前为止，你看到的都是输入张量为 TensorFlow 变量的情况<code>tape.gradient()</code> 。实际上，这些输入可以是任意张量。但是，默认情况下只跟踪<em>可训练变量</em>。对于常量张量，你需要手动调用 <code>trace()</code> 方法来将其标记为已跟踪<code>tape.watch()</code>。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">input_const = tf.constant(<span class="number">3.0</span>)</span><br><span class="line"><span class="keyword">with</span> tf.GradientTape() <span class="keyword">as</span> tape:</span><br><span class="line">    tape.watch(input_const)</span><br><span class="line">    result = tf.square(input_const)</span><br><span class="line">gradient = tape.gradient(result, input_const)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#listing-3-11">清单 3.11</a>：使用<code>GradientTape</code>常量张量输入</p>
+<p>为什么？因为预先存储计算任何变量相对于任何变量的梯度所需的信息成本太高。为了避免浪费资源，梯度磁带需要知道要监视哪些变量。默认情况下，可训练变量会被监视，因为计算损失函数相对于一系列可训练变量的梯度是梯度磁带最常见的应用场景。</p>
+<p>梯度带是一个功能强大的工具，甚至可以计算 <em>二阶梯度</em>——也就是梯度的梯度。例如，物体位置随时间变化的梯度就是该物体的速度，而二阶梯度就是它的加速度。</p>
+<p>如果你测量一个下落的苹果沿垂直轴的位置随时间的变化，并且发现它满足某个条件<code>position(time) = 4.9 * time ** 2</code>，那么它的加速度是多少？让我们用两个嵌套的梯度带来找出答案。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">time = tf.Variable(<span class="number">0.0</span>)</span><br><span class="line"><span class="keyword">with</span> tf.GradientTape() <span class="keyword">as</span> outer_tape:</span><br><span class="line">    <span class="keyword">with</span> tf.GradientTape() <span class="keyword">as</span> inner_tape:</span><br><span class="line">        position = <span class="number">4.9</span> * time**<span class="number">2</span></span><br><span class="line">    speed = inner_tape.gradient(position, time)</span><br><span class="line"><span class="comment"># We use the outer tape to compute the gradient of the gradient from</span></span><br><span class="line"><span class="comment"># the inner tape. Naturally, the answer is 4.9 * 2 = 9.8.</span></span><br><span class="line">acceleration = outer_tape.gradient(speed, time)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#listing-3-12">清单 3.12</a>：使用嵌套梯度带计算二阶梯度</p>
+<h4 id="利用编译加速-tensorflow-函数">利用编译加速 TensorFlow 函数</h4>
+<p>你目前编写的所有 TensorFlow 代码都是“立即执行”的。这意味着操作会在 Python 运行时中逐个执行，就像任何 Python 代码或 NumPy 代码一样。立即执行对于调试非常有用，但通常速度很慢。并行化一些计算，或者说“融合”操作，通常会很有帮助——将两个连续的操作（例如 <code>a</code> 和 <code>b</code>）替换<code>matmul</code>为<code>relu</code>一个更高效的单个操作，该操作无需实例化中间输出即可完成相同的操作。</p>
+<p><em>这可以通过编译</em>来实现。编译的基本思想是，将你用 Python 编写的某些函数提取出来，自动将其重写成一个速度更快、效率更高的“编译程序”，然后从 Python 运行时调用该程序。</p>
+<p>编译的主要好处是提升性能。但它也有缺点：你编写的代码不再是实际执行的代码，这会使调试过程变得非常痛苦。只有在 Python 运行时环境中调试完代码之后，才应该启用编译。</p>
+<p>你可以通过将任何 TensorFlow 函数包装在<code>tf.function</code>装饰器中来对其进行编译，如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@tf.function</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">dense</span>(<span class="params">inputs, W, b</span>):</span><br><span class="line">    <span class="keyword">return</span> tf.nn.relu(tf.matmul(inputs, W) + b)</span><br></pre></td></tr></table></figure>
+<p>这样做之后，所有直接调用<code>dense()</code>都会被替换为对已编译程序的调用，该程序实现了该函数的更优化版本。第一次调用该函数会稍慢一些，因为 TensorFlow 需要编译你的代码。但这只会发生一次——之后对同一函数的所有调用都会很快。</p>
+<p>TensorFlow 有两种编译模式：</p>
+<ul>
+<li>首先是默认模式，我们称之为“图形模式”。任何用 <code>@graph</code> 装饰的函数都会以<code>@tf.function</code>图形模式运行。</li>
+<li>其次，可以使用 XLA 进行编译，XLA 是一款高性能的 ML 编译器（全称为 Accelerated Linear Algebra）。您可以通过指定参数来启用它 <code>jit_compile=True</code>，如下所示：</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@tf.function(<span class="params">jit_compile=<span class="literal">True</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">dense</span>(<span class="params">inputs, W, b</span>):</span><br><span class="line">    <span class="keyword">return</span> tf.nn.relu(tf.matmul(inputs, W) + b)</span><br></pre></td></tr></table></figure>
+<p>通常情况下，使用 XLA 编译函数会比使用图形模式运行得更快——尽管第一次执行函数时需要更多时间，因为编译器需要做更多的工作。</p>
+<h3 id="一个完整的示例纯-tensorflow-中的线性分类器">一个完整的示例：纯 TensorFlow 中的线性分类器</h3>
+<p>您已经了解张量、变量和张量运算，也知道如何计算梯度。这些足以构建任何基于梯度下降的 TensorFlow 机器学习模型。让我们通过一个完整的示例来确保一切都清晰明了。</p>
+<p>在机器学习求职面试中，你可能会被要求从零开始实现一个线性分类器：这项看似简单的任务，实际上是为了筛选出具备基本机器学习基础的候选人和完全没有相关经验的候选人。让我们助你通过这一关，运用你新掌握的 TensorFlow 知识来实现这样一个线性分类器。</p>
+<p>首先，让我们生成一些线性可分的合成数据来处理：二维平面上的两类点。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line">num_samples_per_class = <span class="number">1000</span></span><br><span class="line">negative_samples = np.random.multivariate_normal(</span><br><span class="line">    <span class="comment"># Generates the first class of points: 1,000 random 2D points with</span></span><br><span class="line">    <span class="comment"># specified &quot;mean&quot; and &quot;covariance matrix.&quot; Intuitively, the</span></span><br><span class="line">    <span class="comment"># &quot;covariance matrix&quot; describes the shape of the point cloud, and</span></span><br><span class="line">    <span class="comment"># the &quot;mean&quot; describes its position in the plane. `cov=[[1,</span></span><br><span class="line">    <span class="comment"># 0.5],[0.5, 1]]` corresponds to &quot;an oval-like point cloud oriented</span></span><br><span class="line">    <span class="comment"># from bottom left to top right.&quot;</span></span><br><span class="line">    mean=[<span class="number">0</span>, <span class="number">3</span>], cov=[[<span class="number">1</span>, <span class="number">0.5</span>], [<span class="number">0.5</span>, <span class="number">1</span>]], size=num_samples_per_class</span><br><span class="line">)</span><br><span class="line">positive_samples = np.random.multivariate_normal(</span><br><span class="line">    <span class="comment"># Generates the other class of points with a different mean and the</span></span><br><span class="line">    <span class="comment"># same covariance matrix (point cloud with a different position and</span></span><br><span class="line">    <span class="comment"># the same shape)</span></span><br><span class="line">    mean=[<span class="number">3</span>, <span class="number">0</span>], cov=[[<span class="number">1</span>, <span class="number">0.5</span>], [<span class="number">0.5</span>, <span class="number">1</span>]], size=num_samples_per_class</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#listing-3-13">清单 3.13</a>：在二维平面上生成两类随机点</p>
+<p><code>negative_samples</code>这<code>positive_samples</code>两个数组的形状均为<code>(1000, 2)</code>。让我们将它们堆叠成一个形状为 的数组<code>(2000, 2)</code>。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">inputs = np.vstack((negative_samples, positive_samples)).astype(np.float32)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#listing-3-14">清单 3.14</a>：将两个类堆叠成一个形状为 的数组。<code>(2000, 2)</code></p>
+<p>让我们生成相应的目标标签，一个形状为 的 0 和 1 的数组<code>(2000, 1)</code>，其中<code>targets[i, 0]</code>0 表示<code>inputs[i]</code>属于类别 0（反之亦然）。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">targets = np.vstack(</span><br><span class="line">    (</span><br><span class="line">        np.zeros((num_samples_per_class, <span class="number">1</span>), dtype=<span class="string">&quot;float32&quot;</span>),</span><br><span class="line">        np.ones((num_samples_per_class, <span class="number">1</span>), dtype=<span class="string">&quot;float32&quot;</span>),</span><br><span class="line">    )</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#listing-3-15">清单 3.15</a>：生成相应的目标值（0 和 1）</p>
+<p>让我们使用 Matplotlib（一个著名的 Python 数据可视化库，Colab 中已预装了 Matplotlib，因此您无需自行安装）来绘制数据，如图 3.1 所示。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line">plt.scatter(inputs[:, <span class="number">0</span>], inputs[:, <span class="number">1</span>], c=targets[:, <span class="number">0</span>])</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#listing-3-16">清单 3.16</a>：绘制两个点类</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/linear_model_inputs.282fc3b6.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#figure-3-1">图 3.1</a>：我们的合成数据：二维平面上的两类随机点</p>
+<p>现在，我们来创建一个线性分类器，它可以学习区分这两个斑点。线性分类器是一种仿射变换（<code>prediction = matmul(input, W) + b</code>），其训练目标是最小化预测值与目标值之间差异的平方。</p>
+<p>你会发现，这实际上比第二章末尾的玩具两层神经网络的端到端示例要简单得多。但是这一次，你应该能够逐行理解代码的所有内容。</p>
+<p>让我们创建变量<code>W</code>和<code>b</code>，分别初始化为随机值和零。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># The inputs will be 2D points.</span></span><br><span class="line">input_dim = <span class="number">2</span></span><br><span class="line"><span class="comment"># The output predictions will be a single score per sample (close to 0</span></span><br><span class="line"><span class="comment"># if the sample is predicted to be in class 0, and close to 1 if the</span></span><br><span class="line"><span class="comment"># sample is predicted to be in class 1).</span></span><br><span class="line">output_dim = <span class="number">1</span></span><br><span class="line">W = tf.Variable(initial_value=tf.random.uniform(shape=(input_dim, output_dim)))</span><br><span class="line">b = tf.Variable(initial_value=tf.zeros(shape=(output_dim,)))</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#listing-3-17">清单 3.17</a>：创建线性分类器变量</p>
+<p>这是我们的前向传递函数。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">model</span>(<span class="params">inputs, W, b</span>):</span><br><span class="line">    <span class="keyword">return</span> tf.matmul(inputs, W) + b</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#listing-3-18">清单 3.18</a>：前向传递函数</p>
+<p>由于我们的线性分类器处理的<code>W</code>是二维输入，因此实际上只有两个标量系数：<code>W = [[w1], [w2]]</code>。而则<code>b</code>只有一个标量系数。因此，对于给定的输入点 <code>[x, y]</code>，其预测值为 <code>prediction = [[w1], [w2]] • [x, y] + b = w1 * x + w2 * y + b</code>。</p>
+<p>这是我们的损失函数。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">mean_squared_error</span>(<span class="params">targets, predictions</span>):</span><br><span class="line">    <span class="comment"># per_sample_losses will be a tensor with the same shape as targets</span></span><br><span class="line">    <span class="comment"># and predictions, containing per-sample loss scores.</span></span><br><span class="line">    per_sample_losses = tf.square(targets - predictions)</span><br><span class="line">    <span class="comment"># We need to average these per-sample loss scores into a single</span></span><br><span class="line">    <span class="comment"># scalar loss value: reduce_mean does this.</span></span><br><span class="line">    <span class="keyword">return</span> tf.reduce_mean(per_sample_losses)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#listing-3-19">清单 3.19</a>：均方误差损失函数</p>
+<p>现在，我们进入训练步骤，该步骤接收一些训练数据并更新权重<code>W</code>，<code>b</code>以最大限度地减少数据损失。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">learning_rate = <span class="number">0.1</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Wraps the function in a tf.function decorator to speed it up</span></span><br><span class="line"><span class="meta">@tf.function(<span class="params">jit_compile=<span class="literal">True</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">training_step</span>(<span class="params">inputs, targets, W, b</span>):</span><br><span class="line">    <span class="comment"># Forward pass, inside of a gradient tape scope</span></span><br><span class="line">    <span class="keyword">with</span> tf.GradientTape() <span class="keyword">as</span> tape:</span><br><span class="line">        predictions = model(inputs, W, b)</span><br><span class="line">        loss = mean_squared_error(predictions, targets)</span><br><span class="line">    <span class="comment"># Retrieves the gradient of the loss with regard to weights</span></span><br><span class="line">    grad_loss_wrt_W, grad_loss_wrt_b = tape.gradient(loss, [W, b])</span><br><span class="line">    <span class="comment"># Updates the weights</span></span><br><span class="line">    W.assign_sub(grad_loss_wrt_W * learning_rate)</span><br><span class="line">    b.assign_sub(grad_loss_wrt_b * learning_rate)</span><br><span class="line">    <span class="keyword">return</span> loss</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#listing-3-20">清单 3.20</a>：训练步骤函数</p>
+<p>为了简化起见，我们将采用<em>批量训练</em>而非<em>小批量训练</em>：我们将对整个数据集运行每个训练步骤（梯度计算和权重更新），而不是分批迭代处理数据。一方面，这意味着每个训练步骤的运行时间会更长，因为我们需要一次性计算 2000 个样本的前向传播和梯度。另一方面，由于每次梯度更新都包含了所有训练样本的信息，而不是像之前那样仅包含 128 个随机样本的信息，因此在降低训练数据损失方面会更加有效。因此，我们需要的训练步骤会大大减少，并且应该使用比通常用于小批量训练的学习率更大的学习率（我们将使用<code>learning_rate = 0.1</code>之前定义的学习率）。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> step <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">40</span>):</span><br><span class="line">    loss = training_step(inputs, targets, W, b)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;Loss at step <span class="subst">&#123;step&#125;</span>: <span class="subst">&#123;loss:<span class="number">.4</span>f&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#listing-3-21">清单 3.21</a>：批量训练循环</p>
+<p>经过 40 步训练后，训练损失似乎稳定在 0.025 左右。让我们绘制线性模型如何对训练数据点进行分类，如图 3.2 所示。由于我们的目标值为 0 和 1，因此如果给定输入点的预测值低于 0.5，则将其分类为“0”；如果高于 0.5，则将其分类为“1”。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">predictions = model(inputs, W, b)</span><br><span class="line">plt.scatter(inputs[:, <span class="number">0</span>], inputs[:, <span class="number">1</span>], c=predictions[:, <span class="number">0</span>] &gt; <span class="number">0.5</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/linear_model_predictions.3e5424ac.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#figure-3-2">图 3.2</a>：我们的模型对训练输入的预测：与训练目标非常相似</p>
+<p>回想一下，给定点的预测值<code>[x, y]</code>就是 <code>prediction == [[w1], [w2]] • [x, y] + b == w1 * x + w2 * y + b</code>。因此，“0”类定义为 <code>w1 * x + w2 * y + b &lt; 0.5</code>，“1”类定义为 <code>w1 * x + w2 * y + b &gt; 0.5</code>。你会注意到，你看到的实际上是二维平面上一条直线的方程：<code>w1 * x + w2 * y + b = 0.5</code>。1 类位于直线上方；0 类位于直线下方。你可能习惯于看到直线方程的格式为<code>y = a * x + b</code>；同样，我们的直线方程变为<code>y = - w1 / w2 * x + (0.5 - b) / w2</code>。</p>
+<p>让我们绘制这条线，如图 3.3 所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Generates 100 regularly spaced numbers between -1 and 4, which we</span></span><br><span class="line"><span class="comment"># will use to plot our line</span></span><br><span class="line">x = np.linspace(-<span class="number">1</span>, <span class="number">4</span>, <span class="number">100</span>)</span><br><span class="line"><span class="comment"># This is our line&#x27;s equation.</span></span><br><span class="line">y = -W[<span class="number">0</span>] / W[<span class="number">1</span>] * x + (<span class="number">0.5</span> - b) / W[<span class="number">1</span>]</span><br><span class="line"><span class="comment"># Plots our line (`&quot;-r&quot;` means &quot;plot it as a red line&quot;)</span></span><br><span class="line">plt.plot(x, y, <span class="string">&quot;-r&quot;</span>)</span><br><span class="line"><span class="comment"># Plots our model&#x27;s predictions on the same plot</span></span><br><span class="line">plt.scatter(inputs[:, <span class="number">0</span>], inputs[:, <span class="number">1</span>], c=predictions[:, <span class="number">0</span>] &gt; <span class="number">0.5</span>)</span><br></pre></td></tr></table></figure>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/linear_model_with_plotted_line.fd88e7bc.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#figure-3-3">图 3.3</a>：我们的模型，以一条线的形式呈现。</p>
+<p>这就是线性分类器的全部意义所在：找到一条直线（或者，在高维空间中，一个超平面）的参数，该直线能够清晰地分隔两类数据。</p>
+<h3 id="tensorflow-方法的独特之处是什么">TensorFlow 方法的独特之处是什么？</h3>
+<p>您现在已经熟悉了所有基于 TensorFlow 的工作流所需的基本 API，即将深入学习更多框架——特别是 PyTorch 和 JAX。使用 TensorFlow 与其他框架有何不同？何时应该使用 TensorFlow，何时可以使用其他框架？</p>
+<p>如果您问我们，TensorFlow 的主要优势如下：</p>
+<ul>
+<li>由于采用了图形模式和 XLA 编译，它的速度很快。通常情况下，它比 PyTorch 和 NumPy 快得多，而 JAX 通常更快。</li>
+<li>它功能极其完善。在所有框架中，它独树一帜，不仅支持字符串张量，还支持“不规则张量”（不同条目维度可能不同的张量——对于处理序列非常有用，无需将其填充到统一长度）。此外，它还通过高性能<code>tf.data</code>API 提供出色的数据预处理支持。TensorFlow<code>tf.data</code>如此优秀，甚至连 JAX 都推荐它用于数据预处理。无论您需要做什么，TensorFlow 都能提供解决方案。</li>
+<li>它的生产部署生态系统是所有框架中最成熟的，尤其是在移动设备或浏览器部署方面。</li>
+</ul>
+<p>然而，TensorFlow 也存在一些明显的缺陷：</p>
+<ul>
+<li>它拥有庞大的API——这是功能非常齐全的另一面。TensorFlow包含了数千种不同的操作。</li>
+<li>它的数值 API 有时与 NumPy API 不一致，如果您已经熟悉 NumPy，那么上手起来会稍微困难一些。</li>
+<li>流行的预训练模型共享平台 Hugging Face 对 TensorFlow 的支持较少，这意味着最新的生成式 AI 模型可能并不总是能在 TensorFlow 中使用。</li>
+</ul>
+<p>现在，我们来学习 PyTorch。</p>
+<h2 id="pytorch简介">PyTorch简介</h2>
+<p>PyTorch 是一个基于 Python 的开源机器学习框架，主要由 Meta（前身为 Facebook）开发。它最初于 2016 年 9 月发布（旨在应对 TensorFlow 的发布），其 1.0 版本于 2018 年发布，2.0 版本于 2023 年发布。PyTorch 的编程风格源自现已停止开发的 Chainer 框架，而 Chainer 本身又受到了 NumPy-Autograd 的启发。PyTorch 在机器学习研究领域得到了广泛应用。</p>
+<p>与 TensorFlow 一样，PyTorch 处于一个庞大的相关软件包生态系统的核心，例如<code>torchvision</code>、<code>torchaudio</code>或流行的模型共享平台 Hugging Face。</p>
+<p>PyTorch API 比 TensorFlow 和 JAX 的 API 更高级：它包含了层和优化器，类似于 Keras。当您将 Keras 与 PyTorch 后端一起使用时，这些层和优化器与 Keras 工作流兼容。</p>
+<h3 id="pytorch入门">PyTorch入门</h3>
+<p>接下来的段落将带你熟悉 PyTorch 的所有基础知识。我们将涵盖以下关键概念：</p>
+<ul>
+<li>张量和参数</li>
+<li>PyTorch中的数值运算</li>
+<li><code>backward()</code>用该方法计算梯度</li>
+<li><code>Module</code>使用类进行打包计算</li>
+<li>利用编译加速 PyTorch</li>
+</ul>
+<p>我们将用纯 PyTorch 重新实现我们的线性回归端到端示例，以此结束介绍。</p>
+<h4 id="pytorch-中的张量和参数">PyTorch 中的张量和参数</h4>
+<p>关于 PyTorch，首先要注意的是，它的包名不是 <code>&lt;package_name&gt;</code> <code>pytorch</code>，而是 <code>&lt;package_name&gt;</code> <code>torch</code>。你需要通过 <code>pip install pytorch</code> 安装它<code>pip install torch</code>，然后通过 <code>import pytorch</code> 导入它<code>import torch</code>。</p>
+<p>与 NumPy 和 TensorFlow 类似，该框架的核心对象是张量。首先，让我们来了解一下 PyTorch 张量。</p>
+<h5 id="常张量-1">常张量</h5>
+<p>以下是一些常量张量。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; import torch</span><br><span class="line">&gt;&gt;&gt; # Unlike in other frameworks, the shape argument is named &quot;size&quot;</span><br><span class="line">&gt;&gt;&gt; # rather than &quot;shape.&quot;</span><br><span class="line">&gt;&gt;&gt; torch.ones(size=(2, 1))</span><br><span class="line">tensor([[1.], [1.]])</span><br><span class="line">&gt;&gt;&gt; torch.zeros(size=(2, 1))</span><br><span class="line">tensor([[0.], [0.]])</span><br><span class="line">&gt;&gt;&gt; # Unlike in other frameworks, you cannot pass dtype=&quot;float32&quot; as a</span><br><span class="line">&gt;&gt;&gt; # string. The dtype argument must be a torch dtype instance.</span><br><span class="line">&gt;&gt;&gt; torch.tensor([1, 2, 3], dtype=torch.float32)</span><br><span class="line">tensor([1., 2., 3.])</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#listing-3-22">列表 3.22</a>：全 1 或全 0 张量</p>
+<h5 id="随机张量-1">随机张量</h5>
+<p>随机张量的创建与 NumPy 和 TensorFlow 类似，但语法有所不同。例如<code>normal</code>，该函数不接受形状参数。相反，均值和标准差应作为 PyTorch 张量提供，并具有预期的输出形状。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; # Equivalent to tf.random.normal(shape=(3, 1), mean=0., stddev=1.)</span><br><span class="line">&gt;&gt;&gt; torch.normal(</span><br><span class="line">... mean=torch.zeros(size=(3, 1)),</span><br><span class="line">... std=torch.ones(size=(3, 1)))</span><br><span class="line">tensor([[-0.9613],</span><br><span class="line">        [-2.0169],</span><br><span class="line">        [ 0.2088]])</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#listing-3-23">列表 3.23</a>：随机张量</p>
+<p>至于如何创建一个随机均匀张量，可以使用 <code>.</code> 函数<code>torch.rand</code>。与 <code>.``np.random.uniform</code>或 <code>.</code> 不同<code>tf.random.uniform</code>，输出形状需要作为每个维度的独立参数提供，如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="comment"># Equivalent to tf.random.uniform(shape=(3, 1), minval=0.,</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="comment"># maxval=1.)</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>torch.rand(<span class="number">3</span>, <span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+<h5 id="张量赋值和参数类">张量赋值和参数类</h5>
+<p>与 NumPy 数组类似，但与 TensorFlow 张量不同的是，PyTorch 张量是可赋值的。你可以执行如下操作：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; x = torch.zeros(size=(2, 1))</span><br><span class="line">&gt;&gt;&gt; x[0, 0] = 1.</span><br><span class="line">&gt;&gt;&gt; x</span><br><span class="line">tensor([[1.],</span><br><span class="line">        [0.]])</span><br></pre></td></tr></table></figure>
+<p>虽然你可以使用普通的张量<code>torch.Tensor</code>来存储模型的可训练状态，但 PyTorch 提供了一个专门用于此目的的张量子类：<code>TrainableState</code> 类<code>torch.nn.parameter.Parameter</code>。与普通张量相比，<code>TrainableState</code> 提供了语义上的清晰性——如果你看到一个 <code></code>Parameter<code>TrainableState</code>，你就知道它是一段可训练状态，而 <code>TrainableState``Tensor</code> 可以是任何值。因此，它使得 PyTorch 能够自动跟踪和检索<code>Parameters</code>你分配给 PyTorch 模型的 <code>TrainableState</code>——类似于 Keras 对 Keras<code>Variable</code>实例的处理方式。</p>
+<p>这里有一个<code>Parameter</code>。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>x = torch.zeros(size=(<span class="number">2</span>, <span class="number">1</span>))</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="comment"># A Parameter can only be created using a torch.Tensor value — no</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="comment"># NumPy arrays allowed.</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>p = torch.nn.parameter.Parameter(data=x)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#listing-3-24">清单 3.24</a>：创建 PyTorch 参数</p>
+<h4 id="张量运算在-pytorch-中进行数学运算">张量运算：在 PyTorch 中进行数学运算</h4>
+<p>PyTorch 中的数学运算与 NumPy 或 TensorFlow 中的数学运算完全相同，尽管与 TensorFlow 类似，PyTorch API 经常在一些细微之处与 NumPy API 有所不同。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">a = torch.ones((<span class="number">2</span>, <span class="number">2</span>))</span><br><span class="line"><span class="comment"># Takes the square, same as np.square</span></span><br><span class="line">b = torch.square(a)</span><br><span class="line"><span class="comment"># Takes the square root, same as np.sqrt</span></span><br><span class="line">c = torch.sqrt(a)</span><br><span class="line"><span class="comment"># Adds two tensors (element-wise)</span></span><br><span class="line">d = b + c</span><br><span class="line"><span class="comment"># Takes the product of two tensors (see chapter 2), same as np.matmul</span></span><br><span class="line">e = torch.matmul(a, b)</span><br><span class="line"><span class="comment"># Concatenates a and b along axis 0, same as np.concatenate</span></span><br><span class="line">f = torch.cat((a, b), dim=<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#listing-3-25">示例 3.25</a>：PyTorch 中的一些基本数学运算</p>
+<p>这里有一个致密的层：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">dense</span>(<span class="params">inputs, W, b</span>):</span><br><span class="line">    <span class="keyword">return</span> torch.nn.relu(torch.matmul(inputs, W) + b)</span><br></pre></td></tr></table></figure>
+<h4 id="使用-pytorch-计算梯度">使用 PyTorch 计算梯度</h4>
+<p>PyTorch 中并没有显式的“梯度带”。虽然存在类似的机制：当你在 PyTorch 中运行任何计算时，框架会创建一个一次性的计算图（称为“梯度带”），记录刚刚发生的情况。然而，这个梯度带对用户是隐藏的。使用它的公共 API 位于张量层面：你可以调用 <code>tensor.backward()</code>反向传播函数，遍历所有先前执行的、最终得到该张量的操作。这样做会填充<code>.grad</code>所有跟踪梯度的张量的属性。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; # To compute gradients with respect to a tensor, it must be created</span><br><span class="line">&gt;&gt;&gt; # with requires_grad=True.</span><br><span class="line">&gt;&gt;&gt; input_var = torch.tensor(3.0, requires_grad=True)</span><br><span class="line">&gt;&gt;&gt; result = torch.square(input_var)</span><br><span class="line">&gt;&gt;&gt; # Calling backward() populates the &quot;grad&quot; attribute on all tensors</span><br><span class="line">&gt;&gt;&gt; # create with requires_grad=True.</span><br><span class="line">&gt;&gt;&gt; result.backward()</span><br><span class="line">&gt;&gt;&gt; gradient = input_var.grad</span><br><span class="line">&gt;&gt;&gt; gradient</span><br><span class="line">tensor(6.)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#listing-3-26">清单 3.26</a>：计算梯度<code>.backward()</code></p>
+<p><code>backward()</code>如果连续多次调用该<code>.grad</code>属性，则会“累积”梯度：每次新的调用都会将新的梯度与先前存在的梯度相加。例如，在以下代码中， <code>input_var.grad</code>并非<code>square(input_var)</code>相对于的梯度<code>input_var</code>；而是该梯度与先前计算的梯度之和——其值自上次代码片段以来已翻倍：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; result = torch.square(input_var)</span><br><span class="line">&gt;&gt;&gt; result.backward()</span><br><span class="line">&gt;&gt;&gt; # .grad will sum all gradient values from each time backward() is</span><br><span class="line">&gt;&gt;&gt; # called.</span><br><span class="line">&gt;&gt;&gt; input_var.grad</span><br><span class="line">tensor(12.)</span><br></pre></td></tr></table></figure>
+<p>要重置渐变，只需设置<code>.grad</code>为<code>None</code>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>input_var.grad = <span class="literal">None</span></span><br></pre></td></tr></table></figure>
+<p>现在让我们付诸实践！</p>
+<h3 id="一个完整的示例纯-pytorch-编写的线性分类器">一个完整的示例：纯 PyTorch 编写的线性分类器</h3>
+<p>现在你已经掌握了足够的知识，可以用 PyTorch 重写我们的线性分类器。它将与 TensorFlow 的分类器非常相似——唯一的重大区别在于我们计算梯度的方式。</p>
+<p>我们先来创建模型变量。别忘了传递参数<code>requires_grad=True</code>，以便我们能够计算它们的梯度：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">input_dim = <span class="number">2</span></span><br><span class="line">output_dim = <span class="number">1</span></span><br><span class="line"></span><br><span class="line">W = torch.rand(input_dim, output_dim, requires_grad=<span class="literal">True</span>)</span><br><span class="line">b = torch.zeros(output_dim, requires_grad=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+<p>这是我们的模型——目前为止没有任何变化。我们只是<code>tf.matmul</code>从<code>torch.matmul</code>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">model</span>(<span class="params">inputs, W, b</span>):</span><br><span class="line">    <span class="keyword">return</span> torch.matmul(inputs, W) + b</span><br></pre></td></tr></table></figure>
+<p>这是我们的损失函数。我们只需将函数值从 切换<code>tf.square</code>到<code>torch.square</code>，再从切换<code>tf.reduce_mean</code>到<code>torch.mean</code>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">mean_squared_error</span>(<span class="params">targets, predictions</span>):</span><br><span class="line">    per_sample_losses = torch.square(targets - predictions)</span><br><span class="line">    <span class="keyword">return</span> torch.mean(per_sample_losses)</span><br></pre></td></tr></table></figure>
+<p>现在进入训练阶段。具体操作如下：</p>
+<ol type="1">
+<li><code>loss.backward()</code>从<code>loss</code>输出节点开始运行反向传播，并填充<code>tensor.grad</code>参与计算的所有张量的属性<code>loss</code>。 <code>tensor.grad</code>表示损失相对于该张量的梯度。</li>
+<li>我们使用该<code>.grad</code>属性来恢复损失函数关于<code>W</code>和 的梯度<code>b</code>。</li>
+<li>我们更新<code>W</code>并<code>b</code>使用这些梯度。由于这些更新并非反向传播的一部分，因此我们将其置于一个<code>torch.no_grad()</code>单独的作用域内，这样该作用域内的所有内容都会跳过梯度计算。</li>
+<li>我们通过将其设置为 来重置 <code>and</code>参数<code>.grad</code>的属性内容。如果不这样做，梯度值会在多次调用 <code>and</code> 时累积，从而导致无效值：<code>W``b``None``training_step()</code></li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">learning_rate = <span class="number">0.1</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">training_step</span>(<span class="params">inputs, targets, W, b</span>):</span><br><span class="line">    <span class="comment"># Forward pass</span></span><br><span class="line">    predictions = model(inputs)</span><br><span class="line">    loss = mean_squared_error(targets, predictions)</span><br><span class="line">    <span class="comment"># Computes gradients</span></span><br><span class="line">    loss.backward()</span><br><span class="line">    <span class="comment"># Retrieves gradients</span></span><br><span class="line">    grad_loss_wrt_W, grad_loss_wrt_b = W.grad, b.grad</span><br><span class="line">    <span class="keyword">with</span> torch.no_grad():</span><br><span class="line">        <span class="comment"># Updates weights inside a no_grad scope</span></span><br><span class="line">        W -= grad_loss_wrt_W * learning_rate</span><br><span class="line">        b -= grad_loss_wrt_b * learning_rate</span><br><span class="line">    <span class="comment"># Resets gradients</span></span><br><span class="line">    W.grad = <span class="literal">None</span></span><br><span class="line">    b.grad = <span class="literal">None</span></span><br><span class="line">    <span class="keyword">return</span> loss</span><br></pre></td></tr></table></figure>
+<p>这还可以做得更简单——让我们看看怎么做。</p>
+<h4 id="使用模块类对状态和计算进行打包">使用模块类对状态和计算进行打包</h4>
+<p>PyTorch 还提供了一个更高级别的面向对象的 API 来执行反向传播，这需要依赖两个新类：<code>torch.nn.Module</code>类和来自模块的优化器类<code>torch.optim</code>，例如<code>torch.optim.SGD</code>（相当于<code>keras.optimizers.SGD</code>）。</p>
+<p>总体思路是定义一个子类<code>torch.nn.Module</code>，该子类将</p>
+<ul>
+<li>保留一些空间<code>Parameters</code>，用于存储状态变量。这些变量在方法中定义<code>__init__()</code>。</li>
+<li>在方法中实现前向传递计算<code>forward()</code>。</li>
+</ul>
+<p>它应该看起来像下图一样。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">LinearModel</span>(torch.nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="built_in">super</span>().__init__()</span><br><span class="line">        self.W = torch.nn.Parameter(torch.rand(input_dim, output_dim))</span><br><span class="line">        self.b = torch.nn.Parameter(torch.zeros(output_dim))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, inputs</span>):</span><br><span class="line">        <span class="keyword">return</span> torch.matmul(inputs, self.W) + self.b</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#listing-3-27">清单 3.27</a>：定义一个<code>torch.nn.Module</code></p>
+<p>现在我们可以实例化我们的<code>LinearModel</code>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">model = LinearModel()</span><br></pre></td></tr></table></figure>
+<p>使用实例时<code>torch.nn.Module</code>，与其<code>forward()</code> 直接调用方法，不如使用<code>__call__()</code>（即直接在输入上调用模型类），这会重定向到，<code>forward()</code>但会向其添加一些框架钩子：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">torch_inputs = torch.tensor(inputs)</span><br><span class="line">output = model(torch_inputs)</span><br></pre></td></tr></table></figure>
+<p>现在，让我们来获取一个 PyTorch 优化器。要实例化它，您需要提供优化器要更新的参数列表。您可以通过<code>Module</code>以下方式从我们的实例中获取该列表<code>.parameters()</code>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)</span><br></pre></td></tr></table></figure>
+<p>利用我们的<code>Module</code>实例和 PyTorch<code>SGD</code>优化器，我们可以运行一个简化的训练步骤：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">training_step</span>(<span class="params">inputs, targets</span>):</span><br><span class="line">    predictions = model(inputs)</span><br><span class="line">    loss = mean_squared_error(targets, predictions)</span><br><span class="line">    loss.backward()</span><br><span class="line">    optimizer.step()</span><br><span class="line">    model.zero_grad()</span><br><span class="line">    <span class="keyword">return</span> loss</span><br></pre></td></tr></table></figure>
+<p>之前，更新模型参数的步骤如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">with</span> torch.no_grad():</span><br><span class="line">    W -= grad_loss_wrt_W * learning_rate</span><br><span class="line">    b -= grad_loss_wrt_b * learning_rate</span><br></pre></td></tr></table></figure>
+<p>现在我们可以这么做了<code>optimizer.step()</code>。</p>
+<p>类似地，以前我们需要手动对<code>tensor.grad = None</code>每个参数进行重置梯度操作。现在我们可以直接执行此操作<code>model.zero_grad()</code>。</p>
+<p>总的来说，这可能有点令人困惑——损失张量、优化器和<code>Module</code>实例似乎都通过某种隐藏的后台机制相互感知。它们之间仿佛在进行着某种神秘的远程交互。不过别担心——你可以把这一系列步骤（<code>loss.backward()</code>-- <code>optimizer.step()</code>）<code>model.zero_grad()</code>当作一段魔法咒语，每次需要编写训练步骤函数时都念诵一遍。但务必记住，千万别忘了 <code>model.zero_grad()</code>。否则就会出现一个严重的错误（而且不幸的是，这种情况相当常见）！</p>
+<h4 id="利用编译加速-pytorch-模块">利用编译加速 PyTorch 模块</h4>
+<p>最后一点。类似于 TensorFlow 允许你编译函数以提升性能，PyTorch 也允许你<code>Module</code>通过<code>torch.compile()</code>实用程序编译函数甚至实例。这个 API 使用的是 PyTorch 自带的编译器，名为 Dynamo。</p>
+<p>让我们在线性回归模型中尝试一下<code>Module</code>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">compiled_model = torch.<span class="built_in">compile</span>(model)</span><br></pre></td></tr></table></figure>
+<p>生成的对象旨在与原对象完全相同——只是正向和反向传播速度应该更快。</p>
+<p>你也可以将<code>torch.compile()</code>其用作函数装饰器：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@torch.compile</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">dense</span>(<span class="params">inputs, W, b</span>):</span><br><span class="line">    <span class="keyword">return</span> torch.nn.relu(torch.matmul(inputs, W) + b)</span><br></pre></td></tr></table></figure>
+<p>实际上，大多数 PyTorch 代码并不使用编译，而是直接运行，因为编译器并非总能兼容所有模型，即使兼容也未必能带来速度提升。与 TensorFlow 和 Jax 不同，后者从一开始就内置了编译功能，而 PyTorch 的编译器是相对较新的功能。</p>
+<h3 id="pytorch-方法的独特之处是什么">PyTorch 方法的独特之处是什么？</h3>
+<p>与我们接下来要介绍的 TensorFlow 和 JAX 相比，PyTorch 的优势是什么？你为什么应该使用它，或者不应该使用它？</p>
+<p>以下是 PyTorch 的两大主要优势：</p>
+<ul>
+<li>PyTorch 代码默认以立即执行的方式运行，这使得调试变得容易。需要注意的是，TensorFlow 和 JAX 代码也是如此，但一个很大的区别在于，PyTorch 通常旨在始终以立即执行的方式运行，而任何严肃的 TensorFlow 或 JAX 项目都不可避免地需要在某个时候进行编译，这可能会严重影响调试体验。</li>
+<li>广受欢迎的预训练模型共享平台 Hugging Face 对 PyTorch 提供了顶级的支持，这意味着你想要使用的任何模型都可能在 PyTorch 版本中可用。这正是如今 PyTorch 被广泛采用的主要原因。</li>
+</ul>
+<p>与此同时，使用 PyTorch 也存在一些缺点：</p>
+<ul>
+<li>与 TensorFlow 类似，PyTorch API 与 NumPy 并不一致。此外，它的内部机制也存在差异。例如，常用的关键字<code>axis</code>有时会<code>dim</code>根据函数的不同而使用不同的名称。一些伪随机数生成操作需要<code>seed</code>参数，而另一些则不需要。诸如此类。这使得 PyTorch 的学习过程令人沮丧，尤其是对于从 NumPy 转过来的用户而言。</li>
+<li>由于 PyTorch 注重即时执行，因此速度相当慢——在所有主流框架中，它的速度明显最慢。对于大多数模型，使用 JAX 可以提升 20% 到 30% 的速度。对于某些模型——尤其是大型模型——即使使用其他方法，使用 JAX 的速度提升甚至可达 3 倍或 5 倍<code>torch.compile()</code>。</li>
+<li>虽然可以通过一些方法提升 PyTorch 代码的运行速度<code>torch.compile()</code>，但截至目前（2025 年），PyTorch Dynamo 编译器仍然效率低下，且漏洞百出。因此，只有极少数 PyTorch 用户会使用编译。或许未来的版本会对此有所改进！</li>
+</ul>
+<h2 id="jax简介">JAX简介</h2>
+<p>JAX 是一个用于可微分计算的开源库，主要由谷歌开发。自 2018 年发布以来，JAX 迅速在研究界获得广泛关注，尤其因其能够大规模利用谷歌的 TPU 而备受青睐。如今，JAX 已被生成式人工智能领域的大多数顶尖公司所采用，例如 DeepMind、苹果、Midjourney、Anthropic 和 Cohere 等。</p>
+<p>JAX 采用<em>无状态</em>计算方式，这意味着 JAX 中的函数不维护任何持久状态。这与传统的命令式编程形成鲜明对比，在传统命令式编程中，变量可以在函数调用之间保持值。</p>
+<p>JAX 函数的无状态特性具有诸多优势。尤其值得一提的是，它能够高效地实现自动并行化和分布式计算，因为函数可以独立执行，无需同步。JAX 的超强可扩展性对于处理像 Google 和 DeepMind 这样的公司所面临的大规模机器学习问题至关重要。</p>
+<h3 id="jax入门">JAX入门</h3>
+<p>我们将探讨以下几个关键概念：</p>
+<ul>
+<li>班级<code>array</code></li>
+<li>JAX 中的随机操作</li>
+<li>JAX 中的数值运算</li>
+<li><code>jax.grad</code>通过以下方式计算梯度：<code>jax.value_and_grad</code></li>
+<li>利用即时编译来加快 JAX 函数的运行速度</li>
+</ul>
+<p>我们开始吧。</p>
+<h3 id="jax-中的张量">JAX 中的张量</h3>
+<p>JAX 最棒的特性之一在于它并没有尝试实现自己独立且与 NumPy 类似但略有不同的数值 API。相反，它直接实现了 NumPy API。它以<code>jax.numpy</code>命名空间的形式提供，您经常会看到它被简写为 <code></code>jnp`JAX_ ...</p>
+<p>以下是一些 JAX 数组。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; from jax import numpy as jnp</span><br><span class="line">&gt;&gt;&gt; jnp.ones(shape=(2, 1))</span><br><span class="line">Array([[1.],</span><br><span class="line">       [1.]], dtype=float32)</span><br><span class="line">&gt;&gt;&gt; jnp.zeros(shape=(2, 1))</span><br><span class="line">Array([[0.],</span><br><span class="line">       [0.]], dtype=float32)</span><br><span class="line">&gt;&gt;&gt; jnp.array([1, 2, 3], dtype=&quot;float32&quot;)</span><br><span class="line">Array([1., 2., 3.], dtype=float32)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#listing-3-28">列表 3.28</a>：全 1 或全 0 张量</p>
+<p>不过，它与实际的 NumPy API 之间存在两个细微差别<code>jax.numpy</code>：随机数生成和数组赋值。让我们来看一下。</p>
+<h3 id="jax-中的随机数生成">JAX 中的随机数生成</h3>
+<p>JAX 和 NumPy 的第一个区别在于 JAX 处理随机操作的方式——也就是所谓的“伪随机数生成”（PRNG）操作。我们之前说过 JAX 是<em>无状态的</em>，这意味着 JAX 代码不能依赖任何隐藏的全局状态。请看下面的 NumPy 代码。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; np.random.normal(size=(3,))</span><br><span class="line">array([-1.68856166,  0.16489586,  0.67707523])</span><br><span class="line">&gt;&gt;&gt; np.random.normal(size=(3,))</span><br><span class="line">array([-0.73671259,  0.3053194 ,  0.84124895])</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#listing-3-29">列表 3.29</a>：随机张量</p>
+<p>第二次调用是如何<code>np.random.normal()</code>知道要返回与第一次调用不同的值的呢？没错——这是隐藏的全局状态。实际上，你可以通过 <code>get</code> 获取该全局状态，<code>np.random.get_state()</code>并通过 <code>set</code> 设置它<code>np.random.seed(seed)</code>。</p>
+<p>在无状态框架中，我们不能拥有任何全局状态。相同的 API 调用必须始终返回相同的值。因此，在无状态版本的 NumPy 中，您必须通过向调用传递不同的种子参数<code>np.random</code>来获取不同的值。</p>
+<p>通常情况下，伪随机数生成器 (PRNG) 的调用会在被多次调用的函数中进行，并且每次调用都需要使用不同的随机值。如果您不想依赖任何全局状态，则需要在目标函数之外管理种子状态，如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">apply_noise</span>(<span class="params">x, seed</span>):</span><br><span class="line">    np.random.seed(seed)</span><br><span class="line">    x = x * np.random.normal((<span class="number">3</span>,))</span><br><span class="line">    <span class="keyword">return</span> x</span><br><span class="line"></span><br><span class="line">seed = <span class="number">1337</span></span><br><span class="line">y = apply_noise(x, seed)</span><br><span class="line">seed += <span class="number">1</span></span><br><span class="line">z = apply_noise(x, seed)</span><br></pre></td></tr></table></figure>
+<p>JAX 的基本原理相同。但是，JAX 不使用整数种子，而是使用称为<em>键</em>的特殊数组结构。您可以像这样从一个整数值创建一个键：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> jax</span><br><span class="line"></span><br><span class="line">seed_key = jax.random.key(<span class="number">1337</span>)</span><br></pre></td></tr></table></figure>
+<p>为了强制您始终为 PRNG 调用提供种子“密钥”，所有使用 JAX PRNG 的操作都将<code>key</code>（随机种子）作为其第一个位置参数。使用方法如下<code>random.normal()</code>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; seed_key = jax.random.key(0)</span><br><span class="line">&gt;&gt;&gt; jax.random.normal(seed_key, shape=(3,))</span><br><span class="line">Array([ 1.8160863 , -0.48262316,  0.33988908], dtype=float32)</span><br></pre></td></tr></table></figure>
+<p>两次<code>random.normal()</code>使用相同种子键的调用将始终返回相同的值。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; seed_key = jax.random.key(123)</span><br><span class="line">&gt;&gt;&gt; jax.random.normal(seed_key, shape=(3,))</span><br><span class="line">Array([-0.1470326,  0.5524756,  1.648498 ], dtype=float32)</span><br><span class="line">&gt;&gt;&gt; jax.random.normal(seed_key, shape=(3,))</span><br><span class="line">Array([-0.1470326,  0.5524756,  1.648498 ], dtype=float32)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#listing-3-30">示例 3.30</a>：在 Jax 中使用随机种子</p>
+<p>如果需要新的种子密钥，您可以直接使用该<code>jax.random.split()</code>函数从现有密钥创建新的密钥。此过程是确定性的，因此相同的分割序列始终会产生相同的最终种子密钥：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; seed_key = jax.random.key(123)</span><br><span class="line">&gt;&gt;&gt; jax.random.normal(seed_key, shape=(3,))</span><br><span class="line">Array([-0.1470326,  0.5524756,  1.648498 ], dtype=float32)</span><br><span class="line">&gt;&gt;&gt; # You could even split your key into multiple new keys at once!</span><br><span class="line">&gt;&gt;&gt; new_seed_key = jax.random.split(seed_key, num=1)[0]</span><br><span class="line">&gt;&gt;&gt; jax.random.normal(new_seed_key, shape=(3,))</span><br><span class="line">Array([ 0.5362355, -1.1920372,  2.450225 ], dtype=float32)</span><br></pre></td></tr></table></figure>
+<p>这肯定比使用伪随机数生成器 (PRNG) 更费力<code>np.random</code>！但无状态的优势远远大于劣势：它使你的代码<em>可向量化</em>（即，JAX 编译器可以自动将其转换为高度并行的代码），同时保持确定性（即，你可以两次运行相同的代码并获得相同的结果）。这是使用全局 PRNG 状态无法实现的。</p>
+<h4 id="张量赋值">张量赋值</h4>
+<p>JAX 和 NumPy 的第二个区别在于张量赋值。与 TensorFlow 类似，JAX 数组不支持原地赋值。这是因为任何形式的原地修改都违背了 JAX 的无状态设计。相反，如果需要更新张量，必须创建一个新的张量并赋予其所需的值。JAX 通过提供 <code></code>at()<code>/</code> <code>set()</code>API 简化了这一过程。这些方法允许您创建一个新的张量，并将更新后的元素赋值给指定的索引。以下示例展示了如何将 JAX 数组的第一个元素更新为新值。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>x = jnp.array([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>], dtype=<span class="string">&quot;float32&quot;</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>new_x = x.at[<span class="number">0</span>].<span class="built_in">set</span>(<span class="number">10</span>)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#listing-3-31">示例 3.31</a>：修改 JAX 数组中的值</p>
+<p>很简单！</p>
+<h4 id="张量运算在-jax-中进行数学运算">张量运算：在 JAX 中进行数学运算</h4>
+<p>在 JAX 中进行数学运算与在 NumPy 中进行数学运算完全相同。这次无需学习任何新东西！</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">a = jnp.ones((<span class="number">2</span>, <span class="number">2</span>))</span><br><span class="line"><span class="comment"># Takes the square</span></span><br><span class="line">b = jnp.square(a)</span><br><span class="line"><span class="comment"># Takes the square root</span></span><br><span class="line">c = jnp.sqrt(a)</span><br><span class="line"><span class="comment"># Adds two tensors (element-wise)</span></span><br><span class="line">d = b + c</span><br><span class="line"><span class="comment"># Takes the product of two tensors (see chapter 2)</span></span><br><span class="line">e = jnp.matmul(a, b)</span><br><span class="line"><span class="comment"># Multiplies two tensors (element-wise)</span></span><br><span class="line">e *= d</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#listing-3-32">示例 3.32</a>：JAX 中的一些基本数学运算</p>
+<p>这里有一个致密的层：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">dense</span>(<span class="params">inputs, W, b</span>):</span><br><span class="line">    <span class="keyword">return</span> jax.nn.relu(jnp.matmul(inputs, W) + b)</span><br></pre></td></tr></table></figure>
+<h4 id="使用-jax-计算梯度">使用 JAX 计算梯度</h4>
+<p>与 TensorFlow 和 PyTorch 不同，JAX 采用<em>元编程</em>方法进行梯度计算。元编程指的是<em>函数返回函数</em> ——你可以称之为“元函数”。实际上，JAX 允许你<em>将损失计算函数转换为梯度计算函数</em>。因此，在 JAX 中计算梯度是一个三步过程：</p>
+<ol type="1">
+<li>定义损失函数，<code>compute_loss()</code>。</li>
+<li>调用<code>grad_fn = jax.grad(compute_loss)</code>以检索梯度计算函数。</li>
+<li>调用此函数<code>grad_fn</code>以获取梯度值。</li>
+</ol>
+<p>损失函数应满足以下条件：</p>
+<ul>
+<li>它应该返回一个标量损失值。</li>
+<li>它的第一个参数（在下面的例子中，也是唯一的参数）应该包含我们需要计算梯度的状态数组。这个参数通常被命名为 <code>&lt;state&gt;</code> <code>state</code>。例如，第一个参数可以是单个数组、数组列表或数组字典。</li>
+</ul>
+<p>我们来看一个简单的例子。这是一个损失计算函数，它接受一个标量作为输入，<code>input_var</code>并返回一个标量损失值——即输入的平方：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">compute_loss</span>(<span class="params">input_var</span>):</span><br><span class="line">    <span class="keyword">return</span> jnp.square(input_var)</span><br></pre></td></tr></table></figure>
+<p>现在我们可以对这个损失函数调用 JAX 工具<code>jax.grad()</code>。它返回一个梯度计算函数——该函数接受与原始损失函数相同的参数，并返回损失函数相对于某个变量的梯度<code>input_var</code>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grad_fn = jax.grad(compute_loss)</span><br></pre></td></tr></table></figure>
+<p>一旦你获得了<code>grad_fn()</code>，就可以使用与相同的参数调用它<code>compute_loss()</code>，它将返回与第一个参数对应的梯度数组<code>compute_loss()</code>。在我们的例子中，第一个参数是一个单独的数组，因此<code>grad_fn()</code>它直接返回损失函数相对于该数组的梯度：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">input_var = jnp.array(<span class="number">3.0</span>)</span><br><span class="line">grad_of_loss_wrt_input_var = grad_fn(input_var)</span><br></pre></td></tr></table></figure>
+<h4 id="jax梯度计算最佳实践">JAX梯度计算最佳实践</h4>
+<p>目前为止一切顺利！元编程听起来很复杂，但其实很简单。不过，在实际应用中，还有一些其他因素需要考虑。我们一起来看看。</p>
+<h5 id="返还损失值">返还损失值</h5>
+<p>通常情况下，你需要的不仅仅是梯度数组，还需要损失值。在函数外部独立地重新计算损失值效率很低<code>grad_fn()</code>，因此，你可以配置函数<code>grad_fn()</code>使其同时返回损失值。这可以通过使用 JAX 工具 <code>jax.value_and_grad()</code>而不是函数来实现<code>jax.grad()</code>。它的工作方式相同，但返回的是一个元组，其中第一个元素是损失值，第二个元素是梯度：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">grad_fn = jax.value_and_grad(compute_loss)</span><br><span class="line">output, grad_of_loss_wrt_input_var = grad_fn(input_var)</span><br></pre></td></tr></table></figure>
+<h5 id="求复杂函数的梯度">求复杂函数的梯度</h5>
+<p>那么，如果你需要计算多个变量的梯度呢？如果你的<code>compute_loss()</code>函数有多个输入呢？</p>
+<p>假设你的状态包含三个变量，分别为<code>a</code>x、<code>b</code>y 和<code>c</code>y'，损失函数有两个输入，分别为 x'<code>x</code>和 y <code>y</code>''。你可以这样构建它：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># state contains a, b, and c. It must be the first argument.</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">compute_loss</span>(<span class="params">state, x, y</span>):</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">return</span> loss</span><br><span class="line"></span><br><span class="line">grad_fn = jax.value_and_grad(compute_loss)</span><br><span class="line">state = (a, b, c)</span><br><span class="line"><span class="comment"># grads_of_loss_wrt_state has the same structure as state.</span></span><br><span class="line">loss, grads_of_loss_wrt_state = grad_fn(state, x, y)</span><br></pre></td></tr></table></figure>
+<p>请注意，它<code>state</code>不一定是元组——它可以是字典、列表，或者任何由元组、字典和列表嵌套而成的结构。在 JAX 术语中，这种嵌套结构被称为<em>树</em>。</p>
+<h5 id="返回辅助输出">返回辅助输出</h5>
+<p>最后，如果你的<code>compute_loss()</code>函数需要返回的不仅仅是损失值呢？假设你想返回一个<code>output</code>作为损失计算副产品而得到的额外值，该如何获取呢？</p>
+<p>你可以使用以下<code>has_aux</code>论点：</p>
+<ol type="1">
+<li>修改损失函数，使其返回一个元组，其中第一个元素是损失，第二个元素是你的额外输出。</li>
+<li>将参数传递<code>has_aux=True</code>给函数<code>value_and_grad()</code>。这告诉函数<code>value_and_grad()</code>不仅返回梯度，还要返回函数的“辅助”输出<code>compute_loss()</code>，如下所示：</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">compute_loss</span>(<span class="params">state, x, y</span>):</span><br><span class="line">    ...</span><br><span class="line">    <span class="comment"># Returns a tuple</span></span><br><span class="line">    <span class="keyword">return</span> loss, output</span><br><span class="line"></span><br><span class="line"><span class="comment"># Passes has_aux=True here</span></span><br><span class="line">grad_fn = jax.value_and_grad(compute_loss, has_aux=<span class="literal">True</span>)</span><br><span class="line"><span class="comment"># Gets back a nested tuple</span></span><br><span class="line">loss, (grads_of_loss_wrt_state, output) = grad_fn(state, x, y)</span><br></pre></td></tr></table></figure>
+<p>诚然，事情现在确实变得相当复杂了。不过别担心，这已经是 JAX 最难的部分了！相比之下，其他部分都简单得多。</p>
+<h4 id="使用-jax.jit-加速-jax-函数">使用 <span class="citation" data-cites="jax.jit">@jax.jit</span> 加速 JAX 函数</h4>
+<p>还有一点。作为 JAX 用户，您会经常使用<code>@jax.jit</code>装饰器，它的行为与装饰器完全相同<code>@tf.function(jit_compile=True)</code>。它将任何无状态的 JAX 函数转换为 XLA 编译的代码片段，通常可以显著提高执行速度：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@jax.jit</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">dense</span>(<span class="params">inputs, W, b</span>):</span><br><span class="line">    <span class="keyword">return</span> jax.nn.relu(jnp.matmul(inputs, W) + b)</span><br></pre></td></tr></table></figure>
+<p>请注意，您只能装饰无状态函数——任何由该函数更新的张量都应该是其返回值的一部分。</p>
+<h3 id="一个完整的示例纯-jax-中的线性分类器">一个完整的示例：纯 JAX 中的线性分类器</h3>
+<p>现在你已经掌握了足够的 JAX 知识，可以编写我们线性分类器示例的 JAX 版本了。它与你已经看到的 TensorFlow 和 PyTorch 版本有两个主要区别：</p>
+<ul>
+<li>我们创建的所有函数都将是<em>无状态的</em>。这意味着状态（数组<code>W</code>和<code>b</code>）将作为函数参数提供，如果函数修改了状态，则函数将返回状态的新值。</li>
+<li>使用 JAX 工具计算梯度<code>value_and_grad()</code>。</li>
+</ul>
+<p>我们开始吧。模型函数和均方误差函数应该看起来很熟悉：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">model</span>(<span class="params">inputs, W, b</span>):</span><br><span class="line">    <span class="keyword">return</span> jnp.matmul(inputs, W) + b</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">mean_squared_error</span>(<span class="params">targets, predictions</span>):</span><br><span class="line">    per_sample_losses = jnp.square(targets - predictions)</span><br><span class="line">    <span class="keyword">return</span> jnp.mean(per_sample_losses)</span><br></pre></td></tr></table></figure>
+<p>为了计算梯度，我们需要将损失计算封装在一个<code>compute_loss()</code>函数中。该函数返回总损失值（标量），<code>state</code>其第一个参数是一个元组，其中包含我们需要计算梯度的所有张量：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">compute_loss</span>(<span class="params">state, inputs, targets</span>):</span><br><span class="line">    W, b = state</span><br><span class="line">    predictions = model(inputs, W, b)</span><br><span class="line">    loss = mean_squared_error(targets, predictions)</span><br><span class="line">    <span class="keyword">return</span> loss</span><br></pre></td></tr></table></figure>
+<p>调用<code>jax.value_and_grad()</code>此函数会得到一个新函数，其参数与 相同<code>compute_loss</code>，该函数返回损失函数以及损失函数相对于 元素的梯度<code>state</code>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grad_fn = jax.value_and_grad(compute_loss)</span><br></pre></td></tr></table></figure>
+<p>接下来，我们可以设置训练步骤函数。它看起来很简单。请注意，与 TensorFlow 和 PyTorch 中的对应函数不同，它必须是无状态的，因此必须返回张量的更新<code>W</code>值<code>b</code> ：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">learning_rate = <span class="number">0.1</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># We use the jax.jit decorator to take advantage of XLA compilation.</span></span><br><span class="line"><span class="meta">@jax.jit</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">training_step</span>(<span class="params">inputs, targets, W, b</span>):</span><br><span class="line">    <span class="comment"># Computes the forward pass and backward pass in one go</span></span><br><span class="line">    loss, grads = grad_fn((W, b), inputs, targets)</span><br><span class="line">    grad_wrt_W, grad_wrt_b = grads</span><br><span class="line">    <span class="comment"># Updates W and b</span></span><br><span class="line">    W = W - grad_wrt_W * learning_rate</span><br><span class="line">    b = b - grad_wrt_b * learning_rate</span><br><span class="line">    <span class="comment"># Make sure to return the new values of W and b in addition to the</span></span><br><span class="line">    <span class="comment"># loss!</span></span><br><span class="line">    <span class="keyword">return</span> loss, W, b</span><br></pre></td></tr></table></figure>
+<p>因为在我们的示例中，我们不会改变该值<code>learning_rate</code>，所以我们可以将其视为函数本身的一部分，而不是模型的状态。如果我们想在训练过程中修改学习率，我们也需要将其传递给该函数。</p>
+<p>最后，我们准备运行完整的训练循环。我们初始化 <code></code>W<code>a</code> 和 <code>b</code> <code>b</code>，并通过无状态调用 <code>update</code> 函数反复更新它们<code>training_step()</code>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">input_dim = <span class="number">2</span></span><br><span class="line">output_dim = <span class="number">1</span></span><br><span class="line"></span><br><span class="line">W = jax.numpy.array(np.random.uniform(size=(input_dim, output_dim)))</span><br><span class="line">b = jax.numpy.array(np.zeros(shape=(output_dim,)))</span><br><span class="line">state = (W, b)</span><br><span class="line"><span class="keyword">for</span> step <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">40</span>):</span><br><span class="line">    loss, W, b = training_step(inputs, targets, W, b)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;Loss at step <span class="subst">&#123;step&#125;</span>: <span class="subst">&#123;loss:<span class="number">.4</span>f&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p>搞定！现在你已经可以用 JAX 编写自定义训练循环了。</p>
+<h3 id="jax-方法的独特之处">JAX 方法的独特之处</h3>
+<p>JAX 在现代机器学习框架中独树一帜的主要特点在于其函数式、无状态的设计理念。虽然这种理念乍看之下可能会带来一些不便，但它恰恰释放了 JAX 的强大功能——能够编译成速度极快的代码，并可扩展到任意规模的模型和任意数量的设备。</p>
+<p>JAX有很多值得称道的地方：</p>
+<ul>
+<li>它速度很快。对于大多数模型而言，它是你目前为止见过的所有框架中最快的。</li>
+<li>它的数值 API 与 NumPy 完全一致，因此学习起来很愉快。</li>
+<li>它最适合在 TPU 上训练模型，因为它从一开始就是为 XLA 和 TPU 开发的。</li>
+</ul>
+<p>使用 JAX 也可能给开发人员带来一些不便：</p>
+<ul>
+<li>与纯粹的立即执行相比，它使用元编程和编译会使调试变得更加困难。</li>
+<li>与 TensorFlow 或 PyTorch 相比，底层训练循环往往更加冗长且更难编写。</li>
+</ul>
+<p>至此，您已经掌握了 TensorFlow、PyTorch 和 JAX 的基础知识，可以使用这些框架从零开始实现一个基本的线性分类器。这为您打下了坚实的基础。现在是时候迈向更高效的深度学习之路：Keras API。</p>
+<h2 id="keras简介">Keras简介</h2>
+<p>Keras 是一个用于 Python 的深度学习 API，它提供了一种便捷的方式来定义和训练任何类型的深度学习模型。它于 2015 年 3 月发布，v2 版本于 2017 年发布，v3 版本于 2023 年发布。</p>
+<p>Keras 的用户群体十分广泛，涵盖了从初创公司到大型企业的学术研究人员、工程师和数据科学家，到研究生和业余爱好者。谷歌、Netflix、Uber、YouTube、欧洲核子研究中心 (CERN)、美国国家航空航天局 (NASA)、Yelp、Instacart、Square、Waymo 等众多知名企业，以及成千上万家规模较小的组织都在使用 Keras 来解决各行各业的各种问题。你的 YouTube 推荐视频就源自 Keras 模型。Waymo 的自动驾驶汽车也依靠 Keras 模型来处理传感器数据。此外，Keras 还是机器学习竞赛网站 Kaggle 上的热门框架。</p>
+<p>由于 Keras 的用户群体十分广泛，它不会强迫你遵循单一的“正确”模型构建和训练方法。相反，它支持从高层到底层的各种工作流程，以满足不同用户的需求。例如，你可以使用多种方法来构建模型，也可以使用多种方法来训练模型，每种方法都代表着可用性和灵活性之间的一种权衡。在第 7 章中，我们将详细回顾这些工作流程中的大部分。</p>
+<h3 id="keras入门">Keras入门</h3>
+<p>在开始编写 Keras 代码之前，在导入库之前设置库时需要考虑一些事项。</p>
+<h4 id="选择后端框架">选择后端框架</h4>
+<p>Keras 可以与 JAX、TensorFlow 或 PyTorch 结合使用。它们是 Keras 的“后端框架”。通过这些后端框架，Keras 可以运行在不同类型的硬件上（参见图 3.4）——GPU、TPU 或普通 CPU——可以无缝扩展到数千台机器，并可以部署到各种平台上。</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/keras_and_backends.7fcf768f.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#figure-3-4">图 3.4</a>：Keras 及其后端。后端是一个底层张量计算平台；Keras 是一个高级深度学习 API。</p>
+<p><em>后端框架是可插拔的：编写了一些 Keras 代码后，</em>您可以切换到不同的后端框架 。您不会被锁定在单一框架和生态系统中——您可以根据当前需求将模型从 JAX 迁移到 TensorFlow 或 PyTorch。例如，开发 Keras 模型时，您可以使用 PyTorch 进行调试，使用 JAX 在 TPU 上进行训练以获得最高效率，最后使用 TensorFlow 生态系统中优秀的工具进行推理。</p>
+<p>Keras 目前的默认后端是 TensorFlow，因此如果您<code>import keras</code>在一个全新的环境中运行 Keras，而没有进行任何配置，那么您将使用 TensorFlow。有两种方法可以选择不同的后端：</p>
+<ul>
+<li>设置环境变量<code>KERAS_BACKEND</code>。在启动<code>python</code>REPL 之前，您可以运行以下 shell 命令来使用 JAX 作为 Keras 后端：<code>export KERAS_BACKEND=jax</code>。或者，您可以将以下代码片段添加到 Python 文件或 notebook 的顶部（请注意，它必须放在第一个 <code>&lt;script&gt;</code> 标签之前<code>import keras</code>）：</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line"><span class="comment"># Sets the environment variable from within the Python runtime</span></span><br><span class="line">os.environ[<span class="string">&quot;KERAS_BACKEND&quot;</span>] = <span class="string">&quot;jax&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Only then should you import Keras.</span></span><br><span class="line"><span class="keyword">import</span> keras</span><br></pre></td></tr></table></figure>
+<ul>
+<li>编辑本地 Keras 配置文件<code>~/.keras/keras.json</code>。如果您之前已经导入过 Keras，则该文件已使用默认设置创建。您可以使用任何文本编辑器打开并修改它——这是一个易于阅读的 JSON 文件。它应该如下所示：</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="comment"># Default floating-point precision. It should typically not be</span></span><br><span class="line">    <span class="comment"># changed.</span></span><br><span class="line">    <span class="string">&quot;floatx&quot;</span>: <span class="string">&quot;float32&quot;</span>,</span><br><span class="line">    <span class="comment"># Default numerical fuzzing factor. It should typically not be</span></span><br><span class="line">    <span class="comment"># changed.</span></span><br><span class="line">    <span class="string">&quot;epsilon&quot;</span>: <span class="number">1e-07</span>,</span><br><span class="line">    <span class="comment"># Change &quot;tensorflow&quot; to &quot;jax&quot; or &quot;torch.&quot;</span></span><br><span class="line">    <span class="string">&quot;backend&quot;</span>: <span class="string">&quot;tensorflow&quot;</span>,</span><br><span class="line">    <span class="comment"># This is the default image layout. We&#x27;ll talk about this in</span></span><br><span class="line">    <span class="comment"># chapter 8.</span></span><br><span class="line">    <span class="string">&quot;image_data_format&quot;</span>: <span class="string">&quot;channels_last&quot;</span>,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>配置 Keras 后端时，应该使用字符串 <code></code>"torch"<code>&lt;PyTorch&gt;</code> 来引用 PyTorch 后端，而不是字符串 <code>&lt;PyTorch&gt;</code> <code>"pytorch"</code>，因为后者无效。这是因为 PyTorch 包名是<code>&lt;PyTorch&gt;</code>torch<code>（如 `&lt;PyTorch&gt;</code>import torch<code>或</code><PyTorch> `pip install torch``）。</p>
+<p>现在，你可能会问，我应该选择哪个后端？这完全取决于你的个人选择：本书其余部分的所有 Keras 代码示例都兼容这三种后端。如果需要特定后端的代码（例如在第 7 章中），我会向你展示所有三个版本——TensorFlow、PyTorch 和 JAX。如果你没有特别的后端偏好，我个人推荐 JAX。它通常是性能最高的后端。</p>
+<p>后端配置完成后，就可以开始构建和训练 Keras 模型了。让我们来看一下。</p>
+<h3 id="层深度学习的构建模块">层：深度学习的构建模块</h3>
+<p>神经网络的基本数据结构是<em>层</em>，我们在第二章已经介绍过。层是一个数据处理模块，它接收一个或多个张量作为输入，并输出一个或多个张量。有些层是无状态的，但更常见的是具有状态的层：层权<em>重</em>，即通过随机梯度下降法学习到的一个或多个张量，它们共同包含了网络的<em>知识</em>。</p>
+<p>不同类型的层适用于不同的张量格式和不同的数据处理类型。例如，简单的矢量数据（存储在形状为 的二维张量中<code>(samples, features)</code>）通常由 <em>密集连接</em>层（也称为<em>全连接</em>层 或<em>密集</em>层， <code>Dense</code>Keras 中的类）处理。序列数据（存储在形状为 的三维张量中<code>(samples, timesteps, features)</code>）通常由 <em>循环</em>层（例如<code>LSTM</code>层）或一维卷积层处理<code>Conv1D</code>。图像数据（存储在秩为 4 的张量中）通常由二维卷积层处理<code>Conv2D</code>。</p>
+<p>你可以把层想象成深度学习的乐高积木，Keras 明确地运用了这种比喻。在 Keras 中构建深度学习模型，就是通过将兼容的层拼接在一起，形成有用的数据转换管道。</p>
+<h4 id="layerkeras-中的基础类"><code>Layer</code>Keras 中的基础类</h4>
+<p>一个简单的 API 应该有一个统一的抽象层，所有功能都围绕它展开。在 Keras 中，这个抽象层就是<code>Layer</code>类。Keras 中的一切要么是类<code>Layer</code>，要么是与类紧密交互的对象<code>Layer</code>。</p>
+<p>A<code>Layer</code>是一个对象，它封装了一些状态（权重）和一些计算（前向传播）。权重通常在 <code>a</code> 中定义<code>build()</code>（尽管它们也可以在构造函数中创建<code>__init__()</code>），而计算则在 <code></code>call()<code>c</code> 方法中定义。</p>
+<p>在上一章中，我们实现了一个<code>NaiveDense</code>包含两个权重的类<code>W</code>，<code>b</code>并应用了计算 <code>output = activation(matmul(input, W) + b)</code>。下面是同一层在 Keras 中的实现方式。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> keras</span><br><span class="line"></span><br><span class="line"><span class="comment"># All Keras layers inherit from the base Layer class.</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">SimpleDense</span>(keras.Layer):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, units, activation=<span class="literal">None</span></span>):</span><br><span class="line">        <span class="built_in">super</span>().__init__()</span><br><span class="line">        self.units = units</span><br><span class="line">        self.activation = activation</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Weight creation takes place in the build() method.</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">build</span>(<span class="params">self, input_shape</span>):</span><br><span class="line">        batch_dim, input_dim = input_shape</span><br><span class="line">        <span class="comment"># add_weight is a shortcut method for creating weights. It&#x27;s</span></span><br><span class="line">        <span class="comment"># also possible to create standalone variables and assign them</span></span><br><span class="line">        <span class="comment"># as layer attributes, like self.W = keras.Variable(shape=...,</span></span><br><span class="line">        <span class="comment"># initializer=...).</span></span><br><span class="line">        self.W = self.add_weight(</span><br><span class="line">            shape=(input_dim, self.units), initializer=<span class="string">&quot;random_normal&quot;</span></span><br><span class="line">        )</span><br><span class="line">        self.b = self.add_weight(shape=(self.units,), initializer=<span class="string">&quot;zeros&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># We define the forward pass computation in the call() method.</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">call</span>(<span class="params">self, inputs</span>):</span><br><span class="line">        y = keras.ops.matmul(inputs, self.W) + self.b</span><br><span class="line">        <span class="keyword">if</span> self.activation <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">            y = self.activation(y)</span><br><span class="line">        <span class="keyword">return</span> y</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#listing-3-33">清单 3.33</a>：在 Keras 中从头开始创建一个简单的密集层</p>
+<p>下一节我们将详细介绍这些方法<code>build()</code>及其 用途<code>call()</code>。如果您现在还不能完全理解，请不要担心！</p>
+<p>一旦实例化，像这样的层就可以像函数一样使用，以张量作为输入：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; # Instantiates our layer, defined previously</span><br><span class="line">&gt;&gt;&gt; my_dense = SimpleDense(units=32, activation=keras.ops.relu)</span><br><span class="line">&gt;&gt;&gt; # Creates some test inputs</span><br><span class="line">&gt;&gt;&gt; input_tensor = keras.ops.ones(shape=(2, 784))</span><br><span class="line">&gt;&gt;&gt; # Calls the layer on the inputs, just like a function</span><br><span class="line">&gt;&gt;&gt; output_tensor = my_dense(input_tensor)</span><br><span class="line">&gt;&gt;&gt; print(output_tensor.shape)</span><br><span class="line">(2, 32)</span><br></pre></td></tr></table></figure>
+<p>现在，你可能在想，既然我们最终是通过直接调用层（也就是使用其方法）来使用它，为什么还要实现<code>call()</code> <code>and</code> 呢？这是因为我们希望能够即时创建状态。让我们看看它是如何工作的。<code>build()``__call__</code></p>
+<h4 id="自动形状推断动态构建图层">自动形状推断：动态构建图层</h4>
+<p>就像乐高积木一样，你只能将<em>兼容的</em>图层“拼接”在一起。这里的<em>图层兼容性</em>特指每个图层只能接受特定形状的输入张量，并返回特定形状的输出张量。请看以下示例：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> layers</span><br><span class="line"></span><br><span class="line"><span class="comment"># A dense layer with 32 output units</span></span><br><span class="line">layer = layers.Dense(<span class="number">32</span>, activation=<span class="string">&quot;relu&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p>该层将返回一个非批次维度为 32 的张量。它只能连接到以 32 维向量作为输入的下游层。</p>
+<p>使用 Keras 时，大多数情况下您无需担心尺寸兼容性问题，因为添加到模型中的层会根据输入数据的形状动态构建。例如，假设您编写了以下代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> models</span><br><span class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> layers</span><br><span class="line"></span><br><span class="line">model = models.Sequential(</span><br><span class="line">    [</span><br><span class="line">        layers.Dense(<span class="number">32</span>, activation=<span class="string">&quot;relu&quot;</span>),</span><br><span class="line">        layers.Dense(<span class="number">32</span>),</span><br><span class="line">    ]</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>这些层没有接收到任何关于输入形状的信息。相反，它们会自动推断出输入形状，即它们看到的第一个输入的形状。</p>
+<p>在我们第二章实现的简化版图层中<code>Dense</code>，为了创建其权重，我们必须显式地将图层的输入大小传递给构造函数。这并非理想方案，因为这会导致模型看起来像这样：每个新图层都需要知道前一个图层的形状。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">model = NaiveSequential(</span><br><span class="line">    [</span><br><span class="line">        NaiveDense(input_size=<span class="number">784</span>, output_size=<span class="number">32</span>, activation=<span class="string">&quot;relu&quot;</span>),</span><br><span class="line">        NaiveDense(input_size=<span class="number">32</span>, output_size=<span class="number">64</span>, activation=<span class="string">&quot;relu&quot;</span>),</span><br><span class="line">        NaiveDense(input_size=<span class="number">64</span>, output_size=<span class="number">32</span>, activation=<span class="string">&quot;relu&quot;</span>),</span><br><span class="line">        NaiveDense(input_size=<span class="number">32</span>, output_size=<span class="number">10</span>, activation=<span class="string">&quot;softmax&quot;</span>),</span><br><span class="line">    ]</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>如果某个层用于生成输出形状的规则很复杂，情况会更糟。例如，如果我们的层返回形状为“？”的输出，该怎么办 <code>(batch, input_size * 2 if input_size % 2 == 0 else input_size * 3)</code>？</p>
+<p>如果我们把我们的<code>NaiveDense</code>层重新实现为能够自动进行形状推断的 Keras 层，它看起来会像该<code>SimpleDense</code>层，以及它的<code>build()``and``call()</code>方法。</p>
+<p>在 Keras 中<code>SimpleDense</code>，我们不再像之前的例子那样在构造函数中创建权重。相反，我们在一个专门的状态创建方法中创建权重<code>build()</code>，该方法接收层遇到的第一个输入形状作为参数。该<code>build()</code>方法会在层首次被调用时（通过其 <code></code><strong>call</strong>()<code>setState</code> 方法）自动调用。事实上，这就是我们为什么要在单独的方法中定义计算，<code>call()</code>而不是<code>__call__()</code>直接在 <code>setState</code> 方法中定义的原因！<code>__call__()</code>基础层的 <code>setState</code> 方法示意图如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">__call__</span>(<span class="params">self, inputs</span>):</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> self.built:</span><br><span class="line">        self.build(inputs.shape)</span><br><span class="line">        self.built = <span class="literal">True</span></span><br><span class="line">    <span class="keyword">return</span> self.call(inputs)</span><br></pre></td></tr></table></figure>
+<p>借助自动形状推断功能，我们之前的例子变得简单明了：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">model = keras.Sequential(</span><br><span class="line">    [</span><br><span class="line">        SimpleDense(<span class="number">32</span>, activation=<span class="string">&quot;relu&quot;</span>),</span><br><span class="line">        SimpleDense(<span class="number">64</span>, activation=<span class="string">&quot;relu&quot;</span>),</span><br><span class="line">        SimpleDense(<span class="number">32</span>, activation=<span class="string">&quot;relu&quot;</span>),</span><br><span class="line">        SimpleDense(<span class="number">10</span>, activation=<span class="string">&quot;softmax&quot;</span>),</span><br><span class="line">    ]</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>请注意，自动形状推断并非该类方法处理的唯一任务<code>Layer</code> 。<code>__call__()</code>它还负责许多其他事项，特别是<em>即时</em>执行和<em>图</em>执行之间的路由，以及输入掩码（我们将在第 14 章中介绍）。现在，您只需记住：在实现您自己的层时，请将前向传播放在该<code>call()</code>方法中。</p>
+<h3 id="从图层到模型">从图层到模型</h3>
+<p>深度学习模型是一个由多个层组成的图。在 Keras 中，这被称为 <code></code>Model<code>Map</code> 类。目前，你只接触过<code>Sequential``Map</code> 模型（<code>Map</code> 的一个子类<code>Model</code>），它们只是简单的层堆叠，将单个输入映射到单个输出。但随着学习的深入，你将接触到更多种类的网络拓扑结构。一些常见的拓扑结构包括：</p>
+<ul>
+<li>双分支网络</li>
+<li>多头网络</li>
+<li>残余连接</li>
+</ul>
+<p>网络拓扑结构可能非常复杂。例如，图 3.5 展示了 Transformer 的层拓扑图，Transformer 是一种常见的用于处理文本数据的架构。</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/transformer.cb3f137f.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#figure-3-5">图 3.5</a>：Transformer 架构。这里涉及的内容很多。在接下来的几章中，你将逐步理解它（在第 15 章）。</p>
+<p>在 Keras 中构建此类模型通常有两种方法：您可以直接继承该类<code>Model</code>，也可以使用函数式 API，后者可以让您用更少的代码实现更多功能。我们将在第 7 章介绍这两种方法。</p>
+<p>模型的拓扑结构定义了一个<em>假设空间</em>。你可能还记得，在第一章中，我们将机器学习描述为“在预定义的 <em>可能性空间</em>内，利用反馈信号的指导，寻找输入数据的有用表示”。通过选择网络拓扑结构，你可以将可能性空间（假设空间）限制在一系列特定的张量运算范围内，从而将输入数据映射到输出数据。接下来，你需要寻找的是一组合适的权重张量值，这些权重张量用于这些张量运算。</p>
+<p>要从数据中学习，就必须对数据做出假设。这些假设决定了我们可以学习到什么。因此，假设空间的结构——也就是模型的架构——至关重要。它编码了你对问题的假设，也就是模型初始所依赖的先验知识。例如，如果你正在处理一个二分类问题，而模型只有一层，<code>Dense</code>且没有激活函数（纯仿射变换），那么你就假设这两个类别是线性可分的。</p>
+<p>选择合适的网络架构与其说是一门科学，不如说是一门艺术。虽然有一些最佳实践和原则可以借鉴，但只有实践才能帮助你成为一名合格的神经网络架构师。接下来的几章将不仅教授你构建神经网络的具体原则，还会帮助你培养直觉，判断哪些方法适用于特定问题，哪些方法无效。你将对不同类型的模型架构适用于哪些问题、如何在实践中构建这些网络、如何选择合适的学习配置以及如何调整模型直到获得预期结果等方面建立起扎实的直觉。</p>
+<h3 id="编译步骤配置学习过程">“编译”步骤：配置学习过程</h3>
+<p>模型架构确定后，您还需要选择以下三件事：</p>
+<ul>
+<li><p><em>损失函数（目标函数）</em> ——训练过程中需要最小化的量。它代表了当前任务的成功程度。</p></li>
+<li><p><em>优化器</em>  ——根据损失函数确定网络的更新方式。它实现了随机梯度下降（SGD）的特定变体。</p></li>
+<li><p><em>指标</em>——指在训练和验证过程中需要监控的成功衡量标准，例如分类准确率。与损失函数不同，训练过程不会直接针对这些指标进行优化。因此，指标无需是可微的。</p></li>
+</ul>
+<p>选定损失函数、优化器和指标后，就可以使用内置的 <code>train``compile()</code>和<code>fit()``train</code> 方法开始训练模型了。或者，你也可以编写自定义训练循环——我们将在第 7 章介绍如何操作。但这需要更多的工作！现在，让我们先来看看 <code>train</code> 和 <code></code>compile()<code>train</code>方法<code>fit()</code>。</p>
+<p>该<code>compile()</code>方法用于配置训练过程——您在第二章的第一个神经网络示例中已经接触过它。它接受以下参数：<code>a</code> <code>optimizer</code>、<code>loss``b</code> 和<code>metrics``c</code>（一个列表）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Defines a linear classifier</span></span><br><span class="line">model = keras.Sequential([keras.layers.Dense(<span class="number">1</span>)])</span><br><span class="line">model.<span class="built_in">compile</span>(</span><br><span class="line">    <span class="comment"># Specifies the optimizer by name: RMSprop (it&#x27;s case-insensitive)</span></span><br><span class="line">    optimizer=<span class="string">&quot;rmsprop&quot;</span>,</span><br><span class="line">    <span class="comment"># Specifies the loss by name: mean squared error</span></span><br><span class="line">    loss=<span class="string">&quot;mean_squared_error&quot;</span>,</span><br><span class="line">    <span class="comment"># Specifies a list of metrics: in this case, only accuracy</span></span><br><span class="line">    metrics=[<span class="string">&quot;accuracy&quot;</span>],</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>在之前的调用中<code>compile()</code>，我们将优化器、损失和指标作为字符串传递（例如 <code>$($($($($($($($($($($($($($($</code>"rmsprop"<code>(</code>"rmsprop"<code>)</code>keras.optimizers.RMSprop()`...</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">model.<span class="built_in">compile</span>(</span><br><span class="line">    optimizer=keras.optimizers.RMSprop(),</span><br><span class="line">    loss=keras.losses.MeanSquaredError(),</span><br><span class="line">    metrics=[keras.metrics.BinaryAccuracy()],</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>如果您想传递自定义损失或指标，或者如果您想进一步配置正在使用的对象（例如，通过<code>learning_rate</code>向优化器传递参数），这将非常有用：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">model.<span class="built_in">compile</span>(</span><br><span class="line">    optimizer=keras.optimizers.RMSprop(learning_rate=<span class="number">1e-4</span>),</span><br><span class="line">    loss=my_custom_loss,</span><br><span class="line">    metrics=[my_custom_metric_1, my_custom_metric_2],</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>在第 7 章中，我们将介绍如何创建自定义损失和指标。一般来说，您无需从头开始创建自己的损失、指标或优化器，因为 Keras 提供了丰富的内置选项，很可能包含您所需的一切：</p>
+<ul>
+<li><em>优化器</em>
+<ul>
+<li><code>SGD()</code>（无论是否具有动量）</li>
+<li><code>RMSprop()</code></li>
+<li><code>Adam()</code></li>
+<li>ETC。</li>
+</ul></li>
+<li><em>损失</em>
+<ul>
+<li><code>CategoricalCrossentropy()</code></li>
+<li><code>SparseCategoricalCrossentropy()</code></li>
+<li><code>BinaryCrossentropy()</code></li>
+<li><code>MeanSquaredError()</code></li>
+<li><code>KLDivergence()</code></li>
+<li><code>CosineSimilarity()</code></li>
+<li>ETC。</li>
+</ul></li>
+<li><em>指标</em>
+<ul>
+<li><code>CategoricalAccuracy()</code></li>
+<li><code>SparseCategoricalAccuracy()</code></li>
+<li><code>BinaryAccuracy()</code></li>
+<li><code>AUC()</code></li>
+<li><code>Precision()</code></li>
+<li><code>Recall()</code></li>
+<li>ETC。</li>
+</ul></li>
+</ul>
+<p>在本书中，您将看到这些选项中的许多具体应用。</p>
+<h3 id="选择损失函数">选择损失函数</h3>
+<p>为合适的问题选择合适的损失函数至关重要：你的神经网络会不惜一切代价来最小化损失。因此，如果目标函数与当前任务的成功率没有完全相关性，你的神经网络最终可能会做出一些你意想不到的事情。想象一下，一个愚蠢的、无所不能的人工智能，通过随机梯度下降法（SGD）训练，并被赋予了这样一个糟糕的目标函数：“最大化所有活着的人的平均福祉”。为了简化任务，这个人工智能可能会选择杀死除少数人以外的所有人，然后专注于提高剩余人的福祉，因为平均福祉不受剩余人类数量的影响。这可能并非你的本意！请记住，你构建的所有神经网络都会毫不留情地降低损失函数值，所以务必谨慎选择目标函数，否则你将不得不面对意想不到的副作用。</p>
+<p>幸运的是，对于分类、回归和序列预测等常见问题，有一些简单的指导原则可以帮助你选择合适的损失函数。例如，对于二分类问题，你可以使用二元交叉熵损失函数；对于多分类问题，你可以使用类别交叉熵损失函数，以此类推。只有在研究真正全新的问题时，你才需要开发自己的损失函数。在接下来的几章中，我们将详细介绍针对各种常见任务应该选择哪些损失函数。</p>
+<h3 id="理解拟合方法">理解拟合方法</h3>
+<p>接下来<code>compile()</code>是<code>fit()</code>。该<code>fit</code>方法实现了训练循环本身。它的关键参数是</p>
+<ul>
+<li>用于训练的数据（输入和目标）。通常情况下<em>，</em>数据会以 NumPy 数组或 TensorFlow 对象的形式传递<code>Dataset</code>。您将<code>Dataset</code>在后续章节中了解更多关于 API 的信息。</li>
+<li>训练<em>轮</em>数：训练循环应该对传递的数据进行多少次迭代。</li>
+<li>小批量梯度下降的每个 epoch 中使用的批次大小：用于计算一次权重更新步骤的梯度的训练样本数量。</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">history = model.fit(</span><br><span class="line">    <span class="comment"># The input examples, as a NumPy array</span></span><br><span class="line">    inputs,</span><br><span class="line">    <span class="comment"># The corresponding training targets, as a NumPy array</span></span><br><span class="line">    targets,</span><br><span class="line">    <span class="comment"># The training loop will iterate over the data 5 times.</span></span><br><span class="line">    epochs=<span class="number">5</span>,</span><br><span class="line">    <span class="comment"># The training loop will iterate over the data in batches of 128</span></span><br><span class="line">    <span class="comment"># examples.</span></span><br><span class="line">    batch_size=<span class="number">128</span>,</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#listing-3-34">清单 3.34</a>：<code>fit</code>使用 NumPy 数据 调用</p>
+<p>该调用<code>fit</code>返回一个<code>History</code>对象。此对象包含一个<code>history</code>字段，该字段是一个字典，将键（例如<code>"loss"</code>特定指标名称）映射到其每个 epoch 的值列表：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; history.history</span><br><span class="line">&#123;&quot;binary_accuracy&quot;: [0.855, 0.9565, 0.9555, 0.95, 0.951],</span><br><span class="line"> &quot;loss&quot;: [0.6573270302042366,</span><br><span class="line">  0.07434618508815766,</span><br><span class="line">  0.07687718723714351,</span><br><span class="line">  0.07412414988875389,</span><br><span class="line">  0.07617757616937161]&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="监测损失和验证数据的指标">监测损失和验证数据的指标</h3>
+<p>机器学习的目标并非仅仅是获得在训练数据上表现良好的模型——这很容易，只需沿着梯度前进即可。其目标是获得在一般情况下表现良好的模型，尤其是在模型从未遇到过的数据点上。仅仅因为一个模型在其训练数据上表现良好，并不意味着它在从未见过的数据上也能表现出色！例如，你的模型最终可能只是<em>记住了</em>训练样本与其目标值之间的映射关系，这对于预测模型从未见过的数据的目标值毫无用处。我们将在第五章更详细地探讨这一点。</p>
+<p>为了密切关注模型在新数据上的表现，通常的做法是将一部分训练数据保留为“验证数据”：您不会使用这些数据训练模型，而是用它来计算损失值和指标值。您可以通过<code>validation_data</code>在 <code>.</code> 函数中使用 <code>validate</code> 参数来实现这一点<code>fit()</code>。与训练数据一样，验证数据可以作为 NumPy 数组或 TensorFlow 对象传递<code>Dataset</code>。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">model = keras.Sequential([keras.layers.Dense(<span class="number">1</span>)])</span><br><span class="line">model.<span class="built_in">compile</span>(</span><br><span class="line">    optimizer=keras.optimizers.RMSprop(learning_rate=<span class="number">0.1</span>),</span><br><span class="line">    loss=keras.losses.MeanSquaredError(),</span><br><span class="line">    metrics=[keras.metrics.BinaryAccuracy()],</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># To avoid having samples from only one class in the validation data,</span></span><br><span class="line"><span class="comment"># shuffles the inputs and targets using a random indices permutation</span></span><br><span class="line">indices_permutation = np.random.permutation(<span class="built_in">len</span>(inputs))</span><br><span class="line">shuffled_inputs = inputs[indices_permutation]</span><br><span class="line">shuffled_targets = targets[indices_permutation]</span><br><span class="line"></span><br><span class="line"><span class="comment"># Reserves 30% of the training inputs and targets for &quot;validation.&quot;</span></span><br><span class="line"><span class="comment"># (We&#x27;ll exclude these samples from training and reserve them to</span></span><br><span class="line"><span class="comment"># compute the &quot;validation loss&quot; and metrics).</span></span><br><span class="line">num_validation_samples = <span class="built_in">int</span>(<span class="number">0.3</span> * <span class="built_in">len</span>(inputs))</span><br><span class="line">val_inputs = shuffled_inputs[:num_validation_samples]</span><br><span class="line">val_targets = shuffled_targets[:num_validation_samples]</span><br><span class="line">training_inputs = shuffled_inputs[num_validation_samples:]</span><br><span class="line">training_targets = shuffled_targets[num_validation_samples:]</span><br><span class="line">model.fit(</span><br><span class="line">    <span class="comment"># Training data, used to update the weights of the model</span></span><br><span class="line">    training_inputs,</span><br><span class="line">    training_targets,</span><br><span class="line">    epochs=<span class="number">5</span>,</span><br><span class="line">    batch_size=<span class="number">16</span>,</span><br><span class="line">    <span class="comment"># Validation data, used only to monitor the &quot;validation loss&quot; and</span></span><br><span class="line">    <span class="comment"># metrics</span></span><br><span class="line">    validation_data=(val_inputs, val_targets),</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#listing-3-35">清单 3.35</a>：使用验证数据参数</p>
+<p>验证数据上的损失值称为 <em>验证损失</em>，以区别于<em>训练损失</em>。请注意，必须严格区分训练数据和验证数据：验证的目的是监控模型学习到的知识是否真正适用于新数据。如果模型在训练过程中已经接触过任何验证数据，则验证损失和相关指标将会出现偏差。</p>
+<p>如果想在训练完成后计算验证损失和指标，可以调用以下<code>evaluate</code>方法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">loss_and_metrics = model.evaluate(val_inputs, val_targets, batch_size=128)</span><br></pre></td></tr></table></figure>
+<p><code>evaluate()</code>它将以批次（大小为<code>batch_size</code>）的形式遍历传入的数据，并返回一个标量列表，其中第一个元素是验证损失，后续元素是验证指标。如果模型没有指标，则仅返回验证损失（而不是列表）。</p>
+<h3 id="推理训练后使用模型">推理：训练后使用模型</h3>
+<p>模型训练完成后，接下来需要用它来对新数据进行预测。这称为<em>推理</em>。一种简单的方法是直接对<code>__call__</code>模型进行如下操作：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Takes a NumPy array or a tensor for your current backend and returns</span></span><br><span class="line"><span class="comment"># a tensor for your current backend</span></span><br><span class="line">predictions = model(new_inputs)</span><br></pre></td></tr></table></figure>
+<p>但是，这将一次性处理所有输入<code>new_inputs</code>，如果您要查看大量数据，这可能不可行（特别是，它可能需要比您的 GPU 拥有的内存更多的内存）。</p>
+<p>更好的推理方法是使用该<code>predict()</code>方法。它会以小批量的方式迭代数据，并返回一个包含预测结果的 NumPy 数组。与之前的方法不同<code>__call__</code>，它还可以处理 TensorFlow<code>Dataset</code>对象：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Takes a NumPy array or a Dataset and returns a NumPy array</span></span><br><span class="line">predictions = model.predict(new_inputs, batch_size=<span class="number">128</span>)</span><br></pre></td></tr></table></figure>
+<p>例如，如果我们用<code>predict()</code>之前训练的线性模型对一些验证数据进行测试，我们会得到与模型对每个输入样本的预测相对应的标量分数：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; predictions = model.predict(val_inputs, batch_size=128)</span><br><span class="line">&gt;&gt;&gt; print(predictions[:10])</span><br><span class="line">[[0.3590725 ]</span><br><span class="line"> [0.82706255]</span><br><span class="line"> [0.74428225]</span><br><span class="line"> [0.682058  ]</span><br><span class="line"> [0.7312616 ]</span><br><span class="line"> [0.6059811 ]</span><br><span class="line"> [0.78046083]</span><br><span class="line"> [0.025846  ]</span><br><span class="line"> [0.16594526]</span><br><span class="line"> [0.72068727]]</span><br></pre></td></tr></table></figure>
+<p>目前，关于 Keras 模型你需要了解的就这些了。接下来，你将学习下一章，学习如何使用 Keras 解决实际的机器问题。</p>
+<h2 id="概括">概括</h2>
+<ul>
+<li>TensorFlow、PyTorch 和 JAX 是三种流行的底层数值计算和自动微分框架。它们各有各的实现方式、优势和劣势。</li>
+<li>Keras 是一个用于构建和训练神经网络的高级 API。它可以与 TensorFlow、PyTorch 或 JAX 一起使用——只需选择你最喜欢的后端即可。</li>
+<li>Keras 的核心类是层<code>Layer</code>。层封装了一些权重和一些计算。层被组装成模型。</li>
+<li>在开始训练模型之前，你需要选择一个优化器、一个损失函数和一些指标，这些可以通过该<code>model.compile()</code>方法指定。</li>
+<li>要训练模型，您可以使用该<code>fit()</code>方法，它会为您运行小批量梯度下降法。您还可以使用它来监控模型在验证数据上的损失和指标，验证数据是一组模型在训练过程中不会看到的输入数据。</li>
+<li>模型训练完成后，就可以使用该<code>model.predict()</code>方法对新的输入进行预测。</li>
+</ul>
+<h3 id="脚注">脚注</h3>
+<ol type="1">
+<li>R.E. Wengert，“一个简单的自动导数计算程序”，《ACM通讯》，第7卷第8期（1964年）。 [<a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#footnote-link-1">↩︎]</a></li>
+<li>请注意，PyTorch 的情况比较特殊：它主要是一个底层框架，但也包含自己的层和优化器。但是，如果您将 PyTorch 与 Keras 结合使用，则只会与 PyTorch 的底层 API（例如张量运算）进行交互。 [<a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter03_introduction-to-ml-frameworks/#footnote-link-2">↩︎]</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/02/17/2%E3%80%81%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/" rel="prev" title="《DEEP LEARNING with Python》第二章">
+                  <i class="fa fa-chevron-left"></i> 《DEEP LEARNING with Python》第二章
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/02/19/4%E3%80%81%E5%88%86%E7%B1%BB%E4%B8%8E%E5%9B%9E%E5%BD%92/" rel="next" title="《DEEP LEARNING with Python》第四章">
+                  《DEEP LEARNING with Python》第四章 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

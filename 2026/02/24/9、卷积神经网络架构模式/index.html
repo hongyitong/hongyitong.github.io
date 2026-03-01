@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"enable":true,"style":"tabs","active":"giscus","storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+
+
+    <meta name="description" content="第九章 卷积神经网络架构模式 运行代码 在 Colab 上运行 在 GitHub 上查看 内容模块化、层级结构和重用残余连接批量归一化深度可分离卷积组装完成：一个迷你版的Xception模型超越卷积：视觉变形概括 本章内容  模型架构的模块化-层次-重用公式 卷积神经网络构建标准最佳实践概述：残差连接、批量归一化和深度可分离卷积 计算机视觉模型的持续设计趋势  模型的“架构”是创建该模型时所有选择">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《DEEP LEARNING with Python》第九章">
+<meta property="og:url" content="http://hongyitong.github.io/2026/02/24/9%E3%80%81%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E6%9E%B6%E6%9E%84%E6%A8%A1%E5%BC%8F/index.html">
+<meta property="og:site_name" content="墨语浮生">
+<meta property="og:description" content="第九章 卷积神经网络架构模式 运行代码 在 Colab 上运行 在 GitHub 上查看 内容模块化、层级结构和重用残余连接批量归一化深度可分离卷积组装完成：一个迷你版的Xception模型超越卷积：视觉变形概括 本章内容  模型架构的模块化-层次-重用公式 卷积神经网络构建标准最佳实践概述：残差连接、批量归一化和深度可分离卷积 计算机视觉模型的持续设计趋势  模型的“架构”是创建该模型时所有选择">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/complex_systems.e89aaf78.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/xception_entry_flow_pyramid.4701a5de.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/residual_connection.0524fdc4.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/depthwise_separable_conv.5d1929bd.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/training-and-validation-xception-acc.967bf65c.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/training-and-validation-xception-loss.bc0f5982.png">
+<meta property="article:published_time" content="2026-02-23T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-03-01T03:56:10.918Z">
+<meta property="article:author" content="Rayman.hung">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/complex_systems.e89aaf78.png">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2026/02/24/9%E3%80%81%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E6%9E%B6%E6%9E%84%E6%A8%A1%E5%BC%8F/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2026/02/24/9%E3%80%81%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E6%9E%B6%E6%9E%84%E6%A8%A1%E5%BC%8F/","path":"2026/02/24/9、卷积神经网络架构模式/","title":"《DEEP LEARNING with Python》第九章"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>《DEEP LEARNING with Python》第九章 | 墨语浮生</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZXGEJDXQ33"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-ZXGEJDXQ33","only_pageview":false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?ff358b9c7e949787b074bfc9c8019a9d"></script>
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">墨语浮生</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E6%9E%B6%E6%9E%84%E6%A8%A1%E5%BC%8F"><span class="nav-text">卷积神经网络架构模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E4%BB%A3%E7%A0%81"><span class="nav-text">运行代码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E5%9D%97%E5%8C%96%E5%B1%82%E7%BA%A7%E7%BB%93%E6%9E%84%E5%92%8C%E9%87%8D%E7%94%A8"><span class="nav-text">模块化、层级结构和重用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AE%8B%E4%BD%99%E8%BF%9E%E6%8E%A5"><span class="nav-text">残余连接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%B9%E9%87%8F%E5%BD%92%E4%B8%80%E5%8C%96"><span class="nav-text">批量归一化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B7%B1%E5%BA%A6%E5%8F%AF%E5%88%86%E7%A6%BB%E5%8D%B7%E7%A7%AF"><span class="nav-text">深度可分离卷积</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%84%E8%A3%85%E5%AE%8C%E6%88%90%E4%B8%80%E4%B8%AA%E8%BF%B7%E4%BD%A0%E7%89%88%E7%9A%84xception%E6%A8%A1%E5%9E%8B"><span class="nav-text">组装完成：一个迷你版的Xception模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B6%85%E8%B6%8A%E5%8D%B7%E7%A7%AF%E8%A7%86%E8%A7%89%E5%8F%98%E5%BD%A2"><span class="nav-text">超越卷积：视觉变形</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E6%8B%AC"><span class="nav-text">概括</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%84%9A%E6%B3%A8"><span class="nav-text">脚注</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、心情记录</div>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/02/24/9%E3%80%81%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E6%9E%B6%E6%9E%84%E6%A8%A1%E5%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="《DEEP LEARNING with Python》第九章 | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《DEEP LEARNING with Python》第九章
+        </h1>
+
+        </h1>
+          
+             <p class="post-subtitle">卷积神经网络架构模式</p>
+          
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-02-24 00:00:00" itemprop="dateCreated datePublished" datetime="2026-02-24T00:00:00+08:00">2026-02-24</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>第九章</p>
+<h1 id="卷积神经网络架构模式">卷积神经网络架构模式</h1>
+<h3 id="运行代码">运行代码</h3>
+<p><a target="_blank" rel="noopener" href="https://colab.research.google.com/github/fchollet/deep-learning-with-python-notebooks/blob/master/chapter09_convnet-architecture-patterns.ipynb">在 Colab 上运行</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/fchollet/deep-learning-with-python-notebooks">在 GitHub 上查看</a></p>
+<p>内容<a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter09_convnet-architecture-patterns/#modularity-hierarchy-and-reuse">模块化、层级结构和重用</a><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter09_convnet-architecture-patterns/#residual-connections">残余连接</a><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter09_convnet-architecture-patterns/#batch-normalization">批量归一化</a><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter09_convnet-architecture-patterns/#depthwise-separable-convolutions">深度可分离卷积</a><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter09_convnet-architecture-patterns/#putting-it-together-a-mini-xception-like-model">组装完成：一个迷你版的Xception模型</a><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter09_convnet-architecture-patterns/#beyond-convolution-vision-transformers">超越卷积：视觉变形</a><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter09_convnet-architecture-patterns/#summary">概括</a></p>
+<p>本章内容</p>
+<ul>
+<li>模型架构的模块化-层次-重用公式</li>
+<li>卷积神经网络构建标准最佳实践概述：残差连接、批量归一化和深度可分离卷积</li>
+<li>计算机视觉模型的持续设计趋势</li>
+</ul>
+<p>模型的“架构”是创建该模型时所有选择的总和：使用哪些层、如何配置它们、以及如何连接它们。这些选择定义了模型的<em>假设空间</em>：梯度下降可以搜索的可能函数空间，由模型的权重参数化。与特征工程类似，一个好的假设空间编码了你对当前问题及其解决方案的<em>先验知识</em> 。例如，使用卷积层意味着你预先知道输入图像中存在的相关模式是平移不变的。为了有效地从数据中学习，你需要对你要寻找的内容做出假设。</p>
+<p>模型架构往往是成败的关键。如果架构选择不当，模型可能始终停留在次优指标，再多的训练数据也无济于事。反之，优秀的模型架构能够加速学习，使模型高效利用现有训练数据，从而减少对大型数据集的需求。好的模型架构能够<em>缩小搜索空间</em>，或者更<em>容易地收敛到搜索空间中的某个理想点</em>。与特征工程和数据管理一样，模型架构的核心在于 简化梯度下降<em>算法</em>的求解过程——要知道，梯度下降本身就是一个相当简单的搜索过程，因此它需要尽可能多的辅助手段。</p>
+<p>模型架构与其说是一门科学，不如说是一门艺术。经验丰富的机器学习工程师往往能够凭直觉在第一次尝试时就构建出高性能模型，而初学者却常常连一个能训练的模型都难以创建。这里的关键词是<em>“凭直觉</em>”：没有人能清晰地解释什么有效什么无效。专家们依靠模式匹配，而这种能力是通过大量的实践经验获得的。本书将帮助你培养自己的直觉。然而，这并非<em>完全</em>取决于直觉——其中并没有太多真正的科学原理，但就像任何工程学科一样，也存在一些最佳实践。</p>
+<p>在接下来的章节中，我们将回顾一些卷积神经网络（ConvNet）架构的最佳实践，特别是 <em>残差连接</em>、<em>批量归一化</em>和<em>可分离卷积</em>。一旦掌握了它们的使用方法，您就能构建高效的图像模型。我们将演示如何将它们应用于我们的猫狗分类问题。</p>
+<p>让我们从宏观角度来看：系统架构的模块化-层次-重用（MHR）公式。</p>
+<span id="more"></span>
+<h2 id="模块化层级结构和重用">模块化、层级结构和重用</h2>
+<p>如果你想简化一个复杂的系统，有一个通用的方法：只需将你那团杂乱无章的复杂性结构化为<em>模块</em>，将这些模块组织成一个<em>层级结构</em>，然后根据需要在多个地方<em>复用</em>相同的模块（“复用”是<em>抽象</em>的另一种说法）。这就是模块化-层级-复用（MHR）公式（见图 9.1），它几乎是所有使用<em>“架构”</em>一词的领域中系统架构的基础 。它是任何具有实际复杂度的系统组织的核心，无论是教堂、你的身体、美国海军，还是 Keras 代码库。</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/complex_systems.e89aaf78.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter09_convnet-architecture-patterns/#figure-9-1">图 9.1</a>：复杂系统遵循层次结构，并被组织成不同的模块，这些模块会被多次重复使用（例如你的 4 个肢体，它们都是同一蓝图的不同变体，或者你的 20 个手指）。</p>
+<p>如果你是一名软件工程师，你肯定对这些原则非常熟悉：高效的代码库应该是模块化的、分层的，并且避免重复实现相同的功能，而是依赖于可重用的类和函数。如果你遵循这些原则来重构代码，那么你就是在进行“软件架构”。</p>
+<p>深度学习本身就是将此方法应用于梯度下降的连续优化：采用经典的优化技术（在连续函数空间上进行梯度下降），将搜索空间构建成模块（层），组织成一个深度层次结构（通常只是一个堆栈，这是最简单的层次结构），在其中尽可能地重用任何信息（例如，卷积就是在不同的空间位置重用相同的信息）。</p>
+<p>同样，深度学习模型架构的核心在于巧妙地利用模块化、层次结构和可重用性。你会注意到，所有流行的卷积神经网络（ConvNet）架构不仅由层组成，而且还由重复的层组（称为<em>块</em>或<em>模块</em>）组成。例如，上一章中使用的 Xception 架构就是由重复的块组成的 <code>SeparableConv</code>（<code>SeparableConv</code>参见<code>MaxPooling</code>图 9.2）。</p>
+<p>此外，大多数卷积神经网络（ConvNet）通常具有金字塔状结构（<em>特征层级</em>）。例如，回想一下我们在上一章构建的第一个卷积神经网络中使用的卷积滤波器的数量变化：32、64、128。滤波器的数量随着层深度的增加而增加，而特征图的大小则相应缩小。您会在 Xception 模型的各个模块中看到同样的模式（参见图 9.2）。</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/xception_entry_flow_pyramid.4701a5de.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter09_convnet-architecture-patterns/#figure-9-2">图 9.2</a>：Xception 架构的“入口流程”：注意重复的图层块和逐渐缩小和加深的特征图，从 299 x 299 x 3 到 19 x 19 x 728。</p>
+<p>更深的层级结构本质上是有益的，因为它们鼓励特征重用，从而实现抽象。一般来说，由较深的窄层堆叠而成的模型比由较浅的宽层堆叠而成的模型性能更好。然而，层级堆叠的深度是有限的：<em>梯度消失</em>问题。这就引出了我们第一个重要的模型架构模式：残差连接。</p>
+<p><strong>论消融研究在深度学习研究中的重要性</strong></p>
+<p>深度学习架构往往是不断<em>演化</em>而非精心设计的——它们是通过反复尝试并选择有效方法而开发的。就像生物系统一样，如果你采用任何复杂的实验性深度学习设置，很可能可以移除一些模块（或用随机特征替换一些训练过的特征）而不会损失性能。</p>
+<p>深度学习研究人员面临的激励机制加剧了这种情况：他们通过使系统比实际需要更复杂，使其看起来更有趣或更新颖，从而提高论文通过同行评审的几率。如果你阅读过大量的深度学习论文，你会发现它们在风格和内容上往往都针对同行评审进行了优化，这反而损害了解释的清晰度和结果的可靠性。例如，深度学习论文中的数学很少用于清晰地形式化概念或推导出不显而易见的结论——相反，它被用作一种<em>严肃性的象征</em>，就像销售人员身上穿着昂贵的西装一样。</p>
+<p>研究的目标不应仅仅是发表论文，而应是<em>产生可靠的知识</em>。至关重要的是，<em>理解</em>系统中的因果关系是产生可靠知识最直接的方法。而探究因果关系的方法非常简便： <em>消融研究</em>。消融研究是指系统地移除系统的部分组件——也就是简化系统——从而确定系统性能的真正来源。如果你发现 X + Y + Z 组合能带来良好的结果，那么不妨也尝试 X、Y、Z、X + Y、X + Z、Y + Z 的组合，看看会发生什么。</p>
+<p>如果你成为一名深度学习研究员，就要在研究过程中排除干扰：对你的模型进行消融实验。始终要问自己：有没有更简单的解释？这种额外的复杂性真的有必要吗？为什么？</p>
+<h2 id="残余连接">残余连接</h2>
+<p><em>你可能听说过“传话</em>游戏”（或称“中国式耳语”）， 在英国也叫*“Chinese whispers” ，在法国叫**“téléphone arabe”*。游戏规则是：玩家先将一条信息悄悄告诉其中一位，然后这位玩家再将信息告诉下一位，以此类推。最终传递的信息与最初的版本往往大相径庭。这个游戏巧妙地比喻了在嘈杂信道上进行连续传输时累积误差的过程。</p>
+<p>巧合的是，序列深度学习模型中的反向传播与传话游戏非常相似。你会看到一系列函数，例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">y = f4(f3(f2(f1(x))))</span><br></pre></td></tr></table></figure>
+<p><code>f4</code>游戏的目标是根据模型输出（损失函数）记录的误差来调整链中每个函数的参数。为了调整损失函数<code>f1</code>，你需要将误差信息传递到函数链<code>f2</code>、<code>f3</code>函数和<code>f4</code>函数中。然而，链中的每个后续函数都会引入一定量的噪声。如果你的函数链过深，这些噪声会淹没梯度信息，反向传播就会停止工作。你的模型将无法训练。这就是所谓的<em>梯度消失</em>问题。</p>
+<p>解决方法很简单：只需强制链中的每个函数都采用非破坏性操作——即保留先前输入中包含的信息的无噪声版本。最简单的实现方法是<em>残差连接</em>。它非常简单：只需将某一层或若干层块的输入加回其输出即可（参见图 9.3）。残差连接就像一条<em>信息捷径</em> ，绕过了破坏性或噪声较大的模块（例如包含 ReLU 激活函数或 dropout 层的模块），使得来自早期层的误差梯度信息能够无噪声地在深度网络中传播。这项技术于 2015 年随 ResNet 系列模型（由微软的 He 等人开发）引入。[<a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter09_convnet-architecture-patterns/#footnote-1">1]</a></p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/residual_connection.0524fdc4.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter09_convnet-architecture-patterns/#figure-9-3">图 9.3</a>：处理块周围的残余连接</p>
+<p>在实践中，您可以实现如下列表中所示的残余连接。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Some input tensor</span></span><br><span class="line">x = ...</span><br><span class="line"><span class="comment"># Saves a reference to the original input. This is called the residual.</span></span><br><span class="line">residual = x</span><br><span class="line"><span class="comment"># This computation block can potentially be destructive or noisy, and</span></span><br><span class="line"><span class="comment"># that&#x27;s fine.</span></span><br><span class="line">x = block(x)</span><br><span class="line"><span class="comment"># Adds the original input to the layer&#x27;s output. The final output will</span></span><br><span class="line"><span class="comment"># thus always preserve full information about the original input.</span></span><br><span class="line">x = add([x, residual])</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter09_convnet-architecture-patterns/#listing-9-1">清单 9.1</a>：伪代码中的残余连接</p>
+<p>请注意，将输入加回模块的输出意味着输出应该与输入具有相同的形状。但如果模块包含卷积层（滤波器数量较多）或最大池化层，则情况并非如此。在这种情况下，可以使用一个 1×1 的<code>Conv2D</code>无激活层将残差线性投影到所需的输出形状。通常，您会<code>padding="same"</code> 在目标模块的卷积层中使用此方法，以避免因填充而导致的空间下采样；并且，您需要在残差投影中使用步长来匹配最大池化层造成的任何下采样。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> keras</span><br><span class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> layers</span><br><span class="line"></span><br><span class="line">inputs = keras.Input(shape=(<span class="number">32</span>, <span class="number">32</span>, <span class="number">3</span>))</span><br><span class="line">x = layers.Conv2D(<span class="number">32</span>, <span class="number">3</span>, activation=<span class="string">&quot;relu&quot;</span>)(inputs)</span><br><span class="line"><span class="comment"># Sets aside the residual</span></span><br><span class="line">residual = x</span><br><span class="line"><span class="comment"># This is the layer around which we create a residual connection: it</span></span><br><span class="line"><span class="comment"># increases the number of output filers from 32 to 64. We use</span></span><br><span class="line"><span class="comment"># padding=&quot;same&quot; to avoid downsampling due to padding.</span></span><br><span class="line">x = layers.Conv2D(<span class="number">64</span>, <span class="number">3</span>, activation=<span class="string">&quot;relu&quot;</span>, padding=<span class="string">&quot;same&quot;</span>)(x)</span><br><span class="line"><span class="comment"># The residual only had 32 filters, so we use a 1 x 1 Conv2D to project</span></span><br><span class="line"><span class="comment"># it to the correct shape.</span></span><br><span class="line">residual = layers.Conv2D(<span class="number">64</span>, <span class="number">1</span>)(residual)</span><br><span class="line"><span class="comment"># Now the block output and the residual have the same shape and can be</span></span><br><span class="line"><span class="comment"># added.</span></span><br><span class="line">x = layers.add([x, residual])</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter09_convnet-architecture-patterns/#listing-9-2">清单 9.2</a>：目标模块更改输出滤波器的数量</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">inputs = keras.Input(shape=(<span class="number">32</span>, <span class="number">32</span>, <span class="number">3</span>))</span><br><span class="line">x = layers.Conv2D(<span class="number">32</span>, <span class="number">3</span>, activation=<span class="string">&quot;relu&quot;</span>)(inputs)</span><br><span class="line"><span class="comment"># Sets aside the residual</span></span><br><span class="line">residual = x</span><br><span class="line"><span class="comment"># This is the block of two layers around which we create a residual</span></span><br><span class="line"><span class="comment"># connection: it includes a 2 x 2 max pooling layer. We use</span></span><br><span class="line"><span class="comment"># padding=&quot;same&quot; in both the convolution layer and the max pooling</span></span><br><span class="line"><span class="comment"># layer to avoid downsampling due to padding.</span></span><br><span class="line">x = layers.Conv2D(<span class="number">64</span>, <span class="number">3</span>, activation=<span class="string">&quot;relu&quot;</span>, padding=<span class="string">&quot;same&quot;</span>)(x)</span><br><span class="line">x = layers.MaxPooling2D(<span class="number">2</span>, padding=<span class="string">&quot;same&quot;</span>)(x)</span><br><span class="line"><span class="comment"># We use strides=2 in the residual projection to match the downsampling</span></span><br><span class="line"><span class="comment"># created by the max pooling layer.</span></span><br><span class="line">residual = layers.Conv2D(<span class="number">64</span>, <span class="number">1</span>, strides=<span class="number">2</span>)(residual)</span><br><span class="line"><span class="comment"># Now the block output and the residual have the same shape and can be</span></span><br><span class="line"><span class="comment"># added.</span></span><br><span class="line">x = layers.add([x, residual])</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter09_convnet-architecture-patterns/#listing-9-3">清单 9.3</a>：包含最大池化层的目标块</p>
+<p>为了使这些概念更加具体，这里有一个简单的卷积神经网络示例，它由一系列模块组成，每个模块由两个卷积层和一个可选的最大池化层组成，每个模块周围都有一个残差连接：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">inputs = keras.Input(shape=(<span class="number">32</span>, <span class="number">32</span>, <span class="number">3</span>))</span><br><span class="line">x = layers.Rescaling(<span class="number">1.0</span> / <span class="number">255</span>)(inputs)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Utility function to apply a convolutional block with a residual</span></span><br><span class="line"><span class="comment"># connection, with an option to add max pooling</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">residual_block</span>(<span class="params">x, filters, pooling=<span class="literal">False</span></span>):</span><br><span class="line">    residual = x</span><br><span class="line">    x = layers.Conv2D(filters, <span class="number">3</span>, activation=<span class="string">&quot;relu&quot;</span>, padding=<span class="string">&quot;same&quot;</span>)(x)</span><br><span class="line">    x = layers.Conv2D(filters, <span class="number">3</span>, activation=<span class="string">&quot;relu&quot;</span>, padding=<span class="string">&quot;same&quot;</span>)(x)</span><br><span class="line">    <span class="keyword">if</span> pooling:</span><br><span class="line">        x = layers.MaxPooling2D(<span class="number">2</span>, padding=<span class="string">&quot;same&quot;</span>)(x)</span><br><span class="line">        <span class="comment"># If we use max pooling, we add a strided convolution to</span></span><br><span class="line">        <span class="comment"># project the residual to the expected shape.</span></span><br><span class="line">        residual = layers.Conv2D(filters, <span class="number">1</span>, strides=<span class="number">2</span>)(residual)</span><br><span class="line">    <span class="keyword">elif</span> filters != residual.shape[-<span class="number">1</span>]:</span><br><span class="line">        <span class="comment"># If we don&#x27;t use max pooling, we only project the residual if</span></span><br><span class="line">        <span class="comment"># the number of channels has changed.</span></span><br><span class="line">        residual = layers.Conv2D(filters, <span class="number">1</span>)(residual)</span><br><span class="line">    x = layers.add([x, residual])</span><br><span class="line">    <span class="keyword">return</span> x</span><br><span class="line"></span><br><span class="line"><span class="comment"># First block</span></span><br><span class="line">x = residual_block(x, filters=<span class="number">32</span>, pooling=<span class="literal">True</span>)</span><br><span class="line"><span class="comment"># Second block. Note the increasing filter count in each block.</span></span><br><span class="line">x = residual_block(x, filters=<span class="number">64</span>, pooling=<span class="literal">True</span>)</span><br><span class="line"><span class="comment"># The last block doesn&#x27;t need a max pooling layer, since we will apply</span></span><br><span class="line"><span class="comment"># global average pooling right after it.</span></span><br><span class="line">x = residual_block(x, filters=<span class="number">128</span>, pooling=<span class="literal">False</span>)</span><br><span class="line"></span><br><span class="line">x = layers.GlobalAveragePooling2D()(x)</span><br><span class="line">outputs = layers.Dense(<span class="number">1</span>, activation=<span class="string">&quot;sigmoid&quot;</span>)(x)</span><br><span class="line">model = keras.Model(inputs=inputs, outputs=outputs)</span><br></pre></td></tr></table></figure>
+<p>让我们来看一下模型概要：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; model.summary()</span><br><span class="line">Model: &quot;functional&quot;</span><br><span class="line">┏━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━┓</span><br><span class="line">┃ Layer (type)         ┃ Output Shape       ┃    Param # ┃ Connected to        ┃</span><br><span class="line">┡━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━┩</span><br><span class="line">│ input_layer_2        │ (None, 32, 32, 3)  │          0 │ -                   │</span><br><span class="line">│ (InputLayer)         │                    │            │                     │</span><br><span class="line">├──────────────────────┼────────────────────┼────────────┼─────────────────────┤</span><br><span class="line">│ rescaling (Rescaling)│ (None, 32, 32, 3)  │          0 │ input_layer_2[0][0] │</span><br><span class="line">├──────────────────────┼────────────────────┼────────────┼─────────────────────┤</span><br><span class="line">│ conv2d_6 (Conv2D)    │ (None, 32, 32, 32) │        896 │ rescaling[0][0]     │</span><br><span class="line">├──────────────────────┼────────────────────┼────────────┼─────────────────────┤</span><br><span class="line">│ conv2d_7 (Conv2D)    │ (None, 32, 32, 32) │      9,248 │ conv2d_6[0][0]      │</span><br><span class="line">├──────────────────────┼────────────────────┼────────────┼─────────────────────┤</span><br><span class="line">│ max_pooling2d_1      │ (None, 16, 16, 32) │          0 │ conv2d_7[0][0]      │</span><br><span class="line">│ (MaxPooling2D)       │                    │            │                     │</span><br><span class="line">├──────────────────────┼────────────────────┼────────────┼─────────────────────┤</span><br><span class="line">│ conv2d_8 (Conv2D)    │ (None, 16, 16, 32) │        128 │ rescaling[0][0]     │</span><br><span class="line">├──────────────────────┼────────────────────┼────────────┼─────────────────────┤</span><br><span class="line">│ add_2 (Add)          │ (None, 16, 16, 32) │          0 │ max_pooling2d_1[0]… │</span><br><span class="line">│                      │                    │            │ conv2d_8[0][0]      │</span><br><span class="line">├──────────────────────┼────────────────────┼────────────┼─────────────────────┤</span><br><span class="line">│ conv2d_9 (Conv2D)    │ (None, 16, 16, 64) │     18,496 │ add_2[0][0]         │</span><br><span class="line">├──────────────────────┼────────────────────┼────────────┼─────────────────────┤</span><br><span class="line">│ conv2d_10 (Conv2D)   │ (None, 16, 16, 64) │     36,928 │ conv2d_9[0][0]      │</span><br><span class="line">├──────────────────────┼────────────────────┼────────────┼─────────────────────┤</span><br><span class="line">│ max_pooling2d_2      │ (None, 8, 8, 64)   │          0 │ conv2d_10[0][0]     │</span><br><span class="line">│ (MaxPooling2D)       │                    │            │                     │</span><br><span class="line">├──────────────────────┼────────────────────┼────────────┼─────────────────────┤</span><br><span class="line">│ conv2d_11 (Conv2D)   │ (None, 8, 8, 64)   │      2,112 │ add_2[0][0]         │</span><br><span class="line">├──────────────────────┼────────────────────┼────────────┼─────────────────────┤</span><br><span class="line">│ add_3 (Add)          │ (None, 8, 8, 64)   │          0 │ max_pooling2d_2[0]… │</span><br><span class="line">│                      │                    │            │ conv2d_11[0][0]     │</span><br><span class="line">├──────────────────────┼────────────────────┼────────────┼─────────────────────┤</span><br><span class="line">│ conv2d_12 (Conv2D)   │ (None, 8, 8, 128)  │     73,856 │ add_3[0][0]         │</span><br><span class="line">├──────────────────────┼────────────────────┼────────────┼─────────────────────┤</span><br><span class="line">│ conv2d_13 (Conv2D)   │ (None, 8, 8, 128)  │    147,584 │ conv2d_12[0][0]     │</span><br><span class="line">├──────────────────────┼────────────────────┼────────────┼─────────────────────┤</span><br><span class="line">│ conv2d_14 (Conv2D)   │ (None, 8, 8, 128)  │      8,320 │ add_3[0][0]         │</span><br><span class="line">├──────────────────────┼────────────────────┼────────────┼─────────────────────┤</span><br><span class="line">│ add_4 (Add)          │ (None, 8, 8, 128)  │          0 │ conv2d_13[0][0],    │</span><br><span class="line">│                      │                    │            │ conv2d_14[0][0]     │</span><br><span class="line">├──────────────────────┼────────────────────┼────────────┼─────────────────────┤</span><br><span class="line">│ global_average_pool… │ (None, 128)        │          0 │ add_4[0][0]         │</span><br><span class="line">│ (GlobalAveragePooli… │                    │            │                     │</span><br><span class="line">├──────────────────────┼────────────────────┼────────────┼─────────────────────┤</span><br><span class="line">│ dense (Dense)        │ (None, 1)          │        129 │ global_average_poo… │</span><br><span class="line">└──────────────────────┴────────────────────┴────────────┴─────────────────────┘</span><br><span class="line"> Total params: 297,697 (1.14 MB)</span><br><span class="line"> Trainable params: 297,697 (1.14 MB)</span><br><span class="line"> Non-trainable params: 0 (0.00 B)</span><br></pre></td></tr></table></figure>
+<p>利用残差连接，您可以构建任意深度的网络，而无需担心梯度消失问题。现在，让我们继续讨论下一个重要的卷积神经网络架构模式： <em>批量归一化</em>。</p>
+<h2 id="批量归一化">批量归一化</h2>
+<p><em>机器学习中的归一化</em>是一类广泛的方法，旨在使机器学习模型所看到的不同样本彼此更加相似，从而帮助模型更好地学习和泛化到新数据。最常见的数据归一化方法在本书中已经多次出现：通过从数据中减去均值将数据中心化到零，并通过将数据除以其标准差来赋予数据单位标准差。实际上，这种方法假设数据服从正态（或高斯）分布，并确保该分布被中心化并缩放到单位方差。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">normalized_data = (data - np.mean(data, axis=...)) / np.std(data, axis=...)</span><br></pre></td></tr></table></figure>
+<p>本书前面的例子在将数据输入模型之前都对其进行了归一化处理。但是，网络每次转换之后，数据归一化都可能成为一个问题：即使输入到模型<code>Dense</code>或<code>Conv2D</code>网络的数据均值为 0、方差为 1，也不能预先认为输出的数据也如此。对中间激活值进行归一化是否有帮助呢？</p>
+<p><code>BatchNormalization</code>批量归一化正是实现这一功能。它是Keras 中的一种层，由 Ioffe 和 Szegedy 于 2015 年引入；[<a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter09_convnet-architecture-patterns/#footnote-2">2]</a> 即使训练过程中均值和方差随时间变化，它也能自适应地对数据进行归一化。在训练过程中，它使用当前数据批次的均值和方差来归一化样本；而在推理过程中（当可能没有足够大的代表性数据批次可用时），它使用训练过程中所见数据的批次均值和方差的指数移动平均值。</p>
+<p>尽管 Ioffe 和 Szegedy 的原始论文指出批量归一化通过“减少内部协变量偏移”来发挥作用，但没有人真正确切地知道批量归一化究竟为何有效。存在各种假设，但没有确凿的答案。你会发现，深度学习中的许多事物都是如此——深度学习并非一门精确的科学，而是一套不断变化、基于经验的工程最佳实践，并由一些不可靠的理论串联起来。你有时会觉得，你手头的书告诉你<em>如何</em> 做某件事，但却没有令人满意地解释其<em>原理</em>：那是因为我们知道怎么做，却不知道为什么。每当有可靠的解释时，我们都会确保提及。但批量归一化并非如此。</p>
+<p>实际上，批量归一化的主要作用在于它有助于梯度传播——类似于残差连接——从而允许构建更深的网络。一些非常深的网络只有包含多层才能进行训练<code>BatchNormalization</code>。例如，Keras 自带的许多高级卷积神经网络架构，如 ResNet50、EfficientNet 和 Xception，都大量使用了批量归一化。</p>
+<p>该<code>BatchNormalization</code>图层可以用于任何图层之后——例如<code>Dense</code>，，<code>Conv2D</code>等等：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">x = ...</span><br><span class="line"><span class="comment"># Because the output of the Conv2D layer gets normalized, the layer</span></span><br><span class="line"><span class="comment"># doesn&#x27;t need its own bias vector.</span></span><br><span class="line">x = layers.Conv2D(<span class="number">32</span>, <span class="number">3</span>, use_bias=<span class="literal">False</span>)(x)</span><br><span class="line">x = layers.BatchNormalization()(x)</span><br></pre></td></tr></table></figure>
+<p>两者<code>Dense</code>都<code>Conv2D</code>包含一个“偏置向量”，这是一个学习变量，其目的是使层<em>具有仿射性</em>而非纯线性。例如，<code>Conv2D</code>示意图中，返回 ，<code>y = conv(x, kernel) + bias</code>而<code>Dense</code>返回<code>y = dot(x, kernel) + bias</code>。由于归一化步骤会将层的输出中心化到零，因此在使用时不再需要偏置向量<code>BatchNormalization</code>，并且可以通过选项 来创建不带偏置向量的层<code>use_bias=False</code>。这使得层结构略微精简。</p>
+<p>重要的是，我通常建议将前一层的激活函数放在 批量归一化层<em>之后</em>（尽管这一点仍存在争议）。所以，与其这样做，不如这样做：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">x = layers.Conv2D(<span class="number">32</span>, <span class="number">3</span>, activation=<span class="string">&quot;relu&quot;</span>)(x)</span><br><span class="line">x = layers.BatchNormalization()(x)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter09_convnet-architecture-patterns/#listing-9-4">清单 9.4</a>：如何避免使用批量归一化</p>
+<p>实际上，你应该这样做：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Note the lack of activation here.</span></span><br><span class="line">x = layers.Conv2D(<span class="number">32</span>, <span class="number">3</span>, use_bias=<span class="literal">False</span>)(x)</span><br><span class="line">x = layers.BatchNormalization()(x)</span><br><span class="line"><span class="comment"># We place the activation after the BatchNormalization layer.</span></span><br><span class="line">x = layers.Activation(<span class="string">&quot;relu&quot;</span>)(x)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter09_convnet-architecture-patterns/#listing-9-5">清单 9.5</a>：如何使用批量归一化</p>
+<p>直观的解释是，批量归一化会将输入值中心化到零，而 ReLU 激活函数则以零为基准来决定保留或丢弃激活的通道：在激活之前进行归一化可以最大程度地利用 ReLU。也就是说，这种顺序并非绝对必要，所以即使你采用卷积-激活-批量归一化的顺序，模型仍然可以训练，并且不一定会得到更差的结果。</p>
+<p>批量归一化有很多特性。其中一个主要特性与微调有关：当微调包含<code>BatchNormalization</code>多个层的模型时，我建议冻结这些层（将其<code>trainable</code>属性设置为 true <code>False</code>）。否则，它们会不断更新其内部均值和方差，这可能会干扰应用于周围层的微小更新<code>Conv2D</code>。</p>
+<p>现在，让我们来看看本系列中的最后一个架构模式：深度可分离卷积。</p>
+<h2 id="深度可分离卷积">深度可分离卷积</h2>
+<p>如果我们告诉你，有一个层可以作为现成的替代品，<code>Conv2D</code>它能让你的模型更小（减少可训练的权重参数）、更精简（减少浮点运算），并且还能让它在任务上提升几个百分点，你会相信吗？这正是<em>深度可分离卷积</em>层（<code>SeparableConv2D</code>在 Keras 中）的功能。如图 9.4 所示，该层首先对输入的每个通道独立地执行空间卷积，然后再通过逐点卷积（1×1 卷积）混合输出通道。</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/depthwise_separable_conv.5d1929bd.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter09_convnet-architecture-patterns/#figure-9-4">图 9.4</a>：深度可分离卷积：先进行深度卷积，再进行逐点卷积</p>
+<p>这相当于将空间特征的学习和通道特征的学习分开。正如卷积依赖于图像中的模式与特定位置无关的假设一样，深度可分离卷积依赖于 中间激活的*空间位置**高度相关<em>，但</em>不同通道<em>高度</em>独立的*假设。由于这一假设通常适用于深度神经网络学习到的图像表示，因此它可以作为有用的先验信息，帮助模型更有效地利用训练数据。只要先验信息准确，拥有更强信息结构先验信息的模型就是更好的模型。</p>
+<p>与常规卷积相比，深度可分离卷积所需的参数更少，计算量也更小，同时却拥有相当的表征能力。这使得模型体积更小、收敛速度更快、更不容易过拟合。当使用有限的数据从头开始训练小型模型时，这些优势尤为重要。</p>
+<p>对于大规模模型而言，深度可分离卷积是 Xception 架构的基础，Xception 是一个高性能的卷积神经网络，它与 Keras 集成在一起。您可以在论文“Xception: Deep Learning with Depthwise Separable Convolutions”中了解更多关于深度可分离卷积和 Xception 的理论基础。[<a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter09_convnet-architecture-patterns/#footnote-3">3]</a></p>
+<p><strong>硬件、软件和算法的共同演化</strong></p>
+<p>考虑一个常规的卷积运算，其窗口大小为 3×3，输入通道数为 64，输出通道数为 64。它使用 3×3×64×64 = 36,864 个可训练参数，当将其应用于图像时，需要执行与参数数量成正比的浮点运算次数。而考虑一个等效的深度可分离卷积：它仅涉及 3×3×64 + 64×64 = 4,672 个可训练参数，并且浮点运算次数也相应减少。随着滤波器数量或卷积窗口大小的增大，这种效率提升会更加显著。</p>
+<p>因此，你可能会认为深度可分离卷积的速度会显著提升，对吧？别急。如果你用简单的 CUDA 或 C++ 实现这些算法，那确实如此——事实上，在 CPU 上运行确实能获得显著的速度提升，因为底层实现是并行化的 C++。但在实际应用中，你很可能使用的是 GPU，而你在 GPU 上执行的远非“简单”的 CUDA 实现：它是一个 <em>cuDNN 内核</em>，一段经过极其优化的代码，优化程度甚至细致到每一条机器指令。当然，花费大量精力优化这段代码是合理的，因为 NVIDIA 硬件上的 cuDNN 卷积每天都要进行数百亿亿次浮点运算。但这种极致的微优化带来的一个副作用是，其他方法几乎没有机会在性能上与之匹敌——即使是像深度可分离卷积这样本身具有显著优势的方法。</p>
+<p>尽管多次向 NVIDIA 提出请求，但深度可分离卷积并未像常规卷积那样获得同等程度的软硬件优化，因此，即使其参数和浮点运算次数呈平方级减少，其速度也仅与常规卷积大致相当。不过，即使深度可分离卷积无法带来速度提升，使用它仍然是一个好主意：其更少的参数意味着过拟合的风险更低，并且其通道不相关的假设有助于模型更快收敛并生成更鲁棒的表示。</p>
+<p>在这种情况下，这只是一个小小的麻烦，但在其他情况下，它却可能变成一道难以逾越的障碍：因为深度学习的整个硬件和软件生态系统都针对一组非常特定的算法（特别是通过反向传播训练的卷积神经网络）进行了微优化，所以偏离既定路线的代价极其高昂。如果你尝试使用其他算法，例如无梯度优化或脉冲神经网络，那么你最初实现的几个并行 C++ 或 CUDA 版本的速度都会比传统的卷积神经网络慢几个数量级——无论你的想法多么巧妙高效。即使你的方法确实更好，也很难说服其他研究人员采用你的方法。</p>
+<p>可以说，现代深度学习是硬件、软件和算法共同演化的产物：NVIDIA GPU 和 CUDA 的出现促成了反向传播训练的卷积神经网络的早期成功，进而促使 NVIDIA 针对这些算法优化其硬件和软件，最终推动了相关研究群体的整合。如今，想要另辟蹊径需要对整个生态系统进行长达数年的重构。</p>
+<h2 id="组装完成一个迷你版的xception模型">组装完成：一个迷你版的Xception模型</h2>
+<p>作为回顾，以下是您目前为止学到的卷积神经网络架构原则：</p>
+<ul>
+<li><em>你的模型应该由重复的层块</em>组成，通常由多个卷积层和一个最大池化层构成。</li>
+<li>随着空间特征图尺寸的减小，图层中的过滤器数量应该增加。</li>
+<li>深而窄的鱼比宽而浅的鱼好。</li>
+<li>在层块周围引入残差连接有助于训练更深的网络。</li>
+<li>在卷积层之后引入批量归一化层可能是有益的。</li>
+<li>用参数效率更高的层替换<code>Conv2D</code>层可能是有益的。<code>SeparableConv2D</code></li>
+</ul>
+<p>让我们把所有这些想法整合到一个模型中。它的架构类似于简化版的 Xception。我们将把它应用到上一章的猫狗对抗任务中。对于数据加载和模型训练，只需重复使用与第 8 章 8.2 节中完全相同的设置——但将模型定义替换为以下卷积神经网络：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> keras</span><br><span class="line"></span><br><span class="line">inputs = keras.Input(shape=(<span class="number">180</span>, <span class="number">180</span>, <span class="number">3</span>))</span><br><span class="line"><span class="comment"># Don&#x27;t forget input rescaling!</span></span><br><span class="line">x = layers.Rescaling(<span class="number">1.0</span> / <span class="number">255</span>)(inputs)</span><br><span class="line"><span class="comment"># The assumption that underlies separable convolution, &quot;Feature</span></span><br><span class="line"><span class="comment"># channels are largely independent,&quot; does not hold for RGB images! Red,</span></span><br><span class="line"><span class="comment"># green, and blue color channels are actually highly correlated in</span></span><br><span class="line"><span class="comment"># natural images. As such, the first layer in our model is a regular</span></span><br><span class="line"><span class="comment"># `Conv2D` layer. We&#x27;ll start using `SeparableConv2D` afterward.</span></span><br><span class="line">x = layers.Conv2D(filters=<span class="number">32</span>, kernel_size=<span class="number">5</span>, use_bias=<span class="literal">False</span>)(x)</span><br><span class="line"></span><br><span class="line"><span class="comment"># We apply a series of convolutional blocks with increasing feature</span></span><br><span class="line"><span class="comment"># depth. Each block consists of two batch-normalized depthwise</span></span><br><span class="line"><span class="comment"># separable convolution layers and a max pooling layer, with a residual</span></span><br><span class="line"><span class="comment"># connection around the entire block.</span></span><br><span class="line"><span class="keyword">for</span> size <span class="keyword">in</span> [<span class="number">32</span>, <span class="number">64</span>, <span class="number">128</span>, <span class="number">256</span>, <span class="number">512</span>]:</span><br><span class="line">    residual = x</span><br><span class="line"></span><br><span class="line">    x = layers.BatchNormalization()(x)</span><br><span class="line">    x = layers.Activation(<span class="string">&quot;relu&quot;</span>)(x)</span><br><span class="line">    x = layers.SeparableConv2D(size, <span class="number">3</span>, padding=<span class="string">&quot;same&quot;</span>, use_bias=<span class="literal">False</span>)(x)</span><br><span class="line"></span><br><span class="line">    x = layers.BatchNormalization()(x)</span><br><span class="line">    x = layers.Activation(<span class="string">&quot;relu&quot;</span>)(x)</span><br><span class="line">    x = layers.SeparableConv2D(size, <span class="number">3</span>, padding=<span class="string">&quot;same&quot;</span>, use_bias=<span class="literal">False</span>)(x)</span><br><span class="line"></span><br><span class="line">    x = layers.MaxPooling2D(<span class="number">3</span>, strides=<span class="number">2</span>, padding=<span class="string">&quot;same&quot;</span>)(x)</span><br><span class="line"></span><br><span class="line">    residual = layers.Conv2D(</span><br><span class="line">        size, <span class="number">1</span>, strides=<span class="number">2</span>, padding=<span class="string">&quot;same&quot;</span>, use_bias=<span class="literal">False</span></span><br><span class="line">    )(residual)</span><br><span class="line">    x = layers.add([x, residual])</span><br><span class="line"></span><br><span class="line"><span class="comment"># In the original model, we used a Flatten layer before the Dense</span></span><br><span class="line"><span class="comment"># layer. Here, we go with a GlobalAveragePooling2D layer.</span></span><br><span class="line">x = layers.GlobalAveragePooling2D()(x)</span><br><span class="line"><span class="comment"># Like in the original model, we add a dropout layer for</span></span><br><span class="line"><span class="comment"># regularization.</span></span><br><span class="line">x = layers.Dropout(<span class="number">0.5</span>)(x)</span><br><span class="line">outputs = layers.Dense(<span class="number">1</span>, activation=<span class="string">&quot;sigmoid&quot;</span>)(x)</span><br><span class="line">model = keras.Model(inputs=inputs, outputs=outputs)</span><br></pre></td></tr></table></figure>
+<p>该卷积神经网络的可训练参数数量为 721,857，远低于上一章模型的 1,569,089 个可训练参数，但却取得了更好的结果。图 9.5 显示了训练曲线和验证曲线。</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/training-and-validation-xception-acc.967bf65c.png" alt="img" /><img src="/img3/DEEP%20LEARNING%20with%20Python/training-and-validation-xception-loss.bc0f5982.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter09_convnet-architecture-patterns/#figure-9-5">图 9.5</a>：采用类似 Xception 架构的训练和验证指标</p>
+<p>你会发现，我们的新模型测试准确率达到了 90.8%，而之前的模型只有 83.9%。由此可见，遵循最佳架构实践确实能对模型性能产生立竿见影的显著影响！</p>
+<p>此时，如果您想进一步提高性能，就应该开始系统地调整架构的超参数——我们将在第 18 章详细介绍这一主题。我们在这里还没有完成这一步骤，因此先前模型的配置完全来自我们概述的最佳实践，此外，在衡量模型大小时，还包含少量直觉。</p>
+<h2 id="超越卷积视觉变形">超越卷积：视觉变形</h2>
+<p>自 2010 年代中期以来，卷积神经网络 (ConvNets) 一直主导着计算机视觉领域，但近年来，一种名为 Vision Transformer（简称 ViTs）的替代架构开始对其构成竞争。从长远来看，ViTs 很可能会最终取代 ConvNets——不过，就目前而言，ConvNets 在大多数情况下仍然是最佳选择。</p>
+<p>你现在还不了解 Transformer 是什么，因为我们将在第 15 章介绍它。简而言之，Transformer 架构是为处理文本而开发的——它本质上是一种序列处理架构。Transformer 在这方面非常出色，这就引出了一个问题：我们是否也可以用它们来处理图像？</p>
+<p>由于 ViT 是一种 Transformer 模型，它们也能够处理序列：它们将图像分割成一维的图像块序列，将每个图像块转换为一个平面向量，然后处理该向量序列。Transformer 架构使得 ViT 能够捕捉图像不同部分之间的长程关系，而这正是 ConvNet 有时难以处理的问题。</p>
+<p>我们使用Transformer模型的总体经验是，如果您处理的是海量数据集，它们是一个不错的选择。它们在利用大量数据方面表现出色。然而，对于较小的数据集，它们往往并非最佳选择，原因有二。首先，它们缺乏卷积神经网络（ConvNets）的空间先验信息——ConvNets基于二维图像块的架构包含了更多关于视觉空间局部结构的假设，使其数据效率更高。其次，为了充分发挥Transformer模型的优势，它们需要处理非常大的数据集。对于小于ImageNet的数据集，它们最终会变得难以驾驭。</p>
+<p>图像识别领域的竞争远未结束，但虚拟神经网络（ViTs）无疑开启了激动人心的新篇章。您很可能会在大规模生成图像模型中使用这种架构——我们将在第17章中讨论这一主题。然而，对于小规模图像分类需求，卷积神经网络（ConvNets）仍然是您的最佳选择。</p>
+<p>至此，我们对卷积神经网络（ConvNet）架构最佳实践的介绍就结束了。掌握了这些原则，您将能够开发出性能更高的模型，并应用于各种计算机视觉任务。您现在已经朝着成为一名熟练的计算机视觉从业者迈出了坚实的一步。为了进一步加深您的专业知识，我们还需要讨论最后一个重要主题：解释模型如何得出预测结果。</p>
+<h2 id="概括">概括</h2>
+<ul>
+<li>深度学习模型的架构编码了关于当前问题本质的关键假设。</li>
+<li>模块化-层次化-重用公式是几乎所有复杂系统（包括深度学习模型）架构的基础。</li>
+<li>计算机视觉的关键架构模式包括残差连接、批量归一化和深度可分离卷积。</li>
+<li>视觉变换器是卷积神经网络的一种新兴替代方案，适用于大规模计算机视觉任务。</li>
+</ul>
+<h3 id="脚注">脚注</h3>
+<ol type="1">
+<li>Kaiming He 等人，“用于图像识别的深度残差学习”，计算机视觉与模式识别会议 (2015)，https://arxiv.org/abs/1512.03385。 [<a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter09_convnet-architecture-patterns/#footnote-link-1">↩︎]</a></li>
+<li>Sergey Ioffe 和 Christian Szegedy，“批量归一化：通过减少内部协变量偏移加速深度网络训练”，<em>第 32 届国际机器学习会议论文集</em>(2015)，https://arxiv.org/abs/1502.03167。 [<a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter09_convnet-architecture-patterns/#footnote-link-2">↩︎]</a></li>
+<li>François Chollet，“Xception：基于深度可分离卷积的深度学习”，计算机视觉与模式识别会议（2017），https://arxiv.org/abs/1610.02357。 [<a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter09_convnet-architecture-patterns/#footnote-link-3">↩︎]</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/02/23/8%E3%80%81%E5%9B%BE%E5%83%8F%E5%88%86%E7%B1%BB/" rel="prev" title="《DEEP LEARNING with Python》第八章">
+                  <i class="fa fa-chevron-left"></i> 《DEEP LEARNING with Python》第八章
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/02/25/10%E3%80%81%E8%A7%A3%E8%AF%BB%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%9A%84%E5%AD%A6%E4%B9%A0%E6%88%90%E6%9E%9C/" rel="next" title="《DEEP LEARNING with Python》第十章">
+                  《DEEP LEARNING with Python》第十章 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
