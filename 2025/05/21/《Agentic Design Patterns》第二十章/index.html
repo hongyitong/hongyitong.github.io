@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"enable":true,"style":"tabs","active":"giscus","storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+
+
+    <meta name="description" content="Chapter 20: Prioritization | 第二十章：优先级排序 In complex, dynamic environments, Agents frequently encounter numerous potential actions, conflicting goals, and limited resources. Without a defined process fo">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《Agentic Design Patterns》第二十章">
+<meta property="og:url" content="http://hongyitong.github.io/2025/05/21/%E3%80%8AAgentic%20Design%20Patterns%E3%80%8B%E7%AC%AC%E4%BA%8C%E5%8D%81%E7%AB%A0/index.html">
+<meta property="og:site_name" content="墨语浮生">
+<meta property="og:description" content="Chapter 20: Prioritization | 第二十章：优先级排序 In complex, dynamic environments, Agents frequently encounter numerous potential actions, conflicting goals, and limited resources. Without a defined process fo">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Agentic%20Design%20Patterns/chapter20_fig1.png">
+<meta property="article:published_time" content="2025-05-20T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-03-02T03:26:16.588Z">
+<meta property="article:author" content="Rayman.hung">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hongyitong.github.io/img3/Agentic%20Design%20Patterns/chapter20_fig1.png">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2025/05/21/%E3%80%8AAgentic%20Design%20Patterns%E3%80%8B%E7%AC%AC%E4%BA%8C%E5%8D%81%E7%AB%A0/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2025/05/21/%E3%80%8AAgentic%20Design%20Patterns%E3%80%8B%E7%AC%AC%E4%BA%8C%E5%8D%81%E7%AB%A0/","path":"2025/05/21/《Agentic Design Patterns》第二十章/","title":"《Agentic Design Patterns》第二十章"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>《Agentic Design Patterns》第二十章 | 墨语浮生</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZXGEJDXQ33"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-ZXGEJDXQ33","only_pageview":false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?ff358b9c7e949787b074bfc9c8019a9d"></script>
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">墨语浮生</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#chapter-20-prioritization-%E7%AC%AC%E4%BA%8C%E5%8D%81%E7%AB%A0%E4%BC%98%E5%85%88%E7%BA%A7%E6%8E%92%E5%BA%8F"><span class="nav-text">Chapter 20: Prioritization | 第二十章：优先级排序</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#prioritization-pattern-overview-%E4%BC%98%E5%85%88%E7%BA%A7%E6%8E%92%E5%BA%8F%E6%A8%A1%E5%BC%8F%E6%A6%82%E8%BF%B0"><span class="nav-text">Prioritization Pattern Overview | 优先级排序模式概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#practical-applications-use-cases-%E5%AE%9E%E9%99%85%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-text">Practical Applications &amp; Use Cases | 实际应用场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hands-on-code-example-%E4%BD%BF%E7%94%A8-langchain-%E7%9A%84%E5%AE%9E%E6%88%98%E4%BB%A3%E7%A0%81"><span class="nav-text">Hands-On Code Example | 使用 LangChain 的实战代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#at-a-glance-%E8%A6%81%E7%82%B9%E9%80%9F%E8%A7%88"><span class="nav-text">At a Glance | 要点速览</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#key-takeaways-%E6%A0%B8%E5%BF%83%E8%A6%81%E7%82%B9"><span class="nav-text">Key Takeaways | 核心要点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#conclusions-%E7%BB%93%E8%AF%AD"><span class="nav-text">Conclusions | 结语</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#references-%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="nav-text">References | 参考文献</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、心情记录</div>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2025/05/21/%E3%80%8AAgentic%20Design%20Patterns%E3%80%8B%E7%AC%AC%E4%BA%8C%E5%8D%81%E7%AB%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="《Agentic Design Patterns》第二十章 | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《Agentic Design Patterns》第二十章
+        </h1>
+
+        </h1>
+          
+             <p class="post-subtitle">优先级排序</p>
+          
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-05-21 00:00:00" itemprop="dateCreated datePublished" datetime="2025-05-21T00:00:00+08:00">2025-05-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="chapter-20-prioritization-第二十章优先级排序">Chapter 20: Prioritization | <mark>第二十章：优先级排序</mark></h1>
+<p>In complex, dynamic environments, Agents frequently encounter numerous potential actions, conflicting goals, and limited resources. Without a defined process for determining the subsequent action, the agents may experience reduced efficiency, operational delays, or failures to achieve key objectives. The prioritization pattern addresses this issue by enabling agents to assess and rank tasks, objectives, or actions based on their significance, urgency, dependencies, and established criteria. This ensures the agents concentrate efforts on the most critical tasks, resulting in enhanced effectiveness and goal alignment.</p>
+<span id="more"></span>
+<p><mark>在复杂多变的环境中，智能体常常面临大量潜在行动、相互冲突的目标以及有限的资源。如果缺乏明确的流程来决定下一步行动，智能体可能会出现效率降低、运行延迟，甚至无法实现关键目标等问题。优先级排序模式通过让智能体根据重要性、紧迫性、依赖关系和既定标准来评估和排序任务、目标或行动，解决了这一问题。这确保智能体能够将精力集中在最关键的任务上，从而提升效能并实现与目标的对齐。</mark></p>
+<hr />
+<h2 id="prioritization-pattern-overview-优先级排序模式概述">Prioritization Pattern Overview | <mark>优先级排序模式概述</mark></h2>
+<p>Agents employ prioritization to effectively manage tasks, goals, and sub-goals, guiding subsequent actions. This process facilitates informed decision-making when addressing multiple demands, prioritizing vital or urgent activities over less critical ones. It is particularly relevant in real-world scenarios where resources are constrained, time is limited, and objectives may conflict.</p>
+<p><mark>智能体使用优先级排序来有效管理任务、目标和子目标，从而指导后续行动。这一过程有助于在面对多种需求时做出明智决策，优先处理重要或紧急的活动，而非不太关键的事项。这在资源受限、时间紧迫且目标可能相互冲突的现实场景中尤为重要。</mark></p>
+<p>The fundamental aspects of agent prioritization typically involve several elements. First, criteria definition establishes the rules or metrics for task evaluation. These may include urgency (time sensitivity of the task), importance (impact on the primary objective), dependencies (whether the task is a prerequisite for others), resource availability (readiness of necessary tools or information), cost/benefit analysis (effort versus expected outcome), and user preferences for personalized agents. Second, task evaluation involves assessing each potential task against these defined criteria, utilizing methods ranging from simple rules to complex scoring or reasoning by LLMs. Third, scheduling or selection logic refers to the algorithm that, based on the evaluations, selects the optimal next action or task sequence, potentially utilizing a queue or an advanced planning component. Finally, dynamic re-prioritization allows the agent to modify priorities as circumstances change, such as the emergence of a new critical event or an approaching deadline, ensuring agent adaptability and responsiveness.</p>
+<p><mark>智能体优先级排序的基本要素通常包括以下几个方面。首先，<strong>标准定义</strong>为任务评估建立规则或指标，可能包括紧迫性（任务的时间敏感度）、重要性（对主要目标的影响）、依赖关系（该任务是否是其他任务的前提）、资源可用性（所需工具或信息的就绪状态）、成本收益分析（投入与预期产出的对比）以及个性化智能体的用户偏好。其次，<strong>任务评估</strong>是根据这些定义的标准对每个潜在任务进行评估，使用的方法从简单规则到大语言模型（LLM）的复杂评分或推理不等。第三，<strong>调度或选择逻辑</strong>是指基于评估结果选择最优下一步行动或任务序列的算法，可能使用队列或高级规划组件。最后，<strong>动态重新排序</strong>允许智能体在情况发生变化时（如出现新的关键事件或截止日期临近）调整优先级，确保智能体的适应性和响应能力。</mark></p>
+<p>Prioritization can occur at various levels: selecting an overarching objective (high-level goal prioritization), ordering steps within a plan (sub-task prioritization), or choosing the next immediate action from available options (action selection). Effective prioritization enables agents to exhibit more intelligent, efficient, and robust behavior, especially in complex, multi-objective environments. This mirrors human team organization, where managers prioritize tasks by considering input from all members.</p>
+<p><mark>优先级排序可以发生在多个层次：选择总体目标（高层目标优先级排序）、安排计划中的步骤顺序（子任务优先级排序），或从可用选项中选择下一个立即行动（行动选择）。有效的优先级排序使智能体能够展现更智能、高效和稳健的行为，特别是在复杂的多目标环境中。这与人类团队组织方式类似，管理者会综合考虑所有成员的意见来确定任务优先级。</mark></p>
+<hr />
+<h2 id="practical-applications-use-cases-实际应用场景">Practical Applications &amp; Use Cases | <mark>实际应用场景</mark></h2>
+<p>In various real-world applications, AI agents demonstrate a sophisticated use of prioritization to make timely and effective decisions.</p>
+<p><mark>在各种实际应用中，AI 智能体展现出了对优先级排序的精妙运用，以做出及时有效的决策。</mark></p>
+<ul>
+<li><p><strong>Automated Customer Support</strong>: Agents prioritize urgent requests, like system outage reports, over routine matters, such as password resets. They may also give preferential treatment to high-value customers.</p></li>
+<li><p><mark><strong>自动化客户支持：</strong>智能体优先处理紧急请求（如系统故障报告），而非常规事务（如密码重置）。它们还可能优先服务高价值客户。</mark></p></li>
+<li><p><strong>Cloud Computing</strong>: AI manages and schedules resources by prioritizing allocation to critical applications during peak demand, while relegating less urgent batch jobs to off-peak hours to optimize costs.</p></li>
+<li><p><mark><strong>云计算：</strong>AI 通过在高峰需求期间优先为关键应用分配资源，同时将不太紧急的批处理任务安排在非高峰时段来管理和调度资源，从而优化成本。</mark></p></li>
+<li><p><strong>Autonomous Driving Systems</strong>: Continuously prioritize actions to ensure safety and efficiency. For example, braking to avoid a collision takes precedence over maintaining lane discipline or optimizing fuel efficiency.</p></li>
+<li><p><mark><strong>自动驾驶系统：</strong>持续对行动进行优先级排序以确保安全和效率。例如，制动避免碰撞的优先级高于保持车道纪律或优化燃油效率。</mark></p></li>
+<li><p><strong>Financial Trading</strong>: Bots prioritize trades by analyzing factors like market conditions, risk tolerance, profit margins, and real-time news, enabling prompt execution of high-priority transactions.</p></li>
+<li><p><mark><strong>金融交易：</strong>交易机器人通过分析市场状况、风险承受能力、利润率和实时新闻等因素来确定交易优先级，从而快速执行高优先级交易。</mark></p></li>
+<li><p><strong>Project Management</strong>: AI agents prioritize tasks on a project board based on deadlines, dependencies, team availability, and strategic importance.</p></li>
+<li><p><mark><strong>项目管理：</strong>AI 智能体根据截止日期、依赖关系、团队可用性和战略重要性，对项目看板上的任务进行优先级排序。</mark></p></li>
+<li><p><strong>Cybersecurity</strong>: Agents monitoring network traffic prioritize alerts by assessing threat severity, potential impact, and asset criticality, ensuring immediate responses to the most dangerous threats.</p></li>
+<li><p><mark><strong>网络安全：</strong>监控网络流量的智能体通过评估威胁严重程度、潜在影响和资产关键性来确定警报优先级，确保立即应对最危险的威胁。</mark></p></li>
+<li><p><strong>Personal Assistant AIs</strong>: Utilize prioritization to manage daily lives, organizing calendar events, reminders, and notifications according to user-defined importance, upcoming deadlines, and current context.</p></li>
+<li><p><mark><strong>个人助理 AI：</strong>利用优先级排序来管理日常生活，根据用户定义的重要性、即将到来的截止日期和当前情境组织日历事件、提醒和通知。</mark></p></li>
+</ul>
+<p>These examples collectively illustrate how the ability to prioritize is fundamental to the enhanced performance and decision-making capabilities of AI agents across a wide spectrum of situations.</p>
+<p><mark>这些示例共同说明了优先级排序能力对于 AI 智能体在各种情境中提升性能和决策能力的重要性。</mark></p>
+<hr />
+<h2 id="hands-on-code-example-使用-langchain-的实战代码">Hands-On Code Example | <mark>使用 LangChain 的实战代码</mark></h2>
+<p>The following demonstrates the development of a Project Manager AI agent using LangChain. This agent facilitates the creation, prioritization, and assignment of tasks to team members, illustrating the application of large language models with bespoke tools for automated project management.</p>
+<p><mark>以下演示了如何使用 LangChain 开发项目经理 AI 智能体。该智能体能够创建、排序任务优先级并将任务分配给团队成员，展示了大语言模型与定制工具在自动化项目管理中的应用。</mark></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> asyncio</span><br><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">List</span>, <span class="type">Optional</span>, <span class="type">Dict</span>, <span class="type">Type</span></span><br><span class="line"><span class="keyword">from</span> dotenv <span class="keyword">import</span> load_dotenv</span><br><span class="line"><span class="keyword">from</span> pydantic <span class="keyword">import</span> BaseModel, Field</span><br><span class="line"><span class="keyword">from</span> langchain_core.prompts <span class="keyword">import</span> ChatPromptTemplate</span><br><span class="line"><span class="keyword">from</span> langchain_core.tools <span class="keyword">import</span> Tool</span><br><span class="line"><span class="keyword">from</span> langchain_openai <span class="keyword">import</span> ChatOpenAI</span><br><span class="line"><span class="keyword">from</span> langchain.agents <span class="keyword">import</span> AgentExecutor, create_react_agent</span><br><span class="line"><span class="keyword">from</span> langchain.memory <span class="keyword">import</span> ConversationBufferMemory</span><br><span class="line"></span><br><span class="line"><span class="comment"># --- 0. Configuration and Setup ---</span></span><br><span class="line"><span class="comment"># Loads the OPENAI_API_KEY from the .env file.</span></span><br><span class="line">load_dotenv()</span><br><span class="line"></span><br><span class="line"><span class="comment"># The ChatOpenAI client automatically picks up the API key from the environment.</span></span><br><span class="line">llm = ChatOpenAI(temperature=<span class="number">0.5</span>, model=<span class="string">&quot;gpt-4o-mini&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># --- 1. Task Management System ---</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Task</span>(<span class="title class_ inherited__">BaseModel</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;Represents a single task in the system.&quot;&quot;&quot;</span></span><br><span class="line">    <span class="built_in">id</span>: <span class="built_in">str</span></span><br><span class="line">    description: <span class="built_in">str</span></span><br><span class="line">    priority: <span class="type">Optional</span>[<span class="built_in">str</span>] = <span class="literal">None</span>  <span class="comment"># P0, P1, P2</span></span><br><span class="line">    assigned_to: <span class="type">Optional</span>[<span class="built_in">str</span>] = <span class="literal">None</span> <span class="comment"># Name of the worker</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">SuperSimpleTaskManager</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;An efficient and robust in-memory task manager.&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="comment"># Use a dictionary for O(1) lookups, updates, and deletions.</span></span><br><span class="line">        self.tasks: <span class="type">Dict</span>[<span class="built_in">str</span>, Task] = &#123;&#125;</span><br><span class="line">        self.next_task_id = <span class="number">1</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">create_task</span>(<span class="params">self, description: <span class="built_in">str</span></span>) -&gt; Task:</span><br><span class="line">        <span class="string">&quot;&quot;&quot;Creates and stores a new task.&quot;&quot;&quot;</span></span><br><span class="line">        task_id = <span class="string">f&quot;TASK-<span class="subst">&#123;self.next_task_id:03d&#125;</span>&quot;</span></span><br><span class="line">        new_task = Task(<span class="built_in">id</span>=task_id, description=description)</span><br><span class="line">        self.tasks[task_id] = new_task</span><br><span class="line">        self.next_task_id += <span class="number">1</span></span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;DEBUG: Task created - <span class="subst">&#123;task_id&#125;</span>: <span class="subst">&#123;description&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span> new_task</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">update_task</span>(<span class="params">self, task_id: <span class="built_in">str</span>, **kwargs</span>) -&gt; <span class="type">Optional</span>[Task]:</span><br><span class="line">        <span class="string">&quot;&quot;&quot;Safely updates a task using Pydantic&#x27;s model_copy.&quot;&quot;&quot;</span></span><br><span class="line">        task = self.tasks.get(task_id)</span><br><span class="line">        <span class="keyword">if</span> task:</span><br><span class="line">            <span class="comment"># Use model_copy for type-safe updates.</span></span><br><span class="line">            update_data = &#123;k: v <span class="keyword">for</span> k, v <span class="keyword">in</span> kwargs.items() <span class="keyword">if</span> v <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>&#125;</span><br><span class="line">            updated_task = task.model_copy(update=update_data)</span><br><span class="line">            self.tasks[task_id] = updated_task</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;DEBUG: Task <span class="subst">&#123;task_id&#125;</span> updated with <span class="subst">&#123;update_data&#125;</span>&quot;</span>)</span><br><span class="line">            <span class="keyword">return</span> updated_task</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;DEBUG: Task <span class="subst">&#123;task_id&#125;</span> not found for update.&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">None</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">list_all_tasks</span>(<span class="params">self</span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">        <span class="string">&quot;&quot;&quot;Lists all tasks currently in the system.&quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> self.tasks:</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;No tasks in the system.&quot;</span></span><br><span class="line"></span><br><span class="line">        task_strings = []</span><br><span class="line">        <span class="keyword">for</span> task <span class="keyword">in</span> self.tasks.values():</span><br><span class="line">            task_strings.append(</span><br><span class="line">                <span class="string">f&quot;ID: <span class="subst">&#123;task.<span class="built_in">id</span>&#125;</span>, Desc: &#x27;<span class="subst">&#123;task.description&#125;</span>&#x27;, &quot;</span></span><br><span class="line">                <span class="string">f&quot;Priority: <span class="subst">&#123;task.priority <span class="keyword">or</span> <span class="string">&#x27;N/A&#x27;</span>&#125;</span>, &quot;</span></span><br><span class="line">                <span class="string">f&quot;Assigned To: <span class="subst">&#123;task.assigned_to <span class="keyword">or</span> <span class="string">&#x27;N/A&#x27;</span>&#125;</span>&quot;</span></span><br><span class="line">            )</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;Current Tasks:\n&quot;</span> + <span class="string">&quot;\n&quot;</span>.join(task_strings)</span><br><span class="line"></span><br><span class="line">task_manager = SuperSimpleTaskManager()</span><br><span class="line"></span><br><span class="line"><span class="comment"># --- 2. Tools for the Project Manager Agent ---</span></span><br><span class="line"><span class="comment"># Use Pydantic models for tool arguments for better validation and clarity.</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">CreateTaskArgs</span>(<span class="title class_ inherited__">BaseModel</span>):</span><br><span class="line">    description: <span class="built_in">str</span> = Field(description=<span class="string">&quot;A detailed description of the task.&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">PriorityArgs</span>(<span class="title class_ inherited__">BaseModel</span>):</span><br><span class="line">    task_id: <span class="built_in">str</span> = Field(description=<span class="string">&quot;The ID of the task to update, e.g., &#x27;TASK-001&#x27;.&quot;</span>)</span><br><span class="line">    priority: <span class="built_in">str</span> = Field(description=<span class="string">&quot;The priority to set. Must be one of: &#x27;P0&#x27;, &#x27;P1&#x27;, &#x27;P2&#x27;.&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">AssignWorkerArgs</span>(<span class="title class_ inherited__">BaseModel</span>):</span><br><span class="line">    task_id: <span class="built_in">str</span> = Field(description=<span class="string">&quot;The ID of the task to update, e.g., &#x27;TASK-001&#x27;.&quot;</span>)</span><br><span class="line">    worker_name: <span class="built_in">str</span> = Field(description=<span class="string">&quot;The name of the worker to assign the task to.&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">create_new_task_tool</span>(<span class="params">description: <span class="built_in">str</span></span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;Creates a new project task with the given description.&quot;&quot;&quot;</span></span><br><span class="line">    task = task_manager.create_task(description)</span><br><span class="line">    <span class="keyword">return</span> <span class="string">f&quot;Created task <span class="subst">&#123;task.<span class="built_in">id</span>&#125;</span>: &#x27;<span class="subst">&#123;task.description&#125;</span>&#x27;.&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">assign_priority_to_task_tool</span>(<span class="params">task_id: <span class="built_in">str</span>, priority: <span class="built_in">str</span></span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;Assigns a priority (P0, P1, P2) to a given task ID.&quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">if</span> priority <span class="keyword">not</span> <span class="keyword">in</span> [<span class="string">&quot;P0&quot;</span>, <span class="string">&quot;P1&quot;</span>, <span class="string">&quot;P2&quot;</span>]:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;Invalid priority. Must be P0, P1, or P2.&quot;</span></span><br><span class="line">    task = task_manager.update_task(task_id, priority=priority)</span><br><span class="line">    <span class="keyword">return</span> <span class="string">f&quot;Assigned priority <span class="subst">&#123;priority&#125;</span> to task <span class="subst">&#123;task.<span class="built_in">id</span>&#125;</span>.&quot;</span> <span class="keyword">if</span> task <span class="keyword">else</span> <span class="string">f&quot;Task <span class="subst">&#123;task_id&#125;</span> not found.&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">assign_task_to_worker_tool</span>(<span class="params">task_id: <span class="built_in">str</span>, worker_name: <span class="built_in">str</span></span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;Assigns a task to a specific worker.&quot;&quot;&quot;</span></span><br><span class="line">    task = task_manager.update_task(task_id, assigned_to=worker_name)</span><br><span class="line">    <span class="keyword">return</span> <span class="string">f&quot;Assigned task <span class="subst">&#123;task.<span class="built_in">id</span>&#125;</span> to <span class="subst">&#123;worker_name&#125;</span>.&quot;</span> <span class="keyword">if</span> task <span class="keyword">else</span> <span class="string">f&quot;Task <span class="subst">&#123;task_id&#125;</span> not found.&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># All tools the PM agent can use</span></span><br><span class="line">pm_tools = [</span><br><span class="line">    Tool(</span><br><span class="line">        name=<span class="string">&quot;create_new_task&quot;</span>,</span><br><span class="line">        func=create_new_task_tool,</span><br><span class="line">        description=<span class="string">&quot;Use this first to create a new task and get its ID.&quot;</span>,</span><br><span class="line">        args_schema=CreateTaskArgs</span><br><span class="line">    ),</span><br><span class="line">    Tool(</span><br><span class="line">        name=<span class="string">&quot;assign_priority_to_task&quot;</span>,</span><br><span class="line">        func=assign_priority_to_task_tool,</span><br><span class="line">        description=<span class="string">&quot;Use this to assign a priority to a task after it has been created.&quot;</span>,</span><br><span class="line">        args_schema=PriorityArgs</span><br><span class="line">    ),</span><br><span class="line">    Tool(</span><br><span class="line">        name=<span class="string">&quot;assign_task_to_worker&quot;</span>,</span><br><span class="line">        func=assign_task_to_worker_tool,</span><br><span class="line">        description=<span class="string">&quot;Use this to assign a task to a specific worker after it has been created.&quot;</span>,</span><br><span class="line">        args_schema=AssignWorkerArgs</span><br><span class="line">    ),</span><br><span class="line">    Tool(</span><br><span class="line">        name=<span class="string">&quot;list_all_tasks&quot;</span>,</span><br><span class="line">        func=task_manager.list_all_tasks,</span><br><span class="line">        description=<span class="string">&quot;Use this to list all current tasks and their status.&quot;</span></span><br><span class="line">    ),</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"><span class="comment"># --- 3. Project Manager Agent Definition ---</span></span><br><span class="line">pm_prompt_template = ChatPromptTemplate.from_messages([</span><br><span class="line">    (<span class="string">&quot;system&quot;</span>, <span class="string">&quot;&quot;&quot;You are a focused Project Manager LLM agent. Your goal is to manage project tasks efficiently.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">When you receive a new task request, follow these steps:</span></span><br><span class="line"><span class="string">1.  First, create the task with the given description using the `create_new_task` tool. You must do this first to get a `task_id`.</span></span><br><span class="line"><span class="string">2.  Next, analyze the user&#x27;s request to see if a priority or an assignee is mentioned.</span></span><br><span class="line"><span class="string">    - If a priority is mentioned (e.g., &quot;urgent&quot;, &quot;ASAP&quot;, &quot;critical&quot;), map it to P0. Use `assign_priority_to_task`.</span></span><br><span class="line"><span class="string">    - If a worker is mentioned, use `assign_task_to_worker`.</span></span><br><span class="line"><span class="string">3.  If any information (priority, assignee) is missing, you must make a reasonable default assignment (e.g., assign P1 priority and assign to &#x27;Worker A&#x27;).</span></span><br><span class="line"><span class="string">4.  Once the task is fully processed, use `list_all_tasks` to show the final state.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Available workers: &#x27;Worker A&#x27;, &#x27;Worker B&#x27;, &#x27;Review Team&#x27;</span></span><br><span class="line"><span class="string">Priority levels: P0 (highest), P1 (medium), P2 (lowest)</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span>),</span><br><span class="line">    (<span class="string">&quot;placeholder&quot;</span>, <span class="string">&quot;&#123;chat_history&#125;&quot;</span>),</span><br><span class="line">    (<span class="string">&quot;human&quot;</span>, <span class="string">&quot;&#123;input&#125;&quot;</span>),</span><br><span class="line">    (<span class="string">&quot;placeholder&quot;</span>, <span class="string">&quot;&#123;agent_scratchpad&#125;&quot;</span>)</span><br><span class="line">])</span><br><span class="line"></span><br><span class="line"><span class="comment"># Create the agent executor</span></span><br><span class="line">pm_agent = create_react_agent(llm, pm_tools, pm_prompt_template)</span><br><span class="line">pm_agent_executor = AgentExecutor(</span><br><span class="line">    agent=pm_agent,</span><br><span class="line">    tools=pm_tools,</span><br><span class="line">    verbose=<span class="literal">True</span>,</span><br><span class="line">    handle_parsing_errors=<span class="literal">True</span>,</span><br><span class="line">    memory=ConversationBufferMemory(memory_key=<span class="string">&quot;chat_history&quot;</span>, return_messages=<span class="literal">True</span>)</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># --- 4. Simple Interaction Flow ---</span></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">run_simulation</span>():</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;--- Project Manager Simulation ---&quot;</span>)</span><br><span class="line">    <span class="comment"># Scenario 1: Handle a new, urgent feature request</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;\n[User Request] I need a new login system implemented ASAP. It should be assigned to Worker B.&quot;</span>)</span><br><span class="line">    <span class="keyword">await</span> pm_agent_executor.ainvoke(&#123;<span class="string">&quot;input&quot;</span>: <span class="string">&quot;Create a task to implement a new login system. It&#x27;s urgent and should be assigned to Worker B.&quot;</span>&#125;)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;\n&quot;</span> + <span class="string">&quot;-&quot;</span>*<span class="number">60</span> + <span class="string">&quot;\n&quot;</span>)</span><br><span class="line">    <span class="comment"># Scenario 2: Handle a less urgent content update with fewer details</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;[User Request] We need to review the marketing website content.&quot;</span>)</span><br><span class="line">    <span class="keyword">await</span> pm_agent_executor.ainvoke(&#123;<span class="string">&quot;input&quot;</span>: <span class="string">&quot;Manage a new task: Review marketing website content.&quot;</span>&#125;)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;\n--- Simulation Complete ---&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Run the simulation</span></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    asyncio.run(run_simulation())</span><br></pre></td></tr></table></figure>
+<p>This code implements a simple task management system using Python and LangChain, designed to simulate a project manager agent powered by a large language model.</p>
+<p><mark>该代码使用 Python 和 LangChain 实现了一个简单的任务管理系统，旨在模拟由大语言模型驱动的项目经理智能体。</mark></p>
+<p>The system employs a SuperSimpleTaskManager class to efficiently manage tasks within memory, utilizing a dictionary structure for rapid data retrieval. Each task is represented by a Task Pydantic model, which encompasses attributes such as a unique identifier, a descriptive text, an optional priority level (P0, P1, P2), and an optional assignee designation.Memory usage varies based on task type, the number of workers, and other contributing factors. The task manager provides methods for task creation, task modification, and retrieval of all tasks.</p>
+<p><mark>系统采用 <code>SuperSimpleTaskManager</code> 类在内存中高效管理任务，利用字典结构实现快速数据检索。每个任务由 <code>Task</code> Pydantic 模型表示，包含唯一标识符、描述文本、可选优先级（P0、P1、P2）和可选分配对象等属性。内存使用量因任务类型、工作人员数量和其他因素而异。任务管理器提供任务创建、修改和检索所有任务的方法。</mark></p>
+<p>The agent interacts with the task manager via a defined set of Tools. These tools facilitate the creation of new tasks, the assignment of priorities to tasks, the allocation of tasks to personnel, and the listing of all tasks. Each tool is encapsulated to enable interaction with an instance of the SuperSimpleTaskManager. Pydantic models are utilized to delineate the requisite arguments for the tools, thereby ensuring data validation.</p>
+<p><mark>智能体通过一组定义好的工具与任务管理器交互。这些工具用于创建新任务、分配任务优先级、将任务分配给人员以及列出所有任务。每个工具都被封装以便与 <code>SuperSimpleTaskManager</code> 实例交互。使用 Pydantic 模型来定义工具所需的参数，从而确保数据验证。</mark></p>
+<p>An AgentExecutor is configured with the language model, the toolset, and a conversation memory component to maintain contextual continuity. A specific ChatPromptTemplate is defined to direct the agent's behavior in its project management role. The prompt instructs the agent to initiate by creating a task, subsequently assigning priority and personnel as specified, and concluding with a comprehensive task list. Default assignments, such as P1 priority and 'Worker A', are stipulated within the prompt for instances where information is absent.</p>
+<p><mark>通过配置语言模型、工具集和对话记忆组件来构建 <code>AgentExecutor</code>，以保持上下文连续性。定义了特定的 <code>ChatPromptTemplate</code> 来指导智能体在项目管理角色中的行为。提示指示智能体首先创建任务，然后根据指定分配优先级和人员，最后提供完整的任务列表。在缺少信息的情况下，提示中规定了默认分配（如 P1 优先级和「Worker A」）。</mark></p>
+<p>The code incorporates a simulation function (run_simulation) of asynchronous nature to demonstrate the agent's operational capacity. The simulation executes two distinct scenarios: the management of an urgent task with designated personnel, and the management of a less urgent task with minimal input. The agent's actions and logical processes are outputted to the console due to the activation of verbose=True within the AgentExecutor.</p>
+<p><mark>代码包含一个异步模拟函数（<code>run_simulation</code>）来演示智能体的运行能力。该模拟执行两个不同的场景：管理指定人员的紧急任务，以及管理输入最少的非紧急任务。由于在 <code>AgentExecutor</code> 中激活了 <code>verbose=True</code>，智能体的动作和逻辑过程会输出到控制台。</mark></p>
+<hr />
+<h2 id="at-a-glance-要点速览">At a Glance | <mark>要点速览</mark></h2>
+<p><strong>What:</strong> AI agents operating in complex environments face a multitude of potential actions, conflicting goals, and finite resources. Without a clear method to determine their next move, these agents risk becoming inefficient and ineffective. This can lead to significant operational delays or a complete failure to accomplish primary objectives. The core challenge is to manage this overwhelming number of choices to ensure the agent acts purposefully and logically.</p>
+<p><mark><strong>问题所在：</strong>在复杂环境中运行的 AI 智能体面临大量潜在行动、相互冲突的目标和有限的资源。如果没有明确的方法来确定下一步行动，这些智能体可能会变得低效和无效。这可能导致严重的运行延迟，甚至完全无法实现主要目标。核心挑战是管理这些压倒性的选择，以确保智能体有目的性和逻辑性地行动。</mark></p>
+<p><strong>Why:</strong> The Prioritization pattern provides a standardized solution for this problem by enabling agents to rank tasks and goals. This is achieved by establishing clear criteria such as urgency, importance, dependencies, and resource cost. The agent then evaluates each potential action against these criteria to determine the most critical and timely course of action. This Agentic capability allows the system to dynamically adapt to changing circumstances and manage constrained resources effectively. By focusing on the highest-priority items, the agent's behavior becomes more intelligent, robust, and aligned with its strategic goals.</p>
+<p><mark><strong>解决之道：</strong>优先级排序模式通过让智能体对任务和目标进行排序，为这一问题提供了标准化解决方案。这是通过建立明确标准（如紧迫性、重要性、依赖关系和资源成本）来实现的。然后，智能体根据这些标准评估每个潜在行动，以确定最关键和最及时的行动方案。这种具智能体特性的能力使系统能够动态适应变化的情况，并有效管理受限资源。通过专注于最高优先级项目，智能体的行为变得更加智能、稳健，并与其战略目标保持一致。</mark></p>
+<p><strong>Rule of thumb:</strong> Use the Prioritization pattern when an Agentic system must autonomously manage multiple, often conflicting, tasks or goals under resource constraints to operate effectively in a dynamic environment.</p>
+<p><mark><strong>经验法则：</strong>当具智能体特性的系统需要在资源受限的情况下自主管理多个（通常相互冲突的）任务或目标，以便在动态环境中有效运行时，应使用优先级排序模式。</mark></p>
+<p><strong>Visual summary:</strong></p>
+<p><mark><strong>可视化总结：</strong></mark></p>
+<figure>
+<img src="/img3/Agentic%20Design%20Patterns/chapter20_fig1.png" alt="Prioritization Design Pattern" /><figcaption aria-hidden="true">Prioritization Design Pattern</figcaption>
+</figure>
+<p><mark><strong>图 1：</strong>优先级排序设计模式</mark></p>
+<hr />
+<h2 id="key-takeaways-核心要点">Key Takeaways | <mark>核心要点</mark></h2>
+<ul>
+<li><p>Prioritization enables AI agents to function effectively in complex, multi-faceted environments.</p></li>
+<li><p><mark>优先级排序使 AI 智能体能够在复杂多变的环境中有效运作。</mark></p></li>
+<li><p>Agents utilize established criteria such as urgency, importance, and dependencies to evaluate and rank tasks.</p></li>
+<li><p><mark>智能体利用既定标准（如紧迫性、重要性和依赖关系）来评估和排序任务。</mark></p></li>
+<li><p>Dynamic re-prioritization allows agents to adjust their operational focus in response to real-time changes.</p></li>
+<li><p><mark>动态重新排序使智能体能够根据实时变化调整其运行重点。</mark></p></li>
+<li><p>Prioritization occurs at various levels, encompassing overarching strategic objectives and immediate tactical decisions.</p></li>
+<li><p><mark>优先级排序发生在多个层次，涵盖总体战略目标和即时战术决策。</mark></p></li>
+<li><p>Effective prioritization results in increased efficiency and improved operational robustness of AI agents.</p></li>
+<li><p><mark>有效的优先级排序能够提升 AI 智能体的效率和运行稳健性。</mark></p></li>
+</ul>
+<hr />
+<h2 id="conclusions-结语">Conclusions | <mark>结语</mark></h2>
+<p>In conclusion, the prioritization pattern is a cornerstone of effective agentic AI, equipping systems to navigate the complexities of dynamic environments with purpose and intelligence. It allows an agent to autonomously evaluate a multitude of conflicting tasks and goals, making reasoned decisions about where to focus its limited resources. This agentic capability moves beyond simple task execution, enabling the system to act as a proactive, strategic decision-maker. By weighing criteria such as urgency, importance, and dependencies, the agent demonstrates a sophisticated, human-like reasoning process.</p>
+<p><mark>总之，优先级排序模式是高效的具智能体特性的 AI 的基石，使系统能够有目的性和智能性地应对动态环境的复杂性。它使智能体能够自主评估大量相互冲突的任务和目标，就如何集中有限资源做出理性决策。这种具智能体特性的能力超越了简单的任务执行，使系统能够成为主动的战略决策者。通过权衡紧迫性、重要性和依赖关系等标准，智能体展现出复杂的、类人的推理过程。</mark></p>
+<p>A key feature of this agentic behavior is dynamic re-prioritization, which grants the agent the autonomy to adapt its focus in real-time as conditions change. As demonstrated in the code example, the agent interprets ambiguous requests, autonomously selects and uses the appropriate tools, and logically sequences its actions to fulfill its objectives. This ability to self-manage its workflow is what separates a true agentic system from a simple automated script. Ultimately, mastering prioritization is fundamental for creating robust and intelligent agents that can operate effectively and reliably in any complex, real-world scenario.</p>
+<p><mark>这种具智能体特性的行为的一个关键特征是动态重新排序，它赋予智能体在条件变化时实时调整其关注点的自主性。正如代码示例所展示的，智能体能够解读模糊的请求，自主选择并使用适当的工具，并合理安排其行动顺序以实现目标。这种自我管理工作流程的能力是真正具智能体特性的系统与简单自动化脚本的区别所在。归根结底，掌握优先级排序是创建能够在任何复杂现实场景中有效且可靠运行的稳健智能体的基础。</mark></p>
+<hr />
+<h2 id="references-参考文献">References | <mark>参考文献</mark></h2>
+<ol type="1">
+<li><p>Examining the Security of Artificial Intelligence in Project Management: A Case Study of AI-driven Project Scheduling and Resource Allocation in Information Systems Projects ; <a target="_blank" rel="noopener" href="https://www.irejournals.com/paper-details/1706160">https://www.irejournals.com/paper-details/1706160</a></p>
+<p><mark>人工智能在项目管理中的安全性研究：信息系统项目中 AI 驱动的项目调度与资源分配案例研究</mark></p></li>
+<li><p>AI-Driven Decision Support Systems in Agile Software Project Management: Enhancing Risk Mitigation and Resource Allocation; <a target="_blank" rel="noopener" href="https://www.mdpi.com/2079-8954/13/3/208">https://www.mdpi.com/2079-8954/13/3/208</a></p>
+<p><mark>敏捷软件项目管理中的 AI 驱动决策支持系统：增强风险缓解与资源分配</mark></p></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/05/20/%E3%80%8AAgentic%20Design%20Patterns%E3%80%8B%E7%AC%AC%E5%8D%81%E4%B9%9D%E7%AB%A0/" rel="prev" title="《Agentic Design Patterns》第十九章">
+                  <i class="fa fa-chevron-left"></i> 《Agentic Design Patterns》第十九章
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/05/22/%E3%80%8AAgentic%20Design%20Patterns%E3%80%8B%E7%AC%AC%E4%BA%8C%E5%8D%81%E4%B8%80%E7%AB%A0/" rel="next" title="《Agentic Design Patterns》第二十一章">
+                  《Agentic Design Patterns》第二十一章 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

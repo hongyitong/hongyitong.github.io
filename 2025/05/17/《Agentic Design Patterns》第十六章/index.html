@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"enable":true,"style":"tabs","active":"giscus","storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+
+
+    <meta name="description" content="Chapter 16: Resource-Aware Optimization | 第 16 章：资源感知优化 Resource-Aware Optimization enables intelligent agents to dynamically monitor and manage computational, temporal, and financial resources during">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《Agentic Design Patterns》第十六章">
+<meta property="og:url" content="http://hongyitong.github.io/2025/05/17/%E3%80%8AAgentic%20Design%20Patterns%E3%80%8B%E7%AC%AC%E5%8D%81%E5%85%AD%E7%AB%A0/index.html">
+<meta property="og:site_name" content="墨语浮生">
+<meta property="og:description" content="Chapter 16: Resource-Aware Optimization | 第 16 章：资源感知优化 Resource-Aware Optimization enables intelligent agents to dynamically monitor and manage computational, temporal, and financial resources during">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Agentic%20Design%20Patterns/chapter16_fig1.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Agentic%20Design%20Patterns/chapter16_fig2.png">
+<meta property="article:published_time" content="2025-05-16T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-03-02T03:21:51.171Z">
+<meta property="article:author" content="Rayman.hung">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hongyitong.github.io/img3/Agentic%20Design%20Patterns/chapter16_fig1.png">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2025/05/17/%E3%80%8AAgentic%20Design%20Patterns%E3%80%8B%E7%AC%AC%E5%8D%81%E5%85%AD%E7%AB%A0/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2025/05/17/%E3%80%8AAgentic%20Design%20Patterns%E3%80%8B%E7%AC%AC%E5%8D%81%E5%85%AD%E7%AB%A0/","path":"2025/05/17/《Agentic Design Patterns》第十六章/","title":"《Agentic Design Patterns》第十六章"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>《Agentic Design Patterns》第十六章 | 墨语浮生</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZXGEJDXQ33"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-ZXGEJDXQ33","only_pageview":false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?ff358b9c7e949787b074bfc9c8019a9d"></script>
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">墨语浮生</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#chapter-16-resource-aware-optimization-%E7%AC%AC-16-%E7%AB%A0%E8%B5%84%E6%BA%90%E6%84%9F%E7%9F%A5%E4%BC%98%E5%8C%96"><span class="nav-text">Chapter 16: Resource-Aware Optimization | 第 16 章：资源感知优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#practical-applications-use-cases-%E5%AE%9E%E9%99%85%E5%BA%94%E7%94%A8%E4%B8%8E%E7%94%A8%E4%BE%8B"><span class="nav-text">Practical Applications &amp; Use Cases | 实际应用与用例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hands-on-code-example-%E5%AE%9E%E6%88%98%E4%BB%A3%E7%A0%81%E7%A4%BA%E4%BE%8B"><span class="nav-text">Hands-On Code Example | 实战代码示例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#router-agent-%E8%B7%AF%E7%94%B1%E6%99%BA%E8%83%BD%E4%BD%93"><span class="nav-text">Router Agent | 路由智能体</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#critique-agent-%E8%AF%84%E8%AE%BA%E6%99%BA%E8%83%BD%E4%BD%93"><span class="nav-text">Critique Agent | 评论智能体</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hands-on-code-with-openai-%E4%BD%BF%E7%94%A8-openai-%E7%9A%84%E5%AE%9E%E6%88%98%E4%BB%A3%E7%A0%81"><span class="nav-text">Hands-On Code with OpenAI | 使用 OpenAI 的实战代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hands-on-code-example-openrouter-%E4%BD%BF%E7%94%A8-openrouter-%E7%9A%84%E5%AE%9E%E6%88%98%E4%BB%A3%E7%A0%81"><span class="nav-text">Hands-On Code Example (OpenRouter) | 使用 OpenRouter 的实战代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#beyond-dynamic-model-switching-a-spectrum-of-agent-resource-optimizations-%E8%B6%85%E8%B6%8A%E5%8A%A8%E6%80%81%E6%A8%A1%E5%9E%8B%E5%88%87%E6%8D%A2%E6%99%BA%E8%83%BD%E4%BD%93%E8%B5%84%E6%BA%90%E4%BC%98%E5%8C%96%E7%9A%84%E5%85%A8%E6%99%AF"><span class="nav-text">Beyond Dynamic Model Switching: A Spectrum of Agent Resource Optimizations | 超越动态模型切换：智能体资源优化的全景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#at-a-glance-%E8%A6%81%E7%82%B9%E9%80%9F%E8%A7%88"><span class="nav-text">At a Glance | 要点速览</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#visual-summary-%E5%8F%AF%E8%A7%86%E5%8C%96%E6%91%98%E8%A6%81"><span class="nav-text">Visual Summary | 可视化摘要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#key-takeaways-%E6%A0%B8%E5%BF%83%E8%A6%81%E7%82%B9"><span class="nav-text">Key Takeaways | 核心要点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#conclusions-%E7%BB%93%E8%AE%BA"><span class="nav-text">Conclusions | 结论</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#references"><span class="nav-text">References</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、心情记录</div>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2025/05/17/%E3%80%8AAgentic%20Design%20Patterns%E3%80%8B%E7%AC%AC%E5%8D%81%E5%85%AD%E7%AB%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="《Agentic Design Patterns》第十六章 | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《Agentic Design Patterns》第十六章
+        </h1>
+
+        </h1>
+          
+             <p class="post-subtitle">资源感知优化</p>
+          
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-05-17 00:00:00" itemprop="dateCreated datePublished" datetime="2025-05-17T00:00:00+08:00">2025-05-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="chapter-16-resource-aware-optimization-第-16-章资源感知优化">Chapter 16: Resource-Aware Optimization | <mark>第 16 章：资源感知优化</mark></h1>
+<p>Resource-Aware Optimization enables intelligent agents to dynamically monitor and manage computational, temporal, and financial resources during operation. This differs from simple planning, which primarily focuses on action sequencing. Resource-Aware Optimization requires agents to make decisions regarding action execution to achieve goals within specified resource budgets or to optimize efficiency. This involves choosing between more accurate but expensive models and faster, lower-cost ones, or deciding whether to allocate additional compute for a more refined response versus returning a quicker, less detailed answer.</p>
+<span id="more"></span>
+<p><mark>资源感知优化使具智能体特性的系统能够在运行过程中动态监控和管理计算、时间和财务资源。这与简单的规划不同，后者主要关注动作序列。资源感知优化要求智能体在执行动作时做出决策，以在指定的资源预算内实现目标或优化效率。这涉及在更准确但昂贵的模型与更快速但成本较低的模型之间进行选择，或者决定是否为更精细的响应分配额外的计算资源，还是返回更快速但不太详细的答案。</mark></p>
+<p>For example, consider an agent tasked with analyzing a large dataset for a financial analyst. If the analyst needs a preliminary report immediately, the agent might use a faster, more affordable model to quickly summarize key trends. However, if the analyst requires a highly accurate forecast for a critical investment decision and has a larger budget and more time, the agent would allocate more resources to utilize a powerful, slower, but more precise predictive model. A key strategy in this category is the fallback mechanism, which acts as a safeguard when a preferred model is unavailable due to being overloaded or throttled. To ensure graceful degradation, the system automatically switches to a default or more affordable model, maintaining service continuity instead of failing completely.</p>
+<p><mark>例如，考虑一个负责为金融分析师分析大型数据集的智能体。如果分析师需要立即获得初步报告，智能体可能会使用更快速、更实惠的模型来快速总结关键趋势。然而，如果分析师需要为关键投资决策提供高度准确的预测，并且有更大的预算和更多时间，智能体将分配更多资源来使用强大、较慢但更精确的预测模型。此类别中的一个关键策略是后备机制，当首选模型由于过载或限流而不可用时，它充当保护措施。为确保优雅降级，系统会自动切换到默认或更实惠的模型，从而维持服务连续性，而不是完全失败。</mark></p>
+<hr />
+<h2 id="practical-applications-use-cases-实际应用与用例">Practical Applications &amp; Use Cases | <mark>实际应用与用例</mark></h2>
+<p>Practical use cases include:</p>
+<p><mark>实际用例包括：</mark></p>
+<ul>
+<li><strong>Cost-Optimized LLM Usage</strong>: An agent deciding whether to use a large, expensive LLM for complex tasks or a smaller, more affordable one for simpler queries, based on a budget constraint.</li>
+</ul>
+<p><mark>* <strong>成本优化的 LLM 使用：</strong>智能体根据预算约束，决定是使用大型、昂贵的 LLM 处理复杂任务，还是使用较小、更实惠的 LLM 处理简单查询。</mark></p>
+<ul>
+<li><strong>Latency-Sensitive Operations</strong>: In real-time systems, an agent chooses a faster but potentially less comprehensive reasoning path to ensure a timely response.</li>
+</ul>
+<p><mark>* <strong>延迟敏感操作：</strong>在实时系统中，智能体选择更快但可能不太全面的推理路径，以确保及时响应。</mark></p>
+<ul>
+<li><strong>Energy Efficiency</strong>: For agents deployed on edge devices or with limited power, optimizing their processing to conserve battery life.</li>
+</ul>
+<p><mark>* <strong>能源效率：</strong>对于部署在边缘设备或电力有限的智能体，优化其处理以节省电池寿命。</mark></p>
+<ul>
+<li><strong>Fallback for service reliability</strong>: An agent automatically switches to a backup model when the primary choice is unavailable, ensuring service continuity and graceful degradation.</li>
+</ul>
+<p><mark>* <strong>服务可靠性的后备机制：</strong>当主要选择不可用时，智能体自动切换到备份模型，确保服务连续性和优雅降级。</mark></p>
+<ul>
+<li><strong>Data Usage Management</strong>: An agent opting for summarized data retrieval instead of full dataset downloads to save bandwidth or storage.</li>
+</ul>
+<p><mark>* <strong>数据使用管理：</strong>智能体选择摘要数据检索而不是完整数据集下载，以节省带宽或存储空间。</mark></p>
+<ul>
+<li><strong>Adaptive Task Allocation</strong>: In multi-agent systems, agents self-assign tasks based on their current computational load or available time.</li>
+</ul>
+<p><mark>* <strong>自适应任务分配：</strong>在多智能体系统中，智能体根据当前计算负载或可用时间自行分配任务。</mark></p>
+<hr />
+<h2 id="hands-on-code-example-实战代码示例">Hands-On Code Example | <mark>实战代码示例</mark></h2>
+<p>An intelligent system for answering user questions can assess the difficulty of each question. For simple queries, it utilizes a cost-effective language model such as Gemini Flash. For complex inquiries, a more powerful, but expensive, language model (like Gemini Pro) is considered. The decision to use the more powerful model also depends on resource availability, specifically budget and time constraints. This system dynamically selects appropriate models.</p>
+<p><mark>一个用于回答用户问题的智能系统可以评估每个问题的难度。对于简单查询，它使用成本效益高的语言模型，如 <code>Gemini Flash</code>。对于复杂查询，会考虑使用更强大但昂贵的语言模型（如 <code>Gemini Pro</code>）。使用更强大模型的决定还取决于资源可用性，特别是预算和时间约束。该系统会动态选择适当的模型。</mark></p>
+<p>For example, consider a travel planner built with a hierarchical agent. The high-level planning, which involves understanding a user's complex request, breaking it down into a multi-step itinerary, and making logical decisions, would be managed by a sophisticated and more powerful LLM like Gemini Pro. This is the "planner" agent that requires a deep understanding of context and the ability to reason.</p>
+<p><mark>例如，考虑使用层次化智能体构建的旅行规划器。高层规划涉及理解用户的复杂请求、将其分解为多步骤行程并做出逻辑决策，这将由复杂且更强大的 LLM（如 <code>Gemini Pro</code>）管理。这是需要深入理解上下文和推理能力的「规划器」智能体。</mark></p>
+<p>However, once the plan is established, the individual tasks within that plan, such as looking up flight prices, checking hotel availability, or finding restaurant reviews, are essentially simple, repetitive web queries. These "tool function calls" can be executed by a faster and more affordable model like Gemini Flash. It is easier to visualize why the affordable model can be used for these straightforward web searches, while the intricate planning phase requires the greater intelligence of the more advanced model to ensure a coherent and logical travel plan.</p>
+<p><mark>然而，一旦确定了计划，该计划中的各个任务（如查找航班价格、检查酒店可用性或查找餐厅评论）本质上是简单、重复的网络查询。这些「工具函数调用」可以由更快速、更实惠的模型（如 <code>Gemini Flash</code>）执行。很容易理解为什么这些直接的网络搜索可以使用实惠的模型，而复杂的规划阶段需要更先进模型的更强智能，以确保连贯且合乎逻辑的旅行计划。</mark></p>
+<p>Google's ADK supports this approach through its multi-agent architecture, which allows for modular and scalable applications. Different agents can handle specialized tasks. Model flexibility enables the direct use of various Gemini models, including both Gemini Pro and Gemini Flash, or integration of other models through LiteLLM. The ADK's orchestration capabilities support dynamic, LLM-driven routing for adaptive behavior. Built-in evaluation features allow systematic assessment of agent performance, which can be used for system refinement (see the Chapter on Evaluation and Monitoring).</p>
+<p><mark>Google 的 <code>ADK</code> 通过其多智能体架构支持这种方法，允许模块化和可扩展的应用程序。不同的智能体可以处理专门的任务。模型灵活性支持直接使用各种 Gemini 模型，包括 <code>Gemini Pro</code> 和 <code>Gemini Flash</code>，或通过 <code>LiteLLM</code> 集成其他模型。ADK 的编排功能支持动态的、由 LLM 驱动的路由，以实现自适应行为。内置的评估功能允许系统化评估智能体性能，可用于系统优化（参见评估与监控章节）。</mark></p>
+<p>Next, two agents with identical setup but utilizing different models and costs will be defined.</p>
+<p><mark>接下来，将定义两个设置相同但使用不同模型和成本的智能体。</mark></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Conceptual Python-like structure, not runnable code</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> google.adk.agents <span class="keyword">import</span> Agent</span><br><span class="line"><span class="comment"># from google.adk.models.lite_llm import LiteLlm # If using models not directly supported by ADK&#x27;s default Agent</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Agent using the more expensive Gemini Pro 2.5</span></span><br><span class="line">gemini_pro_agent = Agent(</span><br><span class="line">   name=<span class="string">&quot;GeminiProAgent&quot;</span>,</span><br><span class="line">   model=<span class="string">&quot;gemini-2.5-pro&quot;</span>, <span class="comment"># Placeholder for actual model name if different</span></span><br><span class="line">   description=<span class="string">&quot;A highly capable agent for complex queries.&quot;</span>,</span><br><span class="line">   instruction=<span class="string">&quot;You are an expert assistant for complex problem-solving.&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Agent using the less expensive Gemini Flash 2.5</span></span><br><span class="line">gemini_flash_agent = Agent(</span><br><span class="line">   name=<span class="string">&quot;GeminiFlashAgent&quot;</span>,</span><br><span class="line">   model=<span class="string">&quot;gemini-2.5-flash&quot;</span>, <span class="comment"># Placeholder for actual model name if different</span></span><br><span class="line">   description=<span class="string">&quot;A fast and efficient agent for simple queries.&quot;</span>,</span><br><span class="line">   instruction=<span class="string">&quot;You are a quick assistant for straightforward questions.&quot;</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><mark>上述代码定义了两个智能体：<code>GeminiProAgent</code> 使用更昂贵的 <code>Gemini Pro 2.5</code> 模型处理复杂查询，而 <code>GeminiFlashAgent</code> 使用更实惠的 <code>Gemini Flash 2.5</code> 模型处理简单查询。</mark></p>
+<h3 id="router-agent-路由智能体">Router Agent | <mark>路由智能体</mark></h3>
+<p>A Router Agent can direct queries based on simple metrics like query length, where shorter queries go to less expensive models and longer queries to more capable models. However, a more sophisticated Router Agent can utilize either LLM or ML models to analyze query nuances and complexity. This LLM router can determine which downstream language model is most suitable. For example, a query requesting a factual recall is routed to a flash model, while a complex query requiring deep analysis is routed to a pro model.</p>
+<p><mark>路由智能体可以基于简单的指标（如查询长度）来引导查询，其中较短的查询发送到成本较低的模型，较长的查询发送到更强大的模型。然而，更复杂的路由智能体可以利用 LLM 或 ML 模型来分析查询的细微差别和复杂性。这个 LLM 路由器可以确定哪个下游语言模型最合适。例如，请求事实回忆的查询被路由到 Flash 模型，而需要深入分析的复杂查询被路由到 Pro 模型。</mark></p>
+<p>Optimization techniques can further enhance the LLM router's effectiveness. Prompt tuning involves crafting prompts to guide the router LLM for better routing decisions. Fine-tuning the LLM router on a dataset of queries and their optimal model choices improves its accuracy and efficiency. This dynamic routing capability balances response quality with cost-effectiveness.</p>
+<p><mark>优化技术可以进一步提高 LLM 路由器的有效性。提示调优涉及精心设计提示以指导路由器 LLM 做出更好的路由决策。在查询及其最优模型选择的数据集上对 LLM 路由器进行微调，可以提高其准确性和效率。这种动态路由能力在响应质量和成本效益之间取得平衡。</mark></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Conceptual Python-like structure, not runnable code</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> google.adk.agents <span class="keyword">import</span> Agent, BaseAgent</span><br><span class="line"><span class="keyword">from</span> google.adk.events <span class="keyword">import</span> Event</span><br><span class="line"><span class="keyword">from</span> google.adk.agents.invocation_context <span class="keyword">import</span> InvocationContext</span><br><span class="line"><span class="keyword">import</span> asyncio</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">QueryRouterAgent</span>(<span class="title class_ inherited__">BaseAgent</span>):</span><br><span class="line">   name: <span class="built_in">str</span> = <span class="string">&quot;QueryRouter&quot;</span></span><br><span class="line">   description: <span class="built_in">str</span> = <span class="string">&quot;Routes user queries to the appropriate LLM agent based on complexity.&quot;</span></span><br><span class="line"></span><br><span class="line">   <span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">_run_async_impl</span>(<span class="params">self, context: InvocationContext</span>) -&gt; AsyncGenerator[Event, <span class="literal">None</span>]:</span><br><span class="line">       user_query = context.current_message.text <span class="comment"># Assuming text input</span></span><br><span class="line">       query_length = <span class="built_in">len</span>(user_query.split()) <span class="comment"># Simple metric: number of words</span></span><br><span class="line"></span><br><span class="line">       <span class="keyword">if</span> query_length &lt; <span class="number">20</span>: <span class="comment"># Example threshold for simplicity vs. complexity</span></span><br><span class="line">           <span class="built_in">print</span>(<span class="string">f&quot;Routing to Gemini Flash Agent for short query (length: <span class="subst">&#123;query_length&#125;</span>)&quot;</span>)</span><br><span class="line">           <span class="comment"># In a real ADK setup, you would &#x27;transfer_to_agent&#x27; or directly invoke</span></span><br><span class="line">           <span class="comment"># For demonstration, we&#x27;ll simulate a call and yield its response</span></span><br><span class="line">           response = <span class="keyword">await</span> gemini_flash_agent.run_async(context.current_message)</span><br><span class="line">           <span class="keyword">yield</span> Event(author=self.name, content=<span class="string">f&quot;Flash Agent processed: <span class="subst">&#123;response&#125;</span>&quot;</span>)</span><br><span class="line">       <span class="keyword">else</span>:</span><br><span class="line">           <span class="built_in">print</span>(<span class="string">f&quot;Routing to Gemini Pro Agent for long query (length: <span class="subst">&#123;query_length&#125;</span>)&quot;</span>)</span><br><span class="line">           response = <span class="keyword">await</span> gemini_pro_agent.run_async(context.current_message)</span><br><span class="line">           <span class="keyword">yield</span> Event(author=self.name, content=<span class="string">f&quot;Pro Agent processed: <span class="subst">&#123;response&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p><mark>上述代码实现了 <code>QueryRouterAgent</code> 类，它根据查询的复杂度将用户查询路由到适当的 LLM 智能体。它使用简单的指标（查询中的单词数）来确定复杂度。短查询（少于 20 个单词）被路由到 <code>Gemini Flash Agent</code>，而长查询被路由到 <code>Gemini Pro Agent</code>。</mark></p>
+<h3 id="critique-agent-评论智能体">Critique Agent | <mark>评论智能体</mark></h3>
+<p>The Critique Agent evaluates responses from language models, providing feedback that serves several functions. For self-correction, it identifies errors or inconsistencies, prompting the answering agent to refine its output for improved quality. It also systematically assesses responses for performance monitoring, tracking metrics like accuracy and relevance, which are used for optimization.</p>
+<p><mark>评论智能体评估来自语言模型的响应，提供服务于多种功能的反馈。对于自我修正，它识别错误或不一致之处，促使回答智能体改进其输出以提高质量。它还系统化地评估响应以进行性能监控，跟踪准确性和相关性等指标，这些指标用于优化。</mark></p>
+<p>Additionally, its feedback can signal reinforcement learning or fine-tuning; consistent identification of inadequate Flash model responses, for instance, can refine the router agent's logic. While not directly managing the budget, the Critique Agent contributes to indirect budget management by identifying suboptimal routing choices, such as directing simple queries to a Pro model or complex queries to a Flash model, which leads to poor results. This informs adjustments that improve resource allocation and cost savings.</p>
+<p><mark>此外，其反馈可以为强化学习或微调提供信号；例如，持续识别 Flash 模型的不充分响应可以改进路由智能体的逻辑。虽然不直接管理预算，但评论智能体通过识别次优路由选择（如将简单查询引导到 Pro 模型或将复杂查询引导到 Flash 模型，从而导致不良结果）来促进间接预算管理。这为改进资源分配和成本节约的调整提供了信息。</mark></p>
+<p>The Critique Agent can be configured to review either only the generated text from the answering agent or both the original query and the generated text, enabling a comprehensive evaluation of the response's alignment with the initial question.</p>
+<p><mark>评论智能体可以配置为仅审查来自回答智能体的生成文本，或同时审查原始查询和生成文本，从而能够全面评估响应与初始问题的对齐情况。</mark></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">CRITIC_SYSTEM_PROMPT = <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">You are the **Critic Agent**, serving as the quality assurance arm of our collaborative research assistant system. Your primary function is to **meticulously review and challenge** information from the Researcher Agent, guaranteeing **accuracy, completeness, and unbiased presentation**.</span></span><br><span class="line"><span class="string">Your duties encompass:</span></span><br><span class="line"><span class="string">* **Assessing research findings** for factual correctness, thoroughness, and potential leanings.</span></span><br><span class="line"><span class="string">* **Identifying any missing data** or inconsistencies in reasoning.</span></span><br><span class="line"><span class="string">* **Raising critical questions** that could refine or expand the current understanding.</span></span><br><span class="line"><span class="string">* **Offering constructive suggestions** for enhancement or exploring different angles.</span></span><br><span class="line"><span class="string">* **Validating that the final output is comprehensive** and balanced.</span></span><br><span class="line"><span class="string">All criticism must be constructive. Your goal is to fortify the research, not invalidate it. Structure your feedback clearly, drawing attention to specific points for revision. Your overarching aim is to ensure the final research product meets the highest possible quality standards.</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+<p><mark>上述代码展示了评论智能体的系统提示模板 <code>CRITIC_SYSTEM_PROMPT</code>。该提示明确定义了智能体作为质量保证组件的角色，职责包括评估研究结果的准确性、识别缺失数据、提出批判性问题、提供建设性建议，并验证最终输出的全面性和平衡性。</mark></p>
+<p>The Critic Agent operates based on a predefined system prompt that outlines its role, responsibilities, and feedback approach. A well-designed prompt for this agent must clearly establish its function as an evaluator. It should specify the areas for critical focus and emphasize providing constructive feedback rather than mere dismissal. The prompt should also encourage the identification of both strengths and weaknesses, and it must guide the agent on how to structure and present its feedback.</p>
+<p><mark>评论智能体基于预定义的系统提示运行，该提示概述了其角色、职责和反馈方法。为该智能体设计良好的提示必须清楚地确立其作为评估者的功能。它应该指定需要重点关注的领域，并强调提供建设性反馈而不是简单地否定。提示还应鼓励识别优势和劣势，并且必须指导智能体如何构建和呈现其反馈。</mark></p>
+<hr />
+<h2 id="hands-on-code-with-openai-使用-openai-的实战代码">Hands-On Code with OpenAI | <mark>使用 OpenAI 的实战代码</mark></h2>
+<p>This system uses a resource-aware optimization strategy to handle user queries efficiently. It first classifies each query into one of three categories to determine the most appropriate and cost-effective processing pathway. This approach avoids wasting computational resources on simple requests while ensuring complex queries get the necessary attention. The three categories are:</p>
+<p><mark>该系统使用资源感知优化策略来高效处理用户查询。它首先将每个查询分类为三个类别之一，以确定最合适且最具成本效益的处理路径。这种方法避免了在简单请求上浪费计算资源，同时确保复杂查询获得必要的关注。三个类别是：</mark></p>
+<ul>
+<li><strong>simple</strong>: For straightforward questions that can be answered directly without complex reasoning or external data.</li>
+</ul>
+<p><mark>* <strong>simple（简单）：</strong>用于可以直接回答而无需复杂推理或外部数据的直接问题。</mark></p>
+<ul>
+<li><strong>reasoning</strong>: For queries that require logical deduction or multi-step thought processes, which are routed to more powerful models.</li>
+</ul>
+<p><mark>* <strong>reasoning（推理）：</strong>用于需要逻辑推理或多步骤思考过程的查询，这些查询被路由到更强大的模型。</mark></p>
+<ul>
+<li><strong>internet_search</strong>: For questions needing current information, which automatically triggers a Google Search to provide an up-to-date answer.</li>
+</ul>
+<p><mark>* <strong>internet_search（网络搜索）：</strong>用于需要当前信息的问题，会自动触发 Google 搜索以提供最新答案。</mark></p>
+<p>The code is under the MIT license and available on Github: (https://github.com/mahtabsyed/21-Agentic-Patterns/blob/main/16_Resource_Aware_Opt_LLM_Reflection_v2.ipynb)</p>
+<p><mark>该代码采用 MIT 许可证，可在 GitHub 上获取：(https://github.com/mahtabsyed/21-Agentic-Patterns/blob/main/16_Resource_Aware_Opt_LLM_Reflection_v2.ipynb)</mark></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># MIT License</span></span><br><span class="line"><span class="comment"># Copyright (c) 2025 Mahtab Syed</span></span><br><span class="line"><span class="comment"># https://www.linkedin.com/in/mahtabsyed/</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">from</span> dotenv <span class="keyword">import</span> load_dotenv</span><br><span class="line"><span class="keyword">from</span> openai <span class="keyword">import</span> OpenAI</span><br><span class="line"></span><br><span class="line"><span class="comment"># Load environment variables</span></span><br><span class="line">load_dotenv()</span><br><span class="line">OPENAI_API_KEY = os.getenv(<span class="string">&quot;OPENAI_API_KEY&quot;</span>)</span><br><span class="line">GOOGLE_CUSTOM_SEARCH_API_KEY = os.getenv(<span class="string">&quot;GOOGLE_CUSTOM_SEARCH_API_KEY&quot;</span>)</span><br><span class="line">GOOGLE_CSE_ID = os.getenv(<span class="string">&quot;GOOGLE_CSE_ID&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> <span class="keyword">not</span> OPENAI_API_KEY <span class="keyword">or</span> <span class="keyword">not</span> GOOGLE_CUSTOM_SEARCH_API_KEY <span class="keyword">or</span> <span class="keyword">not</span> GOOGLE_CSE_ID:</span><br><span class="line">    <span class="keyword">raise</span> ValueError(</span><br><span class="line">        <span class="string">&quot;Please set OPENAI_API_KEY, GOOGLE_CUSTOM_SEARCH_API_KEY, and GOOGLE_CSE_ID in your .env file.&quot;</span></span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">client = OpenAI(api_key=OPENAI_API_KEY)</span><br><span class="line"></span><br><span class="line"><span class="comment"># --- Step 1: Classify the Prompt ---</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">classify_prompt</span>(<span class="params">prompt: <span class="built_in">str</span></span>) -&gt; <span class="built_in">dict</span>:</span><br><span class="line">    system_message = &#123;</span><br><span class="line">        <span class="string">&quot;role&quot;</span>: <span class="string">&quot;system&quot;</span>,</span><br><span class="line">        <span class="string">&quot;content&quot;</span>: (</span><br><span class="line">            <span class="string">&quot;You are a classifier that analyzes user prompts and returns one of three categories ONLY:\n\n&quot;</span></span><br><span class="line">            <span class="string">&quot;- simple\n&quot;</span></span><br><span class="line">            <span class="string">&quot;- reasoning\n&quot;</span></span><br><span class="line">            <span class="string">&quot;- internet_search\n\n&quot;</span></span><br><span class="line">            <span class="string">&quot;Rules:\n&quot;</span></span><br><span class="line">            <span class="string">&quot;- Use &#x27;simple&#x27; for direct factual questions that need no reasoning or current events.\n&quot;</span></span><br><span class="line">            <span class="string">&quot;- Use &#x27;reasoning&#x27; for logic, math, or multi-step inference questions.\n&quot;</span></span><br><span class="line">            <span class="string">&quot;- Use &#x27;internet_search&#x27; if the prompt refers to current events, recent data, or things not in your training data.\n\n&quot;</span></span><br><span class="line">            <span class="string">&quot;Respond ONLY with JSON like:\n&quot;</span></span><br><span class="line">            <span class="string">&#x27;&#123; &quot;classification&quot;: &quot;simple&quot; &#125;&#x27;</span></span><br><span class="line">        ),</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    user_message = &#123;<span class="string">&quot;role&quot;</span>: <span class="string">&quot;user&quot;</span>, <span class="string">&quot;content&quot;</span>: prompt&#125;</span><br><span class="line"></span><br><span class="line">    response = client.chat.completions.create(</span><br><span class="line">        model=<span class="string">&quot;gpt-4o&quot;</span>, messages=[system_message, user_message], temperature=<span class="number">1</span></span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    reply = response.choices[<span class="number">0</span>].message.content</span><br><span class="line">    <span class="keyword">return</span> json.loads(reply)</span><br><span class="line"></span><br><span class="line"><span class="comment"># --- Step 2: Google Search ---</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">google_search</span>(<span class="params">query: <span class="built_in">str</span>, num_results=<span class="number">1</span></span>) -&gt; <span class="built_in">list</span>:</span><br><span class="line">    url = <span class="string">&quot;https://www.googleapis.com/customsearch/v1&quot;</span></span><br><span class="line">    params = &#123;</span><br><span class="line">        <span class="string">&quot;key&quot;</span>: GOOGLE_CUSTOM_SEARCH_API_KEY,</span><br><span class="line">        <span class="string">&quot;cx&quot;</span>: GOOGLE_CSE_ID,</span><br><span class="line">        <span class="string">&quot;q&quot;</span>: query,</span><br><span class="line">        <span class="string">&quot;num&quot;</span>: num_results,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        response = requests.get(url, params=params)</span><br><span class="line">        response.raise_for_status()</span><br><span class="line">        results = response.json()</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> <span class="string">&quot;items&quot;</span> <span class="keyword">in</span> results <span class="keyword">and</span> results[<span class="string">&quot;items&quot;</span>]:</span><br><span class="line">            <span class="keyword">return</span> [</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="string">&quot;title&quot;</span>: item.get(<span class="string">&quot;title&quot;</span>),</span><br><span class="line">                    <span class="string">&quot;snippet&quot;</span>: item.get(<span class="string">&quot;snippet&quot;</span>),</span><br><span class="line">                    <span class="string">&quot;link&quot;</span>: item.get(<span class="string">&quot;link&quot;</span>),</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">for</span> item <span class="keyword">in</span> results[<span class="string">&quot;items&quot;</span>]</span><br><span class="line">            ]</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">return</span> []</span><br><span class="line">    <span class="keyword">except</span> requests.exceptions.RequestException <span class="keyword">as</span> e:</span><br><span class="line">        <span class="keyword">return</span> &#123;<span class="string">&quot;error&quot;</span>: <span class="built_in">str</span>(e)&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># --- Step 3: Generate Response ---</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">generate_response</span>(<span class="params">prompt: <span class="built_in">str</span>, classification: <span class="built_in">str</span>, search_results=<span class="literal">None</span></span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">    <span class="keyword">if</span> classification == <span class="string">&quot;simple&quot;</span>:</span><br><span class="line">        model = <span class="string">&quot;gpt-4o-mini&quot;</span></span><br><span class="line">        full_prompt = prompt</span><br><span class="line">    <span class="keyword">elif</span> classification == <span class="string">&quot;reasoning&quot;</span>:</span><br><span class="line">        model = <span class="string">&quot;o4-mini&quot;</span></span><br><span class="line">        full_prompt = prompt</span><br><span class="line">    <span class="keyword">elif</span> classification == <span class="string">&quot;internet_search&quot;</span>:</span><br><span class="line">        model = <span class="string">&quot;gpt-4o&quot;</span></span><br><span class="line">        <span class="comment"># Convert each search result dict to a readable string</span></span><br><span class="line">        <span class="keyword">if</span> search_results:</span><br><span class="line">            search_context = <span class="string">&quot;\n&quot;</span>.join(</span><br><span class="line">                [</span><br><span class="line">                    <span class="string">f&quot;Title: <span class="subst">&#123;item.get(<span class="string">&#x27;title&#x27;</span>)&#125;</span>\nSnippet: <span class="subst">&#123;item.get(<span class="string">&#x27;snippet&#x27;</span>)&#125;</span>\nLink: <span class="subst">&#123;item.get(<span class="string">&#x27;link&#x27;</span>)&#125;</span>&quot;</span></span><br><span class="line">                    <span class="keyword">for</span> item <span class="keyword">in</span> search_results</span><br><span class="line">                ]</span><br><span class="line">            )</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            search_context = <span class="string">&quot;No search results found.&quot;</span></span><br><span class="line">        full_prompt = <span class="string">f&quot;&quot;&quot;Use the following web results to answer the user query:</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"><span class="subst">&#123;search_context&#125;</span></span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Query: <span class="subst">&#123;prompt&#125;</span>&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    response = client.chat.completions.create(</span><br><span class="line">        model=model,</span><br><span class="line">        messages=[&#123;<span class="string">&quot;role&quot;</span>: <span class="string">&quot;user&quot;</span>, <span class="string">&quot;content&quot;</span>: full_prompt&#125;],</span><br><span class="line">        temperature=<span class="number">1</span>,</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> response.choices[<span class="number">0</span>].message.content, model</span><br><span class="line"></span><br><span class="line"><span class="comment"># --- Step 4: Combined Router ---</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">handle_prompt</span>(<span class="params">prompt: <span class="built_in">str</span></span>) -&gt; <span class="built_in">dict</span>:</span><br><span class="line">    classification_result = classify_prompt(prompt)</span><br><span class="line">    classification = classification_result[<span class="string">&quot;classification&quot;</span>]</span><br><span class="line"></span><br><span class="line">    search_results = <span class="literal">None</span></span><br><span class="line">    <span class="keyword">if</span> classification == <span class="string">&quot;internet_search&quot;</span>:</span><br><span class="line">        search_results = google_search(prompt)</span><br><span class="line"></span><br><span class="line">    answer, model = generate_response(prompt, classification, search_results)</span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;classification&quot;</span>: classification, <span class="string">&quot;response&quot;</span>: answer, <span class="string">&quot;model&quot;</span>: model&#125;</span><br><span class="line"></span><br><span class="line">test_prompt = <span class="string">&quot;What is the capital of Australia?&quot;</span></span><br><span class="line"><span class="comment"># test_prompt = &quot;Explain the impact of quantum computing on cryptography.&quot;</span></span><br><span class="line"><span class="comment"># test_prompt = &quot;When does the Australian Open 2026 start, give me full date?&quot;</span></span><br><span class="line"></span><br><span class="line">result = handle_prompt(test_prompt)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;🔍 Classification:&quot;</span>, result[<span class="string">&quot;classification&quot;</span>])</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;🧠 Model Used:&quot;</span>, result[<span class="string">&quot;model&quot;</span>])</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;🧠 Response:\n&quot;</span>, result[<span class="string">&quot;response&quot;</span>])</span><br></pre></td></tr></table></figure>
+<p><mark>该 Python 代码实现了一个提示路由系统来回答用户问题。它首先从 <code>.env</code> 文件加载 OpenAI 和 Google Custom Search 所需的 API 密钥。核心功能在于将用户的提示分类为三个类别：<code>simple</code>（简单）、<code>reasoning</code>（推理）或 <code>internet_search</code>（网络搜索）。专门的函数 <code>classify_prompt</code> 利用 OpenAI 模型执行此分类步骤。如果提示需要当前信息，则使用 Google Custom Search API 执行 Google 搜索。另一个函数 <code>generate_response</code> 根据分类选择适当的 OpenAI 模型生成最终响应。对于网络搜索查询，搜索结果作为上下文提供给模型。主函数 <code>handle_prompt</code> 协调此工作流程，在生成响应之前调用分类和搜索（如果需要）函数。它返回分类、使用的模型和生成的答案。该系统有效地将不同类型的查询引导到优化的方法以获得更好的响应。</mark></p>
+<hr />
+<h2 id="hands-on-code-example-openrouter-使用-openrouter-的实战代码">Hands-On Code Example (OpenRouter) | <mark>使用 OpenRouter 的实战代码</mark></h2>
+<p>OpenRouter offers a unified interface to hundreds of AI models via a single API endpoint. It provides automated failover and cost-optimization, with easy integration through your preferred SDK or framework.</p>
+<p><mark>OpenRouter 通过单个 API 端点提供对数百个 AI 模型的统一接口。它提供自动故障转移和成本优化，可通过您喜欢的 SDK 或框架轻松集成。</mark></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> json</span><br><span class="line">response = requests.post(</span><br><span class="line"> url=<span class="string">&quot;https://openrouter.ai/api/v1/chat/completions&quot;</span>,</span><br><span class="line"> headers=&#123;</span><br><span class="line">   <span class="string">&quot;Authorization&quot;</span>: <span class="string">&quot;Bearer &lt;OPENROUTER_API_KEY&gt;&quot;</span>,</span><br><span class="line">   <span class="string">&quot;HTTP-Referer&quot;</span>: <span class="string">&quot;&lt;YOUR_SITE_URL&gt;&quot;</span>, <span class="comment"># Optional. Site URL for rankings on openrouter.ai.</span></span><br><span class="line">   <span class="string">&quot;X-Title&quot;</span>: <span class="string">&quot;&lt;YOUR_SITE_NAME&gt;&quot;</span>, <span class="comment"># Optional. Site title for rankings on openrouter.ai.</span></span><br><span class="line"> &#125;,</span><br><span class="line"> data=json.dumps(&#123;</span><br><span class="line">   <span class="string">&quot;model&quot;</span>: <span class="string">&quot;openai/gpt-4o&quot;</span>, <span class="comment"># Optional</span></span><br><span class="line">   <span class="string">&quot;messages&quot;</span>: [</span><br><span class="line">     &#123;</span><br><span class="line">       <span class="string">&quot;role&quot;</span>: <span class="string">&quot;user&quot;</span>,</span><br><span class="line">       <span class="string">&quot;content&quot;</span>: <span class="string">&quot;What is the meaning of life?&quot;</span></span><br><span class="line">     &#125;</span><br><span class="line">   ]</span><br><span class="line"> &#125;)</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><mark>此代码片段使用 <code>requests</code> 库与 OpenRouter API 交互。它向聊天完成端点发送 POST 请求，包含用户消息。请求包括带有 API 密钥的授权标头和可选的站点信息。目标是从指定的语言模型（在本例中为 <code>openai/gpt-4o</code>）获取响应。</mark></p>
+<p>Openrouter offers two distinct methodologies for routing and determining the computational model used to process a given request.</p>
+<p><mark>OpenRouter 提供两种不同的方法来路由和确定用于处理给定请求的计算模型。</mark></p>
+<ul>
+<li><strong>Automated Model Selection</strong>: This function routes a request to an optimized model chosen from a curated set of available models. The selection is predicated on the specific content of the user's prompt. The identifier of the model that ultimately processes the request is returned in the response's metadata.</li>
+</ul>
+<p><mark>* <strong>自动模型选择：</strong>此功能将请求路由到从精选的可用模型集中选择的优化模型。选择基于用户提示的具体内容。最终处理请求的模型标识符在响应的元数据中返回。</mark></p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line"> <span class="attr">&quot;model&quot;</span><span class="punctuation">:</span> <span class="string">&quot;openrouter/auto&quot;</span><span class="punctuation">,</span></span><br><span class="line"> ... <span class="comment">// Other params</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>Sequential Model Fallback</strong>: This mechanism provides operational redundancy by allowing users to specify a hierarchical list of models. The system will first attempt to process the request with the primary model designated in the sequence. Should this primary model fail to respond due to any number of error conditions—such as service unavailability, rate-limiting, or content filtering—the system will automatically re-route the request to the next specified model in the sequence. This process continues until a model in the list successfully executes the request or the list is exhausted. The final cost of the operation and the model identifier returned in the response will correspond to the model that successfully completed the computation.</li>
+</ul>
+<p><mark>* <strong>顺序模型回退：</strong>此机制通过允许用户指定分层模型列表来提供操作冗余。系统将首先尝试使用序列中指定的主要模型处理请求。如果主要模型由于多种错误条件（如服务不可用、速率限制或内容过滤）而无法响应，系统将自动将请求重新路由到序列中的下一个指定模型。此过程将持续进行，直到列表中的某个模型成功执行请求或列表耗尽。操作的最终成本和响应中返回的模型标识符将对应于成功完成计算的模型。</mark></p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line"> <span class="attr">&quot;models&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span><span class="string">&quot;anthropic/claude-3.5-sonnet&quot;</span><span class="punctuation">,</span> <span class="string">&quot;gryphe/mythomax-l2-13b&quot;</span><span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line"> ... <span class="comment">// Other params</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>OpenRouter offers a detailed leaderboard (https://openrouter.ai/rankings) which ranks available AI models based on their cumulative token production. It also offers latest models from different providers (ChatGPT, Gemini, Claude) (see Fig. 1)</p>
+<p><mark>OpenRouter 提供详细的排行榜（https://openrouter.ai/rankings），根据累积令牌生产量对可用的 AI 模型进行排名。它还提供来自不同提供商（ChatGPT、Gemini、Claude）的最新模型（见图 1）。</mark></p>
+<figure>
+<img src="/img3/Agentic%20Design%20Patterns/chapter16_fig1.png" alt="OpenRouter Web site" /><figcaption aria-hidden="true">OpenRouter Web site</figcaption>
+</figure>
+<p><mark><strong>图 1：</strong>OpenRouter 网站 (https://openrouter.ai/)</mark></p>
+<hr />
+<h2 id="beyond-dynamic-model-switching-a-spectrum-of-agent-resource-optimizations-超越动态模型切换智能体资源优化的全景">Beyond Dynamic Model Switching: A Spectrum of Agent Resource Optimizations | <mark>超越动态模型切换：智能体资源优化的全景</mark></h2>
+<p>Resource-aware optimization is paramount in developing intelligent agent systems that operate efficiently and effectively within real-world constraints. Let's see a number of additional techniques:</p>
+<p><mark>资源感知优化在开发能够在现实世界约束下高效且有效运行的具智能体特性的系统中至关重要。让我们看看许多其他技术：</mark></p>
+<p><strong>Dynamic Model Switching</strong> is a critical technique involving the strategic selection of large language models based on the intricacies of the task at hand and the available computational resources. When faced with simple queries, a lightweight, cost-effective LLM can be deployed, whereas complex, multifaceted problems necessitate the utilization of more sophisticated and resource-intensive models.</p>
+<p><mark><strong>动态模型切换</strong>是一种关键技术，涉及基于手头任务的复杂性和可用计算资源对大型语言模型的战略选择。面对简单查询时，可以部署轻量级、成本效益高的 LLM，而复杂的多方面问题则需要使用更复杂和资源密集的模型。</mark></p>
+<p><strong>Adaptive Tool Use &amp; Selection</strong> ensures agents can intelligently choose from a suite of tools, selecting the most appropriate and efficient one for each specific sub-task, with careful consideration given to factors like API usage costs, latency, and execution time. This dynamic tool selection enhances overall system efficiency by optimizing the use of external APIs and services.</p>
+<p><mark><strong>自适应工具使用与选择</strong>确保智能体能够从一组工具中智能选择，为每个特定子任务选择最合适和最高效的工具，并仔细考虑 API 使用成本、延迟和执行时间等因素。这种动态工具选择通过优化外部 API 和服务的使用来提高整体系统效率。</mark></p>
+<p><strong>Contextual Pruning &amp; Summarization</strong> plays a vital role in managing the amount of information processed by agents, strategically minimizing the prompt token count and reducing inference costs by intelligently summarizing and selectively retaining only the most relevant information from the interaction history, preventing unnecessary computational overhead.</p>
+<p><mark><strong>上下文修剪与摘要</strong>在管理智能体处理的信息量方面发挥着至关重要的作用，通过智能摘要和选择性地仅保留交互历史中最相关的信息来战略性地最小化提示令牌数并降低推理成本，从而防止不必要的计算开销。</mark></p>
+<p><strong>Proactive Resource Prediction</strong> involves anticipating resource demands by forecasting future workloads and system requirements, which allows for proactive allocation and management of resources, ensuring system responsiveness and preventing bottlenecks.</p>
+<p><mark><strong>主动资源预测</strong>涉及通过预测未来工作负载和系统需求来预测资源需求，从而允许主动分配和管理资源，确保系统响应性并防止瓶颈。</mark></p>
+<p><strong>Cost-Sensitive Exploration</strong> in multi-agent systems extends optimization considerations to encompass communication costs alongside traditional computational costs, influencing the strategies employed by agents to collaborate and share information, aiming to minimize the overall resource expenditure.</p>
+<p><mark><strong>成本敏感探索</strong>在多智能体系统中将优化考虑扩展到包括通信成本以及传统计算成本，影响智能体协作和共享信息所采用的策略，旨在最小化整体资源支出。</mark></p>
+<p><strong>Energy-Efficient Deployment</strong> is specifically tailored for environments with stringent resource constraints, aiming to minimize the energy footprint of intelligent agent systems, extending operational time and reducing overall running costs.</p>
+<p><mark><strong>能源高效部署</strong>专门针对具有严格资源约束的环境而定制，旨在最小化具智能体特性系统的能源足迹，延长运行时间并降低整体运行成本。</mark></p>
+<p><strong>Parallelization &amp; Distributed Computing Awareness</strong> leverages distributed resources to enhance the processing power and throughput of agents, distributing computational workloads across multiple machines or processors to achieve greater efficiency and faster task completion.</p>
+<p><mark><strong>并行化与分布式计算感知</strong>利用分布式资源来增强智能体的处理能力和吞吐量，将计算工作负载分布到多台机器或处理器上，以实现更高的效率和更快的任务完成。</mark></p>
+<p><strong>Learned Resource Allocation Policies</strong> introduce a learning mechanism, enabling agents to adapt and optimize their resource allocation strategies over time based on feedback and performance metrics, improving efficiency through continuous refinement.</p>
+<p><mark><strong>学习型资源分配策略</strong>引入学习机制，使智能体能够基于反馈和性能指标随时间推移适应和优化其资源分配策略，通过持续改进提高效率。</mark></p>
+<p><strong>Graceful Degradation and Fallback Mechanisms</strong> ensure that intelligent agent systems can continue to function, albeit perhaps at a reduced capacity, even when resource constraints are severe, gracefully degrading performance and falling back to alternative strategies to maintain operation and provide essential functionality.</p>
+<p><mark><strong>优雅降级和后备机制</strong>确保具智能体特性的系统即使在资源约束严重时也能继续运行（尽管可能以降低的容量），优雅地降低性能并回退到替代策略以维持运行并提供基本功能。</mark></p>
+<hr />
+<h2 id="at-a-glance-要点速览">At a Glance | <mark>要点速览</mark></h2>
+<p><strong>What</strong>: Resource-Aware Optimization addresses the challenge of managing the consumption of computational, temporal, and financial resources in intelligent systems. LLM-based applications can be expensive and slow, and selecting the best model or tool for every task is often inefficient. This creates a fundamental trade-off between the quality of a system's output and the resources required to produce it. Without a dynamic management strategy, systems cannot adapt to varying task complexities or operate within budgetary and performance constraints.</p>
+<p><mark><strong>问题所在：</strong>资源感知优化解决了在具智能体特性的系统中管理计算、时间和财务资源消耗的挑战。基于 LLM 的应用程序可能既昂贵又缓慢，为每个任务选择最佳模型或工具往往效率低下。这在系统输出质量与生成所需资源之间产生了根本性权衡。如果没有动态管理策略，系统无法适应不同的任务复杂性或在预算和性能约束内运行。</mark></p>
+<p><strong>Why</strong>: The standardized solution is to build an agentic system that intelligently monitors and allocates resources based on the task at hand. This pattern typically employs a "Router Agent" to first classify the complexity of an incoming request. The request is then forwarded to the most suitable LLM or tool—a fast, inexpensive model for simple queries, and a more powerful one for complex reasoning. A "Critique Agent" can further refine the process by evaluating the quality of the response, providing feedback to improve the routing logic over time. This dynamic, multi-agent approach ensures the system operates efficiently, balancing response quality with cost-effectiveness.</p>
+<p><mark><strong>解决之道：</strong>标准化解决方案是构建一个具智能体特性的系统，根据手头的任务智能地监控和分配资源。此模式通常使用「路由智能体」首先对传入请求的复杂性进行分类。然后将请求转发到最合适的 LLM 或工具——简单查询使用快速、廉价的模型，复杂推理使用更强大的模型。「评论智能体」可以通过评估响应质量进一步改进流程，提供反馈以随时间改进路由逻辑。这种动态的多智能体方法确保系统高效运行，在响应质量和成本效益之间取得平衡。</mark></p>
+<p><strong>Rule of thumb</strong>: Use this pattern when operating under strict financial budgets for API calls or computational power, building latency-sensitive applications where quick response times are critical, deploying agents on resource-constrained hardware such as edge devices with limited battery life, programmatically balancing the trade-off between response quality and operational cost, and managing complex, multi-step workflows where different tasks have varying resource requirements.</p>
+<p><mark><strong>经验法则：</strong>在以下情况下使用此模式：在 API 调用或计算能力的严格财务预算下运行；构建对延迟敏感的应用程序，其中快速响应时间至关重要；在资源受限的硬件（如电池寿命有限的边缘设备）上部署智能体；以编程方式平衡响应质量和运营成本之间的权衡；以及管理复杂的多步骤工作流程，其中不同任务具有不同的资源需求。</mark></p>
+<hr />
+<h2 id="visual-summary-可视化摘要">Visual Summary | <mark>可视化摘要</mark></h2>
+<figure>
+<img src="/img3/Agentic%20Design%20Patterns/chapter16_fig2.png" alt="Resource-Aware Optimization Design Pattern" /><figcaption aria-hidden="true">Resource-Aware Optimization Design Pattern</figcaption>
+</figure>
+<p><mark><strong>图 2：</strong>资源感知优化设计模式</mark></p>
+<hr />
+<h2 id="key-takeaways-核心要点">Key Takeaways | <mark>核心要点</mark></h2>
+<ul>
+<li><strong>Resource-Aware Optimization is Essential</strong>: Intelligent agents can manage computational, temporal, and financial resources dynamically. Decisions regarding model usage and execution paths are made based on real-time constraints and objectives.</li>
+</ul>
+<p><mark>* <strong>资源感知优化至关重要：</strong>具智能体特性的系统可以动态管理计算、时间和财务资源。关于模型使用和执行路径的决策基于实时约束和目标做出。</mark></p>
+<ul>
+<li><strong>Multi-Agent Architecture for Scalability</strong>: Google's ADK provides a multi-agent framework, enabling modular design. Different agents (answering, routing, critique) handle specific tasks.</li>
+</ul>
+<p><mark>* <strong>可扩展的多智能体架构：</strong>Google 的 ADK 提供多智能体框架，支持模块化设计。不同的智能体（回答、路由、评论）处理特定任务。</mark></p>
+<ul>
+<li><strong>Dynamic, LLM-Driven Routing</strong>: A Router Agent directs queries to language models (Gemini Flash for simple, Gemini Pro for complex) based on query complexity and budget. This optimizes cost and performance.</li>
+</ul>
+<p><mark>* <strong>动态的、由 LLM 驱动的路由：</strong>路由智能体根据查询复杂性和预算将查询引导到语言模型（简单查询使用 Gemini Flash，复杂查询使用 Gemini Pro）。这优化了成本和性能。</mark></p>
+<ul>
+<li><strong>Critique Agent Functionality</strong>: A dedicated Critique Agent provides feedback for self-correction, performance monitoring, and refining routing logic, enhancing system effectiveness.</li>
+</ul>
+<p><mark>* <strong>评论智能体功能：</strong>专门的评论智能体为自我修正、性能监控和改进路由逻辑提供反馈，增强系统有效性。</mark></p>
+<ul>
+<li><strong>Optimization Through Feedback and Flexibility</strong>: Evaluation capabilities for critique and model integration flexibility contribute to adaptive and self-improving system behavior.</li>
+</ul>
+<p><mark>* <strong>通过反馈和灵活性进行优化：</strong>评论的评估能力和模型集成灵活性有助于自适应和自我改进的系统行为。</mark></p>
+<ul>
+<li><strong>Additional Resource-Aware Optimizations</strong>: Other methods include Adaptive Tool Use &amp; Selection, Contextual Pruning &amp; Summarization, Proactive Resource Prediction, Cost-Sensitive Exploration in Multi-Agent Systems, Energy-Efficient Deployment, Parallelization &amp; Distributed Computing Awareness, Learned Resource Allocation Policies, Graceful Degradation and Fallback Mechanisms, and Prioritization of Critical Tasks.</li>
+</ul>
+<p><mark>* <strong>其他资源感知优化：</strong>其他方法包括自适应工具使用与选择、上下文修剪与摘要、主动资源预测、多智能体系统中的成本敏感探索、能源高效部署、并行化与分布式计算感知、学习型资源分配策略、优雅降级和后备机制，以及关键任务优先级排序。</mark></p>
+<hr />
+<h2 id="conclusions-结论">Conclusions | <mark>结论</mark></h2>
+<p>Resource-aware optimization is essential for the development of intelligent agents, enabling efficient operation within real-world constraints. By managing computational, temporal, and financial resources, agents can achieve optimal performance and cost-effectiveness. Techniques such as dynamic model switching, adaptive tool use, and contextual pruning are crucial for attaining these efficiencies. Advanced strategies, including learned resource allocation policies and graceful degradation, enhance an agent's adaptability and resilience under varying conditions. Integrating these optimization principles into agent design is fundamental for building scalable, robust, and sustainable AI systems.</p>
+<p><mark>资源感知优化对于具智能体特性系统的开发至关重要，使其能够在现实世界约束下高效运行。通过管理计算、时间和财务资源，智能体可以实现最佳性能和成本效益。动态模型切换、自适应工具使用和上下文修剪等技术对于实现这些效率至关重要。包括学习型资源分配策略和优雅降级在内的高级策略增强了智能体在不同条件下的适应性和韧性。将这些优化原则整合到智能体设计中是构建可扩展、稳健和可持续的 AI 系统的基础。</mark></p>
+<hr />
+<h2 id="references">References</h2>
+<p><mark>参考文献</mark></p>
+<ol type="1">
+<li><p>Google's Agent Development Kit (ADK): <a target="_blank" rel="noopener" href="https://google.github.io/adk-docs/">google.github.io/adk-docs</a></p></li>
+<li><p>Gemini Flash 2.5 &amp; Gemini 2.5 Pro: <a target="_blank" rel="noopener" href="https://aistudio.google.com/">aistudio.google.com</a></p></li>
+<li><p>OpenRouter: <a target="_blank" rel="noopener" href="https://openrouter.ai/docs/quickstart">openrouter.ai/docs/quickstart</a></p></li>
+<li><p><mark>Google 智能体开发工具包（ADK）：<a target="_blank" rel="noopener" href="https://google.github.io/adk-docs/">google.github.io/adk-docs</a></mark></p></li>
+<li><p><mark>Gemini Flash 2.5 和 Gemini 2.5 Pro：<a target="_blank" rel="noopener" href="https://aistudio.google.com/">aistudio.google.com</a></mark></p></li>
+<li><p><mark>OpenRouter：<a target="_blank" rel="noopener" href="https://openrouter.ai/docs/quickstart">openrouter.ai/docs/quickstart</a></mark></p></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/05/16/%E3%80%8AAgentic%20Design%20Patterns%E3%80%8B%E7%AC%AC%E5%8D%81%E4%BA%94%E7%AB%A0/" rel="prev" title="《Agentic Design Patterns》第十五章">
+                  <i class="fa fa-chevron-left"></i> 《Agentic Design Patterns》第十五章
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/05/18/%E3%80%8AAgentic%20Design%20Patterns%E3%80%8B%E7%AC%AC%E5%8D%81%E4%B8%83%E7%AB%A0/" rel="next" title="《Agentic Design Patterns》第十七章">
+                  《Agentic Design Patterns》第十七章 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

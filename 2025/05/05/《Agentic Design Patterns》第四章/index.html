@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"enable":true,"style":"tabs","active":"giscus","storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+
+
+    <meta name="description" content="Chapter 4: Reflection | 第四章：反思 Reflection Pattern Overview | 反思模式概述 In the preceding chapters, we&#39;ve explored fundamental agentic patterns: Chaining for sequential execution, Routing for dynamic path">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《Agentic Design Patterns》第四章">
+<meta property="og:url" content="http://hongyitong.github.io/2025/05/05/%E3%80%8AAgentic%20Design%20Patterns%E3%80%8B%E7%AC%AC%E5%9B%9B%E7%AB%A0/index.html">
+<meta property="og:site_name" content="墨语浮生">
+<meta property="og:description" content="Chapter 4: Reflection | 第四章：反思 Reflection Pattern Overview | 反思模式概述 In the preceding chapters, we&#39;ve explored fundamental agentic patterns: Chaining for sequential execution, Routing for dynamic path">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Agentic%20Design%20Patterns/chapter04_fig1.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Agentic%20Design%20Patterns/chapter04_fig2.png">
+<meta property="article:published_time" content="2025-05-04T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-03-02T03:23:56.450Z">
+<meta property="article:author" content="Rayman.hung">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hongyitong.github.io/img3/Agentic%20Design%20Patterns/chapter04_fig1.png">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2025/05/05/%E3%80%8AAgentic%20Design%20Patterns%E3%80%8B%E7%AC%AC%E5%9B%9B%E7%AB%A0/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2025/05/05/%E3%80%8AAgentic%20Design%20Patterns%E3%80%8B%E7%AC%AC%E5%9B%9B%E7%AB%A0/","path":"2025/05/05/《Agentic Design Patterns》第四章/","title":"《Agentic Design Patterns》第四章"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>《Agentic Design Patterns》第四章 | 墨语浮生</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZXGEJDXQ33"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-ZXGEJDXQ33","only_pageview":false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?ff358b9c7e949787b074bfc9c8019a9d"></script>
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">墨语浮生</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#chapter-4-reflection-%E7%AC%AC%E5%9B%9B%E7%AB%A0%E5%8F%8D%E6%80%9D"><span class="nav-text">Chapter 4: Reflection | 第四章：反思</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#reflection-pattern-overview-%E5%8F%8D%E6%80%9D%E6%A8%A1%E5%BC%8F%E6%A6%82%E8%BF%B0"><span class="nav-text">Reflection Pattern Overview | 反思模式概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#practical-applications-use-cases-%E5%AE%9E%E9%99%85%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-text">Practical Applications &amp; Use Cases | 实际应用场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hands-on-code-example-langchain-%E5%AE%9E%E6%88%98%E7%A4%BA%E4%BE%8B%E4%BD%BF%E7%94%A8-langchain"><span class="nav-text">Hands-On Code Example (LangChain) | 实战示例：使用 LangChain</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hands-on-code-example-google-adk-%E5%AE%9E%E6%88%98%E7%A4%BA%E4%BE%8B%E4%BD%BF%E7%94%A8-google-adk"><span class="nav-text">Hands-On Code Example (Google ADK) | 实战示例：使用 Google ADK</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#at-a-glance-%E8%A6%81%E7%82%B9%E9%80%9F%E8%A7%88"><span class="nav-text">At a Glance | 要点速览</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#key-takeaways-%E6%A0%B8%E5%BF%83%E8%A6%81%E7%82%B9"><span class="nav-text">Key Takeaways | 核心要点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#conclusion-%E7%BB%93%E8%AF%AD"><span class="nav-text">Conclusion | 结语</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#references-%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="nav-text">References | 参考文献</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、心情记录</div>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2025/05/05/%E3%80%8AAgentic%20Design%20Patterns%E3%80%8B%E7%AC%AC%E5%9B%9B%E7%AB%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="《Agentic Design Patterns》第四章 | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《Agentic Design Patterns》第四章
+        </h1>
+
+        </h1>
+          
+             <p class="post-subtitle">反思</p>
+          
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-05-05 00:00:00" itemprop="dateCreated datePublished" datetime="2025-05-05T00:00:00+08:00">2025-05-05</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="chapter-4-reflection-第四章反思">Chapter 4: Reflection | <mark>第四章：反思</mark></h1>
+<h2 id="reflection-pattern-overview-反思模式概述">Reflection Pattern Overview | <mark>反思模式概述</mark></h2>
+<p>In the preceding chapters, we've explored fundamental agentic patterns: Chaining for sequential execution, Routing for dynamic path selection, and Parallelization for concurrent task execution. These patterns enable agents to perform complex tasks more efficiently and flexibly. However, even with sophisticated workflows, an agent's initial output or plan might not be optimal, accurate, or complete. This is where the <strong>Reflection</strong> pattern comes into play.</p>
+<span id="more"></span>
+<p><mark>在前面的章节中，我们探讨了智能体的基础模式：用于顺序执行的提示链（Prompt Chaining）、用于动态路径选择的路由（Routing），以及用于并发任务执行的并行模式（Parallelization）。这些模式使智能体能够更高效、更灵活地执行复杂任务。然而，即使工作流设计再精妙，智能体初始输出或计划也未必最优、准确或完整。这正是<strong>反思（Reflection）模式</strong>发挥作用之处。</mark></p>
+<p>The Reflection pattern involves an agent evaluating its own work, output, or internal state and using that evaluation to improve its performance or refine its response. It's a form of self-correction or self-improvement, allowing the agent to iteratively refine its output or adjust its approach based on feedback, internal critique, or comparison against desired criteria. Reflection can occasionally be facilitated by a separate agent whose specific role is to analyze the output of an initial agent.</p>
+<p><mark>反思模式是指智能体评估自己的工作、输出和内部状态，并利用评估结果改进性能和优化响应。这是一种自我纠正或自我改进的形式。通过这种形式，智能体可以根据反馈、内部剖析及与期望标准的比较，来不断地优化输出、调整方法。反思有时也可由独立的智能体来承担，其职责是专门分析初始智能体的输出。</mark></p>
+<p>Unlike a simple sequential chain where output is passed directly to the next step, or routing which chooses a path, reflection introduces a feedback loop. The agent doesn't just produce an output; it then examines that output (or the process that generated it), identifies potential issues or areas for improvement, and uses those insights to generate a better version or modify its future actions.</p>
+<p><mark>反思模式与简单顺序链或路由模式有着本质区别。前者只是将输出直接传给下一步，或是在不同路径中做出选择；而反思模式则引入了反馈循环。在这种模式下，智能体并非简单地产出结果就结束了。它会回过头来审视自己的输出（或其生成过程），找出潜在的问题和改进空间，并依据这些洞察生成更优的版本，或是修正其后续的行动策略。</mark></p>
+<p>The process typically involves:</p>
+<p><mark>这个过程通常包括以下步骤：</mark></p>
+<ol type="1">
+<li><p><strong>Execution:</strong> The agent performs a task or generates an initial output.</p>
+<p><mark><strong>执行：</strong>智能体执行任务或生成初始版本的输出。</mark></p></li>
+<li><p><strong>Evaluation/Critique:</strong> The agent (often using another LLM call or a set of rules) analyzes the result from the previous step. This evaluation might check for factual accuracy, coherence, style, completeness, adherence to instructions, or other relevant criteria.</p>
+<p><mark><strong>评估/剖析：</strong>智能体（通常借助另一个大语言模型调用或一组规则）对上一步的结果进行分析。该过程旨在检查其事实准确性、内容连贯性、风格、完整度、是否遵循指令以及其他相关标准。</mark></p></li>
+<li><p><strong>Reflection/Refinement:</strong> Based on the critique, the agent determines how to improve. This might involve generating a refined output, adjusting parameters for a subsequent step, or even modifying the overall plan.</p>
+<p><mark><strong>反思/优化：</strong>根据上一轮的剖析结果，智能体将确定具体的改进方向。这可能涉及几个方面：生成一个更为精炼的输出、为后续步骤调整参数，甚至是修正整体计划。</mark></p></li>
+<li><p><strong>Iteration (Optional but common):</strong> The refined output or adjusted approach can then be executed, and the reflection process can repeat until a satisfactory result is achieved or a stopping condition is met.</p>
+<p><mark><strong>迭代（可选，但很常见）：</strong>随后，智能体便会将优化后的输出或调整过的方法付诸执行，并循环往复地进行整个反思过程，直到最终结果令人满意，或满足了预设的停止条件</mark></p></li>
+</ol>
+<p>A key and highly effective implementation of the Reflection pattern separates the process into two distinct logical roles: a Producer and a Critic. This is often called the "Generator-Critic" or "Producer-Reviewer" model. While a single agent can perform self-reflection, using two specialized agents (or two separate LLM calls with distinct system prompts) often yields more robust and unbiased results.</p>
+<p><mark>反思模式的一个关键且高效的实现方式，是将流程拆分为两个独立的逻辑角色：生产者（Producer）和评论者（Critic）。这通常被称为「生成器 - 评论者」（Generator-Critic）或「生产者 - 审查者」（Producer-Reviewer）模型。虽然单个智能体也能进行自我反思，但使用两个专用的智能体（或两个具有不同系统提示的独立大语言模型调用）通常能产出更稳健、更客观的结果。</mark></p>
+<ol type="1">
+<li><p>The Producer Agent: This agent's primary responsibility is to perform the initial execution of the task. It focuses entirely on generating the content, whether it's writing code, drafting a blog post, or creating a plan. It takes the initial prompt and produces the first version of the output.</p>
+<p><mark><strong>生产者智能体：</strong>主要职责是完成任务的初始执行。它完全专注于生成内容，无论是编写代码、起草博客文章还是制定计划。它会接收初始提示，并据此生成输出的第一个版本。</mark></p></li>
+<li><p>The Critic Agent: This agent's sole purpose is to evaluate the output generated by the Producer. It is given a different set of instructions, often a distinct persona (e.g., "You are a senior software engineer," "You are a meticulous fact-checker"). The Critic's instructions guide it to analyze the Producer's work against specific criteria, such as factual accuracy, code quality, stylistic requirements, or completeness. It is designed to find flaws, suggest improvements, and provide structured feedback.</p>
+<p><mark><strong>评论者智能体：</strong>该智能体的唯一使命就是评估由生产者生成的输出。它会被赋予一套不同的指令，通常还包含一个独特的角色设定（例如「你是一位高级软件工程师」、「你是一位严谨的事实核查员」）。评论者的指令引导它根据特定标准分析生产者的工作，如事实准确性、代码质量、风格要求和完整性，旨在发现问题、提出改进建议并给出结构化的反馈。</mark></p></li>
+</ol>
+<p>This separation of concerns is powerful because it prevents the "cognitive bias" of an agent reviewing its own work. The Critic agent approaches the output with a fresh perspective, dedicated entirely to finding errors and areas for improvement. The feedback from the Critic is then passed back to the Producer agent, which uses it as a guide to generate a new, refined version of the output. The provided LangChain and ADK code examples both implement this two-agent model: the LangChain example uses a specific "reflector_prompt" to create a critic persona, while the ADK example explicitly defines a producer and a reviewer agent.</p>
+<p><mark>这种职责分离非常有效，因为它避免了智能体自我审查时产生的<strong>认知偏见</strong>。评论者智能体以全新视角审视输出，完全专注于发现错误和改进空间。它的反馈意见随后传回给生产者智能体，生产者据此对内容进行修改和优化。实战部分 LangChain 和 ADK 代码示例都采用了这种双智能体模型：LangChain 使用特定的 <code>reflector_prompt</code> 创建评论者角色，而 ADK 示例明确区分了生产者和审查者两个智能体。</mark></p>
+<p>Implementing reflection often requires structuring the agent's workflow to include these feedback loops. This can be achieved through iterative loops in code, or using frameworks that support state management and conditional transitions based on evaluation results. While a single step of evaluation and refinement can be implemented within either a LangChain/LangGraph, or ADK, or Crew.AI chain, true iterative reflection typically involves more complex orchestration.</p>
+<p><mark>实现反思模式通常需要构建包含反馈循环的智能体工作流。这可以通过在编码实现迭代循环，或使用支持状态管理和根据评估结果进行条件跳转的框架来完成。虽然单步评估和优化可以在 LangChain/LangGraph、ADK 或 Crew.AI 链中实现，但真正的迭代反思通常需要更复杂的编排。</mark></p>
+<p>The Reflection pattern is crucial for building agents that can produce high-quality outputs, handle nuanced tasks, and exhibit a degree of self-awareness and adaptability. It moves agents beyond simply executing instructions towards a more sophisticated form of problem-solving and content generation.</p>
+<p><mark>反思模式对于构建能产出高质量结果、应对复杂任务并展现自我意识与适应能力的智能体非常重要。它让智能体不再只是执行指令，而是发展出更成熟的推理与内容生成能力。</mark></p>
+<p>The intersection of reflection with goal setting and monitoring (see Chapter 11) is worth noticing. A goal provides the ultimate benchmark for the agent's self-evaluation, while monitoring tracks its progress. In a number of practical cases, Reflection then might act as the corrective engine, using monitored feedback to analyze deviations and adjust its strategy. This synergy transforms the agent from a passive executor into a purposeful system that adaptively works to achieve its objectives.</p>
+<p><mark>需要特别注意反思模式与目标设定和监控（见第 11 章）的联系。目标为智能体的自我评估提供最终基准，监控则跟踪其进度。在许多实际情形中，反思会充当纠偏机制：利用监控反馈分析偏离之处并据此调整策略。这样的协同作用使智能体从单纯执行者变成有目的的、自主适应以实现目标的系统。</mark></p>
+<p>Furthermore, the effectiveness of the Reflection pattern is significantly enhanced when the LLM keeps a memory of the conversation (see Chapter 8). This conversational history provides crucial context for the evaluation phase, allowing the agent to assess its output not just in isolation, but against the backdrop of previous interactions, user feedback, and evolving goals. It enables the agent to learn from past critiques and avoid repeating errors. Without memory, each reflection is a self-contained event; with memory, reflection becomes a cumulative process where each cycle builds upon the last, leading to more intelligent and context-aware refinement.</p>
+<p><mark>此外，当模型能保持对话记忆时，反思模式的有效性显著增强（见第 8 章）。对话历史为评估阶段提供关键上下文，使智能体不仅能孤立评估输出，还能结合先前交互、用户反馈和不断演变的目标进行评估。这使智能体能从过去的评价反馈中学习并避免重复错误。没有记忆，每次反思都是独立事件；有了记忆，反思成为累积性的循环，每个轮次都建立在上一轮基础上，从而实现更智能、更具上下文感知的优化。</mark></p>
+<hr />
+<h2 id="practical-applications-use-cases-实际应用场景">Practical Applications &amp; Use Cases | <mark>实际应用场景</mark></h2>
+<p>The Reflection pattern is valuable in scenarios where output quality, accuracy, or adherence to complex constraints is critical:</p>
+<p><mark>当输出质量、准确性或对复杂约束的遵从性至关重要时，反思模式非常有用：</mark></p>
+<p><strong>1. Creative Writing and Content Generation:</strong> | <mark><strong>创意写作和内容生成：</strong></mark></p>
+<p>Refining generated text, stories, poems, or marketing copy.</p>
+<p><mark>对生成的文本、故事、诗歌或营销文案进行润色和改进。</mark></p>
+<ul>
+<li><p><strong>Use Case:</strong> An agent writing a blog post.</p></li>
+<li><p><strong>Reflection:</strong> Generate a draft, critique it for flow, tone, and clarity, then rewrite based on the critique. Repeat until the post meets quality standards.</p></li>
+<li><p><strong>Benefit:</strong> Produces more polished and effective content.</p></li>
+<li><p><mark><strong>用例：</strong>撰写博客文章的智能体。</mark></p></li>
+<li><p><mark><strong>反思：</strong>先写一篇草稿，再从流畅性、语气和表达清晰度等方面进行检查，随后根据反馈重写草稿。反复进行，直到文章符合质量要求。</mark></p></li>
+<li><p><mark><strong>好处：</strong>产生更精致、更有效的内容。</mark></p></li>
+</ul>
+<p><strong>2. Code Generation and Debugging:</strong> | <mark><strong>代码生成和调试：</strong></mark></p>
+<p>Writing code, identifying errors, and fixing them.</p>
+<p><mark>编写代码、识别错误并修复它们。</mark></p>
+<ul>
+<li><p><strong>Use Case:</strong> An agent writing a Python function.</p></li>
+<li><p><strong>Reflection:</strong> Write initial code, run tests or static analysis, identify errors or inefficiencies, then modify the code based on the findings.</p></li>
+<li><p><strong>Benefit:</strong> Generates more robust and functional code.</p></li>
+<li><p><mark><strong>用例：</strong>编写 Python 函数的智能体。</mark></p></li>
+<li><p><mark><strong>反思：</strong>编写初始代码，运行测试或静态分析，识别错误或低效之处，然后基于这些发现优化代码。</mark></p></li>
+<li><p><mark><strong>好处：</strong>生成更健壮、功能更完整的代码。</mark></p></li>
+</ul>
+<p><strong>3. Complex Problem Solving:</strong> | <mark><strong>复杂问题解决：</strong></mark></p>
+<p>Evaluating intermediate steps or proposed solutions in multi-step reasoning tasks.</p>
+<p><mark>在多步推理任务中，对中间步骤或所提出的解决方案进行评估和审查。</mark></p>
+<ul>
+<li><p><strong>Use Case:</strong> An agent solving a logic puzzle.</p></li>
+<li><p><strong>Reflection:</strong> Propose a step, evaluate if it leads closer to the solution or introduces contradictions, backtrack or choose a different step if needed.</p></li>
+<li><p><strong>Benefit:</strong> Improves the agent's ability to navigate complex problem spaces.</p></li>
+<li><p><mark><strong>用例：</strong>解决逻辑推理类谜题的智能体。</mark></p></li>
+<li><p><mark><strong>反思：</strong>提出一个行动步骤，评估该步骤是否有助于推进问题的解决或引入矛盾；如发现问题，则回退并尝试其他步骤。</mark></p></li>
+<li><p><mark><strong>好处：</strong>增强智能体在复杂问题情境中分析和解决问题的能力。</mark></p></li>
+</ul>
+<p><strong>4. Summarization and Information Synthesis:</strong> | <mark><strong>摘要和信息综合：</strong></mark></p>
+<p>Refining summaries for accuracy, completeness, and conciseness.</p>
+<p><mark>对摘要进行润色，使其更准确、完整且简明。</mark></p>
+<ul>
+<li><p><strong>Use Case:</strong> An agent summarizing a long document.</p></li>
+<li><p><strong>Reflection:</strong> Generate an initial summary, compare it against key points in the original document, refine the summary to include missing information or improve accuracy.</p></li>
+<li><p><strong>Benefit:</strong> Creates more accurate and comprehensive summaries.</p></li>
+<li><p><mark><strong>用例：</strong>总结长文档的智能体。</mark></p></li>
+<li><p><mark><strong>反思：</strong>先生成一份初步摘要，再将其与原文的要点对照，找出遗漏或不准确之处，随后对摘要进行修订，补充缺失信息并提高准确性。</mark></p></li>
+<li><p><mark><strong>好处：</strong>生成更准确、更全面的摘要。</mark></p></li>
+</ul>
+<p><strong>5. Planning and Strategy:</strong> | <mark><strong>规划和策略：</strong></mark></p>
+<p>Evaluating a proposed plan and identifying potential flaws or improvements.</p>
+<p><mark>评估所提计划，找出存在的问题并提出改进建议。</mark></p>
+<ul>
+<li><p><strong>Use Case:</strong> An agent planning a series of actions to achieve a goal.</p></li>
+<li><p><strong>Reflection:</strong> Generate a plan, simulate its execution or evaluate its feasibility against constraints, revise the plan based on the evaluation.</p></li>
+<li><p><strong>Benefit:</strong> Develops more effective and realistic plans.</p></li>
+<li><p><mark><strong>用例：</strong>规划一系列行动以实现特定任务的智能体。</mark></p></li>
+<li><p><mark><strong>反思：</strong>制定计划，模拟执行或根据限制评估可行性，然后根据评估结果对计划进行改进与调整。</mark></p></li>
+<li><p><mark><strong>好处：</strong>制定更有效、更符合实际的计划。</mark></p></li>
+</ul>
+<p><strong>6. Conversational Agents:</strong> | <mark><strong>对话智能体：</strong></mark></p>
+<p>Reviewing previous turns in a conversation to maintain context, correct misunderstandings, or improve response quality.</p>
+<p><mark>回顾对话中的前几轮交流，以保持上下文连贯、纠正误会并提升回答的质量。</mark></p>
+<ul>
+<li><p><strong>Use Case:</strong> A customer support chatbot.</p></li>
+<li><p><strong>Reflection:</strong> After a user response, review the conversation history and the last generated message to ensure coherence and address the user's latest input accurately.</p></li>
+<li><p><strong>Benefit:</strong> Leads to more natural and effective conversations.</p></li>
+<li><p><mark><strong>用例：</strong>客户支持聊天机器人。</mark></p></li>
+<li><p><mark><strong>反思：</strong>在用户回复后，回顾整个对话和上一次生成的内容，确认信息前后连贯并针对用户的最新输入做出准确回应。</mark></p></li>
+<li><p><mark><strong>好处：</strong>实现更自然、更高效的沟通。</mark></p></li>
+</ul>
+<p>Reflection adds a layer of meta-cognition to agentic systems, enabling them to learn from their own outputs and processes, leading to more intelligent, reliable, and high-quality results.</p>
+<p><mark>反思模式为智能体系统增加了一层元认知能力，使其能从自己处理过程和输出中学习，从而产生更智能、更可靠、更高质量的结果。</mark></p>
+<hr />
+<h2 id="hands-on-code-example-langchain-实战示例使用-langchain">Hands-On Code Example (LangChain) | <mark>实战示例：使用 LangChain</mark></h2>
+<p>The implementation of a complete, iterative reflection process necessitates mechanisms for state management and cyclical execution. While these are handled natively in graph-based frameworks like LangGraph or through custom procedural code, the fundamental principle of a single reflection cycle can be demonstrated effectively using the compositional syntax of LCEL (LangChain Expression Language).</p>
+<p><mark>要实现完整的迭代反思流程，需要具备状态管理和循环执行的机制。虽然诸如 LangGraph 这类基于图的框架，或自定义的过程式代码可以原生支持这些功能，但通过 LCEL（LangChain 表达式语言）的组合语法，就能清晰地演示反思模式的核心原理。</mark></p>
+<p>This example implements a reflection loop using the Langchain library and OpenAI's GPT-4o model to iteratively generate and refine a Python function that calculates the factorial of a number. The process starts with a task prompt, generates initial code, and then repeatedly reflects on the code based on critiques from a simulated senior software engineer role, refining the code in each iteration until the critique stage determines the code is perfect or a maximum number of iterations is reached. Finally, it prints the resulting refined code.</p>
+<p><mark>本示例使用 Langchain 库和 OpenAI 的 <code>GPT-4o</code> 模型实现反思循环，迭代生成并优化一个计算阶乘的 Python 函数。流程从任务提示开始，生成初始代码，然后由扮演高级软件工程师角色的智能体提出改进建议并反复迭代，直到确定代码已无可改进或达到最大迭代次数时结束，最终输出完善后的代码。</mark></p>
+<p>First, ensure you have the necessary libraries installed:</p>
+<p><mark>首先确保已安装必要的库：</mark></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install langchain langchain-community langchain-openai</span><br></pre></td></tr></table></figure>
+<p>You will also need to set up your environment with your API key for the language model you choose (e.g., OpenAI, Google Gemini, Anthropic).</p>
+<p><mark>还需要为选择的语言模型（例如 OpenAI、Google Gemini、Anthropic）设置 <code>API</code> 密钥。</mark></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">from</span> dotenv <span class="keyword">import</span> load_dotenv</span><br><span class="line"><span class="keyword">from</span> langchain_openai <span class="keyword">import</span> ChatOpenAI</span><br><span class="line"><span class="keyword">from</span> langchain_core.prompts <span class="keyword">import</span> ChatPromptTemplate</span><br><span class="line"><span class="keyword">from</span> langchain_core.messages <span class="keyword">import</span> SystemMessage, HumanMessage</span><br><span class="line"></span><br><span class="line"><span class="comment"># Colab 代码链接：https://colab.research.google.com/drive/1xnL6Rky6nsm4iAhomLnUK3kgwSyyYZfb</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装依赖</span></span><br><span class="line"><span class="comment"># pip install langchain langchain-community langchain-openai</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># --- Configuration ---</span></span><br><span class="line"><span class="comment"># Load environment variables from .env file (for OPENAI_API_KEY)</span></span><br><span class="line"><span class="comment"># 从 .env 文件加载环境变量（如 OPENAI_API_KEY）</span></span><br><span class="line">load_dotenv()</span><br><span class="line"></span><br><span class="line"><span class="comment"># Check if the API key is set</span></span><br><span class="line"><span class="comment"># 检查 API 密钥是否设置</span></span><br><span class="line"><span class="keyword">if</span> <span class="keyword">not</span> os.getenv(<span class="string">&quot;OPENAI_API_KEY&quot;</span>):</span><br><span class="line">    <span class="keyword">raise</span> ValueError(<span class="string">&quot;OPENAI_API_KEY not found in .env file. Please add it.&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Initialize the Chat LLM. We use a powerful model like gpt-4o for better reasoning.</span></span><br><span class="line"><span class="comment"># A lower temperature is used for more deterministic and focused outputs.</span></span><br><span class="line"><span class="comment"># 使用 gpt-4o 或其他模型，并设置较低的温度值以获得更稳定的输出</span></span><br><span class="line">llm = ChatOpenAI(model=<span class="string">&quot;gpt-4o&quot;</span>, temperature=<span class="number">0.1</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">run_reflection_loop</span>():</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    Demonstrates a multi-step AI reflection loop to progressively improve a Python function.</span></span><br><span class="line"><span class="string">    展示了通过多步骤反思循环，逐步改进 Python 函数的方法。</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># --- The Core Task ---</span></span><br><span class="line">    <span class="comment"># --- 核心任务的提示词 ---</span></span><br><span class="line">    task_prompt = <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    Your task is to create a Python function named `calculate_factorial`.</span></span><br><span class="line"><span class="string">    This function should do the following:</span></span><br><span class="line"><span class="string">    1.  Accept a single integer `n` as input.</span></span><br><span class="line"><span class="string">    2.  Calculate its factorial (n!).</span></span><br><span class="line"><span class="string">    3.  Include a clear docstring explaining what the function does.</span></span><br><span class="line"><span class="string">    4.  Handle edge cases: The factorial of 0 is 1.</span></span><br><span class="line"><span class="string">    5.  Handle invalid input: Raise a ValueError if the input is a negative number.</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># --- The Reflection Loop ---</span></span><br><span class="line">    <span class="comment"># --- 反思循环 ---</span></span><br><span class="line">    max_iterations = <span class="number">3</span></span><br><span class="line">    current_code = <span class="string">&quot;&quot;</span></span><br><span class="line">    <span class="comment"># We will build a conversation history to provide context in each step.</span></span><br><span class="line">    <span class="comment"># 构建对话历史，为每一步提供必要的上下文信息。</span></span><br><span class="line">    message_history = [HumanMessage(content=task_prompt)]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(max_iterations):</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;\n&quot;</span> + <span class="string">&quot;=&quot;</span>*<span class="number">25</span> + <span class="string">f&quot; REFLECTION LOOP: ITERATION <span class="subst">&#123;i + <span class="number">1</span>&#125;</span> &quot;</span> + <span class="string">&quot;=&quot;</span>*<span class="number">25</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># --- 1. GENERATE / REFINE STAGE ---</span></span><br><span class="line">        <span class="comment"># In the first iteration, it generates. In subsequent iterations, it refines.</span></span><br><span class="line">        <span class="comment"># 在第一次迭代时，生成初始代码；在后续迭代时，基于上一步的反馈优化代码。</span></span><br><span class="line">        <span class="keyword">if</span> i == <span class="number">0</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;\n&gt;&gt;&gt; STAGE 1: GENERATING initial code...&quot;</span>)</span><br><span class="line">            <span class="comment"># The first message is just the task prompt.</span></span><br><span class="line">            <span class="comment"># 第一次迭代时，只需要任务提示词。</span></span><br><span class="line">            response = llm.invoke(message_history)</span><br><span class="line">            current_code = response.content</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;\n&gt;&gt;&gt; STAGE 1: REFINING code based on previous critique...&quot;</span>)</span><br><span class="line">            <span class="comment"># The message history now contains the task, the last code, and the last critique.</span></span><br><span class="line">            <span class="comment"># We instruct the model to apply the critiques.</span></span><br><span class="line">            <span class="comment"># 后续迭代时，除了任务提示词，还包含上一步的代码和反馈。</span></span><br><span class="line">            <span class="comment"># 然后要求模型根据反馈意见优化代码。</span></span><br><span class="line">            message_history.append(HumanMessage(content=<span class="string">&quot;Please refine the code using the critiques provided.&quot;</span>))</span><br><span class="line">            response = llm.invoke(message_history)</span><br><span class="line">            current_code = response.content</span><br><span class="line"></span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;\n--- Generated Code (v&quot;</span> + <span class="built_in">str</span>(i + <span class="number">1</span>) + <span class="string">&quot;) ---\n&quot;</span> + current_code)</span><br><span class="line">        message_history.append(response) <span class="comment"># Add the generated code to history</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># --- 2. REFLECT STAGE ---</span></span><br><span class="line">        <span class="comment"># --- 反思阶段 ---</span></span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;\n&gt;&gt;&gt; STAGE 2: REFLECTING on the generated code...&quot;</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># Create a specific prompt for the reflector agent.</span></span><br><span class="line">        <span class="comment"># This asks the model to act as a senior code reviewer.</span></span><br><span class="line">        <span class="comment"># 创建一个特定的提示词，要求模型扮演高级软件工程师的角色，对代码进行仔细的审查。</span></span><br><span class="line">        reflector_prompt = [</span><br><span class="line">            SystemMessage(content=<span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                You are a senior software engineer and an expert in Python.</span></span><br><span class="line"><span class="string">                Your role is to perform a meticulous code review.</span></span><br><span class="line"><span class="string">                Critically evaluate the provided Python code based on the original task requirements.</span></span><br><span class="line"><span class="string">                Look for bugs, style issues, missing edge cases, and areas for improvement.</span></span><br><span class="line"><span class="string">                If the code is perfect and meets all requirements, respond with the single phrase &#x27;CODE_IS_PERFECT&#x27;.</span></span><br><span class="line"><span class="string">                Otherwise, provide a bulleted list of your critiques.</span></span><br><span class="line"><span class="string">            &quot;&quot;&quot;</span>),</span><br><span class="line">            HumanMessage(content=<span class="string">f&quot;Original Task:\n<span class="subst">&#123;task_prompt&#125;</span>\n\nCode to Review:\n<span class="subst">&#123;current_code&#125;</span>&quot;</span>)</span><br><span class="line">        ]</span><br><span class="line"></span><br><span class="line">        critique_response = llm.invoke(reflector_prompt)</span><br><span class="line">        critique = critique_response.content</span><br><span class="line"></span><br><span class="line">        <span class="comment"># --- 3. STOPPING CONDITION ---</span></span><br><span class="line">        <span class="comment"># 如果代码完美符合要求，则结束反思循环。</span></span><br><span class="line">        <span class="keyword">if</span> <span class="string">&quot;CODE_IS_PERFECT&quot;</span> <span class="keyword">in</span> critique:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;\n--- Critique ---\nNo further critiques found. The code is satisfactory.&quot;</span>)</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;\n--- Critique ---\n&quot;</span> + critique)</span><br><span class="line">        <span class="comment"># Add the critique to the history for the next refinement loop.</span></span><br><span class="line">        message_history.append(HumanMessage(content=<span class="string">f&quot;Critique of the previous code:\n<span class="subst">&#123;critique&#125;</span>&quot;</span>))</span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;\n&quot;</span> + <span class="string">&quot;=&quot;</span>*<span class="number">30</span> + <span class="string">&quot; FINAL RESULT &quot;</span> + <span class="string">&quot;=&quot;</span>*<span class="number">30</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;\nFinal refined code after the reflection process:\n&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(current_code)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    run_reflection_loop()</span><br></pre></td></tr></table></figure>
+<p>译者注：<a target="_blank" rel="noopener" href="https://colab.research.google.com/drive/1xnL6Rky6nsm4iAhomLnUK3kgwSyyYZfb">Colab 代码</a> 已维护在<a href="/codes/Chapter-04-Reflection-LangChain-Example.py">此处</a>，同时补充了输出结果作为参考。</p>
+<p>The code begins by setting up the environment, loading API keys, and initializing a powerful language model like GPT-4o with a low temperature for focused outputs. The core task is defined by a prompt asking for a Python function to calculate the factorial of a number, including specific requirements for docstrings, edge cases (factorial of 0), and error handling for negative input. The run_reflection_loop function orchestrates the iterative refinement process. Within the loop, in the first iteration, the language model generates initial code based on the task prompt. In subsequent iterations, it refines the code based on critiques from the previous step. A separate "reflector" role, also played by the language model but with a different system prompt, acts as a senior software engineer to critique the generated code against the original task requirements. This critique is provided as a bulleted list of issues or the phrase 'CODE_IS_PERFECT' if no issues are found. The loop continues until the critique indicates the code is perfect or a maximum number of iterations is reached. The conversation history is maintained and passed to the language model in each step to provide context for both generation/refinement and reflection stages. Finally, the script prints the last generated code version after the loop concludes.</p>
+<p><mark>代码首先设置环境、加载 API 密钥，并初始化 GPT-4o 模型，使用低温度值以获得稳定的输出。核心任务由一个提示定义，要求创建一个计算阶乘的 Python 函数，要求包含完整的文档、处理边界情况（如 0 的阶乘）、以及对负数输入的错误处理。</mark></p>
+<p><mark><code>run_reflection_loop</code> 函数负责协调整个迭代优化过程。在循环中，第一次迭代由大语言模型基于任务提示生成初始代码；之后的迭代则根据上一步给出的建议优化代码。</mark></p>
+<p><mark>还有一个独立的「反思者」角色，同样由大语言模型扮演但使用不同系统提示。它以高级软件工程师的身份来评审生成的代码是否符合原始需求，并以问题列表的形式提供反馈意见，或在没有发现问题时返回 <code>CODE_IS_PERFECT</code>。循环会持续进行，直到评审认为代码已无可改进或达到最大迭代次数。</mark></p>
+<p><mark>会话历史在每一步都会保留并传递给语言模型，为生成、改进和反思阶段提供上下文。最后，脚本在循环结束时打印出最终代码版本。</mark></p>
+<hr />
+<h2 id="hands-on-code-example-google-adk-实战示例使用-google-adk">Hands-On Code Example (Google ADK) | <mark>实战示例：使用 Google ADK</mark></h2>
+<p>Let's now look at a conceptual code example implemented using the Google ADK. Specifically, the code showcases this by employing a Generator-Critic structure, where one component (the Generator) produces an initial result or plan, and another component (the Critic) provides critical feedback or a critique, guiding the Generator towards a more refined or accurate final output.</p>
+<p><mark>现在我们来看一个使用 Google ADK 实现的示例。具体来说，代码采用「生成器 - 评论者」架构来演示反思模式，其中一个组件（生成器）产生初始结果或方案，另一个组件（评论者）提出反馈建议，帮助生成器不断改进，最终得到更完善、更准确的输出。</mark></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> google.adk.agents <span class="keyword">import</span> SequentialAgent, LlmAgent</span><br><span class="line"></span><br><span class="line"><span class="comment"># Colab 代码链接：https://colab.research.google.com/drive/1nwE2GH6c08dGlvAv7T28uF1xe2qeu2q_</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># The first agent generates the initial draft.</span></span><br><span class="line"><span class="comment"># 第一个智能体生成初始草稿。</span></span><br><span class="line">generator = LlmAgent(</span><br><span class="line">    name=<span class="string">&quot;DraftWriter&quot;</span>,</span><br><span class="line">    description=<span class="string">&quot;Generates initial draft content on a given subject.&quot;</span>,</span><br><span class="line">    instruction=<span class="string">&quot;Write a short, informative paragraph about the user&#x27;s subject.&quot;</span>,</span><br><span class="line">    output_key=<span class="string">&quot;draft_text&quot;</span> <span class="comment"># The output is saved to this state key.</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># The second agent critiques the draft from the first agent.</span></span><br><span class="line"><span class="comment"># 第二个智能体评审第一个智能体的草稿。</span></span><br><span class="line">reviewer = LlmAgent(</span><br><span class="line">    name=<span class="string">&quot;FactChecker&quot;</span>,</span><br><span class="line">    description=<span class="string">&quot;Reviews a given text for factual accuracy and provides a structured critique.&quot;</span>,</span><br><span class="line">    instruction=<span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    You are a meticulous fact-checker.</span></span><br><span class="line"><span class="string">    1. Read the text provided in the state key &#x27;draft_text&#x27;.</span></span><br><span class="line"><span class="string">    2. Carefully verify the factual accuracy of all claims.</span></span><br><span class="line"><span class="string">    3. Your final output must be a dictionary containing two keys:</span></span><br><span class="line"><span class="string">       - &quot;status&quot;: A string, either &quot;ACCURATE&quot; or &quot;INACCURATE&quot;.</span></span><br><span class="line"><span class="string">       - &quot;reasoning&quot;: A string providing a clear explanation for your status, citing specific issues if any are found.</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span>,</span><br><span class="line">    output_key=<span class="string">&quot;review_output&quot;</span> <span class="comment"># The structured dictionary is saved here.</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># The SequentialAgent ensures the generator runs before the reviewer.</span></span><br><span class="line"><span class="comment"># 确保生成者在评论者之前运行。</span></span><br><span class="line">review_pipeline = SequentialAgent(</span><br><span class="line">    name=<span class="string">&quot;WriteAndReview_Pipeline&quot;</span>,</span><br><span class="line">    sub_agents=[generator, reviewer]</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Execution Flow:</span></span><br><span class="line"><span class="comment"># 1. generator runs -&gt; saves its paragraph to state[&#x27;draft_text&#x27;].</span></span><br><span class="line"><span class="comment"># 2. reviewer runs -&gt; reads state[&#x27;draft_text&#x27;] and saves its dictionary output to state[&#x27;review_output&#x27;].</span></span><br><span class="line"><span class="comment"># 执行流程：</span></span><br><span class="line"><span class="comment"># 1. 生成者运行 -&gt; 将其段落保存到 state[&#x27;draft_text&#x27;]。</span></span><br><span class="line"><span class="comment"># 2. 评论者运行 -&gt; 读取 state[&#x27;draft_text&#x27;] 并将其字典输出保存到 state[&#x27;review_output&#x27;]。</span></span><br></pre></td></tr></table></figure>
+<p>译者注：<a target="_blank" rel="noopener" href="https://colab.research.google.com/drive/1nwE2GH6c08dGlvAv7T28uF1xe2qeu2q_">Colab 代码</a> 已维护在<a href="/codes/Chapter-04-Reflection-ADK-Example.py">此处</a>。</p>
+<p>This code demonstrates the use of a sequential agent pipeline in Google ADK for generating and reviewing text. It defines two LlmAgent instances: generator and reviewer. The generator agent is designed to create an initial draft paragraph on a given subject. It is instructed to write a short and informative piece and saves its output to the state key draft_text. The reviewer agent acts as a fact-checker for the text produced by the generator. It is instructed to read the text from draft_text and verify its factual accuracy. The reviewer's output is a structured dictionary with two keys: status and reasoning. status indicates if the text is "ACCURATE" or "INACCURATE", while reasoning provides an explanation for the status. This dictionary is saved to the state key review_output. A SequentialAgent named review_pipeline is created to manage the execution order of the two agents. It ensures that the generator runs first, followed by the reviewer. The overall execution flow is that the generator produces text, which is then saved to the state. Subsequently, the reviewer reads this text from the state, performs its fact-checking, and saves its findings (the status and reasoning) back to the state. This pipeline allows for a structured process of content creation and review using separate agents. <strong>Note:</strong> An alternative implementation utilizing ADK's LoopAgent is also available for those interested.</p>
+<p><mark>该示例展示了在 Google ADK 中使用顺序智能体管道来生成和审查文本。它定义了两个 <code>LlmAgent</code> 实例：<code>generator</code> 和 <code>reviewer</code>。生成器智能体负责根据指定主题撰写一段简短且信息量高的初稿，并将结果存为状态键 <code>draft_text</code>。审查者智能体则作为事实核查者，从 <code>draft_text</code> 读取内容并核实事实准确性。审查者的输出是一个结构化字典，包含两个键：<code>status</code> 和 <code>reasoning</code>，其中状态的值包括 <code>ACCURATE</code> 和 <code>INACCURATE</code>，而 <code>reasoning</code> 字段是对状态判断的补充说明，具体的值保存在状态键 <code>review_output</code>。</mark></p>
+<p><mark>然后通过名为 <code>review_pipeline</code> 的 <code>SequentialAgent</code> 来控制两个智能体的执行顺序，确保先执行生成器智能体，再执行审查者智能体。整体流程是生成器先生成并保存文本，然后审查者读取状态并执行事实核查，再将核查发现的内容保存回状态。这种管道化的设计便于用独立的智能体完成结构化的内容创作与审查。<strong>注意：</strong>对于感兴趣的用户，还可使用 ADK 的 <code>LoopAgent</code> 实现类似功能。</mark></p>
+<p>Before concluding, it's important to consider that while the Reflection pattern significantly enhances output quality, it comes with important trade-offs. The iterative process, though powerful, can lead to higher costs and latency, since every refinement loop may require a new LLM call, making it suboptimal for time-sensitive applications. Furthermore, the pattern is memory-intensive; with each iteration, the conversational history expands, including the initial output, critique, and subsequent refinements.</p>
+<p><mark>在结束前需要注意，虽然反思模式能显著提升输出质量，但也有重要的权衡。其迭代过程虽有效，却可能带来更高的成本和更长的延迟，因为每次改进往往都要发起一次新的模型调用，因此对时间敏感的场景并不适合。另外，该模式占用的内存也会较多，因为随着每轮迭代的进行，会话历史会不断增长，包含最初的输出、评价意见和后续的改进内容。</mark></p>
+<hr />
+<h2 id="at-a-glance-要点速览">At a Glance | <mark>要点速览</mark></h2>
+<p><strong>What:</strong> An agent's initial output is often suboptimal, suffering from inaccuracies, incompleteness, or a failure to meet complex requirements. Basic agentic workflows lack a built-in process for the agent to recognize and fix its own errors. This is solved by having the agent evaluate its own work or, more robustly, by introducing a separate logical agent to act as a critic, preventing the initial response from being the final one regardless of quality.</p>
+<p><mark><strong>问题所在：</strong>智能体的初始输出通常不够理想，存在不准确、不完整或未能满足复杂要求的问题。基本智能体工作流缺乏内置过程让智能体识别和修复自己的错误。为了解决这一点，可以让智能体先自我评估，或通过引入独立的智能体来审查和指出问题，确保初始回答不会直接作为最终结果。</mark></p>
+<p><strong>Why:</strong> The Reflection pattern offers a solution by introducing a mechanism for self-correction and refinement. It establishes a feedback loop where a "producer" agent generates an output, and then a "critic" agent (or the producer itself) evaluates it against predefined criteria. This critique is then used to generate an improved version. This iterative process of generation, evaluation, and refinement progressively enhances the quality of the final result, leading to more accurate, coherent, and reliable outcomes.</p>
+<p><mark><strong>解决之道：</strong>反思模式通过引入自我纠错和改进机制来解决问题。它建立反馈循环，其中「生产者」智能体生成输出，然后「评论者」智能体（或生产者本身）根据预定义标准评估输出。相关的反馈建议随后用于生成改进版本。这种生成、评估和优化的迭代过程逐步提高最终结果的质量，产生更准确、连贯和可靠的结果。</mark></p>
+<p><strong>Rule of thumb:</strong> Use the Reflection pattern when the quality, accuracy, and detail of the final output are more important than speed and cost. It is particularly effective for tasks like generating polished long-form content, writing and debugging code, and creating detailed plans. Employ a separate critic agent when tasks require high objectivity or specialized evaluation that a generalist producer agent might miss.</p>
+<p><mark><strong>经验法则：</strong>当最终输出的质量、准确性和细节比速度和成本更重要时应考虑使用反思模式。它对于生成高质量的长篇内容、编写和调试代码、创建详细计划等任务非常有效。当任务需要更高的客观性或涉及专业评估（常规生产者可能会遗漏），建议采用独立的评论者智能体以提高输出质量。</mark></p>
+<p><strong>Visual summary</strong> | <mark><strong>可视化总结</strong></mark></p>
+<figure>
+<img src="/img3/Agentic%20Design%20Patterns/chapter04_fig1.png" alt="Reflection Pattern - Self-Reflection" /><figcaption aria-hidden="true">Reflection Pattern - Self-Reflection</figcaption>
+</figure>
+<p>Fig. 1: Reflection design pattern, self-reflection</p>
+<p><mark>图 1：反思设计模式之自我反思</mark></p>
+<figure>
+<img src="/img3/Agentic%20Design%20Patterns/chapter04_fig2.png" alt="Reflection Pattern - Producer and Critic" /><figcaption aria-hidden="true">Reflection Pattern - Producer and Critic</figcaption>
+</figure>
+<p>Fig.2: Reflection design pattern, producer and critique agent</p>
+<p><mark>图 2：反思设计模式之生产者和评论者智能体</mark></p>
+<hr />
+<h2 id="key-takeaways-核心要点">Key Takeaways | <mark>核心要点</mark></h2>
+<ul>
+<li><p>The primary advantage of the Reflection pattern is its ability to iteratively self-correct and refine outputs, leading to significantly higher quality, accuracy, and adherence to complex instructions.</p>
+<p><mark>反思模式的主要优势在于它可以通过反复自我修正和改进输出，显著提高质量、准确性和遵循更复杂的指令。</mark></p></li>
+<li><p>It involves a feedback loop of execution, evaluation/critique, and refinement. Reflection is essential for tasks requiring high-quality, accurate, or nuanced outputs.</p>
+<p><mark>它包括执行、评估/评价和改进的反馈循环。对于需要高质量、准确性或细腻表述的任务，反思是不可或缺的。</mark></p></li>
+<li><p>A powerful implementation is the Producer-Critic model, where a separate agent (or prompted role) evaluates the initial output. This separation of concerns enhances objectivity and allows for more specialized, structured feedback.</p>
+<p><mark>一个有效的方法是采用「生产者 - 评论者」模型，由一个独立的智能体（或基于提示的不同角色）来评估初始输出。通过职责分离可以提高评判的客观性，并提供更专业、更有条理的反馈。</mark></p></li>
+<li><p>However, these benefits come at the cost of increased latency and computational expense, along with a higher risk of exceeding the model's context window or being throttled by API services.</p>
+<p><mark>然而，这些好处以增加延迟和成本为代价，同时还有超出模型上下文窗口或被 <code>API</code> 服务限流的风险。</mark></p></li>
+<li><p>While full iterative reflection often requires stateful workflows (like LangGraph), a single reflection step can be implemented in LangChain using LCEL to pass output for critique and subsequent refinement.</p>
+<p><mark>虽然完整的迭代反思通常依赖有状态的工作流（例如 LangGraph），但在 LangChain 中也可以用 LCEL 实现一次性的反思步骤，将生成的输出传给评论者以进行评审并据此改进。</mark></p></li>
+<li><p>Google ADK can facilitate reflection through sequential workflows where one agent's output is critiqued by another agent, allowing for subsequent refinement steps.</p>
+<p><mark>Google ADK 可以通过一系列串联的工作流程来促进反思：一个智能体生成输出，另一个智能体对其进行评审，并据此进行后续改进。</mark></p></li>
+<li><p>This pattern enables agents to perform self-correction and enhance their performance over time.</p>
+<p><mark>该模式使智能体能够自我修正，并随着时间不断提高表现。</mark></p></li>
+</ul>
+<hr />
+<h2 id="conclusion-结语">Conclusion | <mark>结语</mark></h2>
+<p>The reflection pattern provides a crucial mechanism for self-correction within an agent's workflow, enabling iterative improvement beyond a single-pass execution. This is achieved by creating a loop where the system generates an output, evaluates it against specific criteria, and then uses that evaluation to produce a refined result. This evaluation can be performed by the agent itself (self-reflection) or, often more effectively, by a distinct critic agent, which represents a key architectural choice within the pattern.</p>
+<p><mark>反思模式为智能体的工作流程提供了自我修正的关键手段，使其能通过多次迭代而不是一次性完成任务来持续改进。具体做法是形成一个循环：系统先生成初稿，然后按照既定标准对其进行评估，最后根据评估结果生成更完善的输出。这种评估既可以由智能体自己完成（自我反思），也可以由一个专门的评论者智能体来执行。通常后一种方式更有效，也是该模式的一个重要架构决策。</mark></p>
+<p>While a fully autonomous, multi-step reflection process requires a robust architecture for state management, its core principle is effectively demonstrated in a single generate-critique-refine cycle. As a control structure, reflection can be integrated with other foundational patterns to construct more robust and functionally complex agentic systems.</p>
+<p><mark>虽然要实现完全自主的多步骤反思需要可靠的状态管理架构，但其核心思想可以通过「生成—评审—改进」的循环清晰地呈现。作为一种控制结构，反思可以与其他基础模式结合使用，从而构建更稳健、功能更强大的智能体系统。</mark></p>
+<hr />
+<h2 id="references-参考文献">References | <mark>参考文献</mark></h2>
+<p>Here are some resources for further reading on the Reflection pattern and related concepts:</p>
+<p><mark>以下是有关反思模式和相关概念的进一步阅读资源：</mark></p>
+<ol type="1">
+<li><p>Training Language Models to Self-Correct via Reinforcement Learning, <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2409.12917">https://arxiv.org/abs/2409.12917</a></p>
+<p><mark>使用强化学习训练语言模型以实现自我纠正，<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2409.12917">https://arxiv.org/abs/2409.12917</a></mark></p></li>
+<li><p>LangChain Expression Language (LCEL) Documentation: <a target="_blank" rel="noopener" href="https://python.langchain.com/docs/introduction/">https://python.langchain.com/docs/introduction/</a></p>
+<p><mark>LangChain 表达式语言文档：<a target="_blank" rel="noopener" href="https://python.langchain.com/docs/introduction/">https://python.langchain.com/docs/introduction/</a></mark></p></li>
+<li><p>LangGraph Documentation:<a target="_blank" rel="noopener" href="https://www.langchain.com/langgraph">https://www.langchain.com/langgraph</a></p>
+<p><mark>LangGraph 文档：<a target="_blank" rel="noopener" href="https://www.langchain.com/langgraph">https://www.langchain.com/langgraph</a></mark></p></li>
+<li><p>Google Agent Developer Kit (ADK) Documentation (Multi-Agent Systems): <a target="_blank" rel="noopener" href="https://google.github.io/adk-docs/agents/multi-agents/">https://google.github.io/adk-docs/agents/multi-agents/</a></p>
+<p><mark>Google 智能体开发套件 (ADK) 文档（多智能体系统）：<a target="_blank" rel="noopener" href="https://google.github.io/adk-docs/agents/multi-agents/">https://google.github.io/adk-docs/agents/multi-agents/</a></mark></p></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/05/04/%E3%80%8AAgentic%20Design%20Patterns%E3%80%8B%E7%AC%AC%E4%B8%89%E7%AB%A0/" rel="prev" title="《Agentic Design Patterns》第三章">
+                  <i class="fa fa-chevron-left"></i> 《Agentic Design Patterns》第三章
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/05/06/%E3%80%8AAgentic%20Design%20Patterns%E3%80%8B%E7%AC%AC%E4%BA%94%E7%AB%A0/" rel="next" title="《Agentic Design Patterns》第五章">
+                  《Agentic Design Patterns》第五章 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

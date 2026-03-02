@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"enable":true,"style":"tabs","active":"giscus","storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+
+
+    <meta name="description" content="Chapter 3: Parallelization | 第三章：并行化 Parallelization Pattern Overview | 并行模式概述 In the previous chapters, we&#39;ve explored Prompt Chaining for sequential workflows and Routing for dynamic decision-making">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《Agentic Design Patterns》第三章">
+<meta property="og:url" content="http://hongyitong.github.io/2025/05/04/%E3%80%8AAgentic%20Design%20Patterns%E3%80%8B%E7%AC%AC%E4%B8%89%E7%AB%A0/index.html">
+<meta property="og:site_name" content="墨语浮生">
+<meta property="og:description" content="Chapter 3: Parallelization | 第三章：并行化 Parallelization Pattern Overview | 并行模式概述 In the previous chapters, we&#39;ve explored Prompt Chaining for sequential workflows and Routing for dynamic decision-making">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Agentic%20Design%20Patterns/chapter03_fig1.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/Agentic%20Design%20Patterns/chapter03_fig2.jpg">
+<meta property="article:published_time" content="2025-05-03T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-03-02T03:23:46.488Z">
+<meta property="article:author" content="Rayman.hung">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hongyitong.github.io/img3/Agentic%20Design%20Patterns/chapter03_fig1.png">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2025/05/04/%E3%80%8AAgentic%20Design%20Patterns%E3%80%8B%E7%AC%AC%E4%B8%89%E7%AB%A0/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2025/05/04/%E3%80%8AAgentic%20Design%20Patterns%E3%80%8B%E7%AC%AC%E4%B8%89%E7%AB%A0/","path":"2025/05/04/《Agentic Design Patterns》第三章/","title":"《Agentic Design Patterns》第三章"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>《Agentic Design Patterns》第三章 | 墨语浮生</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZXGEJDXQ33"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-ZXGEJDXQ33","only_pageview":false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?ff358b9c7e949787b074bfc9c8019a9d"></script>
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">墨语浮生</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#chapter-3-parallelization-%E7%AC%AC%E4%B8%89%E7%AB%A0%E5%B9%B6%E8%A1%8C%E5%8C%96"><span class="nav-text">Chapter 3: Parallelization | 第三章：并行化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#parallelization-pattern-overview-%E5%B9%B6%E8%A1%8C%E6%A8%A1%E5%BC%8F%E6%A6%82%E8%BF%B0"><span class="nav-text">Parallelization Pattern Overview | 并行模式概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#practical-applications-use-cases-%E5%AE%9E%E9%99%85%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-text">Practical Applications &amp; Use Cases | 实际应用场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hands-on-code-example-langchain-%E5%AE%9E%E6%88%98%E7%A4%BA%E4%BE%8B%E4%BD%BF%E7%94%A8-langchain"><span class="nav-text">Hands-On Code Example (LangChain) | 实战示例：使用 LangChain</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hands-on-code-example-google-adk-%E5%AE%9E%E6%88%98%E7%A4%BA%E4%BE%8B%E4%BD%BF%E7%94%A8-google-adk"><span class="nav-text">Hands-On Code Example (Google ADK) | 实战示例：使用 Google ADK</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#at-a-glance-%E8%A6%81%E7%82%B9%E9%80%9F%E8%A7%88"><span class="nav-text">At a Glance | 要点速览</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#key-takeaways-%E6%A0%B8%E5%BF%83%E8%A6%81%E7%82%B9"><span class="nav-text">Key Takeaways | 核心要点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#conclusion-%E7%BB%93%E8%AF%AD"><span class="nav-text">Conclusion | 结语</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#references-%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="nav-text">References | 参考文献</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、心情记录</div>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2025/05/04/%E3%80%8AAgentic%20Design%20Patterns%E3%80%8B%E7%AC%AC%E4%B8%89%E7%AB%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="《Agentic Design Patterns》第三章 | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《Agentic Design Patterns》第三章
+        </h1>
+
+        </h1>
+          
+             <p class="post-subtitle">并行化</p>
+          
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-05-04 00:00:00" itemprop="dateCreated datePublished" datetime="2025-05-04T00:00:00+08:00">2025-05-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="chapter-3-parallelization-第三章并行化">Chapter 3: Parallelization | <mark>第三章：并行化</mark></h1>
+<h2 id="parallelization-pattern-overview-并行模式概述">Parallelization Pattern Overview | <mark>并行模式概述</mark></h2>
+<p>In the previous chapters, we've explored Prompt Chaining for sequential workflows and Routing for dynamic decision-making and transitions between different paths. While these patterns are essential, many complex agentic tasks involve multiple sub-tasks that can be executed <em>simultaneously</em> rather than one after another. This is where the <strong>Parallelization</strong> pattern becomes crucial.</p>
+<p><mark>在前面的章节中，我们探讨了用于顺序工作流的提示链以及用于智能决策的路由模式。虽然这些模式很重要，但许多复杂的智能体任务需要<strong>同时</strong>执行多个子任务，而非一个接一个地执行。这时<strong>并行模式</strong>就变得至关重要。</mark></p>
+<span id="more"></span>
+<p>Parallelization involves executing multiple components, such as LLM calls, tool usages, or even entire sub-agents, concurrently (see Fig.1). Instead of waiting for one step to complete before starting the next, parallel execution allows independent tasks to run at the same time, significantly reducing the overall execution time for tasks that can be broken down into independent parts.</p>
+<p><mark>并行模式涉及同时执行多个组件，例如大语言模型调用、工具使用，甚至整个子智能体（见图 1）。与等待一个步骤完成后再开始下一个步骤不同，并行执行允许独立任务同时运行，这大大缩短了那些可以分解为相互独立部分的任务的总执行时间。</mark></p>
+<p>Consider an agent designed to research a topic and summarize its findings. A sequential approach might:</p>
+<p><mark>考虑实现一个研究主题并汇总结论的智能体。按顺序执行时可能会是这样：</mark></p>
+<ol type="1">
+<li><p>Search for Source A.</p>
+<p><mark>搜索来源 A。</mark></p></li>
+<li><p>Summarize Source A.</p>
+<p><mark>总结来源 A。</mark></p></li>
+<li><p>Search for Source B.</p>
+<p><mark>搜索来源 B。</mark></p></li>
+<li><p>Summarize Source B.</p>
+<p><mark>总结来源 B。</mark></p></li>
+<li><p>Synthesize a final answer from summaries A and B.</p>
+<p><mark>整合总结 A 和 总结 B 中的内容，生成一个最终答案。</mark></p></li>
+</ol>
+<p>A parallel approach could instead:</p>
+<p><mark>如果使用并行模式则可以优化为：</mark></p>
+<ol type="1">
+<li><p>Search for Source A <em>and</em> Search for Source B simultaneously.</p>
+<p><mark><strong>同时</strong>搜索来源 A 和来源 B。</mark></p></li>
+<li><p>Once both searches are complete, Summarize Source A <em>and</em> Summarize Source B simultaneously.</p>
+<p><mark>两次搜索完成后，同时对来源 A 和来源 B 进行总结。</mark></p></li>
+<li><p>Synthesize a final answer from summaries A and B (this step is typically sequential, waiting for the parallel steps to finish).</p>
+<p><mark>整合总结 A 和 总结 B 中的内容，生成一个最终答案。这一步通常按顺序进行，需要等待前面并行步骤全部完成。</mark></p></li>
+</ol>
+<p>The core idea is to identify parts of the workflow that do not depend on the output of other parts and execute them in parallel. This is particularly effective when dealing with external services (like APIs or databases) that have latency, as you can issue multiple requests concurrently.</p>
+<p><mark>并行模式的核心在于找出工作流中互不依赖的环节，并将它们并行执行。在处理外部服务（如 API 或数据库）时，这种做法特别有效，因为可以同时发起多个请求，从而减少总体等待时间。</mark></p>
+<p>Implementing parallelization often requires frameworks that support asynchronous execution or multi-threading/multi-processing. Modern agentic frameworks are designed with asynchronous operations in mind, allowing you to easily define steps that can run in parallel.</p>
+<p><mark>实现并行化通常需要使用支持异步执行、多线程或多进程的框架。现代智能体框架原生都能支持异步操作，帮助你方便地定义并同时运行多个步骤。</mark></p>
+<figure>
+<img src="/img3/Agentic%20Design%20Patterns/chapter03_fig1.png" alt="Parallelization Example" /><figcaption aria-hidden="true">Parallelization Example</figcaption>
+</figure>
+<p>Fig.1. Example of parallelization with sub-agents</p>
+<p><mark>图 1：使用子智能体进行并行化的示例</mark></p>
+<p>Frameworks like LangChain, LangGraph, and Google ADK provide mechanisms for parallel execution. In LangChain Expression Language (LCEL), you can achieve parallel execution by combining runnable objects using operators like | (for sequential) and by structuring your chains or graphs to have branches that execute concurrently. LangGraph, with its graph structure, allows you to define multiple nodes that can be executed from a single state transition, effectively enabling parallel branches in the workflow. Google ADK provides robust, native mechanisms to facilitate and manage the parallel execution of agents, significantly enhancing the efficiency and scalability of complex, multi-agent systems. This inherent capability within the ADK framework allows developers to design and implement solutions where multiple agents can operate concurrently, rather than sequentially.</p>
+<p><mark>LangChain、LangGraph 和 Google ADK 等框架都提供了并行执行机制。</mark></p>
+<p><mark>在 LangChain 表达式语言（LCEL）中，可以使用 <code>|</code> 等运算符组合可运行对象，并通过设计具有并发分支的链或图结构来实现并行执行。而 LangGraph 则利用图结构，允许从状态转换中执行多个节点，从而在工作流中实现并行分支。</mark></p>
+<p><mark>Google ADK 也提供了强大的原生机制来促进和管理智能体的并行执行，显著提升了复杂多智能体系统的效率和可扩展性。ADK 框架的这一内在能力使开发者能够设计并实现让多个智能体并发运行（而非顺序执行）的解决方案。</mark></p>
+<p>The Parallelization pattern is vital for improving the efficiency and responsiveness of agentic systems, especially when dealing with tasks that involve multiple independent lookups, computations, or interactions with external services. It's a key technique for optimizing the performance of complex agent workflows.</p>
+<p><mark>并行模式对于提升智能体系统的效率和响应速度至关重要，特别是在需要执行多个独立查询、计算或与外部服务交互的场景中。它是优化复杂智能体工作流性能的关键技术。</mark></p>
+<hr />
+<h2 id="practical-applications-use-cases-实际应用场景">Practical Applications &amp; Use Cases | <mark>实际应用场景</mark></h2>
+<p>Parallelization is a powerful pattern for optimizing agent performance across various applications:</p>
+<p><mark>并行模式可以在各种场景中使用以提升智能体性能：</mark></p>
+<p><strong>1. Information Gathering and Research:</strong> | <mark><strong>信息收集和研究：</strong></mark></p>
+<p>Collecting information from multiple sources simultaneously is a classic use case.</p>
+<p><mark>一个经典的用例就是同时从多个来源收集信息。</mark></p>
+<ul>
+<li><p><strong>Use Case:</strong> An agent researching a company.</p>
+<p><mark><strong>用例：</strong>研究某个公司的智能体。</mark></p></li>
+<li><p><strong>Parallel Tasks:</strong> Search news articles, pull stock data, check social media mentions, and query a company database, all at the same time.</p>
+<p><mark><strong>并行执行任务：</strong>同时搜索新闻、拉取股票数据、监测社交媒体上的提及，并查询公司数据库。</mark></p></li>
+<li><p><strong>Benefit:</strong> Gathers a comprehensive view much faster than sequential lookups.</p>
+<p><mark><strong>好处：</strong>比逐项查找更快获得全面信息。</mark></p></li>
+</ul>
+<p><strong>2. Data Processing and Analysis:</strong> | <mark><strong>数据处理和分析：</strong></mark></p>
+<p>Applying different analysis techniques or processing different data segments concurrently.</p>
+<p><mark>使用不同的分析方法或并行处理不同的数据段。</mark></p>
+<ul>
+<li><p><strong>Use Case:</strong> An agent analyzing customer feedback.</p>
+<p><mark><strong>用例：</strong>分析客户反馈的智能体。</mark></p></li>
+<li><p><strong>Parallel Tasks:</strong> Run sentiment analysis, extract keywords, categorize feedback, and identify urgent issues simultaneously across a batch of feedback entries.</p>
+<p><mark><strong>并行处理任务：</strong>在一批反馈中同时进行情感分析、关键词提取、分类，并识别需要优先处理的紧急问题。</mark></p></li>
+<li><p><strong>Benefit:</strong> Provides a multi-faceted analysis quickly.</p>
+<p><mark><strong>好处：</strong>快速提供多角度的分析。</mark></p></li>
+</ul>
+<p><strong>3. Multi-API or Tool Interaction:</strong> | <mark><strong>多个 API 或工具交互：</strong></mark></p>
+<p>Calling multiple independent APIs or tools to gather different types of information or perform different actions.</p>
+<p><mark>调用多个独立的 API 或工具，以获取不同类别的信息或完成不同的任务。</mark></p>
+<ul>
+<li><p><strong>Use Case:</strong> A travel planning agent.</p>
+<p><mark><strong>用例：</strong>旅行规划智能体。</mark></p></li>
+<li><p><strong>Parallel Tasks:</strong> Check flight prices, search for hotel availability, look up local events, and find restaurant recommendations concurrently.</p>
+<p><mark><strong>并行处理任务：</strong>同时检查航班价格、搜索酒店、了解当地活动，并找到推荐的餐厅。</mark></p></li>
+<li><p><strong>Benefit:</strong> Presents a complete travel plan faster.</p>
+<p><mark><strong>好处：</strong>更快速地制定出完整的旅行行程。</mark></p></li>
+</ul>
+<p><strong>4. Content Generation with Multiple Components:</strong> | <mark><strong>多组件内容生成：</strong></mark></p>
+<p>Generating different parts of a complex piece of content in parallel.</p>
+<p><mark>并行生成复杂作品的各个部分。</mark></p>
+<ul>
+<li><p><strong>Use Case:</strong> An agent creating a marketing email.</p>
+<p><mark><strong>用例：</strong>撰写营销邮件的智能体。</mark></p></li>
+<li><p><strong>Parallel Tasks:</strong> Generate a subject line, draft the email body, find a relevant image, and create a call-to-action button text simultaneously.</p>
+<p><mark><strong>并行处理任务：</strong>同时生成邮件主题、撰写正文、查找相关图片，并设计具有号召性的按钮文案。</mark></p></li>
+<li><p><strong>Benefit:</strong> Assembles the final email more efficiently.</p>
+<p><mark><strong>好处：</strong>更高效地生成电子邮件内容。</mark></p></li>
+</ul>
+<p><strong>5. Validation and Verification:</strong> | <mark><strong>验证和核实：</strong></mark></p>
+<p>Performing multiple independent checks or validations concurrently.</p>
+<p><mark>并行执行多个彼此独立的检查或验证。</mark></p>
+<ul>
+<li><p><strong>Use Case:</strong> An agent verifying user input.</p>
+<p><mark><strong>用例：</strong>验证用户输入的智能体。</mark></p></li>
+<li><p><strong>Parallel Tasks:</strong> Check email format, validate phone number, verify address against a database, and check for profanity simultaneously.</p>
+<p><mark><strong>并行执行任务：</strong>同时检查邮件格式、验证电话号码、在数据库中核对地址，并检查是否有不当内容。</mark></p></li>
+<li><p><strong>Benefit:</strong> Provides faster feedback on input validity.</p>
+<p><mark><strong>好处：</strong>能够更快地反馈输入是否有效。</mark></p></li>
+</ul>
+<p><strong>6. Multi-Modal Processing:</strong> | <mark><strong>多模态处理：</strong></mark></p>
+<p>Processing different modalities (text, image, audio) of the same input concurrently.</p>
+<p><mark>同时对同一输入的不同模态（文本、图像、音频）数据进行处理。</mark></p>
+<ul>
+<li><p><strong>Use Case:</strong> An agent analyzing a social media post with text and an image.</p>
+<p><mark><strong>用例：</strong>分析包含文本和图像的社交媒体帖子的智能体。</mark></p></li>
+<li><p><strong>Parallel Tasks:</strong> Analyze the text for sentiment and keywords <em>and</em> analyze the image for objects and scene description simultaneously.</p>
+<p><mark><strong>并行执行任务：</strong>同时分析文本的情感和关键词，以及分析图像中的对象和场景描述。</mark></p></li>
+<li><p><strong>Benefit:</strong> Integrates insights from different modalities more quickly.</p>
+<p><mark><strong>好处：</strong>能更快地综合来自不同模态的信息与洞见。</mark></p></li>
+</ul>
+<p><strong>7. A/B Testing or Multiple Options Generation:</strong> | <mark><strong>A/B 测试或多种方案生成：</strong></mark></p>
+<p>Generating multiple variations of a response or output in parallel to select the best one.</p>
+<p><mark>并行生成多个响应或输出版本，然后从中挑选最佳的一种。</mark></p>
+<ul>
+<li><p><strong>Use Case:</strong> An agent generating different creative text options.</p>
+<p><mark><strong>用例：</strong>生成多个创意文案的智能体。</mark></p></li>
+<li><p><strong>Parallel Tasks:</strong> Generate three different headlines for an article simultaneously using slightly different prompts or models.</p>
+<p><mark><strong>并行执行任务：</strong>同时使用稍微不同的提示或模型为同一篇文章生成三条各具风格的标题。</mark></p></li>
+<li><p><strong>Benefit:</strong> Allows for quick comparison and selection of the best option.</p>
+<p><mark><strong>好处：</strong>可以快速比较各个方案并选出最优者。</mark></p></li>
+</ul>
+<p>Parallelization is a fundamental optimization technique in agentic design, allowing developers to build more performant and responsive applications by leveraging concurrent execution for independent tasks.</p>
+<p><mark>并行模式是智能体设计中的一项重要优化技术。通过对独立任务进行并发执行，开发者可以构建更高效、更具响应性的应用程序。</mark></p>
+<hr />
+<h2 id="hands-on-code-example-langchain-实战示例使用-langchain">Hands-On Code Example (LangChain) | <mark>实战示例：使用 LangChain</mark></h2>
+<p>Parallel execution within the LangChain framework is facilitated by the LangChain Expression Language (LCEL). The primary method involves structuring multiple runnable components within a dictionary or list construct. When this collection is passed as input to a subsequent component in the chain, the LCEL runtime executes the contained runnables concurrently.</p>
+<p><mark>在 LangChain 框架中，通过 LangChain 的表达式语言（LCEL）可以实现并行执行。常见做法是把多个可运行组件组织成字典或列表，并把这个集合作为输入传给链中的下一个组件。LCEL 执行器会并行执行集合中的各个可运行项。</mark></p>
+<p>In the context of LangGraph, this principle is applied to the graph's topology. Parallel workflows are defined by architecting the graph such that multiple nodes, lacking direct sequential dependencies, can be initiated from a single common node. These parallel pathways execute independently before their results can be aggregated at a subsequent convergence point in the graph.</p>
+<p><mark>在 LangGraph 中，这一原则体现在图的拓扑结构上。通过从一个公共节点同时触发多个没有直接顺序依赖的节点，就能形成并行工作流。这些并行路径各自独立运行，之后在图中的某个汇聚点合并结果。</mark></p>
+<p>The following implementation demonstrates a parallel processing workflow constructed with the LangChain framework. This workflow is designed to execute two independent operations concurrently in response to a single user query. These parallel processes are instantiated as distinct chains or functions, and their respective outputs are subsequently aggregated into a unified result.</p>
+<p><mark>以下示例展示了如何使用 LangChain 框架构建并行处理流程：针对同一个用户查询，工作流同时启动两个互不依赖的操作，然后将它们各自的输出合并为一个最终结果。</mark></p>
+<p>The prerequisites for this implementation include the installation of the requisite Python packages, such as langchain, langchain-community, and a model provider library like langchain-openai. Furthermore, a valid API key for the chosen language model must be configured in the local environment for authentication.</p>
+<p><mark>要实现此功能，首先需要安装必要的 Python 包（如 langchain、langchain-community 及 langchain-openai 等模型提供库）。同时需要在本地环境中配置所选语言模型的有效 API 密钥，以便进行身份验证。</mark></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> asyncio</span><br><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">Optional</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> langchain_openai <span class="keyword">import</span> ChatOpenAI</span><br><span class="line"><span class="keyword">from</span> langchain_core.prompts <span class="keyword">import</span> ChatPromptTemplate</span><br><span class="line"><span class="keyword">from</span> langchain_core.output_parsers <span class="keyword">import</span> StrOutputParser</span><br><span class="line"><span class="keyword">from</span> langchain_core.runnables <span class="keyword">import</span> Runnable, RunnableParallel, RunnablePassthrough</span><br><span class="line"></span><br><span class="line"><span class="comment"># Colab 代码链接：https://colab.research.google.com/drive/1uK1r9p-5sdX0ffMjAi_dbIkaMedb1sTj</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装依赖</span></span><br><span class="line"><span class="comment"># pip install langchain langchain-community langchain-openai langgraph</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># For better security, load environment variables from a .env file</span></span><br><span class="line"><span class="comment"># 为了更好的安全性，建议从 .env 文件加载环境变量</span></span><br><span class="line"><span class="keyword">from</span> dotenv <span class="keyword">import</span> load_dotenv</span><br><span class="line">load_dotenv()</span><br><span class="line"></span><br><span class="line"><span class="comment"># --- Configuration ---</span></span><br><span class="line"><span class="comment"># Ensure your API key environment variable is set (e.g., OPENAI_API_KEY)</span></span><br><span class="line"><span class="comment"># 确保你的 API 密钥环境变量已设置 (如 OPENAI_API_KEY)</span></span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    llm: <span class="type">Optional</span>[ChatOpenAI] = ChatOpenAI(model=<span class="string">&quot;gpt-4o-mini&quot;</span>, temperature=<span class="number">0.7</span>)</span><br><span class="line">    <span class="keyword">if</span> llm:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;Language model initialized: <span class="subst">&#123;llm.model_name&#125;</span>&quot;</span>)</span><br><span class="line"><span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;Error initializing language model: <span class="subst">&#123;e&#125;</span>&quot;</span>)</span><br><span class="line">    llm = <span class="literal">None</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># --- Define Independent Chains ---</span></span><br><span class="line"><span class="comment"># These three chains represent distinct tasks that can be executed in parallel.</span></span><br><span class="line"><span class="comment"># --- 定义独立的链 ---</span></span><br><span class="line"><span class="comment"># 这三条链代表彼此独立、可同时执行的任务。</span></span><br><span class="line">summarize_chain: Runnable = (</span><br><span class="line">    ChatPromptTemplate.from_messages([</span><br><span class="line">        (<span class="string">&quot;system&quot;</span>, <span class="string">&quot;Summarize the following topic concisely:&quot;</span>),</span><br><span class="line">        (<span class="string">&quot;user&quot;</span>, <span class="string">&quot;&#123;topic&#125;&quot;</span>)</span><br><span class="line">    ])</span><br><span class="line">    | llm</span><br><span class="line">    | StrOutputParser()</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">questions_chain: Runnable = (</span><br><span class="line">    ChatPromptTemplate.from_messages([</span><br><span class="line">        (<span class="string">&quot;system&quot;</span>, <span class="string">&quot;Generate three interesting questions about the following topic:&quot;</span>),</span><br><span class="line">        (<span class="string">&quot;user&quot;</span>, <span class="string">&quot;&#123;topic&#125;&quot;</span>)</span><br><span class="line">    ])</span><br><span class="line">    | llm</span><br><span class="line">    | StrOutputParser()</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">terms_chain: Runnable = (</span><br><span class="line">    ChatPromptTemplate.from_messages([</span><br><span class="line">        (<span class="string">&quot;system&quot;</span>, <span class="string">&quot;Identify 5-10 key terms from the following topic, separated by commas:&quot;</span>),</span><br><span class="line">        (<span class="string">&quot;user&quot;</span>, <span class="string">&quot;&#123;topic&#125;&quot;</span>)</span><br><span class="line">    ])</span><br><span class="line">    | llm</span><br><span class="line">    | StrOutputParser()</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># --- Build the Parallel + Synthesis Chain ---</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 1. Define the block of tasks to run in parallel. The results of these,</span></span><br><span class="line"><span class="comment">#    along with the original topic, will be fed into the next step.</span></span><br><span class="line"><span class="comment"># --- 定义要并行执行的任务块。这些结果以及原始内容将作为输入传递给下一步。</span></span><br><span class="line">map_chain = RunnableParallel(</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="string">&quot;summary&quot;</span>: summarize_chain,</span><br><span class="line">        <span class="string">&quot;questions&quot;</span>: questions_chain,</span><br><span class="line">        <span class="string">&quot;key_terms&quot;</span>: terms_chain,</span><br><span class="line">        <span class="string">&quot;topic&quot;</span>: RunnablePassthrough(),  <span class="comment"># Pass the original topic through</span></span><br><span class="line">    &#125;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. Define the final synthesis prompt which will combine the parallel results.</span></span><br><span class="line"><span class="comment"># --- 定义最终的综合提示，将并行结果合并。</span></span><br><span class="line">synthesis_prompt = ChatPromptTemplate.from_messages([</span><br><span class="line">    (<span class="string">&quot;system&quot;</span>, <span class="string">&quot;&quot;&quot;Based on the following information:</span></span><br><span class="line"><span class="string">     Summary: &#123;summary&#125;</span></span><br><span class="line"><span class="string">     Related Questions: &#123;questions&#125;</span></span><br><span class="line"><span class="string">     Key Terms: &#123;key_terms&#125;</span></span><br><span class="line"><span class="string">     Synthesize a comprehensive answer.&quot;&quot;&quot;</span>),</span><br><span class="line">    (<span class="string">&quot;user&quot;</span>, <span class="string">&quot;Original topic: &#123;topic&#125;&quot;</span>)</span><br><span class="line">])</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. Construct the full chain by piping the parallel results directly</span></span><br><span class="line"><span class="comment">#    into the synthesis prompt, followed by the LLM and output parser.</span></span><br><span class="line"><span class="comment"># --- 通过将并行结果直接传递给综合提示，然后是语言模型和输出解析器，构建完整的链。</span></span><br><span class="line">full_parallel_chain = map_chain | synthesis_prompt | llm | StrOutputParser()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># --- Run the Chain ---</span></span><br><span class="line"><span class="comment"># --- 运行链 ---</span></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">run_parallel_example</span>(<span class="params">topic: <span class="built_in">str</span></span>) -&gt; <span class="literal">None</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    Asynchronously invokes the parallel processing chain with a specific topic</span></span><br><span class="line"><span class="string">    and prints the synthesized result.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Args:</span></span><br><span class="line"><span class="string">        topic: The input topic to be processed by the LangChain chains.</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> llm:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;LLM not initialized. Cannot run example.&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;\n--- Running Parallel LangChain Example for Topic: &#x27;<span class="subst">&#123;topic&#125;</span>&#x27; ---&quot;</span>)</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="comment"># The input to `ainvoke` is the single &#x27;topic&#x27; string, which is</span></span><br><span class="line">        <span class="comment"># then passed to each runnable in the `map_chain`.</span></span><br><span class="line">        <span class="comment"># `ainvoke` 的输入是单个 &#x27;topic&#x27; 字符串，该字符串随后会被传递给 `map_chain` 中的每个可运行项。</span></span><br><span class="line">        response = <span class="keyword">await</span> full_parallel_chain.ainvoke(topic)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;\n--- Final Response ---&quot;</span>)</span><br><span class="line">        <span class="built_in">print</span>(response)</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;\nAn error occurred during chain execution: <span class="subst">&#123;e&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    test_topic = <span class="string">&quot;The history of space exploration&quot;</span></span><br><span class="line">    <span class="comment"># In Python 3.7+, asyncio.run is the standard way to run an async function.</span></span><br><span class="line">    <span class="comment"># 在 Python 3.7 及更高版本中，asyncio.run 是运行异步函数的标准方式。</span></span><br><span class="line">    asyncio.run(run_parallel_example(test_topic))</span><br></pre></td></tr></table></figure>
+<p>译者注：<a target="_blank" rel="noopener" href="https://colab.research.google.com/drive/1uK1r9p-5sdX0ffMjAi_dbIkaMedb1sTj">Colab 代码</a> 已维护在<a href="/codes/Chapter-03-Parallelization-LangChain-Example.py">此处</a>。</p>
+<p><strong>运行输出（译者添加）：</strong></p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">Language model initialized: gpt-4o-mini</span><br><span class="line"></span><br><span class="line">--- Running Parallel LangChain Example for Topic: &#x27;The history of space exploration&#x27; ---</span><br><span class="line"></span><br><span class="line">--- Final Response ---</span><br><span class="line">The history of space exploration is a fascinating narrative marked by human curiosity, technological advancement, and international cooperation. It began in the mid-20th century, with the launch of the Soviet satellite Sputnik 1 in 1957, which signified the dawn of the Space Age. This event triggered a series of significant milestones that would shape our understanding of the cosmos.</span><br><span class="line"></span><br><span class="line">In 1961, the Soviet space program successfully launched Yuri Gagarin, the first human to journey into space, further igniting the Space Race between the United States and the Soviet Union. This fierce competition led to rapid advancements in technology and culminated with the U.S. Apollo program, which achieved the historic Moon landing in 1969. The success of Apollo 11 not only demonstrated human capability but also inspired generations to look to the stars.</span><br><span class="line"></span><br><span class="line">Throughout the 1970s and 1980s, space exploration expanded to include missions to Mars, the launch of revolutionary space telescopes like the Hubble Space Telescope, and the development of the Space Shuttle program. These initiatives allowed for more extended missions and the ability to deploy and service satellites, enhancing our understanding of the universe and our place within it.</span><br><span class="line"></span><br><span class="line">The late 1990s saw the launch of the International Space Station (ISS), a landmark achievement in international cooperation in space research. The ISS has become a platform for collaboration among multiple space agencies, including NASA, Roscosmos, ESA, JAXA, and others, allowing scientists from around the world to work together in the unique environment of space.</span><br><span class="line"></span><br><span class="line">In recent years, technological advancements, particularly in the realm of reusable rockets, have reshaped the goals and capabilities of space exploration. Companies such as SpaceX and Blue Origin have pioneered private spaceflight initiatives, driving costs down and making space more accessible than ever. This shift has reignited interest in missions targeting Mars, the Moon, and beyond, with plans for crewed missions to Mars on the horizon.</span><br><span class="line"></span><br><span class="line">The Space Race has also had lasting effects on international cooperation in contemporary space exploration. The competitive spirit of the Cold War era has evolved into a collaborative approach, exemplified by the ISS and joint missions like the Mars rover endeavors, where multiple countries contribute resources and expertise to achieve common goals.</span><br><span class="line"></span><br><span class="line">However, the entrance of private companies into the space exploration sector raises various ethical considerations and potential implications. These include questions about the commercialization of space, the prioritization of profit over scientific research, and concerns about space debris and environmental impacts. As private entities take on larger roles in exploration, the dynamics of scientific research and exploration beyond Earth&#x27;s atmosphere may shift, necessitating new frameworks for governance and collaboration.</span><br><span class="line"></span><br><span class="line">In summary, the history of space exploration is a rich tapestry woven from human ingenuity and cooperation. It reflects our quest to understand the universe, marked by milestones that highlight both our achievements and the challenges that lie ahead. As we move into a new era of exploration, the interplay between public and private initiatives will shape the future of our endeavors among the stars.</span><br></pre></td></tr></table></figure>
+<p>The provided Python code implements a LangChain application designed for processing a given topic efficiently by leveraging parallel execution. Note that asyncio provides concurrency, not parallelism. It achieves this on a single thread by using an event loop that intelligently switches between tasks when one is idle (e.g., waiting for a network request). This creates the effect of multiple tasks progressing at once, but the code itself is still being executed by only one thread, constrained by Python's Global Interpreter Lock (GIL).</p>
+<p><mark>上述 Python 示例实现了一个基于 LangChain 的应用，通过并发执行来更高效地处理指定话题。需要说明的是，asyncio 实现的是并发（Concurrency），不是多线程或多核的真正并行（Parallelism）。它在单个线程中运行，通过事件循环在任务等待（如等待网络响应）时切换执行，从而让多个任务看起来同时执行。但底层代码仍在同一线程上运行，这是受 Python 全局解释器锁（GIL）的限制。</mark></p>
+<p>The code begins by importing essential modules from langchain_openai and langchain_core, including components for language models, prompts, output parsing, and runnable structures. The code attempts to initialize a ChatOpenAI instance, specifically using the "gpt-4o-mini" model, with a specified temperature for controlling creativity. A try-except block is used for robustness during the language model initialization. Three independent LangChain "chains" are then defined, each designed to perform a distinct task on the input topic. The first chain is for summarizing the topic concisely, using a system message and a user message containing the topic placeholder. The second chain is configured to generate three interesting questions related to the topic. The third chain is set up to identify between 5 and 10 key terms from the input topic, requesting them to be comma-separated. Each of these independent chains consists of a ChatPromptTemplate tailored to its specific task, followed by the initialized language model and a StrOutputParser to format the output as a string.</p>
+<p><mark>代码从 <code>langchain_openai</code> 和 <code>langchain_core</code> 导入了关键模块，包含语言模型、提示模板、输出解析器和可运行组件。接着尝试初始化一个 <code>ChatOpenAI</code> 实例，指定使用 <code>gpt-4o-mini</code> 模型，并设置了控制创造力的温度值，初始化时用 <code>try-except</code> 来保证健壮性。随后定义了三条相互独立的 LangChain 链，每条链负责对输入主题执行不同任务：第一条链用来简洁地总结主题，采用系统消息和包含主题占位符的用户消息；第二条链生成与主题相关的三个有趣问题；第三条链则从主题中识别 5 到 10 个关键术语，要求用逗号分隔。每条链都由为该任务定制的 <code>ChatPromptTemplate</code>、已初始化的语言模型和用于把输出格式化为字符串的 <code>StrOutputParser</code> 组成。</mark></p>
+<p>A RunnableParallel block is then constructed to bundle these three chains, allowing them to execute simultaneously. This parallel runnable also includes a RunnablePassthrough to ensure the original input topic is available for subsequent steps. A separate ChatPromptTemplate is defined for the final synthesis step, taking the summary, questions, key terms, and the original topic as input to generate a comprehensive answer. The full end-to-end processing chain, named full_parallel_chain, is created by sequencing the map_chain (the parallel block) into the synthesis prompt, followed by the language model and the output parser. An asynchronous function run_parallel_example is provided to demonstrate how to invoke this full_parallel_chain. This function takes the topic as input and uses invoke to run the asynchronous chain. Finally, the standard Python if <strong>name</strong> == "<strong>main</strong>": block shows how to execute the run_parallel_example with a sample topic, in this case, "The history of space exploration", using asyncio.run to manage the asynchronous execution.</p>
+<p><mark>随后构建了一个 <code>RunnableParallel</code> 块，把这三条链打包在一起以便同时运行。这个运行单元还包含一个 <code>RunnablePassthrough</code>，确保原始输入的主题可以在后续步骤中使用。</mark></p>
+<p><mark>接着为最后的汇总步骤定义了一个独立的 <code>ChatPromptTemplate</code>，使用摘要、问题、关键术语和原始主题作为输入来生成完整的答案。这个名为 <code>full_parallel_chain</code> 的端到端处理链，是通过 <code>map_chain</code> 连接到汇总提示，再接语言模型和输出解析器来构建的。</mark></p>
+<p><mark>示例中提供了一个异步函数 <code>run_parallel_example</code>，用来演示如何调用这个 <code>full_parallel_chain</code>，该函数接收主题作为输入并通过 <code>invoke</code> 运行异步链。</mark></p>
+<p><mark>最后，通过标准的 Python <code>if <strong>name</strong> == "<strong>main</strong>":</code> 代码块演示如何用 <code>asyncio.run</code> 管理异步执行，来启动 <code>run_parallel_example</code> 方法，其中主题为「航天探索史」。</mark></p>
+<p>In essence, this code sets up a workflow where multiple LLM calls (for summarizing, questions, and terms) happen at the same time for a given topic, and their results are then combined by a final LLM call. This showcases the core idea of parallelization in an agentic workflow using LangChain.</p>
+<p><mark>本质上，这段代码构建了一个工作流：针对某个主题，使用大语言模型同时进行摘要、提问和术语等多个调用，随后由一次最终的请求把这些输出整合在一起。该示例说明了在使用 LangChain 的智能体工作流中通过并行执行来提高效率的核心思想。</mark></p>
+<hr />
+<h2 id="hands-on-code-example-google-adk-实战示例使用-google-adk">Hands-On Code Example (Google ADK) | <mark>实战示例：使用 Google ADK</mark></h2>
+<p>Okay, let's now turn our attention to a concrete example illustrating these concepts within the Google ADK framework. We'll examine how the ADK primitives, such as ParallelAgent and SequentialAgent, can be applied to build an agent flow that leverages concurrent execution for improved efficiency.</p>
+<p><mark>现在通过 Google ADK 框架中的具体示例来说明这些概念。我们将展示 ADK 的基本组件（如 ParallelAgent 和 SequentialAgent）来构建智能体流程，从而通过并行执行提高效率。</mark></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Part of agent.py --&gt; Follow https://google.github.io/adk-docs/get-started/quickstart/ to learn the setup</span></span><br><span class="line"><span class="comment"># --- 1. Define Researcher Sub-Agents (to run in parallel) ---</span></span><br><span class="line"><span class="comment"># --- 定义研究员子智能体（并行执行） ---</span></span><br><span class="line"></span><br><span class="line"> <span class="comment"># Researcher 1: Renewable Energy</span></span><br><span class="line"> <span class="comment"># 研究员 1：可再生能源</span></span><br><span class="line"> researcher_agent_1 = LlmAgent(</span><br><span class="line">     name=<span class="string">&quot;RenewableEnergyResearcher&quot;</span>,</span><br><span class="line">     model=GEMINI_MODEL,</span><br><span class="line">     instruction=<span class="string">&quot;&quot;&quot;You are an AI Research Assistant specializing in energy.</span></span><br><span class="line"><span class="string"> Research the latest advancements in &#x27;renewable energy sources&#x27;.</span></span><br><span class="line"><span class="string"> Use the Google Search tool provided.</span></span><br><span class="line"><span class="string"> Summarize your key findings concisely (1-2 sentences).</span></span><br><span class="line"><span class="string"> Output *only* the summary.</span></span><br><span class="line"><span class="string"> &quot;&quot;&quot;</span>,</span><br><span class="line">     description=<span class="string">&quot;Researches renewable energy sources.&quot;</span>,</span><br><span class="line">     tools=[google_search],</span><br><span class="line">     <span class="comment"># Store result in state for the merger agent</span></span><br><span class="line">     output_key=<span class="string">&quot;renewable_energy_result&quot;</span></span><br><span class="line"> )</span><br><span class="line"></span><br><span class="line"> <span class="comment"># Researcher 2: Electric Vehicles</span></span><br><span class="line"> <span class="comment"># 研究员 2：电动汽车</span></span><br><span class="line"> researcher_agent_2 = LlmAgent(</span><br><span class="line">     name=<span class="string">&quot;EVResearcher&quot;</span>,</span><br><span class="line">     model=GEMINI_MODEL,</span><br><span class="line">     instruction=<span class="string">&quot;&quot;&quot;You are an AI Research Assistant specializing in transportation.</span></span><br><span class="line"><span class="string"> Research the latest developments in &#x27;electric vehicle technology&#x27;.</span></span><br><span class="line"><span class="string"> Use the Google Search tool provided.</span></span><br><span class="line"><span class="string"> Summarize your key findings concisely (1-2 sentences).</span></span><br><span class="line"><span class="string"> Output *only* the summary.</span></span><br><span class="line"><span class="string"> &quot;&quot;&quot;</span>,</span><br><span class="line">     description=<span class="string">&quot;Researches electric vehicle technology.&quot;</span>,</span><br><span class="line">     tools=[google_search],</span><br><span class="line">     <span class="comment"># Store result in state for the merger agent</span></span><br><span class="line">     output_key=<span class="string">&quot;ev_technology_result&quot;</span></span><br><span class="line"> )</span><br><span class="line"></span><br><span class="line"> <span class="comment"># Researcher 3: Carbon Capture</span></span><br><span class="line"> <span class="comment"># 研究员 3：碳捕获</span></span><br><span class="line"> researcher_agent_3 = LlmAgent(</span><br><span class="line">     name=<span class="string">&quot;CarbonCaptureResearcher&quot;</span>,</span><br><span class="line">     model=GEMINI_MODEL,</span><br><span class="line">     instruction=<span class="string">&quot;&quot;&quot;You are an AI Research Assistant specializing in climate solutions.</span></span><br><span class="line"><span class="string"> Research the current state of &#x27;carbon capture methods&#x27;.</span></span><br><span class="line"><span class="string"> Use the Google Search tool provided.</span></span><br><span class="line"><span class="string"> Summarize your key findings concisely (1-2 sentences).</span></span><br><span class="line"><span class="string"> Output *only* the summary.</span></span><br><span class="line"><span class="string"> &quot;&quot;&quot;</span>,</span><br><span class="line">     description=<span class="string">&quot;Researches carbon capture methods.&quot;</span>,</span><br><span class="line">     tools=[google_search],</span><br><span class="line">     <span class="comment"># Store result in state for the merger agent</span></span><br><span class="line">     output_key=<span class="string">&quot;carbon_capture_result&quot;</span></span><br><span class="line"> )</span><br><span class="line"></span><br><span class="line"> <span class="comment"># --- 2. Create the ParallelAgent (Runs researchers concurrently) ---</span></span><br><span class="line"> <span class="comment"># This agent orchestrates the concurrent execution of the researchers.</span></span><br><span class="line"> <span class="comment"># It finishes once all researchers have completed and stored their results in state.</span></span><br><span class="line"> <span class="comment"># --- 2. 创建 ParallelAgent（并行运行多个研究员子智能体） ---</span></span><br><span class="line"> <span class="comment"># 该智能体协调多个研究员子智能体的并发执行。</span></span><br><span class="line"> <span class="comment"># 所有研究员完成工作并将结果写入状态后，流程即结束。</span></span><br><span class="line"> parallel_research_agent = ParallelAgent(</span><br><span class="line">     name=<span class="string">&quot;ParallelWebResearchAgent&quot;</span>,</span><br><span class="line">     sub_agents=[researcher_agent_1, researcher_agent_2, researcher_agent_3],</span><br><span class="line">     description=<span class="string">&quot;Runs multiple research agents in parallel to gather information.&quot;</span></span><br><span class="line"> )</span><br><span class="line"></span><br><span class="line"> <span class="comment"># --- 3. Define the Merger Agent (Runs *after* the parallel agents) ---</span></span><br><span class="line"> <span class="comment"># This agent takes the results stored in the session state by the parallel agents</span></span><br><span class="line"> <span class="comment"># and synthesizes them into a single, structured response with attributions.</span></span><br><span class="line"> <span class="comment"># --- 3. 定义合并智能体（在并行研究员子智能体之后运行） ---</span></span><br><span class="line"> <span class="comment"># 该智能体使用并行运行的子智能体已保存在会话状态中的结果，</span></span><br><span class="line"> <span class="comment"># 将这些内容整合并归纳为一份结构化的响应，并在相应部分标注出处。</span></span><br><span class="line"> merger_agent = LlmAgent(</span><br><span class="line">     name=<span class="string">&quot;SynthesisAgent&quot;</span>,</span><br><span class="line">     model=GEMINI_MODEL,  <span class="comment"># Or potentially a more powerful model if needed for synthesis</span></span><br><span class="line">     instruction=<span class="string">&quot;&quot;&quot;You are an AI Assistant responsible for combining research findings into a structured report.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"> Your primary task is to synthesize the following research summaries, clearly attributing findings to their source areas. Structure your response using headings for each topic. Ensure the report is coherent and integrates the key points smoothly.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"> **Crucially: Your entire response MUST be grounded *exclusively* on the information provided in the &#x27;Input Summaries&#x27; below. Do NOT add any external knowledge, facts, or details not present in these specific summaries.**</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"> **Input Summaries:**</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"> *   **Renewable Energy:**</span></span><br><span class="line"><span class="string">     &#123;renewable_energy_result&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"> *   **Electric Vehicles:**</span></span><br><span class="line"><span class="string">     &#123;ev_technology_result&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"> *   **Carbon Capture:**</span></span><br><span class="line"><span class="string">     &#123;carbon_capture_result&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"> **Output Format:**</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"> ## Summary of Recent Sustainable Technology Advancements</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"> ### Renewable Energy Findings</span></span><br><span class="line"><span class="string"> (Based on RenewableEnergyResearcher&#x27;s findings)</span></span><br><span class="line"><span class="string"> [Synthesize and elaborate *only* on the renewable energy input summary provided above.]</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"> ### Electric Vehicle Findings</span></span><br><span class="line"><span class="string"> (Based on EVResearcher&#x27;s findings)</span></span><br><span class="line"><span class="string"> [Synthesize and elaborate *only* on the EV input summary provided above.]</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"> ### Carbon Capture Findings</span></span><br><span class="line"><span class="string"> (Based on CarbonCaptureResearcher&#x27;s findings)</span></span><br><span class="line"><span class="string"> [Synthesize and elaborate *only* on the carbon capture input summary provided above.]</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"> ### Overall Conclusion</span></span><br><span class="line"><span class="string"> [Provide a brief (1-2 sentence) concluding statement that connects *only* the findings presented above.]</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"> Output *only* the structured report following this format. Do not include introductory or concluding phrases outside this structure, and strictly adhere to using only the provided input summary content.</span></span><br><span class="line"><span class="string"> &quot;&quot;&quot;</span>,</span><br><span class="line">     description=<span class="string">&quot;Combines research findings from parallel agents into a structured, cited report, strictly grounded on provided inputs.&quot;</span>,</span><br><span class="line">     <span class="comment"># No tools needed for merging</span></span><br><span class="line">     <span class="comment"># No output_key needed here, as its direct response is the final output of the sequence</span></span><br><span class="line"> )</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"> <span class="comment"># --- 4. Create the SequentialAgent (Orchestrates the overall flow) ---</span></span><br><span class="line"> <span class="comment"># This is the main agent that will be run. It first executes the ParallelAgent</span></span><br><span class="line"> <span class="comment"># to populate the state, and then executes the MergerAgent to produce the final output.</span></span><br><span class="line"> <span class="comment"># --- 4. 创建 SequentialAgent（协调整个流程） ---</span></span><br><span class="line"> <span class="comment"># 这是将被运行的主智能体。它先执行 ParallelAgent 来填充状态，</span></span><br><span class="line"> <span class="comment"># 然后执行 MergerAgent 来生成最终输出。</span></span><br><span class="line"> sequential_pipeline_agent = SequentialAgent(</span><br><span class="line">     name=<span class="string">&quot;ResearchAndSynthesisPipeline&quot;</span>,</span><br><span class="line">     <span class="comment"># Run parallel research first, then merge</span></span><br><span class="line">     sub_agents=[parallel_research_agent, merger_agent],</span><br><span class="line">     description=<span class="string">&quot;Coordinates parallel research and synthesizes the results.&quot;</span></span><br><span class="line"> )</span><br><span class="line"></span><br><span class="line"> root_agent = sequential_pipeline_agent</span><br></pre></td></tr></table></figure>
+<p>译者注：<a target="_blank" rel="noopener" href="https://colab.research.google.com/drive/1gcztL9ebeqGeWl-_0E9FeMcHMOsknB0I">Colab 代码</a> 已维护在<a href="/codes/Chapter-03-Parallelization-ADK-Example.py">此处</a>。</p>
+<p>This code defines a multi-agent system used to research and synthesize information on sustainable technology advancements. It sets up three LlmAgent instances to act as specialized researchers. ResearcherAgent_1 focuses on renewable energy sources, ResearcherAgent_2 researches electric vehicle technology, and ResearcherAgent_3 investigates carbon capture methods. Each researcher agent is configured to use a GEMINI_MODEL and the google_search tool. They are instructed to summarize their findings concisely (1-2 sentences) and store these summaries in the session state using output_key.</p>
+<p><mark>该代码建立了一个多智能体系统，用于收集与整合可持续技术进展的资料。系统包含三个子智能体担任不同的研究员：<code>ResearcherAgent_1</code> 聚焦可再生能源，<code>ResearcherAgent_2</code> 研究电动汽车技术，<code>ResearcherAgent_3</code> 调查碳捕集技术。每个研究员子智能体都配置为使用 <code>GEMINI_MODEL</code> 和 <code>google_search</code> 工具，并要求使用一到两句话总结研究结果，随后通过 <code>output_key</code> 将这些总结内容保存到会话状态中。</mark></p>
+<p>A ParallelAgent named ParallelWebResearchAgent is then created to run these three researcher agents concurrently. This allows the research to be conducted in parallel, potentially saving time. The ParallelAgent completes its execution once all its sub-agents (the researchers) have finished and populated the state.</p>
+<p><mark>然后创建了一个名为 <code>ParallelWebResearchAgent</code> 的并行智能体，用于同时运行这三个研究员子智能体。这样可以并行开展研究，节省时间。只有当所有子智能体（研究员）都完成并将结果写入状态后，并行智能体才算执行结束。</mark></p>
+<p>Next, a MergerAgent (also an LlmAgent) is defined to synthesize the research results. This agent takes the summaries stored in the session state by the parallel researchers as input. Its instruction emphasizes that the output must be strictly based only on the provided input summaries, prohibiting the addition of external knowledge. The MergerAgent is designed to structure the combined findings into a report with headings for each topic and a brief overall conclusion.</p>
+<p><mark>接下来，定义了一个 <code>MergerAgent</code>（也是 <code>LlmAgent</code>）来综合研究结果。该智能体将并行研究员子智能体存储在会话状态中的总结内容作为输入。其指令强调输出必须严格基于所提供的总结内容，禁止添加外部知识。<code>MergerAgent</code> 旨在将合并的发现结构化为报告，每个主题都有标题和简要的结论。</mark></p>
+<p>Finally, a SequentialAgent named ResearchAndSynthesisPipeline is created to orchestrate the entire workflow. As the primary controller, this main agent first executes the ParallelAgent to perform the research. Once the ParallelAgent is complete, the SequentialAgent then executes the MergerAgent to synthesize the collected information. The sequential_pipeline_agent is set as the root_agent, representing the entry point for running this multi-agent system. The overall process is designed to efficiently gather information from multiple sources in parallel and then combine it into a single, structured report.</p>
+<p><mark>最后，创建了一个名为 <code>ResearchAndSynthesisPipeline</code> 的顺序型智能体来协调整个工作流。作为主要控制器，该主智能体首先执行 <code>ParallelAgent</code> 来进行研究。<code>ParallelAgent</code> 完成后，<code>SequentialAgent</code> 会执行 <code>MergerAgent</code> 来综合收集的信息。<code>sequential_pipeline_agent</code> 被设置为 <code>root_agent</code>，代表运行该多智能体系统的入口。整个流程的设计目标是并行从多个来源高效收集信息，然后将这些信息合并为一份结构化报告。</mark></p>
+<hr />
+<h2 id="at-a-glance-要点速览">At a Glance | <mark>要点速览</mark></h2>
+<p><strong>What:</strong> Many agentic workflows involve multiple sub-tasks that must be completed to achieve a final goal. A purely sequential execution, where each task waits for the previous one to finish, is often inefficient and slow. This latency becomes a significant bottleneck when tasks depend on external I/O operations, such as calling different APIs or querying multiple databases. Without a mechanism for concurrent execution, the total processing time is the sum of all individual task durations, hindering the system's overall performance and responsiveness.</p>
+<p><mark><strong>问题所在：</strong>许多智能体工作流涉及多个必须完成的子任务以实现最终目标。纯粹的顺序执行，即每个任务等待前一个任务完成再执行，通常效率低下且速度缓慢。当任务依赖于外部 I/O 操作（如调用不同的 API 或查询多个数据库）时，这种延迟会成为重大瓶颈。没有并发机制时，总耗时就是各个任务耗时的累加，进而影响系统的性能和响应速度。</mark></p>
+<p><strong>Why:</strong> The Parallelization pattern provides a standardized solution by enabling the simultaneous execution of independent tasks. It works by identifying components of a workflow, like tool usages or LLM calls, that do not rely on each other's immediate outputs. Agentic frameworks like LangChain and the Google ADK provide built-in constructs to define and manage these concurrent operations. For instance, a main process can invoke several sub-tasks that run in parallel and wait for all of them to complete before proceeding to the next step. By running these independent tasks at the same time rather than one after another, this pattern drastically reduces the total execution time.</p>
+<p><mark><strong>解决之道：</strong>并行模式通过同时执行彼此独立的任务，提供了一种标准化的解决方案来缩短整体执行时间。它的做法是识别工作流中不相互依赖的部分，比如某些工具调用或大语言模型请求。像 LangChain 和 Google ADK 这样的智能体框架内置了用于定义和管理并发操作的能力。举例来说，主流程可以启动多个并行的子任务，然后在继续下一步之前等待这些子任务全部完成。相比与顺序执行，这种并行执行能大幅减少总耗时。</mark></p>
+<p><strong>Rule of thumb:</strong> Use this pattern when a workflow contains multiple independent operations that can run simultaneously, such as fetching data from several APIs, processing different chunks of data, or generating multiple pieces of content for later synthesis.</p>
+<p><mark><strong>经验法则：</strong>当工作流中存在多个相互独立且可并行执行的任务时应采用该模式，例如同时从多个 API 拉取数据、并行处理不同的数据分片，或同时生成多个将来需要合并的内容，从而缩短总体执行时间。</mark></p>
+<p><strong>Visual summary</strong> | <mark><strong>可视化总结</strong></mark></p>
+<figure>
+<img src="/img3/Agentic%20Design%20Patterns/chapter03_fig2.jpg" alt="Parallelization Pattern" /><figcaption aria-hidden="true">Parallelization Pattern</figcaption>
+</figure>
+<p>Fig.2: Parallelization design pattern</p>
+<p><mark>图 2：并行化设计模式</mark></p>
+<hr />
+<h2 id="key-takeaways-核心要点">Key Takeaways | <mark>核心要点</mark></h2>
+<p>Here are the key takeaways:</p>
+<p><mark>以下是关键要点：</mark></p>
+<ul>
+<li><p>Parallelization is a pattern for executing independent tasks concurrently to improve efficiency.</p>
+<p><mark>并行模式是一种将相互独立的任务同时执行，从而缩短总耗时并提高效率的方法。</mark></p></li>
+<li><p>It is particularly useful when tasks involve waiting for external resources, such as API calls.</p>
+<p><mark>在任务需要等待外部资源（比如调用 API）时，这种方式特别有用。</mark></p></li>
+<li><p>The adoption of a concurrent or parallel architecture introduces substantial complexity and cost, impacting key development phases such as design, debugging, and system logging.</p>
+<p><mark>采用并发或并行架构会显著增加复杂性和成本，从而对设计、调试和日志等开发环节带来影响。</mark></p></li>
+<li><p>Frameworks like LangChain and Google ADK provide built-in support for defining and managing parallel execution.</p>
+<p><mark>像 LangChain 和 Google ADK 这样的框架内置了对并行执行的支持，方便定义和管理并行任务。</mark></p></li>
+<li><p>In LangChain Expression Language (LCEL), RunnableParallel is a key construct for running multiple runnables side-by-side.</p>
+<p><mark>在 LangChain 的表达式语言（LCEL）中，RunnableParallel 是一个核心组件，用于并行执行多个可运行单元。</mark></p></li>
+<li><p>Google ADK can facilitate parallel execution through LLM-Driven Delegation, where a Coordinator agent's LLM identifies independent sub-tasks and triggers their concurrent handling by specialized sub-agents.</p>
+<p><mark>Google ADK 可以通过大语言模型驱动的委派机制来实现并行执行，其中协调器智能体中的大语言模型会识别出互相独立的子任务，并将这些任务分派给相应的子智能体去处理，从而并发完成各个子任务。</mark></p></li>
+<li><p>Parallelization helps reduce overall latency and makes agentic systems more responsive for complex tasks.</p>
+<p><mark>并行模式能有效减少总体耗时，从而提升智能体系统对复杂任务的响应能力。</mark></p></li>
+</ul>
+<hr />
+<h2 id="conclusion-结语">Conclusion | <mark>结语</mark></h2>
+<p>The parallelization pattern is a method for optimizing computational workflows by concurrently executing independent sub-tasks. This approach reduces overall latency, particularly in complex operations that involve multiple model inferences or calls to external services.</p>
+<p><mark>并行模式是通过并发执行独立子任务来优化计算流程。对于需要多次模型推理或调用外部服务的复杂操作，采用并行执行可以显著降低总体耗时并提高效率。</mark></p>
+<p>Frameworks provide distinct mechanisms for implementing this pattern. In LangChain, constructs like RunnableParallel are used to explicitly define and execute multiple processing chains simultaneously. In contrast, frameworks like the Google Agent Developer Kit (ADK) can achieve parallelization through multi-agent delegation, where a primary coordinator model assigns different sub-tasks to specialized agents that can operate concurrently.</p>
+<p><mark>不同的框架为实现此模式提供了不同的机制。在 LangChain 中，像 RunnableParallel 这样的组件可以用于显式定义和执行多个处理链。相比之下，Google ADK 可以通过多智能体委派机制实现并行化，其中主协调器模型将不同的子任务分配给可以并发执行的专用智能体。</mark></p>
+<p>By integrating parallel processing with sequential (chaining) and conditional (routing) control flows, it becomes possible to construct sophisticated, high-performance computational systems capable of efficiently managing diverse and complex tasks.</p>
+<p><mark>将并行处理与顺序（链式）和条件（路由）控制流结合起来，可以构建既复杂又高效的计算系统，从而更有效地管理各类复杂任务。</mark></p>
+<hr />
+<h2 id="references-参考文献">References | <mark>参考文献</mark></h2>
+<p>Here are some resources for further reading on the Parallelization pattern and related concepts:</p>
+<p><mark>以下是一些可供深入了解并行模式及其相关概念的推荐阅读资料：</mark></p>
+<ol type="1">
+<li><p>LangChain Expression Language (LCEL) Documentation (Parallelism): <a target="_blank" rel="noopener" href="https://python.langchain.com/docs/concepts/lcel/">https://python.langchain.com/docs/concepts/lcel/</a></p>
+<p><mark>LangChain 表达式语言文档（并行化）：<a target="_blank" rel="noopener" href="https://python.langchain.com/docs/concepts/lcel/">https://python.langchain.com/docs/concepts/lcel/</a></mark></p></li>
+<li><p>Google Agent Developer Kit (ADK) Documentation (Multi-Agent Systems): <a target="_blank" rel="noopener" href="https://google.github.io/adk-docs/agents/multi-agents/">https://google.github.io/adk-docs/agents/multi-agents/</a></p>
+<p><mark>Google ADK 文档（多智能体系统）：<a target="_blank" rel="noopener" href="https://google.github.io/adk-docs/agents/multi-agents/">https://google.github.io/adk-docs/agents/multi-agents/</a></mark></p></li>
+<li><p>Python asyncio Documentation: <a target="_blank" rel="noopener" href="https://docs.python.org/3/library/asyncio.html">https://docs.python.org/3/library/asyncio.html</a></p>
+<p><mark>Python asyncio 文档：<a target="_blank" rel="noopener" href="https://docs.python.org/3/library/asyncio.html">https://docs.python.org/3/library/asyncio.html</a></mark></p></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/05/03/%E3%80%8AAgentic%20Design%20Patterns%E3%80%8B%E7%AC%AC%E4%BA%8C%E7%AB%A0/" rel="prev" title="《Agentic Design Patterns》第二章">
+                  <i class="fa fa-chevron-left"></i> 《Agentic Design Patterns》第二章
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/05/05/%E3%80%8AAgentic%20Design%20Patterns%E3%80%8B%E7%AC%AC%E5%9B%9B%E7%AB%A0/" rel="next" title="《Agentic Design Patterns》第四章">
+                  《Agentic Design Patterns》第四章 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
