@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"enable":true,"style":"tabs","active":"giscus","storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+
+
+    <meta name="description" content="第十一章 图像分割 运行代码 在 Colab 上运行 在 GitHub 上查看 内容计算机视觉任务从零开始训练分割模型使用预训练分割模型概括 本章内容  计算机视觉的不同分支包括：图像分类、图像分割和目标检测。 从零开始构建分割模型 使用预训练的 Segment Anything 模型  第 8 章通过一个简单的用例——二值图像分类——初步介绍了计算机视觉中的深度学习。但计算机视觉远不止图像分类！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《DEEP LEARNING with Python》第十一章">
+<meta property="og:url" content="http://hongyitong.github.io/2026/02/26/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B11%E3%80%81%E5%9B%BE%E5%83%8F%E5%88%86%E5%89%B2/index.html">
+<meta property="og:site_name" content="墨语浮生">
+<meta property="og:description" content="第十一章 图像分割 运行代码 在 Colab 上运行 在 GitHub 上查看 内容计算机视觉任务从零开始训练分割模型使用预训练分割模型概括 本章内容  计算机视觉的不同分支包括：图像分类、图像分割和目标检测。 从零开始构建分割模型 使用预训练的 Segment Anything 模型  第 8 章通过一个简单的用例——二值图像分类——初步介绍了计算机视觉中的深度学习。但计算机视觉远不止图像分类！">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/computer_vision_tasks.da2bf0ea.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/instance_segmentation.818c62ba.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/segmentation_input.d246cf5a.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/segmentation_mask.cc320651.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/segmentation_loss.489fa0c8.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/segmentation_test.ece7f638.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/sa1b_example.6701768b.jpg">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/sam_architecture.dad9dae6.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/fruits.8cef44dc.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/peach_point.432d548a.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/peach_segmented.333556ff.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/banana_segmented.8e0b3e81.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/bananas_all_masks.c922b7a6.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/mango_box.45e1bae1.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/mango_segmented.2dfb0dae.png">
+<meta property="article:published_time" content="2026-02-25T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-03-01T03:56:31.149Z">
+<meta property="article:author" content="Rayman.hung">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/computer_vision_tasks.da2bf0ea.png">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2026/02/26/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B11%E3%80%81%E5%9B%BE%E5%83%8F%E5%88%86%E5%89%B2/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2026/02/26/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B11%E3%80%81%E5%9B%BE%E5%83%8F%E5%88%86%E5%89%B2/","path":"2026/02/26/《DEEP LEARNING with Python》11、图像分割/","title":"《DEEP LEARNING with Python》第十一章"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>《DEEP LEARNING with Python》第十一章 | 墨语浮生</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZXGEJDXQ33"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-ZXGEJDXQ33","only_pageview":false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?ff358b9c7e949787b074bfc9c8019a9d"></script>
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">墨语浮生</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%BE%E5%83%8F%E5%88%86%E5%89%B2"><span class="nav-text">图像分割</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E4%BB%A3%E7%A0%81"><span class="nav-text">运行代码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89%E4%BB%BB%E5%8A%A1"><span class="nav-text">计算机视觉任务</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%BE%E5%83%8F%E5%88%86%E5%89%B2%E7%9A%84%E7%B1%BB%E5%9E%8B"><span class="nav-text">图像分割的类型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E8%AE%AD%E7%BB%83%E5%88%86%E5%89%B2%E6%A8%A1%E5%9E%8B"><span class="nav-text">从零开始训练分割模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD%E5%88%86%E5%89%B2%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="nav-text">下载分割数据集</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%84%E5%BB%BA%E5%92%8C%E8%AE%AD%E7%BB%83%E5%88%86%E5%89%B2%E6%A8%A1%E5%9E%8B"><span class="nav-text">构建和训练分割模型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E9%A2%84%E8%AE%AD%E7%BB%83%E5%88%86%E5%89%B2%E6%A8%A1%E5%9E%8B"><span class="nav-text">使用预训练分割模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD-segment-anything-%E6%A8%A1%E5%9E%8B"><span class="nav-text">下载 Segment Anything 模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#segment-anything-%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="nav-text">Segment Anything 的工作原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%86%E5%A4%87%E6%B5%8B%E8%AF%95%E5%9B%BE%E5%83%8F"><span class="nav-text">准备测试图像</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%A8%E7%9B%AE%E6%A0%87%E7%82%B9%E6%8F%90%E7%A4%BA%E6%A8%A1%E5%9E%8B"><span class="nav-text">用目标点提示模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E7%9B%AE%E6%A0%87%E6%A1%86%E6%8F%90%E7%A4%BA%E6%A8%A1%E5%9E%8B"><span class="nav-text">使用目标框提示模型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E6%8B%AC"><span class="nav-text">概括</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%84%9A%E6%B3%A8"><span class="nav-text">脚注</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、心情记录</div>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/02/26/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B11%E3%80%81%E5%9B%BE%E5%83%8F%E5%88%86%E5%89%B2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="《DEEP LEARNING with Python》第十一章 | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《DEEP LEARNING with Python》第十一章
+        </h1>
+
+        </h1>
+          
+             <p class="post-subtitle">图像分割</p>
+          
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-02-26 00:00:00" itemprop="dateCreated datePublished" datetime="2026-02-26T00:00:00+08:00">2026-02-26</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>第十一章</p>
+<h1 id="图像分割">图像分割</h1>
+<h3 id="运行代码">运行代码</h3>
+<p><a target="_blank" rel="noopener" href="https://colab.research.google.com/github/fchollet/deep-learning-with-python-notebooks/blob/master/chapter11_image-segmentation.ipynb">在 Colab 上运行</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/fchollet/deep-learning-with-python-notebooks">在 GitHub 上查看</a></p>
+<p>内容<a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter11_image-segmentation/#computer-vision-tasks">计算机视觉任务</a><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter11_image-segmentation/#training-a-segmentation-model-from-scratch">从零开始训练分割模型</a><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter11_image-segmentation/#using-a-pretrained-segmentation-model">使用预训练分割模型</a><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter11_image-segmentation/#summary">概括</a></p>
+<p>本章内容</p>
+<ul>
+<li>计算机视觉的不同分支包括：图像分类、图像分割和目标检测。</li>
+<li>从零开始构建分割模型</li>
+<li>使用预训练的 Segment Anything 模型</li>
+</ul>
+<p>第 8 章通过一个简单的用例——二值图像分类——初步介绍了计算机视觉中的深度学习。但计算机视觉远不止图像分类！本章将深入探讨计算机视觉的另一个重要应用——图像分割。</p>
+<span id="more"></span>
+<h2 id="计算机视觉任务">计算机视觉任务</h2>
+<p>到目前为止，我们主要关注的是图像分类模型：输入一张图像，输出一个标签。“这张图很可能包含一只猫；这张图很可能包含一只狗。” 但图像分类只是深度学习在计算机视觉领域众多应用之一。总的来说，你需要了解以下三个基本的计算机视觉任务：</p>
+<ul>
+<li><em>图像分类的</em>目标是为图像分配一个或多个标签。它可以是单标签分类（即类别互斥），也可以是多标签分类（标记图像所属的所有类别，如图 11.1 所示）。例如，当您在 Google Photos 应用中搜索关键词时，实际上您是在查询一个非常庞大的多标签分类模型——该模型包含超过 20,000 个不同的类别，并基于数百万张图像进行训练。</li>
+<li><em>图像分割的</em>目标是将图像“分割”或“划分”成不同的区域，每个区域通常代表一个类别（如图 11.1 所示）。例如，当 Zoom 或 Google Meet 在视频通话中显示自定义背景时，它就是使用图像分割模型来区分你的脸和背景，精度可达像素级。</li>
+<li><em>目标检测的</em>目标是在图像中围绕感兴趣的物体绘制矩形框（称为<em>边界框</em>），并将每个矩形框与一个类别关联起来。例如，自动驾驶汽车可以使用目标检测模型来监控其摄像头视野范围内的车辆、行人和标志。</li>
+</ul>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/computer_vision_tasks.da2bf0ea.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter11_image-segmentation/#figure-11-1">图 11.1</a>：计算机视觉的三大主要任务：分类、分割和检测</p>
+<p>除了图像分类、图像分割和目标检测这三者之外，深度学习在计算机视觉领域还涵盖了一些更为细分的任务，例如图像相似度评分（评估两幅图像的视觉相似程度）、关键点检测（精确定位图像中感兴趣的属性，例如面部特征）、姿态估计、3D网格估计、深度估计等等。但首先，图像分类、图像分割和目标检测是每位机器学习工程师都应该熟悉的基础。几乎所有计算机视觉应用最终都可以归结为这三者之一。</p>
+<p>你已经在第8章中了解了图像分类的实际应用。接下来，我们将深入探讨图像分割。图像分割是一种非常实用且用途广泛的技术，你可以运用目前为止所学的知识轻松上手。然后，在下一章中，你将详细学习目标检测。</p>
+<h3 id="图像分割的类型">图像分割的类型</h3>
+<p>基于深度学习的图像分割是指利用模型为图像中的每个像素分配一个类别，从而将图像<em>分割</em>成不同的区域（例如“背景”和“前景”或“道路”、“汽车”和“人行道”）。这类技术可应用于图像和视频编辑、自动驾驶、机器人、医学成像等众多领域，并具有广泛的应用价值。</p>
+<p>你应该了解三种不同的图像分割方法：</p>
+<ul>
+<li><em>语义分割</em>，其中每个像素都被独立地分类到一个语义类别，例如“猫”。如果图像中有两只猫，则对应的像素都映射到同一个通用的“猫”类别（见图 11.2）。</li>
+<li><em>实例分割</em>旨在解析出单个对象实例。在一张包含两只猫的图像中，实例分割会区分属于“猫 1”的像素和属于“猫 2”的像素（见图 11.2）。</li>
+<li><em>全景分割</em>结合了语义分割和实例分割，它为图像中的每个像素分配一个语义标签（例如“猫”）和一个实例标签（例如“猫2”）。这是三种分割类型中信息量最大的。</li>
+</ul>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/instance_segmentation.818c62ba.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter11_image-segmentation/#figure-11-2">图 11.2</a>：语义分割与实例分割</p>
+<p>为了更好地了解分割，让我们从头开始，用您自己的数据训练一个小型分割模型。</p>
+<h2 id="从零开始训练分割模型">从零开始训练分割模型</h2>
+<p>在第一个例子中，我们将重点关注语义分割。我们将再次观察猫和狗的图像，这次我们将学习如何区分主体和背景。</p>
+<h3 id="下载分割数据集">下载分割数据集</h3>
+<p>我们将使用牛津大学-IIIT宠物数据集（https://www.robots.ox.ac.uk/~vgg/data/pets/），该数据集包含7390张不同品种猫狗的图片，以及每张图片的前景-背景<em>分割掩码</em>。分割掩码相当于图像分割中的标签：它是一个与输入图像大小相同的图像，只有一个颜色通道，其中每个整数值对应于输入图像中相应像素的类别。在我们的例子中，分割掩码的像素可以取以下三个整数值之一：</p>
+<ul>
+<li>1（前景）</li>
+<li>2（背景）</li>
+<li>3（轮廓）</li>
+</ul>
+<p>首先，我们使用 shell 工具下载并解压缩数据<code>wget</code>集<code>tar</code> ：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">!wget http://www.robots.ox.ac.uk/~vgg/data/pets/data/images.tar.gz</span><br><span class="line">!wget http://www.robots.ox.ac.uk/~vgg/data/pets/data/annotations.tar.gz</span><br><span class="line">!tar -xf images.tar.gz</span><br><span class="line">!tar -xf annotations.tar.gz</span><br></pre></td></tr></table></figure>
+<p>输入图片以 JPG 文件形式存储在<code>images/</code>文件夹（例如<code>images/Abyssinian_1.jpg</code>）中，相应的分割掩码以同名 PNG 文件形式存储在<code>annotations/trimaps/</code>文件夹（例如<code>annotations/trimaps/Abyssinian_1.png</code>）中。</p>
+<p>让我们准备输入文件路径列表以及对应的掩码文件路径列表：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pathlib</span><br><span class="line"></span><br><span class="line">input_dir = pathlib.Path(<span class="string">&quot;images&quot;</span>)</span><br><span class="line">target_dir = pathlib.Path(<span class="string">&quot;annotations/trimaps&quot;</span>)</span><br><span class="line"></span><br><span class="line">input_img_paths = <span class="built_in">sorted</span>(input_dir.glob(<span class="string">&quot;*.jpg&quot;</span>))</span><br><span class="line"><span class="comment"># Ignores some spurious files in the trimaps directory that start with</span></span><br><span class="line"><span class="comment"># a &quot;.&quot;</span></span><br><span class="line">target_paths = <span class="built_in">sorted</span>(target_dir.glob(<span class="string">&quot;[!.]*.png&quot;</span>))</span><br></pre></td></tr></table></figure>
+<p>那么，这些输入之一及其掩码是什么样的呢？让我们快速看一下（见图 11.3）。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">from</span> keras.utils <span class="keyword">import</span> load_img, img_to_array, array_to_img</span><br><span class="line"></span><br><span class="line">plt.axis(<span class="string">&quot;off&quot;</span>)</span><br><span class="line"><span class="comment"># Displays input image number 9</span></span><br><span class="line">plt.imshow(load_img(input_img_paths[<span class="number">9</span>]))</span><br></pre></td></tr></table></figure>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/segmentation_input.d246cf5a.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter11_image-segmentation/#figure-11-3">图 11.3</a>：示例图像</p>
+<p>我们再来看一下它的目标掩码（见图 11.4）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">display_target</span>(<span class="params">target_array</span>):</span><br><span class="line">    <span class="comment"># The original labels are 1, 2, and 3. We subtract 1 so that the</span></span><br><span class="line">    <span class="comment"># labels range from 0 to 2, and then we multiply by 127 so that the</span></span><br><span class="line">    <span class="comment"># labels become 0 (black), 127 (gray), 254 (near-white).</span></span><br><span class="line">    normalized_array = (target_array.astype(<span class="string">&quot;uint8&quot;</span>) - <span class="number">1</span>) * <span class="number">127</span></span><br><span class="line">    plt.axis(<span class="string">&quot;off&quot;</span>)</span><br><span class="line">    plt.imshow(normalized_array[:, :, <span class="number">0</span>])</span><br><span class="line"></span><br><span class="line"><span class="comment"># We use color_mode=&#x27;grayscale&#x27; so that the image we load is treated as</span></span><br><span class="line"><span class="comment"># having a single color channel.</span></span><br><span class="line">img = img_to_array(load_img(target_paths[<span class="number">9</span>], color_mode=<span class="string">&quot;grayscale&quot;</span>))</span><br><span class="line">display_target(img)</span><br></pre></td></tr></table></figure>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/segmentation_mask.cc320651.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter11_image-segmentation/#figure-11-4">图 11.4</a>：对应的目标掩模</p>
+<p>接下来，我们将输入和目标值加载到两个 NumPy 数组中。由于数据集非常小，我们可以将所有内容加载到内存中：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> random</span><br><span class="line"></span><br><span class="line"><span class="comment"># We resize everything to 200 x 200 for this example.</span></span><br><span class="line">img_size = (<span class="number">200</span>, <span class="number">200</span>)</span><br><span class="line"><span class="comment"># Total number of samples in the data</span></span><br><span class="line">num_imgs = <span class="built_in">len</span>(input_img_paths)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Shuffles the file paths (they were originally sorted by breed). We</span></span><br><span class="line"><span class="comment"># use the same seed (1337) in both statements to ensure that the input</span></span><br><span class="line"><span class="comment"># paths and target paths stay in the same order.</span></span><br><span class="line">random.Random(<span class="number">1337</span>).shuffle(input_img_paths)</span><br><span class="line">random.Random(<span class="number">1337</span>).shuffle(target_paths)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">path_to_input_image</span>(<span class="params">path</span>):</span><br><span class="line">    <span class="keyword">return</span> img_to_array(load_img(path, target_size=img_size))</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">path_to_target</span>(<span class="params">path</span>):</span><br><span class="line">    img = img_to_array(</span><br><span class="line">        load_img(path, target_size=img_size, color_mode=<span class="string">&quot;grayscale&quot;</span>)</span><br><span class="line">    )</span><br><span class="line">    <span class="comment"># Subtracts 1 so that our labels become 0, 1, and 2</span></span><br><span class="line">    img = img.astype(<span class="string">&quot;uint8&quot;</span>) - <span class="number">1</span></span><br><span class="line">    <span class="keyword">return</span> img</span><br><span class="line"></span><br><span class="line"><span class="comment"># Loads all images in the input_imgs float32 array and their masks in</span></span><br><span class="line"><span class="comment"># the targets uint8 array (same order). The inputs have three channels</span></span><br><span class="line"><span class="comment"># (RGB values), and the targets have a single channel (which contains</span></span><br><span class="line"><span class="comment"># integer labels).</span></span><br><span class="line">input_imgs = np.zeros((num_imgs,) + img_size + (<span class="number">3</span>,), dtype=<span class="string">&quot;float32&quot;</span>)</span><br><span class="line">targets = np.zeros((num_imgs,) + img_size + (<span class="number">1</span>,), dtype=<span class="string">&quot;uint8&quot;</span>)</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(num_imgs):</span><br><span class="line">    input_imgs[i] = path_to_input_image(input_img_paths[i])</span><br><span class="line">    targets[i] = path_to_target(target_paths[i])</span><br></pre></td></tr></table></figure>
+<p>和往常一样，我们将数组分成训练集和验证集：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Reserves 1,000 samples for validation</span></span><br><span class="line">num_val_samples = <span class="number">1000</span></span><br><span class="line"><span class="comment"># Splits the data into a training and a validation set</span></span><br><span class="line">train_input_imgs = input_imgs[:-num_val_samples]</span><br><span class="line">train_targets = targets[:-num_val_samples]</span><br><span class="line">val_input_imgs = input_imgs[-num_val_samples:]</span><br><span class="line">val_targets = targets[-num_val_samples:]</span><br></pre></td></tr></table></figure>
+<h3 id="构建和训练分割模型">构建和训练分割模型</h3>
+<p>现在，是时候定义我们的模型了：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> keras</span><br><span class="line"><span class="keyword">from</span> keras.layers <span class="keyword">import</span> Rescaling, Conv2D, Conv2DTranspose</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_model</span>(<span class="params">img_size, num_classes</span>):</span><br><span class="line">    inputs = keras.Input(shape=img_size + (<span class="number">3</span>,))</span><br><span class="line">    <span class="comment"># Don&#x27;t forget to rescale input images to the [0–1] range.</span></span><br><span class="line">    x = Rescaling(<span class="number">1.0</span> / <span class="number">255</span>)(inputs)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># We use padding=&quot;same&quot; everywhere to avoid the influence of border</span></span><br><span class="line">    <span class="comment"># padding on feature map size.</span></span><br><span class="line">    x = Conv2D(<span class="number">64</span>, <span class="number">3</span>, strides=<span class="number">2</span>, activation=<span class="string">&quot;relu&quot;</span>, padding=<span class="string">&quot;same&quot;</span>)(x)</span><br><span class="line">    x = Conv2D(<span class="number">64</span>, <span class="number">3</span>, activation=<span class="string">&quot;relu&quot;</span>, padding=<span class="string">&quot;same&quot;</span>)(x)</span><br><span class="line">    x = Conv2D(<span class="number">128</span>, <span class="number">3</span>, strides=<span class="number">2</span>, activation=<span class="string">&quot;relu&quot;</span>, padding=<span class="string">&quot;same&quot;</span>)(x)</span><br><span class="line">    x = Conv2D(<span class="number">128</span>, <span class="number">3</span>, activation=<span class="string">&quot;relu&quot;</span>, padding=<span class="string">&quot;same&quot;</span>)(x)</span><br><span class="line">    x = Conv2D(<span class="number">256</span>, <span class="number">3</span>, strides=<span class="number">2</span>, padding=<span class="string">&quot;same&quot;</span>, activation=<span class="string">&quot;relu&quot;</span>)(x)</span><br><span class="line">    x = Conv2D(<span class="number">256</span>, <span class="number">3</span>, activation=<span class="string">&quot;relu&quot;</span>, padding=<span class="string">&quot;same&quot;</span>)(x)</span><br><span class="line"></span><br><span class="line">    x = Conv2DTranspose(<span class="number">256</span>, <span class="number">3</span>, activation=<span class="string">&quot;relu&quot;</span>, padding=<span class="string">&quot;same&quot;</span>)(x)</span><br><span class="line">    x = Conv2DTranspose(<span class="number">256</span>, <span class="number">3</span>, strides=<span class="number">2</span>, activation=<span class="string">&quot;relu&quot;</span>, padding=<span class="string">&quot;same&quot;</span>)(x)</span><br><span class="line">    x = Conv2DTranspose(<span class="number">128</span>, <span class="number">3</span>, activation=<span class="string">&quot;relu&quot;</span>, padding=<span class="string">&quot;same&quot;</span>)(x)</span><br><span class="line">    x = Conv2DTranspose(<span class="number">128</span>, <span class="number">3</span>, strides=<span class="number">2</span>, activation=<span class="string">&quot;relu&quot;</span>, padding=<span class="string">&quot;same&quot;</span>)(x)</span><br><span class="line">    x = Conv2DTranspose(<span class="number">64</span>, <span class="number">3</span>, activation=<span class="string">&quot;relu&quot;</span>, padding=<span class="string">&quot;same&quot;</span>)(x)</span><br><span class="line">    x = Conv2DTranspose(<span class="number">64</span>, <span class="number">3</span>, strides=<span class="number">2</span>, activation=<span class="string">&quot;relu&quot;</span>, padding=<span class="string">&quot;same&quot;</span>)(x)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># We end the model with a per-pixel three-way softmax to classify</span></span><br><span class="line">    <span class="comment"># each output pixel into one of our three categories.</span></span><br><span class="line">    outputs = Conv2D(num_classes, <span class="number">3</span>, activation=<span class="string">&quot;softmax&quot;</span>, padding=<span class="string">&quot;same&quot;</span>)(x)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> keras.Model(inputs, outputs)</span><br><span class="line"></span><br><span class="line">model = get_model(img_size=img_size, num_classes=<span class="number">3</span>)</span><br></pre></td></tr></table></figure>
+<p>模型的前半部分与用于图像分类的卷积神经网络（ConvNet）非常相似：由一系列<code>Conv2D</code>层堆叠而成，滤波器尺寸逐渐增大。我们将图像以两倍的因子进行三次下采样，最终得到大小为 的激活值 <code>(25, 25, 256)</code>。前半部分的目的是将图像编码成更小的特征图，其中每个空间位置（或“像素”）都包含原始图像中较大空间区域的信息。您可以将其理解为一种压缩。</p>
+<p>该模型前半部分与之前你看到的分类模型的一个重要区别在于下采样的方式：在第 8 章的分类卷积神经网络中，我们使用<code>MaxPooling2D</code>层来对特征图进行下采样。而在这里，我们通过给每隔一个卷积层添加<em>步长</em>来进行下采样（如果你不记得卷积步长的工作原理，请参阅第 8 章 8.1.1 节）。这样做是因为在图像分割中，我们非常关注图像中信息的空间位置，因为我们需要生成每个像素的目标掩码作为模型的输出。当你进行 2×2 最大池化时，你会完全破坏每个池化窗口内的位置信息：每个窗口返回一个标量值，而你完全不知道这个值来自窗口中的哪个位置。</p>
+<p>因此，虽然最大池化层在分类任务中表现良好，但在分割任务中却会造成相当大的负面影响。与此同时，步长卷积在下采样特征图的同时，能够更好地保留位置信息。在本书中，你会注意到，对于任何需要关注特征位置的模型，例如第 17 章中的生成模型，我们倾向于使用步长卷积而不是最大池化。</p>
+<p>模型的后半部分是由一系列<code>Conv2DTranspose</code>层堆叠而成。这些层是什么呢？模型前半部分的输出是一个形状为 的特征图<code>(25, 25, 256)</code>，但我们希望最终输出能够预测每个像素的类别，使其与原始空间维度相匹配。最终模型的输出形状为<code>(200, 200, num_classes)</code>，如图所示<code>(200, 200, 3)</code>。因此，我们需要应用一种与之前应用的变换*相反的操作，即对特征图进行**上采样<em>而不是下采样。这就是 层的作用<code>Conv2DTranspose</code>：你可以把它看作是一个</em>学习上采样*的卷积层。如果你有一个形状为 的输入<code>(100, 100, 64)</code>，并将其输入到 层，<code>Conv2D(128, 3, strides=2, padding="same")</code>你会得到一个形状为 的输出<code>(50, 50, 128)</code>。如果你将这个输出输入到 层 <code>Conv2DTranspose(64, 3, strides=2, padding="same")</code>，你会得到一个形状为 的输出<code>(100, 100, 64)</code>，与原始输入相同。因此，在<code>(25, 25, 256)</code>通过一系列<code>Conv2D</code> 层将输入压缩成形状为 的特征图之后，我们可以简单地应用相应的层序列，<code>Conv2DTranspose</code> 最后加上一个最终<code>Conv2D</code>层，从而生成形状为 的输出<code>(200, 200, 3)</code>。</p>
+<p>为了评估模型，我们将使用 <em>交并比</em>(IoU) 指标。它衡量的是真实分割掩码和预测掩码之间的匹配程度。可以分别计算每个类别的 IoU，也可以对多个类别取平均值。其工作原理如下：</p>
+<ol type="1">
+<li>计算掩码之间的<em>交集</em>，即预测结果与真实值重叠的区域。</li>
+<li>计算两个掩码的<em>并集</em>，即两个掩码共同覆盖的总面积。这就是我们感兴趣的整个空间——目标对象以及模型可能错误包含的任何额外部分。</li>
+<li>将交集面积除以并集面积即可得到交并比 (IoU)。IoU 是一个介于 0 和 1 之间的数字，其中 1 表示完全匹配，0 表示完全不匹配。</li>
+</ol>
+<p>我们可以直接使用 Keras 内置的指标，而无需自己构建：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">foreground_iou = keras.metrics.IoU(</span><br><span class="line">    <span class="comment"># Specifies the total number of classes</span></span><br><span class="line">    num_classes=<span class="number">3</span>,</span><br><span class="line">    <span class="comment"># Specifies the class to compute IoU for (0 = foreground)</span></span><br><span class="line">    target_class_ids=(<span class="number">0</span>,),</span><br><span class="line">    name=<span class="string">&quot;foreground_iou&quot;</span>,</span><br><span class="line">    <span class="comment"># Our targets are sparse (integer class IDs).</span></span><br><span class="line">    sparse_y_true=<span class="literal">True</span>,</span><br><span class="line">    <span class="comment"># But our model&#x27;s predictions are a dense softmax!</span></span><br><span class="line">    sparse_y_pred=<span class="literal">False</span>,</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>现在我们可以编译并拟合我们的模型了：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">model.<span class="built_in">compile</span>(</span><br><span class="line">    optimizer=<span class="string">&quot;adam&quot;</span>,</span><br><span class="line">    loss=<span class="string">&quot;sparse_categorical_crossentropy&quot;</span>,</span><br><span class="line">    metrics=[foreground_iou],</span><br><span class="line">)</span><br><span class="line">callbacks = [</span><br><span class="line">    keras.callbacks.ModelCheckpoint(</span><br><span class="line">        <span class="string">&quot;oxford_segmentation.keras&quot;</span>,</span><br><span class="line">        save_best_only=<span class="literal">True</span>,</span><br><span class="line">    ),</span><br><span class="line">]</span><br><span class="line">history = model.fit(</span><br><span class="line">    train_input_imgs,</span><br><span class="line">    train_targets,</span><br><span class="line">    epochs=<span class="number">50</span>,</span><br><span class="line">    callbacks=callbacks,</span><br><span class="line">    batch_size=<span class="number">64</span>,</span><br><span class="line">    validation_data=(val_input_imgs, val_targets),</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>让我们展示一下训练损失和验证损失（见图 11.5）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">epochs = <span class="built_in">range</span>(<span class="number">1</span>, <span class="built_in">len</span>(history.history[<span class="string">&quot;loss&quot;</span>]) + <span class="number">1</span>)</span><br><span class="line">loss = history.history[<span class="string">&quot;loss&quot;</span>]</span><br><span class="line">val_loss = history.history[<span class="string">&quot;val_loss&quot;</span>]</span><br><span class="line">plt.figure()</span><br><span class="line">plt.plot(epochs, loss, <span class="string">&quot;r--&quot;</span>, label=<span class="string">&quot;Training loss&quot;</span>)</span><br><span class="line">plt.plot(epochs, val_loss, <span class="string">&quot;b&quot;</span>, label=<span class="string">&quot;Validation loss&quot;</span>)</span><br><span class="line">plt.title(<span class="string">&quot;Training and validation loss&quot;</span>)</span><br><span class="line">plt.legend()</span><br></pre></td></tr></table></figure>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/segmentation_loss.489fa0c8.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter11_image-segmentation/#figure-11-5">图 11.5</a>：显示训练和验证损失曲线</p>
+<p>你可以看到，我们在大约第 25 个 epoch 左右开始出现过拟合现象。让我们根据验证损失重新加载性能最佳的模型，并演示如何使用它来预测分割掩码（参见图 11.6）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">model = keras.models.load_model(<span class="string">&quot;oxford_segmentation.keras&quot;</span>)</span><br><span class="line"></span><br><span class="line">i = <span class="number">4</span></span><br><span class="line">test_image = val_input_imgs[i]</span><br><span class="line">plt.axis(<span class="string">&quot;off&quot;</span>)</span><br><span class="line">plt.imshow(array_to_img(test_image))</span><br><span class="line"></span><br><span class="line">mask = model.predict(np.expand_dims(test_image, <span class="number">0</span>))[<span class="number">0</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># Utility to display a model&#x27;s prediction</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">display_mask</span>(<span class="params">pred</span>):</span><br><span class="line">    mask = np.argmax(pred, axis=-<span class="number">1</span>)</span><br><span class="line">    mask *= <span class="number">127</span></span><br><span class="line">    plt.axis(<span class="string">&quot;off&quot;</span>)</span><br><span class="line">    plt.imshow(mask)</span><br><span class="line"></span><br><span class="line">display_mask(mask)</span><br></pre></td></tr></table></figure>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/segmentation_test.ece7f638.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter11_image-segmentation/#figure-11-6">图 11.6</a>：测试图像及其预测的分割掩码</p>
+<p>我们预测的掩模中存在一些细微的瑕疵，这是由前景和背景的几何形状造成的。尽管如此，我们的模型看起来运行良好。</p>
+<h2 id="使用预训练分割模型">使用预训练分割模型</h2>
+<p>在第 8 章的图像分类示例中，您已经看到，使用预训练模型可以显著提高准确率——尤其是在只有少量样本可供训练的情况下。图像分割也是如此。</p>
+<p>细分<em>任何事物</em>模型[<a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter11_image-segmentation/#footnote-1">1]</a>SAM（或简称 SAM）是一款功能强大的预训练分割模型，几乎可以用于任何场景。它由 Meta AI 开发，于 2023 年 4 月发布。该模型使用 1100 万张图像及其分割掩码进行训练，涵盖超过 10 亿个对象实例。如此庞大的训练数据使模型具备了对自然图像中几乎所有对象的内置知识。</p>
+<p>SAM 的主要创新之处在于它不局限于预定义的对象类别。您只需提供一个示例来描述您要查找的对象，即可使用它来分割新的对象。您甚至无需事先对模型进行微调。让我们看看它是如何工作的。</p>
+<h3 id="下载-segment-anything-模型">下载 Segment Anything 模型</h3>
+<p>首先，我们实例化 SAM 模型并下载其权重。同样，我们可以使用 KerasHub 包来使用这个预训练模型，而无需从头开始自行实现。</p>
+<p>还记得<code>ImageClassifier</code>我们在上一章用到的任务吗？我们可以使用另一个 KerasHub 任务<code>ImageSegmenter</code>，将预训练的图像分割模型封装成一个具有标准输入输出的高级模型。这里，我们将使用 <code>sam_huge_sa1b</code>预训练模型，其中<code>sam</code>代表模型，<code>huge</code> 代表模型中的参数数量， 代表<code>sa1b</code>与模型一起发布的 SA-1B 数据集，其中包含 10 亿个带标注的掩码。现在就下载吧：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> keras_hub</span><br><span class="line"></span><br><span class="line">model = keras_hub.models.ImageSegmenter.from_preset(<span class="string">&quot;sam_huge_sa1b&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p>首先我们可以注意到的一点是，我们的模型确实非常庞大：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; model.count_params()</span><br><span class="line">641090864</span><br></pre></td></tr></table></figure>
+<p>SAM模型拥有6.41亿个参数，是本书迄今为止我们使用过的最大模型。预训练模型规模越来越大、使用的数据量越来越大的趋势，将在第16章中进行更详细的讨论。</p>
+<h3 id="segment-anything-的工作原理">Segment Anything 的工作原理</h3>
+<p>在尝试使用该模型进行分割之前，我们先来详细了解一下SAM的工作原理。该模型的强大功能很大程度上源于其预训练数据集的规模。Meta公司在开发模型的同时还开发了SA-1B数据集，其中部分训练好的模型被用于辅助数据标注过程。也就是说，数据集和模型是在一个反馈循环中共同开发的。</p>
+<p>SA-1B 数据集的目标是创建完全分割的图像，其中图像中的每个对象都被赋予一个唯一的分割掩码。参见图 11.7 的示例。数据集中的每张图像平均有约 100 个掩码，有些图像甚至包含超过 500 个单独掩码的对象。这是通过一个逐步自动化的数据采集流程实现的。最初，专家们手动分割了一个小型示例数据集，并用它来训练一个初始模型。该模型用于驱动半自动化的数据采集阶段，在该阶段，图像首先由 SAM 进行分割，然后通过人工校正和进一步标注进行改进。</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/sa1b_example.6701768b.jpg" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter11_image-segmentation/#figure-11-7">图 11.7</a>：SA-1B 数据集中的示例图像</p>
+<p>该模型使用<code>(image, prompt, mask)</code>三元组进行训练。<code>image</code>和<code>prompt</code> 是模型的输入。图像可以是任何输入图像，提示信息可以采用以下几种形式：</p>
+<ul>
+<li>要遮罩的物体内部点</li>
+<li>用方框框住物体以进行遮罩</li>
+</ul>
+<p>给定<code>image</code>输入<code>prompt</code>，该模型应生成提示所指示对象的准确预测掩码，并将其与真实<code>mask</code>标签进行比较。</p>
+<p>该模型由几个独立的组件构成。其中一个图像编码器类似于我们在前几章中使用的 Xception 模型，它会接收输入图像并输出一个更小的图像嵌入。我们已经知道如何构建这个编码器。</p>
+<p>接下来，我们添加一个提示编码器，它负责将前面提到的任何形式的提示映射到嵌入向量；以及一个掩码解码器，它接收图像嵌入和提示嵌入作为输入，并输出几个可能的预测掩码。这里我们不详细介绍提示编码器和掩码解码器，因为它们使用了一些建模技术，我们将在后面的章节中介绍。我们可以像本章前面部分那样，将这些预测掩码与真实掩码进行比较（参见图 11.8）。</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/sam_architecture.dad9dae6.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter11_image-segmentation/#figure-11-8">图 11.8</a>：Segment Anything 高级架构概述</p>
+<p>所有这些子组件都通过 <code>(image, prompt, mask)</code>从 SA-1B 图像和掩码数据中生成新的三元组批次进行同时训练。这个过程其实很简单。对于给定的输入图像，首先在输入中随机选择一个掩码。然后，随机选择创建框提示还是点提示。要创建点提示，在掩码标签内随机选择一个像素。要创建框提示，则在掩码标签内的所有点周围绘制一个框。我们可以无限重复这个过程， <code>(image, prompt, mask)</code>从每个图像输入中采样若干个三元组。</p>
+<h3 id="准备测试图像">准备测试图像</h3>
+<p>让我们通过实际测试模型来具体说明这一点。我们可以先加载一张测试图像进行分割。我们将使用一张水果碗的图片（见图 11.9）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Downloads the image and returns the local file path</span></span><br><span class="line">path = keras.utils.get_file(</span><br><span class="line">    origin=<span class="string">&quot;https://s3.amazonaws.com/keras.io/img/book/fruits.jpg&quot;</span></span><br><span class="line">)</span><br><span class="line"><span class="comment"># Loads the image as a Python Imaging Library (PIL) object</span></span><br><span class="line">pil_image = keras.utils.load_img(path)</span><br><span class="line"><span class="comment"># Turns the PIL object into a NumPy matrix</span></span><br><span class="line">image_array = keras.utils.img_to_array(pil_image)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Displays the NumPy matrix</span></span><br><span class="line">plt.imshow(image_array.astype(<span class="string">&quot;uint8&quot;</span>))</span><br><span class="line">plt.axis(<span class="string">&quot;off&quot;</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/fruits.8cef44dc.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter11_image-segmentation/#figure-11-9">图 11.9</a>：我们的测试图像</p>
+<p>SAM 期望输入图像为 1024 × 1024。然而，强制将任意图像调整为 1024 × 1024 会扭曲其宽高比——例如，我们的图像并非正方形。更好的做法是先调整图像大小，使其最长边变为 1024 像素，然后用填充值（例如 0）填充剩余像素。我们可以使用操作<code>pad_to_aspect_ratio</code> 中的参数来实现这一点<code>keras.ops.image.resize()</code>，如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> ops</span><br><span class="line"></span><br><span class="line">image_size = (<span class="number">1024</span>, <span class="number">1024</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">resize_and_pad</span>(<span class="params">x</span>):</span><br><span class="line">    <span class="keyword">return</span> ops.image.resize(x, image_size, pad_to_aspect_ratio=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">image = resize_and_pad(image_array)</span><br></pre></td></tr></table></figure>
+<p>接下来，我们来定义一些在使用模型时会用到的实用工具。我们需要……</p>
+<ul>
+<li>显示图像。</li>
+<li>在图像上叠加显示分割掩码。</li>
+<li>突出显示图像中的特定点。</li>
+<li>在图像上叠加显示框。</li>
+</ul>
+<p>我们所有的实用程序都接受一个 Matplotlib<code>axis</code>对象（记为<code>ax</code>），以便它们都可以写入同一个图形：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> ops</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">show_image</span>(<span class="params">image, ax</span>):</span><br><span class="line">    ax.imshow(ops.convert_to_numpy(image).astype(<span class="string">&quot;uint8&quot;</span>))</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">show_mask</span>(<span class="params">mask, ax</span>):</span><br><span class="line">    color = np.array([<span class="number">30</span> / <span class="number">255</span>, <span class="number">144</span> / <span class="number">255</span>, <span class="number">255</span> / <span class="number">255</span>, <span class="number">0.6</span>])</span><br><span class="line">    h, w, _ = mask.shape</span><br><span class="line">    mask_image = mask.reshape(h, w, <span class="number">1</span>) * color.reshape(<span class="number">1</span>, <span class="number">1</span>, -<span class="number">1</span>)</span><br><span class="line">    ax.imshow(mask_image)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">show_points</span>(<span class="params">points, ax</span>):</span><br><span class="line">    x, y = points[:, <span class="number">0</span>], points[:, <span class="number">1</span>]</span><br><span class="line">    ax.scatter(x, y, c=<span class="string">&quot;green&quot;</span>, marker=<span class="string">&quot;*&quot;</span>, s=<span class="number">375</span>, ec=<span class="string">&quot;white&quot;</span>, lw=<span class="number">1.25</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">show_box</span>(<span class="params">box, ax</span>):</span><br><span class="line">    box = box.reshape(-<span class="number">1</span>)</span><br><span class="line">    x0, y0 = box[<span class="number">0</span>], box[<span class="number">1</span>]</span><br><span class="line">    w, h = box[<span class="number">2</span>] - box[<span class="number">0</span>], box[<span class="number">3</span>] - box[<span class="number">1</span>]</span><br><span class="line">    ax.add_patch(plt.Rectangle((x0, y0), w, h, ec=<span class="string">&quot;red&quot;</span>, fc=<span class="string">&quot;none&quot;</span>, lw=<span class="number">2</span>))</span><br></pre></td></tr></table></figure>
+<h3 id="用目标点提示模型">用目标点提示模型</h3>
+<p>要使用 SAM，您需要发出提示。这意味着我们需要以下选项之一：</p>
+<ul>
+<li><em>点提示</em>— 选择图像中的一个点，让模型分割出该点所属的对象。</li>
+<li><em>框提示</em>——在物体周围画一个大致的框（不需要特别精确），让模型将物体分割到框内。</li>
+</ul>
+<p>我们先从一个点提示开始。这些点都带有标签，1 表示前景（你要分割的对象），0 表示背景（对象周围的一切）。在情况不明确时，为了提高分割效果，你可以传递多个带标签的点，而不是单个点，这样可以更精确地定义哪些区域应该包含在分割范围内（标记为 1 的点），哪些区域应该排除在外（标记为 0 的点）。</p>
+<p>我们尝试使用单个前景点（见图 11.10）。以下是一个测试点：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line"><span class="comment"># Coordinates of our point</span></span><br><span class="line">input_point = np.array([[<span class="number">580</span>, <span class="number">450</span>]])</span><br><span class="line"><span class="comment"># 1 means foreground, and 0 means background.</span></span><br><span class="line">input_label = np.array([<span class="number">1</span>])</span><br><span class="line"></span><br><span class="line">plt.figure(figsize=(<span class="number">10</span>, <span class="number">10</span>))</span><br><span class="line"><span class="comment"># &quot;gca&quot; means &quot;get current axis&quot; — the current figure.</span></span><br><span class="line">show_image(image, plt.gca())</span><br><span class="line">show_points(input_point, plt.gca())</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/peach_point.432d548a.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter11_image-segmentation/#figure-11-10">图 11.10</a>：一个提示点落在桃子上</p>
+<p>让我们用它提示SAM：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">outputs = model.predict(</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="string">&quot;images&quot;</span>: ops.expand_dims(image, axis=<span class="number">0</span>),</span><br><span class="line">        <span class="string">&quot;points&quot;</span>: ops.expand_dims(input_point, axis=<span class="number">0</span>),</span><br><span class="line">        <span class="string">&quot;labels&quot;</span>: ops.expand_dims(input_label, axis=<span class="number">0</span>),</span><br><span class="line">    &#125;</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>返回值<code>outputs</code>包含一个字段，其中包含四个目标对象的 256 × 256 候选掩码，按匹配质量降序排列。掩码的质量分数作为模型输出的一部分，<code>"masks"</code>在该字段下可用：<code>"iou_pred"</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; outputs[&quot;masks&quot;].shape</span><br><span class="line">(1, 4, 256, 256)</span><br></pre></td></tr></table></figure>
+<p>让我们将第一个蒙版叠加到图像上（见图 11.11）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">get_mask</span>(<span class="params">sam_outputs, index=<span class="number">0</span></span>):</span><br><span class="line">    mask = sam_outputs[<span class="string">&quot;masks&quot;</span>][<span class="number">0</span>][index]</span><br><span class="line">    mask = np.expand_dims(mask, axis=-<span class="number">1</span>)</span><br><span class="line">    mask = resize_and_pad(mask)</span><br><span class="line">    <span class="keyword">return</span> ops.convert_to_numpy(mask) &gt; <span class="number">0.0</span></span><br><span class="line"></span><br><span class="line">mask = get_mask(outputs, index=<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">plt.figure(figsize=(<span class="number">10</span>, <span class="number">10</span>))</span><br><span class="line">show_image(image, plt.gca())</span><br><span class="line">show_mask(mask, plt.gca())</span><br><span class="line">show_points(input_point, plt.gca())</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/peach_segmented.333556ff.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter11_image-segmentation/#figure-11-11">图 11.11</a>：桃子</p>
+<p>不错！</p>
+<p>接下来，我们来试试香蕉。我们将向模型输入坐标<code>(300, 550)</code>，该坐标指向从左边数第二个香蕉（见图 11.12）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">input_point = np.array([[<span class="number">300</span>, <span class="number">550</span>]])</span><br><span class="line">input_label = np.array([<span class="number">1</span>])</span><br><span class="line"></span><br><span class="line">outputs = model.predict(</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="string">&quot;images&quot;</span>: ops.expand_dims(image, axis=<span class="number">0</span>),</span><br><span class="line">        <span class="string">&quot;points&quot;</span>: ops.expand_dims(input_point, axis=<span class="number">0</span>),</span><br><span class="line">        <span class="string">&quot;labels&quot;</span>: ops.expand_dims(input_label, axis=<span class="number">0</span>),</span><br><span class="line">    &#125;</span><br><span class="line">)</span><br><span class="line">mask = get_mask(outputs, index=<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">plt.figure(figsize=(<span class="number">10</span>, <span class="number">10</span>))</span><br><span class="line">show_image(image, plt.gca())</span><br><span class="line">show_mask(mask, plt.gca())</span><br><span class="line">show_points(input_point, plt.gca())</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/banana_segmented.8e0b3e81.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter11_image-segmentation/#figure-11-12">图 11.12</a>：香蕉瓣</p>
+<p>那么，其他掩码候选方案呢？它们在处理含义模糊的提示时非常有用。让我们尝试绘制其他三个掩码（见图 11.13）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">fig, axes = plt.subplots(<span class="number">1</span>, <span class="number">3</span>, figsize=(<span class="number">20</span>, <span class="number">60</span>))</span><br><span class="line">masks = outputs[<span class="string">&quot;masks&quot;</span>][<span class="number">0</span>][<span class="number">1</span>:]</span><br><span class="line"><span class="keyword">for</span> i, mask <span class="keyword">in</span> <span class="built_in">enumerate</span>(masks):</span><br><span class="line">    show_image(image, axes[i])</span><br><span class="line">    show_points(input_point, axes[i])</span><br><span class="line">    mask = get_mask(outputs, index=i + <span class="number">1</span>)</span><br><span class="line">    show_mask(mask, axes[i])</span><br><span class="line">    axes[i].set_title(<span class="string">f&quot;Mask <span class="subst">&#123;i + <span class="number">1</span>&#125;</span>&quot;</span>, fontsize=<span class="number">16</span>)</span><br><span class="line">    axes[i].axis(<span class="string">&quot;off&quot;</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/bananas_all_masks.c922b7a6.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter11_image-segmentation/#figure-11-13">图 11.13</a>：香蕉提示的替代分割掩码</p>
+<p>正如您在这里看到的，模型找到的另一种分割方式包含了香蕉。</p>
+<h3 id="使用目标框提示模型">使用目标框提示模型</h3>
+<p>除了提供一个或多个目标点之外，您还可以提供近似于待分割对象位置的框。这些框应通过其左上角和右下角的坐标传递。下图是芒果周围的框（参见图 11.14）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">input_box = np.array(</span><br><span class="line">    [</span><br><span class="line">        <span class="comment"># Top-left corner</span></span><br><span class="line">        [<span class="number">520</span>, <span class="number">180</span>],</span><br><span class="line">        <span class="comment"># Bottom-right corner</span></span><br><span class="line">        [<span class="number">770</span>, <span class="number">420</span>],</span><br><span class="line">    ]</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">plt.figure(figsize=(<span class="number">10</span>, <span class="number">10</span>))</span><br><span class="line">show_image(image, plt.gca())</span><br><span class="line">show_box(input_box, plt.gca())</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/mango_box.45e1bae1.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter11_image-segmentation/#figure-11-14">图 11.14</a>：芒果周围的框提示</p>
+<p>让我们用它来提示 SAM（参见图 11.15）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">outputs = model.predict(</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="string">&quot;images&quot;</span>: ops.expand_dims(image, axis=<span class="number">0</span>),</span><br><span class="line">        <span class="string">&quot;boxes&quot;</span>: ops.expand_dims(input_box, axis=(<span class="number">0</span>, <span class="number">1</span>)),</span><br><span class="line">    &#125;</span><br><span class="line">)</span><br><span class="line">mask = get_mask(outputs, <span class="number">0</span>)</span><br><span class="line">plt.figure(figsize=(<span class="number">10</span>, <span class="number">10</span>))</span><br><span class="line">show_image(image, plt.gca())</span><br><span class="line">show_mask(mask, plt.gca())</span><br><span class="line">show_box(input_box, plt.gca())</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/mango_segmented.2dfb0dae.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter11_image-segmentation/#figure-11-15">图 11.15</a>：芒果瓣</p>
+<p>SAM 可以成为快速创建带有分割掩码标注的大型图像数据集的强大工具。</p>
+<h2 id="概括">概括</h2>
+<ul>
+<li>图像分割是计算机视觉任务的主要类别之一。它包括计算分割掩码，这些掩码在像素级别上描述图像的内容。</li>
+<li>要构建自己的分割模型，可以使用一系列步长<code>Conv2D</code>层将输入图像“压缩”成更小的特征图，然后再使用一系列相应的<code>Conv2DTranspose</code> 层将特征图“扩展”成与输入图像大小相同的分割掩码。</li>
+<li>您还可以使用预训练的分割模型。KerasHub 中包含的 Segment Anything 就是一个功能强大的模型，它支持图像提示、文本提示、点提示和框提示。</li>
+</ul>
+<h3 id="脚注">脚注</h3>
+<ol type="1">
+<li>Kirillov 等人，“分割任何事物”，发表<em>于 IEEE/CVF 国际计算机视觉会议论文集</em>，arXiv (2023)，https://arxiv.org/abs/2304.02643。 [<a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter11_image-segmentation/#footnote-link-1">↩︎]</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/02/25/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B10%E3%80%81%E8%A7%A3%E8%AF%BB%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%9A%84%E5%AD%A6%E4%B9%A0%E6%88%90%E6%9E%9C/" rel="prev" title="《DEEP LEARNING with Python》第十章">
+                  <i class="fa fa-chevron-left"></i> 《DEEP LEARNING with Python》第十章
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/02/27/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B12%E3%80%81%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/" rel="next" title="《DEEP LEARNING with Python》第十二章">
+                  《DEEP LEARNING with Python》第十二章 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

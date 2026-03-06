@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"enable":true,"style":"tabs","active":"giscus","storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+
+
+    <meta name="description" content="第十九章 人工智能的未来 内容深度学习的局限性规模并不是你所需要的全部如何培养智力缺失的要素：搜索和符号 本章内容  深度学习的局限性 智能的本质 当前方法缺少什么 未来可能会是什么样子  要正确使用工具，不仅要了解它的功能，还要了解它的局限性。我将概述深度学习的一些关键局限性。然后，我会对人工智能的未来发展方向以及达到人类水平的通用智能需要哪些条件提出一些推测。如果您对基础研究感兴趣，这部分内容">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《DEEP LEARNING with Python》第十九章">
+<meta property="og:url" content="http://hongyitong.github.io/2026/03/09/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B19%E3%80%81%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD%E7%9A%84%E6%9C%AA%E6%9D%A5/index.html">
+<meta property="og:site_name" content="墨语浮生">
+<meta property="og:description" content="第十九章 人工智能的未来 内容深度学习的局限性规模并不是你所需要的全部如何培养智力缺失的要素：搜索和符号 本章内容  深度学习的局限性 智能的本质 当前方法缺少什么 未来可能会是什么样子  要正确使用工具，不仅要了解它的功能，还要了解它的局限性。我将概述深度学习的一些关键局限性。然后，我会对人工智能的未来发展方向以及达到人类水平的通用智能需要哪些条件提出一些推测。如果您对基础研究感兴趣，这部分内容">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/arc_example_2.7d4f0c33.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/monty_hall.86dba4ca.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/adversarial_example.8f3cfeb2.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/ml_model.02e47549.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/c_elegans.ca0de605.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/local_vs_extreme_generalization.4b71aa83.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/kaleidoscope.fec15d2f.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/skill_vs_information.2468629a.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/arc_example.2b17dc06.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/arc_task_not_solved_by_o3.03d72f08.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/arc_1_vs_arc_2.1201d48e.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/value_centric_abstraction.ea920558.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/program_centric_abstraction.028e5301.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/program_synthesis.8af8560a.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/metalearning1.63aa6580.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/metalearning2.f5a5efde.png">
+<meta property="article:published_time" content="2026-03-08T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-03-01T03:45:06.741Z">
+<meta property="article:author" content="Rayman.hung">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/arc_example_2.7d4f0c33.png">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2026/03/09/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B19%E3%80%81%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD%E7%9A%84%E6%9C%AA%E6%9D%A5/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2026/03/09/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B19%E3%80%81%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD%E7%9A%84%E6%9C%AA%E6%9D%A5/","path":"2026/03/09/《DEEP LEARNING with Python》19、人工智能的未来/","title":"《DEEP LEARNING with Python》第十九章"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>《DEEP LEARNING with Python》第十九章 | 墨语浮生</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZXGEJDXQ33"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-ZXGEJDXQ33","only_pageview":false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?ff358b9c7e949787b074bfc9c8019a9d"></script>
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">墨语浮生</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD%E7%9A%84%E6%9C%AA%E6%9D%A5"><span class="nav-text">人工智能的未来</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%9A%84%E5%B1%80%E9%99%90%E6%80%A7"><span class="nav-text">深度学习的局限性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A8%A1%E5%9E%8B%E9%9A%BE%E4%BB%A5%E9%80%82%E5%BA%94%E6%96%B0%E4%BA%8B%E7%89%A9"><span class="nav-text">深度学习模型难以适应新事物</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A8%A1%E5%9E%8B%E5%AF%B9%E6%8E%AA%E8%BE%9E%E5%92%8C%E5%85%B6%E4%BB%96%E5%B9%B2%E6%89%B0%E5%9B%A0%E7%B4%A0%E9%AB%98%E5%BA%A6%E6%95%8F%E6%84%9F"><span class="nav-text">深度学习模型对措辞和其他干扰因素高度敏感。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A8%A1%E5%9E%8B%E9%9A%BE%E4%BB%A5%E5%AD%A6%E4%B9%A0%E5%8F%AF%E6%B3%9B%E5%8C%96%E7%9A%84%E7%A8%8B%E5%BA%8F"><span class="nav-text">深度学习模型难以学习可泛化的程序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B0%86%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%A8%A1%E5%9E%8B%E6%8B%9F%E4%BA%BA%E5%8C%96%E7%9A%84%E9%A3%8E%E9%99%A9"><span class="nav-text">将机器学习模型拟人化的风险</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%84%E6%A8%A1%E5%B9%B6%E4%B8%8D%E6%98%AF%E4%BD%A0%E6%89%80%E9%9C%80%E8%A6%81%E7%9A%84%E5%85%A8%E9%83%A8"><span class="nav-text">规模并不是你所需要的全部</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E5%8A%A8%E6%9C%BA%E4%B8%8E%E6%99%BA%E8%83%BD%E4%BD%93"><span class="nav-text">自动机与智能体</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B1%80%E9%83%A8%E6%B3%9B%E5%8C%96%E4%B8%8E%E6%9E%81%E7%AB%AF%E6%B3%9B%E5%8C%96"><span class="nav-text">局部泛化与极端泛化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%83%85%E6%8A%A5%E7%9A%84%E7%9B%AE%E7%9A%84"><span class="nav-text">情报的目的</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8F%90%E5%8D%87%E6%A6%82%E6%8B%AC%E7%A8%8B%E5%BA%A6"><span class="nav-text">提升概括程度</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%9F%B9%E5%85%BB%E6%99%BA%E5%8A%9B"><span class="nav-text">如何培养智力</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%87%E8%8A%B1%E7%AD%92%E5%81%87%E8%AF%B4"><span class="nav-text">万花筒假说</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%99%BA%E8%83%BD%E7%9A%84%E6%9C%AC%E8%B4%A8%E6%8A%BD%E8%B1%A1%E6%80%9D%E7%BB%B4%E7%9A%84%E4%B9%A0%E5%BE%97%E4%B8%8E%E9%87%8D%E7%BB%84"><span class="nav-text">智能的本质：抽象思维的习得与重组</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BE%E5%AE%9A%E6%AD%A3%E7%A1%AE%E7%9B%AE%E6%A0%87%E7%9A%84%E9%87%8D%E8%A6%81%E6%80%A7"><span class="nav-text">设定正确目标的重要性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B0%E7%9B%AE%E6%A0%87%E5%8D%B3%E6%97%B6%E9%80%82%E5%BA%94"><span class="nav-text">新目标：即时适应</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#arc%E5%A5%96"><span class="nav-text">ARC奖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E6%97%B6%E9%97%B4%E9%80%82%E5%BA%94%E6%97%B6%E4%BB%A3"><span class="nav-text">测试时间适应时代</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#arc-agi-2"><span class="nav-text">ARC-AGI 2</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%BA%E5%A4%B1%E7%9A%84%E8%A6%81%E7%B4%A0%E6%90%9C%E7%B4%A2%E5%92%8C%E7%AC%A6%E5%8F%B7"><span class="nav-text">缺失的要素：搜索和符号</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8A%BD%E8%B1%A1%E7%9A%84%E4%B8%A4%E6%9E%81"><span class="nav-text">抽象的两极</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%A5%E4%BB%B7%E5%80%BC%E4%B8%BA%E4%B8%AD%E5%BF%83%E7%9A%84%E7%B1%BB%E6%AF%94"><span class="nav-text">以价值为中心的类比</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%A5%E7%A8%8B%E5%BA%8F%E4%B8%BA%E4%B8%AD%E5%BF%83%E7%9A%84%E7%B1%BB%E6%AF%94"><span class="nav-text">以程序为中心的类比</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%A4%E7%9F%A5%E6%98%AF%E4%B8%A4%E7%A7%8D%E6%8A%BD%E8%B1%A1%E6%80%9D%E7%BB%B4%E7%9A%84%E7%BB%93%E5%90%88"><span class="nav-text">认知是两种抽象思维的结合</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%B9%B6%E4%B8%8D%E8%83%BD%E5%AE%8C%E5%85%A8%E8%A7%A3%E5%86%B3%E6%8A%BD%E8%B1%A1%E7%94%9F%E6%88%90%E9%97%AE%E9%A2%98"><span class="nav-text">为什么深度学习并不能完全解决抽象生成问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD%E7%9A%84%E5%8F%A6%E4%B8%80%E7%A7%8D%E6%96%B9%E6%B3%95%E7%A8%8B%E5%BA%8F%E5%90%88%E6%88%90"><span class="nav-text">人工智能的另一种方法：程序合成</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%9E%8D%E5%90%88%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%92%8C%E7%A8%8B%E5%BA%8F%E5%90%88%E6%88%90"><span class="nav-text">融合深度学习和程序合成</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B0%86%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A8%A1%E5%9D%97%E5%92%8C%E7%AE%97%E6%B3%95%E6%A8%A1%E5%9D%97%E9%9B%86%E6%88%90%E5%88%B0%E6%B7%B7%E5%90%88%E7%B3%BB%E7%BB%9F%E4%B8%AD"><span class="nav-text">将深度学习模块和算法模块集成到混合系统中</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%A9%E7%94%A8%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%8C%87%E5%AF%BC%E7%A8%8B%E5%BA%8F%E6%90%9C%E7%B4%A2"><span class="nav-text">利用深度学习指导程序搜索</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E5%9D%97%E5%8C%96%E7%BB%84%E4%BB%B6%E9%87%8D%E7%BB%84%E5%92%8C%E7%BB%88%E8%BA%AB%E5%AD%A6%E4%B9%A0"><span class="nav-text">模块化组件重组和终身学习</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%95%BF%E8%BF%9C%E6%84%BF%E6%99%AF"><span class="nav-text">长远愿景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%84%9A%E6%B3%A8"><span class="nav-text">脚注</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、心情记录</div>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/03/09/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B19%E3%80%81%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD%E7%9A%84%E6%9C%AA%E6%9D%A5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="《DEEP LEARNING with Python》第十九章 | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《DEEP LEARNING with Python》第十九章
+        </h1>
+
+        </h1>
+          
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-03-09 00:00:00" itemprop="dateCreated datePublished" datetime="2026-03-09T00:00:00+08:00">2026-03-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>第十九章</p>
+<h1 id="人工智能的未来">人工智能的未来</h1>
+<p>内容<a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter19_future_of_ai/#the-limitations-of-deep-learning">深度学习的局限性</a><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter19_future_of_ai/#scale-isnt-all-you-need">规模并不是你所需要的全部</a><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter19_future_of_ai/#how-to-build-intelligence">如何培养智力</a><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter19_future_of_ai/#the-missing-ingredients-search-and-symbols">缺失的要素：搜索和符号</a></p>
+<p>本章内容</p>
+<ul>
+<li>深度学习的局限性</li>
+<li>智能的本质</li>
+<li>当前方法缺少什么</li>
+<li>未来可能会是什么样子</li>
+</ul>
+<p>要正确使用工具，不仅要了解它的功能<em>，</em>还要了解它的局限性<em>。</em>我将概述深度学习的一些关键局限性。然后，我会对人工智能的未来发展方向以及达到人类水平的通用智能需要哪些条件提出一些推测。如果您对基础研究感兴趣，这部分内容应该会特别吸引您。</p>
+<span id="more"></span>
+<h2 id="深度学习的局限性">深度学习的局限性</h2>
+<p>深度学习的应用范围非常广泛，几乎无所不能。但深度学习并非<em>万能</em>。要想有效利用任何工具，不仅要了解它的优势，还要了解它的局限性。那么，深度学习的不足之处究竟在哪里呢？</p>
+<h3 id="深度学习模型难以适应新事物">深度学习模型难以适应新事物</h3>
+<p>深度学习模型是拟合大型数据集的大型参数曲线。这正是它们强大的原因——易于训练，并且无论在模型规模还是数据集规模方面，都能很好地扩展。但这同时也带来了显著的弱点。曲线拟合本身存在固有的局限性。</p>
+<p>首先，参数曲线只能存储信息——它是一种<em>数据库</em>。还记得我们在第15章中讨论的Transformer模型作为“插值数据库”吗？其次，至关重要的是，这个数据库是<em>静态的</em>。模型的参数在特定的“训练阶段”确定。之后，这些参数会被固定下来，并在“推理阶段”使用这个固定版本对新数据进行预测。</p>
+<p>静态数据库的唯一用途就是信息检索。而这正是深度学习模型的优势所在：识别或生成与训练过程中遇到的模式高度相似的模式。但另一方面，它们的适应<em>能力</em>却很差。数据库是面向过去的——它能拟合过去的数据，但无法应对未来变化。在推理阶段，你最好祈祷模型遇到的情况包含在训练数据分布中，否则模型就会崩溃。例如，一个在 ImageNet 上训练的模型会将豹纹沙发分类为真正的豹子——沙发并不在其训练数据范围内。</p>
+<p>这一点同样适用于规模最大的生成模型。近年来，大型语言模型（LLM）的兴起及其在编程辅助和推理类问题中的应用，为这一点提供了大量的实证证明。尽管人们经常声称LLM能够进行<em>上下文学习，</em>仅凭少量示例就能掌握新技能，但大量证据表明，它们实际上是在提取训练期间记忆的向量函数，并将其重新应用于当前任务。通过学习在网络规模的文本数据集上进行下一个词元预测，LLM已经积累了数百万个潜在有用的微型文本处理程序，并且可以轻松地将其重用于新问题。但是，如果给它展示一些在其训练数据中没有直接对应物的内容，它就束手无策了。</p>
+<p>请看图 19.1 中的谜题。你找到答案了吗？很好。这并不难，对吧？但如今，即使是最先进的语言学习模型（LLM）或视觉语言模型也无法解决这个问题，因为这个问题与它们在训练时见过的任何内容都没有直接对应关系——即便它们已经在整个互联网甚至更多的地方进行了训练。语言学习模型解决特定问题的能力与问题的复杂性无关，而与<em>熟悉程度</em>密切相关——任何足够新颖的问题，无论多么简单，它们都会束手无策。</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/arc_example_2.7d4f0c33.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter19_future_of_ai/#figure-19-1">图 19.1</a>：一个简单而新颖的谜题</p>
+<p>这种失效模式甚至适用于学习逻辑模型（LLM）在训练数据中多次遇到的模式的微小变化。例如，在 ChatGPT 发布后的几个月里，如果你问它“10 公斤钢和 1 公斤羽毛哪个更重？”，它会回答它们重量相同。这是因为“1 公斤钢和 1 公斤羽毛哪个更重？”这个问题在互联网上经常出现——它本身就是一个陷阱问题。当然，正确答案是它们重量相同，所以 GPT 模型会重复它记忆中的答案，而不会关注查询中的实际数字或查询的真正<em>含义</em>。类似地，学习逻辑模型难以适应蒙提霍尔问题的变体（见图 19.2），并且倾向于总是输出它在训练过程中多次遇到的标准答案，而不管这个答案在上下文中是否合理。</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/monty_hall.86dba4ca.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter19_future_of_ai/#figure-19-2">图 19.2</a>：蒙提霍尔问题的变体</p>
+<p>需要注意的是，这些特定的提示后来通过特殊处理进行了修补。如今，有超过 25,000 名全职人员负责为 LLM 提供训练数据，他们通过审查失败案例并提出更优答案来实现这一目标。LLM 的维护就像一场永无止境的打地鼠游戏，失败的提示被逐一修补，却未能解决更普遍的根本问题。即使是已经修补过的提示，如果稍作修改，仍然会失效！</p>
+<h3 id="深度学习模型对措辞和其他干扰因素高度敏感">深度学习模型对措辞和其他干扰因素高度敏感。</h3>
+<p>一个密切相关的问题是深度学习模型对输入呈现方式的极端敏感性。例如，图像模型会受到<em>对抗样本</em>的影响，这些对抗样本是专门输入到深度学习网络中，旨在欺骗模型进行错误分类的样本。您可能已经知道，可以在输入空间中进行梯度上升，以生成能够最大化某个卷积神经网络（ConvNet）滤波器激活值的输入——这正是第 10 章介绍的滤波器可视化技术的基础。</p>
+<p>类似地，通过梯度上升法，可以对图像进行微调，从而最大化特定类别的预测结果。例如，拍摄一张熊猫的照片，并添加一个长臂猿的梯度，我们就可以让神经网络将熊猫分类为长臂猿（见图 19.3）。这既体现了这些模型的脆弱性，也揭示了它们的输入输出映射与我们人类感知之间的巨大差异。</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/adversarial_example.8f3cfeb2.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter19_future_of_ai/#figure-19-3">图 19.3</a>：对抗示例：图像中不易察觉的变化可以颠覆模型对图像的分类。</p>
+<p>同样，LLM 对提示信息中的细微差别极其敏感。一些看似无害的提示信息修改，例如更改文本段落中的地点和人名，或者代码块中的变量名，都可能显著降低 LLM 的性能。想想著名的<em>《爱丽丝梦游仙境》</em>谜语吧。[<a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter19_future_of_ai/#footnote-1">1]</a>：</p>
+<p>“爱丽丝有 N 个兄弟和 M 个姐妹。爱丽丝的兄弟有多少个姐妹？”</p>
+<p>答案当然是<em>M</em> + 1（爱丽丝的姐妹们加上爱丽丝本人）。对于法学硕士来说，使用网上常见谜题中的数值（例如<em>N</em> = 3 和*M = 2）来提问通常都能得到正确答案，但如果你尝试改变**M<em>和</em>N*的值，很快就会得到错误答案。</p>
+<p>这种对措辞的过度敏感催生了“<em>提示工程”</em>的概念。提示工程是指以最大化任务绩效的方式构建学习型学习模型（LLM）提示的艺术。例如，事实证明，在涉及推理的提示中添加“请逐步思考”的指令可以显著提高绩效。“<em>提示工程</em>”一词对问题的本质是一种非常乐观的表述：“你的模型比你想象的要好！你只需要正确使用它们！” 更消极的表述是指出，对于任何看似有效的查询，都存在一系列细微的改动，这些改动都可能导致绩效大幅下降。如果仅仅通过简单的措辞改变就能破坏学习型学习模型的理解，那么它们究竟对事物的理解程度如何呢？</p>
+<p>这种现象背后的原因是，LLM（逻辑学习模型）是一条大型参数曲线——一种存储知识和程序的媒介，你可以在任意两个对象之间进行插值，从而生成无限多个中间对象。你的提示信息是一种访问数据库特定位置的方式：如果你问“如何在Python中对列表进行排序？像海盗一样回答”，这实际上是一种数据库查找，你首先检索到一条知识（如何在Python中对列表进行排序），然后检索并执行一个风格迁移程序（“像海盗一样回答”）。</p>
+<p>由于LLM索引的知识和程序是插值式的，你可以<em>在潜在空间中自由移动</em>，探索附近的位置。例如，一个略有不同的提示，比如“解释Python列表排序，但要像海盗一样回答”，仍然会指向数据库中非常相似的位置，从而得到一个非常接近但并不完全相同的答案。你可以使用成千上万种不同的提示，每一种都会得到一个相似但略有不同的答案。这就是为什么需要进行提示设计。你最初随意的提示并不一定就是你任务的最佳选择。LLM不会理解你的意思，也不会以最佳方式执行——它只会从众多可能的路径中，找到你的提示所指向的程序。</p>
+<p>提示工程是指通过反复试验，在潜在空间中搜索似乎最适合目标任务的查找查询。这与在谷歌搜索中尝试不同的关键词并无二致。如果学习记忆模块（LLM）真的理解了你的问题，那么就不需要这种搜索过程了，因为无论你的提示词是使用“重写”而不是“改写”，还是加上“一步一步思考”，所传达的关于目标任务的信息量都不会改变。永远不要想当然地认为学习记忆模块第一次就能“理解”——记住，你的提示词只是浩瀚程序海洋中的一个地址，所有这些程序都是学习完成大量词法序列的副产品。</p>
+<h3 id="深度学习模型难以学习可泛化的程序">深度学习模型难以学习可泛化的程序</h3>
+<p>深度学习模型的问题不仅在于它们只能盲目地重复应用训练时记忆的模式，也不仅在于它们对输入呈现方式高度敏感。即使你只需要查询并应用一个众所周知的程序，并且你确切地知道如何在潜在空间中处理这个程序，你仍然会面临一个重大问题：深度学习模型记忆的程序通常泛化能力很差。它们对某些输入值有效，而对另一些输入值则无效。对于编码任何离散逻辑的程序来说，这种情况尤为突出。</p>
+<p>考虑将两个数字相加的问题，这两个数字用字符序列表示，例如“4 3 5 7 + 8 9 3 6”。尝试用数十万个这样的数字对训练一个 Transformer 模型：你会得到非常高的准确率。非常高，但并非 100%——你会经常看到错误的答案，因为 Transformer 模型无法编码精确的加法算法（就是你在小学学过的那种）。它实际上是通过在训练阶段获得的数据点之间进行插值来猜测输出结果。</p>
+<p>这也适用于最先进的逻辑学习模型（LLM）——至少那些没有被明确硬编码为执行类似“4357 + 8936”这样的Python代码片段来给出正确答案的模型。它们已经见过足够多的数字加法示例，能够进行加法运算，但准确率只有70%左右——相当令人失望。此外，它们的准确率很大程度上取决于<em>所</em>加数字的种类，常用数字越多，准确率越高。</p>
+<p>深度学习模型即使学习了数百万个示例，也无法最终掌握精确的加法算法，原因在于它本质上只是<em>一系列简单的、连续的几何变换，</em> 将一个向量空间映射到另一个向量空间。这种模型非常适合感知模式识别，但却不适合编码任何类型的离散逻辑步骤，例如位值或进位等概念。它所能做的只是将一个数据流形 X 映射到另一个流形 Y，前提是存在一个从 X 到 Y 的可学习的连续变换。深度学习模型可以被解释为一种程序，但反过来， <em>大多数程序都无法用深度学习模型来表示</em>。对于大多数任务，要么不存在能够解决该任务的、规模合理的神经网络，要么即使存在，也可能无法<em>学习</em>：相应的几何变换可能过于复杂，或者可能没有合适的数据可供学习。</p>
+<h3 id="将机器学习模型拟人化的风险">将机器学习模型拟人化的风险</h3>
+<p>我们对图像、声音和语言的理解根植于我们作为人类的感知运动经验。机器学习模型无法获得此类经验，因此无法以人类可理解的方式理解其输入。通过向模型输入大量训练样本，我们让它们学习一种几何变换，将数据映射到特定样本集上的人类概念，但这种映射只是我们脑海中原始模型的简化草图——原始模型源于我们作为具身主体的经验。它就像镜子中模糊的影像（见图 19.4）。你创建的模型会采取任何可行的捷径来拟合其训练数据。</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/ml_model.02e47549.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter19_future_of_ai/#figure-19-4">图 19.4</a>：当前机器学习模型：如同镜子中的模糊影像</p>
+<p>当代人工智能的一大风险在于误解深度学习模型的运作方式，并高估其能力。人类的一个基本特征是 <em>心智理论</em>：我们倾向于将意图、信念和知识投射到周围的事物上。例如，在石头上画个笑脸，在我们看来，它就“快乐”了。应用于深度学习，这意味着当我们训练能够使用语言的模型时，我们会误以为模型能够像我们一样“理解”它们生成的词序列的内容。然而，一旦训练数据中出现任何与现有模式的细微偏差，模型就会生成完全荒谬的答案，这让我们感到惊讶。</p>
+<p>作为机器学习从业者，务必牢记这一点，切勿陷入“神经网络理解它们所执行的任务”的误区——它们并不理解，至少无法以我们能够理解的方式理解。它们的训练任务与我们想要教给它们的任务截然不同，也远比我们想要教给它们的任务狭窄得多：后者是将训练输入逐点映射到训练目标。一旦它们接触到任何与训练数据相悖的内容，就会出现各种匪夷所思的错误。</p>
+<h2 id="规模并不是你所需要的全部">规模并不是你所需要的全部</h2>
+<p>我们能否通过不断扩展模型来克服深度学习的局限性？<em>规模</em>就是我们所需要的一切吗？这长期以来一直是该领域的主流观点，尤其是在2023年初，即深度学习模型（LLM）热潮达到顶峰时，这种观点更为突出。当时，GPT-4刚刚发布，它本质上是GPT-3的扩展版本：更多的参数，更多的训练数据。其性能的显著提升似乎表明，我们可以继续扩展模型——或许会出现GPT-5，它只是在GPT-3的基础上进行了扩展，而通用人工智能（AGI）将由此自发涌现。</p>
+<p>持这种观点的人会以“缩放定律”作为证据。缩放定律是指深度学习模型规模（以及训练数据集的规模）与其在特定任务上的性能之间的一种经验关系。它们表明，增加模型规模能够以可预测的方式可靠地提升性能。但缩放定律的拥护者们忽略了一个关键点：他们用来衡量“性能”的基准实际上是记忆测试，也就是我们常给大学生布置的那种测试。学习型学习模型（LLM）之所以能在这些测试中表现出色，是因为它们能够记住答案，因此，向模型中塞入更多的问题和答案自然会相应地提升它们的性能。</p>
+<p>事实上，模型规模的扩大并没有解决我之前列举的问题——无法适应新事物、对措辞过于敏感以及无法推断出适用于推理问题的通用程序——因为这些问题是曲线拟合（深度学习的范式）固有的。我早在2017年就开始指出这些问题，而时至今日，我们仍在与它们作斗争——尽管现在的模型规模已经扩大了四五个数量级，知识也更加丰富。我们之所以在这些问题上毫无进展，是因为<em>我们使用的模型依然如故</em>。七年多来，它们始终如一——仍然是通过梯度下降法拟合到数据集的参数曲线，仍然使用Transformer架构。</p>
+<p>通过堆叠更多层和使用更多训练数据来扩展当前的深度学习技术并不能解决深度学习的根本问题：</p>
+<ul>
+<li>深度学习模型只能使用训练时记忆的插值程序。它们无法在推理时自主合成全新的程序来适应全新的情况。</li>
+<li>即使在已知情况下，这些插值程序也存在概括性问题，导致对措辞和混淆因素特征过于敏感。</li>
+<li>深度学习模型在表示能力上存在局限性，大多数你想学习的程序都无法用数据流形的连续几何变形来表示。算法推理任务尤其如此。</li>
+</ul>
+<p>让我们仔细看看生物智能与深度学习方法之间的区别。</p>
+<h3 id="自动机与智能体">自动机与智能体</h3>
+<p>深度学习模型从输入到输出的直接几何变换与人类的思维和学习方式存在根本差异。这不仅仅是因为人类是通过自身体验而非接受明确的训练示例来学习。人脑与可微参数函数相比，完全是两码事。</p>
+<p>让我们稍微跳出这个框架，思考一下：智能的目的是什么？它最初是如何产生的？我们只能进行推测，但我们可以做出一些有理有据的推测。我们可以从大脑——产生智能的器官——入手。大脑是一种进化适应，它是一种机制，经过数亿年的演化，在自然选择的引导下，通过随机的试错逐步发展而成，极大地增强了生物体适应环境的能力。大脑最初出现于五亿多年前，用于<em>存储和执行行为程序</em>。行为程序就是一系列指令，使生物体能够对环境做出反应：“如果发生这种情况，就那样做。”它们将生物体的感觉输入与其运动控制联系起来。最初，大脑的作用是将行为程序（以神经连接模式的形式）硬编码，从而使生物体能够对感觉输入做出适当的反应。昆虫的大脑仍然以这种方式运作——苍蝇、蚂蚁、<em>秀丽隐杆线虫</em>（见图 19.5）等等。由于这些程序的原始“源代码”是 DNA，它会被解码为神经连接模式，因此进化突然能够以一种很大程度上不受限制的方式<em>搜索行为空间——这是一次重大的进化转变。</em></p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/c_elegans.ca0de605.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter19_future_of_ai/#figure-19-5">图 19.5 ：</a><em>秀丽隐杆</em>线虫的大脑网络：由自然进化“编程”的行为自动机。图由 Emma Towlson 绘制（出自 Yan 等人发表于《<em>自然》</em>杂志 2017 年 10 月的论文“网络控制原理预测秀丽隐杆线虫连接组中的神经元功能” ）。</p>
+<p>进化是程序员，而大脑则是计算机，它们小心翼翼地执行着进化赋予的代码。由于神经连接是一种非常通用的计算基础，所有拥有大脑的物种的感知运动空间都可能突然开始急剧扩张。眼睛、耳朵、下颚、四条腿、二十四条腿——只要你拥有大脑，进化就会为你制定出能够充分利用这些器官的行为程序。大脑可以处理你赋予它的任何感觉模式，或者任何感觉模式的组合。</p>
+<p>不过，请注意，这些早期大脑本身并不具备真正的智能。它们更像是 <em>自动装置</em>：它们只会执行预先编码在生物体DNA中的行为程序。它们只能像恒温器、列表排序程序或训练有素的（人工）深度神经网络那样，被称作“智能”。这是一个重要的区别，所以让我们仔细探讨一下：自动装置和真正的智能体之间究竟有何不同？</p>
+<h3 id="局部泛化与极端泛化">局部泛化与极端泛化</h3>
+<p>人工智能领域长期以来一直存在混淆<em>智能</em>和<em>自动化</em>概念的问题。自动化系统（或自动机）是静态的，其设计目的是在特定情境下完成特定任务——“如果发生这种情况，那么就会发生这种情况”——而智能体则可以即时适应新的、意想不到的情况。当自动机遇到与其“编程”目标不符的情况时（无论我们指的是人类编写的程序、进化生成的程序，还是将模型拟合到训练数据集上的隐式编程过程），它都会失败。</p>
+<p>与此同时，像我们人类一样的智能体将运用其流体智力来寻找前进的方向。如何区分一个背诵了过去三年考题但对学科一无所知的学生和一个真正理解了学科知识的学生呢？答案是：给他们一个全新的问题。</p>
+<p>人类的能力远不止像深度神经网络或昆虫那样，将即时刺激映射到即时反应。我们可以即时构建关于当前处境、自身以及他人的复杂抽象模型，并利用这些模型预测不同的未来可能性，进行长期规划。我们能够迅速适应突发情况，只需稍加练习就能掌握新技能。</p>
+<p>这种运用<em>抽象思维</em>和<em>推理</em>能力来应对我们始料未及的经历的能力，是人类认知能力的本质特征。我称之为 <em>极端泛化</em>：一种仅凭少量数据甚至完全没有新数据，就能适应全新、从未经历过的情况的能力。这种能力是人类和高等动物展现智能的关键所在。</p>
+<p>这与类似自动机的系统截然不同。一个非常僵化的自动机完全不具备任何泛化能力；它无法处理任何事先没有明确告知的信息。Python 字典或用硬编码的 if-then-else 语句实现的简单问答程序就属于此类。深度神经网络的表现略好一些：它们可以成功处理与自身熟悉的输入略有偏差的情况，而这正是它们的用处所在。我们在第八章中提到的猫狗分类模型可以对之前从未见过的猫狗图片进行分类，只要这些图片与训练时使用的图片足够接近即可。然而，深度神经网络的泛化能力仅限于我所说的 <em>局部泛化</em>（见图 19.6）：当输入开始偏离网络在训练时所见的内容时，深度神经网络执行的输入到输出的映射很快就会失效。深度神经网络只能泛化到 <em>已知的未知情况</em>，即模型开发过程中预先设想并在训练数据中广泛存在的变异因素，例如宠物照片的不同拍摄角度或光照条件。这是因为深度神经网络通过流形上的插值进行泛化（回顾第五章）：输入空间中的任何变异因素都需要被它们学习到的流形所捕捉。因此，基础数据增强对于提升深度神经网络的泛化能力至关重要。与人类不同，这些模型无法在数据匮乏或完全没有数据的情况下进行即兴发挥。</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/local_vs_extreme_generalization.4b71aa83.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter19_future_of_ai/#figure-19-6">图 19.6</a>：局部泛化与极端泛化</p>
+<p>例如，考虑一下学习合适的发射参数以使火箭成功登月的问题。如果使用深度神经网络来完成这项任务，并使用监督学习或强化学习进行训练，则需要输入数万甚至数百万次的发射试验：需要对输入空间进行<em>密集</em>采样，才能使其学习到从输入空间到输出空间的可靠映射。相比之下，作为人类，我们可以利用抽象能力构建物理模型——火箭科学——并推导出精确的解决方案，只需一次或几次试验即可使火箭成功登月。类似地，如果开发一个控制人体的深度神经网络，并希望它学会安全地在城市中穿行而不被车辆撞到，则该神经网络必须在各种情况下经历数千次的失败，才能推断出车辆的危险性并发展出相应的避让行为。如果将其置于一个陌生的城市，该神经网络则必须重新学习大部分已掌握的知识。另一方面，人类无需经历死亡就能学习安全的行为——这同样要归功于我们对新情况进行抽象建模的能力。</p>
+<h3 id="情报的目的">情报的目的</h3>
+<p>区分高度适应性的智能体和僵化的自动机，让我们回到大脑的进化问题上。大脑最初只是自然进化发展出行为自动机的媒介，为什么最终会变得智能呢？就像每一个重要的进化里程碑一样，它的发生是因为自然选择的约束促成了它的出现。</p>
+<p>大脑负责行为的产生。如果生物体所面临的情境大多是静态的且预先已知的，那么行为的产生就很容易：进化只需通过随机的试错法就能找到正确的行为模式，并将其硬编码到生物体的DNA中。大脑进化的最初阶段——大脑如同自动机——就已经达到了最优状态。然而，至关重要的是，随着生物体复杂性（以及随之而来的环境复杂性）的不断增加，动物所面临的情境变得更加动态且难以预测。仔细观察，你会发现你生命中的每一天都与你以往经历的任何一天都截然不同，也与你的任何进化祖先经历过的任何一天都截然不同。你需要能够不断面对未知和突发的情况。进化不可能找到并硬编码你从几个小时前醒来后为了成功应对一天而执行的行为序列到DNA中。它必须每天随机生成。</p>
+<p>大脑作为一台优秀的行为生成引擎，自然而然地适应了这种需求。它优化了自身的适应性和普适性，而不再仅仅优化对特定情境的适应性。这种转变在进化史上可能多次发生，最终造就了进化上相距甚远的动物——猿类、章鱼、渡鸦等等。智能是对复杂多变的生态系统所带来的挑战的一种回应。</p>
+<p>这就是智能的本质：它是一种能够高效利用现有信息，在充满不确定性和瞬息万变的未来中做出成功决策的能力。笛卡尔所谓的“理解”正是这种卓越能力的关键：它能够挖掘过往经验，构建模块化、可复用的抽象概念，并能快速将其应用于应对新情况，实现高度的泛化能力。</p>
+<h3 id="提升概括程度">提升概括程度</h3>
+<p>粗略地概括一下，生物智能的进化史可以看作是逐步提升<em>概括能力的过程</em>。最初，生物的大脑如同自动机一般，只能进行局部概括。随着时间的推移，进化开始产生能够进行更广泛概括的生物，从而在日益复杂多变的环境中生存繁衍。最终，在过去的几百万年里——从进化的角度来看，这不过是转瞬即逝——某些人科物种开始发展出能够进行极端概括的生物智能，这开启了人类世，并永远地改变了地球生命的历史。</p>
+<p>过去70年人工智能的发展历程与这一演变有着惊人的相似之处。早期的人工智能系统是纯粹的自动机，例如20世纪60年代的ELIZA聊天程序或SHRDLU：[<a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter19_future_of_ai/#footnote-2">2]</a>1970 年，人工智能诞生，能够根据自然语言指令操控简单的物体。到了 20 世纪 90 年代和 21 世纪初，我们见证了机器学习系统的兴起，这些系统具备局部泛化能力，可以应对一定程度的不确定性和新奇情况。21 世纪 10 年代，深度学习进一步提升了这些系统的局部泛化能力，使工程师能够使用更大的数据集和更具表现力的模型。</p>
+<p>今天，我们或许正站在下一个进化阶段的开端。我们正朝着能够实现<em>广泛泛化的</em>系统迈进，我将其定义为在单一的广泛任务领域内处理<em>未知未知情况的</em>能力（包括系统未训练处理且其创造者无法预见的情况）。例如，能够安全应对任何情况的自动驾驶汽车，或者能够通过“沃兹智能测试”（即进入一个随机的厨房并煮一杯咖啡）的家用机器人：[<a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter19_future_of_ai/#footnote-3">3]</a>通过将深度学习与精心手工打造的世界抽象模型相结合，我们已经在实现这些目标方面取得了明显的进展。</p>
+<p>然而，深度学习范式一直局限于认知自动化：“人工智能”中的“智能”标签是一个范畴错误。更准确的说法是，我们应该称之为“人工认知”，而“认知自动化”和“人工智能”则是其中两个几乎独立的子领域。在这个划分下，人工智能将是一个全新的领域，几乎所有东西都还有待探索。</p>
+<p>我并非要贬低深度学习的成就。认知自动化非常有用，深度学习模型仅凭数据就能自动执行任务，这代表了一种特别强大的认知自动化形式，远比显式编程更实用、更灵活。如果能做好这一点，几乎可以改变所有行业的格局。但它距离人类（或动物）智能还有很长的路要走。到目前为止，我们的模型只能进行局部泛化：它们通过从X到Y的密集采样数据点中学习到的平滑几何变换，将空间X映射到空间Y，而空间X或Y中的任何扰动都会使这种映射失效。它们只能泛化到与过去数据相似的新情况，而人类认知能够进行极强的泛化，快速适应全新的情况，并为长远的未来情况做好规划。</p>
+<h2 id="如何培养智力">如何培养智力</h2>
+<p>到目前为止，你已经了解到，智能远不止深度学习所使用的那种潜在流形插值。那么，我们需要什么才能开始构建真正的智能呢？目前我们还在努力攻克哪些核心难题？</p>
+<h3 id="万花筒假说">万花筒假说</h3>
+<p>智力是指运用过往经验（以及与生俱来的先验知识）来应对全新且意想不到的未来情境的能力。然而，如果你即将面对的未来真的<em>完全陌生</em>——与你以往所见的一切都毫无关联——那么无论你多么聪明，都将无力应对。</p>
+<p>智慧之所以有效，是因为任何事物都并非完全没有先例。当我们遇到新事物时，我们能够通过类比过去的经验，并用我们长期积累的抽象概念来理解它。一个17世纪的人第一次看到喷气式飞机，可能会把它描述成一只巨大、轰鸣的金属鸟，而且它不会拍打翅膀。汽车呢？那就像一辆没有马的马车。如果你想教小学生物理，你可以解释电就像水管里的水，或者时空就像一张被重物扭曲的橡胶膜。</p>
+<p>除了这些清晰明确的类比之外，我们每时每刻、每个念头都在进行着细微的、隐含的类比。类比是我们应对生活的方式。去一家新的超市购物？你会通过把它和去过的类似商店联系起来找到方向。和新认识的人交谈？他们会让你想起以前认识的几个人。即使是看似随机的图案，比如云的形状，也能立刻在我们脑海中唤起生动的画面——大象、船、鱼。</p>
+<p>这些类比并非仅仅存在于我们的想象中：物理现实本身就充满了同构现象。电磁力与引力类似。由于共同的起源，动物在结构上彼此相似。二氧化硅晶体与冰晶相似。等等。</p>
+<p>我称之为<em>万花筒假说</em>：我们对世界的体验似乎充满了难以置信的复杂性和永无止境的新奇感，但在这片复杂海洋中，万物又彼此相似。描述你所生活的宇宙所需的<em>独特意义原子</em>数量相对较少，而你周围的一切都是这些原子的重组：几个种子，无穷无尽的变化，就像万花筒内部的运作一样，几颗玻璃珠在镜面系统的反射下，呈现出丰富多彩、看似无穷无尽的图案（见图19.7）。</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/kaleidoscope.fec15d2f.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter19_future_of_ai/#figure-19-7">图 19.7</a>：万花筒仅用几颗彩色玻璃珠就能产生丰富（但重复）的图案。</p>
+<h3 id="智能的本质抽象思维的习得与重组">智能的本质：抽象思维的习得与重组</h3>
+<p>智慧是一种能力，它能从你的经验中挖掘出那些看似可以在许多不同情境中重复使用的意义原子——万花筒的核心珠子。一旦提取出来，它们就被称为<em>抽象概念</em>。每当你遇到新的情境，你都会通过即时地从你的经验库中重新组合抽象概念来理解它，从而编织出一个适应当前情境的全新“模型”。</p>
+<p>该过程包含两个主要部分：</p>
+<ul>
+<li><em>抽象获取</em>——从经验流或数据流中高效提取简洁、可重用的抽象概念。这涉及识别底层结构、原则或不变式。</li>
+<li><em>即时重组</em>——以新颖的方式高效地选择和重组这些抽象概念，以模拟新的问题和情况，即使是与过去经验相去甚远的问题和情况。</li>
+</ul>
+<p><em>效率</em>至关重要。你的智力水平取决于你从有限的经验中高效地获取有效抽象概念的能力，以及你如何高效地将这些概念重新组合，以应对不确定性和新情况。如果你需要数十万小时的练习才能掌握一项技能，那么你的智力并不高。如果你需要列举棋盘上所有可能的走法才能找到最佳方案，那么你的智力也并不高。</p>
+<p>这就是经典深度学习范式存在两大主要问题的根源：</p>
+<ul>
+<li>这些模型完全缺乏动态重组能力。它们在训练阶段通过梯度下降法能够很好地获取抽象概念，但由于设计上的缺陷，它们在测试阶段完全无法重组已有的信息。它们的行为就像一个静态的抽象数据库，功能仅限于检索。它们缺失了关键信息的一半——而这恰恰是最重要的一半。</li>
+<li>它们效率极低。梯度下降法需要海量数据才能提炼出简洁的抽象概念——比人类需要的数据量要多几个数量级。</li>
+</ul>
+<p>那么我们如何才能突破这些限制呢？</p>
+<h3 id="设定正确目标的重要性">设定正确目标的重要性</h3>
+<p>生物智能是对自然界提出的一个问题的解答。同样，如果我们想要开发真正的人工智能，首先我们需要提出正确的问题。归根结底，人工智能系统的能力反映了它们被设计和优化时所针对的目标。</p>
+<p>在系统设计中，你经常会看到一种现象，那就是<em>捷径法则</em>：如果你专注于优化某个成功指标，你或许能实现目标，但代价是牺牲系统中所有未被该指标涵盖的部分。最终，你会走上所有可能的捷径。你的创造物是由你给自己设定的激励机制塑造的。</p>
+<p>这种情况在机器学习竞赛中屡见不鲜。2009 年，Netflix 举办了一项挑战赛，承诺向在电影推荐任务中得分最高的团队颁发 100 万美元的奖金。最终，Netflix 从未采用过获胜团队开发的系统，因为它过于复杂且计算量巨大。获胜团队只优化了预测准确率——这也是他们获得奖励的目标——却牺牲了系统的其他所有重要特性：推理成本、可维护性和可解释性。这条捷径法则在大多数 Kaggle 竞赛中也同样适用——Kaggle 获胜团队开发的模型几乎从未被实际应用于生产环境。</p>
+<p>在过去的几十年里，人工智能领域充斥着各种捷径。上世纪70年代，心理学家兼计算机科学先驱艾伦·纽厄尔(Allen Newell)担心他的领域在构建完善的认知理论方面进展缓慢，于是为人工智能提出了一个新的宏伟目标：下棋。他的理由是，人类下棋似乎需要——甚至可以说是必须——感知、推理和分析、记忆和读书学习等能力。那么，如果我们能够制造出一台下棋机器，它肯定也具备这些能力，对吧？</p>
+<p>二十多年后，梦想成真：1997年，IBM的“深蓝”击败了世界最佳棋手加里·卡斯帕罗夫。研究人员随后不得不面对这样一个事实：创造出国际象棋冠军人工智能并没有让他们对人类智能有太多了解。“深蓝”的核心A*算法并非人脑模型，也无法推广到除类似棋类游戏之外的其他任务。事实证明，构建一个只会下国际象棋的人工智能比构建一个真正的人工智能更容易——于是，研究人员选择了这条捷径。</p>
+<p>迄今为止，<em>人工智能领域衡量成功的主要标准是解决特定任务</em>，从国际象棋到围棋，从MNIST分类到ImageNet，从高中数学考试到律师资格考试。因此，该领域的发展史是由一系列“成功”案例构成的，在这些案例中， <em>我们找到了解决这些任务的方法，但并未展现任何智能</em>。</p>
+<p>如果这听起来令人惊讶，请记住，类人智能的特征并非在于掌握任何特定任务的技能，而在于适应新环境、高效获取新技能并精通前所未见的任务的能力。通过固定任务，你可以对需要完成的工作进行任意精确的描述——无论是通过硬编码人类提供的知识，还是通过提供海量数据。这使得工程师只需添加数据或硬编码的知识，就能“购买”人工智能的更多技能，而无需提升人工智能的泛化能力（参见图 19.8）。如果你拥有近乎无限的训练数据，即使是像最近邻搜索这样非常粗糙的算法也能以超人的水平玩电子游戏。同样地，如果你有近乎无限多的由人类编写的 if-then-else 语句——也就是说，直到你对游戏规则做出一个人类可以立即适应的小改变——那将需要对不智能的系统进行重新训练或从头开始重建。</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/skill_vs_information.2468629a.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter19_future_of_ai/#figure-19-8">图 19.8</a>：低泛化系统在给定无限的特定任务信息的情况下，可以在固定任务上达到任意技能。</p>
+<p>简而言之，通过固定任务，你就消除了处理不确定性和新事物的必要性。而智能的本质在于处理不确定性和新事物的能力，因此你实际上也消除了对智能的需求。而且，由于找到一个针对特定任务的低效解决方案总是比解决智能的普遍问题容易得多，所以你总是会选择这条捷径。人类可以运用他们的通用智能来学习任何新任务的技能，但反过来，却无法从一系列特定任务的技能转化为通用智能。</p>
+<h3 id="新目标即时适应">新目标：即时适应</h3>
+<p>要让人工智能真正具备智能，并能够应对现实世界惊人的多变性和瞬息万变的本质，首先，我们需要转变思路，不再追求<em>特定任务的技能</em>，而是着眼于提升其泛化能力本身。我们需要新的进度指标来帮助我们开发出更加智能的系统：这些指标能够指明正确的方向，并为我们提供可操作的反馈信号。如果我们仍然将目标设定为“创建一个能够解决任务X的模型”，那么就会陷入“捷径”的陷阱，最终我们只会得到一个能够完成任务X的模型，仅此而已。</p>
+<p>在我看来，智能可以精确地量化为一个<em>效率比率</em>：即你掌握的关于世界的*相关信息量（可以是过去的经验或先验知识）与你**未来可操作的领域<em>（即你能够做出适当行为的一系列新情况，你可以将其视为你的</em>技能集<em>）之间的转换比率。更智能的智能体能够利用更少的过去经验来处理更广泛的未来任务和情况。要衡量这个比率，你只需要固定系统可用的信息——它的经验和先验知识——并在一组已知与系统已接触过的情况有足够差异的参考情境或任务上测试它的表现。努力最大化这个比率应该能让你接近智能。至关重要的是，为了避免作弊，你需要确保只在系统未被编程或训练处理的任务上测试它——事实上，你需要的是系统</em>创建者无法预见的*任务。</p>
+<p>2018 年和 2019 年，我开发了一个名为“ <em>通用人工智能抽象与推理语料库 (ARC-AGI)”的</em>基准数据集：[<a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter19_future_of_ai/#footnote-4">4]</a> ARC-AGI旨在捕捉智能的这一定义。它既适用于机器也适用于人类，其形式与人类智商测试（例如瑞文渐进矩阵测试）非常相似。测试时，你会看到一系列“任务”。每个任务都通过三到四个“示例”进行解释，这些示例以输入网格和相应的输出网格的形式呈现（参见图19.9）。之后，你会得到一个全新的输入网格，并有三次机会生成正确的输出网格，之后才能进入下一个任务。</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/arc_example.2b17dc06.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter19_future_of_ai/#figure-19-9">图 19.9</a>：ARC-AGI 任务：通过几个输入输出对示例来演示任务的性质。给定一个新的输入，您必须构建相应的输出。</p>
+<p>与智商测试相比，ARC-AGI 有两点独特之处。首先，ARC 旨在通过测试你从未接触过的任务来衡量你的泛化能力。这意味着 ARC-AGI 是<em>一款你无法事先练习的游戏</em>，至少理论上如此：你将要面对的任务有着其独特的逻辑，你必须在测试过程中迅速理解。你无法简单地记住过去任务中的特定策略。</p>
+<p>此外，ARC-AGI 试图控制你带入测试的<em>先验知识</em>。你不可能完全从零开始解决一个新问题——你会运用已有的技能和信息。ARC-AGI 假设所有测试者都应从一组被称为<em>“核心知识先验”</em>的知识体系出发，这些知识体系代表了人类与生俱来的知识系统。与智商测试不同，ARC-AGI 的任务不会涉及后天习得的知识，例如英语句子。</p>
+<h3 id="arc奖">ARC奖</h3>
+<p>为了加速人工智能系统向着能够像ARC-AGI所衡量的那样进行流畅抽象和推理的方向发展，我于2024年与Mike Knoop合作创立了非营利组织ARC Prize基金会。该基金会每年举办一次竞赛，奖金丰厚（2024年奖金超过100万美元），旨在激励研究人员开发能够解决ARC-AGI问题并展现真正流畅智能的人工智能。</p>
+<p>ARC-AGI 基准测试已经证明其对当前流行的深度学习扩展范式具有极强的抵抗力。大多数其他基准测试在低阶学习模型（LLM）时代很快就达到了饱和状态。这是因为它们可以通过记忆来破解，而 ARC-AGI 的设计本身就具有这种抵抗力。从 2019 年 ARC-AGI 首次发布到 2025 年，基础 LLM 的规模扩大了约 5 万倍——例如，从 GPT-2（2019 年）到 GPT-4.5（2025 年），但它们在 2019 年版 ARC-AGI 上的性能仅从 0% 提升到 10% 左右。考虑到读者可以轻松获得 95% 以上的分数，这样的表现并不理想。</p>
+<p>如果将系统规模扩大 5 万倍，却仍然没有取得实质性进展，这就像一个巨大的警示信号，提醒你需要尝试新的方法。仅仅扩大模型规模或使用更多数据进行训练并不能解锁 ARC-AGI 所需的那种流畅智能。ARC-AGI 清楚地表明，即时重组能力对于解决推理问题至关重要。</p>
+<h3 id="测试时间适应时代">测试时间适应时代</h3>
+<p>2024年，一切都发生了改变。那一年，话语体系发生了重大转变——而ARC Prize正是促成这一转变的部分催化剂。2023年盛行的“规模就是一切”的信条开始让位于“实际上，我们需要的是动态重组”。2024年12月公布的竞赛结果令人瞩目：领先的解决方案并非简单地扩展现有的深度学习架构，而是全部采用了某种形式的测试时自适应（TTA）——无论是测试时搜索还是测试时训练。</p>
+<p>TTA 指的是人工智能系统在测试过程中利用所提供的具体问题信息进行主动推理或学习的方法——这是经典深度学习范式所缺乏的关键组成部分。</p>
+<p>实现测试时自适应有多种方法：</p>
+<ul>
+<li><em>测试时训练</em>——该模型根据测试任务中给出的示例，使用梯度下降法调整其一些参数。</li>
+<li><em>搜索方法</em>——系统在测试时会搜索许多可能的推理步骤或潜在解决方案，以找到最佳方案。这可以通过自然语言（思维链合成）或在符号化的、可验证的程序空间（程序合成）中完成。</li>
+</ul>
+<p>这些TTA方法使人工智能系统比静态模型更灵活，更能应对新情况。2024年ARC Prize的所有顶级参赛作品都采用了这些方法。</p>
+<p>2024年12月底，在ARC-AGI大赛结束后不久，OpenAI预览了其o3测试时推理模型，并利用ARC-AGI展示了其前所未有的强大能力。该模型利用大量的测试时计算资源，在每项任务成本约为200美元的情况下取得了76%的得分，在每项任务成本超过2万美元的情况下取得了88%的得分，超越了人类的基准水平。我们首次看到了展现出真正流体智能迹象的人工智能模型。这一突破引发了对类似技术的新一轮关注和投资——测试时自适应时代由此开启。重要的是，ARC-AGI是当时为数不多的几个能够清晰表明重大范式转变正在进行的基准测试之一。</p>
+<h3 id="arc-agi-2">ARC-AGI 2</h3>
+<p>那是否意味着通用人工智能（AGI）问题已经解决？o3 的智能水平是否与人类相当？</p>
+<p>并非如此。首先，尽管 o3 的表现堪称里程碑式的成就，但代价却极其高昂——每个 ARC-AGI 谜题都需要数万美元的计算资源。智能不仅仅关乎能力，其根本在于效率。在拥有庞大计算资源的情况下，穷举所有可能的解空间是一种捷径，它使得各种任务成为可能，而无需真正运用智能。理论上，你甚至可以简单地遍历所有可能的解程序，逐一测试，直到找到一个适用于演示题对的解，从而解决 ARC-AGI 问题。o3 的结果固然令人印象深刻，但感觉更像是用超级计算机破解密码，而非展现敏捷、流畅的人类思维。智能的精髓在于以尽可能少的资源取得成果。</p>
+<p>其次，我们发现 o3 仍然难以完成许多人类觉得非常简单的任务（例如图 19.10 中所示的任务）。这强烈表明 o3 的水平尚未达到人类水平。问题在于——2019 年版的 ARC-AGI 测试旨在降低难度。它本质上是对流体智力的二元测试：要么你像所有基础 LLM 一样没有流体智力，在这种情况下你的得分接近于零；要么你展现出一定的流体智力，在这种情况下你的得分会非常高，就像任何人类一样——或者像 o3 一样。两者之间几乎没有中间状态。显然，基准测试需要随着其旨在衡量的 AI 能力的发展而不断演进。我们需要一个新版本的 ARC-AGI，它不那么依赖蛮力，并且能够更好地区分拥有不同水平流体推理能力（直至人类水平）的系统。好消息是：我们自 2022 年以来一直在开发这样一个版本。</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/arc_task_not_solved_by_o3.03d72f08.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter19_future_of_ai/#figure-19-10">图 19.10</a>：o3 在最高计算设置下无法解决的任务示例（每个任务超过 20,000 美元）</p>
+<p>因此，在2025年3月，ARC Prize基金会推出了ARC-AGI-2。它沿用了第一版的格式，但显著改进了任务内容。新版本旨在提高标准，纳入了需要更复杂推理链且更难通过穷举搜索方法解决的任务。其目标是创建一个基准，在这个基准中，计算效率成为成功的关键因素，从而推动系统采用更智能、更高效的策略，而不是仅仅探索数十亿种可能性。虽然大多数ARC-AGI-1任务几乎可以瞬间由人类完成，无需太多认知努力，但ARC-AGI-2中的所有任务都需要一定程度的深思熟虑（见图19.11）——例如，在我们实验中，人类测试者完成任务的平均时间为5分钟。</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/arc_1_vs_arc_2.1201d48e.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter19_future_of_ai/#figure-19-11">图 19.11</a>：典型的 ARC-AGI-1 任务（左）与典型的 ARC-AGI-2 任务（右）对比</p>
+<p>ARC-AGI 2 的初步 AI 测试结果令人警醒：即使是 o3 也难以应对这一系列新的挑战，在有限的计算资源下，其得分骤降至两位数以下。至于基础 LLM 模型？它们在 ARC-AGI-2 上的表现几乎为零——这很正常，因为基础 LLM 模型并不具备流体智能。构建真正高效、类人流体智能的 AI 的挑战远未解决。我们需要超越现有 TTA 技术的方法。</p>
+<h2 id="缺失的要素搜索和符号">缺失的要素：搜索和符号</h2>
+<p>要彻底解决 ARC-AGI 问题，特别是版本 2，需要做些什么？希望这个挑战能启发你的思考。这正是 ARC-AGI 的意义所在：为你设定一个不同的目标，引导你朝着新的方向前进——希望是富有成效的方向。现在，让我们快速了解一下，如果你想响应号召，你需要哪些关键要素。</p>
+<p>我曾说过，智能由两个部分组成：<em>抽象概念的习得</em>和<em>抽象概念的重组</em>。它们紧密耦合——你操控的抽象概念<em>类型</em>决定了你如何以及在多大程度上能够重组它们。深度学习模型只能操控通过梯度下降法拟合的参数曲线所存储的抽象概念。难道就没有更好的方法吗？</p>
+<h3 id="抽象的两极">抽象的两极</h3>
+<p>抽象概念的习得始于对<em>事物的比较</em>。至关重要的是，比较事物有两种截然不同的方式，由此衍生出两种不同的抽象概念和两种思维模式，每一种都更适合解决不同类型的问题。这两种抽象概念共同构成了我们所有思维的基础。</p>
+<p>将事物联系起来的第一种方法是<em>相似性比较</em>，它产生了以<em>价值为中心的类比</em>。第二种方法是<em>精确的结构匹配</em>，它产生了以<em>程序为中心的类比</em>（或以结构为中心的类比）。在这两种情况下，你都从事物的<em>实例</em>出发，并将相关的实例合并在一起，从而生成一个<em>抽象概念</em>，该概念捕捉了底层实例的共同元素。不同之处在于如何判断两个实例之间的关联，以及如何将实例合并成抽象概念。让我们仔细看看每种类型。</p>
+<h4 id="以价值为中心的类比">以价值为中心的类比</h4>
+<p>假设你在后院遇到了许多不同种类的甲虫，它们分属不同的物种。你会注意到它们之间存在相似之处。有些甲虫彼此更相似，有些则不太相似：相似性的概念隐含着一个平滑的连续<em>距离函数</em>，它定义了一个潜在流形，你的甲虫实例就存在于这个流形中。当你观察了足够多的甲虫后，就可以开始将更相似的实例聚类在一起，并将它们合并成一组<em>原型</em>，这些原型捕捉了每个聚类的共同视觉特征（图 19.12）。这些原型是抽象的：它们看起来不像你见过的任何特定实例，尽管它们编码了所有实例共有的属性。当你遇到一只新的甲虫时，你不需要将它与之前见过的每一只甲虫进行比较才能知道该如何处理它。你只需将它与你已有的几个原型进行比较，找到最接近的原型——即这只甲虫所属的<em>类别</em>——并用它来做出有用的预测：这只甲虫有可能咬你吗？它会吃你的苹果吗？</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/value_centric_abstraction.ea920558.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter19_future_of_ai/#figure-19-12">图 19.12</a>：以价值为中心的类比通过连续的相似性概念将实例联系起来，从而获得抽象原型。</p>
+<p>这听起来是不是很熟悉？这几乎就是对无监督机器学习（例如 K-means 聚类算法）工作原理的描述。总的来说，所有现代机器学习，无论是否采用无监督方法，其工作原理都是学习描述实例空间的潜在流形，这些实例空间通过原型进行编码。（还记得你在第 10 章中可视化的卷积神经网络特征吗？它们就是可视化的原型。）以值为中心的类比正是深度学习模型能够进行局部泛化的关键所在。</p>
+<p>这也是你许多认知能力的基础。作为人类，你无时无刻不在进行以价值为中心的类比。这种抽象思维是 <em>模式识别</em>、<em>感知</em>和<em>直觉</em>的基础。如果你能不假思索地完成一项任务，那么你就是在大量依赖以价值为中心的类比。如果你在看电影时，开始下意识地将不同的角色归类为不同的“类型”，这就是以价值为中心的抽象思维。</p>
+<h4 id="以程序为中心的类比">以程序为中心的类比</h4>
+<p>至关重要的是，认知远不止于价值中心类比所能实现的那种即时、粗略、直觉式的分类。还有另一种抽象生成机制，它速度较慢、精确且深思熟虑：程序中心（或结构中心）类比。</p>
+<p>在软件工程中，你经常会编写一些看似有很多共同点的不同函数或类。当你注意到这些冗余时，你会开始思考：是否存在一个更抽象的函数来执行相同的任务，并且可以重复使用两次？是否存在一个抽象基类，你的两个类都可以继承自它？这里你使用的抽象定义对应于以程序为中心的类比。你并非试图通过比较类和函数的<em>外观相似度</em>（就像通过隐式距离函数比较两张人脸一样）来比较它们。相反，你感兴趣的是它们是否存在*结构完全相同的**部分<em>。你正在寻找所谓的</em>子图同构*（参见图 19.13）：程序可以表示为运算符图，而你试图找到在不同程序中完全共享的子图（程序子集）。</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/program_centric_abstraction.028e5301.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter19_future_of_ai/#figure-19-13">图 19.13</a>：以程序为中心的类比识别并隔离不同实例中的同构子结构。</p>
+<p>这种通过在不同离散结构中建立精确的结构匹配来进行类比的方法，并非计算机科学或数学等专业领域所独有——你其实一直在不知不觉中使用它。它是<em>推理</em>、*规划以及**严谨性*（而非直觉）这一概念的 基础。任何时候，当你思考通过离散关系网络（而非连续相似性函数）相互连接的对象时，你就是在运用以程序为中心的类比。</p>
+<h3 id="认知是两种抽象思维的结合">认知是两种抽象思维的结合</h3>
+<p>表 19.1 将这两种抽象程度进行了对比。</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">以价值为中心的抽象</th>
+<th style="text-align: left;">以程序为中心的抽象</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">通过距离将事物联系起来</td>
+<td style="text-align: left;">通过精确的结构匹配将事物联系起来</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">连续的，以几何学为基础。</td>
+<td style="text-align: left;">离散的，基于拓扑学</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">通过将实例“平均化”为“原型”来生成抽象概念。</td>
+<td style="text-align: left;">通过隔离实例间的同构子结构来生成抽象概念</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">感知和直觉的基础</td>
+<td style="text-align: left;">这是推理和计划的基础</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">即时的、模糊的、近似的</td>
+<td style="text-align: left;">缓慢、精准、严谨</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">需要丰富的经验才能得出可靠的结果</td>
+<td style="text-align: left;">体验高效：只需两个实例即可运行</td>
+</tr>
+</tbody>
+</table>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter19_future_of_ai/#table-19-1">表 19.1</a>：抽象的两极</p>
+<p>我们所做的一切，我们所想的一切，都是这两种抽象方式的结合。你很难找到只涉及其中一种的任务。即使是看似“纯粹感知”的任务，例如识别场景中的物体，也包含相当多的关于你所观察物体之间关系的隐性推理。即使是看似“纯粹推理”的任务，例如证明一个数学定理，也包含大量的直觉。当数学家提笔作答时，他们心中已经对前进的方向有了大致的构想。他们为达成目标而采取的离散推理步骤，是由高层次的直觉引导的。</p>
+<p>这两个极端相辅相成，正是它们的交织融合才使得极端概括成为可能。任何思维都离不开这两者。</p>
+<h3 id="为什么深度学习并不能完全解决抽象生成问题">为什么深度学习并不能完全解决抽象生成问题</h3>
+<p>深度学习非常擅长编码以价值为中心的抽象概念，但它基本上不具备生成以程序为中心的抽象概念的能力。类人智能是这两种抽象概念紧密交织的产物，因此我们实际上缺失了所需能力的一半——可以说是最重要的一半。</p>
+<p>现在，需要说明一点。到目前为止，我一直把每种抽象类型都描述得与其他类型完全独立——甚至是截然相反的。然而，在实践中，它们更像是一个连续谱：在某种程度上，你可以通过将离散程序嵌入连续流形来进行推理——就像你可以用任意一组离散点拟合一个多项式函数一样，只要你有足够多的系数。反之，你也可以使用离散程序来模拟连续距离函数——毕竟，当你在计算机上进行线性代数运算时，你实际上是在处理连续空间，完全是通过对 1 和 0 进行运算的离散程序来实现的。</p>
+<p>然而，显然有些问题类型更适合使用其中一种方法。例如，尝试训练一个深度学习模型来对一个包含五个数字的列表进行排序。虽然架构合适并非不可能，但这绝对会令人沮丧。你需要大量的训练数据才能实现这一点——即便如此，模型在处理新的数字时仍然会偶尔出错。如果你想对包含十个数字的列表进行排序，则需要使用更多的数据重新训练模型。相比之下，用 Python 编写一个排序算法只需几行代码，生成的程序在经过几个示例验证后，就能处理任何大小的列表。这展现了强大的泛化能力：只需几个演示示例和测试示例，就能得到一个可以成功处理任何数字列表的程序。</p>
+<p>反过来，感知问题并不适合离散推理过程。尝试用纯 Python 编写一个程序来对 MNIST 数字进行分类，而不使用任何机器学习技术：你会发现自己陷入了困境。你会费尽心思地编写函数来检测数字中的闭合环路数量、数字质心的坐标等等。编写数千行代码后，你可能只能达到 90% 的测试准确率。在这种情况下，拟合参数模型要简单得多；它可以更好地利用大量可用数据，并获得更稳健的结果。如果你拥有大量数据，并且面临的问题符合流形假设，那么深度学习是最佳选择。</p>
+<p>因此，我们不太可能看到一种方法能够将推理问题简化为流形插值，或者将感知问题简化为离散推理。人工智能的未来发展方向是开发一个统一的框架，将这<em>两种</em> 抽象生成方式融合在一起。</p>
+<h3 id="人工智能的另一种方法程序合成">人工智能的另一种方法：程序合成</h3>
+<p>直到2024年，所有能够进行真正离散推理的人工智能系统都由人类程序员硬编码——例如，依赖搜索算法、图操作和形式逻辑的软件。在测试时自适应（TTA）时代，这种情况终于开始改变。TTA的一个特别有前景的分支是<em>程序合成</em>——这个领域目前仍然非常小众，但我预计它将在未来几十年内蓬勃发展。</p>
+<p>程序合成是指利用搜索算法（例如遗传搜索，如<em>遗传编程</em>中的算法）自动生成简单的程序，以探索大量的可能程序（见图 19.14）。当找到符合所需规范的程序时，搜索即停止，这些规范通常以一组输入-输出对的形式给出。这与机器学习非常相似：给定以输入-输出对形式提供的训练数据，我们可以找到一个能够将输入与输出匹配并能泛化到新输入的程序。不同之处在于，我们不是学习硬编码程序（神经网络）中的参数值，而是通过离散搜索过程生成源代码（见表 19.2）。</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/program_synthesis.8af8560a.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter19_future_of_ai/#figure-19-14">图 19.14</a>：程序合成示意图：给定程序规范和一组构建模块，搜索过程将这些构建模块组装成候选程序，然后根据规范对这些候选程序进行测试。搜索过程持续进行，直到找到有效的程序为止。</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">机器学习</th>
+<th style="text-align: left;">程序合成</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">模型：可微参数函数</td>
+<td style="text-align: left;">模型：编程语言中的运算符图</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">引擎：梯度下降</td>
+<td style="text-align: left;">引擎：离散搜索（例如基因搜索）</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">需要大量数据才能得出可靠的结果</td>
+<td style="text-align: left;">数据效率高：只需几个训练样本即可完成工作</td>
+</tr>
+</tbody>
+</table>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter19_future_of_ai/#table-19-2">表 19.2</a>：机器学习与程序合成</p>
+<p>程序合成是我们为人工智能系统添加以程序为中心的抽象能力的方式。它是缺失的那一块拼图。</p>
+<h3 id="融合深度学习和程序合成">融合深度学习和程序合成</h3>
+<p>当然，深度学习不会消失。程序合成并非它的替代品，而是它的补充。它弥补了我们人工智能大脑中长期以来缺失的那一半。我们将把两者结合起来使用。这主要通过两种方式实现：</p>
+<ul>
+<li>开发集成深度学习模块和离散算法模块的系统</li>
+<li>利用深度学习提高程序搜索过程本身的效率。</li>
+</ul>
+<p>让我们逐一审视这些可能的途径。</p>
+<h4 id="将深度学习模块和算法模块集成到混合系统中">将深度学习模块和算法模块集成到混合系统中</h4>
+<p>如今，许多最强大的AI系统都是混合型的：它们既使用深度学习模型，也使用手工编写的符号操作程序。例如，在DeepMind的AlphaGo中，大部分智能都是由人类程序员设计和硬编码的（例如蒙特卡洛树搜索）。数据学习仅发生在专门的子模块中（例如价值网络和策略网络）。再比如Waymo的自动驾驶汽车：它能够应对各种各样的情况，是因为它维护着一个周围世界的模型——一个真实的3D模型——其中包含着由人类工程师硬编码的假设。这个模型通过深度学习感知模块（由Keras驱动）不断更新，这些模块将模型与汽车周围的环境进行交互。</p>
+<p>对于AlphaGo和自动驾驶汽车这两个系统而言，正是人类编写的离散程序与学习到的连续模型相结合，才使得它们能够达到单独使用任何一种方法都无法企及的性能水平，例如端到端的深度神经网络或不包含机器学习元素的软件。目前，此类混合系统的离散算法元素仍需由人类工程师精心硬编码。但未来，此类系统或许能够完全自主学习，无需任何人为干预。</p>
+<p>这会是什么样子呢？考虑一种众所周知的网络类型：循环神经网络（RNN）。值得注意的是，RNN 的限制比前馈网络略少。这是因为 RNN 不仅仅是简单的几何变换：它们是在一个*循环**中重复应用的<code>for</code>*几何变换。时间<code>for</code>循环本身是由开发者硬编码的：它是网络的内置假设。当然，RNN 在表示能力方面仍然非常有限，这主要是因为它们执行的每一步都是一个可微的几何变换，并且它们通过连续几何空间中的点（状态向量）将信息从一步传递到另一步。现在想象一个神经网络，它以类似的方式用编程原语进行了增强，但与单个硬编码<code>for</code>循环和硬编码的连续空间内存不同，该网络包含大量编程原语，模型可以自由操作这些原语来扩展其处理功能，例如<code>if</code>分支、<code>while</code>语句、变量创建、用于长期记忆的磁盘存储、排序运算符、高级数据结构（例如列表、图和哈希表）等等。这种网络能够表示的程序空间将远比当前深度学习模型所能表示的要广阔得多，并且其中一些程序可能具有更强的泛化能力。重要的是，这些程序本身并不具备端到端可微性，尽管其特定模块仍然可微，因此需要通过离散程序搜索和梯度下降相结合的方法生成。</p>
+<p>我们将摒弃一方面硬编码算法智能（手工编写的软件）另一方面学习几何智能（深度学习）的模式。取而代之的是，我们将融合提供推理和抽象能力的正式算法模块和提供非正式直觉和模式识别能力的几何模块（图 19.15）。整个系统将在几乎无需人工干预的情况下进行学习。这将极大地扩展机器学习能够解决的问题范围——即在给定适当训练数据的情况下，我们可以自动生成的程序空间。像 AlphaGo 这样的系统，甚至循环神经网络（RNN），都可以被视为这种混合算法-几何模型的早期雏形。</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/metalearning1.63aa6580.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter19_future_of_ai/#figure-19-15">图 19.15</a>：一个学习程序，它既依赖于几何基元（模式识别、直觉），也依赖于算法基元（推理、搜索、记忆）。</p>
+<h4 id="利用深度学习指导程序搜索">利用深度学习指导程序搜索</h4>
+<p>如今，程序合成面临着一个重大障碍：效率极其低下。简单来说，典型的程序合成技术会尝试搜索空间中所有可能的程序，直到找到一个符合给定规范的程序为止。随着程序规范复杂性的增加，或者用于编写程序的基本元素词汇量的扩展，程序搜索过程会遇到所谓的<em>组合爆炸</em>：需要考虑的程序集合会以惊人的速度增长，实际上，其增长速度远超指数级增长。因此，目前程序合成只能用于生成非常短的程序。你不可能很快就用它为你的计算机生成一个新的操作系统。</p>
+<p>为了向前迈进，我们需要提高程序合成的效率，使其更接近人类编写软件的方式。当你打开编辑器编写脚本时，你不会考虑所有可能编写的程序。你只会想到少数几种可能的方法：你可以利用对问题的理解和过去的经验，大幅缩小需要考虑的选项范围。</p>
+<p>深度学习可以帮助程序合成实现同样的目标：尽管我们想要生成的每个特定程序本质上可能是一个离散对象，执行非插值数据操作，但目前的证据表明，<em>所有有用程序的空间</em>可能非常像一个连续流形。这意味着，经过数百万次成功程序生成案例训练的深度学习模型，可能会开始对 程序*空间中的搜索路径形成清晰的**直觉*，从而确定从规范到相应程序的搜索过程——就像软件工程师可能对他们即将编写的脚本的整体架构以及他们应该使用的中间函数和类（作为通往目标的垫脚石）有直接的直觉一样。</p>
+<p>请记住，人类推理很大程度上受价值中心抽象的引导——即模式识别和直觉。程序合成也应如此。我预计，在未来10到20年内，通过学习启发式方法来指导程序搜索的总体方法将受到越来越多的研究关注。</p>
+<h3 id="模块化组件重组和终身学习">模块化组件重组和终身学习</h3>
+<p>如果模型变得更加复杂，并基于更丰富的算法原语构建，那么这种复杂性的增加就需要任务间更高的模型复用率，而不是每次遇到新任务或新数据集时都从头开始训练新模型。许多数据集包含的信息不足以让我们从头开始开发一个全新的复杂模型，因此必须利用先前遇到的数据集中的信息（就像你不会每次打开一本新书都从头开始学习英语一样——那是不可能的）。此外，由于当前任务与先前遇到的任务之间存在大量重叠，因此针对每个新任务从头开始训练模型也是低效的。</p>
+<p>借助现代基础模型，我们正逐步迈向一个人工智能系统拥有海量已习得知识和技能，并能将其应用于应对任何挑战的世界。然而，LLM（逻辑学习模型）却缺少一个关键要素：重组。LLM 非常擅长获取和重新应用已记忆的函数，但它们尚无法将这些函数即时重组为适应当前情况的全新程序。事实上，正如 Dziri 等人最近发表的一篇论文中所探讨的那样，LLM 完全不具备函数组合的能力。[<a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter19_future_of_ai/#footnote-5">5]</a>此外，它们学习的函数抽象程度或模块化程度不够，从一开始就不适合重组。还记得我们之前指出的LLM在计算大整数加法时准确率很低吗？你肯定不想把下一个代码库建立在如此脆弱的函数之上。</p>
+<p>为了解决<em>组合泛化问题</em>，我们需要重用健壮的<em>程序组件，</em>例如人类编程语言中的函数和类。这些组件将专门针对新环境中的模块化重用而演化——这与语言学习模型记忆的模式截然不同。我们的人工智能将根据当前任务动态地重新组合这些组件，从而合成新的程序。至关重要的是，这些可重用组件库将基于所有人工智能实例的累积经验构建，并永久供所有人访问。我们的人工智能遇到的任何问题都只需解决一次——这使得它们能够不断自我改进。</p>
+<p>想想如今的软件开发流程：工程师一旦解决了某个特定问题（例如，Python 中的 HTTP 查询），就会将其打包成一个抽象的、可重用的库，供全球任何人访问。未来遇到类似问题的工程师可以搜索现有的库，下载并应用到自己的项目中。类似地，未来的元学习系统也能通过筛选一个包含高级可重用模块的全局库来构建新的程序。当系统发现自己需要为多个不同的任务开发类似的程序子例程时，它可以生成一个 <em>抽象的</em>、可重用的子例程版本，并将其存储在全局库中（参见图 19.16）。这些子例程可以是几何的（带有预训练表示的深度学习模块），也可以是算法的（更接近于当代软件工程师使用的库）。</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/metalearning2.f5a5efde.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter19_future_of_ai/#figure-19-16">图 19.16</a>：一种元学习器，能够利用可重用的基本元素（包括算法和几何元素）快速开发特定任务的模型，从而实现极强的泛化能力。</p>
+<h3 id="长远愿景">长远愿景</h3>
+<p>简而言之，这是我对人工智能的长期愿景：</p>
+<ul>
+<li><p>模型将更像程序，其功能将远远超越我们目前处理的输入数据的连续几何变换。这些程序可以说更接近人类对周围环境和自身所持有的抽象心理模型，并且由于其丰富的算法特性，它们将具备更强的泛化能力。</p></li>
+<li><p>具体而言，模型将融合提供形式推理、搜索和抽象能力的*算法模块与提供非正式直觉和模式识别能力的**几何模块* 。这将实现以价值为中心和以程序为中心的抽象的融合。AlphaGo 或自动驾驶汽车（这些系统需要大量的人工软件工程和人为设计决策）是符号人工智能和几何人工智能融合的早期范例。</p></li>
+<li><p>这些模型将自动<em>构建</em>，而非由人工工程师硬编码，它们使用存储在全局可重用子程序库中的模块化组件——该库通过在数千个先前任务和数据集上学习高性能模型而不断演化。随着元学习系统识别出频繁的问题解决模式，这些模式将被转化为可重用的子程序（类似于软件工程中的函数和类），并添加到全局库中。</p></li>
+<li><p>搜索子程序的可能组合以生成新模型的过程将是一个离散搜索过程（程序合成），但它将很大程度上受到深度学习提供的<em>程序空间直觉的指导。</em></p></li>
+<li><p>这个全局子程序库及其相关的模型增长系统能够实现某种类似人类的<em>极端泛化能力</em>：面对新的任务或情境，该系统能够利用极少的数据构建出一个适合该任务的新模型。这得益于其丰富的、具有良好泛化能力的类程序原语，以及在类似任务上的丰富经验。同样地，如果人类拥有丰富的游戏经验，他们就能快速学会玩一款复杂的新游戏，因为从这些经验中衍生出的模型是抽象的、类程序的，而不是刺激与动作之间的简单映射。</p></li>
+</ul>
+<p>这种持续学习、不断增长模型的系统可以被解读为<em>通用人工智能</em>（AGI）。但不要指望会因此出现什么奇点式的机器人末日：那纯粹是幻想，源于对智能和技术的一系列深刻误解。然而，这种批判并不适合本书。</p>
+<h3 id="脚注">脚注</h3>
+<ol type="1">
+<li>另见 Marianna Nezhurina、Lucia Cipolina-Kun、Mehdi Cherti 和 Jenia Jitsev 合著的《爱丽丝梦游仙境：在最先进的大型语言模型中，简单任务会完全破坏推理能力》，arXiv，https://arxiv.org/abs/2406.02061。 [<a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter19_future_of_ai/#footnote-link-1">↩︎]</a></li>
+<li>Terry Winograd，“计算机程序中用于理解自然语言的数据表示方法：过程”，1971 年。 [<a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter19_future_of_ai/#footnote-link-2">↩︎]</a></li>
+<li>Michael Shick，“沃兹尼亚克：电脑能煮杯咖啡吗？”《快公司》，2010 年 3 月。 [<a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter19_future_of_ai/#footnote-link-3">↩︎]</a></li>
+<li>弗朗索瓦·肖莱，《论智力的衡量》，2019 年。 [<a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter19_future_of_ai/#footnote-link-4">↩︎]</a></li>
+<li>Nouha Dziri 等人，“命运与信念：Transformer 对组合性的限制”，第 37 届国际神经信息处理系统会议论文集 (2023)，https://arxiv.org/abs/2305.18654。 [<a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter19_future_of_ai/#footnote-link-5">↩︎]</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/03/08/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B18%E3%80%81%E7%8E%B0%E5%AE%9E%E4%B8%96%E7%95%8C%E7%9A%84%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/" rel="prev" title="《DEEP LEARNING with Python》第十八章">
+                  <i class="fa fa-chevron-left"></i> 《DEEP LEARNING with Python》第十八章
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/03/10/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B20%E3%80%81%E7%BB%93%E8%AE%BA/" rel="next" title="《DEEP LEARNING with Python》第二十章">
+                  《DEEP LEARNING with Python》第二十章 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"enable":true,"style":"tabs","active":"giscus","storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+
+
+    <meta name="description" content="第十章 解读卷积神经网络的学习成果 运行代码 在 Colab 上运行 在 GitHub 上查看 内容可视化中间激活可视化卷积神经网络滤波器可视化类别激活热图概括 本章内容  解释卷积神经网络如何分解输入图像 可视化卷积神经网络学习到的滤波器 可视化图像中负责特定分类决策的区域  构建计算机视觉应用时，一个根本性问题是可解释性：为什么分类器会认为某张图像中包含冰箱，而你看到的明明是一辆卡车？这在深度">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《DEEP LEARNING with Python》第十章">
+<meta property="og:url" content="http://hongyitong.github.io/2026/02/25/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B10%E3%80%81%E8%A7%A3%E8%AF%BB%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%9A%84%E5%AD%A6%E4%B9%A0%E6%88%90%E6%9E%9C/index.html">
+<meta property="og:site_name" content="墨语浮生">
+<meta property="og:description" content="第十章 解读卷积神经网络的学习成果 运行代码 在 Colab 上运行 在 GitHub 上查看 内容可视化中间激活可视化卷积神经网络滤波器可视化类别激活热图概括 本章内容  解释卷积神经网络如何分解输入图像 可视化卷积神经网络学习到的滤波器 可视化图像中负责特定分类决策的区域  构建计算机视觉应用时，一个根本性问题是可解释性：为什么分类器会认为某张图像中包含冰箱，而你看到的明明是一辆卡车？这在深度">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/cat.135f6a4b.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/fifth_activation.3dac2691.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/all_activations.7a8d82cd.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/bicycles.c7a8501c.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/single_filter.8d2772d6.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/allfilters.8d050d97.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/elephant.6abc731a.jpg">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/cam.b66fff28.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/elephant_cam.73b7f8e0.jpg">
+<meta property="article:published_time" content="2026-02-24T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-03-01T03:56:21.648Z">
+<meta property="article:author" content="Rayman.hung">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/cat.135f6a4b.png">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2026/02/25/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B10%E3%80%81%E8%A7%A3%E8%AF%BB%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%9A%84%E5%AD%A6%E4%B9%A0%E6%88%90%E6%9E%9C/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2026/02/25/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B10%E3%80%81%E8%A7%A3%E8%AF%BB%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%9A%84%E5%AD%A6%E4%B9%A0%E6%88%90%E6%9E%9C/","path":"2026/02/25/《DEEP LEARNING with Python》10、解读卷积神经网络的学习成果/","title":"《DEEP LEARNING with Python》第十章"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>《DEEP LEARNING with Python》第十章 | 墨语浮生</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZXGEJDXQ33"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-ZXGEJDXQ33","only_pageview":false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?ff358b9c7e949787b074bfc9c8019a9d"></script>
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">墨语浮生</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%A7%A3%E8%AF%BB%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%9A%84%E5%AD%A6%E4%B9%A0%E6%88%90%E6%9E%9C"><span class="nav-text">解读卷积神经网络的学习成果</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E4%BB%A3%E7%A0%81"><span class="nav-text">运行代码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AF%E8%A7%86%E5%8C%96%E4%B8%AD%E9%97%B4%E6%BF%80%E6%B4%BB"><span class="nav-text">可视化中间激活</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AF%E8%A7%86%E5%8C%96%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E6%BB%A4%E6%B3%A2%E5%99%A8"><span class="nav-text">可视化卷积神经网络滤波器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#tensorflow-%E4%B8%AD%E7%9A%84%E6%A2%AF%E5%BA%A6%E4%B8%8A%E5%8D%87"><span class="nav-text">TensorFlow 中的梯度上升</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pytorch-%E4%B8%AD%E7%9A%84%E6%A2%AF%E5%BA%A6%E4%B8%8A%E5%8D%87"><span class="nav-text">PyTorch 中的梯度上升</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#jax-%E4%B8%AD%E7%9A%84%E6%A2%AF%E5%BA%A6%E4%B8%8A%E5%8D%87"><span class="nav-text">JAX 中的梯度上升</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%87%E6%BB%A4%E5%99%A8%E5%8F%AF%E8%A7%86%E5%8C%96%E5%BE%AA%E7%8E%AF"><span class="nav-text">过滤器可视化循环</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AF%E8%A7%86%E5%8C%96%E7%B1%BB%E5%88%AB%E6%BF%80%E6%B4%BB%E7%83%AD%E5%9B%BE"><span class="nav-text">可视化类别激活热图</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E9%A1%B6%E5%B1%82%E7%B1%BB%E7%9A%84%E6%A2%AF%E5%BA%A6tensorflow-%E7%89%88%E6%9C%AC"><span class="nav-text">获取顶层类的梯度：TensorFlow 版本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E9%A1%B6%E5%B1%82%E7%B1%BB%E7%9A%84%E6%A2%AF%E5%BA%A6pytorch-%E7%89%88%E6%9C%AC"><span class="nav-text">获取顶层类的梯度：PyTorch 版本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E9%A1%B6%E5%B1%82%E7%B1%BB%E7%9A%84%E6%B8%90%E5%8F%98jax-%E7%89%88%E6%9C%AC"><span class="nav-text">获取顶层类的渐变：JAX 版本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%98%BE%E7%A4%BA%E7%B1%BB%E5%88%AB%E6%BF%80%E6%B4%BB%E7%83%AD%E5%9B%BE"><span class="nav-text">显示类别激活热图</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E6%8B%AC"><span class="nav-text">概括</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%84%9A%E6%B3%A8"><span class="nav-text">脚注</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、心情记录</div>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/02/25/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B10%E3%80%81%E8%A7%A3%E8%AF%BB%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%9A%84%E5%AD%A6%E4%B9%A0%E6%88%90%E6%9E%9C/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="《DEEP LEARNING with Python》第十章 | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《DEEP LEARNING with Python》第十章
+        </h1>
+
+        </h1>
+          
+             <p class="post-subtitle">解读卷积神经网络的学习成果</p>
+          
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-02-25 00:00:00" itemprop="dateCreated datePublished" datetime="2026-02-25T00:00:00+08:00">2026-02-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>第十章</p>
+<h1 id="解读卷积神经网络的学习成果">解读卷积神经网络的学习成果</h1>
+<h3 id="运行代码">运行代码</h3>
+<p><a target="_blank" rel="noopener" href="https://colab.research.google.com/github/fchollet/deep-learning-with-python-notebooks/blob/master/chapter10_interpreting-what-convnets-learn.ipynb">在 Colab 上运行</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/fchollet/deep-learning-with-python-notebooks">在 GitHub 上查看</a></p>
+<p>内容<a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter10_interpreting-what-convnets-learn/#visualizing-intermediate-activations">可视化中间激活</a><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter10_interpreting-what-convnets-learn/#visualizing-convnet-filters">可视化卷积神经网络滤波器</a><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter10_interpreting-what-convnets-learn/#visualizing-heatmaps-of-class-activation">可视化类别激活热图</a><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter10_interpreting-what-convnets-learn/#summary">概括</a></p>
+<p>本章内容</p>
+<ul>
+<li>解释卷积神经网络如何分解输入图像</li>
+<li>可视化卷积神经网络学习到的滤波器</li>
+<li>可视化图像中负责特定分类决策的区域</li>
+</ul>
+<p>构建计算机视觉应用时，一个根本性问题是可<em>解释性</em>：<em>为什么</em>分类器会认为某张图像中包含冰箱，而你看到的明明是一辆卡车？这在深度学习用于辅助人类专业知识的应用场景中尤为重要，例如医学影像应用。本章将介绍一系列不同的可视化卷积神经网络学习内容和理解其决策的技术。</p>
+<p>人们常说深度学习模型是“黑箱”：它们学习到的表征难以提取并以人类可读的形式呈现。虽然这种说法对某些类型的深度学习模型部分正确，但对卷积神经网络（ConvNets）而言则完全不成立。卷积神经网络学习到的表征非常易于可视化，这很大程度上是因为它们是 <em>对视觉概念的表征</em>。自 2013 年以来，人们开发了多种可视化和解释这些表征的技术。我们不会一一介绍，但会重点介绍其中三种最易于理解和使用的方法：</p>
+<ul>
+<li><em>可视化卷积神经网络的中间输出（中间激活值）</em> ——有助于理解连续的卷积神经网络层如何转换其输入，并初步了解各个卷积神经网络滤波器的含义。</li>
+<li><em>可视化卷积神经网络的滤波器</em>——有助于精确理解卷积神经网络中每个滤波器所响应的视觉模式或概念。</li>
+<li><em>可视化图像中类别激活的热图</em>——有助于了解图像中哪些部分被识别为属于特定类别，从而帮助您定位图像中的对象。</li>
+</ul>
+<p>对于第一种方法——激活可视化——你将使用你在第 8 章中从头开始训练的用于解决猫狗分类问题的小型卷积神经网络。对于接下来的两种方法，你将使用预训练的 Xception 模型。</p>
+<span id="more"></span>
+<h2 id="可视化中间激活">可视化中间激活</h2>
+<p>可视化中间激活值是指在给定特定输入的情况下，显示模型中各个卷积层和池化层返回的值（层的输出通常称为其<em>激活值</em>，即激活函数的输出）。这可以让我们了解输入是如何分解成网络学习到的不同滤波器的。我们希望可视化具有三个维度的特征图：宽度、高度和深度（通道数）。每个通道编码相对独立的特征，因此可视化这些特征图的正确方法是将每个通道的内容分别绘制成二维图像。让我们首先加载您在 8.2 节中保存的模型：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; import keras</span><br><span class="line">&gt;&gt;&gt; model = keras.models.load_model(</span><br><span class="line">...     &quot;convnet_from_scratch_with_augmentation.keras&quot;</span><br><span class="line">... )</span><br><span class="line">&gt;&gt;&gt; model.summary()</span><br><span class="line">Model: &quot;functional_3&quot;</span><br><span class="line">┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┓</span><br><span class="line">┃ Layer (type)                      ┃ Output Shape             ┃       Param # ┃</span><br><span class="line">┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━┩</span><br><span class="line">│ input_layer_3 (InputLayer)        │ (None, 180, 180, 3)      │             0 │</span><br><span class="line">├───────────────────────────────────┼──────────────────────────┼───────────────┤</span><br><span class="line">│ rescaling_1 (Rescaling)           │ (None, 180, 180, 3)      │             0 │</span><br><span class="line">├───────────────────────────────────┼──────────────────────────┼───────────────┤</span><br><span class="line">│ conv2d_11 (Conv2D)                │ (None, 178, 178, 32)     │           896 │</span><br><span class="line">├───────────────────────────────────┼──────────────────────────┼───────────────┤</span><br><span class="line">│ max_pooling2d_6 (MaxPooling2D)    │ (None, 89, 89, 32)       │             0 │</span><br><span class="line">├───────────────────────────────────┼──────────────────────────┼───────────────┤</span><br><span class="line">│ conv2d_12 (Conv2D)                │ (None, 87, 87, 64)       │        18,496 │</span><br><span class="line">├───────────────────────────────────┼──────────────────────────┼───────────────┤</span><br><span class="line">│ max_pooling2d_7 (MaxPooling2D)    │ (None, 43, 43, 64)       │             0 │</span><br><span class="line">├───────────────────────────────────┼──────────────────────────┼───────────────┤</span><br><span class="line">│ conv2d_13 (Conv2D)                │ (None, 41, 41, 128)      │        73,856 │</span><br><span class="line">├───────────────────────────────────┼──────────────────────────┼───────────────┤</span><br><span class="line">│ max_pooling2d_8 (MaxPooling2D)    │ (None, 20, 20, 128)      │             0 │</span><br><span class="line">├───────────────────────────────────┼──────────────────────────┼───────────────┤</span><br><span class="line">│ conv2d_14 (Conv2D)                │ (None, 18, 18, 256)      │       295,168 │</span><br><span class="line">├───────────────────────────────────┼──────────────────────────┼───────────────┤</span><br><span class="line">│ max_pooling2d_9 (MaxPooling2D)    │ (None, 9, 9, 256)        │             0 │</span><br><span class="line">├───────────────────────────────────┼──────────────────────────┼───────────────┤</span><br><span class="line">│ conv2d_15 (Conv2D)                │ (None, 7, 7, 512)        │     1,180,160 │</span><br><span class="line">├───────────────────────────────────┼──────────────────────────┼───────────────┤</span><br><span class="line">│ global_average_pooling2d_3        │ (None, 512)              │             0 │</span><br><span class="line">│ (GlobalAveragePooling2D)          │                          │               │</span><br><span class="line">├───────────────────────────────────┼──────────────────────────┼───────────────┤</span><br><span class="line">│ dropout (Dropout)                 │ (None, 512)              │             0 │</span><br><span class="line">├───────────────────────────────────┼──────────────────────────┼───────────────┤</span><br><span class="line">│ dense_3 (Dense)                   │ (None, 1)                │           513 │</span><br><span class="line">└───────────────────────────────────┴──────────────────────────┴───────────────┘</span><br><span class="line"> Total params: 4,707,269 (17.96 MB)</span><br><span class="line"> Trainable params: 1,569,089 (5.99 MB)</span><br><span class="line"> Non-trainable params: 0 (0.00 B)</span><br><span class="line"> Optimizer params: 3,138,180 (11.97 MB)</span><br></pre></td></tr></table></figure>
+<p>接下来，你会得到一张输入图像——一张猫的图片，但这并非网络训练所用图像的一部分。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> keras</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line"><span class="comment"># Downloads a test image</span></span><br><span class="line">img_path = keras.utils.get_file(</span><br><span class="line">    fname=<span class="string">&quot;cat.jpg&quot;</span>, origin=<span class="string">&quot;https://img-datasets.s3.amazonaws.com/cat.jpg&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_img_array</span>(<span class="params">img_path, target_size</span>):</span><br><span class="line">    <span class="comment"># Opens the image file and resizes it</span></span><br><span class="line">    img = keras.utils.load_img(img_path, target_size=target_size)</span><br><span class="line">    <span class="comment"># Turns the image into a float32 NumPy array of shape (180, 180, 3)</span></span><br><span class="line">    array = keras.utils.img_to_array(img)</span><br><span class="line">    <span class="comment"># We add a dimension to transform our array into a &quot;batch&quot; of a</span></span><br><span class="line">    <span class="comment"># single sample. Its shape is now (1, 180, 180, 3).</span></span><br><span class="line">    array = np.expand_dims(array, axis=<span class="number">0</span>)</span><br><span class="line">    <span class="keyword">return</span> array</span><br><span class="line"></span><br><span class="line">img_tensor = get_img_array(img_path, target_size=(<span class="number">180</span>, <span class="number">180</span>))</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter10_interpreting-what-convnets-learn/#listing-10-1">清单 10.1</a>：单幅图像的预处理</p>
+<p>让我们展示一下图片（见图 10.1）。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line">plt.axis(<span class="string">&quot;off&quot;</span>)</span><br><span class="line">plt.imshow(img_tensor[<span class="number">0</span>].astype(<span class="string">&quot;uint8&quot;</span>))</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter10_interpreting-what-convnets-learn/#listing-10-2">清单 10.2</a>：显示测试图片</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/cat.135f6a4b.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter10_interpreting-what-convnets-learn/#figure-10-1">图 10.1</a>：测试猫的图片</p>
+<p>要提取你想要查看的特征图，你需要创建一个 Keras 模型，该模型以图像批次作为输入，并输出所有卷积层和池化层的激活值。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> layers</span><br><span class="line"></span><br><span class="line">layer_outputs = []</span><br><span class="line">layer_names = []</span><br><span class="line"><span class="comment"># Extracts the outputs of all Conv2D and MaxPooling2D layers and put</span></span><br><span class="line"><span class="comment"># them in a list</span></span><br><span class="line"><span class="keyword">for</span> layer <span class="keyword">in</span> model.layers:</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">isinstance</span>(layer, (layers.Conv2D, layers.MaxPooling2D)):</span><br><span class="line">        layer_outputs.append(layer.output)</span><br><span class="line">        <span class="comment"># Saves the layer names for later</span></span><br><span class="line">        layer_names.append(layer.name)</span><br><span class="line"><span class="comment"># Creates a model that will return these outputs, given the model input</span></span><br><span class="line">activation_model = keras.Model(inputs=model.<span class="built_in">input</span>, outputs=layer_outputs)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter10_interpreting-what-convnets-learn/#listing-10-3">清单 10.3</a>：实例化一个返回层激活值的模型</p>
+<p>当输入图像时，该模型会返回原始模型中各层激活值，以列表形式呈现。这是自第 7 章学习多输出模型以来，本书中你第一次实际接触到多输出模型：此前你所看到的模型都只有一个输入和一个输出。而这个模型有一个输入和九个输出——每个层激活值对应一个输出。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Returns a list of nine NumPy arrays — one array per layer activation</span></span><br><span class="line">activations = activation_model.predict(img_tensor)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter10_interpreting-what-convnets-learn/#listing-10-4">清单 10.4</a>：使用该模型计算层激活值</p>
+<p>例如，这是猫图像输入的第一个卷积层的激活值：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; first_layer_activation = activations[0]</span><br><span class="line">&gt;&gt;&gt; print(first_layer_activation.shape)</span><br><span class="line">(1, 178, 178, 32)</span><br></pre></td></tr></table></figure>
+<p>这是一个 178 × 178 的特征图，有 32 个通道。让我们尝试绘制原始模型第一层激活的第六个通道（见图 10.2）。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line">plt.matshow(first_layer_activation[<span class="number">0</span>, :, :, <span class="number">5</span>], cmap=<span class="string">&quot;viridis&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter10_interpreting-what-convnets-learn/#listing-10-5">列表 10.5</a>：可视化第六通道</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/fifth_activation.3dac2691.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter10_interpreting-what-convnets-learn/#figure-10-2">图 10.2</a>：测试猫图片上第一层激活的第六个通道</p>
+<p>该通道似乎编码了一个对角边缘检测器，但请注意，您自己的通道可能会有所不同，因为卷积层学习到的具体滤波器是不确定的。</p>
+<p>现在让我们绘制网络中所有激活的完整可视化图（见图 10.3）。我们将提取并绘制每一层激活中的每个通道，并将结果堆叠在一个大网格中，通道并排堆叠。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">images_per_row = <span class="number">16</span></span><br><span class="line"><span class="comment"># Iterates over the activations (and the names of the corresponding</span></span><br><span class="line"><span class="comment"># layers)</span></span><br><span class="line"><span class="keyword">for</span> layer_name, layer_activation <span class="keyword">in</span> <span class="built_in">zip</span>(layer_names, activations):</span><br><span class="line">    <span class="comment"># The layer activation has shape (1, size, size, n_features).</span></span><br><span class="line">    n_features = layer_activation.shape[-<span class="number">1</span>]</span><br><span class="line">    size = layer_activation.shape[<span class="number">1</span>]</span><br><span class="line">    n_cols = n_features // images_per_row</span><br><span class="line">    <span class="comment"># Prepares an empty grid for displaying all the channels in this</span></span><br><span class="line">    <span class="comment"># activation</span></span><br><span class="line">    display_grid = np.zeros(</span><br><span class="line">        ((size + <span class="number">1</span>) * n_cols - <span class="number">1</span>, images_per_row * (size + <span class="number">1</span>) - <span class="number">1</span>)</span><br><span class="line">    )</span><br><span class="line">    <span class="keyword">for</span> col <span class="keyword">in</span> <span class="built_in">range</span>(n_cols):</span><br><span class="line">        <span class="keyword">for</span> row <span class="keyword">in</span> <span class="built_in">range</span>(images_per_row):</span><br><span class="line">            channel_index = col * images_per_row + row</span><br><span class="line">            <span class="comment"># This is a single channel (or feature).</span></span><br><span class="line">            channel_image = layer_activation[<span class="number">0</span>, :, :, channel_index].copy()</span><br><span class="line">            <span class="comment"># Normalizes channel values within the [0, 255] range.</span></span><br><span class="line">            <span class="comment"># All-zero channels are kept at zero.</span></span><br><span class="line">            <span class="keyword">if</span> channel_image.<span class="built_in">sum</span>() != <span class="number">0</span>:</span><br><span class="line">                channel_image -= channel_image.mean()</span><br><span class="line">                channel_image /= channel_image.std()</span><br><span class="line">                channel_image *= <span class="number">64</span></span><br><span class="line">                channel_image += <span class="number">128</span></span><br><span class="line">            channel_image = np.clip(channel_image, <span class="number">0</span>, <span class="number">255</span>).astype(<span class="string">&quot;uint8&quot;</span>)</span><br><span class="line">            <span class="comment"># Places the channel matrix in the empty grid we prepared</span></span><br><span class="line">            display_grid[</span><br><span class="line">                col * (size + <span class="number">1</span>) : (col + <span class="number">1</span>) * size + col,</span><br><span class="line">                row * (size + <span class="number">1</span>) : (row + <span class="number">1</span>) * size + row,</span><br><span class="line">            ] = channel_image</span><br><span class="line">    <span class="comment"># Displays the grid for the layer</span></span><br><span class="line">    scale = <span class="number">1.0</span> / size</span><br><span class="line">    plt.figure(</span><br><span class="line">        figsize=(scale * display_grid.shape[<span class="number">1</span>], scale * display_grid.shape[<span class="number">0</span>])</span><br><span class="line">    )</span><br><span class="line">    plt.title(layer_name)</span><br><span class="line">    plt.grid(<span class="literal">False</span>)</span><br><span class="line">    plt.axis(<span class="string">&quot;off&quot;</span>)</span><br><span class="line">    plt.imshow(display_grid, aspect=<span class="string">&quot;auto&quot;</span>, cmap=<span class="string">&quot;viridis&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter10_interpreting-what-convnets-learn/#listing-10-6">列表 10.6</a>：可视化每个中间激活中的每个通道</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/all_activations.7a8d82cd.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter10_interpreting-what-convnets-learn/#figure-10-3">图 10.3</a>：测试猫图片上每一层的每个通道的激活情况</p>
+<p>这里有几点需要注意：</p>
+<ul>
+<li>第一层充当各种边缘检测器的集合。在这个阶段，激活值几乎保留了初始图像中的所有信息。</li>
+<li>随着层级的提升，激活模式变得越来越抽象，视觉可解释性也越来越低。它们开始编码更高层次的概念，例如“猫耳朵”和“猫眼睛”。更高层次的表征包含的关于图像视觉内容的信息越来越少，而关于图像类别的信息越来越多。</li>
+<li>随着层数的增加，激活值的稀疏性也随之增加：在第一层，所有滤波器都会被输入图像激活；但在后续层中，越来越多的滤波器处于空白状态。这意味着滤波器编码的模式在输入图像中并不存在。</li>
+</ul>
+<p>我们刚刚观察到深度神经网络学习到的表征的一个重要普遍特征：随着层数的增加，每一层提取的特征都变得越来越抽象。更高层的激活值包含的关于特定输入的信息越来越少，而关于目标（在本例中是图像的类别：猫或狗）的信息越来越多。深度神经网络实际上充当着<em>信息提炼管道的角色</em>，原始数据（在本例中是RGB图像）输入后，会经过反复转换，从而过滤掉无关信息（例如图像的具体视觉外观），并放大和提炼有用的信息（例如图像的类别）。</p>
+<p>这与人类和动物感知世界的方式类似：观察一个场景几秒钟后，人类可以记住场景中存在哪些抽象物体（例如自行车、树），但却记不住这些物体的具体外观。事实上，如果你试图凭记忆画出一辆普通的自行车，你很可能根本画不出来，即使你一生中见过成千上万辆自行车（例如，参见图 10.4）。现在就试试：这种现象绝对真实存在。你的大脑已经学会了完全抽象化视觉输入——将其转化为高级视觉概念，同时过滤掉无关的视觉细节——这使得我们很难记住周围事物的本来面目。</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/bicycles.c7a8501c.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter10_interpreting-what-convnets-learn/#figure-10-4">图 10.4</a>：左图：尝试凭记忆画一辆自行车。右图：自行车示意图应有的样子。</p>
+<h2 id="可视化卷积神经网络滤波器">可视化卷积神经网络滤波器</h2>
+<p>检查卷积神经网络（ConvNet）学习到的滤波器的另一种简便方法是显示每个滤波器应该响应的视觉模式。这可以通过<em>输入空间中的梯度上升</em>来实现，即对卷积神经网络的输入图像的值应用<em>梯度下降，</em>从而<em>最大化</em>特定滤波器的响应，初始输入图像为空白图像。最终得到的输入图像将是所选滤波器响应最强的图像。</p>
+<p>让我们用 Xception 模型的滤波器来试试。过程很简单：我们构建一个损失函数，最大化给定卷积层中给定滤波器的值，然后使用随机梯度下降法调整输入图像的值，以最大化该激活值。这将是你看到的第二个底层梯度下降循环的例子（第一个在第 2 章）。我们将分别用 TensorFlow、PyTorch 和 Jax 来演示。</p>
+<p>首先，我们实例化在 ImageNet 数据集上训练的 Xception 模型。我们可以再次使用 KerasHub 库，就像我们在第 8 章中所做的那样。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> keras_hub</span><br><span class="line"></span><br><span class="line"><span class="comment"># Instantiates the feature extractor network from pretrained weights</span></span><br><span class="line">model = keras_hub.models.Backbone.from_preset(</span><br><span class="line">    <span class="string">&quot;xception_41_imagenet&quot;</span>,</span><br><span class="line">)</span><br><span class="line"><span class="comment"># Loads the matching preprocessing to scale our input images</span></span><br><span class="line">preprocessor = keras_hub.layers.ImageConverter.from_preset(</span><br><span class="line">    <span class="string">&quot;xception_41_imagenet&quot;</span>,</span><br><span class="line">    image_size=(<span class="number">180</span>, <span class="number">180</span>),</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter10_interpreting-what-convnets-learn/#listing-10-7">清单 10.7</a>：实例化 Xception 卷积基</p>
+<p>我们对模型的卷积层——也就是 <code>t</code>层<code>Conv2D</code> 和<code>SeparableConv2D``f</code> 层——很感兴趣。我们需要知道它们的名称才能获取它们的输出。让我们按深度顺序打印出它们的名称。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> layer <span class="keyword">in</span> model.layers:</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">isinstance</span>(layer, (keras.layers.Conv2D, keras.layers.SeparableConv2D)):</span><br><span class="line">        <span class="built_in">print</span>(layer.name)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter10_interpreting-what-convnets-learn/#listing-10-8">清单 10.8</a>：打印 Xception 中所有卷积层的名称</p>
+<p>你会注意到，<code>SeparableConv2D</code>这里的层都以类似 <code>&lt;T&gt;</code> <code>block6_sepconv1</code>、<code>block7_sepconv2``&lt;T&gt;</code>、<code>&lt;T&gt;</code> 等的名称命名——Xception 被组织成块，每个块包含几个卷积层。</p>
+<p>现在我们来创建第二个模型，它返回特定层的输出——一个“特征提取器”模型。由于我们的模型是函数式 API 模型，因此它是可检查的：您可以查询其中<code>output</code>某一层的输出，并在新模型中重用它。无需复制整个 Xception 代码。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># You could replace this with the name of any layer in the Xception</span></span><br><span class="line"><span class="comment"># convolutional base.</span></span><br><span class="line">layer_name = <span class="string">&quot;block3_sepconv1&quot;</span></span><br><span class="line"><span class="comment"># This is the layer object we&#x27;re interested in.</span></span><br><span class="line">layer = model.get_layer(name=layer_name)</span><br><span class="line"><span class="comment"># We use model.input and layer.output to create a model that, given an</span></span><br><span class="line"><span class="comment"># input image, returns the output of our target layer.</span></span><br><span class="line">feature_extractor = keras.Model(inputs=model.<span class="built_in">input</span>, outputs=layer.output)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter10_interpreting-what-convnets-learn/#listing-10-9">清单 10.9</a>：返回特定输出的特征提取器模型</p>
+<p>要使用此模型，我们可以简单地将其应用于一些输入数据，但我们应该小心地应用我们模型特定的图像预处理，以便我们的图像缩放到与 Xception 预训练数据相同的范围。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">activation = feature_extractor(preprocessor(img_tensor))</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter10_interpreting-what-convnets-learn/#listing-10-10">清单 10.10</a>：使用特征提取器</p>
+<p>让我们使用特征提取模型来定义一个函数，该函数返回一个标量值，用于量化给定输入图像在层中“激活”给定滤波器的程度。这就是我们将在梯度上升过程中最大化的损失函数：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> ops</span><br><span class="line"></span><br><span class="line"><span class="comment"># The loss function takes an image tensor and the index of the filter</span></span><br><span class="line"><span class="comment"># we consider (an integer).</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">compute_loss</span>(<span class="params">image, filter_index</span>):</span><br><span class="line">    activation = feature_extractor(image)</span><br><span class="line">    <span class="comment"># We avoid border artifacts by only involving nonborder pixels in</span></span><br><span class="line">    <span class="comment"># the loss: we discard the first 2 pixels along the sides of the</span></span><br><span class="line">    <span class="comment"># activation.</span></span><br><span class="line">    filter_activation = activation[:, <span class="number">2</span>:-<span class="number">2</span>, <span class="number">2</span>:-<span class="number">2</span>, filter_index]</span><br><span class="line">    <span class="comment"># Returns the mean of the activation values for the filter</span></span><br><span class="line">    <span class="keyword">return</span> ops.mean(filter_activation)</span><br></pre></td></tr></table></figure>
+<p><strong><code>model.predict(x)</code>两者之间的区别<code>model(x)</code></strong></p>
+<p>上一章我们使用了<code>predict(x)</code>特征提取。而这里，我们却使用了<code>model(x)</code>。这是为什么呢？</p>
+<p>两者（其中<code>y = model.predict(x)</code>是输入数据数组）都表示“对 运行模型并检索输出”。然而，它们并不完全相同。<code>y = model(x)``x``x``y</code></p>
+<p><code>predict()</code>它分批遍历数据（实际上，您可以通过指定批处理大小<code>predict(x, batch_size=64)</code>），并提取输出的 NumPy 值。其原理与以下代码等效：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">predict</span>(<span class="params">x</span>):</span><br><span class="line">    y_batches = []</span><br><span class="line">    <span class="keyword">for</span> x_batch <span class="keyword">in</span> get_batches(x):</span><br><span class="line">        y_batch = model(x).numpy()</span><br><span class="line">        y_batches.append(y_batch)</span><br><span class="line">    <span class="keyword">return</span> np.concatenate(y_batches)</span><br></pre></td></tr></table></figure>
+<p>这意味着<code>predict()</code>调用可以扩展到非常大的数组。而 <code>map</code> <code>model(x)</code>操作在内存中进行，无法扩展。另一方面，<code>map``predict()</code>是不可微的：TensorFlow、PyTorch 和 JAX 都无法对其进行反向传播。</p>
+<p><code>model(x)</code>当你需要获取模型调用的梯度时，应该使用 <code>get_gradient()</code>。而<code>predict()</code>如果你只需要输出值，则应该使用 <code>get_gradient()</code>。换句话说，<code>predict()</code>除非你正在编写底层梯度下降循环（就像我们现在这样），否则应该始终使用 <code>get_gradient()</code>。</p>
+<p>一个不太明显的技巧是，为了使梯度上升过程更加平稳，可以将梯度张量除以其 L2 范数（张量中各值平方和的平方根）进行归一化。这可以确保对输入图像所做的更新幅度始终在同一范围内。</p>
+<p>我们来设置梯度上升步骤函数。任何涉及梯度的操作都需要调用后端 API，例如<code>GradientTape</code>TensorFlow、 <code>.backward()</code>PyTorch 和<code>jax.grad()</code>JAX。让我们把这三个后端的代码片段整理出来，首先是 TensorFlow。</p>
+<h3 id="tensorflow-中的梯度上升">TensorFlow 中的梯度上升</h3>
+<p>对于 TensorFlow，我们可以直接打开一个<code>GradientTape</code>作用域，并在其中计算损失来获取所需的梯度。我们将使用<code>@tf.function</code> 装饰器来加速计算：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"></span><br><span class="line"><span class="meta">@tf.function</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">gradient_ascent_step</span>(<span class="params">image, filter_index, learning_rate</span>):</span><br><span class="line">    <span class="keyword">with</span> tf.GradientTape() <span class="keyword">as</span> tape:</span><br><span class="line">        <span class="comment"># Explicitly watches the image tensor, since it isn&#x27;t a</span></span><br><span class="line">        <span class="comment"># TensorFlow Variable (only Variables are automatically watched</span></span><br><span class="line">        <span class="comment"># in a gradient tape)</span></span><br><span class="line">        tape.watch(image)</span><br><span class="line">        <span class="comment"># Computes the loss scalar, indicating how much the current</span></span><br><span class="line">        <span class="comment"># image activates the filter</span></span><br><span class="line">        loss = compute_loss(image, filter_index)</span><br><span class="line">    <span class="comment"># Computes the gradients of the loss with respect to the image</span></span><br><span class="line">    grads = tape.gradient(loss, image)</span><br><span class="line">    <span class="comment"># Applies the &quot;gradient normalization trick&quot;</span></span><br><span class="line">    grads = ops.normalize(grads)</span><br><span class="line">    <span class="comment"># Moves the image a little bit in a direction that activates our</span></span><br><span class="line">    <span class="comment"># target filter more strongly</span></span><br><span class="line">    image += learning_rate * grads</span><br><span class="line">    <span class="comment"># Returns the updated image, so we can run the step function in a</span></span><br><span class="line">    <span class="comment"># loop</span></span><br><span class="line">    <span class="keyword">return</span> image</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter10_interpreting-what-convnets-learn/#listing-10-11">示例 10.11</a>：基于随机梯度上升的损失最大化：TensorFlow</p>
+<h3 id="pytorch-中的梯度上升">PyTorch 中的梯度上升</h3>
+<p>对于 PyTorch，我们使用<code>loss.backward()</code>和<code>image.grad</code>来获得损失函数相对于输入图像的梯度，如下所示。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">gradient_ascent_step</span>(<span class="params">image, filter_index, learning_rate</span>):</span><br><span class="line">    <span class="comment"># Creates a copy of &quot;image&quot; that we can get gradients for.</span></span><br><span class="line">    image = image.clone().detach().requires_grad_(<span class="literal">True</span>)</span><br><span class="line">    loss = compute_loss(image, filter_index)</span><br><span class="line">    loss.backward()</span><br><span class="line">    grads = image.grad</span><br><span class="line">    grads = ops.normalize(grads)</span><br><span class="line">    image = image + learning_rate * grads</span><br><span class="line">    <span class="keyword">return</span> image</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter10_interpreting-what-convnets-learn/#listing-10-12">示例 10.12</a>：基于随机梯度上升的损失最大化：PyTorch</p>
+<p>由于图像张量在每次迭代中都会重新创建，因此无需重置梯度。</p>
+<h3 id="jax-中的梯度上升">JAX 中的梯度上升</h3>
+<p>对于 JAX，我们用它<code>jax.grad()</code>来获取一个函数，该函数返回损失函数相对于输入图像的梯度。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> jax</span><br><span class="line"></span><br><span class="line">grad_fn = jax.grad(compute_loss)</span><br><span class="line"></span><br><span class="line"><span class="meta">@jax.jit</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">gradient_ascent_step</span>(<span class="params">image, filter_index, learning_rate</span>):</span><br><span class="line">    grads = grad_fn(image, filter_index)</span><br><span class="line">    grads = ops.normalize(grads)</span><br><span class="line">    image += learning_rate * grads</span><br><span class="line">    <span class="keyword">return</span> image</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter10_interpreting-what-convnets-learn/#listing-10-13">列表 10.13</a>：基于随机梯度上升的损失最大化：JAX</p>
+<h3 id="过滤器可视化循环">过滤器可视化循环</h3>
+<p>现在你已经掌握了所有要素。让我们将它们组合成一个 Python 函数，该函数以滤波器索引作为输入，并返回一个张量，该张量表示使目标层中指定滤波器的激活值最大化的模式。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">img_width = <span class="number">200</span></span><br><span class="line">img_height = <span class="number">200</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">generate_filter_pattern</span>(<span class="params">filter_index</span>):</span><br><span class="line">    <span class="comment"># The number of gradient ascent steps to apply</span></span><br><span class="line">    iterations = <span class="number">30</span></span><br><span class="line">    <span class="comment"># The amplitude of a single step</span></span><br><span class="line">    learning_rate = <span class="number">10.0</span></span><br><span class="line">    image = keras.random.uniform(</span><br><span class="line">        <span class="comment"># Initialize an image tensor with random values. (The Xception</span></span><br><span class="line">        <span class="comment"># model expects input values in the [0, 1] range, so here we</span></span><br><span class="line">        <span class="comment"># pick a range centered on 0.5.)</span></span><br><span class="line">        minval=<span class="number">0.4</span>, maxval=<span class="number">0.6</span>, shape=(<span class="number">1</span>, img_width, img_height, <span class="number">3</span>)</span><br><span class="line">    )</span><br><span class="line">    <span class="comment"># Repeatedly updates the values of the image tensor to maximize our</span></span><br><span class="line">    <span class="comment"># loss function</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(iterations):</span><br><span class="line">        image = gradient_ascent_step(image, filter_index, learning_rate)</span><br><span class="line">    <span class="keyword">return</span> image[<span class="number">0</span>]</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter10_interpreting-what-convnets-learn/#listing-10-14">清单 10.14</a>：生成筛选可视化的函数</p>
+<p>生成的图像张量是一个形状为 的浮点数组<code>(200, 200, 3)</code>，其中 内的值可能不是整数<code>[0, 255]</code>。因此，您需要对该张量进行后处理，将其转换为可显示的图像。您可以使用以下简单的实用函数来完成此操作。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">deprocess_image</span>(<span class="params">image</span>):</span><br><span class="line">    <span class="comment"># Normalizes image values within the [0, 255] range</span></span><br><span class="line">    image -= ops.mean(image)</span><br><span class="line">    image /= ops.std(image)</span><br><span class="line">    image *= <span class="number">64</span></span><br><span class="line">    image += <span class="number">128</span></span><br><span class="line">    image = ops.clip(image, <span class="number">0</span>, <span class="number">255</span>)</span><br><span class="line">    <span class="comment"># Center crop to avoid border artifacts</span></span><br><span class="line">    image = image[<span class="number">25</span>:-<span class="number">25</span>, <span class="number">25</span>:-<span class="number">25</span>, :]</span><br><span class="line">    image = ops.cast(image, dtype=<span class="string">&quot;uint8&quot;</span>)</span><br><span class="line">    <span class="keyword">return</span> ops.convert_to_numpy(image)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter10_interpreting-what-convnets-learn/#listing-10-15">清单 10.15</a>：将张量转换为有效图像的实用函数</p>
+<p>我们来试一试（见图 10.5）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>plt.axis(<span class="string">&quot;off&quot;</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>plt.imshow(deprocess_image(generate_filter_pattern(filter_index=<span class="number">2</span>)))</span><br></pre></td></tr></table></figure>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/single_filter.8d2772d6.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter10_interpreting-what-convnets-learn/#figure-10-5">图 10.5</a>：该层中第二个通道<code>block3_sepconv1</code>响应最大的 模式</p>
+<p>似乎图层中的第二个过滤器<code>block3_sepconv1</code>对水平线条图案有反应，有点像水或毛皮。</p>
+<p>现在有趣的部分来了：您可以开始可视化层中的每个过滤器，甚至可以可视化模型中每一层中的每个过滤器（参见图 10.6）。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Generates and saves visualizations for the first 64 filters in the</span></span><br><span class="line"><span class="comment"># layer</span></span><br><span class="line">all_images = []</span><br><span class="line"><span class="keyword">for</span> filter_index <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">64</span>):</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;Processing filter <span class="subst">&#123;filter_index&#125;</span>&quot;</span>)</span><br><span class="line">    image = deprocess_image(generate_filter_pattern(filter_index))</span><br><span class="line">    all_images.append(image)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Prepares a blank canvas for us to paste filter visualizations</span></span><br><span class="line">margin = <span class="number">5</span></span><br><span class="line">n = <span class="number">8</span></span><br><span class="line">box_width = img_width - <span class="number">25</span> * <span class="number">2</span></span><br><span class="line">box_height = img_height - <span class="number">25</span> * <span class="number">2</span></span><br><span class="line">full_width = n * box_width + (n - <span class="number">1</span>) * margin</span><br><span class="line">full_height = n * box_height + (n - <span class="number">1</span>) * margin</span><br><span class="line">stitched_filters = np.zeros((full_width, full_height, <span class="number">3</span>))</span><br><span class="line"></span><br><span class="line"><span class="comment"># Fills the picture with our saved filters</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(n):</span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(n):</span><br><span class="line">        image = all_images[i * n + j]</span><br><span class="line">        stitched_filters[</span><br><span class="line">            (box_width + margin) * i : (box_width + margin) * i + box_width,</span><br><span class="line">            (box_height + margin) * j : (box_height + margin) * j + box_height,</span><br><span class="line">            :,</span><br><span class="line">        ] = image</span><br><span class="line"></span><br><span class="line"><span class="comment"># Saves the canvas to disk</span></span><br><span class="line">keras.utils.save_img(<span class="string">f&quot;filters_for_layer_<span class="subst">&#123;layer_name&#125;</span>.png&quot;</span>, stitched_filters)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter10_interpreting-what-convnets-learn/#listing-10-16">清单 10.16</a>：生成所有滤波器响应模式的网格</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/allfilters.8d050d97.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter10_interpreting-what-convnets-learn/#figure-10-6">图 10.6</a>：图层 、 和 的一些<code>block2_sepconv1</code>滤波器<code>block4_sepconv1</code>模式<code>block8_sepconv1</code></p>
+<p>这些滤波器可视化图可以让你深入了解卷积神经网络（ConvNet）各层如何感知世界：卷积神经网络中的每一层都会学习一组滤波器，使得它们的输入可以表示为这些滤波器的组合。这类似于傅里叶变换将信号分解为一组余弦函数。随着模型层数的增加，这些卷积神经网络滤波器组中的滤波器会变得越来越复杂和精细：</p>
+<ul>
+<li>模型第一层的滤波器对简单的方向性边缘和颜色（或在某些情况下对彩色边缘）进行编码。</li>
+<li>堆栈上层一些的滤镜，例如<code>block4_sepconv1</code>，对由边缘和颜色组合而成的简单纹理进行编码。</li>
+<li>更高层级的滤镜开始呈现出类似自然图像中的纹理：羽毛、眼睛、树叶等等。</li>
+</ul>
+<h2 id="可视化类别激活热图">可视化类别激活热图</h2>
+<p>最后介绍一种可视化技术——它有助于理解给定图像的哪些部分引导卷积神经网络（ConvNet）做出最终分类决策。这对于“调试”卷积神经网络的决策过程非常有帮助，尤其是在出现分类错误的情况下（这属于<em>模型可解释性</em>问题）。它还可以帮助你定位图像中的特定对象。</p>
+<p>这类技术被称为<em>类激活图</em>（CAM）可视化，其原理是生成输入图像的类激活热图。类激活热图是一个二维网格，网格上显示了与特定输出类别相关的分数，这些分数针对任何输入图像中的每个位置计算，表明每个位置相对于所考虑类别的重要性。例如，给定一张输入到“狗与猫”卷积神经网络的图像，CAM 可视化可以生成“猫”类别的热图，指示图像中不同部分与猫的相似程度；还可以生成“狗”类别的热图，指示图像中不同部分与狗的相似程度。我们将使用 Selvaraju 等人描述的具体实现。[<a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter10_interpreting-what-convnets-learn/#footnote-1">1]</a></p>
+<p>Grad-CAM算法首先获取卷积层的输出特征图（给定输入图像），然后根据类别相对于该通道的梯度对该特征图中的每个通道进行加权。直观地理解，这种方法是将“输入图像激活不同通道的强度”的空间图与“每个通道对类别的重要性”进行加权，从而得到“输入图像激活该类别的强度”的空间图。</p>
+<p>让我们使用预训练的 Xception 模型来演示这项技术。考虑图 10.7 中所示的两头非洲象（可能是母象和幼象）在稀树草原上漫步的图像。我们可以先下载这张图片，并将其转换为 NumPy 数组，如图 10.7 所示。</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/elephant.6abc731a.jpg" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter10_interpreting-what-convnets-learn/#figure-10-7">图 10.7</a>：非洲象的测试图片</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Downloads the image and stores it locally under the path img_path</span></span><br><span class="line">img_path = keras.utils.get_file(</span><br><span class="line">    fname=<span class="string">&quot;elephant.jpg&quot;</span>,</span><br><span class="line">    origin=<span class="string">&quot;https://img-datasets.s3.amazonaws.com/elephant.jpg&quot;</span>,</span><br><span class="line">)</span><br><span class="line"><span class="comment"># Returns a Python Imaging Library (PIL) image</span></span><br><span class="line">img = keras.utils.load_img(img_path)</span><br><span class="line">img_array = np.expand_dims(img, axis=<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter10_interpreting-what-convnets-learn/#listing-10-17">清单 10.17</a>：对 Xception 的输入图像进行预处理</p>
+<p>目前为止，我们仅使用 KerasHub 实例化了一个基于骨干类的预训练特征提取器网络。对于 Grad-CAM，我们需要完整的 Xception 模型，包括分类头——回想一下，Xception 是在 ImageNet 数据集上训练的，该数据集包含约 100 万张标注图像，分属 1000 个不同的类别。</p>
+<p>KerasHub为常见的端到端工作流程（例如图像分类、文本分类、图像生成等）提供了一个高级<em>任务API。一个任务将预处理、特征提取网络和特定于任务的头部封装到一个易于使用的类中。让我们来试用一下：</em></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; model = keras_hub.models.ImageClassifier.from_preset(</span><br><span class="line">...    &quot;xception_41_imagenet&quot;,</span><br><span class="line">...    # We can configure the final activation of the classifier. Here,</span><br><span class="line">...    # we use a softmax activation so our outputs are probabilities.</span><br><span class="line">...    activation=&quot;softmax&quot;,</span><br><span class="line">... )</span><br><span class="line">&gt;&gt;&gt; preds = model.predict(img_array)</span><br><span class="line">&gt;&gt;&gt; # ImageNet has 1,000 classes, so each prediction from our</span><br><span class="line">&gt;&gt;&gt; # classifier has 1,000 entries.</span><br><span class="line">&gt;&gt;&gt; preds.shape</span><br><span class="line">(1, 1000)</span><br><span class="line">&gt;&gt;&gt; keras_hub.utils.decode_imagenet_predictions(preds)</span><br><span class="line">[[(&quot;African_elephant&quot;, 0.90331),</span><br><span class="line">  (&quot;tusker&quot;, 0.05487),</span><br><span class="line">  (&quot;Indian_elephant&quot;, 0.01637),</span><br><span class="line">  (&quot;triceratops&quot;, 0.00029),</span><br><span class="line">  (&quot;Mexican_hairless&quot;, 0.00018)]]</span><br></pre></td></tr></table></figure>
+<p>该图像预测的前五大类别如下：</p>
+<ul>
+<li>非洲象（概率为 90%）</li>
+<li>巨牙鲨（概率为 5%）</li>
+<li>印度象（概率为 2%）</li>
+<li>三角龙和墨西哥无毛犬的概率均小于0.1%</li>
+</ul>
+<p>网络识别出图像中包含数量不明的非洲象。预测向量中激活程度最高的条目是索引为 386 的“非洲象”类别：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; np.argmax(preds[0])</span><br><span class="line">386</span><br></pre></td></tr></table></figure>
+<p>为了直观地了解图像的哪些部分最像非洲象，让我们设置 Grad-CAM 流程。</p>
+<p>你会注意到，在调用任务模型之前，我们不需要对图像进行预处理。这是因为 KerasHub<code>ImageClassifier</code>已经为我们预处理了输入<code>predict()</code>。现在让我们自己预处理图像，以便可以直接使用预处理后的输入：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># KerasHub tasks like ImageClassifier have a preprocessor layer.</span></span><br><span class="line">img_array = model.preprocessor(img_array)</span><br></pre></td></tr></table></figure>
+<p>首先，我们创建一个模型，将输入图像映射到最后一个卷积层的激活值。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">last_conv_layer_name = <span class="string">&quot;block14_sepconv2_act&quot;</span></span><br><span class="line">last_conv_layer = model.backbone.get_layer(last_conv_layer_name)</span><br><span class="line">last_conv_layer_model = keras.Model(model.inputs, last_conv_layer.output)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter10_interpreting-what-convnets-learn/#listing-10-18">清单 10.18</a>：返回最后一个卷积输出</p>
+<p>其次，我们创建了一个模型，将最后一个卷积层的激活映射到最终的类别预测。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">classifier_input = last_conv_layer.output</span><br><span class="line">x = classifier_input</span><br><span class="line"><span class="keyword">for</span> layer_name <span class="keyword">in</span> [<span class="string">&quot;pooler&quot;</span>, <span class="string">&quot;predictions&quot;</span>]:</span><br><span class="line">    x = model.get_layer(layer_name)(x)</span><br><span class="line">classifier_model = keras.Model(classifier_input, x)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter10_interpreting-what-convnets-learn/#listing-10-19">清单 10.19</a>：从最后一个卷积输出到最终预测</p>
+<p>然后，我们计算输入图像预测结果最高的类别相对于最后一个卷积层激活值的梯度。同样，由于需要计算梯度，我们必须使用后端 API。</p>
+<h3 id="获取顶层类的梯度tensorflow-版本">获取顶层类的梯度：TensorFlow 版本</h3>
+<p>让我们从 TensorFlow 版本开始，再次使用<code>GradientTape</code>。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_top_class_gradients</span>(<span class="params">img_array</span>):</span><br><span class="line">    <span class="comment"># Computes activations of the last conv layer and makes the tape</span></span><br><span class="line">    <span class="comment"># watch it</span></span><br><span class="line">    last_conv_layer_output = last_conv_layer_model(img_array)</span><br><span class="line">    <span class="keyword">with</span> tf.GradientTape() <span class="keyword">as</span> tape:</span><br><span class="line">        tape.watch(last_conv_layer_output)</span><br><span class="line">        preds = classifier_model(last_conv_layer_output)</span><br><span class="line">        top_pred_index = ops.argmax(preds[<span class="number">0</span>])</span><br><span class="line">        <span class="comment"># Retrieves the activation channel corresponding to the top</span></span><br><span class="line">        <span class="comment"># predicted class</span></span><br><span class="line">        top_class_channel = preds[:, top_pred_index]</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Gets the gradient of the top predicted class with regard to the</span></span><br><span class="line">    <span class="comment"># output feature map of the last convolutional layer</span></span><br><span class="line">    grads = tape.gradient(top_class_channel, last_conv_layer_output)</span><br><span class="line">    <span class="keyword">return</span> grads, last_conv_layer_output</span><br><span class="line"></span><br><span class="line">grads, last_conv_layer_output = get_top_class_gradients(img_array)</span><br><span class="line">grads = ops.convert_to_numpy(grads)</span><br><span class="line">last_conv_layer_output = ops.convert_to_numpy(last_conv_layer_output)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter10_interpreting-what-convnets-learn/#listing-10-20">清单 10.20</a>：使用 TensorFlow 计算顶级类梯度</p>
+<h3 id="获取顶层类的梯度pytorch-版本">获取顶层类的梯度：PyTorch 版本</h3>
+<p><code>.backward()</code>接下来，这是使用 PyTorch和 的版本<code>.grad</code>。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">get_top_class_gradients</span>(<span class="params">img_array</span>):</span><br><span class="line">    <span class="comment"># Computes activations of the last conv layer</span></span><br><span class="line">    last_conv_layer_output = last_conv_layer_model(img_array)</span><br><span class="line">    <span class="comment"># Creates a copy of last_conv_layer_output that we can get</span></span><br><span class="line">    <span class="comment"># gradients for</span></span><br><span class="line">    last_conv_layer_output = (</span><br><span class="line">        last_conv_layer_output.clone().detach().requires_grad_(<span class="literal">True</span>)</span><br><span class="line">    )</span><br><span class="line">    <span class="comment"># Retrieves the activation channel corresponding to the top</span></span><br><span class="line">    <span class="comment"># predicted class</span></span><br><span class="line">    preds = classifier_model(last_conv_layer_output)</span><br><span class="line">    top_pred_index = ops.argmax(preds[<span class="number">0</span>])</span><br><span class="line">    top_class_channel = preds[:, top_pred_index]</span><br><span class="line">    <span class="comment"># Gets the gradient of the top predicted class with regard to the</span></span><br><span class="line">    <span class="comment"># output feature map of the last convolutional layer</span></span><br><span class="line">    top_class_channel.backward()</span><br><span class="line">    grads = last_conv_layer_output.grad</span><br><span class="line">    <span class="keyword">return</span> grads, last_conv_layer_output</span><br><span class="line"></span><br><span class="line">grads, last_conv_layer_output = get_top_class_gradients(img_array)</span><br><span class="line">grads = ops.convert_to_numpy(grads)</span><br><span class="line">last_conv_layer_output = ops.convert_to_numpy(last_conv_layer_output)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter10_interpreting-what-convnets-learn/#listing-10-21">清单 10.21</a>：使用 PyTorch 计算顶级类梯度</p>
+<h3 id="获取顶层类的渐变jax-版本">获取顶层类的渐变：JAX 版本</h3>
+<p>最后，我们来实现 JAX。我们定义一个独立的损失计算函数，该函数接收最后一层的输出，并返回与预测结果最高的类别对应的激活通道。我们将这个激活值用作损失，从而计算梯度。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> jax</span><br><span class="line"></span><br><span class="line"><span class="comment"># Defines a separate loss function</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">loss_fn</span>(<span class="params">last_conv_layer_output</span>):</span><br><span class="line">    preds = classifier_model(last_conv_layer_output)</span><br><span class="line">    top_pred_index = ops.argmax(preds[<span class="number">0</span>])</span><br><span class="line">    top_class_channel = preds[:, top_pred_index]</span><br><span class="line">    <span class="comment"># Returns the activation value of the top-class channel</span></span><br><span class="line">    <span class="keyword">return</span> top_class_channel[<span class="number">0</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># Creates a gradient function</span></span><br><span class="line">grad_fn = jax.grad(loss_fn)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_top_class_gradients</span>(<span class="params">img_array</span>):</span><br><span class="line">    last_conv_layer_output = last_conv_layer_model(img_array)</span><br><span class="line">    <span class="comment"># Now  retrieving the gradient of the top-class channel is just a</span></span><br><span class="line">    <span class="comment"># matter of calling the gradient function!</span></span><br><span class="line">    grads = grad_fn(last_conv_layer_output)</span><br><span class="line">    <span class="keyword">return</span> grads, last_conv_layer_output</span><br><span class="line"></span><br><span class="line">grads, last_conv_layer_output = get_top_class_gradients(img_array)</span><br><span class="line">grads = ops.convert_to_numpy(grads)</span><br><span class="line">last_conv_layer_output = ops.convert_to_numpy(last_conv_layer_output)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter10_interpreting-what-convnets-learn/#listing-10-22">清单 10.22</a>：使用 Jax 计算顶级类梯度</p>
+<h3 id="显示类别激活热图">显示类别激活热图</h3>
+<p>现在，我们对梯度张量应用池化和重要性加权，以获得类别激活的热图。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># This is a vector where each entry is the mean intensity of the</span></span><br><span class="line"><span class="comment"># gradient for a given channel. It quantifies the importance of each</span></span><br><span class="line"><span class="comment"># channel with regard to the top predicted class.</span></span><br><span class="line">pooled_grads = np.mean(grads, axis=(<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>))</span><br><span class="line">last_conv_layer_output = last_conv_layer_output[<span class="number">0</span>].copy()</span><br><span class="line"><span class="comment"># Multiplies each channel in the output of the last convolutional layer</span></span><br><span class="line"><span class="comment"># by how important this channel is</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(pooled_grads.shape[-<span class="number">1</span>]):</span><br><span class="line">    last_conv_layer_output[:, :, i] *= pooled_grads[i]</span><br><span class="line"><span class="comment"># The channel-wise mean of the resulting feature map is our heatmap of</span></span><br><span class="line"><span class="comment"># class activation.</span></span><br><span class="line">heatmap = np.mean(last_conv_layer_output, axis=-<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter10_interpreting-what-convnets-learn/#listing-10-23">清单 10.23</a>：梯度池化和通道重要性加权</p>
+<p>为了便于可视化，您还需要将热图归一化到 0 到 1 之间。结果如图 10.8 所示。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">heatmap = np.maximum(heatmap, <span class="number">0</span>)</span><br><span class="line">heatmap /= np.<span class="built_in">max</span>(heatmap)</span><br><span class="line">plt.matshow(heatmap)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter10_interpreting-what-convnets-learn/#listing-10-24">清单 10.24</a>：热图后处理</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/cam.b66fff28.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter10_interpreting-what-convnets-learn/#figure-10-8">图 10.8</a>：独立类激活热图</p>
+<p>最后，让我们生成一张图像，将原始图像叠加到你刚刚获得的热图上（见图 10.9）。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> matplotlib.cm <span class="keyword">as</span> cm</span><br><span class="line"></span><br><span class="line"><span class="comment"># Loads the original image</span></span><br><span class="line">img = keras.utils.load_img(img_path)</span><br><span class="line">img = keras.utils.img_to_array(img)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Rescales the heatmap to the range 0–255</span></span><br><span class="line">heatmap = np.uint8(<span class="number">255</span> * heatmap)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Uses the &quot;jet&quot; colormap to recolorize the heatmap</span></span><br><span class="line">jet = cm.get_cmap(<span class="string">&quot;jet&quot;</span>)</span><br><span class="line">jet_colors = jet(np.arange(<span class="number">256</span>))[:, :<span class="number">3</span>]</span><br><span class="line">jet_heatmap = jet_colors[heatmap]</span><br><span class="line"></span><br><span class="line"><span class="comment"># Creates an image that contains the recolorized heatmap</span></span><br><span class="line">jet_heatmap = keras.utils.array_to_img(jet_heatmap)</span><br><span class="line">jet_heatmap = jet_heatmap.resize((img.shape[<span class="number">1</span>], img.shape[<span class="number">0</span>]))</span><br><span class="line">jet_heatmap = keras.utils.img_to_array(jet_heatmap)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Superimposes the heatmap and the original image, with the heatmap at</span></span><br><span class="line"><span class="comment"># 40% opacity</span></span><br><span class="line">superimposed_img = jet_heatmap * <span class="number">0.4</span> + img</span><br><span class="line">superimposed_img = keras.utils.array_to_img(superimposed_img)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Shows the superimposed image</span></span><br><span class="line">plt.imshow(superimposed_img)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter10_interpreting-what-convnets-learn/#listing-10-25">图 10.25</a>：将热图叠加到原始图片上</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/elephant_cam.73b7f8e0.jpg" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter10_interpreting-what-convnets-learn/#figure-10-9">图 10.9</a>：测试图片上非洲象类别的激活热图</p>
+<p>这种可视化技术回答了两个重要问题：</p>
+<ul>
+<li>为什么电视台认为这张图片中包含非洲象？</li>
+<li>图片中的非洲象位于哪里？</li>
+</ul>
+<p>尤其值得注意的是，小象的耳朵被强烈激活：这可能是神经网络能够区分非洲象和印度象的方式。</p>
+<h2 id="概括">概括</h2>
+<ul>
+<li>卷积神经网络通过应用一组已学习的滤波器来处理图像。早期层的滤波器检测边缘和基本纹理，而后期层的滤波器则检测越来越抽象的概念。</li>
+<li>您可以可视化滤波器检测到的模式以及滤波器在图像上的响应图。</li>
+<li>您可以使用 Grad-CAM 技术来可视化图像中的哪些区域导致了分类器的决策。</li>
+<li>这些技术结合起来，使得卷积神经网络具有很高的可解释性。</li>
+</ul>
+<h3 id="脚注">脚注</h3>
+<ol type="1">
+<li>Ramprasaath R. Selvaraju 等人，“Grad-CAM：基于梯度定位的深度网络可视化解释”，arxiv (2019)，https://arxiv.org/abs/1610.02391。 [<a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter10_interpreting-what-convnets-learn/#footnote-link-1">↩︎]</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/02/24/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B9%E3%80%81%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E6%9E%B6%E6%9E%84%E6%A8%A1%E5%BC%8F/" rel="prev" title="《DEEP LEARNING with Python》第九章">
+                  <i class="fa fa-chevron-left"></i> 《DEEP LEARNING with Python》第九章
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/02/26/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B11%E3%80%81%E5%9B%BE%E5%83%8F%E5%88%86%E5%89%B2/" rel="next" title="《DEEP LEARNING with Python》第十一章">
+                  《DEEP LEARNING with Python》第十一章 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

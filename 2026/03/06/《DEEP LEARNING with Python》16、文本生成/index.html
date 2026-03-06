@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"enable":true,"style":"tabs","active":"giscus","storage":true,"lazyload":true,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+
+
+    <meta name="description" content="第十六章 文本生成 运行代码 在 Colab 上运行 在 GitHub 上查看 内容序列生成简史训练一个迷你 GPT使用预训练的LLM继续攻读法学硕士学位法学硕士（LLM）的未来发展方向是什么？概括 本章内容  生成模型简史 从零开始训练一个微型 GPT 模型 使用预训练的Transformer模型构建聊天机器人 构建一个能够用自然语言描述图像的多模态模型  当我最初提出在不久的将来，我们所消费的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《DEEP LEARNING with Python》第十六章">
+<meta property="og:url" content="http://hongyitong.github.io/2026/03/06/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B16%E3%80%81%E6%96%87%E6%9C%AC%E7%94%9F%E6%88%90/index.html">
+<meta property="og:site_name" content="墨语浮生">
+<meta property="og:description" content="第十六章 文本生成 运行代码 在 Colab 上运行 在 GitHub 上查看 内容序列生成简史训练一个迷你 GPT使用预训练的LLM继续攻读法学硕士学位法学硕士（LLM）的未来发展方向是什么？概括 本章内容  生成模型简史 从零开始训练一个微型 GPT 模型 使用预训练的Transformer模型构建聊天机器人 构建一个能够用自然语言描述图像的多模态模型  当我最初提出在不久的将来，我们所消费的">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/keras-midjourney-image.edfbf674.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/learning-rate-warmup.e99ec2a4.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/sampling-strategies.0545bedf.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/lora-layer.b3119596.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/lora-memory.c02fdac4.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/multimodal-transformer.974dc2ec.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/gemma-test-image.ddb3b630.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/llm-sizes.34d71a34.png">
+<meta property="article:published_time" content="2026-03-05T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-03-01T03:58:49.851Z">
+<meta property="article:author" content="Rayman.hung">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/keras-midjourney-image.edfbf674.png">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2026/03/06/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B16%E3%80%81%E6%96%87%E6%9C%AC%E7%94%9F%E6%88%90/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2026/03/06/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B16%E3%80%81%E6%96%87%E6%9C%AC%E7%94%9F%E6%88%90/","path":"2026/03/06/《DEEP LEARNING with Python》16、文本生成/","title":"《DEEP LEARNING with Python》第十六章"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>《DEEP LEARNING with Python》第十六章 | 墨语浮生</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZXGEJDXQ33"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-ZXGEJDXQ33","only_pageview":false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?ff358b9c7e949787b074bfc9c8019a9d"></script>
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">墨语浮生</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%87%E6%9C%AC%E7%94%9F%E6%88%90"><span class="nav-text">文本生成</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E4%BB%A3%E7%A0%81"><span class="nav-text">运行代码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BA%8F%E5%88%97%E7%94%9F%E6%88%90%E7%AE%80%E5%8F%B2"><span class="nav-text">序列生成简史</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%AD%E7%BB%83%E4%B8%80%E4%B8%AA%E8%BF%B7%E4%BD%A0-gpt"><span class="nav-text">训练一个迷你 GPT</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%84%E5%BB%BA%E6%A8%A1%E5%9E%8B"><span class="nav-text">构建模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E9%A2%84%E8%AE%AD%E7%BB%83"><span class="nav-text">模型预训练</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E5%BC%8F%E8%A7%A3%E7%A0%81"><span class="nav-text">生成式解码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8A%BD%E6%A0%B7%E7%AD%96%E7%95%A5"><span class="nav-text">抽样策略</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E9%A2%84%E8%AE%AD%E7%BB%83%E7%9A%84llm"><span class="nav-text">使用预训练的LLM</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-gemma-%E6%A8%A1%E5%9E%8B%E8%BF%9B%E8%A1%8C%E6%96%87%E6%9C%AC%E7%94%9F%E6%88%90"><span class="nav-text">使用 Gemma 模型进行文本生成</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%87%E4%BB%A4%E5%BE%AE%E8%B0%83"><span class="nav-text">指令微调</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%8E%E7%A7%A9%E8%87%AA%E9%80%82%E5%BA%94lora"><span class="nav-text">低秩自适应（LoRA）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%A7%E7%BB%AD%E6%94%BB%E8%AF%BB%E6%B3%95%E5%AD%A6%E7%A1%95%E5%A3%AB%E5%AD%A6%E4%BD%8D"><span class="nav-text">继续攻读法学硕士学位</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E4%BA%BA%E7%B1%BB%E5%8F%8D%E9%A6%88%E7%9A%84%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0rlhf"><span class="nav-text">基于人类反馈的强化学习（RLHF）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E9%80%9A%E8%BF%87-rlhf-%E8%AE%AD%E7%BB%83%E7%9A%84%E8%81%8A%E5%A4%A9%E6%9C%BA%E5%99%A8%E4%BA%BA"><span class="nav-text">使用通过 RLHF 训练的聊天机器人</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E6%A8%A1%E6%80%81llm"><span class="nav-text">多模态LLM</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E6%A8%A1%E5%9E%8B"><span class="nav-text">基础模型</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A3%80%E7%B4%A2%E5%A2%9E%E5%BC%BA%E7%94%9F%E6%88%90rag"><span class="nav-text">检索增强生成（RAG）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%A8%E7%90%86%E6%A8%A1%E5%9E%8B"><span class="nav-text">“推理”模型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%95%E5%AD%A6%E7%A1%95%E5%A3%ABllm%E7%9A%84%E6%9C%AA%E6%9D%A5%E5%8F%91%E5%B1%95%E6%96%B9%E5%90%91%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-text">法学硕士（LLM）的未来发展方向是什么？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E6%8B%AC"><span class="nav-text">概括</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%84%9A%E6%B3%A8"><span class="nav-text">脚注</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、心情记录</div>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/03/06/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B16%E3%80%81%E6%96%87%E6%9C%AC%E7%94%9F%E6%88%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="《DEEP LEARNING with Python》第十六章 | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《DEEP LEARNING with Python》第十六章
+        </h1>
+
+        </h1>
+          
+             <p class="post-subtitle">文本生成</p>
+          
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-03-06 00:00:00" itemprop="dateCreated datePublished" datetime="2026-03-06T00:00:00+08:00">2026-03-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>第十六章</p>
+<h1 id="文本生成">文本生成</h1>
+<h3 id="运行代码">运行代码</h3>
+<p><a target="_blank" rel="noopener" href="https://colab.research.google.com/github/fchollet/deep-learning-with-python-notebooks/blob/master/chapter16_text-generation.ipynb">在 Colab 上运行</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/fchollet/deep-learning-with-python-notebooks">在 GitHub 上查看</a></p>
+<p>内容<a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter16_text-generation/#a-brief-history-of-sequence-generation">序列生成简史</a><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter16_text-generation/#training-a-mini-gpt">训练一个迷你 GPT</a><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter16_text-generation/#using-a-pretrained-llm">使用预训练的LLM</a><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter16_text-generation/#going-further-with-llms">继续攻读法学硕士学位</a><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter16_text-generation/#where-are-llms-heading-next">法学硕士（LLM）的未来发展方向是什么？</a><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter16_text-generation/#summary">概括</a></p>
+<p>本章内容</p>
+<ul>
+<li>生成模型简史</li>
+<li>从零开始训练一个微型 GPT 模型</li>
+<li>使用预训练的Transformer模型构建聊天机器人</li>
+<li>构建一个能够用自然语言描述图像的多模态模型</li>
+</ul>
+<p>当我最初提出在不久的将来，我们所消费的大部分文化内容都将在人工智能的大力协助下创作时，我遭到了彻底的质疑，甚至连资深的机器学习从业者也对此表示怀疑。那是2014年。十年过去了，这种质疑以惊人的速度消散了。生成式人工智能工具如今已成为文字处理器、图像编辑器和开发环境中常见的组成部分。运用生成模型创作的文学和艺术作品也屡获殊荣——这引发了相当大的争议和辩论。[<a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter16_text-generation/#footnote-1">1]</a>人工智能与艺术创作常常交织在一起的世界，如今已不再像是科幻小说里的情节。</p>
+<span id="more"></span>
+<p>从实际意义上讲，人工智能远未达到能与人类编剧、画家或作曲家匹敌的程度。但取代人类并非必要，也不应该成为人工智能的目标。在许多领域，尤其是在创意领域，人们会利用人工智能来增强自身能力——与其说是人工智能，不如说是增强智能。</p>
+<p>艺术创作很大程度上依赖于模式识别和技术技巧。我们的感知方式、语言和艺术作品都具有统计结构，而深度学习模型擅长学习这种结构。机器学习模型可以学习图像、音乐和故事的统计潜在空间，并从中采样，从而创造出与模型训练数据中特征相似的新艺术作品。这种采样本身几乎算不上艺术创作——它仅仅是一种数学运算。只有作为人类观众的我们进行解读，才能赋予模型生成的作品以意义。但在技艺精湛的艺术家手中，算法生成的图像可以被引导得富有意义，并且充满美感。潜在空间采样可以成为艺术家的画笔，增强我们的创造力，并拓展我们的想象空间。它甚至可以消除对技术技巧和练习的需求，使艺术创作更加普及——建立起一种纯粹表达的新媒介，将艺术与技艺区分开来。</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/keras-midjourney-image.edfbf674.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter16_text-generation/#figure-16-1">图 16.1</a>：使用生成图像软件 Midjourney 生成的图像。提示是“手绘的科幻景观，居民居住在一栋形状像红色字母 K 的建筑中”。</p>
+<p>电子音乐和算法音乐的先驱伊阿尼斯·泽纳基斯在 20 世纪 60 年代就以将自动化技术应用于音乐创作为背景，精彩地表达了同样的想法：[<a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter16_text-generation/#footnote-2">2]</a></p>
+<blockquote>
+<p>摆脱了繁琐的计算，作曲家得以专注于新音乐形式所提出的普遍问题，并在调整输入数据的同时，探索这种形式的方方面面。例如，他可以测试从独奏到室内乐团再到大型管弦乐团的所有乐器组合。借助电子计算机，作曲家就像一位领航员：他按下按钮，输入坐标，操控着一艘宇宙飞船在声音的空间中航行，穿越他过去只能在遥远梦境中瞥见的音响星座和星系。</p>
+</blockquote>
+<p>生成式人工智能的潜力远不止于艺术创作。在许多行业中，人们创作的内容更需要模式识别：例如，总结大型文档、转录语音、校对错别字或标记代码中的常见错误。这些重复性工作恰恰发挥了深度学习方法的优势。如何在工作场所部署人工智能，以及它对社会产生的切实影响，都值得我们深思。</p>
+<p>在接下来的两章中，我们将探索深度学习在辅助内容创作方面的潜力。我们将学习如何在文本和图像领域中挖掘潜在空间，并从中提取新的内容。我们将从文本入手，扩展我们在上一章中首次接触的语言模型概念。这些 <em>大型语言模型</em>（简称<em>LLM）</em>是ChatGPT等数字助手以及众多快速增长的实际应用背后的驱动力。</p>
+<h2 id="序列生成简史">序列生成简史</h2>
+<p>直到最近，从模型生成序列的想法还只是机器学习领域的一个小众子课题——生成式循环网络直到 2016 年才开始进入主流视野。然而，这些技术有着相当长的历史，可以追溯到 1997 年 LSTM 算法的开发。</p>
+<p>2002年，道格拉斯·埃克首次将LSTM应用于音乐生成，并取得了令人瞩目的成果。埃克后来成为谷歌大脑的研究员，并在2016年创立了名为Magenta的新研究团队，致力于运用现代深度学习技术创作引人入胜的音乐。有时候，好的想法需要15年的时间才能付诸实践。</p>
+<p>在2000年代末和2010年代初，Alex Graves率先将循环神经网络应用于新型序列数据的生成。尤其值得一提的是，他2013年发表的关于应用循环混合密度网络，利用笔迹时间序列生成类人手写体的研究，被一些人视为一个转折点。Graves在2013年上传到预印本服务器arXiv的LaTeX文件中留下了一条被注释掉的评论：“生成序列数据是计算机最接近做梦的方式。” 这项工作以及“机器会做梦”的概念，在我开发Keras之初就给了我重要的启发。</p>
+<p>2018 年，在我们上一章讨论的论文《注意力是你所需要的一切》发表一年后，一个名为 OpenAI 的组织的研究人员发表了一篇新论文《通过生成式预训练提高语言理解能力》。[<a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter16_text-generation/#footnote-3">3]</a> 他们将几种成分混合在一起：</p>
+<ul>
+<li>无监督语言模型预训练——本质上是训练一个模型来“猜测序列中的下一个词元”，就像我们在第15章中对莎士比亚生成器所做的那样。</li>
+<li>Transformer架构</li>
+<li>通过数千本自出版书籍收集的各种主题的文本数据</li>
+</ul>
+<p>作者们证明，这种预训练模型可以进行微调，从而在各种文本分类任务上取得最先进的性能——从衡量两个句子的相似度到回答多项选择题。他们将这种预训练模型命名为<em>GPT</em>，即生成式预训练 Transformer 的缩写。</p>
+<p>GPT并没有带来任何建模或训练方面的改进。有趣的是，这种通用的训练方案在许多任务上都能胜过更复杂的技术。它无需复杂的文本归一化，也无需针对每个基准测试定制模型架构或训练数据，只需要大量的预训练数据和计算资源。</p>
+<p>在接下来的几年里，OpenAI 一心一意地致力于扩展这一理念。模型架构仅做了细微的改动。四年间，OpenAI 发布了三个版本的 GPT，扩展情况如下：</p>
+<ul>
+<li>GPT-1 于 2018 年发布，拥有 1.17 亿个参数，并使用 10 亿个标记进行训练。</li>
+<li>GPT-2 于 2019 年发布，拥有 15 亿个参数，并使用超过 100 亿个 token 进行训练。</li>
+<li>GPT-3 于 2020 年发布，拥有 1750 亿个参数，并使用大约 5000 万亿个 token 进行训练。</li>
+</ul>
+<p>语言建模设置使每个模型都能生成文本，OpenAI 的开发人员注意到，随着规模的每一次飞跃，这种生成输出的质量都大幅提高。</p>
+<p>对于 GPT-1 来说，模型的生成能力主要是预训练的副产品，而非其主要目标。他们通过添加一个额外的密集层进行分类微调来评估模型，就像我们在上一章中对 RoBERTa 所做的那样。</p>
+<p>作者们发现，使用 GPT-2 时，只需向模型提供几个任务示例，无需任何微调即可生成高质量的输出。例如，您可以向模型输入以下内容，使其输出“cheese”（奶酪）一词的法语翻译：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Translate English to French:</span><br><span class="line"></span><br><span class="line">sea otter =&gt; loutre de mer</span><br><span class="line">peppermint =&gt; menthe poivrée</span><br><span class="line">plush giraffe =&gt; peluche girafe</span><br><span class="line">cheese =&gt;</span><br></pre></td></tr></table></figure>
+<p>这种设置称为<em>少样本学习</em>，它尝试仅使用少量监督示例来教模型解决一个新问题——对于标准梯度下降来说，示例数量太少了。</p>
+<p>使用 GPT-3 时，并非总是需要示例。您只需向模型提供问题和输入的简单文本描述，通常就能获得高质量的结果：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Translate English to French:</span><br><span class="line"></span><br><span class="line">cheese =&gt;</span><br></pre></td></tr></table></figure>
+<p>GPT-3仍然存在一些尚未解决的根本性问题。语言学习模型（LLM）经常出现“幻觉”——其输出结果可能在没有任何预兆的情况下从准确变为完全错误。它们对提示语的措辞极其敏感，看似细微的提示语改动都会导致性能的大幅波动。而且，它们无法适应训练数据中未充分出现的问题。</p>
+<p>然而，GPT-3 的生成输出效果足够好，因此该模型成为了 ChatGPT 的基础——ChatGPT 是第一个广泛应用的面向消费者的生成式模型。此后数月乃至数年，ChatGPT 引发了大量的投资和兴趣，推动了语言学习模型 (LLM) 的构建，并探索了其新的应用场景。在下一节中，我们将构建一个微型 GPT 模型，以便更好地理解此类模型的工作原理、功能以及局限性。</p>
+<h2 id="训练一个迷你-gpt">训练一个迷你 GPT</h2>
+<p>为了开始预训练我们的迷你 GPT，我们需要大量的文本数据。GPT-1 使用了一个名为 BooksCorpus 的数据集，其中包含许多未经作者明确许可而添加的免费自出版书籍。该数据集已被其出版商撤下。</p>
+<p>我们将使用谷歌于 2020 年发布的名为“Colossal Clean Crawled Corpus”（C4）的较新的预训练数据集。该数据集大小为 750 GB，远大于我们能够合理训练一个书籍示例的数据集，因此我们将使用不到 1% 的整个语料库。</p>
+<p>我们先来下载并解压数据：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> keras</span><br><span class="line"><span class="keyword">import</span> pathlib</span><br><span class="line"></span><br><span class="line">extract_dir = keras.utils.get_file(</span><br><span class="line">    fname=<span class="string">&quot;mini-c4&quot;</span>,</span><br><span class="line">    origin=(</span><br><span class="line">        <span class="string">&quot;https://hf.co/datasets/mattdangerw/mini-c4/resolve/main/mini-c4.zip&quot;</span></span><br><span class="line">    ),</span><br><span class="line">    extract=<span class="literal">True</span>,</span><br><span class="line">)</span><br><span class="line">extract_dir = pathlib.Path(extract_dir) / <span class="string">&quot;mini-c4&quot;</span></span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter16_text-generation/#listing-16-1">清单 16.1</a>：下载 C4 数据集的一部分</p>
+<p><strong>运行本章中的代码</strong></p>
+<p>生成式语言模型体积庞大，运行需要大量的计算资源。尽管我们已尽力使本章代码易于理解，但它仍然是本书中计算量最大的章节。</p>
+<p>如果你愿意，可以在免费的 Colab GPU 运行时（截至撰写本文时为 T4 GPU）上运行所有程序，但请做好等待的准备！这个 mini-GPT 示例大约需要 6 个小时的训练时间，而且在运行笔记本的过程中，你需要重启 Colab 运行时以释放 GPU 内存，然后再加载更大的预训练模型。更强大的 GPU 可以更快地运行这些示例；我们是在 A100 上开发了这个示例，它可以在一个多小时内完整运行本章的代码。</p>
+<p>您可以随时查看那些昂贵的<code>fit()</code>调用，并减少训练步骤的数量以便快速进行实验。而且，如果您几年后还在运行此程序，这些示例很可能对现代硬件来说只是小菜一碟！</p>
+<p>我们有 50 个文本数据分片，每个分片包含大约 75 MB 的原始文本。每一行都包含一个文档，其中换行符已转义。让我们来看第一个分片中的一个文档：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; with open(extract_dir / &quot;shard0.txt&quot;, &quot;r&quot;) as f:</span><br><span class="line">&gt;&gt;&gt;     print(f.readline().replace(&quot;\\n&quot;, &quot;\n&quot;)[:100])</span><br><span class="line">Beginners BBQ Class Taking Place in Missoula!</span><br><span class="line">Do you want to get better at making delicious BBQ? You</span><br></pre></td></tr></table></figure>
+<p>即使是像我们正在训练的这种小型逻辑模型，我们也需要预处理大量数据才能进行预训练。使用快速分词程序将源文档预处理成整数标记可以简化我们的工作。</p>
+<p>我们将使用 SentencePiece 库，该库用于文本数据的子词标记化。实际的标记化技术与我们在第 14 章中自行构建的字节对编码标记化技术相同，但该库使用 C++ 编写以提高速度，并添加了一个<code>detokenize()</code>将整数反转为字符串并将它们连接起来的函数。我们将使用一个预先构建的词汇表，其中包含 32,000 个词汇术语，这些术语以 SentencePiece 库所需的特定格式存储。</p>
+<p>和上一章一样，我们可以使用 KerasHub 库来访问一些用于处理大型语言模型的额外函数。KerasHub 将 SentencePiece 库封装成一个 Keras 层。让我们来试一试。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> keras_hub</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line">vocabulary_file = keras.utils.get_file(</span><br><span class="line">    origin=<span class="string">&quot;https://hf.co/mattdangerw/spiece/resolve/main/vocabulary.proto&quot;</span>,</span><br><span class="line">)</span><br><span class="line">tokenizer = keras_hub.tokenizers.SentencePieceTokenizer(vocabulary_file)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter16_text-generation/#listing-16-2">清单 16.2</a>：下载 SentencePiece 词汇表并实例化分词器</p>
+<p>我们可以使用此分词器将文本双向映射到整数序列：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; tokenizer.tokenize(&quot;The quick brown fox.&quot;)</span><br><span class="line">array([  450,  4996, 17354,  1701, 29916, 29889], dtype=int32)</span><br><span class="line">&gt;&gt;&gt; tokenizer.detokenize([450, 4996, 17354, 1701, 29916, 29889])</span><br><span class="line">&quot;The quick brown fox.&quot;</span><br></pre></td></tr></table></figure>
+<p>让我们使用这一层对输入文本进行分词，然后使用<code>tf.data</code>它将输入窗口化为长度为 256 的序列。</p>
+<p>在训练 GPT 时，开发者选择保持简单，并未尝试阻止文档边界出现在样本中间。他们使用特殊<code>&lt;|endoftext|&gt;</code>标记来标记文档边界。我们也将采用相同的方法。同样，我们将使用相同的<code>tf.data</code>输入数据管道，并使用任意后端进行训练。</p>
+<p>我们将分别加载每个文件分片，并将输出数据交错整合到一个数据集中。这样可以保证数据加载速度快，而且无需担心文本跨样本边界对齐的问题——每个样本都是独立的。通过交错处理，CPU 上的每个处理器都可以同时读取和标记化一个单独的文件。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"></span><br><span class="line">batch_size = <span class="number">64</span></span><br><span class="line">sequence_length = <span class="number">256</span></span><br><span class="line">suffix = np.array([tokenizer.token_to_id(<span class="string">&quot;&lt;|endoftext|&gt;&quot;</span>)])</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">read_file</span>(<span class="params">filename</span>):</span><br><span class="line">    ds = tf.data.TextLineDataset(filename)</span><br><span class="line">    <span class="comment"># Restores newlines</span></span><br><span class="line">    ds = ds.<span class="built_in">map</span>(<span class="keyword">lambda</span> x: tf.strings.regex_replace(x, <span class="string">r&quot;\\n&quot;</span>, <span class="string">&quot;\n&quot;</span>))</span><br><span class="line">    <span class="comment"># Tokenizes data</span></span><br><span class="line">    ds = ds.<span class="built_in">map</span>(tokenizer, num_parallel_calls=<span class="number">8</span>)</span><br><span class="line">    <span class="comment"># Adds the &lt;|endoftext|&gt; token</span></span><br><span class="line">    <span class="keyword">return</span> ds.<span class="built_in">map</span>(<span class="keyword">lambda</span> x: tf.concat([x, suffix], -<span class="number">1</span>))</span><br><span class="line"></span><br><span class="line">files = [<span class="built_in">str</span>(file) <span class="keyword">for</span> file <span class="keyword">in</span> extract_dir.glob(<span class="string">&quot;*.txt&quot;</span>)]</span><br><span class="line">ds = tf.data.Dataset.from_tensor_slices(files)</span><br><span class="line"><span class="comment"># Combines our file shards into a single dataset</span></span><br><span class="line">ds = ds.interleave(read_file, cycle_length=<span class="number">32</span>, num_parallel_calls=<span class="number">32</span>)</span><br><span class="line"><span class="comment"># Windows tokens into even samples of 256 tokens</span></span><br><span class="line">ds = ds.rebatch(sequence_length + <span class="number">1</span>, drop_remainder=<span class="literal">True</span>)</span><br><span class="line"><span class="comment"># Splits labels, offset by one</span></span><br><span class="line">ds = ds.<span class="built_in">map</span>(<span class="keyword">lambda</span> x: (x[:-<span class="number">1</span>], x[<span class="number">1</span>:]))</span><br><span class="line">ds = ds.batch(batch_size).prefetch(<span class="number">8</span>)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter16_text-generation/#listing-16-3">清单 16.3</a>：Transformer 预训练的文本输入预处理</p>
+<p>正如我们在第 8 章中首次所做的那样，我们将以<code>tf.data</code>调用结束我们的流程 <code>prefetch()</code>。这将确保我们始终有一些批次的数据加载到 GPU 上，并准备好供模型使用。</p>
+<p>我们有 58,746 个批次。您可以自己统计一下——代码<code>ds.reduce(0, lambda c, _: c + 1)</code>会遍历整个数据集并递增计数器。但即使使用速度不错的 CPU，对如此庞大的数据集进行标记化也需要几分钟时间。</p>
+<p>每个批次包含 64 个样本，每个样本包含 256 个 token，总共接近 10 亿个 token。我们先从中取出 500 个批次作为快速验证集，然后就可以开始预训练了：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">num_batches = <span class="number">58746</span></span><br><span class="line">num_val_batches = <span class="number">500</span></span><br><span class="line">num_train_batches = num_batches - num_val_batches</span><br><span class="line">val_ds = ds.take(num_val_batches).repeat()</span><br><span class="line">train_ds = ds.skip(num_val_batches).repeat()</span><br></pre></td></tr></table></figure>
+<h3 id="构建模型">构建模型</h3>
+<p>原始的 GPT 模型简化了我们在上一章看到的序列到序列 Transformer 模型。与我们翻译模型中需要编码器和解码器来处理源序列和目标序列不同，GPT 方法完全摒弃了编码器，只使用解码器。这意味着信息只能在序列中从左到右传递。</p>
+<p>这是GPT开发者的一个有趣尝试。仅解码器模型仍然可以处理序列到序列的问题，例如问答。然而，我们不再将问题和答案作为单独的输入，而是必须将它们合并成一个单一的序列才能输入到模型中。因此，与原始Transformer不同，问题标记和答案标记的处理方式完全相同。所有标记都被嵌入到同一个潜在空间中，并使用相同的参数集。</p>
+<p>这种方法的另一个后果是，即使对于输入序列，信息流也不再是双向的。给定一个输入，例如“法国的首都在哪里？”，学习到的“在哪里”一词的表示无法在注意力层中同时关注“首都”和“法国”这两个词。这限制了模型的表达能力，但在预训练的简易性方面却具有巨大的优势。我们无需精心构建包含成对输入输出的数据集；所有内容都可以是单个序列。我们可以大规模地训练任何在互联网上找到的文本。</p>
+<p>让我们复制<code>TransformerDecoder</code>第 15 章的代码，但移除交叉注意力层，该层允许解码器关注编码器的序列。我们还会做一个小改动，在注意力层和前馈层之后添加 dropout 层。在第 15 章中，我们的编码器和解码器都只使用了一个 Transformer 层，因此我们只需在整个模型的末尾使用一个 dropout 层即可。但对于我们的 GPT 模型，我们将堆叠相当多的层，因此在每个解码器层中添加 dropout 层对于防止过拟合至关重要。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> layers</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">TransformerDecoder</span>(keras.Layer):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, hidden_dim, intermediate_dim, num_heads</span>):</span><br><span class="line">        <span class="built_in">super</span>().__init__()</span><br><span class="line">        key_dim = hidden_dim // num_heads</span><br><span class="line">        <span class="comment"># Self-attention layers</span></span><br><span class="line">        self.self_attention = layers.MultiHeadAttention(</span><br><span class="line">            num_heads, key_dim, dropout=<span class="number">0.1</span></span><br><span class="line">        )</span><br><span class="line">        self.self_attention_layernorm = layers.LayerNormalization()</span><br><span class="line">        <span class="comment"># Feedforward layers</span></span><br><span class="line">        self.feed_forward_1 = layers.Dense(intermediate_dim, activation=<span class="string">&quot;relu&quot;</span>)</span><br><span class="line">        self.feed_forward_2 = layers.Dense(hidden_dim)</span><br><span class="line">        self.feed_forward_layernorm = layers.LayerNormalization()</span><br><span class="line">        self.dropout = layers.Dropout(<span class="number">0.1</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">call</span>(<span class="params">self, inputs</span>):</span><br><span class="line">        <span class="comment"># Self-attention computation</span></span><br><span class="line">        residual = x = inputs</span><br><span class="line">        x = self.self_attention(query=x, key=x, value=x, use_causal_mask=<span class="literal">True</span>)</span><br><span class="line">        x = self.dropout(x)</span><br><span class="line">        x = x + residual</span><br><span class="line">        x = self.self_attention_layernorm(x)</span><br><span class="line">        <span class="comment"># Feedforward computation</span></span><br><span class="line">        residual = x</span><br><span class="line">        x = self.feed_forward_1(x)</span><br><span class="line">        x = self.feed_forward_2(x)</span><br><span class="line">        x = self.dropout(x)</span><br><span class="line">        x = x + residual</span><br><span class="line">        x = self.feed_forward_layernorm(x)</span><br><span class="line">        <span class="keyword">return</span> x</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter16_text-generation/#listing-16-4">清单 16.4</a>：一个不带交叉注意的 Transformer 解码器模块</p>
+<p>接下来，我们可以复制<code>PositionalEmbedding</code>第 15 章中的这一层。回想一下，这一层为我们提供了一种简单的方法来学习序列中每个位置的嵌入，并将其与我们的标记嵌入结合起来。</p>
+<p>这里有一个巧妙的技巧可以节省一些GPU内存。Transformer模型中权重最大的部分是输入词嵌入和输出密集预测层，因为它们处理的是词汇空间。词嵌入权重的形状为，<code>(vocab_size, hidden_dim)</code>用于嵌入所有可能的词元。输出投影权重的形状为<code>(hidden_dim, vocab_size)</code>，用于对每个可能的词元进行浮点预测。</p>
+<p>我们实际上可以将这两个权重矩阵联系起来。为了计算模型的最终预测结果，我们将隐藏状态乘以词元嵌入矩阵的转置。你可以把最终的投影看作是“反向嵌入”。它将隐藏空间映射到词元空间，而词元嵌入则是将词元空间映射到隐藏空间。事实证明，对输入和输出投影使用相同的权重是一个好主意。</p>
+<p>将其添加到我们的系统中<code>PositionalEmbedding</code>很简单；我们只需<code>reverse</code> 向该<code>call</code>方法添加一个参数，该方法通过转置词嵌入来计算投影。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> ops</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">PositionalEmbedding</span>(keras.Layer):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, sequence_length, input_dim, output_dim</span>):</span><br><span class="line">        <span class="built_in">super</span>().__init__()</span><br><span class="line">        self.token_embeddings = layers.Embedding(input_dim, output_dim)</span><br><span class="line">        self.position_embeddings = layers.Embedding(sequence_length, output_dim)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">call</span>(<span class="params">self, inputs, reverse=<span class="literal">False</span></span>):</span><br><span class="line">        <span class="keyword">if</span> reverse:</span><br><span class="line">            token_embeddings = self.token_embeddings.embeddings</span><br><span class="line">            <span class="keyword">return</span> ops.matmul(inputs, ops.transpose(token_embeddings))</span><br><span class="line">        positions = ops.cumsum(ops.ones_like(inputs), axis=-<span class="number">1</span>) - <span class="number">1</span></span><br><span class="line">        embedded_tokens = self.token_embeddings(inputs)</span><br><span class="line">        embedded_positions = self.position_embeddings(positions)</span><br><span class="line">        <span class="keyword">return</span> embedded_tokens + embedded_positions</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter16_text-generation/#listing-16-5">示例 16.5</a>：一种可以反转文本嵌入的位置嵌入层</p>
+<p>让我们来构建模型。我们将把八个解码器层堆叠成一个“迷你”GPT模型。</p>
+<p>我们还会启用 Keras 的一项名为<em>“混合精度”</em>的设置来加速训练。这将使 Keras 能够以牺牲部分数值精度为代价，更快地执行模型的部分计算。目前，这项设置还略显神秘，但完整的解释将在第 18 章中呈现。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Enables mixed precision (see chapter 18)</span></span><br><span class="line">keras.config.set_dtype_policy(<span class="string">&quot;mixed_float16&quot;</span>)</span><br><span class="line"></span><br><span class="line">vocab_size = tokenizer.vocabulary_size()</span><br><span class="line">hidden_dim = <span class="number">512</span></span><br><span class="line">intermediate_dim = <span class="number">2056</span></span><br><span class="line">num_heads = <span class="number">8</span></span><br><span class="line">num_layers = <span class="number">8</span></span><br><span class="line"></span><br><span class="line">inputs = keras.Input(shape=(<span class="literal">None</span>,), dtype=<span class="string">&quot;int32&quot;</span>, name=<span class="string">&quot;inputs&quot;</span>)</span><br><span class="line">embedding = PositionalEmbedding(sequence_length, vocab_size, hidden_dim)</span><br><span class="line">x = embedding(inputs)</span><br><span class="line">x = layers.LayerNormalization()(x)</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(num_layers):</span><br><span class="line">    x = TransformerDecoder(hidden_dim, intermediate_dim, num_heads)(x)</span><br><span class="line">outputs = embedding(x, reverse=<span class="literal">True</span>)</span><br><span class="line">mini_gpt = keras.Model(inputs, outputs)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter16_text-generation/#listing-16-6">清单 16.6</a>：创建迷你 GPT 功能模型</p>
+<p>该模型有 4100 万个参数，对于本书中的模型来说很大，但与当今大多数 LLM 相比却很小，后者的参数数量从几十亿到几万亿不等。</p>
+<h3 id="模型预训练">模型预训练</h3>
+<p>训练一个大型 Transformer 模型是出了名的棘手——模型对参数初始化和优化器的选择非常敏感。当堆叠多个 Transformer 层时，很容易出现梯度爆炸，导致参数更新过快，损失函数无法收敛。一个有效的技巧是在若干个预热步骤中线性地过渡到完整的学习率，这样模型参数的初始更新量就会很小。这在 Keras 中很容易实现<code>LearningRateSchedule</code>。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">WarmupSchedule</span>(keras.optimizers.schedules.LearningRateSchedule):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="comment"># Peak learning rate</span></span><br><span class="line">        self.rate = <span class="number">2e-4</span></span><br><span class="line">        self.warmup_steps = <span class="number">1_000.0</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__call__</span>(<span class="params">self, step</span>):</span><br><span class="line">        step = ops.cast(step, dtype=<span class="string">&quot;float32&quot;</span>)</span><br><span class="line">        scale = ops.minimum(step / self.warmup_steps, <span class="number">1.0</span>)</span><br><span class="line">        <span class="keyword">return</span> self.rate * scale</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter16_text-generation/#listing-16-7">清单 16.7</a>：定义自定义学习率计划</p>
+<p>我们可以绘制学习率随时间变化的曲线图，以确保它符合我们的预期（图 16.2）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line">schedule = WarmupSchedule()</span><br><span class="line">x = <span class="built_in">range</span>(<span class="number">0</span>, <span class="number">5_000</span>, <span class="number">100</span>)</span><br><span class="line">y = [ops.convert_to_numpy(schedule(step)) <span class="keyword">for</span> step <span class="keyword">in</span> x]</span><br><span class="line">plt.plot(x, y)</span><br><span class="line">plt.xlabel(<span class="string">&quot;Train Step&quot;</span>)</span><br><span class="line">plt.ylabel(<span class="string">&quot;Learning Rate&quot;</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/learning-rate-warmup.e99ec2a4.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter16_text-generation/#figure-16-2">图 16.2</a>：预热使我们在训练开始时对模型参数的更新更小，并且有助于稳定性。</p>
+<p>我们将使用 10 亿个 token 进行一次训练，训练周期为 8 个 epoch，以便我们能够不时地检查验证集的损失和准确率。</p>
+<p>我们正在训练一个迷你版的 GPT，它的参数量比 GPT-1 少 3 倍，训练步骤也少 100 倍。尽管它的训练成本比最小的 GPT 模型低两个数量级，但这次调用 <code>fit()</code>将是整本书中计算量最大的训练过程。如果你边读边运行代码，请先运行一下，稍作休息！</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">num_epochs = <span class="number">8</span></span><br><span class="line"><span class="comment"># Set these to a lower value if you don&#x27;t want to wait for training.</span></span><br><span class="line">steps_per_epoch = num_train_batches // num_epochs</span><br><span class="line">validation_steps = num_val_batches</span><br><span class="line"></span><br><span class="line">mini_gpt.<span class="built_in">compile</span>(</span><br><span class="line">    optimizer=keras.optimizers.Adam(schedule),</span><br><span class="line">    loss=keras.losses.SparseCategoricalCrossentropy(from_logits=<span class="literal">True</span>),</span><br><span class="line">    metrics=[<span class="string">&quot;accuracy&quot;</span>],</span><br><span class="line">)</span><br><span class="line">mini_gpt.fit(</span><br><span class="line">    train_ds,</span><br><span class="line">    validation_data=val_ds,</span><br><span class="line">    epochs=num_epochs,</span><br><span class="line">    steps_per_epoch=steps_per_epoch,</span><br><span class="line">    validation_steps=validation_steps,</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter16_text-generation/#listing-16-8">清单 16.8</a>：训练 mini-GPT 模型</p>
+<p><strong>什么是logit？</strong></p>
+<p>在构建模型的过程中，你会注意到损失函数有了一个新的值 <code>SparseCategoricalCrossentropy(from_logits=True)</code>。什么是logit？</p>
+<p>我们Transformer模型的输出投影不包含通常的<code>softmax</code>激活函数。你可以将此输出视为每个词元的“未归一化对数概率”。如果你将每个输出值取指数，并将所有值归一化为总和为1（这就是该<code>softmax</code>函数所做的），你将得到一个概率值。“未归一化对数概率”的常用术语是<em>logit</em>，正如我们将在下一节中看到的，在生成文本时，logit更容易处理。</p>
+<p>Keras 允许你选择应用该<code>softmax</code>函数的位置。对于分类问题，你可以将其用作<code>softmax</code>模型的最后一个激活函数并输出概率，或者将其移至<code>softmax</code>损失函数中并输出 logits。要实现后者，你应该将其 <code>SparseCategoricalCrossentropy(from_logits=True)</code>作为分类损失函数传递。</p>
+<p>经过训练后，我们的模型在验证集上大约有 36% 的概率预测序列中的下一个标记，尽管这种指标只是一个粗略的启发式方法。</p>
+<p>请注意，我们的模型训练不足。验证损失会在每个 epoch 后持续下降，这并不奇怪，因为我们使用的训练步骤比 GPT-1 少了 100 倍。延长训练时间当然是个好主意，但这需要时间和计算资源。</p>
+<p>让我们来玩玩我们的迷你 GPT 模型。</p>
+<h3 id="生成式解码">生成式解码</h3>
+<p>为了获取模型的部分输出，我们可以沿用第15章中生成莎士比亚或西班牙语译文的方法。我们向模型输入一组固定的词元。对于输入序列中的每个位置，模型都会输出下一个词元在整个词汇表中的概率分布。通过选择最后一个位置最有可能的下一个词元，将其添加到序列中，然后重复此过程，我们就能逐个生成新的序列。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">generate</span>(<span class="params">prompt, max_length=<span class="number">64</span></span>):</span><br><span class="line">    tokens = <span class="built_in">list</span>(ops.convert_to_numpy(tokenizer(prompt)))</span><br><span class="line">    prompt_length = <span class="built_in">len</span>(tokens)</span><br><span class="line">    <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(max_length - prompt_length):</span><br><span class="line">        prediction = mini_gpt(ops.convert_to_numpy([tokens]))</span><br><span class="line">        prediction = ops.convert_to_numpy(prediction[<span class="number">0</span>, -<span class="number">1</span>])</span><br><span class="line">        tokens.append(np.argmax(prediction).item())</span><br><span class="line">    <span class="keyword">return</span> tokenizer.detokenize(tokens)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter16_text-generation/#listing-16-9">清单 16.9</a>：mini-GPT 模型的一个简单生成函数</p>
+<p>我们用文本提示来试试：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; prompt = &quot;A piece of advice&quot;</span><br><span class="line">&gt;&gt;&gt; generate(prompt)</span><br><span class="line">A piece of advice, and the best way to get a feel for yourself is to get a sense</span><br><span class="line">of what you are doing.</span><br><span class="line">If you are a business owner, you can get a sense of what you are doing. You can</span><br><span class="line">get a sense of what you are doing, and you can get a sense of what</span><br></pre></td></tr></table></figure>
+<p>运行此程序时，您首先会注意到它需要几分钟才能完成。这有点令人费解。在训练期间，我们在参考硬件上每秒可以预测约 20 万个 token。生成循环可能会增加时间，但一分钟的延迟实在太慢了。到底发生了什么？造成速度慢的主要原因（至少在 Jax 和 TensorFlow 后端上）是我们运行的是未编译的计算。</p>
+<p>每次运行 <code>keras.get</code>fit()<code>()</code> 或 <code>keras.get ()</code> 时<code>predict()</code>，Keras 都会编译处理每批数据的计算。所有<code>keras.ops</code>使用的计算都会从 Python 中提取出来，并由后端框架进行深度优化。对于单个数据批次来说速度较慢，但后续每次调用都会大幅提升速度。然而，如果我们像之前那样直接调用模型，后端框架则需要在每一步都实时运行未经优化的前向传播过程。</p>
+<p>这里最简单的解决方案是借助Keras <code>predict()</code>。有了<code>predict()</code>Keras，它会自动处理编译，但需要注意一个重要的陷阱。TensorFlow 或 Jax 编译函数时，会针对特定的输入形状进行编译。如果输入形状已知，后端就可以针对特定硬件进行优化，因为它确切地知道构成张量操作的处理器指令数量。但在我们的生成函数中，我们调用模型时使用的序列在每次预测后都会改变形状。这会导致每次调用函数时都触发重新编译<code>predict()</code>。</p>
+<p>相反，如果我们对输入进行填充，使序列始终保持相同长度，就可以避免重新编译<code>predict()</code>函数。我们来试一试。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">compiled_generate</span>(<span class="params">prompt, max_length=<span class="number">64</span></span>):</span><br><span class="line">    tokens = <span class="built_in">list</span>(ops.convert_to_numpy(tokenizer(prompt)))</span><br><span class="line">    prompt_length = <span class="built_in">len</span>(tokens)</span><br><span class="line">    <span class="comment"># Pads tokens to the full sequence length</span></span><br><span class="line">    tokens = tokens + [<span class="number">0</span>] * (max_length - prompt_length)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(prompt_length, max_length):</span><br><span class="line">        prediction = mini_gpt.predict(np.array([tokens]), verbose=<span class="number">0</span>)</span><br><span class="line">        prediction = prediction[<span class="number">0</span>, i - <span class="number">1</span>]</span><br><span class="line">        tokens[i] = np.argmax(prediction).item()</span><br><span class="line">    <span class="keyword">return</span> tokenizer.detokenize(tokens)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter16_text-generation/#listing-16-10">清单 16.10</a>：mini-GPT 模型的编译生成函数</p>
+<p>让我们看看这个新功能的速度如何：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; import timeit</span><br><span class="line">&gt;&gt;&gt; tries = 10</span><br><span class="line">&gt;&gt;&gt; timeit.timeit(lambda: compiled_generate(prompt), number=tries) / tries</span><br><span class="line">0.4866470648999893</span><br></pre></td></tr></table></figure>
+<p>通过编译，我们这一代通话时间从几分钟缩短到了不到一秒。这真是一个巨大的进步。</p>
+<p><strong>缓存生成</strong></p>
+<p>我们刚刚构建的生成函数中还存在一个主要的效率低下之处。你能发现它吗？</p>
+<p>每次调用模型时，我们都会针对<em>整个序列</em>进行调用，然后丢弃除单个位置预测结果之外的所有内容。这很浪费——序列在生成步骤之间只会改变一个词元。我们在第 15 章使用 RNN 进行生成时，可以保留 RNN 的状态，并且在每个步骤中只计算单个词元的输出。这个状态向量包含了模型所需的关于过去序列的所有信息。使用因果注意力机制的 Transformer 模型（例如 GPT）实际上也有类似的状态概念。</p>
+<p>如果我们仔细思考一下刚刚构建的整个模型，就会发现注意力机制是模型中<em>唯一能够将信息从一个位置传递到另一个位置的地方。Transformer 的前馈模块只是独立地修改每个标记位置的隐藏表示。</em></p>
+<p><code>key</code> 在注意力机制内部，我们通过向量和向量来整合过去标记的信息<code>value</code>。对于给定<code>query</code>位置的标记，我们通过将标记<code>query</code>与所有先前的<code>key</code>向量进行点积运算，并将所有先前的<code>value</code>向量组合起来，来计算注意力得分。这些向量<code>key</code>和<code>value</code>向量对于序列中过去的标记始终保持不变——过去的输入是固定的，并且因果掩码阻止了Transformer“预见”未来的标记。因此，如果我们缓存所有向量<code>key</code>和 <code>value</code>向量，那么在Transformer的每一层，我们就拥有了相当于RNN状态的信息。我们可以利用这些信息来一次计算单个位置的Transformer输出。</p>
+<p>实现起来有点繁琐，因为它涉及到保存和重用Transformer中每个注意力层的中间数组，但这至关重要。你的模型输入长度可以从与输出最大长度相同的长度，到单个标记的长度不等。如果你生成的序列包含数千个标记，缓存可以带来千倍的速度提升！任何高效的生成式采样实现都将包含<code>key</code>缓存 <code>value</code>。</p>
+<h3 id="抽样策略">抽样策略</h3>
+<p>我们生成式输出的另一个明显问题是，我们的模型经常重复自身。在我们这次的训练运行中，模型反复重复“明白你在做什么”这组词。</p>
+<p>与其说这是一个漏洞，不如说是我们训练目标的直接结果。我们的模型试图预测一段包含约十亿个单词、涵盖众多主题的序列中最有可能出现的下一个词元。如果一段文本序列的下一个词元没有明显的选择，那么一种有效的策略就是猜测常用词或重复出现的词组模式。不出所料，我们的模型在训练过程中几乎立即学会了这样做。如果您过早停止训练我们的模型，它很可能会不断生成单词<code>"the"</code> “incessantly”，因为<code>"the"</code>这是英语中最常见的单词。</p>
+<p>在我们的生成循环中，我们总是选择模型输出中最有可能的预测词元。但我们的输出并非仅仅是一个预测词元；它是词汇表中所有32000个词元的概率分布。</p>
+<p>在每一代迭代步骤中使用最可能的输出称为<em>贪婪搜索</em>。这是利用模型预测最直接的方法，但绝非唯一方法。如果我们在过程中加入一些随机性，就可以更广泛地探索模型学习到的概率分布。这可以避免我们陷入高概率词序列的循环中。</p>
+<p>我们来试试看。首先，我们可以重构生成函数，使其能够传递一个函数，该函数将模型的预测结果映射到下一个标记的选择。我们将此称为<em>采样策略</em>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">compiled_generate</span>(<span class="params">prompt, sample_fn, max_length=<span class="number">64</span></span>):</span><br><span class="line">    tokens = <span class="built_in">list</span>(ops.convert_to_numpy(tokenizer(prompt)))</span><br><span class="line">    prompt_length = <span class="built_in">len</span>(tokens)</span><br><span class="line">    tokens = tokens + [<span class="number">0</span>] * (max_length - prompt_length)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(prompt_length, max_length):</span><br><span class="line">        prediction = mini_gpt.predict(np.array([tokens]), verbose=<span class="number">0</span>)</span><br><span class="line">        prediction = prediction[<span class="number">0</span>, i - <span class="number">1</span>]</span><br><span class="line">        next_token = ops.convert_to_numpy(sample_fn(prediction))</span><br><span class="line">        tokens[i] = np.array(next_token).item()</span><br><span class="line">    <span class="keyword">return</span> tokenizer.detokenize(tokens)</span><br></pre></td></tr></table></figure>
+<p>现在我们可以将贪婪搜索写成一个简单的函数，并将其传递给 <code>compiled_generate()</code>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">greedy_search</span>(<span class="params">preds</span>):</span><br><span class="line">    <span class="keyword">return</span> ops.argmax(preds)</span><br><span class="line"></span><br><span class="line">compiled_generate(prompt, greedy_search)</span><br></pre></td></tr></table></figure>
+<p>Transformer 的输出定义了一个类别分布，其中每个标记在每个时间步都有一定的输出概率。我们不仅可以选择最有可能出现的标记，还可以直接对这个分布进行采样。 <code>keras.random.categorical()</code>我们将预测结果通过 softmax 函数处理，得到一个概率分布，然后对其进行随机采样。让我们来试试：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">random_sample</span>(<span class="params">preds, temperature=<span class="number">1.0</span></span>):</span><br><span class="line">    preds = preds / temperature</span><br><span class="line">    <span class="keyword">return</span> keras.random.categorical(preds[<span class="literal">None</span>, :], num_samples=<span class="number">1</span>)[<span class="number">0</span>]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>compiled_generate(prompt, random_sample)</span><br><span class="line">A piece of advice, just read my knees <span class="keyword">and</span> stick <span class="keyword">with</span> getables <span class="keyword">and</span> a hello to me.</span><br><span class="line">However, the bar napkin doesn<span class="string">&#x27;t last as long. I happen to be waking up close and</span></span><br><span class="line"><span class="string">pull it up as I wanted too and I still get it, really, shouldn&#x27;</span>t be a reaction</span><br></pre></td></tr></table></figure>
+<p>我们的输出结果更加多样化，模型也不再陷入循环。但是，我们的采样范围过广，输出结果波动剧烈，缺乏连续性。</p>
+<p>你会注意到我们添加了一个名为 的参数<code>temperature</code>。我们可以使用它来收窄或拓宽概率分布，从而使我们的采样对分布的探索程度降低或提高。</p>
+<p>如果温度设置得很低，softmax 函数处理前所有 logits 的值都会增大，这使得最可能的输出结果出现的概率更高。如果温度设置得很高，softmax 函数处理前 logits 的值会更小，概率分布也会更加分散。我们来尝试几次，看看这会如何影响我们的采样：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; from functools import partial</span><br><span class="line">&gt;&gt;&gt; compiled_generate(prompt, partial(random_sample, temperature=2.0))</span><br><span class="line">A piece of advice tran writes using ignore unnecessary pivot - come without</span><br><span class="line">introdu accounts indicugelâ per\u3000divuren sendSolisżsilen om transparent</span><br><span class="line">Gill Guide pover integer song arrays coding\u3000LIST**…Allow index criteria</span><br><span class="line">Draw Reference Ex artifactincluding lib tak Br basunker increases entirelytembre</span><br><span class="line">AnyкаTextView cardinal spiritual heavenToen</span><br><span class="line">&gt;&gt;&gt; compiled_generate(prompt, partial(random_sample, temperature=0.8))</span><br><span class="line">A piece of advice I wrote about the same thing today. I have been a writer for</span><br><span class="line">two years now. I am writing this blog and I just wrote about it. I am writing</span><br><span class="line">this blog and it was really interesting. I have been writing about the book and</span><br><span class="line">I have read many things about my life.</span><br><span class="line">The</span><br><span class="line">&gt;&gt;&gt; compiled_generate(prompt, partial(random_sample, temperature=0.2))</span><br><span class="line">A piece of advice, and a lot of people are saying that they have to be careful</span><br><span class="line">about the way they think about it.</span><br><span class="line">I think it&#x27;s a good idea to have a good understanding of the way you think about</span><br><span class="line">it.</span><br><span class="line">I think it&#x27;s a good idea to have a good understanding of the</span><br></pre></td></tr></table></figure>
+<p>高温下，我们的输出不再像英语，而是看似随机地排列词元。低温下，我们的模型行为开始类似于贪婪搜索，反复重复某些文本模式。</p>
+<p>另一种常用的分布优化方法是将采样范围限制在最有可能出现的词元集合中。这被称为<em>前k采样</em>，其中K是需要探索的候选词元数量。图16.3展示了前k采样如何在贪婪采样和随机采样之间找到平衡点。</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/sampling-strategies.0545bedf.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter16_text-generation/#figure-16-3">图 16.3</a>：贪婪抽样、top-k 抽样和随机抽样策略在同一概率分布上显示</p>
+<p>让我们用代码来试试。我们可以用它<code>keras.ops.top_k</code>来查找数组的前 K 个元素：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">top_k</span>(<span class="params">preds, k=<span class="number">5</span>, temperature=<span class="number">1.0</span></span>):</span><br><span class="line">    preds = preds / temperature</span><br><span class="line">    top_preds, top_indices = ops.top_k(preds, k=k, <span class="built_in">sorted</span>=<span class="literal">False</span>)</span><br><span class="line">    choice = keras.random.categorical(top_preds[<span class="literal">None</span>, :], num_samples=<span class="number">1</span>)[<span class="number">0</span>]</span><br><span class="line">    <span class="keyword">return</span> ops.take_along_axis(top_indices, choice, axis=-<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+<p>我们可以尝试几种不同的 top-k 变体，看看它对采样有何影响：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; compiled_generate(prompt, partial(top_k, k=5))</span><br><span class="line">A piece of advice that I can&#x27;t help it. I&#x27;m not going to be able to do anything</span><br><span class="line">for a few months, but I&#x27;m trying to get a little better. It&#x27;s a little too much.</span><br><span class="line">I have a few other questions on this site, but I&#x27;m sure I</span><br><span class="line">&gt;&gt;&gt; compiled_generate(prompt, partial(top_k, k=20))</span><br><span class="line">A piece of advice and guidance from the Audi Bank in 2015. With all the above,</span><br><span class="line">it&#x27;s not just a bad idea, but it&#x27;s very good to see that is going to be a great</span><br><span class="line">year for you in 2017.</span><br><span class="line">That&#x27;s really going to</span><br></pre></td></tr></table></figure>
+<p>通过前 k 个候选词的筛选与温度采样不同。通过较低的温度会提高可能存在的词元的概率，但不会排除任何词元。前 k 个候选词的采样则会将 K 个候选词之外的任何词元的概率归零。您可以将两者结合起来，例如，对温度为 0.5 的前五个候选词进行采样：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; compiled_generate(prompt, partial(top_k, k=5, temperature=0.5))</span><br><span class="line">A piece of advice that you can use to get rid of the problem.</span><br><span class="line">The first thing you need to do is to get the job done. It is important that you</span><br><span class="line">have a plan that will help you get rid of it.</span><br><span class="line">The first thing you need to do is to get rid of the problem yourself.</span><br></pre></td></tr></table></figure>
+<p>在文本生成过程中，采样策略是一项重要的控制手段，而且有很多种方法可供选择。例如，束搜索是一种启发式技术，它通过在每个时间步保持固定数量的“束”（不同的预测词元链）进行探索，从而探索多条预测词元链。</p>
+<p>通过 top-k 采样，我们的模型生成的文本更接近于合理的英文文本，但这种输出几乎没有任何实际用途。这与 GPT-1 的结果相符。对于最初的 GPT 论文而言，生成的输出更多的是一种好奇心，而最先进的结果只有通过微调分类模型才能实现。我们的 mini-GPT 的训练程度远低于 GPT-1。</p>
+<p>为了达到如今生成式LLM的规模，我们需要将参数数量至少增加100倍，训练步数至少增加1000倍。如果能够做到这一点，我们将看到与OpenAI的GPT模型类似的质量飞跃。而且我们完全可以做到！我们之前使用的训练方案正是目前所有LLM训练者所使用的蓝图。唯一缺少的是大量的计算资源以及一些跨多台机器训练的技巧，我们将在第18章中介绍这些技巧。</p>
+<p>为了采取更实际的方法，我们将过渡到使用预训练模型。这将使我们能够探索当前规模下 LLM 的行为。</p>
+<h2 id="使用预训练的llm">使用预训练的LLM</h2>
+<p>既然我们已经从零开始训练了一个迷你语言模型，接下来让我们尝试使用一个拥有十亿参数的预训练模型，看看它的表现如何。鉴于预训练 Transformer 模型的成本极其高昂，业内大多数公司都倾向于使用少数几家公司开发的预训练模型。这不仅是出于成本考虑，也是出于环境考虑——生成模型训练如今已占大型科技公司数据中心总能耗的很大一部分。</p>
+<p>Meta公布了其于2023年发布的机器学习模型Llama 2的一些环境数据。Llama 2比GPT-3小得多，但据估计，它的训练过程需要消耗130万千瓦时的电力——相当于约4.5万个美国家庭的日用电量。如果每个使用机器学习模型的机构都自行进行预训练，那么能源消耗规模将占全球能源消耗的相当大一部分。</p>
+<p>让我们来体验一下谷歌预训练的生成模型 Gemma。我们将使用 Gemma 模型的第三版，该版本于 2025 年公开发布。为了使本书中的示例易于理解，我们将使用 Gemma 的最小版本，其参数量接近 10 亿。这个“小型”模型使用了大约 2 万亿个预训练数据标记进行训练——比我们刚刚训练的 mini-GPT 的数据标记数量多 2000 倍！</p>
+<h3 id="使用-gemma-模型进行文本生成">使用 Gemma 模型进行文本生成</h3>
+<p>要加载这个预训练模型，我们可以使用 KerasHub，就像我们在前面的章节中所做的那样。</p>
+<p><strong>获取 Gemma 权重</strong></p>
+<p>如果您要自行运行本章代码，则需要先接受 Gemma 模型的使用条款才能下载权重。模型权重存储在 Kaggle 上，我们可以<code>kagglehub</code>像第 8 章那样使用 API 登录。在此之前，您需要完成以下两项操作：</p>
+<ol type="1">
+<li>请访问https://www.kaggle.com/models/keras/gemma3，并接受页面顶部的 Gemma 使用条款。</li>
+<li>前往https://www.kaggle.com/settings，生成 Kaggle API 密钥（如果您尚未在第 8 章中执行此操作）。</li>
+</ol>
+<p>这样，我们就可以使用 API 密钥从笔记本中对 Kaggle 进行身份验证了：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> kagglehub</span><br><span class="line"></span><br><span class="line">kagglehub.login()</span><br></pre></td></tr></table></figure>
+<p>随着LLM（生命周期管理）功能日益强大，类似的条款也变得越来越普遍。Gemma的使用条款禁止将该模型用于生成垃圾邮件或仇恨言论等用途。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">gemma_lm = keras_hub.models.CausalLM.from_preset(</span><br><span class="line">    <span class="string">&quot;gemma3_1b&quot;</span>,</span><br><span class="line">    dtype=<span class="string">&quot;float32&quot;</span>,</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter16_text-generation/#listing-16-11">清单 16.11</a>：使用 KerasHub 实例化预训练 LLM</p>
+<p><code>CausalLM</code>这是高级任务 API 的另一个示例，类似于 本书前面提到的 <code></code>ImageClassifier<code>and</code>任务。该任务会将分词器和正确初始化的架构合并到一个 Keras 模型中。KerasHub 会将 Gemma 权重加载到正确初始化的架构中，并为预训练权重加载匹配的分词器。<code>ImageSegmenter``CausalLM</code></p>
+<p>让我们来看一下Gemma模型的概要：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; gemma_lm.summary()</span><br><span class="line">Preprocessor: &quot;gemma3_causal_lm_preprocessor&quot;</span><br><span class="line">┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓</span><br><span class="line">┃ Layer (type)                                 ┃                        Config ┃</span><br><span class="line">┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩</span><br><span class="line">│ gemma3_tokenizer (Gemma3Tokenizer)           │           Vocab size: 262,144 │</span><br><span class="line">└──────────────────────────────────────────────┴───────────────────────────────┘</span><br><span class="line">Model: &quot;gemma3_causal_lm&quot;</span><br><span class="line">┏━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━┓</span><br><span class="line">┃ Layer (type)          ┃ Output Shape      ┃     Param # ┃ Connected to       ┃</span><br><span class="line">┡━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━┩</span><br><span class="line">│ padding_mask          │ (None, None)      │           0 │ -                  │</span><br><span class="line">│ (InputLayer)          │                   │             │                    │</span><br><span class="line">├───────────────────────┼───────────────────┼─────────────┼────────────────────┤</span><br><span class="line">│ token_ids             │ (None, None)      │           0 │ -                  │</span><br><span class="line">│ (InputLayer)          │                   │             │                    │</span><br><span class="line">├───────────────────────┼───────────────────┼─────────────┼────────────────────┤</span><br><span class="line">│ gemma3_backbone       │ (None, None,      │ 999,885,952 │ padding_mask[0][0… │</span><br><span class="line">│ (Gemma3Backbone)      │ 1152)             │             │ token_ids[0][0]    │</span><br><span class="line">├───────────────────────┼───────────────────┼─────────────┼────────────────────┤</span><br><span class="line">│ token_embedding       │ (None, None,      │ 301,989,888 │ gemma3_backbone[0… │</span><br><span class="line">│ (ReversibleEmbedding) │ 262144)           │             │                    │</span><br><span class="line">└───────────────────────┴───────────────────┴─────────────┴────────────────────┘</span><br><span class="line"> Total params: 999,885,952 (3.72 GB)</span><br><span class="line"> Trainable params: 999,885,952 (3.72 GB)</span><br><span class="line"> Non-trainable params: 0 (0.00 B)</span><br></pre></td></tr></table></figure>
+<p>与其自己实现生成例程，我们可以利用<code>generate()</code>类自带的函数来简化操作<code>CausalLM</code> 。<code>generate()</code>正如我们在上一节中探讨的那样，该函数可以编译成不同的采样策略：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; gemma_lm.compile(sampler=&quot;greedy&quot;)</span><br><span class="line">&gt;&gt;&gt; gemma_lm.generate(&quot;A piece of advice&quot;, max_length=40)</span><br><span class="line">A piece of advice from a former student of mine:</span><br><span class="line"></span><br><span class="line">&lt;blockquote&gt;&quot;I&#x27;m not sure if you&#x27;ve heard of it, but I&#x27;ve been told that the</span><br><span class="line">best way to learn</span><br><span class="line">&gt;&gt;&gt; gemma_lm.generate(&quot;How can I make brownies?&quot;, max_length=40)</span><br><span class="line">How can I make brownies?</span><br><span class="line"></span><br><span class="line">[User 0001]</span><br><span class="line"></span><br><span class="line">I&#x27;m trying to make brownies for my son&#x27;s birthday party. I&#x27;ve never made</span><br><span class="line">brownies before.</span><br></pre></td></tr></table></figure>
+<p>我们可以立即注意到几点。首先，输出结果比我们的迷你 GPT 模型更加连贯。很难将这段文本与 C4 数据集中的大部分训练数据区分开来。其次，输出结果仍然不太实用。该模型会生成大致合理的文本，但其具体用途尚不明确。</p>
+<p>正如我们在 mini-GPT 示例中所看到的，这与其说是一个 bug，不如说是我们预训练目标的必然结果。Gemma 模型和 mini-GPT 一样，都使用“猜测下一个词”的目标进行训练，这意味着它实际上就是一个功能强大的网络自动补全工具。它会不断地重复输入序列中最有可能的词，就好像你的提示是一段从网络上随机找到的文本片段一样。</p>
+<p>改变输出结果的一种方法是，用更长的输入提示模型，这样就能更清楚地表明我们想要哪种类型的输出。例如，如果我们用布朗尼蛋糕食谱的前两句话提示 Gemma 模型，就能得到更有帮助的输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; gemma_lm.generate(</span><br><span class="line">&gt;&gt;&gt;     &quot;The following brownie recipe is easy to make in just a few &quot;</span><br><span class="line">&gt;&gt;&gt;     &quot;steps.\n\nYou can start by&quot;,</span><br><span class="line">&gt;&gt;&gt;     max_length=40,</span><br><span class="line">&gt;&gt;&gt; )</span><br><span class="line">The following brownie recipe is easy to make in just a few steps.</span><br><span class="line"></span><br><span class="line">You can start by melting the butter and sugar in a saucepan over medium heat.</span><br><span class="line"></span><br><span class="line">Then add the eggs and vanilla extract</span><br></pre></td></tr></table></figure>
+<p>虽然在使用一个能够“说话”的模型时，我们很容易想象它会以某种人类对话的方式来解读我们的提示，但事实并非如此。我们只是构建了一个提示，相比于模仿论坛上寻求烘焙帮助的帖子，它更有可能提供一个实际的布朗尼食谱。</p>
+<p>在构建提示方面，你还可以做更多的事情。例如，你可以用一些自然语言指令来提示模型，告诉它应该扮演什么角色；<code>"You are a large language model that gives short, helpful answers to people's questions."</code>或者，你可以向模型提供一份包含大量有害话题的提示，这些话题不应该出现在任何生成的回复中。</p>
+<p>如果这一切听起来有点含糊不清且难以控制，那你的评价很中肯。尝试通过提示来探索模型分布的不同部分通常很有用，但预测模型对特定提示的反应却非常困难。</p>
+<p>逻辑逻辑模型面临的另一个有据可查的问题是幻觉。模型总会给出一些结论——对于给定的序列，总会有一个最可能的下一个标记。在我们的逻辑逻辑模型分布中找到那些没有事实依据的位置很容易：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; gemma_lm.generate(</span><br><span class="line">&gt;&gt;&gt;     &quot;Tell me about the 542nd president of the United States.&quot;,</span><br><span class="line">&gt;&gt;&gt;     max_length=40,</span><br><span class="line">&gt;&gt;&gt; )</span><br><span class="line">Tell me about the 542nd president of the United States.</span><br><span class="line"></span><br><span class="line">The 542nd president of the United States was James A. Garfield.</span><br></pre></td></tr></table></figure>
+<p>当然，这完全是无稽之谈，但模型找不到更合理的完成此提示的方法。</p>
+<p>幻觉和不可控的输出是语言模型的根本问题。如果存在万全之策，我们至今尚未找到。然而，一种非常有帮助的方法是，使用你期望的特定类型生成输出的示例来进一步微调模型。</p>
+<p>如果要构建一个能够执行指令的聊天机器人，这种训练方式就叫做<em>指令微调</em>。让我们用 Gemma 做一些指令微调，让她作为对话伙伴更加得心应手。</p>
+<h3 id="指令微调">指令微调</h3>
+<p>指令微调涉及向模型提供输入/输出对——用户指令后跟模型响应。我们将这些输入/输出对合并成一个单一序列，作为模型的新训练数据。为了在训练过程中清晰地区分指令或响应的结束，我们可以在合并后的序列中添加特殊的标记，例如 <code>\n</code> <code>"[instruction]"</code>和 <code>\</code>"[response]"<code>n</code>。只要标记保持一致，具体的标记形式并不重要。</p>
+<p>我们可以将组合后的序列作为常规训练数据，并使用与预训练语言学习模型 (LLM) 时相同的“猜测下一个词”损失函数。通过使用包含预期响应的示例进行进一步训练，我们实际上是在引导模型的输出朝着我们想要的方向发展。我们在这里不会学习语言的潜在空间；这已经在数万亿个词元的预训练中完成了。我们只是对学习到的表征进行一些微调，以控制输出的语气和内容。</p>
+<p>首先，我们需要一个指令-响应对的数据集。训练聊天机器人是一个热门话题，因此有很多专门为此目的创建的数据集。我们将使用Databricks公司公开的数据集。该数据集包含15000条指令和手写回复，由员工贡献。让我们下载该数据集，并将其合并成一个序列。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> json</span><br><span class="line"></span><br><span class="line">PROMPT_TEMPLATE = <span class="string">&quot;&quot;&quot;&quot;[instruction]\n&#123;&#125;[end]\n[response]\n&quot;&quot;&quot;</span></span><br><span class="line">RESPONSE_TEMPLATE = <span class="string">&quot;&quot;&quot;&#123;&#125;[end]&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">dataset_path = keras.utils.get_file(</span><br><span class="line">    origin=(</span><br><span class="line">        <span class="string">&quot;https://hf.co/datasets/databricks/databricks-dolly-15k/&quot;</span></span><br><span class="line">        <span class="string">&quot;resolve/main/databricks-dolly-15k.jsonl&quot;</span></span><br><span class="line">    ),</span><br><span class="line">)</span><br><span class="line">data = &#123;<span class="string">&quot;prompts&quot;</span>: [], <span class="string">&quot;responses&quot;</span>: []&#125;</span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(dataset_path) <span class="keyword">as</span> file:</span><br><span class="line">    <span class="keyword">for</span> line <span class="keyword">in</span> file:</span><br><span class="line">        features = json.loads(line)</span><br><span class="line">        <span class="keyword">if</span> features[<span class="string">&quot;context&quot;</span>]:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        data[<span class="string">&quot;prompts&quot;</span>].append(PROMPT_TEMPLATE.<span class="built_in">format</span>(features[<span class="string">&quot;instruction&quot;</span>]))</span><br><span class="line">        data[<span class="string">&quot;responses&quot;</span>].append(RESPONSE_TEMPLATE.<span class="built_in">format</span>(features[<span class="string">&quot;response&quot;</span>]))</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter16_text-generation/#listing-16-12">清单 16.12</a>：加载指令微调数据集</p>
+<p>请注意，有些示例包含额外的上下文信息——与指令相关的文本信息。为了简化说明，我们暂时忽略这些示例。</p>
+<p>让我们来看数据集中的一个元素：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; data[&quot;prompts&quot;][0]</span><br><span class="line">[instruction]</span><br><span class="line">Which is a species of fish? Tope or Rope[end]</span><br><span class="line">[response]</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; data[&quot;responses&quot;][0]</span><br><span class="line">Tope[end]</span><br></pre></td></tr></table></figure>
+<p>我们的提示模板赋予示例可预测的结构。虽然 Gemma 不是像我们的英西翻译器那样的序列到序列模型，但我们仍然可以通过在类似这样的提示上进行训练，并在标记之后生成输出，将其用于序列到序列的场景中<code>"[response]"</code>。</p>
+<p>让我们创建一个<code>tf.data.Dataset</code>并拆分一些验证数据：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ds = tf.data.Dataset.from_tensor_slices(data).shuffle(<span class="number">2000</span>).batch(<span class="number">2</span>)</span><br><span class="line">val_ds = ds.take(<span class="number">100</span>)</span><br><span class="line">train_ds = ds.skip(<span class="number">100</span>)</span><br></pre></td></tr></table></figure>
+<p>我们<code>CausalLM</code>从 KerasHub 库加载的是一个用于端到端因果语言建模的高级对象。它封装了两个对象：一个<code>preprocessor</code> 用于预处理文本输入的层，以及一个<code>backbone</code>包含模型前向传播数值结果的模型。</p>
+<p>预处理默认包含在 Keras 的高级函数（例如 <code>preprocessing``fit()</code> 和 <code>preprocessing.batch</code> ）中<code>predict()</code>。但为了更好地了解预处理的具体作用，我们不妨只对单个批次运行预处理：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; preprocessor = gemma_lm.preprocessor</span><br><span class="line">&gt;&gt;&gt; preprocessor.sequence_length = 512</span><br><span class="line">&gt;&gt;&gt; batch = next(iter(train_ds))</span><br><span class="line">&gt;&gt;&gt; x, y, sample_weight = preprocessor(batch)</span><br><span class="line">&gt;&gt;&gt; x[&quot;token_ids&quot;].shape</span><br><span class="line">(2, 512)</span><br><span class="line">&gt;&gt;&gt; x[&quot;padding_mask&quot;].shape</span><br><span class="line">(2, 512)</span><br><span class="line">&gt;&gt;&gt; y.shape</span><br><span class="line">(2, 512)</span><br><span class="line">&gt;&gt;&gt; sample_weight.shape</span><br><span class="line">(2, 512)</span><br></pre></td></tr></table></figure>
+<p>预处理层会将所有输入填充到固定长度，并计算一个填充掩码来跟踪哪些 token ID 输入只是填充了零。该 <code>sample_weight</code>张量允许我们仅计算响应 token 的损失值。我们并不关心用户提示的损失；它是固定的，而且我们绝对不想计算刚刚添加的零填充的损失。</p>
+<p>如果我们打印出一部分词元 ID 和标签，我们可以看到这是常规的语言模型设置，其中每个标签都是下一个词元值：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; x[&quot;token_ids&quot;][0, :5], y[0, :5]</span><br><span class="line">(Array([     2,  77074,  22768, 236842,    107], dtype=int32),</span><br><span class="line"> Array([ 77074,  22768, 236842,    107,  24249], dtype=int32))</span><br></pre></td></tr></table></figure>
+<h3 id="低秩自适应lora">低秩自适应（LoRA）</h3>
+<p>如果我们现在在配备 16 GB 设备内存的 Colab GPU 上运行<code>fit()</code>，很快就会触发内存不足错误。但我们已经加载了模型并运行了生成过程，为什么现在会内存不足呢？</p>
+<p>我们这个拥有10亿参数的模型占用了大约3.7 GB的内存。您可以在我们之前的模型概要中看到这一点。我们使用的优化器需要为<em>每个</em><code>Adam</code>参数跟踪三个额外的浮点数——实际梯度、速度值和动量值。总而言之，仅权重和优化器状态就需要15 GB的内存。我们还需要几GB的内存来跟踪模型前向传播过程中的中间值，但我们已经没有多余的内存了。运行程序会在第一个训练步骤就崩溃。这是训练LLM时常见的问题。由于这些模型的参数数量庞大，因此GPU和CPU的吞吐量是次要的，模型应该优先在加速器内存上进行拟合。<code>fit()</code></p>
+<p>本书前面已经介绍过如何在微调过程中冻结模型的某些部分。但我们没有提到的是，这样做可以节省大量内存！对于冻结的参数，我们无需跟踪任何优化器变量——它们永远不会更新。这使我们能够在加速器上节省大量空间。</p>
+<p>研究人员已经对Transformer模型在微调过程中冻结不同参数进行了大量实验，结果表明（或许符合直觉），最应该保持未冻结状态的权重位于注意力机制中。但是，我们的注意力层仍然有数亿个参数。我们能否做得更好？</p>
+<p>2021年，微软的研究人员提出了一种名为LoRA（ <em>大型语言模型的低秩自适应）</em>的技术，专门用于解决这一内存问题。[<a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter16_text-generation/#footnote-4">4]</a>为了解释这一点，我们想象一个简单的线性投影层：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Linear</span>(keras.Layer):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, input_dim, output_dim</span>):</span><br><span class="line">        <span class="built_in">super</span>().__init__()</span><br><span class="line">        self.kernel = self.add_weight(shape=(input_dim, output_dim))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">call</span>(<span class="params">self, inputs</span>):</span><br><span class="line">        <span class="keyword">return</span> ops.matmul(inputs, self.kernel)</span><br></pre></td></tr></table></figure>
+<p>LoRA论文提出冻结<code>kernel</code>矩阵并添加一个新的“低秩”核投影分解。该分解有两个新的投影矩阵，<code>alpha</code>和<code>beta</code>，它们分别从内部矩阵 投影到 和 从 <code>rank</code>。让我们来看一下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">LoraLinear</span>(keras.Layer):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, input_dim, output_dim, rank</span>):</span><br><span class="line">        <span class="built_in">super</span>().__init__()</span><br><span class="line">        self.kernel = self.add_weight(</span><br><span class="line">            shape=(input_dim, output_dim), trainable=<span class="literal">False</span></span><br><span class="line">        )</span><br><span class="line">        self.alpha = self.add_weight(shape=(input_dim, rank))</span><br><span class="line">        self.beta = self.add_weight(shape=(rank, output_dim))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">call</span>(<span class="params">self, inputs</span>):</span><br><span class="line">        frozen = ops.matmul(inputs, self.kernel)</span><br><span class="line">        update = ops.matmul(ops.matmul(inputs, self.alpha), self.beta)</span><br><span class="line">        <span class="keyword">return</span> frozen + update</span><br></pre></td></tr></table></figure>
+<p>如果我们的<code>kernel</code>数据集形状为 2048 × 2048，那么就有 4,194,304 个冻结参数。但如果我们保留<code>rank</code>较低的秩，比如 8，那么低秩分解就只有 32,768 个参数。这种更新的表达能力不如原始核函数；在中间的狭窄区域，整个更新必须用八个浮点数来表示。但在 LLM 微调过程中，你不再需要预训练阶段所需的表达能力（图 16.4）。</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/lora-layer.b3119596.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter16_text-generation/#figure-16-4">图 16.4</a>：低秩核分解包含的参数比核本身少得多。</p>
+<p>LoRA 的作者建议冻结整个 Transformer 模型，仅在注意力层的查询和键投影中添加 LoRA 权重。我们来尝试一下。KerasHub 模型内置了 LoRA 训练方法。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gemma_lm.backbone.enable_lora(rank=<span class="number">8</span>)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter16_text-generation/#listing-16-13">清单 16.13</a>：为 KerasHub 模型启用 LoRa 训练</p>
+<p><strong>定制 LoRA 培训</strong></p>
+<p>该<code>enable_lora()</code>方法也适用于各个<code>Dense</code>层。我们可以通过遍历 Transformer 的各个层，以更冗长的方式等效地编写之前的调用：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Sets all layers to not be trainable</span></span><br><span class="line">gemma_lm.backbone.trainable = <span class="literal">False</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(gemma_lm.backbone.num_layers):</span><br><span class="line">    <span class="comment"># Makes key and query projections trainable and enables LoRA</span></span><br><span class="line">    layer = gemma_lm.backbone.get_layer(<span class="string">f&quot;decoder_block_<span class="subst">&#123;i&#125;</span>&quot;</span>)</span><br><span class="line">    layer.attention.key_dense.trainable = <span class="literal">True</span></span><br><span class="line">    layer.attention.key_dense.enable_lora(rank=<span class="number">8</span>)</span><br><span class="line">    layer.attention.query_dense.trainable = <span class="literal">True</span></span><br><span class="line">    layer.attention.query_dense.enable_lora(rank=<span class="number">8</span>)</span><br></pre></td></tr></table></figure>
+<p>通过这种方法，我们可以在模型中更早或更晚添加更多可训练参数，还可以将 LoRA 添加到价值预测中。</p>
+<p>让我们再来看一下模型概要：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; gemma_lm.summary()</span><br><span class="line">Preprocessor: &quot;gemma3_causal_lm_preprocessor&quot;</span><br><span class="line">┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓</span><br><span class="line">┃ Layer (type)                                 ┃                        Config ┃</span><br><span class="line">┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩</span><br><span class="line">│ gemma3_tokenizer (Gemma3Tokenizer)           │           Vocab size: 262,144 │</span><br><span class="line">└──────────────────────────────────────────────┴───────────────────────────────┘</span><br><span class="line">Model: &quot;gemma3_causal_lm&quot;</span><br><span class="line">┏━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━┓</span><br><span class="line">┃ Layer (type)          ┃ Output Shape      ┃     Param # ┃ Connected to       ┃</span><br><span class="line">┡━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━┩</span><br><span class="line">│ padding_mask          │ (None, None)      │           0 │ -                  │</span><br><span class="line">│ (InputLayer)          │                   │             │                    │</span><br><span class="line">├───────────────────────┼───────────────────┼─────────────┼────────────────────┤</span><br><span class="line">│ token_ids             │ (None, None)      │           0 │ -                  │</span><br><span class="line">│ (InputLayer)          │                   │             │                    │</span><br><span class="line">├───────────────────────┼───────────────────┼─────────────┼────────────────────┤</span><br><span class="line">│ gemma3_backbone       │ (None, None,      │ 1,001,190,… │ padding_mask[0][0… │</span><br><span class="line">│ (Gemma3Backbone)      │ 1152)             │             │ token_ids[0][0]    │</span><br><span class="line">├───────────────────────┼───────────────────┼─────────────┼────────────────────┤</span><br><span class="line">│ token_embedding       │ (None, None,      │ 301,989,888 │ gemma3_backbone[0… │</span><br><span class="line">│ (ReversibleEmbedding) │ 262144)           │             │                    │</span><br><span class="line">└───────────────────────┴───────────────────┴─────────────┴────────────────────┘</span><br><span class="line"> Total params: 1,001,190,528 (3.73 GB)</span><br><span class="line"> Trainable params: 1,304,576 (4.98 MB)</span><br><span class="line"> Non-trainable params: 999,885,952 (3.72 GB)</span><br></pre></td></tr></table></figure>
+<p>尽管我们的模型参数仍然占用 3.7 GB 的空间，但我们的可训练参数现在仅使用 5 MB 的数据——减少了一千倍！这可以将我们的优化器状态从几 GB 减少到 GPU 上的几 MB（图 16.5）。</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/lora-memory.c02fdac4.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter16_text-generation/#figure-16-5">图 16.5</a>：LoRA 大大减少了我们存储梯度和优化器状态所需的内存。</p>
+<p>优化完成后，我们终于可以对 Gemma 模型进行指令调优了。让我们试一试。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">gemma_lm.<span class="built_in">compile</span>(</span><br><span class="line">    loss=keras.losses.SparseCategoricalCrossentropy(from_logits=<span class="literal">True</span>),</span><br><span class="line">    optimizer=keras.optimizers.Adam(<span class="number">5e-5</span>),</span><br><span class="line">    weighted_metrics=[keras.metrics.SparseCategoricalAccuracy()],</span><br><span class="line">)</span><br><span class="line">gemma_lm.fit(train_ds, validation_data=val_ds, epochs=<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter16_text-generation/#listing-16-14">清单 16.14</a>：微调预训练的 LLM</p>
+<p>经过训练，我们的模型在预测下一个单词方面的准确率达到了 55%。这相比我们之前 mini-GPT 模型 35% 的准确率有了显著提升。这充分展现了更大规模模型和更全面的预训练所带来的强大优势。</p>
+<p>我们的微调是否提高了模型的指令执行能力？让我们来验证一下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; gemma_lm.generate(</span><br><span class="line">...     &quot;[instruction]\nHow can I make brownies?[end]\n&quot;</span><br><span class="line">...     &quot;[response]\n&quot;,</span><br><span class="line">...     max_length=512,</span><br><span class="line">... )</span><br><span class="line">[instruction]</span><br><span class="line">How can I make brownies?[end]</span><br><span class="line">[response]</span><br><span class="line">You can make brownies by mixing together 1 cup of flour, 1 cup of sugar, 1/2</span><br><span class="line">cup of butter, 1/2 cup of milk, 1/2 cup of chocolate chips, and 1/2 cup of</span><br><span class="line">chocolate chips. Then, you can bake it in a 9x13 pan for 30 minutes at 350</span><br><span class="line">degrees Fahrenheit. You can also add a little bit of vanilla extract to the</span><br><span class="line">batter to make it taste better.[end]</span><br><span class="line">&gt;&gt;&gt; gemma_lm.generate(</span><br><span class="line">...     &quot;[instruction]\nWhat is a proper noun?[end]\n&quot;</span><br><span class="line">...     &quot;[response]\n&quot;,</span><br><span class="line">...     max_length=512,</span><br><span class="line">... )</span><br><span class="line">[instruction]</span><br><span class="line">What is a proper noun?[end]</span><br><span class="line">[response]</span><br><span class="line">A proper noun is a word that refers to a specific person, place, or thing.</span><br><span class="line">Proper nouns are usually capitalized and are used to identify specific</span><br><span class="line">individuals, places, or things. Proper nouns are often used in formal writing</span><br><span class="line">and are often used in titles, such as &quot;The White House&quot; or &quot;The Eiffel Tower.&quot;</span><br><span class="line">Proper nouns are also used in titles of books, movies, and other works of</span><br><span class="line">literature.[end]</span><br></pre></td></tr></table></figure>
+<p>好多了。我们的模型现在可以回答问题，而不是仅仅试图延续提示文本的内容。</p>
+<p>我们解决幻觉问题了吗？</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; gemma_lm.generate(</span><br><span class="line">...     &quot;[instruction]\nWho is the 542nd president of the United States?[end]\n&quot;</span><br><span class="line">...     &quot;[response]\n&quot;,</span><br><span class="line">...     max_length=512,</span><br><span class="line">... )</span><br><span class="line">[instruction]</span><br><span class="line">Who is the 542nd president of the United States?[end]</span><br><span class="line">[response]</span><br><span class="line">The 542nd president of the United States was James A. Garfield.[end]</span><br></pre></td></tr></table></figure>
+<p>完全不是。不过，我们仍然可以利用指令调优来取得一些进展。一种常见的技巧是使用大量的指令/响应对来训练模型，其中期望的响应是“是”或<code>"I don't know"</code>“否” <code>"As a language model, I cannot help you with that"</code>。这可以训练模型避免尝试回答某些特定主题，因为在这些主题上它往往会给出质量较差的结果。</p>
+<h2 id="继续攻读法学硕士学位">继续攻读法学硕士学位</h2>
+<p>我们现在已经从零开始训练了一个 GPT 模型，并将一个语言模型微调成我们自己的聊天机器人。然而，我们今天对语言模型的研究还只是冰山一角。在本节中，我们将介绍一些针对基本“互联网自动补全”语言模型设置的扩展和改进，但这些扩展和改进并非全部。</p>
+<h3 id="基于人类反馈的强化学习rlhf">基于人类反馈的强化学习（RLHF）</h3>
+<p>我们刚才进行的这种指令微调通常被称为*监督式微调。之所以**称为监督式*，是因为我们需要手动整理一份我们希望模型给出的示例提示和响应列表。</p>
+<p>任何需要手动编写文本示例的情况几乎都会成为瓶颈——获取此类数据既缓慢又昂贵。此外，这种方法会受到人类在指令执行任务上的表现上限的限制。如果我们想在类似聊天机器人的体验中超越人类的表现，就不能依赖手动编写的输出来监督LLM的训练。</p>
+<p>我们真正想要优化的问题是我们对某些反应的偏好。如果样本量足够大，这种偏好问题就能被完美定义，但如何将“我们的偏好”转化为可用于计算梯度的损失函数却相当棘手。这正是<em>基于人类反馈的强化学习</em>（ <em>RLHF</em>）试图解决的问题。</p>
+<p>RLHF 微调的第一步与我们在上一节中所做的完全相同——使用手写提示和回复进行监督式微调。这使我们能够获得良好的基准性能；现在我们需要在此基础上进行改进。为此，我们将构建一个<em>奖励模型</em>，该模型可以作为人类偏好的代理。我们可以收集大量的提示和对这些提示的回复。其中一些回复可以是手写的；其他回复可以由模型生成。回复甚至可以由其他聊天机器人语言学习模型 (LLM) 生成。然后，我们需要让评估人员根据偏好对这些回复进行排序。给定一个提示和几个可能的回复，评估人员的任务是将它们从最有帮助到最没帮助进行排序。这种数据收集方式成本高昂且耗时，但仍然比手动编写所有所需的回复要快。</p>
+<p>我们可以使用这个排序偏好数据集来构建奖励模型。该模型接收一个提示-响应对，并输出一个浮点值。值越高，响应越好。这个奖励模型通常是另一个规模较小的Transformer。它不是预测下一个词元，而是读取整个序列并输出一个浮点数——即对给定响应的评分。</p>
+<p>然后，我们可以利用这个奖励模型，通过强化学习的方式进一步调整模型。本书不会深入探讨强化学习的细节，但请不要被这个术语吓到——它指的是任何一种训练设置，在这种设置中，深度学习模型通过做出预测（称为<em>动作</em>）并获得关于这些预测的反馈（称为 <em>奖励</em>）来学习。简而言之，模型自身的预测就成为了它的训练数据。</p>
+<p>在我们的例子中，操作就是对输入提示生成响应，就像我们之前用函数所做的那样<code>generate()</code>。奖励则是将该字符串输出应用一个单独的回归模型。以下是一个简单的伪代码示例。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> prompts <span class="keyword">in</span> dataset:</span><br><span class="line">    <span class="comment"># Takes an action</span></span><br><span class="line">    responses = model.generate(prompts)</span><br><span class="line">    <span class="comment"># Receives a reward</span></span><br><span class="line">    rewards = reward_model.predict(responses)</span><br><span class="line">    good_responses = []</span><br><span class="line">    <span class="keyword">for</span> response, score <span class="keyword">in</span> <span class="built_in">zip</span>(responses, rewards):</span><br><span class="line">        <span class="keyword">if</span> score &gt; cutoff:</span><br><span class="line">            good_responses.append(response)</span><br><span class="line">    <span class="comment"># Updates the model parameters. We do not update the reward model.</span></span><br><span class="line">    model.fit(good_responses)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter16_text-generation/#listing-16-15">清单 16.15</a>：最简单的 RLHF 算法的伪代码</p>
+<p>在这个简单的例子中，我们使用奖励阈值过滤生成的响应，并将“良好”的输出作为新的训练数据，用于后续的监督式微调，就像我们在上一节中所做的那样。在实践中，通常不会丢弃不良响应，而是使用专门的梯度更新算法，利用所有响应和奖励来调整模型的参数。毕竟，不良响应能够很好地提示我们哪些事情不应该做。OpenAI 最初在 2022 年的一篇论文中描述了 RLHF。[<a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter16_text-generation/#footnote-5">5]</a>并利用这种训练设置，从 GPT-3 的初始预训练参数发展到 ChatGPT 的第一个版本。</p>
+<p>这种设置的优势在于其迭代性。你可以利用新训练的模型，生成对提示的新的、改进的响应，根据人类的偏好对这些响应进行排序，然后训练一个新的、改进的奖励模型。</p>
+<h4 id="使用通过-rlhf-训练的聊天机器人">使用通过 RLHF 训练的聊天机器人</h4>
+<p>我们可以通过尝试使用这种迭代偏好调优方式训练的模型来更具体地说明这一点。由于构建聊天机器人是大型 Transformer 模型的“杀手级应用”，因此像 Gemma 这样的预训练模型发布公司通常会发布专门针对聊天场景的“指令调优”版本。现在让我们尝试加载一个。这将是一个拥有 40 亿个参数的模型，是我们刚刚加载的模型的四倍，也是本书中我们将使用的最大模型：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">gemma_lm = keras_hub.models.CausalLM.from_preset(</span><br><span class="line">    <span class="string">&quot;gemma3_instruct_4b&quot;</span>,</span><br><span class="line">    dtype=<span class="string">&quot;bfloat16&quot;</span>,</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter16_text-generation/#listing-16-16">清单 16.16</a>：加载指令优化的 Gemma 变体</p>
+<p><strong>为大型模型选择数据类型</strong></p>
+<p>您可能已经注意到，我们<code>dtype="float32"</code>在第一次创建 Gemma 模型时通过了测试，<code>dtype="bfloat16"</code>现在又通过了。这是怎么回事？</p>
+<p>对于像 Gemma 这样拥有超过十亿个参数的模型，每个浮点数占用的字节数是一个重要的考虑因素。在训练模型时，通常建议每个参数使用 32 位（4 字节）。32 位浮点数可以表示非常小的值，这有助于保持训练梯度的稳定性。这里我们不进行任何训练，因此我们传递 <code>bfloat16</code>一个仅使用 2 字节的参数。我们无需担心梯度稳定性，并且通过使用较低的精度可以节省数 GB 的内存。</p>
+<p>第 18 章将详细讨论浮点精度。</p>
+<p>就像我们之前自行微调的 Gemma 模型一样，这个指令调整后的检查点也带有一个用于格式化输入的特定模板。同样，具体的文本内容并不重要，重要的是我们的提示模板要与用于调整模型的模板相匹配：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">PROMPT_TEMPLATE = <span class="string">&quot;&quot;&quot;&lt;start_of_turn&gt;user</span></span><br><span class="line"><span class="string">&#123;&#125;&lt;end_of_turn&gt;</span></span><br><span class="line"><span class="string">&lt;start_of_turn&gt;model</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+<p>我们试着问它一个问题：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; prompt = &quot;Why can&#x27;t you assign values in Jax tensors? Be brief!&quot;</span><br><span class="line">&gt;&gt;&gt; gemma_lm.generate(PROMPT_TEMPLATE.format(prompt), max_length=512)</span><br><span class="line">&lt;start_of_turn&gt;user</span><br><span class="line">Why can&#x27;t you assign values in Jax tensors? Be brief!&lt;end_of_turn&gt;</span><br><span class="line">&lt;start_of_turn&gt;model</span><br><span class="line">Jax tensors are designed for efficient automatic differentiation. Directly</span><br><span class="line">assigning values disrupts this process, making it difficult to track gradients</span><br><span class="line">correctly. Instead, Jax uses operations to modify tensor values, preserving the</span><br><span class="line">differentiation pipeline.&lt;end_of_turn&gt;</span><br></pre></td></tr></table></figure>
+<p>这个拥有40亿参数的模型首先在14万亿个文本标记上进行预训练，然后经过大量的微调，使其在回答问题时更加有效。部分微调采用了监督式微调（如上一节所述），部分微调采用了强化学习高频（RLHF，如本节所述），还有一些微调采用了其他技术，例如使用一个更大的模型作为“教师”来指导训练。问答能力的提升显而易见。</p>
+<p>让我们用这个模型来处理那个一直困扰我们、让我们产生幻觉的提示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; prompt = &quot;Who is the 542nd president of the United States?&quot;</span><br><span class="line">&gt;&gt;&gt; gemma_lm.generate(PROMPT_TEMPLATE.format(prompt), max_length=512)</span><br><span class="line">&lt;start_of_turn&gt;user</span><br><span class="line">Who is the 542nd president of the United States?&lt;end_of_turn&gt;</span><br><span class="line">&lt;start_of_turn&gt;model</span><br><span class="line">This is a trick question! As of today, November 2, 2023, the United States has</span><br><span class="line">only had 46 presidents. There hasn&#x27;t been a 542nd president yet. 😊 </span><br><span class="line"></span><br><span class="line">You&#x27;re playing with a very large number!&lt;end_of_turn&gt;</span><br></pre></td></tr></table></figure>
+<p>这个更强大的模型拒绝上钩。这并非源于新的建模技术，而是经过大量针对类似我们刚才收到的这类陷阱问题的训练的结果。事实上，你可以清楚地看到，为什么消除幻觉有点像打地鼠——尽管它拒绝产生美国总统的幻觉，但现在它却能编造出今天的日期。</p>
+<h3 id="多模态llm">多模态LLM</h3>
+<p>聊天机器人的一项显而易见的扩展功能是处理新的输入方式。能够响应语音输入并处理图像的助手，远比只能处理文本的助手更有用。</p>
+<p>将 Transformer 模型扩展到不同模态的方法在概念上很简单。Transformer 并非文本专用模型；它是一种高效的<em>序列数据模式学习</em>模型。如果我们能够找到将其他数据类型强制转换为序列表示的方法，就可以将该序列输入 Transformer 模型并进行训练。</p>
+<p>事实上，我们刚刚加载的 Gemma 模型正是如此。该模型自带一个独立的 4.2 亿参数图像编码器，它将输入图像分割成 256 个图像块，并将每个图像块编码为一个向量，该向量的维度与 Gemma 隐藏层 Transformer 的维度相同。每个图像将被嵌入为一个<code>(256, 2560)</code>序列。由于 Gemma Transformer 模型的隐藏层维度为 2560，因此在词元嵌入层之后，可以直接将这种图像表示拼接到我们的文本序列中。您可以将其视为代表图像的 256 个特殊词元，其中每个<code>(1, 2560)</code>向量有时被称为“软词元”（图 16.6）。与我们通常的“硬词元”不同，在硬词元中，每个词元 ID 只能在词元嵌入矩阵中取固定数量的向量，而这些图像软词元可以取视觉编码器输出的任何向量值。</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/multimodal-transformer.974dc2ec.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter16_text-generation/#figure-16-6">图 16.6</a>：通过将文本标记和软图像标记拼接在一起来处理图像输入</p>
+<p>让我们加载一张图片，更详细地看看它是如何工作的（图 16.7）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line">image_url = (</span><br><span class="line">    <span class="string">&quot;https://github.com/mattdangerw/keras-nlp-scripts/&quot;</span></span><br><span class="line">    <span class="string">&quot;blob/main/learned-python.png?raw=true&quot;</span></span><br><span class="line">)</span><br><span class="line">image_path = keras.utils.get_file(origin=image_url)</span><br><span class="line"></span><br><span class="line">image = np.array(keras.utils.load_img(image_path))</span><br><span class="line">plt.axis(<span class="string">&quot;off&quot;</span>)</span><br><span class="line">plt.imshow(image)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/gemma-test-image.ddb3b630.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter16_text-generation/#figure-16-7">图 16.7</a>：Gemma 模型的测试图像</p>
+<p>我们可以使用 Gemma 来询问一些关于这张图片的问题：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; # Limits the maximum input size of the model</span><br><span class="line">&gt;&gt;&gt; gemma_lm.preprocessor.max_images_per_prompt = 1</span><br><span class="line">&gt;&gt;&gt; gemma_lm.preprocessor.sequence_length = 512</span><br><span class="line">&gt;&gt;&gt; prompt = &quot;What is going on in this image? Be concise!&lt;start_of_image&gt;&quot;</span><br><span class="line">&gt;&gt;&gt; gemma_lm.generate(&#123;</span><br><span class="line">...     &quot;prompts&quot;: PROMPT_TEMPLATE.format(prompt),</span><br><span class="line">...     &quot;images&quot;: [image],</span><br><span class="line">... &#125;)</span><br><span class="line">&lt;start_of_turn&gt;user</span><br><span class="line">What is going on in this image? Be concise!</span><br><span class="line"></span><br><span class="line">&lt;start_of_image&gt;</span><br><span class="line"></span><br><span class="line">&lt;end_of_turn&gt;</span><br><span class="line">&lt;start_of_turn&gt;model</span><br><span class="line">A snake wearing glasses is sitting in a leather armchair, surrounded by a large</span><br><span class="line">bookshelf, and reading a book. It&#x27;s a whimsical, slightly surreal image.</span><br><span class="line">&lt;end_of_turn&gt;</span><br><span class="line">&gt;&gt;&gt; prompt = &quot;What is the snake wearing?&lt;start_of_image&gt;&quot;</span><br><span class="line">&gt;&gt;&gt; gemma_lm.generate(&#123;</span><br><span class="line">...     &quot;prompts&quot;: PROMPT_TEMPLATE.format(prompt),</span><br><span class="line">...     &quot;images&quot;: [image],</span><br><span class="line">... &#125;)</span><br><span class="line">&lt;start_of_turn&gt;user</span><br><span class="line">What is the snake wearing?</span><br><span class="line"></span><br><span class="line">&lt;start_of_image&gt;</span><br><span class="line"></span><br><span class="line">&lt;end_of_turn&gt;</span><br><span class="line">&lt;start_of_turn&gt;model</span><br><span class="line">The snake is wearing a pair of glasses! They are red-framed and perched on its</span><br><span class="line">head.&lt;end_of_turn&gt;</span><br></pre></td></tr></table></figure>
+<p>我们的每个输入提示都包含一个特殊标记<code>&lt;start_of_image&gt;</code>。该标记在我们的输入序列中被转换为 256 个占位符值，而这些占位符值又会被替换为代表我们图像的软标记。</p>
+<p>训练这种多模态模型与常规的LLM预训练和微调非常相似。通常，你需要先单独预训练图像编码器，就像我们在本书第8章中所做的那样。然后，你可以简单地进行相同的“猜测下一个词”预训练，并将混合的图像和文本内容输入到一个序列中。我们的Transformer模型不会被训练来输出图像软标记；我们只需将这些图像标记位置的损失值设为零即可。</p>
+<p>我们只需将图像数据添加到语言学习模型（LLM）中，这听起来似乎很神奇，但考虑到我们所用的序列模型的强大功能，这其实是一个意料之中的结果。我们使用了一个Transformer模型，将图像输入转换为序列数据，并进行了大量的额外训练。该模型既保留了原语言模型接收和生成文本的能力，又学会了将图像嵌入到Transformer的潜在空间中。</p>
+<h4 id="基础模型">基础模型</h4>
+<p>随着大型语言模型（LLM）涉足不同模态，“大型语言模型”这个名称可能会有些误导。它们确实<em>可以对</em>语言进行建模，但也可以对图像、音频，甚至结构化数据进行建模。在下一章中，我们将看到一种独特的架构，称为<em>扩散模型</em>，它在底层结构方面与大型语言模型截然不同，但本质上却很相似——它们也使用“互联网规模”的海量数据进行训练，并采用自监督损失函数。</p>
+<p>这类模型的总称是<em>基础模型</em>。更具体地说，基础模型是指任何基于广泛数据（通常使用大规模自监督）训练的模型，它可以针对各种下游任务进行微调。</p>
+<p>一般来说，你可以把基础模型理解为：给定互联网上大量数据的部分表示，学习如何<em>重构</em> 这些数据。虽然逻辑学习模型（LLM）是这类模型中最早也是最知名的，但还有许多其他模型。基础模型的显著特征是：其目标函数是自监督学习（即重构损失），并且这些模型并非专门针对单一任务，而是可以用于多种下游应用。</p>
+<p>这是机器学习漫长发展历程中近期发生的一项重要且引人注目的转变。与其从零开始训练模型来处理你的数据集，通常情况下，使用基础模型来获取输入（无论是图像、文本或其他类型）的丰富表征会更好，然后针对最终的下游任务对该模型进行专门化处理。当然，这样做也存在缺点，即需要运行具有数十亿参数的大型模型，因此它并不适用于所有机器学习的实际应用。</p>
+<h3 id="检索增强生成rag">检索增强生成（RAG）</h3>
+<p>在提示信息中添加额外信息不仅有助于处理图像数据，还可以作为扩展 LLM 功能的通用方法。一个显著的例子是使用 LLM 进行搜索。如果我们简单地将 LLM 与搜索引擎进行比较，它存在一些致命缺陷：</p>
+<ul>
+<li>逻辑学习模型（LLM）偶尔会捏造数据。它会输出一些训练数据中不存在但可以通过插值推断出来的错误“事实”。这些信息可能具有误导性，甚至会造成危险。</li>
+<li>逻辑学习模型（LLM）对世界的认知存在一个截止日期——充其量，是模型预训练的日期。训练LLM的成本相当高昂，而且持续地使用新数据进行训练是不切实际的。因此，在某个任意的时间点，LLM对世界的认知就会停止。</li>
+</ul>
+<p>没人想用一个只能告诉你六个月前发生的事情的搜索引擎。但如果我们把语言学习模型（LLM）看作更像是“对话软件”，它可以处理提示中的任何序列数据，那么如果我们把这个模型用作与传统搜索方式检索信息的接口呢？这就是<em>检索增强生成</em>（<em>RAG）</em>背后的理念。</p>
+<p>RAG 的工作原理是：首先获取用户的初始问题，然后通过某种查询方式提取更多文本上下文。这个查询可以指向数据库、搜索引擎，或者任何能够提供用户所提问题相关信息的来源。这些额外信息随后会直接添加到提示信息中。例如，您可以构建如下提示信息：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Use the following pieces of context to answer the question.</span><br><span class="line">Question: What are some good ways to improve sleep?</span><br><span class="line">Context: &#123;text from a medical journal on improving sleep&#125;</span><br><span class="line">Answer:</span><br></pre></td></tr></table></figure>
+<p>查找相关信息的一种常用方法是使用<em>向量数据库</em>。要构建向量数据库，可以使用 LLM（逻辑层模型）或任何其他模型，将一系列源文档嵌入为向量。文档文本将存储在数据库中，嵌入向量用作键。在检索过程中，可以再次使用 LLM 将用户查询嵌入为向量。向量数据库负责搜索与查询向量接近的键向量，并显示相应的文本。这听起来很像注意力机制本身——回想一下，“查询”、“键”和“值”这些术语实际上都源自数据库系统。</p>
+<p>提供有助于生成的信息可以实现以下几个目标：</p>
+<ul>
+<li>它提供了一种显而易见的绕过模型截止日期的方法。</li>
+<li>它允许模型访问私有数据。公司可能希望使用基于公共数据训练的逻辑回归模型（LLM）作为访问私有信息的接口。</li>
+<li>它可以帮助模型建立事实基础。虽然没有万全之策能完全消除幻觉，但如果提示中提供了关于主题的正确背景信息，LLM（法学硕士）就不太可能捏造事实。</li>
+</ul>
+<h3 id="推理模型">“推理”模型</h3>
+<p>自首批逻辑推理模型（LLM）问世以来，研究人员多年来一直苦苦应对一个众所周知的事实：这些模型在数学问题和逻辑谜题方面表现糟糕。模型或许能在其训练数据中完美解答某个问题，但如果将提示中的几个人名或数字替换掉，就会发现模型根本无法理解它试图解决的问题。对于自然语言处理领域的许多问题，LLM 提供了一条简单的改进途径：增加训练数据量，提高基准测试分数。然而，小学数学题却让这些改进束手无策。</p>
+<p>2023年，谷歌的研究人员发现，如果你用一些数学题的“展示解题步骤”的例子来引导模型——就像做作业一样把解题步骤写出来——模型也会开始模仿。当模型模仿写出中间步骤时，它会更加关注自己的输出，从而更快地找到正确答案。他们将这种方法称为“思维链”引导，这个名称沿用至今。另一组研究人员发现，甚至不需要例子；你只需用“让我们一步一步地思考”这句话来引导模型，就能获得更好的输出。</p>
+<p>自这些发现以来，人们对直接训练逻辑推理模型（LLM）以提高其链式推理能力产生了浓厚的兴趣。像 OpenAI 的 o1 和 DeepSeek 的 r1 这样的模型，通过训练模型“大声思考”难题，在数学和编程问题上取得了显著进步，并因此成为新闻热点。</p>
+<p>这种循序渐进的微调方法与RLHF非常相似。首先，我们会用一些监督学习的例子来训练模型，这些例子要求学习者“展示解题步骤”并得出正确答案。接下来，我们会给模型一个新的数学题，并检查模型是否给出了正确的答案。最后，我们会利用这些新生成的输出来进一步调整模型的权重。</p>
+<p>我们来用 Gemma 模型试试。我们可以自己编写一个应用题，并启用随机抽样，这样每次都能得到一个略微随机的结果：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">prompt = <span class="string">&quot;&quot;&quot;Judy wrote a 2-page letter to 3 friends twice a week for 3 months.</span></span><br><span class="line"><span class="string">How many letters did she write?</span></span><br><span class="line"><span class="string">Be brief, and add &quot;ANSWER:&quot; before your final answer.&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Turns on random sampling to get a diverse range of outputs</span></span><br><span class="line">gemma_lm.<span class="built_in">compile</span>(sampler=<span class="string">&quot;random&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p>我们来尝试生成几个响应：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; gemma_lm.generate(PROMPT_TEMPLATE.format(prompt))</span><br><span class="line">&lt;start_of_turn&gt;user</span><br><span class="line">Judy wrote a 2-page letter to 3 friends twice a week for 3 months.</span><br><span class="line">How many letters did she write?</span><br><span class="line">Be brief, and add &quot;ANSWER:&quot; before your final answer.&lt;end_of_turn&gt;</span><br><span class="line">&lt;start_of_turn&gt;model</span><br><span class="line">Here&#x27;s how to solve the problem:</span><br><span class="line"></span><br><span class="line">* **Letters per week:** 3 friends * 2 letters/week = 6 letters/week</span><br><span class="line">* **Letters per month:** 6 letters/week * 4 weeks/month = 24 letters/month</span><br><span class="line">* **Letters in 3 months:** 24 letters/month * 3 months = 72 letters</span><br><span class="line">* **Total letters:** 72 letters * 2 = 144 letters</span><br><span class="line"></span><br><span class="line">ANSWER: 144&lt;end_of_turn&gt;</span><br><span class="line">&gt;&gt;&gt; gemma_lm.generate(PROMPT_TEMPLATE.format(prompt))</span><br><span class="line">&lt;start_of_turn&gt;user</span><br><span class="line">Judy wrote a 2-page letter to 3 friends twice a week for 3 months.</span><br><span class="line">How many letters did she write?</span><br><span class="line">Be brief, and add &quot;ANSWER:&quot; before your final answer.&lt;end_of_turn&gt;</span><br><span class="line">&lt;start_of_turn&gt;model</span><br><span class="line">Here&#x27;s how to solve the problem:</span><br><span class="line"></span><br><span class="line">* **Letters per week:** 3 friends * 2 letters/week = 6 letters/week</span><br><span class="line">* **Letters per month:** 6 letters/week * 4 weeks/month = 24 letters/month</span><br><span class="line">* **Total letters:** 24 letters/month * 3 months = 72 letters</span><br><span class="line"></span><br><span class="line">ANSWER: 72&lt;end_of_turn&gt;</span><br></pre></td></tr></table></figure>
+<p>第一次尝试中，我们的模型纠结于每封信有两页这个无关紧要的细节。第二次尝试中，模型就正确解决了这个问题。我们使用的这个经过指令调整的Gemma模型已经针对类似的数学问题进行了优化；而上一节中未经调整的Gemma模型则无法达到如此好的效果。</p>
+<p>我们可以将这个想法扩展到一种非常简单的思维导图训练形式：</p>
+<ol type="1">
+<li>收集一些基础数学和推理题以及期望答案。</li>
+<li>生成（带有一定的随机性）若干响应。</li>
+<li>通过字符串解析找出所有正确答案。您可以像之前那样，指示模型使用特定的文本标记来表示最终答案。</li>
+<li>对正确响应进行监督式微调，包括所有中间输出。</li>
+<li>重复！</li>
+</ol>
+<p>前面描述的过程是一种强化学习算法。我们的答案检查充当了 <em>环境</em>，而生成的输出则是模型用来学习的<em>动作</em>。与 RLHF 类似，在实践中，你会使用更复杂的梯度更新步骤来利用所有响应（即使是错误的响应）的信息，但基本原理是相同的。</p>
+<p>同样的思路也被用于提升其他领域中学习逻辑模型（LLM）的性能，这些领域对于文本提示的答案显而易见且可验证。编码是其中重要的一环——你可以提示LLM输出代码，然后实际运行该代码来测试响应的质量。</p>
+<p>在所有这些领域，一个趋势显而易见——随着模型学习解决更复杂的问题，它会在得出最终答案之前花费越来越多的时间“展示其解题过程”。你可以把这理解为模型在学习<em>搜索</em> 自身输出的潜在解决方案。我们将在本书最后一章进一步探讨这一观点。</p>
+<h2 id="法学硕士llm的未来发展方向是什么">法学硕士（LLM）的未来发展方向是什么？</h2>
+<p>鉴于本章开头讨论的LLM发展轨迹，LLM的未来发展方向似乎显而易见：更多参数！更优的性能！从总体上看，这或许没错，但我们的发展轨迹可能并非如此线性。</p>
+<p>假设你有一个固定的预训练预算，比如一百万美元，你可以大致把它理解为购买一定数量的计算资源或浮点运算次数（flops）。你可以选择用这些浮点运算次数来训练更多的数据，或者训练一个更大的模型。最近的研究指出，GPT-3 拥有 1750 亿个参数，远远超出了其计算预算。如果用更多的数据训练一个更小的模型，就能获得更好的模型性能。因此，近年来，模型规模的增长趋势趋于平缓，而数据规模的增长趋势却在不断上升。</p>
+<p>但这并不意味着扩展会停止——更强大的计算能力通常<em>会</em> 带来更好的LLM性能，而且我们尚未看到任何迹象表明下一代币预测性能会趋于平缓。各公司仍在持续投入数十亿美元用于扩展LLM，并探索由此产生的新功能。</p>
+<p>图 16.8 展示了 2018 年至 2025 年间发布的一些主要 LLM 的详细信息。我们可以注意到，虽然用于预训练的 token 总数稳步且大幅增长，但自 GPT-3 以来，模型参数数量却发生了显著变化。部分原因是我们现在知道 GPT-3 存在欠训练问题，但更实际的原因也在于此。在部署模型时，为了获得更适合低成本硬件的小型模型，牺牲一些性能通常是值得的。如果运行成本过高，即使模型性能再好也无济于事。</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/llm-sizes.34d71a34.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter16_text-generation/#figure-16-8">图 16.8</a>：LLM 参数数量（左）和预训练数据集大小（右）随时间的变化。许多近期推出的专有 LLM（例如 GPT-4 和 Gemini）未包含在内，因为模型细节尚未公开。</p>
+<p>我们可能无法盲目地扩展这些模型，还有另一个原因：预训练数据开始告罄！科技公司越来越难以找到更多高质量、公开的、由人类撰写的内容用于预训练。模型甚至开始“自相矛盾”，大量使用其他语言学习模型（LLM）创建的内容进行训练，这又引发了一系列新的问题。这也是强化学习近期备受关注的原因之一。如果你能创建一个具有挑战性的、自包含的<em>环境</em>，为语言学习模型生成新的问题，你就找到了一种利用模型自身输出继续训练的方法——无需再费力地在网络上搜寻更多优质文本素材。</p>
+<p>我们讨论过的所有解决方案都无法彻底解决LLM面临的所有问题。归根结底，根本问题依然是LLM的学习效率远低于人类。模型能力的提升只能依靠训练数据，而训练数据量远超人类一生所能阅读的文本量。随着LLM规模的不断扩大，如何构建能够在数据有限的情况下快速学习的模型的基础研究也将持续进行。</p>
+<p>尽管如此，LLM 代表着构建流畅自然语言界面的能力，仅此一项就将极大地改变我们利用计算设备所能完成的事情。在本章中，我们阐述了许多 LLM 用于实现这些功能的基本方法。</p>
+<h2 id="概括">概括</h2>
+<ul>
+<li>大型语言模型（LLM）是由几个关键要素组合而成的：
+<ul>
+<li>Transformer架构</li>
+<li>语言建模任务（根据过去的词元预测下一个词元）</li>
+<li>大量未标记的文本数据</li>
+</ul></li>
+<li>逻辑学习模型（LLM）学习用于预测单个词元的概率分布。这可以与采样策略相结合，生成一长串文本。有很多常用的文本采样方法：
+<ul>
+<li><em>贪婪搜索</em>在每一代步骤中都选择最有可能预测的令牌。</li>
+<li><em>随机抽样</em>直接对所有标记的预测类别分布进行抽样。</li>
+<li><em>Top-k 抽样</em>将类别分布限制在前 K 个候选对象中。</li>
+</ul></li>
+<li>LLM 使用数十亿个参数，并用数万亿个单词的文本进行训练。</li>
+<li>LLM 的输出不可靠，所有 LLM 都会偶尔产生与事实不符的幻觉信息。</li>
+<li>可以对 LLM 进行微调，使其能够遵循聊天对话中的指令。这种微调称为<em>指令微调</em>：
+<ul>
+<li>最简单的指令微调形式是直接使用指令和响应对来训练模型。</li>
+<li>更高级的教学微调形式涉及强化学习。</li>
+</ul></li>
+<li>使用 LLM 时最常见的资源瓶颈是加速器内存。</li>
+<li>LoRA 是一种通过冻结大多数 Transformer 参数并仅更新注意力投影权重的低秩分解来减少内存使用量的技术。</li>
+<li>如果能够弄清楚如何将这些输入或输出构建成序列预测问题中的序列，LLM 就可以输入或输出来自不同模态的数据。</li>
+<li>基础<em>模型</em>是一个通用术语，指的是使用自监督训练的任何模态的模型，用于执行各种下游任务。</li>
+</ul>
+<h3 id="脚注">脚注</h3>
+<ol type="1">
+<li>2022年，杰森·艾伦（Jason Allen）利用图像生成软件Midjourney赢得了一项数字艺术家奖项；2024年，九段理惠（Rie Kudan）凭借一部大量运用生成软件创作的小说，荣获日本最负盛名的文学奖项之一。 [<a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter16_text-generation/#footnote-link-1">↩︎]</a></li>
+<li>伊安尼斯·泽纳基斯（Iannis Xenakis），“音乐形式：音乐作曲的新原理”，<em>《音乐评论》特刊</em>，第 10 期。 253-254（1963）。 [<a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter16_text-generation/#footnote-link-2">↩︎]</a></li>
+<li>Alec Radford、Karthik Narasimhan、Tim Salimans 和 Ilya Sutskever，“通过生成式预训练提高语言理解能力”，（2018 年），https://mng.bz/GweD。 [<a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter16_text-generation/#footnote-link-3">↩︎]</a></li>
+<li>J. Edward Hu 等人，“LoRA：大型语言模型的低秩自适应”，arXiv (2021)，https://arxiv.org/abs/2106.09685。 [<a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter16_text-generation/#footnote-link-4">↩︎]</a></li>
+<li>Ouyang 等人，“训练语言模型以根据人类反馈遵循指令”，第 36 届国际神经信息处理系统会议论文集 (2022)，https://arxiv.org/abs/2203.02155。 [<a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter16_text-generation/#footnote-link-5">↩︎]</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/03/05/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B15%E3%80%81%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%92%8CTransformer/" rel="prev" title="《DEEP LEARNING with Python》第十五章">
+                  <i class="fa fa-chevron-left"></i> 《DEEP LEARNING with Python》第十五章
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/03/07/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B17%E3%80%81%E5%9B%BE%E5%83%8F%E7%94%9F%E6%88%90/" rel="next" title="《DEEP LEARNING with Python》第十七章">
+                  《DEEP LEARNING with Python》第十七章 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
