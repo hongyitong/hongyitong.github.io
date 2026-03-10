@@ -22,12 +22,12 @@
 
 
 
-    <meta name="description" content="第二章 神经网络的数学基础 运行代码 在 Colab 上运行 在 GitHub 上查看 本章内容  神经网络的第一个例子 张量和张量运算 神经网络如何通过反向传播和梯度下降进行学习  理解深度学习需要熟悉许多简单的数学概念：张量、张量运算、微分、梯度下降等等。本章的目标是在不涉及过多技术细节的情况下，帮助你建立对这些概念的直觉。特别是，我们将避免使用数学符号，因为这些符号可能会给没有数学基础的人造">
+    <meta name="description" content="第二章 神经网络的数学基础 The mathematical building blocks of neural networks 运行代码 在 Colab 上运行 在 GitHub 上查看 本章内容  神经网络的第一个例子 张量和张量运算（ Tensors and tensor operations） 神经网络如何通过反向传播和梯度下降进行学习  理解深度学习需要熟悉许多简单的数学概念：张量、张">
 <meta property="og:type" content="article">
 <meta property="og:title" content="《DEEP LEARNING with Python》第二章">
 <meta property="og:url" content="http://hongyitong.github.io/2026/02/17/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B2%E3%80%81%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/index.html">
 <meta property="og:site_name" content="墨语浮生">
-<meta property="og:description" content="第二章 神经网络的数学基础 运行代码 在 Colab 上运行 在 GitHub 上查看 本章内容  神经网络的第一个例子 张量和张量运算 神经网络如何通过反向传播和梯度下降进行学习  理解深度学习需要熟悉许多简单的数学概念：张量、张量运算、微分、梯度下降等等。本章的目标是在不涉及过多技术细节的情况下，帮助你建立对这些概念的直觉。特别是，我们将避免使用数学符号，因为这些符号可能会给没有数学基础的人造">
+<meta property="og:description" content="第二章 神经网络的数学基础 The mathematical building blocks of neural networks 运行代码 在 Colab 上运行 在 GitHub 上查看 本章内容  神经网络的第一个例子 张量和张量运算（ Tensors and tensor operations） 神经网络如何通过反向传播和梯度下降进行学习  理解深度学习需要熟悉许多简单的数学概念：张量、张">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/MNIST-sample-digits.3d651e1d.png">
 <meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/The-fourth-sample-in-our-dataset.8685ed9a.png">
@@ -56,7 +56,7 @@
 <meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/path_in_backward_graph.fe91e7d0.png">
 <meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/deep-learning-in-3-figures-3_alt.40aa865d.png">
 <meta property="article:published_time" content="2026-02-16T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-03-07T02:50:14.641Z">
+<meta property="article:modified_time" content="2026-03-10T04:05:24.830Z">
 <meta property="article:author" content="Rayman.hung">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/MNIST-sample-digits.3d651e1d.png">
@@ -278,30 +278,34 @@
     
     <div class="post-body" itemprop="articleBody">
         <p><strong>第二章 神经网络的数学基础</strong></p>
+<p>The mathematical building blocks of neural networks</p>
 <p><strong>运行代码</strong></p>
 <p><a target="_blank" rel="noopener" href="https://colab.research.google.com/github/fchollet/deep-learning-with-python-notebooks/blob/master/chapter02_mathematical-building-blocks.ipynb">在 Colab 上运行</a></p>
 <p><a target="_blank" rel="noopener" href="https://github.com/fchollet/deep-learning-with-python-notebooks">在 GitHub 上查看</a></p>
 <p>本章内容</p>
 <ul>
 <li>神经网络的第一个例子</li>
-<li>张量和张量运算</li>
+<li>张量和张量运算（ Tensors and tensor operations）</li>
 <li>神经网络如何通过反向传播和梯度下降进行学习</li>
 </ul>
-<p>理解深度学习需要熟悉许多简单的数学概念：<em>张量</em>、<em>张量运算</em>、<em>微分</em>、<em>梯度下降</em>等等。本章的目标是在不涉及过多技术细节的情况下，帮助你建立对这些概念的直觉。特别是，我们将避免使用数学符号，因为这些符号可能会给没有数学基础的人造成不必要的障碍，而且对于清晰地解释概念也并非必要。对数学运算最精确、最明确的描述就是它的可执行代码。</p>
+<p>理解深度学习需要熟悉许多简单的数学概念：<em>张量</em>、<em>张量运算</em>、<em>微分</em>、<em>梯度下降</em>（tensors, tensor operations, differentiation, gradient descent）等等。本章的目标是在不涉及过多技术细节的情况下，帮助你建立对这些概念的直觉。特别是，我们将避免使用数学符号，因为这些符号可能会给没有数学基础的人造成不必要的障碍，而且对于清晰地解释概念也并非必要。对数学运算最精确、最明确的描述就是它的可执行代码。</p>
 <p>为了充分理解张量和梯度下降的概念，本章将以一个神经网络的实际例子作为开篇。然后，我们将逐一讲解引入的每一个新概念。请记住，这些概念对于理解后续章节中的实际例子至关重要！</p>
 <p>读完本章后，你将对深度学习背后的数学理论有一个直观的理解，并准备好在第 3 章中开始深入学习现代深度学习框架。</p>
+<span id="more"></span>
 <p><strong>运行本书中的代码</strong></p>
-<p>本书包含大量可运行的 Python 代码。每一章都配有一个 <em>Jupyter Notebook</em>，其中包含了本章的所有代码。Jupyter Notebook 就像一个实时 Python 代码草稿本，您可以在其中交互式地运行代码、绘制数据图表、查看图像等等。如果您在阅读的同时运行并尝试书中的代码，将会获得更多实用的知识。</p>
-<p>目前为止，搭建深度学习环境来运行这些笔记本最简单的方法是使用<em>Google Colaboratory</em>（简称 Colab），它是一个托管的 Jupyter Notebook 环境，已成为机器学习从业者的行业标准。借助 Colab，您可以在浏览器中交互式地运行本书的代码，并连接到具有可配置硬件的云运行时。默认情况下，本书中的笔记本将在 Colab 的免费 GPU 运行时上运行。</p>
+<p>本书包含大量可运行的 Python 代码。每一章都配有一个 <em>Jupyter Notebook</em>，其中包含了本章的所有代码。Jupyter Notebook 就像一个实时 Python 代码草稿本，您可以在其中<strong>交互式</strong>地运行代码、绘制数据图表、查看图像等等。如果您在阅读的同时运行并尝试书中的代码，将会获得更多实用的知识。</p>
+<p>目前为止，<strong>搭建深度学习环境来运行这些笔记本最简单的方法是使用<em>Google Colaboratory</em>（简称 Colab），它是一个托管的 Jupyter Notebook 环境，已成为机器学习从业者的行业标准。</strong>借助 Colab，您可以在浏览器中交互式地运行本书的代码，并连接到具有可配置硬件的云运行时。默认情况下，本书中的笔记本将在 Colab 的免费 GPU 运行时上运行。</p>
 <p>如果您愿意，也可以在本地计算机上运行这些笔记本。建议使用 GPU，尤其是在本书后面学习更大规模、计算密集型模型时。</p>
 <p>本地运行和在 Colab 上运行的说明以及代码可以在https://github.com/fchollet/deep-learning-with-python-notebooks找到。</p>
-<span id="more"></span>
 <h2 id="神经网络初探">神经网络初探</h2>
+<p>A first look at a neural network</p>
 <p>让我们来看一个具体的例子，这个神经网络使用机器学习库<em>Keras</em>来学习对手写数字进行分类。本书将大量使用 Keras。它是一个简单易用的高级库，可以帮助我们专注于想要讲解的概念。</p>
 <p>除非您已经熟悉 Keras 或类似的库，否则您可能无法立即完全理解这个示例。没关系。在接下来的几个章节中，我们将逐一回顾示例中的每个元素并进行详细解释。所以，即使某些步骤看起来有些随意或像魔法一样，也不用担心！万事开头难。</p>
 <p>我们在这里要解决的问题是将手写数字的灰度图像（28 × 28 像素）分类到 10 个类别（0 到 9）中。我们将使用 MNIST 数据集，它是机器学习领域的经典数据集，几乎与机器学习领域本身一样古老，并已被广泛研究。MNIST 数据集包含 60,000 张训练图像和 10,000 张测试图像，由美国国家标准与技术研究院（MNIST 中的 NIST）在 20 世纪 80 年代收集。您可以将“解决”MNIST 问题视为深度学习的“Hello World”程序——它是验证算法是否按预期运行的过程。随着您成为机器学习从业者，您会在科学论文、博客文章等各种场合反复看到 MNIST 的身影。您可以在图 2.1 中看到一些 MNIST 样本。</p>
-<p>在机器学习中，分类问题中的一个<em>类别</em>称为类（ <em>class）</em>。数据点称为<em>样本（samples</em>）。与特定样本关联的类别称为<em>标签（label</em>）。</p>
-<p><img src="/img3/DEEP%20LEARNING%20with%20Python/MNIST-sample-digits.3d651e1d.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter02_mathematical-building-blocks/#figure-2-1">图 2.1</a>：MNIST 样本数字</p>
+<p>在机器学习中，分类问题中的一个<em>类别</em>称为类（<em>class）</em>。数据点称为<em>样本（samples</em>）。与特定样本关联的类别称为<em>标签（label</em>）。</p>
+<figure>
+<img src="/img3/DEEP%20LEARNING%20with%20Python/MNIST-sample-digits.3d651e1d.png" alt="图 2.1：MNIST 样本数字" /><figcaption aria-hidden="true">图 2.1：MNIST 样本数字</figcaption>
+</figure>
 <p>MNIST 数据集已预加载到 Keras 中，以四个 NumPy 数组的形式提供。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras.datasets <span class="keyword">import</span> mnist</span><br><span class="line"></span><br><span class="line">(train_images, train_labels), (test_images, test_labels) = mnist.load_data()</span><br></pre></td></tr></table></figure>
 <p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter02_mathematical-building-blocks/#listing-2-1">清单 2.1</a>：在 Keras 中加载 MNIST 数据集</p>
@@ -315,13 +319,13 @@
 </ol>
 <p><strong>简单来说：</strong> 这个链接会直接带你跳到《Python 深度学习》第三章中那个编号为“2-1”的代码块。</p>
 </blockquote>
-<p><code>train_images</code>并<code>train_labels</code>构成训练集，即模型将从中学习的数据。然后，模型将在测试集上进行测试<code>test_images</code>。<code>test_labels</code>图像被编码为 NumPy 数组，标签是一个从 0 到 9 的数字数组。图像和标签一一对应。</p>
-<p>NumPy 是一个非常流行的 Python 数值计算库。在你的机器学习学习过程中，你会经常看到它的身影。由于缺乏 GPU 和<em>自动微分</em>支持，它很少用于实现现代机器学习算法，但 NumPy 数组经常被用作数值数据交换格式——例如，这里就用于存储 MNIST 数据集中的数字及其标签。</p>
+<p><code>train_images</code>并<code>train_labels</code>构成训练集，即模型将从中学习的数据。然后，模型将在测试集上进行测试<code>test_images</code>，<code>test_labels</code>图像被编码为 NumPy 数组，标签是一个从 0 到 9 的数字数组。图像和标签一一对应。</p>
+<p><strong>NumPy 是一个非常流行的 Python 数值计算库。在你的机器学习学习过程中，你会经常看到它的身影。由于缺乏 GPU 和<em>自动微分</em>支持，它很少用于实现现代机器学习算法，但 NumPy 数组经常被用作数值数据交换格式</strong>——例如，这里就用于存储 MNIST 数据集中的数字及其标签。</p>
 <p>我们来看一下训练数据：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; train_images.shape</span><br><span class="line">(60000, 28, 28)</span><br><span class="line">&gt;&gt;&gt; len(train_labels)</span><br><span class="line">60000</span><br><span class="line">&gt;&gt;&gt; train_labels</span><br><span class="line">array([5, 0, 4, ..., 5, 6, 8], dtype=uint8)</span><br></pre></td></tr></table></figure>
 <p>以下是测试数据：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; test_images.shape</span><br><span class="line">(10000, 28, 28)</span><br><span class="line">&gt;&gt;&gt; len(test_labels)</span><br><span class="line">10000</span><br><span class="line">&gt;&gt;&gt; test_labels</span><br><span class="line">array([7, 2, 1, ..., 4, 5, 6], dtype=uint8)</span><br></pre></td></tr></table></figure>
-<p>工作流程如下。首先，我们将训练数据输入神经网络<code>train_images</code>。<code>train_labels</code>然后，网络将学习将图像和标签关联起来。最后，我们将要求网络对进行预测<code>test_images</code>，并验证这些预测是否与来自的标签匹配<code>test_labels</code>。</p>
+<p>工作流程如下。首先，我们将训练数据输入神经网络<code>train_images</code>，<code>train_labels</code>然后，网络将学习将图像和标签关联起来。最后，我们将要求网络对进行预测<code>test_images</code>，并验证这些预测是否与来自的标签匹配<code>test_labels</code>。</p>
 <p>让我们来构建网络——再次提醒，你不需要现在就完全理解这个例子。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> keras</span><br><span class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> layers</span><br><span class="line"></span><br><span class="line">model = keras.Sequential(</span><br><span class="line">    [</span><br><span class="line">        layers.Dense(<span class="number">512</span>, activation=<span class="string">&quot;relu&quot;</span>),</span><br><span class="line">        layers.Dense(<span class="number">10</span>, activation=<span class="string">&quot;softmax&quot;</span>),</span><br><span class="line">    ]</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
 <p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter02_mathematical-building-blocks/#listing-2-2">清单 2.2</a>：网络架构</p>
@@ -336,7 +340,7 @@
 <p>接下来的两章将阐明损失函数和优化器的确切用途。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">model.<span class="built_in">compile</span>(</span><br><span class="line">    optimizer=<span class="string">&quot;adam&quot;</span>,</span><br><span class="line">    loss=<span class="string">&quot;sparse_categorical_crossentropy&quot;</span>,</span><br><span class="line">    metrics=[<span class="string">&quot;accuracy&quot;</span>],</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
 <p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter02_mathematical-building-blocks/#listing-2-3">清单 2.3</a>：编译步骤</p>
-<p>在训练之前，我们将对数据<em>进行预处理</em>，将其重塑为模型期望的形状，并进行缩放，使所有值都在指定<code>[0, 1]</code>区间内。之前，我们的训练图像存储在一个形状<code>(60000, 28, 28)</code>为 <code>[]</code> 的数组中<code>uint8</code>，其值位于<code>[0, 255]</code>指定区间内。我们将它转换为一个<code>float32</code>形状为 <code>[]</code> 的数组，<code>(60000, 28 * 28)</code> 其值介于<code>0</code>0 和 1之间<code>1</code>。</p>
+<p>在训练之前，我们将对数据<em>进行预处理</em>，将其重塑为模型期望的形状，并进行缩放，使所有值都在指定<code>[0, 1]</code>区间内。之前，我们的训练图像存储在一个形状<code>(60000, 28, 28)</code>为的数组中<code>uint8</code>，其值位于<code>[0, 255]</code>指定区间内。我们将它转换为一个<code>float32</code>形状为的数组，<code>(60000, 28 * 28)</code> 其值介于<code>0</code>0 和 1之间<code>1</code>。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">train_images = train_images.reshape((<span class="number">60000</span>, <span class="number">28</span> * <span class="number">28</span>))</span><br><span class="line">train_images = train_images.astype(<span class="string">&quot;float32&quot;</span>) / <span class="number">255</span></span><br><span class="line">test_images = test_images.reshape((<span class="number">10000</span>, <span class="number">28</span> * <span class="number">28</span>))</span><br><span class="line">test_images = test_images.astype(<span class="string">&quot;float32&quot;</span>) / <span class="number">255</span></span><br></pre></td></tr></table></figure>
 <p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter02_mathematical-building-blocks/#listing-2-4">清单 2.4</a>：准备图像数据</p>
 <p>现在我们准备训练模型，在 Keras 中，这是通过调用模型的<code>fit()</code>方法来完成的——我们将模型<em>拟合到其训练数据。</em></p>
@@ -354,33 +358,44 @@
 <p>平均而言，我们的模型在对这些从未见过的数字进行分类方面表现如何？让我们通过计算整个测试集的平均准确率来检验一下。</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; test_loss, test_acc = model.evaluate(test_images, test_labels)</span><br><span class="line">&gt;&gt;&gt; print(f&quot;test_acc: &#123;test_acc&#125;&quot;)</span><br><span class="line">test_acc: 0.9785</span><br></pre></td></tr></table></figure>
 <p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter02_mathematical-building-blocks/#listing-2-7">清单 2.7</a>：在新数据上评估模型</p>
-<p>测试集的准确率达到了 97.8%，几乎是训练集（准确率为 98.9%）的两倍。训练准确率和测试准确率之间的这种差距正是过<em>拟合</em>的一个例子：机器学习模型在新数据上的表现往往比在训练数据上的表现更差。过拟合是第五章的核心内容之一。</p>
-<p>第一个示例到此结束。您刚刚看到了如何用不到 15 行 Python 代码构建和训练一个神经网络来识别手写数字。在本章和下一章中，我们将详细介绍刚才预览的每个组成部分，并阐明其背后的工作原理。您将学习张量（模型中存储数据的对象）、张量运算（构成模型的层）以及梯度下降（使模型能够从训练样本中学习）。</p>
+<p>测试集的准确率达到了 97.8%，错误率几乎是训练集（准确率为 98.9%）的两倍。<strong>训练准确率和测试准确率之间的这种差距正是过<em>拟合</em>的一个例子：机器学习模型在新数据上的表现往往比在训练数据上的表现更差。过拟合是第五章的核心内容之一。</strong></p>
+<p>第一个示例到此结束。您刚刚看到了如何用不到 15 行 Python 代码构建和训练一个神经网络来识别手写数字。在本章和下一章中，我们将详细介绍刚才预览的每个组成部分，并阐明其背后的工作原理。您将学习<strong>张量（模型中存储数据的对象）、张量运算（构成模型的层）以及梯度下降（使模型能够从训练样本中学习）。</strong></p>
 <h2 id="神经网络的数据表示">神经网络的数据表示</h2>
-<p>在前面的例子中，我们从存储在多维 NumPy 数组（也称为<em>张量）</em>中的数据开始。一般来说，所有当前的机器学习系统都使用张量作为其基本数据结构。张量是该领域的基础——其重要性甚至使得 TensorFlow 框架以它命名。那么，什么是张量呢？</p>
+<p>Data representations for neural networks</p>
+<p>在前面的例子中，我们从存储在多维 NumPy 数组（也称为<em>张量）</em>中的数据开始。一般来说，所有当前的机器学习系统都使用张量作为其基本数据结构。<strong>张量是该领域的基础——其重要性甚至使得 TensorFlow 框架以它命名</strong>。那么，什么是张量呢？</p>
 <p>张量本质上是数据的容器——通常是数值数据。所以它是数字的容器。你可能已经熟悉矩阵，矩阵是二阶张量：张量是矩阵在任意维度上的推广（注意，在张量的上下文中，维度通常被称为<em>轴</em>）。</p>
-<p>乍一看，了解张量的细节可能有点抽象。但这绝对值得——操作张量将是你编写任何机器学习代码的基础。</p>
+<p>At its core, a tensor is a container for data—usually numerical data. So it’s a container for numbers. You may already be familiar with matrices, which are rank-2 tensors:tensors are a generalization of matrices to an arbitrary number of dimensions (note that in the context of tensors, a dimension is often called an axis).</p>
+<p>乍一看，了解张量的细节可能有点抽象。但这绝对值得——<strong>操作张量将是你编写任何机器学习代码的基础。</strong></p>
 <h3 id="标量0阶张量">标量（0阶张量）</h3>
-<p>只包含一个数字的张量称为<em>标量</em>（或标量张量、零阶张量或 0 维张量）。在 NumPy 中，一个<code>float32</code>数字<code>float64</code>就是一个标量张量（或标量数组）。您可以通过 <code>x</code> 属性显示 NumPy 张量的轴数<code>ndim</code>；标量张量有 0 个轴（<code>0</code> <code>ndim == 0</code>）。张量的轴数也称为其<em>秩</em>。以下是一个 NumPy 标量张量示例：</p>
+<p>Scalars (rank-0 tensors)</p>
+<p>只包含一个数字的张量称为<em>标量</em>（或标量张量、零阶张量或 0 维张量）。在 NumPy 中，一个<code>float32</code>数字<code>float64</code>就是一个标量张量（或标量数组）。您可以通过 <code>x</code> 属性显示 NumPy 张量的轴数<code>ndim</code>；标量张量有 0 个轴（<code>0</code> <code>ndim == 0</code>）。张量的轴数也称为其<em>秩</em>（rank）。以下是一个 NumPy 标量张量示例：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; import numpy as np</span><br><span class="line">&gt;&gt;&gt; x = np.array(12)</span><br><span class="line">&gt;&gt;&gt; x</span><br><span class="line">array(12)</span><br><span class="line">&gt;&gt;&gt; x.ndim</span><br><span class="line">0</span><br></pre></td></tr></table></figure>
 <h3 id="向量秩为-1-的张量">向量（秩为 1 的张量）</h3>
+<p>Vectors (rank-1 tensors)</p>
 <p>数字数组称为向量（或秩为 1 的张量或一维张量）。秩为 1 的张量只有一个轴。以下是一个 NumPy 向量：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; x = np.array([12, 3, 6, 14, 7])</span><br><span class="line">&gt;&gt;&gt; x</span><br><span class="line">array([12, 3, 6, 14, 7])</span><br><span class="line">&gt;&gt;&gt; x.ndim</span><br><span class="line">1</span><br></pre></td></tr></table></figure>
-<p>这个向量有五个元素，因此被称为<em>五维向量</em>。不要把五维向量和五维张量混淆！五维向量只有一个轴，沿该轴有五个维度，而五维张量有五个轴（每个轴的维度数可以任意）。 <em>维度</em>可以表示特定轴上的元素个数（如我们的五维向量），也可以表示张量的轴数（例如五维张量），这有时会让人感到困惑。在后一种情况下，严格来说，应该说一个 <em>五阶张量</em>（张量的阶数即轴数），但<em>“五维张量”</em>这种含义模糊的表示方法仍然很常见。</p>
+<p>这个向量有五个元素，因此被称为<em>五维向量</em>。<strong>不要把五维向量和五维张量混淆！五维向量只有一个轴，沿该轴有五个维度，而五维张量有五个轴（每个轴的维度数可以任意）。 <em>维度</em>可以表示特定轴上的元素个数（如我们的五维向量），也可以表示张量的轴数（例如五维张量），这有时会让人感到困惑。在后一种情况下，严格来说，应该说一个 <em>五阶张量</em>（张量的阶数即轴数），但<em>“五维张量”</em>这种含义模糊的表示方法仍然很常见。</strong></p>
+<p>This vector has five entries and so is called a 5-dimensional vector. Don’t confuse a 5D vector with a 5D tensor! A 5D vector has only one axis and has five dimensions along its axis, whereas a 5D tensor has five axes (and may have any number of dimensions along each axis). Dimensionality can denote either the number of entries along a specific axis (as in the case of our 5D vector) or the number of axes in a tensor (such as a 5D tensor), which can be confusing at times. In the latter case, it’s technically more correct to talk about a tensor of rank 5 (the rank of a tensor being the number of axes), but the ambiguous notation 5D tensor is common regardless</p>
+<blockquote>
+<p>个人注：确实很容易混淆五维向量和五维张量的叫法。</p>
+</blockquote>
 <h3 id="矩阵秩为-2-的张量">矩阵（秩为 2 的张量）</h3>
+<p>Matrices (rank-2 tensors)</p>
 <p>向量数组就是一个<em>矩阵</em>（或称二阶张量、二维张量）。矩阵有两个轴（通常称为<em>行</em>和<em>列</em>）。你可以将矩阵直观地理解为一个矩形数字网格。以下是一个 NumPy 矩阵：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; x = np.array([[5, 78, 2, 34, 0],</span><br><span class="line">...               [6, 79, 3, 35, 1],</span><br><span class="line">...               [7, 80, 4, 36, 2]])</span><br><span class="line">&gt;&gt;&gt; x.ndim</span><br><span class="line">2</span><br></pre></td></tr></table></figure>
 <p>第一个轴上的元素称为<em>行</em>，第二个轴上的元素称为<em>列</em>。在前面的例子中， <code>[5, 78, 2, 34, 0]</code>是的第一行<code>x</code>，<code>[5, 6, 7]</code>是第一列。</p>
 <h3 id="阶张量及更高阶张量">3阶张量及更高阶张量</h3>
+<p>Rank-3 tensors and higher-rank tensors</p>
 <p>如果将这类矩阵打包到一个新数组中，就会得到一个 3 阶张量（或 3D 张量），可以将其直观地解释为一个数字立方。以下是一个 NumPy 3 阶张量示例：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; x = np.array([[[5, 78, 2, 34, 0],</span><br><span class="line">...                [6, 79, 3, 35, 1],</span><br><span class="line">...                [7, 80, 4, 36, 2]],</span><br><span class="line">...               [[5, 78, 2, 34, 0],</span><br><span class="line">...                [6, 79, 3, 35, 1],</span><br><span class="line">...                [7, 80, 4, 36, 2]],</span><br><span class="line">...               [[5, 78, 2, 34, 0],</span><br><span class="line">...                [6, 79, 3, 35, 1],</span><br><span class="line">...                [7, 80, 4, 36, 2]]])</span><br><span class="line">&gt;&gt;&gt; x.ndim</span><br><span class="line">3</span><br></pre></td></tr></table></figure>
 <p>通过将秩为 3 的张量打包到一个数组中，可以创建一个秩为 4 的张量，依此类推。在深度学习中，通常情况下你会操作秩为 0 到 4 的张量，但如果处理视频数据，则可能需要处理秩为 5 的张量。</p>
 <h3 id="关键属性">关键属性</h3>
+<p>Key attributes</p>
 <p>张量由三个关键属性定义：</p>
 <ul>
-<li><p><em>轴数（秩）</em> ——例如，秩为 3 的张量有三个轴，而矩阵有两个轴。<code>ndim</code>在 NumPy、JAX、TensorFlow 和 PyTorch 等 Python 库中，张量也被称为“张量”。</p></li>
-<li><p><em>形状</em>——这是一个整数元组，用于描述张量在每个轴上的维度数。例如，前面的矩阵示例的形状为<code>(3, 5)</code>，而秩为 3 的张量示例的形状为<code>(3, 3, 5)</code>。向量的形状包含一个元素，例如<code>(5,)</code>，而标量的形状为空，即<code>()</code>。</p></li>
-<li><p><em>数据类型（通常<code>dtype</code>在 Python 库中称为）</em> ——这是张量中包含的数据类型；例如，张量的类型可以是<code>float16``int</code> <code>float32</code>、<code>float64``int</code>、<code>uint8``int</code>、<code>bool``int</code> 等等。在 TensorFlow 中，您也可能会遇到<code>string</code>张量。</p></li>
+<li><em>轴数（秩）Number of axes (rank)</em> ——例如，秩为 3 的张量有三个轴，而矩阵有两个轴。<code>ndim</code>在 NumPy、JAX、TensorFlow 和 PyTorch 等 Python 库中，张量也被称为“张量”。(This is also called the tensor’s ndim in Python libraries such as NumPy, JAX, TensorFlow, and PyTorch.)</li>
+<li><em>形状 Shape</em>——这是一个整数元组，用于<strong>描述张量在每个轴上的维度数</strong>。例如，前面的矩阵示例的形状为<code>(3, 5)</code>，而秩为 3 的张量示例的形状为<code>(3, 3, 5)</code>。向量的形状包含一个元素，例如<code>(5,)</code>，而标量的形状为空，即<code>()</code>。</li>
+<li><em>数据类型（通常<code>dtype</code>在 Python 库中称为）Data type (usually called dtype in Python libraries)</em> ——这是张量中包含的数据类型；例如，张量的类型可以是float16, float32,float64, uint8, bool等等。在 TensorFlow 中，您也可能会遇到<code>string</code>张量。</li>
 </ul>
 <p>为了更具体地说明这一点，让我们回顾一下在 MNIST 示例中处理的数据。首先，我们加载 MNIST 数据集：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras.datasets <span class="keyword">import</span> mnist</span><br><span class="line"></span><br><span class="line">(train_images, train_labels), (test_images, test_labels) = mnist.load_data()</span><br></pre></td></tr></table></figure>
@@ -394,11 +409,14 @@
 <p>让我们使用 Matplotlib 库（标准科学 Python 套件的一部分）显示这个 3 阶张量的第四位数字；参见图 2.2。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line">digit = train_images[<span class="number">4</span>]</span><br><span class="line">plt.imshow(digit, cmap=plt.cm.binary)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
 <p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter02_mathematical-building-blocks/#listing-2-8">示例 2.8</a>：显示第四位数字</p>
-<p><img src="/img3/DEEP%20LEARNING%20with%20Python/The-fourth-sample-in-our-dataset.8685ed9a.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter02_mathematical-building-blocks/#figure-2-2">图 2.2</a>：我们数据集中的第四个样本</p>
+<figure>
+<img src="/img3/DEEP%20LEARNING%20with%20Python/The-fourth-sample-in-our-dataset.8685ed9a.png" alt="图 2.2：我们数据集中的第四个样本" /><figcaption aria-hidden="true">图 2.2：我们数据集中的第四个样本</figcaption>
+</figure>
 <p>自然而然，对应的标签就是整数 9：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; train_labels[4]</span><br><span class="line">9</span><br></pre></td></tr></table></figure>
 <h3 id="在-numpy-中操作张量">在 NumPy 中操作张量</h3>
-<p>在前面的例子中，我们使用语法选择了第一个轴上的一个特定数字 <code>train_images[i]</code>。选择张量中的特定元素称为 <em>张量切片</em>。接下来，我们来看看可以对 NumPy 数组执行哪些张量切片操作。</p>
+<p>Manipulating tensors in NumPy</p>
+<p>在前面的例子中，我们使用语法选择了第一个轴上的一个特定数字 <code>train_images[i]</code>。<strong>选择张量中的特定元素称为 <em>张量切片(tensor slicing)</em></strong>。接下来，我们来看看可以对 NumPy 数组执行哪些张量切片操作。</p>
 <p>以下示例选择数字 #10 到 #100（不包括 #100），并将它们放入形状为 的数组中<code>(90, 28, 28)</code>：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; my_slice = train_images[10:100]</span><br><span class="line">&gt;&gt;&gt; my_slice.shape</span><br><span class="line">(90, 28, 28)</span><br></pre></td></tr></table></figure>
 <p>它等价于这种更详细的表示法，该表示法为每个张量轴指定了切片的起始索引和终止索引。请注意，这<code>:</code>等价于选择整个轴：</p>
@@ -408,7 +426,8 @@
 <p>也可以使用负索引。与 Python 列表中的负索引类似，它们表示相对于当前轴末端的位置。要将图像裁剪成以中心为中心的 14 × 14 像素的块，请执行以下操作：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">my_slice = train_images[:, <span class="number">7</span>:-<span class="number">7</span>, <span class="number">7</span>:-<span class="number">7</span>]</span><br></pre></td></tr></table></figure>
 <h3 id="数据批次的概念">数据批次的概念</h3>
-<p>一般来说，在深度学习中遇到的所有数据张量中，第一个轴（轴 0，因为索引从 0 开始）都是<em>样本轴</em>。在 MNIST 示例中，“样本”指的是数字图像。</p>
+<p>The notion of data batches</p>
+<p>一般来说，在深度学习中遇到的所有数据张量中，<strong>第一个轴（轴 0，因为索引从 0 开始）都是<em>样本轴(samples axis)</em>。</strong>在 MNIST 示例中，“样本”指的是数字图像。</p>
 <p>此外，深度学习模型不会一次性处理整个数据集；相反，它们会将数据分成若干个小的“批次”，即固定大小的样本组。具体来说，以下是我们 MNIST 数字数据集的一个批次，批次大小为 128：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">batch = train_images[:<span class="number">128</span>]</span><br></pre></td></tr></table></figure>
 <p>接下来是下一批：</p>
@@ -417,14 +436,16 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">n = <span class="number">3</span></span><br><span class="line">batch = train_images[<span class="number">128</span> * n : <span class="number">128</span> * (n + <span class="number">1</span>)]</span><br></pre></td></tr></table></figure>
 <p>在考虑这样的批次张量时，第一个轴（轴 0）被称为<em>批次轴</em>（或<em>批次维度</em>）。在使用 Keras 和其他深度学习库时，你会经常遇到这个术语。</p>
 <h3 id="数据张量的实际应用示例">数据张量的实际应用示例</h3>
+<p>Real-world examples of data tensors</p>
 <p>让我们通过几个与你稍后会遇到的情况类似的例子，使数据张量的概念更加具体。你将要处理的数据几乎总是属于以下几类之一：</p>
 <ul>
-<li><em>向量数据</em>——形状为 的秩 2 张量<code>(samples, features)</code>，其中每个样本都是一个数值属性（“特征”）的向量</li>
-<li><em>时间序列数据或序列数据</em> ——形状为 的秩 3 张量<code>(samples, timesteps, features)</code>，其中每个样本都是一个（长度为<code>timesteps</code>）特征向量序列。</li>
-<li><em>图像</em>——形状为 的 4 阶张量<code>(samples, height, width, channels)</code>，其中每个样本都是一个二维像素网格，每个像素由一个值向量（“通道”）表示。</li>
-<li><em>视频</em>——形状为 的 5 阶张量<code>(samples, frames, height, width, channels)</code>，其中每个样本都是一个（长度为<code>frames</code>）的图像序列。</li>
+<li><em>向量数据(Vector data)</em>——形状为 的秩 2 张量<code>(samples, features)</code>，其中每个样本都是一个数值属性（“特征”）的向量</li>
+<li><em>时间序列数据或序列数据(Timeseries data or sequence data)</em> ——形状为 的秩 3 张量<code>(samples, timesteps, features)</code>，其中每个样本都是一个（长度为<code>timesteps</code>）特征向量序列。</li>
+<li><em>图像(Images)</em>——形状为 的 4 阶张量<code>(samples, height, width, channels)</code>，其中每个样本都是一个二维像素网格，每个像素由一个值向量（“通道”）表示。</li>
+<li><em>视频(Video)</em>——形状为 的 5 阶张量<code>(samples, frames, height, width, channels)</code>，其中每个样本都是一个（长度为<code>frames</code>）的图像序列。</li>
 </ul>
 <h4 id="向量数据">向量数据</h4>
+<p>Vector data</p>
 <p>向量数据是最常见的情况之一。在这样的数据集中，每个数据点都可以编码为一个向量，因此一批数据将被编码为一个秩为 2 的张量（即向量数组），其中第一个轴是<em>样本轴</em>，第二个轴是<em>特征轴</em>。</p>
 <p>我们来看两个例子：</p>
 <ul>
@@ -432,22 +453,30 @@
 <li><p>这是一个文本数据集，其中每个文档都用每个单词在文档中出现的次数来表示（字典中包含 20,000 个常用词）。每个文档都可以编码为一个包含 20,000 个值的向量（字典中每个单词对应一个计数），因此，包含 500 个文档的整个数据集可以存储在一个形状为 的张量中<code>(500, 20000)</code>。</p></li>
 </ul>
 <h4 id="时间序列数据或序列数据">时间序列数据或序列数据</h4>
+<p>Timeseries data or sequence data</p>
 <p>当时间在数据中起着重要作用（或者说序列顺序的概念）时，将其存储在具有明确时间轴的 3 阶张量中是合理的。每个样本都可以编码为一系列向量（2 阶张量），因此一批数据将被编码为 3 阶张量（参见图 2.3）。</p>
-<p><img src="/img3/DEEP%20LEARNING%20with%20Python/timeseries_data.a711cc5a.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter02_mathematical-building-blocks/#figure-2-3">图 2.3</a>：秩为 3 的时间序列数据张量</p>
+<figure>
+<img src="/img3/DEEP%20LEARNING%20with%20Python/timeseries_data.a711cc5a.png" alt="图 2.3：秩为 3 的时间序列数据张量" /><figcaption aria-hidden="true">图 2.3：秩为 3 的时间序列数据张量</figcaption>
+</figure>
 <p>按照惯例，时间轴始终是第二个轴（索引为 1 的轴）。我们来看几个例子：</p>
 <ul>
 <li><p><em>股票价格数据集</em>——我们每分钟存储股票的当前价格、过去一分钟的最高价格和最低价格。因此，每分钟的数据被编码为一个三维向量，一整天的交易数据被编码为一个形状为 的矩阵<code>(390, 3)</code> （一个交易日有 390 分钟），而 250 天的数据可以存储在一个形状为 的秩为 3 的张量中<code>(250, 390, 3)</code>。这里，每个样本代表一天的数据。</p></li>
 <li><p><em>一个推文数据集，其中每条推文被编码为一个由 128 个唯一字符组成的字母表中的 280 个字符的序列</em>——在这种情况下，每个字符都可以编码为一个大小为 128 的二进制向量（一个全零向量，除了与该字符对应的索引处的值为 1）。然后，每条推文都可以被编码为一个形状为 的秩为 2 的张量<code>(280, 128)</code>，而包含 100 万条推文的数据集可以存储在一个形状为 的张量中<code>(1000000, 280, 128)</code>。</p></li>
 </ul>
 <h4 id="图像数据">图像数据</h4>
-<p>图像通常具有三个维度：高度、宽度和颜色深度。虽然灰度图像（例如我们的 MNIST 数字）只有一个颜色通道，因此可以存储在二阶张量中，但按照惯例，图像张量始终是三阶的，灰度图像只有一个颜色通道。因此，一批 128 张大小为 256 × 256 的灰度图像可以存储在一个形状为 的张量中<code>(128, 256, 256, 1)</code>，而一批 128 张彩色图像可以存储在一个形状为 的张量中<code>(128, 256, 256, 3)</code>（参见图 2.4）。</p>
-<p><img src="/img3/DEEP%20LEARNING%20with%20Python/image_data.8accee38.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter02_mathematical-building-blocks/#figure-2-4">图 2.4</a>：秩为 4 的图像数据张量</p>
+<p>Image data</p>
+<p>图像通常具有三个维度：高度、宽度和颜色深度(color depth)。虽然灰度图像（例如我们的 MNIST 数字）只有一个颜色通道，因此可以存储在二阶张量中，但按照惯例，图像张量始终是三阶的，灰度图像只有一个颜色通道。因此，一批 128 张大小为 256 × 256 的灰度图像可以存储在一个形状为 的张量中<code>(128, 256, 256, 1)</code>，而一批 128 张彩色图像可以存储在一个形状为 的张量中<code>(128, 256, 256, 3)</code>（参见图 2.4）。</p>
+<figure>
+<img src="/img3/DEEP%20LEARNING%20with%20Python/image_data.8accee38.png" alt="图 2.4：秩为 4 的图像数据张量" /><figcaption aria-hidden="true">图 2.4：秩为 4 的图像数据张量</figcaption>
+</figure>
 <p>图像张量的形状有两种约定：<em>通道后置</em>约定（这是 JAX 和 TensorFlow 以及大多数其他深度学习工具的标准）和<em>通道先置</em>约定（这是 PyTorch 的标准）。</p>
 <p>通道后置约定将颜色深度轴放在末尾： <code>(samples, height, width, color_depth)</code>。而通道先置约定则将颜色深度轴放在批处理轴之后： <code>(samples, color_depth, height, width)</code>。采用通道先置约定，前面的示例将变为<code>(128, 1, 256, 256)</code> 和<code>(128, 3, 256, 256)</code>。Keras API 同时支持这两种格式。</p>
 <h4 id="视频数据">视频数据</h4>
+<p>Video data</p>
 <p>视频数据是少数几种需要使用 5 阶张量的实际数据类型之一。视频可以理解为一系列帧，每一帧都是一张彩色图像。由于每一帧都可以存储在 3 阶张量中<code>(height, width, color_depth)</code>，因此一系列帧可以存储在 4 阶张量中<code>(frames, height, width, color_depth)</code>，进而可以将一批不同的视频存储在形状为 的 5 阶张量中<code>(samples, frames, height, width, color_depth)</code>。</p>
 <p>例如，一段时长 60 秒、分辨率为 144 × 256 的 YouTube 视频片段，以每秒 4 帧的采样率拍摄，将包含 240 帧。四个这样的视频片段将被存储在一个形状为 的张量中<code>(4, 240, 144, 256, 3)</code>。这总共包含 106,168,320 个值！如果<code>dtype</code>该张量的位数为<code>float32</code>，则每个值将以 32 位存储，因此该张量将占用 425 MB 的空间。非常庞大！你在现实生活中遇到的视频要小得多，因为它们并非以 存储<code>float32</code>，而且通常会经过大幅压缩（例如 MPEG 格式）。</p>
 <h2 id="神经网络的齿轮张量运算">神经网络的齿轮：张量运算</h2>
+<p>The gears of neural networks: Tensor operations</p>
 <p>就像任何计算机程序最终都可以简化为对二进制输入进行少量二进制运算（例如<code>AND</code>，<code>OR</code>加法、<code>NOR</code>乘法等等）一样，深度神经网络学习到的所有变换都可以简化为对数值数据张量<em>应用</em>少量张量运算（或<em>张量函数</em>）。例如，可以对张量进行加法运算、乘法运算等等。</p>
 <p><code>Dense</code>在最初的示例中，我们通过逐层堆叠的方式构建模型。Keras 层实例如下所示：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">keras.layers.Dense(<span class="number">512</span>, activation=<span class="string">&quot;relu&quot;</span>)</span><br></pre></td></tr></table></figure>
@@ -455,26 +484,31 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">output = relu(matmul(<span class="built_in">input</span>, W) + b)</span><br></pre></td></tr></table></figure>
 <p>让我们来详细分析一下。这里有三个张量运算：</p>
 <ul>
-<li><code>matmul</code>输入张量与名为 的张量之间的张量积 ( ) <code>W</code>。</li>
-<li><code>+</code>将所得矩阵与向量相加（ ） <code>b</code>。</li>
-<li>操作<code>relu</code>：<code>relu(x)</code>是<code>max(x, 0)</code>。<code>"relu"</code>代表“整流线性单元”。</li>
+<li><p><code>matmul</code>输入张量与名为 的张量之间的张量积 ( ) <code>W</code>。</p></li>
+<li><p><code>+</code>将所得矩阵与向量相加（ ） <code>b</code>。</p></li>
+<li><p>操作<code>relu</code>：<code>relu(x)</code>是<code>max(x, 0)</code>。<code>"relu"</code>代表“整流线性单元”。</p></li>
+<li><p>A tensor product (matmul) between the input tensor and a tensor named W.</p></li>
+<li><p>An addition (+) between the resulting matrix and a vector b.</p></li>
+<li><p>A relu operation: relu(x) is max(x, 0). "relu" stands for “REctified Linear Unit.”</p></li>
 </ul>
 <p>尽管本节完全围绕线性代数表达式展开，但本书中不会出现任何数学符号。我发现，如果将数学概念用简短的 Python 代码片段而非数学公式来表达，那么没有数学背景的程序员更容易掌握这些概念。因此，我们将全程使用 NumPy 代码。</p>
 <h3 id="逐元素运算">逐元素运算</h3>
+<p>Element-wise operations</p>
 <p>加法运算<code>relu</code>是逐元素运算：即对所考虑张量中的每个元素独立执行的运算。这意味着这些运算非常适合大规模并行实现（<em>向量化</em>实现，该术语源于20 世纪 70 年代至 90 年代的<em>向量处理器</em>超级计算机架构）。如果您想用 Python 编写一个简单的逐元素运算实现，可以使用<code>for</code>循环，如下一个简单的逐元素<code>relu</code> 运算实现示例：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">naive_relu</span>(<span class="params">x</span>):</span><br><span class="line">    <span class="comment"># x is a rank-2 NumPy tensor.</span></span><br><span class="line">    <span class="keyword">assert</span> <span class="built_in">len</span>(x.shape) == <span class="number">2</span></span><br><span class="line">    <span class="comment"># Avoids overwriting the input tensor</span></span><br><span class="line">    x = x.copy()</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(x.shape[<span class="number">0</span>]):</span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(x.shape[<span class="number">1</span>]):</span><br><span class="line">            x[i, j] = <span class="built_in">max</span>(x[i, j], <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">return</span> x</span><br></pre></td></tr></table></figure>
 <p>加法也可以用同样的方法：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">naive_add</span>(<span class="params">x, y</span>):</span><br><span class="line">    <span class="comment"># x and y are rank-2 NumPy tensors.</span></span><br><span class="line">    <span class="keyword">assert</span> <span class="built_in">len</span>(x.shape) == <span class="number">2</span></span><br><span class="line">    <span class="keyword">assert</span> x.shape == y.shape</span><br><span class="line">    <span class="comment"># Avoids overwriting the input tensor</span></span><br><span class="line">    x = x.copy()</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(x.shape[<span class="number">0</span>]):</span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(x.shape[<span class="number">1</span>]):</span><br><span class="line">            x[i, j] += y[i, j]</span><br><span class="line">    <span class="keyword">return</span> x</span><br></pre></td></tr></table></figure>
 <p>根据同样的原理，你可以进行逐元素乘法、减法等等。</p>
-<p>实际上，在处理 NumPy 数组时，这些操作可以通过经过优化的内置 NumPy 函数来实现，这些函数本身会将繁重的计算工作委托给基本线性代数子程序 (BLAS) 实现。BLAS 是底层、高度并行且高效的张量操作例程，通常用 Fortran 或 C 语言实现。</p>
+<p>实际上，在处理 NumPy 数组时，这些操作可以通过经过优化的内置 NumPy 函数来实现，这些函数本身会将繁重的计算工作委托给基本线性代数子程序 (BLAS) 实现。BLAS 是底层、<strong>高度并行</strong>且高效的张量操作例程，通常用 Fortran 或 C 语言实现。</p>
 <p>因此，在 NumPy 中，您可以执行以下逐元素操作，速度会非常快：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line"><span class="comment"># Element-wise addition</span></span><br><span class="line">z = x + y</span><br><span class="line"><span class="comment"># Element-wise relu</span></span><br><span class="line">z = np.maximum(z, <span class="number">0.0</span>)</span><br></pre></td></tr></table></figure>
 <p>我们来实际计时一下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line">x = np.random.random((<span class="number">20</span>, <span class="number">100</span>))</span><br><span class="line">y = np.random.random((<span class="number">20</span>, <span class="number">100</span>))</span><br><span class="line"></span><br><span class="line">t0 = time.time()</span><br><span class="line"><span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1000</span>):</span><br><span class="line">    z = x + y</span><br><span class="line">    z = np.maximum(z, <span class="number">0.0</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Took: &#123;0:.2f&#125; s&quot;</span>.<span class="built_in">format</span>(time.time() - t0))</span><br></pre></td></tr></table></figure>
 <p>这只需要 0.02 秒。而最简单的版本却需要惊人的 2.45 秒：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">t0 = time.time()</span><br><span class="line"><span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1000</span>):</span><br><span class="line">    z = naive_add(x, y)</span><br><span class="line">    z = naive_relu(z)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Took: &#123;0:.2f&#125; s&quot;</span>.<span class="built_in">format</span>(time.time() - t0))</span><br></pre></td></tr></table></figure>
-<p>同样，当在 GPU 上运行 JAX/TensorFlow/PyTorch 代码时，逐元素操作是通过完全向量化的 CUDA 实现来执行的，这样可以最大限度地利用高度并行的 GPU 芯片架构。</p>
+<p>同样，<strong>当在 GPU 上运行 JAX/TensorFlow/PyTorch 代码时，逐元素操作是通过完全向量化的 CUDA 实现来执行的，这样可以最大限度地利用高度并行的 GPU 芯片架构。</strong></p>
 <h3 id="广播">广播</h3>
+<p>Broadcasting</p>
 <p>我们之前简单的实现<code>naive_add</code>仅支持形状相同的二阶张量的加法运算。但在<code>Dense</code>前面介绍的层中，我们将一个二阶张量与一个向量相加。当两个待加张量的形状不同时，加法运算会发生什么？</p>
 <p>如果可能且不存在歧义，较小的张量将被 <em>广播</em>以匹配较大张量的形状。广播过程包括两个步骤：</p>
 <ul>
@@ -494,7 +528,9 @@
 <p><code>maximum</code>以下示例通过广播对两个不同形状的张量应用逐元素运算：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line"><span class="comment"># x is a random tensor with shape (64, 3, 32, 10).</span></span><br><span class="line">x = np.random.random((<span class="number">64</span>, <span class="number">3</span>, <span class="number">32</span>, <span class="number">10</span>))</span><br><span class="line"><span class="comment"># y is a random tensor with shape (32, 10).</span></span><br><span class="line">y = np.random.random((<span class="number">32</span>, <span class="number">10</span>))</span><br><span class="line"><span class="comment"># The output z has shape (64, 3, 32, 10) like x.</span></span><br><span class="line">z = np.maximum(x, y)</span><br></pre></td></tr></table></figure>
 <h3 id="张量积">张量积</h3>
+<p>Tensor product</p>
 <p>张<em>量积</em>，也称为<em>点积</em>或<em>矩阵乘法</em> （“矩阵乘法”的缩写），是最常见、最有用的张量运算之一。</p>
+<p>The tensor product, also called dot product or matmul (short for “matrix multiplication”) is one of the most common, most useful tensor operations.</p>
 <p>在 NumPy 中，张量积使用 <code>tf.tf</code> 函数完成<code>np.matmul</code>，而在 Keras 中，则使用 <code></code>keras.ops.matmul<code>tf.tf</code> 函数完成。其简写形式<code>@</code>在 Python 中是 <code>tf.tf</code> 运算符：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">x = np.random.random((<span class="number">32</span>,))</span><br><span class="line">y = np.random.random((<span class="number">32</span>,))</span><br><span class="line"></span><br><span class="line"><span class="comment"># Takes the product between x and y</span></span><br><span class="line">z = np.matmul(x, y)</span><br><span class="line"><span class="comment"># This is equivalent.</span></span><br><span class="line">z = x @ y</span><br></pre></td></tr></table></figure>
 <p>在数学符号中，你会用点号（•）来表示这种运算（因此得名“点积”）：</p>
@@ -510,12 +546,15 @@
 <p>当然，张量积可以推广到具有任意轴数的张量。最常见的应用是两个矩阵的乘积。当且仅当矩阵 A<code>x</code>和<code>y</code> B的乘积为 1 时，才能计算它们的乘积。结果是一个形状为 n 的矩阵，其系数是 A 的行 与 B 的列的向量积。以下是一个简单的实现：<code>matmul(x, y)``x.shape[1] == y.shape[0]``(x.shape[0], y.shape[1])``x``y</code></p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">naive_matrix_product</span>(<span class="params">x, y</span>):</span><br><span class="line">    <span class="comment"># x and y are NumPy matrices.</span></span><br><span class="line">    <span class="keyword">assert</span> <span class="built_in">len</span>(x.shape) == <span class="number">2</span></span><br><span class="line">    <span class="keyword">assert</span> <span class="built_in">len</span>(y.shape) == <span class="number">2</span></span><br><span class="line">    <span class="comment"># The 1st dimension of x must equal the 0th dimension of y!</span></span><br><span class="line">    <span class="keyword">assert</span> x.shape[<span class="number">1</span>] == y.shape[<span class="number">0</span>]</span><br><span class="line">    <span class="comment"># This operation returns a matrix of 0s with a specific shape.</span></span><br><span class="line">    z = np.zeros((x.shape[<span class="number">0</span>], y.shape[<span class="number">1</span>]))</span><br><span class="line">    <span class="comment"># Iterates over the rows of x ...</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(x.shape[<span class="number">0</span>]):</span><br><span class="line">        <span class="comment"># ... and over the columns of y.</span></span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(y.shape[<span class="number">1</span>]):</span><br><span class="line">            row_x = x[i, :]</span><br><span class="line">            column_y = y[:, j]</span><br><span class="line">            z[i, j] = naive_vector_product(row_x, column_y)</span><br><span class="line">    <span class="keyword">return</span> z</span><br></pre></td></tr></table></figure>
 <p>为了理解向量积形状兼容性，将输入和输出张量对齐以可视化它们，如图 2.5 所示，会有所帮助。</p>
-<p><img src="/img3/DEEP%20LEARNING%20with%20Python/matrix_dot_box_diagram.3dc0f796.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter02_mathematical-building-blocks/#figure-2-5">图 2.5</a>：矩阵产品盒图</p>
+<figure>
+<img src="/img3/DEEP%20LEARNING%20with%20Python/matrix_dot_box_diagram.3dc0f796.png" alt="图 2.5：矩阵产品盒图" /><figcaption aria-hidden="true">图 2.5：矩阵产品盒图</figcaption>
+</figure>
 <p><code>x</code>，，<code>y</code>和<code>z</code>被表示为矩形（即系数的方框）。由于的行<code>x</code>和的列<code>y</code>必须大小相同，因此的宽度<code>x</code>必须与的高度相同<code>y</code>。如果你继续开发新的机器学习算法，你很可能会经常绘制这样的图表。</p>
 <p>更一般地，您可以计算高维张量的乘积，遵循与前面针对二维情况概述的形状兼容性规则相同的规则：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(a, b, c, d) • (d,) -&gt; (a, b, c)</span><br><span class="line">(a, b, c, d) • (d, e) -&gt; (a, b, c, e)</span><br></pre></td></tr></table></figure>
 <p>等等。</p>
 <h3 id="张量重塑">张量重塑</h3>
+<p>Tensor reshaping</p>
 <p>第三种需要理解的张量运算是<em>张量重塑</em>。虽然在我们第一个神经网络示例中的各层中没有用到它<code>Dense</code>，但我们在将数字数据输入模型之前对其进行预处理时使用了它：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">train_images = train_images.reshape((<span class="number">60000</span>, <span class="number">28</span> * <span class="number">28</span>))</span><br></pre></td></tr></table></figure>
 <p>重塑张量是指重新排列其行和列，使其符合目标形状。当然，重塑后的张量与初始张量具有相同的系数总数。通过简单的例子可以更好地理解重塑：</p>
@@ -523,41 +562,62 @@
 <p>矩阵重塑中一个常见的特殊情况是<em>转置</em>。 <em>转置</em>矩阵意味着交换它的行和列，因此矩阵<code>x[i, :]</code>变为<code>x[:, i]</code>：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; # Creates an all-zeros matrix of shape (300, 20)</span><br><span class="line">&gt;&gt;&gt; x = np.zeros((300, 20))</span><br><span class="line">&gt;&gt;&gt; x = np.transpose(x)</span><br><span class="line">&gt;&gt;&gt; x.shape</span><br><span class="line">(20, 300)</span><br></pre></td></tr></table></figure>
 <h3 id="张量运算的几何解释">张量运算的几何解释</h3>
+<p>Geometric interpretation of tensor operations</p>
 <p>由于张量运算所处理的张量的内容可以解释为某个几何空间中点的坐标，因此所有张量运算都具有几何解释。例如，我们考虑加法运算。我们从以下向量开始：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">A = [0.5, 1]</span><br></pre></td></tr></table></figure>
 <p>它是二维空间中的一个点（见图 2.6）。通常将向量想象成连接原点和该点的箭头，如图 2.7 所示。</p>
-<p><img src="/img3/DEEP%20LEARNING%20with%20Python/geometric_interpretation_1.4c2c1983.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter02_mathematical-building-blocks/#figure-2-6">图 2.6</a>：二维空间中的一个点</p>
-<p><img src="/img3/DEEP%20LEARNING%20with%20Python/geometric_interpretation_2.e635ec60.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter02_mathematical-building-blocks/#figure-2-7">图 2.7</a>：二维空间中的一个点，用箭头表示。</p>
-<p>我们考虑一个新的点，<code>B = [1, 0.25]</code>将其添加到之前的点上。这可以通过几何方式实现，即将向量箭头连接起来，最终得到的位置是表示前两个向量之和的向量（见图 2.8）。正如你所看到的，将一个向量加到<code>B</code> 另一个向量上，<code>A</code>相当于将点复制<code>A</code>到一个新的位置，其与原点的距离和方向<code>A</code>由向量决定<code>B</code>。如果将同样的向量加法应用于平面上的一组点（一个“对象”），则会在新的位置创建整个对象的副本（见图 2.9）。因此，张量加法表示<em>将一个对象</em>沿特定方向平移一定距离（移动对象而不使其变形）的操作。</p>
-<p><img src="/img3/DEEP%20LEARNING%20with%20Python/geometric_interpretation_3.b1b80fb9.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter02_mathematical-building-blocks/#figure-2-8">图 2.8</a>：两个向量之和的几何解释</p>
-<p>一般来说，平移、旋转、缩放、倾斜等基本几何运算都可以表示为张量运算。以下是一些示例：</p>
+<figure>
+<img src="/img3/DEEP%20LEARNING%20with%20Python/geometric_interpretation_1.4c2c1983.png" alt="图 2.6：二维空间中的一个点" /><figcaption aria-hidden="true">图 2.6：二维空间中的一个点</figcaption>
+</figure>
+<figure>
+<img src="/img3/DEEP%20LEARNING%20with%20Python/geometric_interpretation_2.e635ec60.png" alt="图 2.7：二维空间中的一个点，用箭头表示" /><figcaption aria-hidden="true">图 2.7：二维空间中的一个点，用箭头表示</figcaption>
+</figure>
+<p>我们考虑一个新的点，<code>B = [1, 0.25]</code>将其添加到之前的点上。这可以通过几何方式实现，即将向量箭头连接起来，最终得到的位置是表示前两个向量之和的向量（见图 2.8）。正如你所看到的，将一个向量加到<code>B</code> 另一个向量上，<code>A</code>相当于将点复制<code>A</code>到一个新的位置，其与原点的距离和方向<code>A</code>由向量决定<code>B</code>。如果将同样的向量加法应用于平面上的一组点（一个“对象”），则会在新的位置创建整个对象的副本（见图 2.9）。因此，<strong>张量加法表示<em>将一个对象</em>沿特定方向平移一定距离（移动对象而不使其变形）的操作</strong>。</p>
+<figure>
+<img src="/img3/DEEP%20LEARNING%20with%20Python/geometric_interpretation_3.b1b80fb9.png" alt="图 2.8：两个向量之和的几何解释" /><figcaption aria-hidden="true">图 2.8：两个向量之和的几何解释</figcaption>
+</figure>
+<p>一般来说，平移、旋转、缩放、倾斜等基本几何运算都可以表示为张量运算(In general, elementary geometric operations, such as translation, rotation, scaling, skewing, and so on, can be expressed as tensor operations.)。以下是一些示例：</p>
 <ul>
 <li><em>平移</em>——正如你刚才看到的，给一个点加上一个向量，就会使该点沿固定方向移动固定的距离。应用于一组点（例如二维物体）时，这被称为“平移”（参见图 2.9）。</li>
 </ul>
-<p><img src="/img3/DEEP%20LEARNING%20with%20Python/translation.c123da84.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter02_mathematical-building-blocks/#figure-2-9">图 2.9</a>：二维平移可视为向量加法</p>
+<figure>
+<img src="/img3/DEEP%20LEARNING%20with%20Python/translation.c123da84.png" alt="图 2.9：二维平移可视为向量加法" /><figcaption aria-hidden="true">图 2.9：二维平移可视为向量加法</figcaption>
+</figure>
 <ul>
 <li><em>旋转</em>——二维向量逆时针旋转角度θ（见图2.10）可通过与2×2矩阵的乘积实现 <code>R = [[cos(theta), -sin(theta)], [sin(theta), cos(theta)]]</code>。</li>
 </ul>
-<p><img src="/img3/DEEP%20LEARNING%20with%20Python/rotation.8f4da7c4.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter02_mathematical-building-blocks/#figure-2-10">图 2.10</a>：二维旋转（逆时针）的矩阵乘积</p>
+<figure>
+<img src="/img3/DEEP%20LEARNING%20with%20Python/rotation.8f4da7c4.png" alt="图 2.10：二维旋转（逆时针）的矩阵乘积" /><figcaption aria-hidden="true">图 2.10：二维旋转（逆时针）的矩阵乘积</figcaption>
+</figure>
 <ul>
 <li><em>缩放</em>——图像的垂直和水平缩放（见图 2.11）可以通过与 2 × 2 矩阵的乘积来实现 <code>S = [[horizontal_factor, 0], [0, vertical_factor]]</code>（请注意，这样的矩阵被称为“对角矩阵”，因为它的系数仅在其“对角线”上非零，从左上角到右下角）。</li>
 </ul>
-<p><img src="/img3/DEEP%20LEARNING%20with%20Python/scaling.8cca5e17.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter02_mathematical-building-blocks/#figure-2-11">图 2.11</a>：二维缩放作为矩阵乘积</p>
+<figure>
+<img src="/img3/DEEP%20LEARNING%20with%20Python/scaling.8cca5e17.png" alt="图 2.11：二维缩放作为矩阵乘积" /><figcaption aria-hidden="true">图 2.11：二维缩放作为矩阵乘积</figcaption>
+</figure>
 <ul>
-<li><p><em>线性变换</em>——任意矩阵的乘积即可实现线性变换。请注意，前面提到的<em>缩放</em>和<em>旋转</em>，根据定义，都是线性变换。</p></li>
+<li><p><em>线性变换</em>——任意矩阵的乘积即可实现线性变换。请注意，前面提到的<strong><em>缩放</em>和<em>旋转</em>，根据定义，都是线性变换。</strong></p></li>
 <li><p><em>仿射变换</em>——仿射变换（见图 2.12）是线性变换（通过矩阵乘法实现）和平移（通过向量加法实现）的组合。正如你可能已经意识到的，这正是<code>y = W @ x + b</code>该<code>Dense</code>层实现的计算！<code>Dense</code>没有激活函数的层就是仿射层。</p></li>
 </ul>
-<p><img src="/img3/DEEP%20LEARNING%20with%20Python/affine_transform.80be4403.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter02_mathematical-building-blocks/#figure-2-12">图 2.12</a>：平面上的仿射变换</p>
+<figure>
+<img src="/img3/DEEP%20LEARNING%20with%20Python/affine_transform.80be4403.png" alt="图 2.12：平面上的仿射变换" /><figcaption aria-hidden="true">图 2.12：平面上的仿射变换</figcaption>
+</figure>
 <ul>
-<li><em><code>Dense``relu</code>带激活函数的层</em>——关于仿射变换的一个重要观察结果是，即使重复应用多个仿射变换，最终得到的仍然是仿射变换（所以一开始只需应用一个仿射变换即可）。我们来尝试两个仿射变换：。 <code>affine2(affine1(x)) = W2 @ (W1 @ x + b1) + b2 = (W2 @ W1) @ x + (W2 @ b1 + b2)</code>这是一个仿射变换，其中线性部分是矩阵<code>W2 @ W1</code>，平移部分是向量<code>W2 @ b1 + b2</code>。因此，一个完全由<code>Dense</code>没有激活函数的层组成的多层神经网络将等价于一个单层<code>Dense</code>网络。这个“深度”神经网络实际上只是一个伪装的线性模型！这就是为什么我们需要激活函数，例如<code>relu</code>（如图 2.13 所示）。借助激活函数，<code>Dense</code>我们可以构建一个层链来实现非常复杂的非线性几何变换，从而为深度神经网络提供非常丰富的假设空间。我们将在下一章更详细地介绍这个概念。</li>
+<li><em><code>Dense``relu</code>带激活函数的层(Dense layer with relu activation)</em>——<strong>关于仿射变换的一个重要观察结果是，即使重复应用多个仿射变换，最终得到的仍然是仿射变换（所以一开始只需应用一个仿射变换即可）</strong>。我们来尝试两个仿射变换：。 <code>affine2(affine1(x)) = W2 @ (W1 @ x + b1) + b2 = (W2 @ W1) @ x + (W2 @ b1 + b2)</code>这是一个仿射变换，其中线性部分是矩阵<code>W2 @ W1</code>，平移部分是向量<code>W2 @ b1 + b2</code>。因此，一个完全由<code>Dense</code>没有激活函数的层组成的多层神经网络将等价于一个单层<code>Dense</code>网络。这个“深度”神经网络实际上只是一个伪装的线性模型！这就是为什么我们需要激活函数，例如<code>relu</code>（如图 2.13 所示）。<strong>借助激活函数，<code>Dense</code>我们可以构建一个层链来实现非常复杂的非线性几何变换，从而为深度神经网络提供非常丰富的假设空间。</strong>我们将在下一章更详细地介绍这个概念。</li>
 </ul>
-<p><img src="/img3/DEEP%20LEARNING%20with%20Python/dense_transform.d8a02328.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter02_mathematical-building-blocks/#figure-2-13">图 2.13</a>：仿射变换后<code>relu</code>激活</p>
+<figure>
+<img src="/img3/DEEP%20LEARNING%20with%20Python/dense_transform.d8a02328.png" alt="图 2.13：仿射变换后relu激活" /><figcaption aria-hidden="true">图 2.13：仿射变换后<code>relu</code>激活</figcaption>
+</figure>
 <h3 id="深度学习的几何解释">深度学习的几何解释</h3>
+<p>A geometric interpretation of deep learning</p>
 <p>你刚刚了解到，神经网络完全由一系列张量运算构成，而所有这些张量运算都只是对输入数据进行简单的几何变换。由此可见，你可以将神经网络解释为高维空间中非常复杂的几何变换，这种变换是通过一系列简单的步骤实现的。</p>
 <p>在三维空间中，以下图像或许能有所帮助。想象两张彩色纸：一张红色，一张蓝色。将一张叠在另一张上面。然后将它们揉成一个小球。这个揉成一团的纸球就是你的输入数据，而每张纸则代表分类问题中的一个数据类别。神经网络的任务是找到一种变换方法，将纸球展开，使两个类别的数据再次清晰可分（见图 2.14）。在深度学习中，这可以通过一系列简单的三维空间变换来实现，就像你可以用手指一次移动纸球一样。</p>
-<p><img src="/img3/DEEP%20LEARNING%20with%20Python/geometric_interpretation_4.f8123b83.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter02_mathematical-building-blocks/#figure-2-14">图 2.14</a>：展开复杂的数据流形</p>
+<figure>
+<img src="/img3/DEEP%20LEARNING%20with%20Python/geometric_interpretation_4.f8123b83.png" alt="图 2.14：展开复杂的数据流形" /><figcaption aria-hidden="true">图 2.14：展开复杂的数据流形</figcaption>
+</figure>
 <p>机器学习的本质就在于将纸团展开：在高维空间中为复杂、高度折叠的数据<em>流形</em>找到简洁的表示（流形是一个连续的曲面，就像我们手中的皱巴巴的纸一样）。此时，你应该对深度学习为何擅长此道有了相当清晰的认识：它采用的方法是将复杂的几何变换逐步分解成一系列基本变换，这与人类展开纸团的策略非常相似。深度网络中的每一层都会应用一种变换来解耦数据——而多层网络的叠加使得极其复杂的解耦过程变得可控。</p>
 <h2 id="神经网络的引擎基于梯度的优化">神经网络的引擎：基于梯度的优化</h2>
+<p>The engine of neural networks: Gradient-based optimization</p>
 <p>正如你在上一节中看到的，我们第一个模型示例中的每个神经网络层都按如下方式转换其输入数据：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">output = relu(matmul(<span class="built_in">input</span>, W) + b)</span><br></pre></td></tr></table></figure>
 <p>在这个表达式中，<code>W</code>和<code>b</code>是张量，它们是该层的属性。它们被称为该层的<em>权重</em>或<em>可训练参数</em><code>kernel</code>（分别对应和<code>bias</code>属性）。这些权重包含了模型从训练数据中学习到的信息。</p>
@@ -567,27 +627,39 @@
 <li>绘制一批训练样本<code>x</code>和相应的目标<code>y_true</code>。</li>
 <li>运行模型（称为<em>前向传递的</em><code>x</code>步骤）以获得预测结果。<code>y_pred</code></li>
 <li>计算模型在该批次上的损失，衡量模型<code>y_pred</code>与目标之间的不匹配程度<code>y_true</code>。</li>
-<li>更新模型的所有权重，以略微降低该批次的损失。</li>
+<li>更新模型的所有权重，以<strong>略微降低<em><u>该批次</u></em>的损失</strong>。</li>
 </ol>
+<p>1、Draw a batch of training samples x and corresponding targets y_true.<br />
+2、Run the model on x (a step called the forward pass) to obtain predictions y_pred.<br />
+3、Compute the loss of the model on the batch, a measure of the mismatch between y_pred and y_true.<br />
+4、Update all weights of the model in a way that slightly reduces the loss on this batch.</p>
 <p>最终你会得到一个训练数据损失非常低的模型：预测值<code>y_pred</code>与预期目标值 之间的偏差很小<code>y_true</code>。该模型已经“学习”将输入映射到正确的目标值。从表面上看，这似乎很神奇，但当你将其简化为基本步骤时，就会发现其实很简单。</p>
 <p>第一步听起来很简单——只是简单的I/O代码。第二步和第三步也只是应用一些张量运算，所以你可以完全根据上一节学到的知识来实现这两步。难点在于第四步：更新模型的权重。给定模型中的一个权重系数，如何计算该系数应该增加还是减少，以及增加或减少多少？</p>
 <p>一种简单的解决方法是冻结模型中除一个标量系数之外的所有权重，并尝试该系数的不同值。假设该系数的初始值为 0.3。在对一批数据进行前向传播后，模型在该批次数据上的损失为 0.5。如果将该系数的值改为 0.35 并重新运行前向传播，损失会增加到 0.6。但如果将该系数降低到 0.25，损失会降至 0.4。在这种情况下，将该系数更新 -0.05 似乎有助于最小化损失。这需要对模型中的所有系数重复进行。</p>
-<p>但这种方法效率极低，因为对于每个系数（通常至少有几千个，甚至可能高达数十亿个），都需要计算两次前向传播（这非常耗时）。幸运的是，有一种更好的方法：<em>梯度下降法</em>。</p>
+<p>但这种方法效率极低，因为对于每个系数（通常至少有几千个，甚至可能高达数十亿个），都需要计算两次前向传播（这非常耗时）。幸运的是，有一种更好的方法：<em>梯度下降法（gradient descent）</em>。</p>
 <p>梯度下降是现代神经网络的核心优化技术。简而言之，模型中使用的所有函数（例如<code>matmul</code>或<code>+</code>）都以平滑连续的方式变换其输入：例如，观察<code>z = x + y</code>， 的微小变化<code>y</code>只会导致 的微小变化<code>z</code>；如果您知道 的变化方向<code>y</code>，就可以推断出 的变化方向<code>z</code>。从数学角度来说，这些函数是<em>可微的</em>。如果将这些函数串联起来，得到的更大函数仍然是可微的。特别地，这适用于将模型系数映射到模型在某批数据上的损失的函数：模型系数的微小变化会导致损失值的微小且可预测的变化。这使得您可以使用称为<em>梯度的</em>数学运算 符来描述损失如何随着模型系数向不同方向移动而变化。如果计算出这个梯度，就可以利用它将系数（一次性更新，而不是一次更新一个）向减少损失的方向移动。</p>
 <p>如果您已经了解<em>可微性</em>以及梯度<em>的</em>概念，则可以跳过接下来的两节。否则，以下内容将帮助您理解这些概念。</p>
 <h3 id="什么是导数">什么是导数？</h3>
+<p>What’s a derivative?</p>
 <p>考虑一个连续、光滑的函数<code>f(x) = y</code>，它将一个数映射<code>x</code> 到另一个数<code>y</code>。我们可以用图 2.15 中的函数作为示例。</p>
-<p><img src="/img3/DEEP%20LEARNING%20with%20Python/function.4b000cb3.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter02_mathematical-building-blocks/#figure-2-15">图 2.15</a>：一个连续、光滑的函数</p>
+<figure>
+<img src="/img3/DEEP%20LEARNING%20with%20Python/function.4b000cb3.png" alt="图 2.15：一个连续、光滑的函数" /><figcaption aria-hidden="true">图 2.15：一个连续、光滑的函数</figcaption>
+</figure>
 <p>因为函数是<em>连续的</em>，所以 x 的微小变化<code>x</code>只会导致 y 的微小变化——这就是<em>连续性</em><code>y</code>背后的直觉 。假设 x 增大一个很小的因子：这会导致 y 发生微小的变化，如图 2.16 所示。<code>x``epsilon_x``epsilon_y``y</code></p>
-<p><img src="/img3/DEEP%20LEARNING%20with%20Python/continuity.98fd80b7.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter02_mathematical-building-blocks/#figure-2-16">图 2.16</a>：对于连续函数，的微小变化<code>x</code>会导致的微小变化<code>y</code>。</p>
+<figure>
+<img src="/img3/DEEP%20LEARNING%20with%20Python/continuity.98fd80b7.png" alt="图 2.16：对于连续函数，的微小变化x会导致的微小变化y" /><figcaption aria-hidden="true">图 2.16：对于连续函数，的微小变化<code>x</code>会导致的微小变化<code>y</code></figcaption>
+</figure>
 <p>此外，由于该函数是<em>光滑的</em> （其曲线没有任何突变角），当<code>epsilon_x</code>足够小时，在某一点附近<code>p</code>，可以将其近似<code>f</code>为斜率为的线性函数<code>a</code>，因此<code>epsilon_y</code>变为<code>a * epsilon_x</code>：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">f(x + epsilon_x) = y + a * epsilon_x</span><br></pre></td></tr></table></figure>
 <p><code>x</code> 显然，这种线性近似仅在足够接近时有效<code>p</code>。</p>
 <p>斜率<code>a</code>称为对的<em>导数</em>。如果为负值，则表示附近微小的增加会导致 减小，如图 2.17 所示；如果为正值，则表示 微小的增加 会导致 增大。此外， 的绝对值 （导数的<em>大小</em>）表示这种增加或减小的速度。<code>f``p``a``x``p``f(x)``a``x``f(x)``a</code></p>
-<p><img src="/img3/DEEP%20LEARNING%20with%20Python/derivation.306de198.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter02_mathematical-building-blocks/#figure-2-17">图 2.17</a>：导<code>f</code>数<code>p</code></p>
+<figure>
+<img src="/img3/DEEP%20LEARNING%20with%20Python/derivation.306de198.png" alt="图 2.17：导f数p" /><figcaption aria-hidden="true">图 2.17：导<code>f</code>数<code>p</code></figcaption>
+</figure>
 <p>对于每个可微函数<code>f(x)</code>（<em>可微</em>意味着“可以导出”：例如，光滑连续函数可以导出），都存在一个导函数<code>f'(x)</code>，它将函数值映射<code>x</code>到这些点处函数局部线性近似的斜率<code>f</code>。例如，函数的导数<code>cos(x)</code>是<code>-sin(x)</code>，函数的导数 <code>f(x) = a * x</code>是<code>f'(x) = a</code>，依此类推。</p>
 <p>函数导数能力在 <em>优化问题</em>中是一项非常强大的工具，优化任务是找到使<code>x</code>目标函数值最小化的函数值<code>f(x)</code>。如果你试图<code>x</code>通过改变某个因子<code>epsilon_x</code> 来最小化目标函数值<code>f(x)</code>，并且你知道函数的导数<code>f</code>，那么你的任务就完成了：导数完整地描述了<code>f(x)</code> 当改变目标函数值时，目标函数值是如何变化的<code>x</code>。如果你想减小目标函数值<code>f(x)</code>，你只需要<code>x</code>沿着导数的反方向稍微改变目标函数值即可。</p>
 <h3 id="张量运算的导数梯度">张量运算的导数：梯度</h3>
+<p>Derivative of a tensor operation: The gradient</p>
 <p>我们刚才看到的函数将一个标量值转换<code>x</code>成另一个标量值<code>y</code>：你可以把它绘制成二维平面上的曲线。现在，想象一个将一组标量值转换<code>(x, y)</code>成一个标量值的函数<code>z</code>：这就是一个向量运算。你可以把它绘制成三维空间（通过坐标索引）中的二维<em>曲面</em><code>x, y, z</code>。同样地，你可以想象以矩阵作为输入的函数，以三阶张量作为输入的函数等等。</p>
 <p>只要函数所描述的曲面是连续且光滑的，导数的概念就可以应用于任何此类函数。张量运算（或张量函数）的导数称为<em>梯度</em>。梯度只是将导数的概念推广到以张量为输入的函数。还记得标量函数的导数是如何表示函数曲线的<em>局部斜率</em>的吗？同样地，张量函数的梯度表示 该函数所描述的多维曲面的<em>曲率</em>。它刻画了函数的输出如何随其输入参数的变化而变化。</p>
 <p>让我们来看一个基于机器学习的例子。</p>
@@ -607,6 +679,7 @@
 <p>具体来说，它<code>grad(loss_value, W0)</code>代表什么？你之前已经看到，单系数函数的导数<code>f(x)</code>可以解释为曲线的斜率<code>f</code>。同样地， <code>grad(loss_value, W0)</code> 可以解释为描述曲线 在点附近的<em>曲率</em>的张量。每个偏导数都描述了曲线在特定方向上的曲率。<code>loss_value = f(W)``W0``f</code></p>
 <p>我们刚才看到，对于一个函数<code>f(x)</code>，可以通过沿导数方向的反方向<code>f(x)</code>移动<code>x</code>一点来减小其值。同样地，对于<code>f(W)</code>张量的函数，可以 通过沿梯度方向的反方向 <code>loss_value = f(W)</code>移动来减小其值，例如更新，其中是一个小的比例因子。这意味着逆着曲率移动，直观上应该会使你在曲线上的位置更低。注意，需要比例因子是因为 只有在接近时才能近似曲率，所以你不希望远离。<code>W``W1 = W0 - step * grad(f(W0), W0)``step``step``grad(loss_value, W0)``W0``W0</code></p>
 <h3 id="随机梯度下降">随机梯度下降</h3>
+<p>Stochastic gradient descent</p>
 <p>对于一个可微函数，理论上可以解析地找到它的最小值：已知函数的最小值是导数为 0 的点，所以你只需要找到导数为 0 的所有点，然后检查函数在这些点中哪个点的值最小。</p>
 <p>应用于神经网络，这意味着要解析地找到使损失函数最小的权重值组合。这可以通过求解方程来实现<code>grad(f(W), W) = 0</code>。<code>W</code>这是一个关于<code>N</code>变量的多项式方程，其中<code>N</code>是模型中系数的个数。虽然理论上可以求解出<code>N = 2</code>或<code>N = 3</code>，但对于实际的神经网络来说，这样做是不可行的，因为神经网络的参数数量通常不少于几千个，有时甚至高达数十亿个。</p>
 <p>或者，您可以使用本节开头概述的四步算法：根据随机数据批次上的当前损失值，逐步调整参数。由于您处理的是可微函数，因此可以计算其梯度，从而有效地实现步骤 4。如果您沿与梯度相反的方向更新权重，则每次损失都会略微减少：</p>
@@ -614,23 +687,31 @@
 <li>绘制一批训练样本<code>x</code>和相应的目标<code>y_true</code>。</li>
 <li>运行模型<code>x</code>以获得预测结果<code>y_pred</code> （这称为<em>前向传递</em>）。</li>
 <li>计算模型在该批次上的损失，衡量模型<code>y_pred</code>与目标之间的不匹配程度<code>y_true</code>。</li>
-<li>计算损失函数相对于模型参数的梯度（这称为<em>反向传播</em>）。</li>
+<li><strong>计算损失函数相对于模型参数的梯度（这称为<em>反向传播</em>）</strong>。</li>
 <li>将参数稍微向梯度相反的方向移动——例如<code>W -= learning_rate * gradient</code>——从而略微降低批次的损失。<em>学习率</em>（<code>learning_rate</code> 此处）是一个标量因子，用于调节梯度下降过程的“速度”。</li>
 </ol>
 <p>很简单！我们刚才描述的方法叫做 <em>小批量随机梯度下降</em>（mini-batch SGD）。<em>“随机”</em>一词指的是每个数据批次都是随机抽取的（*“随机”是**“随机”*的科学同义词）。图 2.18 展示了在 1D 情况下，当模型只有一个参数且只有一个训练样本时会发生什么。</p>
-<p><img src="/img3/DEEP%20LEARNING%20with%20Python/sgd_explained_1.0535e152.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter02_mathematical-building-blocks/#figure-2-18">图 2.18</a>：沿一维损失曲线（一个可学习参数）的 SGD</p>
+<figure>
+<img src="/img3/DEEP%20LEARNING%20with%20Python/sgd_explained_1.0535e152.png" alt="图 2.18：沿一维损失曲线（一个可学习参数）的 SGD" /><figcaption aria-hidden="true">图 2.18：沿一维损失曲线（一个可学习参数）的 SGD</figcaption>
+</figure>
 <p>我们可以直观地看出，选择一个合理的<code>learning_rate</code>因子值非常重要。如果因子太小，沿着曲线下降的过程需要多次迭代，并且可能陷入局部最小值。如果<code>learning_rate</code>因子太大，更新操作最终可能会将你带到曲线上完全随机的位置。</p>
 <p>注意，小批量随机梯度下降算法的一个变体是在每次迭代中只抽取一个样本和目标值，而不是抽取一批数据。这才是<em>真正的</em>随机梯度下降（而非<em>小批量随机</em>梯度下降）。或者，走向另一个极端，你可以对<em>所有</em>可用数据进行每次迭代，这被称为<em>批量梯度下降</em>。每次更新都会更加精确，但计算成本也更高。在这两种极端情况之间取得有效平衡的方法是使用大小合理的小批量数据。</p>
 <p>尽管图 2.18 展示了一维参数空间中的梯度下降，但在实践中，梯度下降通常是在高维空间中进行的：神经网络中的每个权重系数都是空间中的一个自由维度，而且可能存在数万甚至数百万个权重系数。为了帮助你建立对损失函数的直观理解，你也可以将梯度下降可视化为二维损失函数，如图 2.19 所示。但是，你不可能直观地看到神经网络训练的实际过程——你无法用人类能够理解的方式来表示一个百万维空间。因此，需要记住的是，你通过这些低维表示所建立的直觉在实践中可能并不总是准确的。这在深度学习研究领域一直是一个问题。</p>
-<p><img src="/img3/DEEP%20LEARNING%20with%20Python/gradient_descent_3d.85d77c73.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter02_mathematical-building-blocks/#figure-2-19">图 2.19</a>：二维损失曲面上的梯度下降（两个可学习参数）</p>
+<figure>
+<img src="/img3/DEEP%20LEARNING%20with%20Python/gradient_descent_3d.85d77c73.png" alt="图 2.19：二维损失曲面上的梯度下降（两个可学习参数）" /><figcaption aria-hidden="true">图 2.19：二维损失曲面上的梯度下降（两个可学习参数）</figcaption>
+</figure>
 <p>此外，随机梯度下降法（SGD）存在多种变体，它们的区别在于，在计算下一次权重更新时，会考虑之前的权重更新，而不仅仅是当前的梯度值。例如，有带动量的SGD，以及Adagrad、RMSprop等其他一些算法。这些变体被称为<em>优化方法</em>或 <em>优化器</em>。尤其值得关注的是<em>动量</em>的概念，它在许多变体中都有应用。动量解决了SGD的两个问题：收敛速度和局部最小值。图2.20展示了损失函数随模型参数变化的曲线。</p>
-<p><img src="/img3/DEEP%20LEARNING%20with%20Python/global_minimum.8f000c0a.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter02_mathematical-building-blocks/#figure-2-20">图 2.20</a>：局部最小值和全局最小值</p>
+<figure>
+<img src="/img3/DEEP%20LEARNING%20with%20Python/global_minimum.8f000c0a.png" alt="图 2.20：局部最小值和全局最小值" /><figcaption aria-hidden="true">图 2.20：局部最小值和全局最小值</figcaption>
+</figure>
 <p>如您所见，在某个参数值附近存在一个<em>局部最小值</em>：在该点附近，向左移动会导致损失增加，向右移动也会导致损失增加。如果使用学习率较小的随机梯度下降法 (SGD) 来优化该参数，那么优化过程就会陷入局部最小值，而无法找到全局最小值。</p>
 <p>你可以利用动量来避免这类问题，动量的概念源于物理学。一个有用的形象比喻是将优化过程想象成一个小球沿着损失曲线滚动。如果动量足够大，小球就不会陷入困境，最终会到达全局最小值。动量的实现方式是，在每一步中，不仅根据当前的斜率值（当前加速度），还根据当前的速度（由过去的加速度决定）来移动小球。实际上，这意味着<code>w</code>不仅要根据当前的梯度值来更新参数，还要根据之前的参数更新来更新参数，例如以下这个简单的实现：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">past_velocity = <span class="number">0.0</span></span><br><span class="line"><span class="comment"># Constant momentum factor</span></span><br><span class="line">momentum = <span class="number">0.1</span></span><br><span class="line"><span class="comment"># Optimization loop</span></span><br><span class="line"><span class="keyword">while</span> loss &gt; <span class="number">0.01</span>:</span><br><span class="line">    w, loss, gradient = get_current_parameters()</span><br><span class="line">    velocity = past_velocity * momentum - learning_rate * gradient</span><br><span class="line">    w = w + momentum * velocity - learning_rate * gradient</span><br><span class="line">    past_velocity = velocity</span><br><span class="line">    update_parameter(w)</span><br></pre></td></tr></table></figure>
 <h3 id="导数链式求解反向传播算法">导数链式求解：反向传播算法</h3>
+<p>Chaining derivatives: The Backpropagation algorithm</p>
 <p>在前面讨论的算法中，我们想当然地认为，既然函数可微，就可以轻松计算其梯度。但事实果真如此吗？在实践中，我们如何计算复杂表达式的梯度？在我们之前提到的双层网络示例中，如何获得损失函数关于权重的梯度？这就需要用到<em>反向传播算法了。</em></p>
 <h4 id="链式法则">链式法则</h4>
+<p>The chain rule</p>
 <p>反向传播是一种利用简单运算（例如加法、<code>relu</code>张量积等）的导数来轻松计算任意复杂组合的梯度的方法。关键在于，神经网络由许多串联的张量运算组成，每个运算都有简单且已知的导数。例如，我们第一个示例中的模型可以表示为一个由变量<code>W1</code>、<code>b1</code>、<code>W2</code>和<code>b2</code> （分别属于第一层和第二<code>Dense</code>层）参数化的函数，其中包含原子运算<code>matmul</code>、<code>relu</code>、<code>softmax</code>和<code>+</code>，以及我们的损失函数 ，<code>loss</code>所有这些都很容易微分：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">loss_value = loss(</span><br><span class="line">    y_true,</span><br><span class="line">    softmax(matmul(relu(matmul(inputs, W1) + b1), W2) + b2),</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
 <p>微积分告诉我们，这样的函数链可以用以下恒等式推导出来，称为<em>链式法则</em>。考虑两个函数<code>f</code>和<code>g</code>，以及复合函数 ， <code>fg</code>使得<code>y = fg(x) == f(g(x))</code>：</p>
@@ -639,15 +720,24 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">fghj</span>(<span class="params">x</span>):</span><br><span class="line">    x1 = j(x)</span><br><span class="line">    x2 = h(x1)</span><br><span class="line">    x3 = g(x2)</span><br><span class="line">    y = f(x3)</span><br><span class="line">    <span class="keyword">return</span> y</span><br><span class="line"></span><br><span class="line">grad(y, x) == grad(y, x3) * grad(x3, x2) * grad(x2, x1) * grad(x1, x)</span><br></pre></td></tr></table></figure>
 <p>将链式法则应用于神经网络梯度值的计算，就产生了一种称为<em>反向传播的</em>算法。让我们具体看看它是如何运作的。</p>
 <h4 id="利用计算图进行自动微分">利用计算图进行自动微分</h4>
+<p>Automatic differentiation with computation graphs</p>
 <p>理解反向传播的一个有效方法是将其视为<em>计算图</em>。计算图是深度学习革命的核心数据结构。它是一个有向无环图，表示操作——在我们的例子中，是张量操作。例如，图 2.21 展示了我们第一个模型的计算图表示。</p>
-<p><img src="/img3/DEEP%20LEARNING%20with%20Python/a_first_computation_graph.90dec1fc.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter02_mathematical-building-blocks/#figure-2-21">图 2.21</a>：我们双层模型的计算图表示</p>
+<figure>
+<img src="/img3/DEEP%20LEARNING%20with%20Python/a_first_computation_graph.90dec1fc.png" alt="图 2.21：我们双层模型的计算图表示" /><figcaption aria-hidden="true">图 2.21：我们双层模型的计算图表示</figcaption>
+</figure>
 <p>计算图在计算机科学中是一种极其成功的抽象概念，因为它使我们能够<em>将计算视为数据</em>：一个可计算表达式被编码为机器可读的数据结构，可以作为另一个程序的输入或输出。例如，你可以想象一个程序接收一个计算图，并返回一个新的计算图，该计算图实现了同一计算的大规模分布式版本——这意味着你可以分发任何计算，而无需自己编写分发逻辑。或者想象一下……一个程序接收一个计算图，并能自动生成它所表示表达式的导数。如果你的计算被表达为显式的图数据结构，而不是例如<code>.py</code>文件中的 ASCII 字符行，那么实现这些操作就容易得多。</p>
 <p>为了更清晰地解释反向传播，我们来看一个非常简单的计算图示例。我们将考虑图 2.21 的简化版本，其中只有一个线性层，所有变量均为标量，如图 2.22 所示。我们将取两个标量变量 <code>w</code>和 ，<code>b</code>一个标量输入<code>x</code>，并对它们进行一些运算，将它们组合成一个输出<code>y</code>。最后，我们将应用绝对值误差损失函数： 。由于我们希望以最小化 的方式<code>loss_val = abs(y_true - y)</code>来更新<code>w</code>和，因此我们关注的是计算 和。<code>b``loss_val``grad(loss_val, b)``grad(loss_val, w)</code></p>
-<p><img src="/img3/DEEP%20LEARNING%20with%20Python/basic_computation_graph.f3e3c75a.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter02_mathematical-building-blocks/#figure-2-22">图 2.22</a>：计算图的基本示例</p>
+<figure>
+<img src="/img3/DEEP%20LEARNING%20with%20Python/basic_computation_graph.f3e3c75a.png" alt="图 2.22：计算图的基本示例" /><figcaption aria-hidden="true">图 2.22：计算图的基本示例</figcaption>
+</figure>
 <p>让我们为图中的“输入节点”设定具体值——即输入值<code>x</code>、目标值<code>y_true</code>和（图 2.23 <code>w</code>）<code>b</code>。我们将这些值从上到下传播到图中的所有节点，直到到达<code>loss_val</code>。这就是<em>前向传播</em>。</p>
-<p><img src="/img3/DEEP%20LEARNING%20with%20Python/basic_computation_graph_with_values.e15cd230.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter02_mathematical-building-blocks/#figure-2-23">图 2.23</a>：向前传球</p>
+<figure>
+<img src="/img3/DEEP%20LEARNING%20with%20Python/basic_computation_graph_with_values.e15cd230.png" alt="图 2.23：向前传球" /><figcaption aria-hidden="true">图 2.23：向前传球</figcaption>
+</figure>
 <p>现在让我们“反转”这个图：对于图中每条从<code>A</code> 到 的边<code>B</code>，我们创建一个从<code>B</code>到 的反向边，并提出问题：“当 变化时， 变化<code>A</code>多少 ？”也就是说， 是多少？我们将用这个值标记每条反向边（图 2.24）。这个反向图表示<em>反向传递过程</em>。<code>B``A``grad(B, A)</code></p>
-<p><img src="/img3/DEEP%20LEARNING%20with%20Python/basic_computation_graph_backward.9e975200.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter02_mathematical-building-blocks/#figure-2-24">图 2.24</a>：向后传球</p>
+<figure>
+<img src="/img3/DEEP%20LEARNING%20with%20Python/basic_computation_graph_backward.9e975200.png" alt="图 2.24：向后传球" /><figcaption aria-hidden="true">图 2.24：向后传球</figcaption>
+</figure>
 <p>我们有</p>
 <ul>
 <li><code>grad(loss_val, x2) = 1</code>因为当<code>x2</code>变化量为ε时， <code>loss_val = abs(4 - x2)</code>变化量也为ε。</li>
@@ -656,7 +746,9 @@
 <li><code>grad(x1, w) = 2</code> 因为<code>w</code>随着ε的变化而变化， <code>x1 = x * w = 2 * w</code>变化量为<code>2 * epsilon</code>。</li>
 </ul>
 <p>链式法则在这个反向图中表明，你可以通过 <em>将连接两个节点的路径上每条边的导数相乘</em>来获得一个节点相对于另一个节点的导数。例如， <code>grad(loss_val, w) = grad(loss_val, x2) * grad(x2, x1) * grad(x1, w)</code>。</p>
-<p><img src="/img3/DEEP%20LEARNING%20with%20Python/path_in_backward_graph.fe91e7d0.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter02_mathematical-building-blocks/#figure-2-25">图 2.25</a>：反向图中 从<code>loss_val</code>到 的路径<code>w</code></p>
+<figure>
+<img src="/img3/DEEP%20LEARNING%20with%20Python/path_in_backward_graph.fe91e7d0.png" alt="图 2.25：反向图中 从loss_val到 的路径w" /><figcaption aria-hidden="true">图 2.25：反向图中 从<code>loss_val</code>到 的路径<code>w</code></figcaption>
+</figure>
 <p>通过对我们的图应用链式法则，我们得到了我们想要的结果：</p>
 <ul>
 <li><code>grad(loss_val, w) = 1 * 1 * 2 = 2</code></li>
@@ -666,8 +758,11 @@
 <p>就这样，你刚才就看到了反向传播的实际应用！反向传播其实就是将链式法则应用于计算图。就这么简单。反向传播从最终损失值开始，从顶层到底层反向传播，计算每个参数对损失值的贡献。这就是“反向传播”名称的由来：我们将计算图中不同节点的损失贡献“反向传播”出去。</p>
 <p>如今，人们使用诸如 JAX、TensorFlow 和 PyTorch 等支持<em>自动微分的</em>现代框架来实现神经网络。自动微分是通过之前介绍的计算图实现的。自动微分使得无需额外操作（只需编写前向传播过程）即可获取任意可微张量运算组合的梯度。2000 年代我用 C 语言编写第一个神经网络时，还得手动计算梯度。现在，得益于现代自动微分工具，你再也不用自己实现反向传播了。真是太幸运了！</p>
 <h2 id="回顾我们的第一个例子">回顾我们的第一个例子</h2>
+<p>Looking back at our first example</p>
 <p>本章即将结束，您现在应该对神经网络的工作原理有了大致的了解。本章开头那个神秘的黑盒子现在已经变得清晰明了，如图 2.26 所示：模型由多个层级串联而成，它将输入数据映射到预测结果。损失函数随后将这些预测结果与目标值进行比较，生成一个损失值：该值衡量模型预测结果与预期结果的匹配程度。优化器使用这个损失值来更新模型的权重。</p>
-<p><img src="/img3/DEEP%20LEARNING%20with%20Python/deep-learning-in-3-figures-3_alt.40aa865d.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter02_mathematical-building-blocks/#figure-2-26">图 2.26</a>：网络、层、损失函数和优化器之间的关系</p>
+<figure>
+<img src="/img3/DEEP%20LEARNING%20with%20Python/deep-learning-in-3-figures-3_alt.40aa865d.png" alt="图 2.26：网络、层、损失函数和优化器之间的关系" /><figcaption aria-hidden="true">图 2.26：网络、层、损失函数和优化器之间的关系</figcaption>
+</figure>
 <p>让我们回到第一个例子，并根据你在前面章节中学到的知识，逐一回顾其中的各个部分。</p>
 <p>以下是输入数据：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">(train_images, train_labels), (test_images, test_labels) = mnist.load_data()</span><br><span class="line">train_images = train_images.reshape((<span class="number">60000</span>, <span class="number">28</span> * <span class="number">28</span>))</span><br><span class="line">train_images = train_images.astype(<span class="string">&quot;float32&quot;</span>) / <span class="number">255</span></span><br><span class="line">test_images = test_images.reshape((<span class="number">10000</span>, <span class="number">28</span> * <span class="number">28</span>))</span><br><span class="line">test_images = test_images.astype(<span class="string">&quot;float32&quot;</span>) / <span class="number">255</span></span><br></pre></td></tr></table></figure>
@@ -680,26 +775,31 @@
 <p>现在您应该明白，<code>"sparse_categorical_crossentropy"</code>损失函数用作学习权重张量的反馈信号，训练阶段的目标是最小化该损失。您也知道，损失的减少是通过小批量随机梯度下降实现的。梯度下降的具体使用规则由<code>"adam"</code>作为第一个参数传递的优化器定义。</p>
 <p>最后，这就是训练循环：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">model.fit(</span><br><span class="line">    train_images,</span><br><span class="line">    train_labels,</span><br><span class="line">    epochs=<span class="number">5</span>,</span><br><span class="line">    batch_size=<span class="number">128</span>,</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
-<p>现在您应该明白调用该函数后会发生什么了<code>fit</code>：模型将开始以 128 个样本为一组的小批量对训练数据进行迭代，重复 5 次（每次迭代对所有训练数据进行一次称为一个<em>epoch</em>）。对于每个小批量，模型将计算损失函数相对于权重的梯度（使用反向传播算法，该算法源于微积分中的链式法则），并调整权重以减小该小批量的损失值。</p>
-<p>经过这 5 个 epoch 后，该模型将执行 2,345 次梯度更新（每个 epoch 469 次），模型的损失将足够低，以至于该模型能够以较高的准确率对手写数字进行分类。</p>
+<p>现在您应该明白调用该函数后会发生什么了<code>fit</code>：<strong>模型将开始以 128 个样本为一组的小批量对训练数据进行迭代，重复 5 次（每次迭代对所有训练数据进行一次称为一个<em>epoch</em>）。对于每个小批量，模型将计算损失函数相对于权重的梯度（使用反向传播算法，该算法源于微积分中的链式法则），并调整权重以减小该小批量的损失值。</strong></p>
+<p><strong>经过这 5 个 epoch 后，该模型将执行 2,345 次梯度更新（每个 epoch 469 次），模型的损失将足够低，以至于该模型能够以较高的准确率对手写数字进行分类。</strong></p>
 <p>至此，你已经掌握了神经网络的大部分知识。让我们通过逐步重现第一个示例的简化版本来证明这一点，全程只使用底层操作。</p>
 <h3 id="从头开始重新实现我们的第一个示例">从头开始重新实现我们的第一个示例</h3>
+<p>Reimplementing our first example from scratch</p>
 <p>还有什么比从零开始实现所有功能更能展现全面、清晰的理解呢？当然，“从零开始”在这里是相对的：我们不会重新实现基本的张量运算，也不会实现反向传播。但我们会深入到非常底层，让每个计算步骤都清晰明了。</p>
 <p>如果你现在还不能完全理解这个例子中的每一个细节，别担心。下一章会更深入地讲解 Keras API。现在，你只需要把握整体思路——这个例子的目的是通过具体的实现来帮助你更好地理解深度学习的数学原理。开始吧！</p>
 <h4 id="一个简单的-dense-类">一个简单的 Dense 类</h4>
+<p>A simple Dense class</p>
 <p>您之前已经了解到，该<code>Dense</code>层实现了以下输入变换，其中<code>W</code>和<code>b</code>是模型参数，<code>activation</code> 是一个逐元素函数（通常为<code>relu</code>）：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">output = activation(matmul(<span class="built_in">input</span>, W) + b)</span><br></pre></td></tr></table></figure>
 <p>让我们实现一个简单的 Python 类<code>NaiveDense</code>，该类创建两个 Keras 变量<code>W</code>，<code>b</code>并公开一个<code>__call__()</code>应用上述转换的方法：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># keras.ops is where you will find all the tensor operations you need.</span></span><br><span class="line"><span class="keyword">import</span> keras</span><br><span class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> ops</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">NaiveDense</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, input_size, output_size, activation=<span class="literal">None</span></span>):</span><br><span class="line">        self.activation = activation</span><br><span class="line">        self.W = keras.Variable(</span><br><span class="line">            <span class="comment"># Creates a matrix W of shape (input_size, output_size),</span></span><br><span class="line">            <span class="comment"># initialized with random values drawn from a uniform</span></span><br><span class="line">            <span class="comment"># distribution</span></span><br><span class="line">            shape=(input_size, output_size), initializer=<span class="string">&quot;uniform&quot;</span></span><br><span class="line">        )</span><br><span class="line">        <span class="comment"># Creates a vector b of shape (output_size,), initialized with</span></span><br><span class="line">        <span class="comment"># zeros</span></span><br><span class="line">        self.b = keras.Variable(shape=(output_size,), initializer=<span class="string">&quot;zeros&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Applies the forward pass</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__call__</span>(<span class="params">self, inputs</span>):</span><br><span class="line">        x = ops.matmul(inputs, self.W)</span><br><span class="line">        x = x + self.b</span><br><span class="line">        <span class="keyword">if</span> self.activation <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">            x = self.activation(x)</span><br><span class="line">        <span class="keyword">return</span> x</span><br><span class="line"></span><br><span class="line"><span class="meta">    @property</span></span><br><span class="line">    <span class="comment"># The convenience method for retrieving the layer&#x27;s weights</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">weights</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">return</span> [self.W, self.b]</span><br></pre></td></tr></table></figure>
 <h4 id="一个简单的-sequential-类">一个简单的 Sequential 类</h4>
+<p>A simple Sequential class</p>
 <p>现在，我们来创建一个<code>NaiveSequential</code>类来串联这些层。它封装了一个层列表，并公开了一个<code>__call__()</code>方法，该方法会按顺序调用底层层对输入的处理。它还提供了一个<code>weights</code>属性，方便跟踪各层的参数：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">NaiveSequential</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, layers</span>):</span><br><span class="line">        self.layers = layers</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__call__</span>(<span class="params">self, inputs</span>):</span><br><span class="line">        x = inputs</span><br><span class="line">        <span class="keyword">for</span> layer <span class="keyword">in</span> self.layers:</span><br><span class="line">            x = layer(x)</span><br><span class="line">        <span class="keyword">return</span> x</span><br><span class="line"></span><br><span class="line"><span class="meta">    @property</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">weights</span>(<span class="params">self</span>):</span><br><span class="line">        weights = []</span><br><span class="line">        <span class="keyword">for</span> layer <span class="keyword">in</span> self.layers:</span><br><span class="line">            weights += layer.weights</span><br><span class="line">        <span class="keyword">return</span> weights</span><br></pre></td></tr></table></figure>
 <p>利用这<code>NaiveDense</code>两个类<code>NaiveSequential</code>，我们可以创建一个模拟的 Keras 模型：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">model = NaiveSequential(</span><br><span class="line">    [</span><br><span class="line">        NaiveDense(input_size=<span class="number">28</span> * <span class="number">28</span>, output_size=<span class="number">512</span>, activation=ops.relu),</span><br><span class="line">        NaiveDense(input_size=<span class="number">512</span>, output_size=<span class="number">10</span>, activation=ops.softmax),</span><br><span class="line">    ]</span><br><span class="line">)</span><br><span class="line"><span class="keyword">assert</span> <span class="built_in">len</span>(model.weights) == <span class="number">4</span></span><br></pre></td></tr></table></figure>
 <h4 id="批处理生成器">批处理生成器</h4>
+<p>A batch generator</p>
 <p>接下来，我们需要一种方法来分批遍历 MNIST 数据。这很容易：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> math</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">BatchGenerator</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, images, labels, batch_size=<span class="number">128</span></span>):</span><br><span class="line">        <span class="keyword">assert</span> <span class="built_in">len</span>(images) == <span class="built_in">len</span>(labels)</span><br><span class="line">        self.index = <span class="number">0</span></span><br><span class="line">        self.images = images</span><br><span class="line">        self.labels = labels</span><br><span class="line">        self.batch_size = batch_size</span><br><span class="line">        self.num_batches = math.ceil(<span class="built_in">len</span>(images) / batch_size)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">next</span>(<span class="params">self</span>):</span><br><span class="line">        images = self.images[self.index : self.index + self.batch_size]</span><br><span class="line">        labels = self.labels[self.index : self.index + self.batch_size]</span><br><span class="line">        self.index += self.batch_size</span><br><span class="line">        <span class="keyword">return</span> images, labels</span><br></pre></td></tr></table></figure>
 <h3 id="跑一个训练步骤">跑一个训练步骤</h3>
+<p>Running one training step</p>
 <p>整个过程中最困难的部分是“训练步骤”：在用一批数据运行模型后，更新模型的权重。我们需要……</p>
 <ul>
 <li>计算模型对批次中图像的预测结果。</li>
@@ -710,11 +810,13 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">one_training_step</span>(<span class="params">model, images_batch, labels_batch</span>):</span><br><span class="line">    <span class="comment"># Runs the &quot;forward pass&quot;</span></span><br><span class="line">    predictions = model(images_batch)</span><br><span class="line">    loss = ops.sparse_categorical_crossentropy(labels_batch, predictions)</span><br><span class="line">    average_loss = ops.mean(loss)</span><br><span class="line">    <span class="comment"># Computes the gradient of the loss with regard to the weights. The</span></span><br><span class="line">    <span class="comment"># output, gradients, is a list where each entry corresponds to a</span></span><br><span class="line">    <span class="comment"># weight from the model.weights list. We haven&#x27;t defined this</span></span><br><span class="line">    <span class="comment"># function yet!</span></span><br><span class="line">    gradients = get_gradients_of_loss_wrt_weights(loss, model.weights)</span><br><span class="line">    <span class="comment"># Updates the weights using the gradients. We haven&#x27;t defined this</span></span><br><span class="line">    <span class="comment"># function yet!</span></span><br><span class="line">    update_weights(gradients, model.weights)</span><br><span class="line">    <span class="keyword">return</span> loss</span><br></pre></td></tr></table></figure>
 <p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter02_mathematical-building-blocks/#listing-2-9">清单 2.9</a>：单步训练</p>
 <h4 id="权重更新步骤">权重更新步骤</h4>
+<p>The weight update step</p>
 <p>如您所知，“权重更新”步骤（由函数表示）的目的<code>update_weights()</code>是将权重向能够减少此批次损失的方向移动“一点”。移动的幅度由“学习率”决定，通常是一个较小的值。实现此<code>update_weights()</code>函数的最简单方法是从每个权重中减去<code>gradient * learning_rate</code>：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">learning_rate = <span class="number">1e-3</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">update_weights</span>(<span class="params">gradients, weights</span>):</span><br><span class="line">    <span class="keyword">for</span> g, w <span class="keyword">in</span> <span class="built_in">zip</span>(gradients, weights):</span><br><span class="line">        <span class="comment"># Assigns a new value to the variable, in place</span></span><br><span class="line">        w.assign(w - g * learning_rate)</span><br></pre></td></tr></table></figure>
 <p>实际上，你几乎永远不会手动实现这样的权重更新步骤。相反，你会使用<code>Optimizer</code>Keras 中的一个实例，就像这样：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> optimizers</span><br><span class="line"></span><br><span class="line">optimizer = optimizers.SGD(learning_rate=<span class="number">1e-3</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">update_weights</span>(<span class="params">gradients, weights</span>):</span><br><span class="line">    optimizer.apply_gradients(<span class="built_in">zip</span>(gradients, weights))</span><br></pre></td></tr></table></figure>
 <h4 id="梯度计算">梯度计算</h4>
+<p>Gradient computation</p>
 <p>现在，我们还缺少一样东西：梯度计算（如<code>get_gradients_of_loss_wrt_weights()</code>清单 2.9 中的函数所示）。在前一节中，我们概述了如何使用链式法则，根据函数链中各个函数的导数来计算它们的梯度，这个过程称为反向传播。我们可以从头开始重新实现反向传播，但这会相当繁琐，尤其因为我们使用了<code>softmax</code>运算和交叉熵损失，它们的导数都相当冗长。</p>
 <p>相反，我们可以依赖 Keras 支持的底层框架（例如 TensorFlow、JAX 或 PyTorch）内置的自动微分机制。为了便于举例，我们这里选择 TensorFlow。您将在下一章中了解更多关于 TensorFlow、JAX 和 PyTorch 的内容。</p>
 <p>您可以使用 TensorFlow 的自动微分功能，而实现此功能的 API 就是 <code>TensorFlow_Driving``tf.GradientTape</code>对象。它是一个 Python 作用域，会以计算图（有时称为<em>磁带</em>）的形式“记录”其中运行的张量运算。然后，可以使用此图来检索任何标量值相对于任何输入值集的梯度：</p>
@@ -723,26 +825,28 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">one_training_step</span>(<span class="params">model, images_batch, labels_batch</span>):</span><br><span class="line">    <span class="keyword">with</span> tf.GradientTape() <span class="keyword">as</span> tape:</span><br><span class="line">        predictions = model(images_batch)</span><br><span class="line">        loss = ops.sparse_categorical_crossentropy(labels_batch, predictions)</span><br><span class="line">        average_loss = ops.mean(loss)</span><br><span class="line">    gradients = tape.gradient(average_loss, model.weights)</span><br><span class="line">    update_weights(gradients, model.weights)</span><br><span class="line">    <span class="keyword">return</span> average_loss</span><br></pre></td></tr></table></figure>
 <p>现在我们的分批次训练步骤已经准备就绪，我们可以继续实施整个训练周期。</p>
 <h3 id="完整的训练循环">完整的训练循环</h3>
+<p>The full training loop</p>
 <p>一次训练周期（epoch）就是对训练数据中的每个批次重复训练步骤，而完整的训练循环就是重复一次训练周期：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">fit</span>(<span class="params">model, images, labels, epochs, batch_size=<span class="number">128</span></span>):</span><br><span class="line">    <span class="keyword">for</span> epoch_counter <span class="keyword">in</span> <span class="built_in">range</span>(epochs):</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;Epoch <span class="subst">&#123;epoch_counter&#125;</span>&quot;</span>)</span><br><span class="line">        batch_generator = BatchGenerator(images, labels)</span><br><span class="line">        <span class="keyword">for</span> batch_counter <span class="keyword">in</span> <span class="built_in">range</span>(batch_generator.num_batches):</span><br><span class="line">            images_batch, labels_batch = batch_generator.<span class="built_in">next</span>()</span><br><span class="line">            loss = one_training_step(model, images_batch, labels_batch)</span><br><span class="line">            <span class="keyword">if</span> batch_counter % <span class="number">100</span> == <span class="number">0</span>:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;loss at batch <span class="subst">&#123;batch_counter&#125;</span>: <span class="subst">&#123;loss:<span class="number">.2</span>f&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
 <p>我们来试驾一下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras.datasets <span class="keyword">import</span> mnist</span><br><span class="line"></span><br><span class="line">(train_images, train_labels), (test_images, test_labels) = mnist.load_data()</span><br><span class="line"></span><br><span class="line">train_images = train_images.reshape((<span class="number">60000</span>, <span class="number">28</span> * <span class="number">28</span>))</span><br><span class="line">train_images = train_images.astype(<span class="string">&quot;float32&quot;</span>) / <span class="number">255</span></span><br><span class="line">test_images = test_images.reshape((<span class="number">10000</span>, <span class="number">28</span> * <span class="number">28</span>))</span><br><span class="line">test_images = test_images.astype(<span class="string">&quot;float32&quot;</span>) / <span class="number">255</span></span><br><span class="line"></span><br><span class="line">fit(model, train_images, train_labels, epochs=<span class="number">10</span>, batch_size=<span class="number">128</span>)</span><br></pre></td></tr></table></figure>
 <h3 id="模型评估">模型评估</h3>
+<p>Evaluating the model</p>
 <p><code>argmax</code>我们可以通过计算模型对测试图像的预测结果，并将其与预期标签进行比较来评估模型：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; predictions = model(test_images)</span><br><span class="line">&gt;&gt;&gt; predicted_labels = ops.argmax(predictions, axis=1)</span><br><span class="line">&gt;&gt;&gt; matches = predicted_labels == test_labels</span><br><span class="line">&gt;&gt;&gt; f&quot;accuracy: &#123;ops.mean(matches):.2f&#125;&quot;</span><br><span class="line">accuracy: 0.83</span><br></pre></td></tr></table></figure>
 <p>大功告成！正如你所见，用几行 Keras 代码就能完成的事情，手动操作却相当费时费力。但正因为你完成了这些步骤，现在你应该对调用神经网络时内部的运作机制有了清晰的理解<code>fit()</code>。有了这种底层逻辑的理解，你就能更好地利用 Keras API 的高级功能。</p>
 <h2 id="概括">概括</h2>
 <ul>
-<li><p><em>张量</em>是现代机器学习系统的基础。它们有多种形式<code>dtype</code>，例如<code>rank</code>、 和<code>shape</code>。</p></li>
-<li><p>你可以通过<em>张量运算</em> （例如加法、张量积或逐元素乘法）来操作数值张量，这些运算可以解释为编码几何变换。总的来说，深度学习中的一切都可以进行几何解释。</p></li>
-<li><p>深度学习模型由一系列简单的张量运算组成，这些运算由<em>权重</em>参数化，而权重本身也是张量。模型的“知识”就存储在权重中。</p></li>
-<li><p><em>学习</em>是指找到一组模型权重值，使得给定一组训练数据样本及其对应目标的<em>损失函数最小化。</em></p></li>
-<li><p>学习过程通过随机抽取数据样本及其目标值批次，并计算模型参数相对于该批次损失的梯度来实现。然后，模型参数会沿梯度的反方向移动一小段距离（移动的幅度由学习率决定）。这被称为<em>小批量梯度下降</em>。</p></li>
-<li><p>整个学习过程之所以成为可能，是因为神经网络中的所有张量运算都是可微的，因此可以应用链式求导法则来找到将当前参数和当前数据批次映射到梯度值的梯度函数。这被称为<em>反向传播</em>。</p></li>
-<li><p>在后续章节中，你会频繁看到两个关键概念：<em>损失函数</em>和 <em>优化器</em>。在开始将数据输入模型之前，你需要先定义这两个概念：</p>
+<li><em>张量</em>是现代机器学习系统的基础。它们有多种形式<code>dtype</code>，例如<code>rank</code>、 和<code>shape</code>。</li>
+<li>你可以通过<em>张量运算</em> （例如加法、张量积或逐元素乘法）来操作数值张量，这些运算可以解释为编码几何变换。总的来说，深度学习中的一切都可以进行几何解释。</li>
+<li>深度学习模型由一系列简单的张量运算组成，这些运算由<em>权重</em>参数化，而权重本身也是张量。模型的“知识”就存储在权重中。</li>
+<li><em>学习</em>是指找到一组模型权重值，使得给定一组训练数据样本及其对应目标的<em>损失函数最小化。</em></li>
+<li>学习过程通过随机抽取数据样本及其目标值批次，并计算模型参数相对于该批次损失的梯度来实现。然后，模型参数会沿梯度的反方向移动一小段距离（移动的幅度由学习率决定）。这被称为<em>小批量梯度下降</em>。</li>
+<li>整个学习过程之所以成为可能，是因为神经网络中的所有张量运算都是可微的，因此可以应用链式求导法则来找到将当前参数和当前数据批次映射到梯度值的梯度函数。这被称为<em>反向传播</em>。</li>
+<li>在后续章节中，你会频繁看到两个关键概念：<em>损失函数</em>和 <em>优化器</em>。在开始将数据输入模型之前，你需要先定义这两个概念：
 <ul>
-<li>损失是你在训练过程中试图最小化的量，因此它应该代表你试图解决的任务的成功程度<em>。</em></li>
-<li>优化<em>器</em>指定损失梯度将用于更新参数的确切方式：例如，它可以是 RMSProp 优化器、带动量的 SGD 等。</li>
+<li><strong>损失是你在训练过程中试图最小化的量，因此它应该代表你试图解决的任务的成功程度<em>。</em></strong></li>
+<li><strong>优化<em>器</em>指定损失梯度将用于更新参数的确切方式：例如，它可以是 RMSProp 优化器、带动量的 SGD 等。</strong></li>
 </ul></li>
 </ul>
 
