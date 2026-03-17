@@ -50,7 +50,7 @@
 <meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/training-and-validation-ft-acc.7ec17959.png">
 <meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/training-and-validation-ft-loss.3c4293eb.png">
 <meta property="article:published_time" content="2026-02-22T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-03-17T04:30:25.676Z">
+<meta property="article:modified_time" content="2026-03-17T04:36:52.782Z">
 <meta property="article:author" content="Rayman.hung">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/local_patterns.b72668dd.jpg">
@@ -627,6 +627,42 @@
 3 Train the part you added.<br />
 4 Unfreeze the base network.<br />
 5 Jointly train both these layers and the part you added.</p>
+</blockquote>
+<blockquote>
+<p>个人注：</p>
+<p>理解微调（Fine-tuning）中的“冻结”与“解冻”，核心在于控制模型中哪些参数<strong>允许根据新数据进行修改</strong>，哪些参数<strong>保持不变</strong>。</p>
+<p>我们可以把这个过程想象成<strong>“入职培训”</strong>：</p>
+<ol type="1">
+<li>为什么要“冻结”？（保留通用知识）</li>
+</ol>
+<p>预训练模型（如 BERT 或 ResNet）已经学习了海量的通用知识（比如语言的语法、图片的轮廓）。</p>
+<ul>
+<li><strong>动作</strong>：将 <code>trainable</code> 属性设为 <code>False</code>。</li>
+<li><strong>目的</strong>：保护这些已经学好的“通用才华”不被新数据破坏。</li>
+<li><strong>底层变化</strong>：正如你之前看到的，这会将参数从“可训练列表”移出，优化器在训练时会直接跳过这些层。</li>
+</ul>
+<ol start="2" type="1">
+<li>为什么要“解冻”？（精细化定制）</li>
+</ol>
+<p>当你发现模型虽然懂通用知识，但在处理你的特定任务（比如识别某种罕见的医学影像）时不够精准，就需要“解冻”。</p>
+<ul>
+<li><strong>动作</strong>：将 <code>trainable</code> 设为 <code>True</code>。</li>
+<li><strong>目的</strong>：允许模型微调其内部的细节，使其更适应当前的数据分布。</li>
+</ul>
+<ol start="3" type="1">
+<li>标准的微调过程：先“冻”后“放”</li>
+</ol>
+<p>通常我们不会一上来就全解冻，而是分阶段进行：</p>
+<p>第一阶段：只练“新人”（完全冻结预训练部分）</p>
+<ul>
+<li><strong>操作</strong>：把整个预训练模型冻结，只给它接一个<strong>全新的分类层</strong>（随机初始化的）。</li>
+<li><strong>理解</strong>：先让这个“新员工”学会基本的分类逻辑。如果此时不冻结预训练模型，由于新层是随机的，产生的巨大误差（Loss）会通过反向传播把预训练模型里的好知识全给冲垮了（这叫“灾难性遗忘”）。</li>
+</ul>
+<p>第二阶段：整体磨合（解冻部分或全部）</p>
+<ul>
+<li><strong>操作</strong>：在训练一段时间后，把预训练模型的一部分（通常是靠近输出的顶层）解冻，然后以<strong>极小的学习率</strong>继续训练。</li>
+<li><strong>理解</strong>：此时新层已经基本稳健了，我们可以稍微调动一下预训练模型的知识，让它和新层配合得更好。</li>
+</ul>
 </blockquote>
 <p>请注意，您不应解冻“批量归一化”层（<code>BatchNormalization</code>）。批量归一化及其对微调的影响将在下一章中解释。</p>
 <p>你已经完成了特征提取的前三个步骤。接下来进行第四步：你需要解冻你的<code>conv_base</code>……</p>
