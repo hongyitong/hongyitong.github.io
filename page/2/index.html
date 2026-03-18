@@ -355,6 +355,7 @@
     
     <div class="post-body" itemprop="articleBody">
           <p><strong>第九章 卷积神经网络架构模式</strong></p>
+<p>ConvNet architecture patterns</p>
 <p><strong>运行代码</strong></p>
 <p><a target="_blank" rel="noopener" href="https://colab.research.google.com/github/fchollet/deep-learning-with-python-notebooks/blob/master/chapter09_convnet-architecture-patterns.ipynb">在 Colab 上运行</a></p>
 <p><a target="_blank" rel="noopener" href="https://github.com/fchollet/deep-learning-with-python-notebooks">在 GitHub 上查看</a></p>
@@ -363,12 +364,12 @@
 <li>模型架构的模块化-层次-重用公式</li>
 <li>卷积神经网络构建标准最佳实践概述：残差连接、批量归一化和深度可分离卷积</li>
 <li>计算机视觉模型的持续设计趋势</li>
+<li>The modularity-hierarchy-reuse formula for model architecture</li>
+<li>An overview of standard best practices for building ConvNets: residual connections, batch normalization, and depthwise separable convolutions</li>
+<li>Ongoing design trends for computer vision models</li>
 </ul>
 <p>模型的“架构”是创建该模型时所有选择的总和：使用哪些层、如何配置它们、以及如何连接它们。这些选择定义了模型的<em>假设空间</em>：梯度下降可以搜索的可能函数空间，由模型的权重参数化。与特征工程类似，一个好的假设空间编码了你对当前问题及其解决方案的<em>先验知识</em> 。例如，使用卷积层意味着你预先知道输入图像中存在的相关模式是平移不变的。为了有效地从数据中学习，你需要对你要寻找的内容做出假设。</p>
-<p>模型架构往往是成败的关键。如果架构选择不当，模型可能始终停留在次优指标，再多的训练数据也无济于事。反之，优秀的模型架构能够加速学习，使模型高效利用现有训练数据，从而减少对大型数据集的需求。好的模型架构能够<em>缩小搜索空间</em>，或者更<em>容易地收敛到搜索空间中的某个理想点</em>。与特征工程和数据管理一样，模型架构的核心在于 简化梯度下降<em>算法</em>的求解过程——要知道，梯度下降本身就是一个相当简单的搜索过程，因此它需要尽可能多的辅助手段。</p>
-<p>模型架构与其说是一门科学，不如说是一门艺术。经验丰富的机器学习工程师往往能够凭直觉在第一次尝试时就构建出高性能模型，而初学者却常常连一个能训练的模型都难以创建。这里的关键词是<em>“凭直觉</em>”：没有人能清晰地解释什么有效什么无效。专家们依靠模式匹配，而这种能力是通过大量的实践经验获得的。本书将帮助你培养自己的直觉。然而，这并非<em>完全</em>取决于直觉——其中并没有太多真正的科学原理，但就像任何工程学科一样，也存在一些最佳实践。</p>
-<p>在接下来的章节中，我们将回顾一些卷积神经网络（ConvNet）架构的最佳实践，特别是 <em>残差连接</em>、<em>批量归一化</em>和<em>可分离卷积</em>。一旦掌握了它们的使用方法，您就能构建高效的图像模型。我们将演示如何将它们应用于我们的猫狗分类问题。</p>
-<p>让我们从宏观角度来看：系统架构的模块化-层次-重用（MHR）公式。</p>
+<p>A model’s “architecture” is the sum of the choices that went into creating it: which layers to use, how to configure them, in what arrangement to connect them.  These choices define the hypothesis space of your model: the space of possible functions that gradient descent can search over, parameterized by the model’s weights. Like feature engineering, a good hypothesis space encodes prior knowledge that you have about the problem at hand and its solution. For instance, using convolution layers means that you know in advance that the relevant patterns present in your input images are translation-invariant. To effectively learn from data, you need to make assumptions about what you’re looking for.</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2026/02/24/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B9%E3%80%81%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E6%9E%B6%E6%9E%84%E6%A8%A1%E5%BC%8F/#more" rel="contents">
@@ -578,7 +579,7 @@
 <li>使用 TensorBoard 来监控您的训练和评估指标随时间的变化</li>
 <li>如何从零开始编写自己的训练和评估循环</li>
 </ul>
-<p>你已经开始积累一些使用 Keras 的经验了。你熟悉<code>Sequential</code>模型、<code>Dense</code>层以及用于训练、评估和推理的内置 API——<code>train</code>、<code>evaluate</code>、<code>compile()`` </code>fit()<code>catch``evaluate()</code>和 <code> catch</code> <code>predict()</code>。你甚至在第 3 章中学习了如何继承 <code>Training</code> 类 <code>Layer</code>来创建自定义层，以及如何使用 TensorFlow、JAX 和 PyTorch 中的梯度 API 来实现逐步训练循环。</p>
+<p>你已经开始积累一些使用 Keras 的经验了。你熟悉<code>Sequential</code>模型、<code>Dense</code>层以及用于训练、评估和推理的内置 API——<code>train</code>、<code>evaluate</code>、<code>compile()``</code>fit()<code>catch``evaluate()</code>和 <code>catch</code> <code>predict()</code>。你甚至在第 3 章中学习了如何继承 <code>Training</code> 类 <code>Layer</code>来创建自定义层，以及如何使用 TensorFlow、JAX 和 PyTorch 中的梯度 API 来实现逐步训练循环。</p>
 <p>在接下来的章节中，我们将深入探讨计算机视觉、时间序列预测、自然语言处理和生成式深度学习(computer vision, timeseries forecasting, natural language processing, and generative deep learning)。这些复杂的应用需要的远不止<code>Sequential</code>架构和默认<code>fit()</code>循环。所以，首先让我们把你培养成 Keras 专家！在本章中，你将全面了解使用 Keras API 的关键方法：你需要掌握的所有内容，足以应对接下来遇到的各种高级深度学习用例。</p>
           <!--noindex-->
             <div class="post-button">
