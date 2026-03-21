@@ -122,37 +122,38 @@
 
 
 <style>
-  /* 强制针对 MathJax 3 的移动端溢出滚动 */
-  mjx-container[display="true"] {
+  /* 1. 强制外层容器允许溢出 */
+  .post-body .math.display, 
+  .post-body span.math.display {
     display: block !important;
+    width: 100% !important;
     overflow-x: auto !important;
     overflow-y: hidden !important;
-    max-width: 100% !important;
-    padding: 15px 0 !important;
     -webkit-overflow-scrolling: touch !important;
   }
-  
-  /* 解决内部表格不随容器缩放的问题 */
-  mjx-container[display="true"] > svg, 
-  mjx-container[display="true"] > mjx-assistive-mml {
-    min-width: 400px !important; /* 强制给长公式一个最小宽度，触发滚动 */
+
+  /* 2. 针对 MathJax 3 的精准打击 */
+  mjx-container[display="true"] {
+    display: inline-grid !important; /* 关键：改为 inline-grid 触发宽度自适应 */
+    overflow: visible !important;   /* 由外层容器负责滚动 */
+    min-width: 100% !important;
   }
 
-  /* 针对窄屏手机的适配 */
-  @media (max-width: 767px) {
-    .post-body {
-      overflow-x: visible !important; /* 确保父级容器不截断 */
-    }
+  mjx-container[display="true"] > svg {
+    margin: 0 !important;
+    min-width: 500px !important; /* 强制撑开，确保在手机上必须滚动 */
+  }
+
+  /* 3. 针对 KaTeX 的备选方案（防止混用） */
+  .katex-display {
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
   }
 </style>
   <noscript>
     <link rel="stylesheet" href="/css/noscript.css">
   </noscript>
-<!-- hexo injector head_end start -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
-
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
-<!-- hexo injector head_end end --></head>
+</head>
 
 <body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
   <div class="headband"></div>
