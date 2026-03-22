@@ -60,7 +60,7 @@
 <meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F3.32.png">
 <meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F3.33.png">
 <meta property="article:published_time" content="2025-04-03T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-02-27T02:50:17.919Z">
+<meta property="article:modified_time" content="2026-03-22T02:24:23.988Z">
 <meta property="article:author" content="Rayman.hung">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F3.1.png">
@@ -106,35 +106,7 @@
 <script src="/js/third-party/math/mathjax.js" defer></script>
 
 
-<style>
-  /* 1. 强制外层容器允许溢出 */
-  .post-body .math.display, 
-  .post-body span.math.display {
-    display: block !important;
-    width: 100% !important;
-    overflow-x: auto !important;
-    overflow-y: hidden !important;
-    -webkit-overflow-scrolling: touch !important;
-  }
 
-  /* 2. 针对 MathJax 3 的精准打击 */
-  mjx-container[display="true"] {
-    display: inline-grid !important; /* 关键：改为 inline-grid 触发宽度自适应 */
-    overflow: visible !important;   /* 由外层容器负责滚动 */
-    min-width: 100% !important;
-  }
-
-  mjx-container[display="true"] > svg {
-    margin: 0 !important;
-    min-width: 500px !important; /* 强制撑开，确保在手机上必须滚动 */
-  }
-
-  /* 3. 针对 KaTeX 的备选方案（防止混用） */
-  .katex-display {
-    overflow-x: auto !important;
-    overflow-y: hidden !important;
-  }
-</style>
   <noscript>
     <link rel="stylesheet" href="/css/noscript.css">
   </noscript>
@@ -407,7 +379,7 @@
 <p><img src="/img3/Hands-On Large Language Models/F3.10.png" alt="F3.1" style="zoom:67%;" /></p>
 <p>在 <strong><span class="math inline">\(\text{Hugging Face Transformers}\)</span></strong> 中，<strong>缓存</strong>默认是<strong>启用</strong>的。我们可以通过设置 <span class="math inline">\(\text{use\_cache}\)</span> 为 <span class="math inline">\(\text{False}\)</span> 来<strong>禁用</strong>它。我们可以通过要求进行<strong>长时间生成</strong>，并<strong>对启用和禁用缓存的生成进行计时</strong>来查看速度上的差异：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">prompt = <span class="string">&quot;Write a very long email apologizing to Sarah for the tragic gardening</span></span><br><span class="line"><span class="string">mishap. Explain how it happened.&quot;</span></span><br><span class="line"><span class="comment"># Tokenize the input prompt</span></span><br><span class="line">input_ids = tokenizer(prompt, return_tensors=<span class="string">&quot;pt&quot;</span>).input_ids</span><br><span class="line">input_ids = input_ids.to(<span class="string">&quot;cuda&quot;</span>)</span><br></pre></td></tr></table></figure>
-<p>然后，我们对<strong>启用缓存</strong>生成 <span class="math inline">\(\text{100}\)</span> 个词元所需的时间进行计时。我们可以使用 <span class="math inline">\(\text{Jupyter}\)</span> 或 <span class="math inline">\(\text{Colab}\)</span> 中的 <strong><span class="math inline">\(\text{\%\%timeit}\)</span> 魔术命令</strong>来计时执行所需的时间（它会运行命令多次并取平均值）：</p>
+<p>然后，我们对<strong>启用缓存</strong>生成 <span class="math inline">\(\text{100}\)</span> 个词元所需的时间进行计时。我们可以使用 <span class="math inline">\(\text{Jupyter}\)</span> 或 <span class="math inline">\(\text{Colab}\)</span> 中的 %%timeit 魔术命令来计时执行所需的时间（它会运行命令多次并取平均值）：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">%%timeit -n <span class="number">1</span></span><br><span class="line"><span class="comment"># Generate the text</span></span><br><span class="line">generation_output = model.generate(</span><br><span class="line">input_ids=input_ids,</span><br><span class="line">max_new_tokens=<span class="number">100</span>,</span><br><span class="line">use_cache=<span class="literal">True</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
 <p>在具有 <strong><span class="math inline">\(\text{T}4\)</span> <span class="math inline">\(\text{GPU}\)</span></strong> 的 <span class="math inline">\(\text{Colab}\)</span> 上，这大约需要 <strong><span class="math inline">\(\text{4.5}\)</span> 秒</strong>。但是，如果我们<strong>禁用缓存</strong>，这需要多长时间呢？</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">%%timeit -n <span class="number">1</span></span><br><span class="line"><span class="comment"># Generate the text</span></span><br><span class="line">generation_output = model.generate(</span><br><span class="line">input_ids=input_ids,</span><br><span class="line">max_new_tokens=<span class="number">100</span>,</span><br><span class="line">use_cache=<span class="literal">False</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
