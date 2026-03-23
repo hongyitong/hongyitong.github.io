@@ -19,12 +19,12 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false,"path":"/search.xml"}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="第十四章 文本分类 运行代码 在 Colab 上运行 在 GitHub 上查看 本章内容  自然语言处理（NLP）领域简介 预处理文本输入，将其转换为数值输入 构建简单的文本分类模型  本章将为处理文本输入奠定基础，本书接下来的两章将在此基础上继续深入探讨。读完本章，你将能够以多种方式构建一个简单的文本分类器。这将为下一章构建更复杂的模型（例如 Transformer 模型）做好准备。">
+    <meta name="description" content="第十四章 文本分类 Text classification 运行代码 在 Colab 上运行 在 GitHub 上查看 本章内容  自然语言处理（NLP）领域简介 预处理文本输入，将其转换为数值输入 构建简单的文本分类模型 An introduction to the field of natural language processing (NLP) Preprocessing text inp">
 <meta property="og:type" content="article">
 <meta property="og:title" content="《DEEP LEARNING with Python》第十四章">
 <meta property="og:url" content="http://hongyitong.github.io/2026/03/04/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B14%E3%80%81%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB/index.html">
 <meta property="og:site_name" content="墨语浮生">
-<meta property="og:description" content="第十四章 文本分类 运行代码 在 Colab 上运行 在 GitHub 上查看 本章内容  自然语言处理（NLP）领域简介 预处理文本输入，将其转换为数值输入 构建简单的文本分类模型  本章将为处理文本输入奠定基础，本书接下来的两章将在此基础上继续深入探讨。读完本章，你将能够以多种方式构建一个简单的文本分类器。这将为下一章构建更复杂的模型（例如 Transformer 模型）做好准备。">
+<meta property="og:description" content="第十四章 文本分类 Text classification 运行代码 在 Colab 上运行 在 GitHub 上查看 本章内容  自然语言处理（NLP）领域简介 预处理文本输入，将其转换为数值输入 构建简单的文本分类模型 An introduction to the field of natural language processing (NLP) Preprocessing text inp">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/text-pipeline.c09bbad6.png">
 <meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/bag-of-words-acc.533d9a5b.png">
@@ -33,7 +33,7 @@
 <meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/embedding-dictionary.80faa429.png">
 <meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/cbow.01aaf529.png">
 <meta property="article:published_time" content="2026-03-03T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-03-07T03:04:38.015Z">
+<meta property="article:modified_time" content="2026-03-23T04:00:28.085Z">
 <meta property="article:author" content="Rayman.hung">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/text-pipeline.c09bbad6.png">
@@ -272,6 +272,7 @@
     
     
     <div class="post-body" itemprop="articleBody"><p><strong>第十四章 文本分类</strong></p>
+<p>Text classification</p>
 <p><strong>运行代码</strong></p>
 <p><a target="_blank" rel="noopener" href="https://colab.research.google.com/github/fchollet/deep-learning-with-python-notebooks/blob/master/chapter14_text-classification.ipynb">在 Colab 上运行</a></p>
 <p><a target="_blank" rel="noopener" href="https://github.com/fchollet/deep-learning-with-python-notebooks">在 GitHub 上查看</a></p>
@@ -280,33 +281,38 @@
 <li>自然语言处理（NLP）领域简介</li>
 <li>预处理文本输入，将其转换为数值输入</li>
 <li>构建简单的文本分类模型</li>
+<li>An introduction to the field of natural language processing (NLP)</li>
+<li>Preprocessing text input into numeric input</li>
+<li>Building simple text classification models</li>
 </ul>
 <p>本章将为处理文本输入奠定基础，本书接下来的两章将在此基础上继续深入探讨。读完本章，你将能够以多种方式构建一个简单的文本分类器。这将为下一章构建更复杂的模型（例如 Transformer 模型）做好准备。</p>
 <span id="more"></span>
 <h2 id="自然语言处理简史">自然语言处理简史</h2>
+<p>A brief history of natural language processing</p>
 <p>在计算机科学中，我们将英语或汉语等人类语言称为“自然语言”，以区别于专为机器设计的语言，例如 LISP、汇编语言和 XML。每一种机器语言都是人为设计的：它的起点是工程师编写一套形式化的规则，用于描述可以表达哪些语句以及这些语句的含义。规则先于语言出现，人们只有在规则集完善后才开始使用这种语言。而人类语言则恰恰相反：使用先于规则。自然语言的形成过程与生物有机体类似，都是通过进化过程实现的——这正是它“自然”的原因。它的“规则”，例如英语语法，是在事后才形式化的，而且经常被使用者忽略或打破。因此，机器可读语言结构严谨、条理清晰，而自然语言则显得杂乱无章——含糊不清、混乱无序、庞杂冗长且不断变化。</p>
 <p>计算机科学家长期以来一直关注能够接收或生成自然语言的系统的潜力。语言，尤其是书面文本，是我们大多数交流和文化生产的基础。几个世纪以来，人类的知识都以文本的形式存储；互联网主要由文本构成，甚至我们的思想也基于语言！利用计算机来解释和处理语言的实践被称为自然语言处理，简称NLP。它最初是在二战后被提出作为一门研究领域的，当时一些人认为我们可以将理解语言视为一种“密码破解”，而自然语言就是用来传输信息的“密码”。</p>
 <p>在机器翻译领域的早期，许多人天真地认为可以像编写LISP规则集一样，编写出“英语规则集”。20世纪50年代初，IBM和乔治城大学的研究人员展示了一个可以将俄语翻译成英语的系统。该系统使用包含六条硬编码规则的语法和一个包含数百个元素（单词和后缀）的查找表，能够准确翻译60个精心挑选的俄语句子。其目的是为了激发人们对机器翻译的兴趣并争取资金，从这个意义上讲，它取得了巨大的成功。尽管演示功能有限，但作者声称五年内翻译问题就能得到解决。在接下来的近十年里，资金源源不断地涌入。然而，事实证明，要推广这样一个系统却异常困难。单词的含义会根据上下文发生巨大变化。任何语法规则都需要无数的例外情况。开发一个能够处理几个精心挑选的例句的程序并不难，但要构建一个能够与人类翻译相媲美的强大系统则完全是另一回事。十年后，一份具有影响力的美国报告详细分析了进展缓慢的原因，资金也随之枯竭。</p>
-<p>尽管遭遇了这些挫折，也经历了从兴奋到失望的反复起伏，手工编写的规则在20世纪90年代仍然是主流方法。问题显而易见，但除了用符号规则描述语法之外，别无他法。然而，随着20世纪80年代末计算机速度的提升和海量数据的出现，研究开始朝着新的方向发展。当你发现自己构建的系统充斥着大量临时规则时，作为一名聪明的工程师，你很可能会开始思考：“我能否利用语料库来自动查找这些规则？我能否在某个规则空间中搜索规则，而不是自己去创造它们？” 就这样，你就踏入了机器学习的领域。</p>
+<p>尽管遭遇了这些挫折，也经历了从兴奋到失望的反复起伏，手工编写的规则在20世纪90年代仍然是主流方法。问题显而易见，但除了用符号规则描述语法之外，别无他法。然而，随着20世纪80年代末计算机速度的提升和海量数据的出现，研究开始朝着新的方向发展。当你发现自己构建的系统充斥着大量临时规则时，作为一名聪明的工程师，<strong>你很可能会开始思考：“我能否利用语料库来自动查找这些规则？我能否在某个规则空间中搜索规则，而不是自己去创造它们？</strong>” 就这样，你就踏入了机器学习的领域。</p>
 <p>20世纪80年代末，我们开始看到机器学习方法应用于自然语言处理。最早的方法基于决策树——其目的在于自动化生成类似硬编码语言系统中的if/then/else规则。随后，统计方法开始发展，以逻辑回归为代表。随着时间的推移，参数化学习模型逐渐占据主导地位，而语言学被一些人视为直接嵌入模型中的障碍。早期语音识别研究员弗雷德里克·杰利内克（Frederick Jelinek）在20世纪90年代曾开玩笑说：“我每解雇一位语言学家，语音识别器的性能就会提高。”</p>
 <p>正如计算机视觉是将模式识别应用于像素一样，现代自然语言处理领域的核心是将模式识别应用于文本中的词语。其实际应用领域不胜枚举：</p>
 <ul>
-<li>给定一封电子邮件的内容，它是垃圾邮件的概率是多少？（<em>文本分类</em>）</li>
-<li>给定一个英文句子，最可能的俄语翻译是什么？（<em>翻译</em>）</li>
-<li>给定一个不完整的句子，接下来最有可能出现的词是什么？（<em>语言建模</em>）</li>
+<li>给定一封电子邮件的内容，它是垃圾邮件的概率是多少？（<em>文本分类</em> text classification）</li>
+<li>给定一个英文句子，最可能的俄语翻译是什么？（<em>翻译</em> (translation）</li>
+<li>给定一个不完整的句子，接下来最有可能出现的词是什么？（<em>语言建模</em> language modeling）</li>
 </ul>
 <p>本书中你将训练的文本处理模型不会像人类一样理解语言；相反，它们只是在输入数据中寻找统计规律，而这足以在各种现实世界的任务中表现出色。</p>
-<p>过去十年，自然语言处理（NLP）研究人员和从业者发现，学习文本相关统计问题的答案竟能带来惊人的效果。2010年代，研究人员开始将长短期记忆网络（LSTM）模型应用于文本处理，这极大地增加了NLP模型的参数数量以及训练所需的计算资源。结果令人鼓舞——LSTM模型能够比以往的方法更准确地泛化到未见过的样本，但最终也遇到了瓶颈。LSTM难以追踪包含大量句子和段落的长文本链中的依赖关系，而且与计算机视觉模型相比，它们的训练速度慢且操作繁琐。</p>
-<p>在2010年代末期，谷歌的研究人员发现了一种名为Transformer的新架构，它解决了困扰LSTM的诸多可扩展性问题。只要模型及其训练数据规模同时增加，Transformer的性能似乎就会越来越好。更重要的是，即使对于长序列，训练Transformer所需的计算也可以有效地并行化。如果训练机器的数量翻倍，等待结果所需的时间大约可以缩短一半。</p>
-<p>Transformer架构的发现，以及GPU和CPU速度的不断提升，在过去几年里引发了自然语言处理（NLP）模型领域投资和兴趣的爆炸式增长。像ChatGPT这样的聊天系统，能够就看似任意的主题和问题生成流畅自然的文本，吸引了公众的目光。用于训练这些模型的原始文本占据了互联网上所有书面语言的很大一部分，而训练单个模型的计算成本可能高达数千万美元。然而，有些炒作需要理性看待——它们本质上是模式识别机器。尽管我们人类总是倾向于在“会说话的东西”中寻找智能，但这些模型复制和合成训练数据的方式与人类智能截然不同（而且效率低得多！）。不过，公平地说，从极其简单的“猜词”训练设置中涌现出复杂的行为，是过去十年机器学习领域最令人震惊的实证成果之一。</p>
+<p>过去十年，自然语言处理（NLP）研究人员和从业者发现，学习文本相关统计问题的答案竟能带来惊人的效果。2010年代，研究人员开始将长短期记忆网络（LSTM）模型应用于文本处理，这极大地增加了NLP模型的参数数量以及训练所需的计算资源。结果令人鼓舞——LSTM模型能够比以往的方法更准确地泛化到未见过的样本，但最终也遇到了瓶颈。<strong>LSTM难以追踪包含大量句子和段落的长文本链中的依赖关系</strong>，而且与计算机视觉模型相比，它们的训练速度慢且操作繁琐。</p>
+<p><strong>在2010年代末期，谷歌的研究人员发现了一种名为Transformer的新架构，它解决了困扰LSTM的诸多可扩展性问题。只要模型及其训练数据规模同时增加，Transformer的性能似乎就会越来越好。更重要的是，即使对于长序列，训练Transformer所需的计算也可以有效地并行化。如果训练机器的数量翻倍，等待结果所需的时间大约可以缩短一半。</strong></p>
+<p>Transformer架构的发现，以及GPU和CPU速度的不断提升，在过去几年里引发了自然语言处理（NLP）模型领域投资和兴趣的爆炸式增长。像ChatGPT这样的聊天系统，能够就看似任意的主题和问题生成流畅自然的文本，吸引了公众的目光。用于训练这些模型的原始文本占据了互联网上所有书面语言的很大一部分，而训练单个模型的计算成本可能高达数千万美元。然而，有些炒作需要理性看待——<strong>它们本质上是模式识别机器。尽管我们人类总是倾向于在“会说话的东西”中寻找智能，但这些模型复制和合成训练数据的方式与人类智能截然不同（而且效率低得多！）</strong>。不过，公平地说，从极其简单的“猜词”训练设置中涌现出复杂的行为，是过去十年机器学习领域最令人震惊的实证成果之一。</p>
 <p>接下来的三章，我们将探讨一系列用于文本数据的机器学习技术。我们将略过20世纪90年代以前盛行的硬编码语言特征，但会涵盖从运行逻辑回归进行文本分类到训练LSTM进行机器翻译等所有内容。我们将深入研究Transformer模型，并探讨其在文本领域如此高效且具有可扩展性的原因。让我们开始吧。</p>
 <h2 id="准备文本数据">准备文本数据</h2>
+<p>Preparing text data</p>
 <p>让我们来看一个英文句子：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">The quick brown fox jumped over the lazy dog.</span><br></pre></td></tr></table></figure>
-<p>在应用前几章提到的任何深度学习技术之前，我们面临着一个显而易见的障碍——我们的输入并非数值型数据！在开始任何建模之前，我们需要将文字转换为数字张量。与图像相对自然的数值表示不同，文本的数值表示可以通过多种方式构建。</p>
+<p>在应用前几章提到的任何深度学习技术之前，我们面临着一个显而易见的障碍——我们的输入并非数值型数据！在开始任何建模之前，我们需要将文字转换为数字张量。<strong>与图像相对自然的数值表示不同，文本的数值表示可以通过多种方式构建。</strong></p>
 <p>一个简单的办法是借鉴标准文本文件格式，使用类似 ASCII 编码的方式。我们可以将输入内容分割成一系列字符，并为每个字符分配一个唯一的索引。另一种直观的方法是构建基于单词的表示，首先将句子按空格和标点符号拆分，然后将每个单词映射到一个唯一的数字表示。</p>
-<p>这两种方法都值得尝试。一般来说，所有文本预处理都会包含一个<em>分割</em>步骤，即将文本分割成称为<em>“词元”（token）</em>的小单元。正则表达式是分割文本的强大工具，它可以灵活地匹配文本中的字符模式。</p>
-<p>我们来看看如何使用正则表达式将字符串拆分成字符序列。最基本的正则表达式是 <code>\n</code> <code>"."</code>，它可以匹配输入文本中的任何字符：</p>
+<p>这两种方法都值得尝试。一般来说，所有文本预处理都会包含一个<em>分割(splitting)</em>步骤，即将文本分割成称为<em>“词元”（token）</em>的小单元。正则表达式(regular expressions)是分割文本的强大工具，它可以灵活地匹配文本中的字符模式。</p>
+<p>我们来看看如何使用正则表达式将字符串拆分成字符序列。最基本的正则表达式是 (The most basic regex we can apply is ".") <code>"."</code>，它可以匹配输入文本中的任何字符：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> regex <span class="keyword">as</span> re</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">split_chars</span>(<span class="params">text</span>):</span><br><span class="line">    <span class="keyword">return</span> re.findall(<span class="string">r&quot;.&quot;</span>, text)</span><br></pre></td></tr></table></figure>
 <p>我们可以将该函数应用于我们的示例输入字符串：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; chars = split_chars(&quot;The quick brown fox jumped over the lazy dog.&quot;)</span><br><span class="line">&gt;&gt;&gt; chars[:12]</span><br><span class="line">[&quot;T&quot;, &quot;h&quot;, &quot;e&quot;, &quot; &quot;, &quot;q&quot;, &quot;u&quot;, &quot;i&quot;, &quot;c&quot;, &quot;k&quot;, &quot; &quot;, &quot;b&quot;, &quot;r&quot;]</span><br></pre></td></tr></table></figure>
@@ -315,35 +321,38 @@
 <p>它对测试句子做了以下处理：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; split_words(&quot;The quick brown fox jumped over the dog.&quot;)</span><br><span class="line">[&quot;The&quot;, &quot;quick&quot;, &quot;brown&quot;, &quot;fox&quot;, &quot;jumped&quot;, &quot;over&quot;, &quot;the&quot;, &quot;dog&quot;, &quot;.&quot;]</span><br></pre></td></tr></table></figure>
 <p>分割操作将单个字符串转换为标记序列，但我们仍然需要将字符串标记转换为数值输入。目前最常用的方法是将每个标记映射到一个唯一的整数索引，这通常称为 对输入<em>进行索引</em>。这种标记化输入的表示方法灵活且可逆，可以与各种建模方法兼容。之后，我们可以决定如何将标记索引映射到模型接收的潜在空间。</p>
-<p>对于字符标记，我们可以使用 ASCII 查找表来索引每个标记——例如，<code>a``ord('A') → 65</code>和 <code>b</code> <code>ord('z') → 122</code>。然而，当涉及到其他语言时，这种方法的扩展性会很差——Unicode 规范中包含超过一百万个字符！一种更稳健的技术是构建一个映射，将训练数据中的特定标记映射到我们关心的数据中出现的索引，这在自然语言处理中被称为<em>词汇表</em>。这种方法的一个优点是，它既适用于词级标记，也适用于字符级标记。</p>
+<p>对于字符标记，我们可以使用 ASCII 查找表来索引每个标记——例如，ord('A') → 65<code>和</code>ord('z') → 122。然而，当涉及到其他语言时，这种方法的扩展性会很差——Unicode 规范中包含超过一百万个字符！一种更稳健的技术是构建一个映射，将训练数据中的特定标记映射到我们关心的数据中出现的索引，这在自然语言处理中被称为<em>词汇表</em>（vocabulary）。这种方法的一个优点是，它既适用于词级标记，也适用于字符级标记。</p>
 <p>让我们来看看如何使用词汇表来转换文本。我们将构建一个简单的 Python 字典，将词元映射到索引，将输入拆分成词元，最后为词元建立索引：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">vocabulary = &#123;</span><br><span class="line">    <span class="string">&quot;[UNK]&quot;</span>: <span class="number">0</span>,</span><br><span class="line">    <span class="string">&quot;the&quot;</span>: <span class="number">1</span>,</span><br><span class="line">    <span class="string">&quot;quick&quot;</span>: <span class="number">2</span>,</span><br><span class="line">    <span class="string">&quot;brown&quot;</span>: <span class="number">3</span>,</span><br><span class="line">    <span class="string">&quot;fox&quot;</span>: <span class="number">4</span>,</span><br><span class="line">    <span class="string">&quot;jumped&quot;</span>: <span class="number">5</span>,</span><br><span class="line">    <span class="string">&quot;over&quot;</span>: <span class="number">6</span>,</span><br><span class="line">    <span class="string">&quot;dog&quot;</span>: <span class="number">7</span>,</span><br><span class="line">    <span class="string">&quot;.&quot;</span>: <span class="number">8</span>,</span><br><span class="line">&#125;</span><br><span class="line">words = split_words(<span class="string">&quot;The quick brown fox jumped over the lazy dog.&quot;</span>)</span><br><span class="line">indices = [vocabulary.get(word, <span class="number">0</span>) <span class="keyword">for</span> word <span class="keyword">in</span> words]</span><br></pre></td></tr></table></figure>
 <p>输出结果如下：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[0, 2, 3, 4, 5, 6, 1, 0, 7, 8]</span><br></pre></td></tr></table></figure>
 <p>我们在词汇表中引入一个特殊标记，称为<code>"[UNK]"</code>“词元”，它代表词汇表中不存在的词元。这样，即使某些词项仅出现在测试数据中，我们也能索引所有遇到的输入。在前面的示例中，“词元”<code>"lazy"</code>映射到<code>"[UNK]"</code>索引 0，因为它不在我们的词汇表中。</p>
-<p>通过这些简单的文本转换，我们已经朝着构建文本预处理流程迈出了重要一步。然而，还有一种更常见的文本处理方式值得我们考虑——标准化。</p>
+<p>通过这些简单的文本转换，我们已经朝着构建文本预处理流程迈出了重要一步。然而，还有一种更常见的文本处理方式值得我们考虑——标准化（standardization）。</p>
 <p>请看以下两个句子：</p>
 <ul>
+<li>“sunset came. i was staring at the Mexico sky. Isnt nature splendid??”</li>
+<li>“Sunset came; I stared at the México sky. Isn’t nature splendid?”</li>
 <li>“日落了。我凝视着墨西哥的天空。大自然真是太壮丽了！</li>
 <li>“夕阳西下，我凝视着墨西哥的天空。大自然真是壮丽啊！”</li>
 </ul>
-<p>它们非常相似——事实上，它们几乎完全相同。然而，如果你像之前描述的那样将它们转换为索引，最终会得到截然不同的表示，因为“i”和“I”是两个不同的字符，“Mexico”和“México”是两个不同的单词，“isnt”和“isn't”不一样，等等。机器学习模型事先并不知道“i”和“I”是同一个字母，“é”是带重音符号的“e”，或者“staring”和“stared”是同一个动词的两种形式。文本<em>标准化</em>是一种基本的特征工程方法，旨在消除你不希望模型处理的编码差异。这并非机器学习独有——如果你要构建一个搜索引擎，也需要做同样的事情。</p>
-<p>一种简单且广泛应用的标准化方案是将字母转换为小写并删除标点符号。我们的两个句子将变成</p>
+<p>它们非常相似——事实上，它们几乎完全相同。然而，如果你像之前描述的那样将它们转换为索引，最终会得到截然不同的表示，因为“i”和“I”是两个不同的字符，“Mexico”和“México”是两个不同的单词，“isnt”和“isn't”不一样，等等。机器学习模型事先并不知道“i”和“I”是同一个字母，“é”是带重音符号的“e”，或者“staring”和“stared”是同一个动词的两种形式。文本<em>标准化</em>是一种基本的特征工程方法，旨在消除你不希望模型处理的编码差异。（<strong>Standardizing text</strong> is a basic form of <strong>feature engineering</strong> that aims to erase encoding differences that you don’t want your model to have to deal with.）这并非机器学习独有——如果你要构建一个搜索引擎，也需要做同样的事情。</p>
+<p>一种<strong>简单且广泛应用的标准化方案是将字母转换为小写并删除标点符号</strong>。我们的两个句子将变成</p>
 <ul>
-<li>“日落时分，我凝视着墨西哥的天空，大自然真是壮丽。”</li>
-<li>“日落时分，我凝视着墨西哥的天空，大自然真是壮丽。”</li>
+<li>“sunset came i was staring at the mexico sky isnt nature splendid”</li>
+<li>“sunset came i stared at the méxico sky isnt nature splendid”</li>
 </ul>
 <p>已经接近目标了。如果我们去掉所有字符上的重音符号，目标还能更接近。</p>
-<p>标准化有很多用途，它曾经是提升模型性能的关键领域之一。在自然语言处理领域，几十年来，人们普遍使用正则表达式将单词映射到共同的词根（例如，“tired”→“tire”，“trophies”→“trophy”），这种方法被称为<em>词干提取</em>或 <em>词形还原</em>。但随着模型表达能力的增强，这种标准化方法往往弊大于利。单词的时态和复数形式是其含义的必要信号。对于如今使用的大型模型而言，大多数标准化都力求轻量级——例如，在进一步处理之前将所有输入转换为标准字符编码。</p>
+<p>标准化有很多用途，它曾经是提升模型性能的关键领域之一。在自然语言处理领域，几十年来，人们普遍使用正则表达式将单词映射到共同的词根（例如，“tired”→“tire”，“trophies”→“trophy”），这种方法被称为<em>词干提取</em>或 <em>词形还原（stemming or lemmatization）</em>。但随着模型表达能力的增强，<strong>这种标准化方法往往弊大于利。单词的时态和复数形式是其含义的必要信号</strong>。对于如今使用的大型模型而言，大多数标准化都力求轻量级——例如，在进一步处理之前将所有输入转换为标准字符编码。</p>
 <p>通过标准化，我们现在看到了文本预处理的三个不同阶段（图 14.1）：</p>
 <ol type="1">
-<li><em>标准化</em>——我们使用基本的文本到文本转换来规范化输入。</li>
-<li><em>分割</em>——将文本分割成一系列<em>标记。</em></li>
-<li>*索引——我们使用**词汇表*将词元映射到索引。</li>
+<li><em>标准化</em>（Standardization）——我们使用基本的文本到文本转换来规范化输入。</li>
+<li><em>分割</em>（Splitting）——将文本分割成一系列<em>标记。</em></li>
+<li><em>索引（Indexing）——我们使用词汇表</em>将词元映射到索引。</li>
 </ol>
-<p><img src="/img3/DEEP%20LEARNING%20with%20Python/text-pipeline.c09bbad6.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter14_text-classification/#figure-14-1">图 14.1</a>：文本预处理流程</p>
-<p>人们通常将整个过程称为<em>分词</em>，并将把文本映射到词元索引序列的对象称为<em>分词器</em>。让我们尝试构建几个分词器。</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/text-pipeline.c09bbad6.png" alt="img" />图 14.1：文本预处理流程</p>
+<p>人们通常将整个过程称为<em>分词</em>（tokenization），并将把文本映射到词元索引序列的对象称为<em>分词器</em>（tokenizer）。让我们尝试构建几个分词器。</p>
 <h3 id="字符和词语标记化">字符和词语标记化</h3>
+<p>Character and word tokenization</p>
 <p>首先，我们来构建一个字符级分词器，它将输入字符串中的每个字符映射到一个整数。为了简化操作，我们只使用一个标准化步骤——将所有输入转换为小写。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">CharTokenizer</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, vocabulary</span>):</span><br><span class="line">        self.vocabulary = vocabulary</span><br><span class="line">        self.unk_id = vocabulary[<span class="string">&quot;[UNK]&quot;</span>]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">standardize</span>(<span class="params">self, inputs</span>):</span><br><span class="line">        <span class="keyword">return</span> inputs.lower()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">split</span>(<span class="params">self, inputs</span>):</span><br><span class="line">        <span class="keyword">return</span> re.findall(<span class="string">r&quot;.&quot;</span>, inputs)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">index</span>(<span class="params">self, tokens</span>):</span><br><span class="line">        <span class="keyword">return</span> [self.vocabulary.get(t, self.unk_id) <span class="keyword">for</span> t <span class="keyword">in</span> tokens]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__call__</span>(<span class="params">self, inputs</span>):</span><br><span class="line">        inputs = self.standardize(inputs)</span><br><span class="line">        tokens = self.split(inputs)</span><br><span class="line">        indices = self.index(tokens)</span><br><span class="line">        <span class="keyword">return</span> indices</span><br></pre></td></tr></table></figure>
 <p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter14_text-classification/#listing-14-1">列表 14.1</a>：基本字符级分词器</p>
@@ -364,13 +373,14 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">vocabulary = compute_word_vocabulary(moby_dick, max_size=<span class="number">2_000</span>)</span><br><span class="line">word_tokenizer = WordTokenizer(vocabulary)</span><br></pre></td></tr></table></figure>
 <p>我们可以打印出词级分词器的相同数据：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; print(&quot;Vocabulary length:&quot;, len(vocabulary))</span><br><span class="line">Vocabulary length: 2000</span><br><span class="line">&gt;&gt;&gt; print(&quot;Vocabulary start:&quot;, list(vocabulary.keys())[:5])</span><br><span class="line">Vocabulary start: [&quot;[UNK]&quot;, &quot;,&quot;, &quot;the&quot;, &quot;.&quot;, &quot;of&quot;]</span><br><span class="line">&gt;&gt;&gt; print(&quot;Vocabulary end:&quot;, list(vocabulary.keys())[-5:])</span><br><span class="line">Vocabulary end: [&quot;tambourine&quot;, &quot;subtle&quot;, &quot;perseus&quot;, &quot;elevated&quot;, &quot;repose&quot;]</span><br><span class="line">&gt;&gt;&gt; print(&quot;Line length:&quot;, len(word_tokenizer(</span><br><span class="line">...    &quot;Call me Ishmael. Some years ago--never mind how long precisely.&quot;</span><br><span class="line">... )))</span><br><span class="line">Line length: 13</span><br></pre></td></tr></table></figure>
-<p>我们已经可以看到两种分词技术的优缺点。字符级分词器只需要 64 个词汇就能覆盖整本书，但它会将每个输入编码成一个非常长的序列。词级分词器可以快速填充一个包含 2000 个词条的词汇表（要索引书中的每个词，你需要一个包含 17000 个词条的词典！），但词级分词器的输出要短得多。</p>
+<p>我们已经可以看到两种分词技术的优缺点。字符级分词器（character-level tokenizer）只需要 64 个词汇就能覆盖整本书，但它会将每个输入编码成一个非常长的序列。词级分词器（word-level tokenizer）可以快速填充一个包含 2000 个词条的词汇表（要索引书中的每个词，你需要一个包含 17000 个词条的词典！），但词级分词器的输出要短得多。</p>
 <p>随着机器学习从业者使用越来越多的数据和参数来扩展模型，词级分词和字符级分词的缺点也逐渐显现。词级分词提供的“压缩”功能非常重要——它允许将更长的序列输入模型。然而，如果你尝试为大型数据集（如今，你可能会遇到包含数万亿个单词的数据集）构建词级词汇表，你将得到一个庞大到无法使用的词汇表，其中包含数亿个词项。如果你严格限制词级词汇表的大小，你会将大量文本编码到<code>"[UNK]"</code>词元中，从而丢失宝贵的信息。</p>
-<p><em>这些问题导致了第三种分词方法（称为子词分词）</em>的流行，该方法试图弥合词级和字符级方法之间的差距。</p>
+<p><strong><em>这些问题导致了第三种分词方法（称为子词分词 subword tokenization）</em>的流行，该方法试图弥合词级和字符级方法之间的差距。</strong></p>
 <h3 id="子词分词">子词分词</h3>
-<p>子词标记化旨在结合字符级和词级编码技术的优点。我们希望它<code>WordTokenizer</code>既能生成简洁的输出，<code>CharTokenizer</code>又能用较小的词汇量编码广泛的输入。</p>
-<p>我们可以将寻找理想的分词器视为寻找理想的输入数据压缩方式。缩短词元长度可以压缩样本的整体长度。较小的词汇表可以减少表示每个词元所需的字节数。如果我们能够同时实现这两点，就能将简短而信息丰富的序列输入到深度学习模型中。</p>
-<p>压缩和分词之间的这种类比并非一直显而易见，但事实证明它非常有效。过去十年自然语言处理研究中发现的最实用有效的技巧之一，就是重新利用了20世纪90年代一种名为<em>字节对编码的无损压缩算法。</em>[<a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter14_text-classification/#footnote-1">1]</a>用于分词。ChatGPT 和许多其他模型至今仍在使用它。在本节中，我们将构建一个使用字节对编码算法的分词器。</p>
+<p>Subword tokenization</p>
+<p><strong>子词标记化旨在结合字符级和词级编码技术的优点。我们希望它<code>WordTokenizer</code>既能生成简洁的输出，<code>CharTokenizer</code>又能用较小的词汇量编码广泛的输入。</strong></p>
+<p><strong>我们可以将寻找理想的分词器视为寻找理想的输入数据压缩方式。缩短词元长度（个人注：减少文本编码后的词元数量）可以压缩样本的整体长度。较小的词汇表可以减少表示每个词元所需的字节数。如果我们能够同时实现这两点，就能将简短而信息丰富的序列输入到深度学习模型中。</strong></p>
+<p><strong>压缩和分词（compression and tokenization）之间的这种类比并非一直显而易见，但事实证明它非常有效。过去十年自然语言处理研究中发现的最实用有效的技巧之一</strong>，就是重新利用了20世纪90年代一种名为<em>字节对编码（</em>byte-pair encoding）<em>的无损压缩算法。</em>[1]用于分词。ChatGPT 和许多其他模型至今仍在使用它。在本节中，我们将构建一个使用字节对编码算法的分词器。</p>
 <p>字节对编码的思想是从一套基本的字符集开始，逐步将常见的字符对“合并”成越来越长的字符序列。假设我们从以下输入文本开始：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">data = [</span><br><span class="line">    <span class="string">&quot;the quick brown fox&quot;</span>,</span><br><span class="line">    <span class="string">&quot;the slow brown fox&quot;</span>,</span><br><span class="line">    <span class="string">&quot;the quick brown foxhound&quot;</span>,</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
 <p>和之前一样<code>WordTokenizer</code>，我们将首先计算文本中所有单词的词频。在创建词频字典时，我们将把所有文本拆分成字符，并用空格连接字符。这样可以方便我们在下一步中处理成对的字符。</p>
@@ -397,28 +407,32 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">vocabulary, merges = compute_sub_word_vocabulary(moby_dick, <span class="number">2_000</span>)</span><br><span class="line">sub_word_tokenizer = SubWordTokenizer(vocabulary, merges)</span><br></pre></td></tr></table></figure>
 <p>我们可以查看一下词汇表，并像之前对 <code>and``WordTokenizer</code>和<code>CharTokenizer``:</code>所做的那样，在分词器上尝试一个测试句子：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; print(&quot;Vocabulary length:&quot;, len(vocabulary))</span><br><span class="line">Vocabulary length: 2000</span><br><span class="line">&gt;&gt;&gt; print(&quot;Vocabulary start:&quot;, list(vocabulary.keys())[:10])</span><br><span class="line">Vocabulary start: [&quot;[UNK]&quot;, &quot;e&quot;, &quot;t&quot;, &quot;a&quot;, &quot;o&quot;, &quot;n&quot;, &quot;i&quot;, &quot;s&quot;, &quot;h&quot;, &quot;r&quot;]</span><br><span class="line">&gt;&gt;&gt; print(&quot;Vocabulary end:&quot;, list(vocabulary.keys())[-7:])</span><br><span class="line">Vocabulary end: [&quot;bright&quot;, &quot;pilot&quot;, &quot;sco&quot;, &quot;ben&quot;, &quot;dem&quot;, &quot;gale&quot;, &quot;ilo&quot;]</span><br><span class="line">&gt;&gt;&gt; print(&quot;Line length:&quot;, len(sub_word_tokenizer(</span><br><span class="line">...    &quot;Call me Ishmael. Some years ago--never mind how long precisely.&quot;</span><br><span class="line">... )))</span><br><span class="line">Line length: 16</span><br></pre></td></tr></table></figure>
-<p>对于我们的测试句子，子词分词器的长度<code>SubWordTokenizer</code>略长于<code>WordTokenizer</code>（16 个词元对 13 个词元），但与不同的是<code>WordTokenizer</code>，它可以对<em>《白鲸记》</em>中的每个单词进行分词，而无需使用<code>"[UNK]"</code>单个词元。词汇表包含了源文本中的所有字符，因此最坏情况下的性能表现是将单词分词成单个字符。我们能够在处理词汇量较小的罕见词的同时，实现较短的<em>平均</em>词元长度。这就是子词分词器的优势所在。</p>
+<p>对于我们的测试句子，子词分词器的长度<code>SubWordTokenizer</code>略长于<code>WordTokenizer</code>（16 个词元对 13 个词元），但与不同的是<code>WordTokenizer</code>，它可以对<em>《白鲸记》</em>中的每个单词进行分词，而无需使用<code>"[UNK]"</code>单个词元。词汇表包含了源文本中的所有字符，因此最坏情况下的性能表现是将单词分词成单个字符。<strong>我们能够在处理词汇量较小的罕见词的同时，实现较短的<em>平均</em>词元长度（average token length）。这就是子词分词器的优势所在。</strong></p>
 <p>您可能会注意到，运行这段代码的速度明显慢于单词和字符分词器；在我们的参考硬件上大约需要一分钟。学习合并规则远比简单地统计输入数据集中的单词数量复杂得多。虽然这是子词分词的一个缺点，但在实践中很少会成为重要问题。每个模型只需要学习一次词汇表，而且学习子词词汇表的成本与模型训练相比通常可以忽略不计。</p>
 <p>我们现在已经了解了三种不同的输入分词方法。既然我们已经能够将文本输入转换为数字输入，就可以开始训练模型了。</p>
 <p>关于分词的最后一点说明——虽然理解分词器的工作原理非常重要，但你很少需要自己构建一个。Keras 和大多数深度学习框架一样，都提供了用于文本输入分词的实用工具。在本章的剩余部分，我们将使用 Keras 的内置分词功能。</p>
 <p><strong>我应该使用哪种分词技术？</strong></p>
+<p>Which tokenization technique should I use?</p>
 <p>在着手解决新的文本建模问题时，首先需要回答的问题之一就是如何对输入文本进行分词。正如我们将在本章末尾看到的，对于给定的预训练模型而言，这个问题非常简单。你必须保留预训练期间使用的精确分词，否则就会丢弃模型权重中包含的输入词元的有效表示。</p>
 <p>如果您要从头开始构建模型，可以根据具体问题定制分词方法。一般来说，词分词器和子词分词器提供的压缩效果至关重要，不容忽视。输入文本的平均长度越短，模型就越能更好地追踪文本中的长程依赖关系，从而提升整体性能。这使得子词分词成为现代语言模型的主流选择。它们能够处理罕见词或拼写错误，而不会增加常用输入的词元长度。</p>
 <p>然而，并不存在万能的解决方案。自然语言处理中的一些问题，例如拼写纠错，可能受益于对输入文本进行低级字符标记化。另一方面，词级标记化方法既简单易用又易于理解——每个模型输入都对应于人类会阅读的一个词。这使得根据词元对预测结果的重要性进行排序变得容易解释。</p>
 <p>本书正文各章节将使用这三种类型的分词器。</p>
 <h2 id="集合与序列">集合与序列</h2>
+<p>Sets vs. sequences</p>
 <p>机器学习模型应该如何表示单个词元（token）是一个相对来说没有争议的问题：它们是类别特征（来自预定义集合的值），我们知道如何处理它们。它们应该被编码为特征空间中的维度或类别向量（在本例中为词元向量）。然而，一个更棘手的问题是如何对文本中词元的顺序进行编码。</p>
+<p>How a machine learning model should represent individual tokens is a relatively uncontroversial question: they’re categorical features (values from a predefined set), and we know how to handle those. They should be encoded as dimensions in a feature space or as category vectors (token vectors in this case). A much more problematic question, however, is how to encode the ordering of tokens in text.</p>
 <p>自然语言中的词序问题非常有趣：与时间序列的步长不同，句子中的词语并没有自然的、规范的顺序。不同的语言对相似的词语的排列方式截然不同。例如，英语的句子结构与日语就大相径庭。即使在同一种语言中，通常也可以通过稍微调整词语顺序来表达相同的意思。如果将一个短句中的词语完全随机排列，有时仍然可以理解其含义——尽管在很多情况下，会产生明显的歧义。词序显然很重要，但它与意义之间的关系并非简单直接。</p>
-<p>如何表示词序是各种自然语言处理（NLP）架构的核心问题。最简单的做法是忽略词序，将文本视为无序的词集——这样就得到了词袋模型。也可以决定严格按照词出现的顺序逐个处理，就像时间序列中的步骤一样——这时就可以使用上一章提到的循环神经网络（RNN）模型。最后，还有一种混合方法：Transformer架构在技术上与词序无关，但它会将词的位置信息注入到处理的表示中，这使得它能够同时处理句子的不同部分（与RNN不同），同时仍然能够感知词序。由于RNN和Transformer都考虑了词序，因此它们都被称为<em>序列模型</em>。</p>
+<p><strong>如何表示词序是各种自然语言处理（NLP）架构的核心问题。</strong>最简单的做法是忽略词序，将文本视为无序的词集——这样就得到了词袋模型（bag-of-words）。也可以决定严格按照词出现的顺序逐个处理，就像时间序列中的步骤一样——这时就可以使用上一章提到的循环神经网络（RNN）模型。<strong>最后，还有一种混合方法：Transformer架构在技术上与词序无关，但它会将词的位置信息注入到处理的表示中，这使得它能够同时处理句子的不同部分（与RNN不同），同时仍然能够感知词序。由于RNN和Transformer都考虑了词序，因此它们都被称为<em>序列模型</em>。</strong></p>
 <p>从历史上看，机器学习在自然语言处理领域的早期应用大多仅限于词袋模型，而忽略了序列数据。直到2015年循环神经网络（RNN）的复兴，人们才开始对序列模型产生兴趣。如今，这两种方法仍然适用。让我们来看看它们是如何工作的，以及何时应该使用哪种方法。</p>
 <p>我们将使用一个著名的文本分类基准数据集——IMDb 电影评论情感分类数据集——来演示每种方法。在第 4 章和第 5 章中，您使用的是 IMDb 数据集的预向量化版本；现在，让我们处理原始的 IMDb 文本数据，就像您在现实世界中处理新的文本分类问题时所做的那样。</p>
 <h3 id="正在加载-imdb-分类数据集">正在加载 IMDb 分类数据集</h3>
+<p>Loading the IMDb classification dataset</p>
 <p>首先，让我们下载并提取数据集。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os, pathlib, shutil, random</span><br><span class="line"></span><br><span class="line">zip_path = keras.utils.get_file(</span><br><span class="line">    origin=<span class="string">&quot;https://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz&quot;</span>,</span><br><span class="line">    fname=<span class="string">&quot;imdb&quot;</span>,</span><br><span class="line">    extract=<span class="literal">True</span>,</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">imdb_extract_dir = pathlib.Path(zip_path) / <span class="string">&quot;aclImdb&quot;</span></span><br></pre></td></tr></table></figure>
 <p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter14_text-classification/#listing-14-9">列表 14.9</a>：下载 IMDb 电影评论数据集</p>
 <p>让我们列出目录结构：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; for path in imdb_extract_dir.glob(&quot;*/*&quot;):</span><br><span class="line">...     if path.is_dir():</span><br><span class="line">...         print(path)</span><br><span class="line">~/.keras/datasets/aclImdb/train/pos</span><br><span class="line">~/.keras/datasets/aclImdb/train/unsup</span><br><span class="line">~/.keras/datasets/aclImdb/train/neg</span><br><span class="line">~/.keras/datasets/aclImdb/test/pos</span><br><span class="line">~/.keras/datasets/aclImdb/test/neg</span><br></pre></td></tr></table></figure>
-<p>我们可以看到包含正例和负例的训练集和测试集。IMDb 网站上用户评分低的电影评论被归类到<code>neg/</code> “训练集”中，评分高的评论被归类到“测试<code>pos/</code>集”中。我们还可以看到一个<code>unsup/</code>“无监督”目录，它是数据集创建者故意未标注的评论；这些评论可能是正面的，也可能是负面的。</p>
+<p>我们可以看到包含正例（positive）和负例（negative）的训练集和测试集。IMDb 网站上用户评分低的电影评论被归类到<code>neg/</code> “训练集”中，评分高的评论被归类到“测试<code>pos/</code>集”中。我们还可以看到一个<code>unsup/</code>“无监督”目录，它是数据集创建者故意未标注的评论；这些评论可能是正面的，也可能是负面的。</p>
 <p>我们来看几个文本文件的内容。无论你处理的是文本数据还是图像数据，在开始建模之前，务必先检查数据的结构。这将有助于你更好地理解模型的实际运行机制。</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; print(open(imdb_extract_dir / &quot;train&quot; / &quot;pos&quot; / &quot;4077_10.txt&quot;, &quot;r&quot;).read())</span><br><span class="line">I first saw this back in the early 90s on UK TV, i did like it then but i missed</span><br><span class="line">the chance to tape it, many years passed but the film always stuck with me and i</span><br><span class="line">lost hope of seeing it TV again, the main thing that stuck with me was the end,</span><br><span class="line">the hole castle part really touched me, its easy to watch, has a great story,</span><br><span class="line">great music, the list goes on and on, its OK me saying how good it is but</span><br><span class="line">everyone will take there own best bits away with them once they have seen it,</span><br><span class="line">yes the animation is top notch and beautiful to watch, it does show its age in a</span><br><span class="line">very few parts but that has now become part of it beauty, i am so glad it has</span><br><span class="line">came out on DVD as it is one of my top 10 films of all time. Buy it or rent it</span><br><span class="line">just see it, best viewing is at night alone with drink and food in reach so you</span><br><span class="line">don&#x27;t have to stop the film.&lt;br /&gt;&lt;br /&gt;Enjoy</span><br></pre></td></tr></table></figure>
 <p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter14_text-classification/#listing-14-10">列表 14.10</a>：预览一篇 IMDb 评论</p>
@@ -430,6 +444,7 @@
 <p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter14_text-classification/#listing-14-12">清单 14.12</a>：加载 IMDb 数据集以供 Keras 使用</p>
 <p>最初我们有 25,000 个训练样本和 25,000 个测试样本，在验证集划分之后，我们有 20,000 条评论用于训练，5,000 条评论用于验证。让我们尝试从这些数据中学习一些东西。</p>
 <h2 id="设置模型">设置模型</h2>
+<p>Set models</p>
 <p>对于文本中词元的顺序，最简单的处理方法就是忽略它。我们仍然像往常一样将输入的评论文本分词为词元 ID 序列，但在分词之后，我们会立即将整个训练样本转换为一个集合——一个简单的无序“词元包”，其中包含电影评论中存在或不存在的词元。</p>
 <p>这里的想法是利用这些数据集构建一个非常简单的模型，该模型为评论中的每个词分配一个权重。某个词的出现 <code>"terrible"</code>可能（但不总是）表明这是一条差评，也 <code>"riveting"</code>可能表明这是一条好评。我们可以构建一个能够学习这些权重的小型模型——称为词袋模型。</p>
 <p>例如，假设你有一个简单的输入句子和词汇表：</p>
@@ -442,6 +457,7 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[<span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>]</span><br></pre></td></tr></table></figure>
 <p>这里第五位的 0 表示该词<code>"laugh"</code>在我们的评论中不存在，第六位的 1 表示<code>"cry"</code>该词存在。这种简单的输入评论编码可以直接用于训练模型。</p>
 <h3 id="训练词袋模型">训练词袋模型</h3>
+<p>Training a bag-of-words model</p>
 <p>要用代码实现这种文本处理，可以很容易地扩展 <code>WordTokenizer</code>本章前面提到的方法。更简单的解决方案是使用<code>TextVectorization</code>Keras 内置的文本处理层。该层可以处理<code>TextVectorization</code>单词和字符标记化，并提供了一些附加功能，包括对层输出进行多热编码。</p>
 <p><code>TextVectorization</code>与 Keras 中的许多预处理层一样， 该层也提供了一种<code>adapt()</code>从输入数据中学习层状态的方法。在本例中 <code>TextVectorization</code>，<code>adapt()</code>它会通过迭代输入数据集来动态学习数据集的词汇表。让我们用它来对输入数据进行分词和编码。我们将构建一个包含 20,000 个单词的词汇表，这对于文本分类问题来说是一个很好的起点。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> layers</span><br><span class="line"></span><br><span class="line">max_tokens = <span class="number">20_000</span></span><br><span class="line">text_vectorization = layers.TextVectorization(</span><br><span class="line">    max_tokens=max_tokens,</span><br><span class="line">    <span class="comment"># Learns a word-level vocabulary</span></span><br><span class="line">    split=<span class="string">&quot;whitespace&quot;</span>,</span><br><span class="line">    output_mode=<span class="string">&quot;multi_hot&quot;</span>,</span><br><span class="line">)</span><br><span class="line">train_ds_no_labels = train_ds.<span class="built_in">map</span>(<span class="keyword">lambda</span> x, y: x)</span><br><span class="line">text_vectorization.adapt(train_ds_no_labels)</span><br><span class="line"></span><br><span class="line">bag_of_words_train_ds = train_ds.<span class="built_in">map</span>(</span><br><span class="line">    <span class="keyword">lambda</span> x, y: (text_vectorization(x), y), num_parallel_calls=<span class="number">8</span></span><br><span class="line">)</span><br><span class="line">bag_of_words_val_ds = val_ds.<span class="built_in">map</span>(</span><br><span class="line">    <span class="keyword">lambda</span> x, y: (text_vectorization(x), y), num_parallel_calls=<span class="number">8</span></span><br><span class="line">)</span><br><span class="line">bag_of_words_test_ds = test_ds.<span class="built_in">map</span>(</span><br><span class="line">    <span class="keyword">lambda</span> x, y: (text_vectorization(x), y), num_parallel_calls=<span class="number">8</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
@@ -459,22 +475,30 @@
 <p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter14_text-classification/#listing-14-15">清单 14.15</a>：训练词袋回归模型</p>
 <p>我们的模型训练时间远低于一分钟，考虑到其规模，这并不令人意外。实际上，输入数据的分词和编码比更新模型参数的开销要大得多。让我们绘制模型准确率图（图 14.2）：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line">accuracy = history.history[<span class="string">&quot;accuracy&quot;</span>]</span><br><span class="line">val_accuracy = history.history[<span class="string">&quot;val_accuracy&quot;</span>]</span><br><span class="line">epochs = <span class="built_in">range</span>(<span class="number">1</span>, <span class="built_in">len</span>(accuracy) + <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">plt.plot(epochs, accuracy, <span class="string">&quot;r--&quot;</span>, label=<span class="string">&quot;Training accuracy&quot;</span>)</span><br><span class="line">plt.plot(epochs, val_accuracy, <span class="string">&quot;b&quot;</span>, label=<span class="string">&quot;Validation accuracy&quot;</span>)</span><br><span class="line">plt.title(<span class="string">&quot;Training and validation accuracy&quot;</span>)</span><br><span class="line">plt.legend()</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
-<p><img src="/img3/DEEP%20LEARNING%20with%20Python/bag-of-words-acc.533d9a5b.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter14_text-classification/#figure-14-2">图 14.2</a>：词袋模型的训练和验证指标</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/bag-of-words-acc.533d9a5b.png" alt="img" />图 14.2：词袋模型的训练和验证指标</p>
 <p>我们可以看到验证集的性能趋于稳定，而不是显著下降；我们的模型非常简单，所以不太可能出现过拟合。让我们尝试在测试集上评估一下。</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; test_loss, test_acc = model.evaluate(bag_of_words_test_ds)</span><br><span class="line">&gt;&gt;&gt; test_acc</span><br><span class="line">0.88388</span><br></pre></td></tr></table></figure>
 <p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter14_text-classification/#listing-14-16">清单 14.16</a>：评估词袋回归模型</p>
 <p>我们能够以 88% 的准确率预测评论的情感倾向，而且训练任务足够轻量级，可以在单个 CPU 上高效运行。</p>
 <p>值得注意的是，我们在这个例子中选择了词级分词。避免使用字符级分词的原因显而易见——一篇影评中所有字符的“集合”几乎无法提供任何关于其内容的信息。使用足够大的词汇表进行子词分词是一个不错的选择，但在这里几乎没有必要。由于我们训练的模型规模很小，因此使用训练速度快且权重与实际英语单词相对应的词汇表更为方便。</p>
 <p><strong>高效预处理文本</strong></p>
+<p>Preprocessing text efficiently</p>
 <p>在所有应用机器学习中，预处理的速度和效率都是至关重要的。更快的程序运行速度固然重要，但当加速器（GPU 和 TPU）成本如此之高时，这一点就显得尤为迫切。您肯定不希望在预处理输入数据时让昂贵的 GPU 闲置！</p>
-<p>文本预处理的特殊之处在于它必须始终在 CPU 上运行。GPU 严格处理数值输入，因此所有分词都必须在 GPU 的训练步骤之前完成。一种方法是预先计算分词后的输入——分词不依赖于模型权重，因此您可以在开始训练之前对所有输入文本文件进行分词，并将其重新保存为整数序列。然而，这种方法并非总是可行。动态分词可以实现更快速的实验。如果您要对一个未见过的样本进行推理，则无法预先计算分词后的输入；您需要快速地进行分词并运行前向传播。</p>
+<p><strong>文本预处理的特殊之处在于它必须始终在 CPU 上运行。GPU 严格处理数值输入，因此所有分词都必须在 GPU 的训练步骤之前完成。一种方法是预先计算分词后的输入——分词不依赖于模型权重，因此您可以在开始训练之前对所有输入文本文件进行分词，并将其重新保存为整数序列。</strong>然而，这种方法并非总是可行。动态分词可以实现更快速的实验。如果您要对一个未见过的样本进行推理，则无法预先计算分词后的输入；您需要快速地进行分词并运行前向传播。</p>
 <p>实时预处理文本输入的关键在于“速度要足够快”。你需要确保昂贵的GPU始终有新的预处理数据可供处理。如果这样做，GPU就成了瓶颈，提升分词速度也就毫无意义了。</p>
-<p>我们在前面的章节中已经看到<code>tf.data</code>，我们使用它的一个重要原因是，该库旨在避免 CPU 成为 GPU 或 TPU 的瓶颈。本章中我们将使用它——例如，<code>keras.utils.text_dataset_from_directory()</code>加载一个模型<code>tf.data.Dataset</code>，并通过应用一个转换层来转换我们的输入数据。它的工作原理是在多个 CPU 核心上并行运行文本预处理，这通常足以避免在训练过程中出现加速器瓶颈。<code>map()``TextVectorization``tf.data</code></p>
+<p><strong>我们在前面的章节中已经看到<code>tf.data</code>，我们使用它的一个重要原因是，该库旨在避免 CPU 成为 GPU 或 TPU 的瓶颈。</strong>本章中我们将使用它——例如，<code>keras.utils.text_dataset_from_directory()</code>加载一个模型<code>tf.data.Dataset</code>，并通过应用一个转换层来转换我们的输入数据。<strong>它的工作原理是在多个 CPU 核心上并行运行文本预处理，这通常足以避免在训练过程中出现加速器瓶颈。</strong><code>map()``TextVectorization``tf.data</code></p>
 <p>需要注意的是，本章中的代码仍然是多后端兼容的（实际上，本章的输出是使用 Jax 生成的）。您可以将其 <code>tf.data</code>与 PyTorch、JAX 或 TensorFlow 本身一起使用——Keras 会自动将输入张量转换为给定后端所需的正确格式。</p>
 <h3 id="训练二元语法模型">训练二元语法模型</h3>
-<p>当然，我们可以凭直觉猜到，完全忽略词序是非常简化的，因为即使是基本概念也可以用多个词来表达：“美国”这个词所传达的概念与“州”和“联合”这两个词单独来看的含义截然不同。一部“还不错”的电影和一部“很糟糕”的电影，其情感评分应该有所不同。</p>
-<p>因此，即使对于我们目前正在构建的这些简单的基于集合的模型，通常也应该在模型中注入一些关于局部词序的信息。一个简单的方法是考虑<em>二元语法</em>——二元语法是指输入文本中连续出现的两个词元。以我们的例子“这部电影让我哭了”为例，是输入中所有<em>一元</em><code>&#123;"this", "movie", "made", "me", "cry"&#125;</code>语法的集合，是所有二元语法的集合。我们刚刚训练的词袋模型可以等价地称为一元语法模型，而术语<em>“n-gram”指的是任意<strong>n个</strong>词</em>元的有序序列。<code>&#123;"this movie", "movie made", "made me", "me cry"&#125;</code></p>
+<p>Training a bigram model</p>
+<p>当然，我们可以凭直觉猜到，完全忽略词序是非常简化的，因为即使是基本概念也可以用多个词来表达：“美国（United States）”这个词所传达的概念与“州（states）”和“联合（united）”这两个词单独来看的含义截然不同。一部“还不错（not bad）”的电影和一部“很糟糕（bad）”的电影，其情感评分应该有所不同。</p>
+<p>因此，即使对于我们目前正在构建的这些简单的基于集合的模型，通常也应该在模型中注入一些关于局部词序的信息。一个简单的方法是考虑<em>二元语法</em>——二元语法是指输入文本中连续出现的两个词元（One easy way to do that is to consider bigrams—a term for two tokens that appear consecutively in the input text. ）。以我们的例子“这部电影让我哭了（this movie made me cry）”为例，是输入中所有<em>一元</em>（unigrams）<code>&#123;"this", "movie", "made", "me", "cry"&#125;</code>语法的集合， {"this movie" , "movie made", "made me", "me cry"} 是所有二元语法的集合。我们刚刚训练的词袋模型可以等价地称为一元语法模型，而术语<em>“n-gram”指的是任意<strong>n个</strong>词</em>元的有序序列。</p>
 <p>为了将二元词组添加到我们的模型中，我们需要在构建词汇表时考虑所有二元词组的出现频率。我们可以通过两种方式实现：一是创建一个仅包含二元词组的词汇表，二是允许二元词组和一元词组竞争同一个词汇表中的空间。对于后一种情况，如果一个词组在输入文本中出现频率更高，<code>"United States"</code>则会优先将其添加到词汇表中。<code>"ventriloquism"</code></p>
+<p>For the latter case, the term "United States" will be included in our vocabulary before "ventriloquism" if it occurs more frequently in the input text.</p>
+<blockquote>
+<p>个人注：<strong>"ventriloquism"</strong>：虽然是一个合法的英文单词，但因为它太冷门了，算法觉得没必要为了它专门在词表里留个位置，不如用现有的字母组合拼凑它。<br />
+<strong>"ventriloquism"</strong>：如果它还没被加入词表，它会被拆成碎片（比如 <code>ventril</code> + <code>oquism</code>），处理它需要 <strong>2 个或更多 Tokens</strong>。<br />
+<strong>结论：高频词优先“合体”，低频词暂时“碎着”。</strong></p>
+</blockquote>
 <p>同样，我们可以通过扩展<code>WordTokenizer</code>本章前面提到的模型来构建它，但没有必要。<code>TextVectorization</code>该模型已经开箱即用地提供了此功能。我们将训练一个稍大的词汇表来处理二元语法、<code>adapt()</code>新词汇表以及包含二元语法的多热编码输出向量。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">max_tokens = <span class="number">30_000</span></span><br><span class="line">text_vectorization = layers.TextVectorization(</span><br><span class="line">    max_tokens=max_tokens,</span><br><span class="line">    <span class="comment"># Learns a word-level vocabulary</span></span><br><span class="line">    split=<span class="string">&quot;whitespace&quot;</span>,</span><br><span class="line">    output_mode=<span class="string">&quot;multi_hot&quot;</span>,</span><br><span class="line">    <span class="comment"># Considers all unigrams and bigrams</span></span><br><span class="line">    ngrams=<span class="number">2</span>,</span><br><span class="line">)</span><br><span class="line">text_vectorization.adapt(train_ds_no_labels)</span><br><span class="line"></span><br><span class="line">bigram_train_ds = train_ds.<span class="built_in">map</span>(</span><br><span class="line">    <span class="keyword">lambda</span> x, y: (text_vectorization(x), y), num_parallel_calls=<span class="number">8</span></span><br><span class="line">)</span><br><span class="line">bigram_val_ds = val_ds.<span class="built_in">map</span>(</span><br><span class="line">    <span class="keyword">lambda</span> x, y: (text_vectorization(x), y), num_parallel_calls=<span class="number">8</span></span><br><span class="line">)</span><br><span class="line">bigram_test_ds = test_ds.<span class="built_in">map</span>(</span><br><span class="line">    <span class="keyword">lambda</span> x, y: (text_vectorization(x), y), num_parallel_calls=<span class="number">8</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
 <p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter14_text-classification/#listing-14-17">列表 14.17</a>：对 IMDb 评论应用二元语法编码</p>
@@ -491,10 +515,11 @@
 <p>我们现在的测试准确率达到了 90%，这是一个显著的进步！</p>
 <p>我们可以通过考虑三元组（三个词组成的词组）来进一步提高这个数值，但一旦超出三元组，问题就会迅速变得难以处理。英语中可能的四元组词组空间极其庞大，而且随着序列长度的增加，问题呈指数级增长。你需要一个极其庞大的词汇表才能对四元组词组进行充分的覆盖，而你的模型也会失去泛化能力，仅仅记住带有权重的完整句子片段。为了稳健地处理更长的有序文本序列，我们需要更高级的建模技术。</p>
 <h2 id="序列模型">序列模型</h2>
+<p>Sequence models</p>
 <p>我们之前的两个模型表明序列信息很重要。我们通过添加包含局部词序信息的特征，改进了一个基本的线性模型。</p>
 <p>然而，这种方法是通过手动构建输入特征实现的，我们可以看出它只能扩展到几个词的局部排序。正如深度学习中常见的情况，与其尝试自行构建这些特征，不如将模型暴露给原始词序列，让它直接学习词元之间的位置依赖关系。</p>
 <p>能够接收完整词元序列的模型，顾名思义，就叫做 <em>序列模型</em>。这里我们有几种架构选择。我们可以像刚才进行时间序列建模那样，构建一个循环神经网络（RNN）模型。我们也可以构建一个一维卷积神经网络（1D ConvNet），类似于我们的图像处理模型，但它只在一个序列维度上进行卷积运算。正如我们将在下一章深入探讨的那样，我们还可以构建一个Transformer模型。</p>
-<p>在采用任何这些方法之前，我们必须将输入预处理成有序序列。我们需要的是一个整数序列的词元 ID，就像我们在本章的词元化部分看到的那样，但这里还有一个需要处理的特殊情况。当我们对一批输入进行计算时，我们希望所有输入都是矩形的，这样所有计算才能有效地在 GPU 上并行处理。然而，词元化的输入几乎总是长度不一的。例如，IMDb 电影评论的长度从几句话到几段不等，字数也各不相同。</p>
+<p>在采用任何这些方法之前，我们必须将输入预处理成有序序列。我们需要的是一个整数序列的词元 ID，就像我们在本章的词元化部分看到的那样，但这里还有一个需要处理的特殊情况。<strong>当我们对一批输入进行计算时，我们希望所有输入都是矩形的，这样所有计算才能有效地在 GPU 上并行处理。</strong>然而，词元化的输入几乎总是长度不一的。例如，IMDb 电影评论的长度从几句话到几段不等，字数也各不相同。</p>
 <p>为了解决这个问题，我们可以截断输入序列，或者用另一个特殊标记<code>"[PAD]"</code>（类似于<code>"[UNK]"</code>我们之前使用的标记）来“填充”它们。例如，给定两个输入句子，期望长度为 8 个。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;the quick brown fox jumped over the lazy dog&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="string">&quot;the slow brown badger&quot;</span></span><br></pre></td></tr></table></figure>
 <p>我们将对以下标记进行标记化，得到整数 ID：</p>
@@ -507,6 +532,7 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; x, y = next(sequence_test_ds.as_numpy_iterator())</span><br><span class="line">&gt;&gt;&gt; x.shape</span><br><span class="line">(32, 600)</span><br><span class="line">&gt;&gt;&gt; x</span><br><span class="line">array([[   11,    29,     7, ...,     0,     0,     0],</span><br><span class="line">       [  132,   115,    35, ...,     0,     0,     0],</span><br><span class="line">       [ 1825,     3, 25819, ...,     0,     0,     0],</span><br><span class="line">       ...,</span><br><span class="line">       [    4,   576,    56, ...,     0,     0,     0],</span><br><span class="line">       [   30,   203,     4, ...,     0,     0,     0],</span><br><span class="line">       [ 5104,     1,    14, ...,     0,     0,     0]])</span><br></pre></td></tr></table></figure>
 <p>预处理后的每个批次都有其形状<code>(batch_size, sequence_length)</code>，几乎所有训练样本的末尾都有若干个 0 用于填充。</p>
 <h3 id="训练循环模型">训练循环模型</h3>
+<p>Training a recurrent model</p>
 <p>我们来尝试训练一个 LSTM 模型。正如我们在上一章中看到的，LSTM 可以高效地处理序列数据。但在应用之前，我们仍然需要将 token ID<em>整数</em>映射到层可以接收的浮点数据<code>Dense</code>。</p>
 <p>最直接的方法是将输入 ID 进行<em>独热</em>编码，类似于我们之前对整个序列进行的多热编码。每个词元都会变成一个长向量，其中所有元素均为 0，只有对应词元在词汇表中索引处的元素为 1。接下来，我们构建一个层来对输入序列进行独热编码。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> ops</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">OneHotEncoding</span>(keras.Layer):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, depth, **kwargs</span>):</span><br><span class="line">        <span class="built_in">super</span>().__init__(**kwargs)</span><br><span class="line">        self.depth = depth</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">call</span>(<span class="params">self, inputs</span>):</span><br><span class="line">        <span class="comment"># Flattens the inputs</span></span><br><span class="line">        flat_inputs = ops.reshape(ops.cast(inputs, <span class="string">&quot;int&quot;</span>), [-<span class="number">1</span>])</span><br><span class="line">        <span class="comment"># Builds an identity matrix with all possible one-hot vectors</span></span><br><span class="line">        one_hot_vectors = ops.eye(self.depth)</span><br><span class="line">        <span class="comment"># Uses our input token IDs to gather the correct vector for</span></span><br><span class="line">        <span class="comment"># each token</span></span><br><span class="line">        outputs = ops.take(one_hot_vectors, flat_inputs, axis=<span class="number">0</span>)</span><br><span class="line">        <span class="comment"># Unflattens the output</span></span><br><span class="line">        <span class="keyword">return</span> ops.reshape(outputs, ops.shape(inputs) + (self.depth,))</span><br><span class="line"></span><br><span class="line">one_hot_encoding = OneHotEncoding(max_tokens)</span><br></pre></td></tr></table></figure>
@@ -526,22 +552,25 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; test_loss, test_acc = model.evaluate(sequence_test_ds)</span><br><span class="line">&gt;&gt;&gt; test_acc</span><br><span class="line">0.84811</span><br></pre></td></tr></table></figure>
 <p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter14_text-classification/#listing-14-24">清单 14.24</a>：评估 LSTM 序列模型</p>
 <p>这个模型虽然能用，但训练速度非常慢，尤其与上一节的轻量级模型相比。这是因为我们的输入数据量非常大：每个输入样本都被编码成一个大小为<code>(600, 30000)</code>600 个单词（每个样本 600 个单词，总共 30,000 个单词）的矩阵。也就是说，一篇电影评论就需要处理 18,000,000 个浮点数！我们的双向 LSTM 模型需要处理大量的数据。除了速度慢之外，该模型的测试准确率也只有 84%——远不如我们速度极快的基于集合的模型。</p>
-<p>显然，使用独热编码将单词转换为向量（这是我们能做的最简单的事情）并不是一个好主意。还有更好的方法——词嵌入。</p>
+<p><strong>显然，使用独热编码将单词转换为向量（这是我们能做的最简单的事情）并不是一个好主意。还有更好的方法——词嵌入</strong>。</p>
+<p>Clearly, using one-hot encoding to turn words into vectors, which was the simplest thing we could do, wasn’t a great idea. There’s a better way—word embeddings.</p>
 <h3 id="理解词嵌入">理解词嵌入</h3>
-<p>当你使用独热编码对数据进行编码时，你实际上是在进行特征工程决策。你将一个关于特征空间结构的基本假设注入到模型中。这个假设是，你编码的不同词元彼此独立：实际上，独热向量彼此正交。但对于词语而言，这个假设显然是错误的。词语构成了一个结构化的空间：它们彼此共享信息。“movie”（电影）和“film”（影片）在大多数句子中可以互换使用，因此表示“movie”的向量不应该与表示“film”的向量正交——它们应该是同一个向量，或者至少非常接近。</p>
-<p>更抽象地说，两个词向量之间的几何关系应该反映这两个词之间的语义关系。例如，在一个合理的词向量空间中，同义词应该嵌入到相似的词向量中；一般来说，任意两个词向量之间的几何距离（例如余弦距离或L2距离）应该与这两个词之间的“语义距离”相关。含义不同的词应该彼此远离，而相关的词应该彼此靠近。</p>
-<p>词嵌入是词语的向量表示，它正是实现了这一点：将人类语言映射到结构化的几何空间。</p>
+<p>Understanding word embeddings</p>
+<p><strong>当你使用独热编码对数据进行编码时，你实际上是在进行特征工程决策。你将一个关于特征空间结构的基本假设注入到模型中。这个假设是，你编码的不同词元彼此独立：实际上，独热向量彼此正交。但对于词语而言，这个假设显然是错误的。词语构成了一个结构化的空间：它们彼此共享信息。“movie”（电影）和“film”（影片）在大多数句子中可以互换使用，因此表示“movie”的向量不应该与表示“film”的向量正交——它们应该是同一个向量，或者至少非常接近。</strong></p>
+<p><strong>更抽象地说，两个词向量之间的几何关系应该反映这两个词之间的语义关系。例如，在一个合理的词向量空间中，同义词应该嵌入到相似的词向量中；一般来说，任意两个词向量之间的几何距离（例如余弦距离或L2距离）应该与这两个词之间的“语义距离”相关。含义不同的词应该彼此远离，而相关的词应该彼此靠近。</strong></p>
+<p><strong>词嵌入是词语的向量表示，它正是实现了这一点：将人类语言映射到结构化的几何空间。</strong></p>
 <p>独热编码得到的向量是二进制的、稀疏的（主要由零组成），并且维度非常高（维度与词汇表中的单词数量相同），而词嵌入则是低维浮点向量（即稠密向量，而非稀疏向量）；参见图 14.3。处理非常大的词汇表时，常见的词嵌入维度为 256 维、512 维或 1024 维。另一方面，对于我们当前的词汇表，独热编码通常会得到 30000 维的向量。因此，词嵌入能够在更少的维度中打包更多信息。</p>
-<p><img src="/img3/DEEP%20LEARNING%20with%20Python/word-representations.b71fcc82.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter14_text-classification/#figure-14-3">图 14.3</a>：通过独热编码或哈希得到的词表示是稀疏的、高维的且硬编码的。词嵌入是稠密的、相对低维的，并且是从数据中学习得到的。</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/word-representations.b71fcc82.png" alt="img" />图 14.3：通过独热编码或哈希得到的词表示是稀疏的、高维的且硬编码的。词嵌入是稠密的、相对低维的，并且是从数据中学习得到的。</p>
 <p>除了是稠密表示之外，词嵌入也是结构化表示，其结构是从数据中学习得到的。相似的词会被嵌入到相近的位置，而且嵌入空间中的特定方向是有意义的。为了更清楚地说明这一点，我们来看一个具体的例子。在图 14.4 中，四个词被嵌入到一个二维平面上：猫、狗、狼和老虎。利用我们选择的向量表示，这些词之间的一些语义关系可以被编码为几何变换。例如，同一个向量允许我们从猫变换到老虎，从狗变换到狼：这个向量可以被解释为“从宠物到野生动物”的向量。类似地，另一个向量允许我们从狗变换到猫，从狼变换到老虎，这可以被解释为“从犬科动物到猫科动物”的向量。</p>
-<p><img src="/img3/DEEP%20LEARNING%20with%20Python/word-embeddings.1bc937b3.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter14_text-classification/#figure-14-4">图 14.4</a>：词嵌入空间的简单示例</p>
-<p>在现实世界的词嵌入空间中，有意义的几何变换的典型例子是“性别”向量和“复数”向量。例如，将“女性”向量添加到“国王”向量中，即可得到向量“女王”。添加“复数”向量，即可得到“国王们”。词嵌入空间通常包含数千个此类可解释且可能有用的向量。</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/word-embeddings.1bc937b3.png" alt="img" />图 14.4：词嵌入空间的简单示例</p>
+<p><strong>在现实世界的词嵌入空间中，有意义的几何变换的典型例子是“性别”向量和“复数”向量。例如，将“女性”向量添加到“国王”向量中，即可得到向量“女王”。添加“复数”向量，即可得到“国王们”。词嵌入空间通常包含数千个此类可解释且可能有用的向量。</strong></p>
 <p>让我们来看看如何在实践中使用这样的嵌入空间。</p>
 <h3 id="使用词嵌入">使用词嵌入</h3>
-<p>是否存在一个理想的词嵌入空间，能够完美映射人类语言并适用于任何自然语言处理（NPL）任务？或许存在，但我们尚未计算出这样的空间。此外，也不存在我们可以尝试映射的单一人类语言——语言种类繁多，彼此并不同构，因为语言反映了特定的文化和语境。更实际地说，一个好的词嵌入空间很大程度上取决于你的任务：一个用于英语电影评论情感分析模型的理想词嵌入空间，可能与一个用于英语法律文件分类模型的理想词嵌入空间截然不同，因为某些语义关系的重要性会因任务而异。</p>
-<p>因此，对于每个新任务，学习一个新的嵌入空间是合理的。幸运的是，反向传播使得这一点变得容易，而 Keras 则让这一切变得更加简单。关键在于学习 Keras<code>Embedding</code>层的权重。</p>
+<p>Using a word embedding</p>
+<p><strong>是否存在一个理想的词嵌入空间，能够完美映射人类语言并适用于任何自然语言处理（NPL）任务？或许存在，但我们尚未计算出这样的空间。此外，也不存在我们可以尝试映射的单一人类语言——语言种类繁多，彼此并不同构，因为语言反映了特定的文化和语境。更实际地说，一个好的词嵌入空间很大程度上取决于你的任务：一个用于英语电影评论情感分析模型的理想词嵌入空间，可能与一个用于英语法律文件分类模型的理想词嵌入空间截然不同，因为某些语义关系的重要性会因任务而异。</strong></p>
+<p><strong>因此，对于每个新任务，学习一个新的嵌入空间是合理的。幸运的是，反向传播使得这一点变得容易，而 Keras 则让这一切变得更加简单。关键在于学习 Keras<code>Embedding</code>层的权重。</strong></p>
 <p>可以把这一层<code>Embedding</code>理解为一个字典，它将整数索引（代表特定单词）映射到稠密向量。它以整数作为输入，在内部字典中查找对应的整数，并返回关联的向量。这实际上就是一个字典查找操作（参见图 14.5）。</p>
-<p><img src="/img3/DEEP%20LEARNING%20with%20Python/embedding-dictionary.80faa429.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter14_text-classification/#figure-14-5">图 14.5</a>：一个<code>Embedding</code>层充当字典，将整数映射到浮点向量。</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/embedding-dictionary.80faa429.png" alt="img" />图 14.5：一个<code>Embedding</code>层充当字典，将整数映射到浮点向量。</p>
 <p>该<code>Embedding</code>层以形状为的秩为 2 的张量作为输入<code>(batch_size, sequence_length)</code>，其中每个元素都是一个整数序列。该层返回形状为的浮点张量<code>(batch_size, sequence_length, embedding_size)</code>。</p>
 <p>当你实例化一个<code>Embedding</code>层时，它的权重（即其内部的词向量字典）最初是随机的，就像其他任何层一样。在训练过程中，这些词向量会通过反向传播逐步调整，从而将嵌入空间构建成下游模型可以利用的结构。一旦完全训练完成，嵌入空间就会展现出丰富的结构——这种结构是专门针对你正在训练模型解决的特定问题而设计的。</p>
 <p>让我们构建一个包含一个<code>Embedding</code>层的模型，并对我们的任务进行基准测试。</p>
@@ -564,16 +593,18 @@
 <p>恰恰相反，训练良好的词嵌入空间可以显著提升此类模型的实际性能上限。本案例的问题在于我们的训练设置。我们仅有的2万条评论样本数据量不足以有效地训练出高质量的词嵌入。经过10个训练周期后，我们的训练集准确率已经突破了99%。我们的模型开始过拟合并记忆输入数据，而且在我们尚未针对当前任务学习到最优词嵌入集之前，它就已经表现得如此出色了。</p>
 <p>对于这种情况，我们可以采用<em>预训练</em>。与其将词嵌入与分类任务联合训练，不如使用更多数据单独训练它，而无需正面和负面评论标签。让我们来看一下。</p>
 <p><strong>增强文本数据</strong></p>
+<p>Augmenting text data</p>
 <p>了解了数据增强在计算机视觉问题中的重要性之后，你可能会想，我们是否也能将同样的方法应用于文本处理呢？答案是肯定的，尽管在文本领域效果远不如计算机视觉。</p>
 <p>基本的文本增强技术旨在寻找可以对输入文本进行的基本编辑，以增强模型的鲁棒性。例如，我们可以随机删除或交换句子中的单词位置，将句子“The rain in Spain falls mostly on the plain”变为“The rain Spain falls plain on the mostly”。使用这种经过编辑的输入训练模型，可以使其对拼写错误和语法错误具有鲁棒性。</p>
 <p>然而，这个例子也简洁地揭示了文本增强的一个主要缺陷——很容易在无意中改变输入文本的含义。与图像数据不同，图像数据可以裁剪、旋转和调整猫的图片颜色，最终得到的仍然是一只可辨认的猫，而语言依赖于语序，并且对细微的变化极其敏感。一个句子中两个词互换的位置，其含义可能与输入句子完全相反。一些增强技术试图通过替换已知同义词表中的词语来解决这个问题，但如果我们选择了错误的含义，这种方法也同样不可靠。这些问题使得文本增强在实践中难以普及。通常来说，与其花费时间研究文本增强技术，不如寻找更多的文本示例。</p>
 <p>我们将在后续章节中看到的生成模型，正逐渐提供一种新的文本增强方式，可以缓解这些痛点。通过让已经学会如何生成连贯一致文本的模型输出，我们可以创建与输入数据高度相似的、完全未知的文本。这固然带来了新的挑战，但也为文本增强开辟了新的领域，尤其是在数据稀少且难以收集的情况下。</p>
 <h3 id="预训练词嵌入">预训练词嵌入</h3>
+<p>Pretraining a word embedding</p>
 <p>过去十年自然语言处理（NLP）的飞速发展恰逢 <em>预训练</em>方法成为文本建模问题的主流策略。一旦我们从简单的基于集合的回归模型转向拥有数百万甚至数十亿参数的序列模型，文本模型对数据的需求就变得异常庞大。我们通常会受到文本领域中特定问题标注样本数量的限制。</p>
-<p>其思路是设计一个无监督任务来训练模型参数，而无需使用标注数据。预训练数据可以是与最终任务领域相似的文本，甚至是任何我们感兴趣的语言的任意文本。预训练使我们能够学习语言中的通用模式，有效地在将模型专门用于最终任务之前对其进行预处理。</p>
+<p>其思路是设计一个无监督任务来训练模型参数，而无需使用标注数据。预训练数据可以是与最终任务领域相似的文本，甚至是任何我们感兴趣的语言的任意文本。<strong>预训练使我们能够学习语言中的通用模式，有效地在将模型专门用于最终任务之前对其进行预处理。</strong></p>
 <p>词嵌入是文本预训练领域最早取得重大成功的技术之一，本节将展示如何预训练词嵌入。还记得 <code>unsup/</code>我们在准备 IMDb 数据集时忽略的那个目录吗？它包含了另外 25,000 条评论——与我们的训练数据量相同。我们将把所有训练数据合并在一起，并展示如何使用无监督任务预训练层的参数<code>Embedding</code>。</p>
-<p>训练词嵌入最直接的方法之一是连续词袋模型（CBOW）。[<a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter14_text-classification/#footnote-2">2]</a>其思路是，在数据集中的所有文本上滑动一个窗口，不断尝试根据缺失单词左右两侧出现的单词来猜测它（图 14.6）。例如，如果我们得到的“单词袋”中包含“sail”、“wave”和“mast”，我们可能会猜测中间的单词是“boat”或“ocean”。</p>
-<p><img src="/img3/DEEP%20LEARNING%20with%20Python/cbow.01aaf529.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter14_text-classification/#figure-14-6">图 14.6</a>：连续词袋模型利用浅层神经网络，根据单词的上下文预测单词。</p>
+<p><strong>训练词嵌入最直接的方法之一是连续词袋模型（Continuous Bag of Words）（CBOW）。[2]其思路是，在数据集中的所有文本上滑动一个窗口，不断尝试根据缺失单词左右两侧出现的单词来猜测它（图 14.6）。例如，如果我们得到的“单词袋”中包含“sail”、“wave”和“mast”，我们可能会猜测中间的单词是“boat”或“ocean”</strong>。</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/cbow.01aaf529.png" alt="img" />图 14.6：连续词袋模型利用浅层神经网络，根据单词的上下文预测单词。</p>
 <p>在我们这个特定的 IMDb 分类问题中，我们感兴趣的是“初始化”我们刚刚训练的 LSTM 模型的词嵌入。我们可以重用 <code>TextVectorization</code>之前计算的词汇表。我们在这里所做的只是为该词汇表中的每个词学习一个合适的 64 维向量。</p>
 <p>我们可以创建一个<code>TextVectorization</code>使用相同词汇表的新层，该层不会截断或填充输入。我们将通过在文本上滑动上下文窗口来预处理该层的输出标记。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">imdb_vocabulary = text_vectorization.get_vocabulary()</span><br><span class="line">tokenize_no_padding = keras.layers.TextVectorization(</span><br><span class="line">    vocabulary=imdb_vocabulary,</span><br><span class="line">    split=<span class="string">&quot;whitespace&quot;</span>,</span><br><span class="line">    output_mode=<span class="string">&quot;int&quot;</span>,</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
@@ -584,6 +615,7 @@
 <p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter14_text-classification/#listing-14-28">清单 14.28</a>：预处理 IMDb 数据以预训练 CBOW 模型</p>
 <p>经过预处理后，我们可以看到有八个整数标记 ID 作为上下文，每个标记 ID 对应一个标签。</p>
 <p>我们用这些数据训练的模型非常简单。我们将使用一个 <code>Embedding</code>层来嵌入所有上下文标记，并使用一个层<code>GlobalAveragePooling1D</code>来计算上下文标记“包”的平均嵌入向量。然后，我们使用该平均嵌入向量来预测中间标签标记的值。</p>
+<p>The model we train with this data is exceedingly simple. We will use an Embedding layer to embed all context tokens and a GlobalAveragePooling1D to compute the average embedding of our “bag” of context tokens. Then, we use that average embedding to predict the value of our middle label token.</p>
 <p>就是这样！通过不断改进我们的嵌入空间，使我们能够根据附近的词嵌入来预测单词，我们就学习到了电影评论中使用的词元的丰富嵌入。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">hidden_dim = <span class="number">64</span></span><br><span class="line">inputs = keras.Input(shape=(<span class="number">2</span> * context_size,))</span><br><span class="line">cbow_embedding = layers.Embedding(</span><br><span class="line">    max_tokens,</span><br><span class="line">    hidden_dim,</span><br><span class="line">)</span><br><span class="line">x = cbow_embedding(inputs)</span><br><span class="line">x = layers.GlobalAveragePooling1D()(x)</span><br><span class="line">outputs = layers.Dense(max_tokens, activation=<span class="string">&quot;sigmoid&quot;</span>)(x)</span><br><span class="line">cbow_model = keras.Model(inputs, outputs)</span><br><span class="line">cbow_model.<span class="built_in">compile</span>(</span><br><span class="line">    optimizer=<span class="string">&quot;adam&quot;</span>,</span><br><span class="line">    loss=<span class="string">&quot;sparse_categorical_crossentropy&quot;</span>,</span><br><span class="line">    metrics=[<span class="string">&quot;sparse_categorical_accuracy&quot;</span>],</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
 <p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter14_text-classification/#listing-14-29">清单 14.29</a>：构建 CBOW 模型</p>
@@ -596,6 +628,7 @@
 <p>训练结束后，我们仅凭相邻的八个单词，就能有大约 12% 的概率猜出中间的单词。这听起来可能不算理想，但考虑到每次我们需要从 3 万个单词中进行猜测，这其实是一个相当不错的准确率。</p>
 <p>让我们利用这个词嵌入来提高 LSTM 模型的性能。</p>
 <h3 id="使用预训练嵌入进行分类">使用预训练嵌入进行分类</h3>
+<p>Using the pretrained embedding for classification</p>
 <p>现在我们已经训练好了一个新的词嵌入，将其应用到我们的 LSTM 模型中就很简单了。首先，我们按照之前的步骤创建模型。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">inputs = keras.Input(shape=(max_length,))</span><br><span class="line">lstm_embedding = layers.Embedding(</span><br><span class="line">    input_dim=max_tokens,</span><br><span class="line">    output_dim=hidden_dim,</span><br><span class="line">    mask_zero=<span class="literal">True</span>,</span><br><span class="line">)</span><br><span class="line">x = lstm_embedding(inputs)</span><br><span class="line">x = layers.Bidirectional(layers.LSTM(hidden_dim))(x)</span><br><span class="line">x = layers.Dropout(<span class="number">0.5</span>)(x)</span><br><span class="line">outputs = layers.Dense(<span class="number">1</span>, activation=<span class="string">&quot;sigmoid&quot;</span>)(x)</span><br><span class="line">model = keras.Model(inputs, outputs, name=<span class="string">&quot;lstm_with_cbow&quot;</span>)</span><br></pre></td></tr></table></figure>
 <p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter14_text-classification/#listing-14-31">清单 14.31</a>：构建另一个带有<code>Embedding</code>层 的 LSTM 序列模型</p>
@@ -609,8 +642,8 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; test_loss, test_acc = model.evaluate(sequence_test_ds)</span><br><span class="line">&gt;&gt;&gt; test_acc</span><br><span class="line">0.89139</span><br></pre></td></tr></table></figure>
 <p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter14_text-classification/#listing-14-34">清单 14.34</a>：使用预训练嵌入评估 LSTM 模型</p>
 <p>利用预训练的嵌入权重，我们将 LSTM 的性能提升到了与基于集合的模型大致相同的水平。我们比一元语法模型略好，但比二元语法模型略差。</p>
-<p>投入了这么多精力之后，这似乎有点令人失望。难道利用顺序信息对整个序列进行训练真的是个糟糕的想法吗？问题在于，我们最终的 LSTM 模型*仍然受到数据限制。该模型表达能力强，功能强大，如果电影评论足够多，我们就能轻松超越基于集合的方法，但我们需要在**有序数据*上进行更多训练，才能达到模型的性能极限。</p>
-<p>只要有足够的计算资源，这个问题很容易解决。下一章我们将介绍Transformer模型。该模型在学习较长词序之间的依赖关系方面略胜一筹，但最关键的是，这些模型通常使用大量的英文文本进行训练，包括所有词序信息。这使得模型能够粗略地学习支配语言的语法模式的统计形式。正是这些围绕词序的统计模式，导致我们当前的LSTM模型由于数据限制而无法有效学习。</p>
+<p>投入了这么多精力之后，这似乎有点令人失望。难道利用顺序信息对整个序列进行训练真的是个糟糕的想法吗？问题在于，我们最终的 LSTM 模型仍然受到数据限制。该模型表达能力强，功能强大，如果电影评论足够多，我们就能轻松超越基于集合的方法，但我们需要在<em>有序数据</em>上进行更多训练，才能达到模型的性能极限。</p>
+<p>只要有足够的计算资源，这个问题很容易解决。<strong>下一章我们将介绍Transformer模型。该模型在学习较长词序之间的依赖关系方面略胜一筹，但最关键的是，这些模型通常使用大量的英文文本进行训练，包括所有词序信息。这使得模型能够粗略地学习支配语言的语法模式的统计形式。正是这些围绕词序的统计模式，导致我们当前的LSTM模型由于数据限制而无法有效学习。</strong></p>
 <p>然而，当我们转向规模更大、更高级的模型，以突破文本分类性能的极限时，值得指出的是，像我们提出的二元语法模型这样简单的基于集合的回归方法，能带来极高的性价比。基于集合的模型速度极快，参数数量也只需几千个，这与如今新闻中充斥的数十亿参数的大型语言模型相比，简直天壤之别。</p>
 <p>如果你的工作环境计算能力有限，并且可以牺牲一些准确性，那么基于集合的模型通常是最具成本效益的方法。</p>
 <h2 id="概括">概括</h2>
@@ -628,8 +661,8 @@
 </ul>
 <p><strong>脚注</strong></p>
 <ol type="1">
-<li>Phillip Gage，“一种新的数据压缩算法”，<em>《C 用户期刊档案</em>》（1994 年），https://dl.acm.org/doi/10.5555/177910.177914。 [<a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter14_text-classification/#footnote-link-1">↩︎]</a></li>
-<li>Mikolov 等人，“向量空间中词表示的有效估计”，国际学习表征会议 (2013)，https://arxiv.org/abs/1301.3781。 [<a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter14_text-classification/#footnote-link-2">↩︎]</a></li>
+<li>Phillip Gage，“一种新的数据压缩算法”，<em>《C 用户期刊档案</em>》（1994 年），https://dl.acm.org/doi/10.5555/177910.177914。</li>
+<li>Mikolov 等人，“向量空间中词表示的有效估计”，国际学习表征会议 (2013)，https://arxiv.org/abs/1301.3781。</li>
 </ol>
 
     </div>
