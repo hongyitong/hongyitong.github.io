@@ -33,7 +33,7 @@
 <meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/embedding-dictionary.80faa429.png">
 <meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/cbow.01aaf529.png">
 <meta property="article:published_time" content="2026-03-03T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-03-23T04:00:28.085Z">
+<meta property="article:modified_time" content="2026-03-24T02:05:05.894Z">
 <meta property="article:author" content="Rayman.hung">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/text-pipeline.c09bbad6.png">
@@ -646,6 +646,68 @@
 <p>只要有足够的计算资源，这个问题很容易解决。<strong>下一章我们将介绍Transformer模型。该模型在学习较长词序之间的依赖关系方面略胜一筹，但最关键的是，这些模型通常使用大量的英文文本进行训练，包括所有词序信息。这使得模型能够粗略地学习支配语言的语法模式的统计形式。正是这些围绕词序的统计模式，导致我们当前的LSTM模型由于数据限制而无法有效学习。</strong></p>
 <p>然而，当我们转向规模更大、更高级的模型，以突破文本分类性能的极限时，值得指出的是，像我们提出的二元语法模型这样简单的基于集合的回归方法，能带来极高的性价比。基于集合的模型速度极快，参数数量也只需几千个，这与如今新闻中充斥的数十亿参数的大型语言模型相比，简直天壤之别。</p>
 <p>如果你的工作环境计算能力有限，并且可以牺牲一些准确性，那么基于集合的模型通常是最具成本效益的方法。</p>
+<blockquote>
+<p>个人注：这是一个非常专业的问题。简单直接的结论是：<strong>在现代 NLP（大语言模型时代）中，几乎 100% 使用的是“子词分词（Subword Tokenization）”。</strong></p>
+<p>传统的“词级分词（Word-level Tokenization）”在 2018 年以后（即 BERT 出现后）已经基本退出了主流舞台。</p>
+<ol type="1">
+<li>为什么“词级分词”被淘汰了？</li>
+</ol>
+<p>在 Word2Vec 或 GloVe 时代，我们确实使用词级分词。但它有两大致命缺陷：</p>
+<ul>
+<li><strong>OOV (Out-Of-Vocabulary) 问题</strong>：如果词表里只有 "apple" 和 "boy"，当遇到 "apples" 或 "boyfriend" 时，模型就会把它标记为 <code>[UNK]</code>（未知词），导致信息丢失。</li>
+<li><strong>词表爆炸</strong>：为了覆盖所有单词及其变体（各种时态、单复数），词表需要达到几十万甚至上百万量级，这会消耗巨大的显存和计算资源。</li>
+</ul>
+<ol start="2" type="1">
+<li>子词分词（Subword）的统治地位</li>
+</ol>
+<p>子词分词结合了“词级”和“字符级”的优点。它将高频词完整保留，将低频词拆分成有意义的片段。</p>
+<ul>
+<li><strong>例子</strong>：单词 <code>unhappiness</code></li>
+<li><strong>词级</strong>：<code>[unhappiness]</code> (如果不在词表就是 <code>[UNK]</code>)</li>
+<li><strong>子词 (BPE/WordPiece)</strong>：<code>[un, happi, ness]</code></li>
+<li><strong>优势</strong>：
+<ol type="1">
+<li><strong>零 OOV</strong>：即使是新造的词，也可以通过基础子词拼凑出来。</li>
+<li><strong>语义共享</strong>：模型能学到 <code>un-</code> 代表否定，<code>ness</code> 代表名词后缀。</li>
+<li><strong>效率高</strong>：词表通常控制在 3w 到 10w 之间，兼顾了计算效率和表达能力。</li>
+</ol></li>
+</ul>
+<ol start="3" type="1">
+<li>主流模型的选择</li>
+</ol>
+<table>
+<thead>
+<tr class="header">
+<th><strong>模型类型</strong></th>
+<th><strong>代表模型</strong></th>
+<th><strong>使用的分词方法</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>早期模型</strong></td>
+<td>Word2Vec, GloVe</td>
+<td><strong>词级 (Word-level)</strong></td>
+</tr>
+<tr class="even">
+<td><strong>Encoder 家族</strong></td>
+<td>BERT, RoBERTa</td>
+<td><strong>WordPiece / BPE</strong> (子词)</td>
+</tr>
+<tr class="odd">
+<td><strong>Decoder 家族</strong></td>
+<td>GPT-3, GPT-4, Llama</td>
+<td><strong>Byte-level BPE</strong> (子词)</td>
+</tr>
+<tr class="even">
+<td><strong>中英文混合</strong></td>
+<td>ChatGLM, Baichuan</td>
+<td><strong>SentencePiece</strong> (子词)</td>
+</tr>
+</tbody>
+</table>
+<p>强调一下：<strong>Word Embedding</strong> 是将 Token 映射为向量，而 <strong>Tokenization</strong> 是将文本切分为 Token。两者是前后的流水线关系。</p>
+</blockquote>
 <h2 id="概括">概括</h2>
 <ul>
 <li>所有文本建模问题都涉及一个预处理步骤，即文本被分解并转换为整数数据，称为<em>分词</em>。</li>
