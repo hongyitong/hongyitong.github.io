@@ -19,18 +19,18 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false,"path":"/search.xml"}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="第十八章 现实世界的最佳实践 运行代码 在 Colab 上运行 在 GitHub 上查看 本章内容  超参数调优 模型集成 在多个 GPU 或 TPU 上训练 Keras 模型 混合精度训练 量子化  从本书开头到现在，你已经取得了长足的进步。你现在可以训练图像分类模型、图像分割模型、矢量数据分类或回归模型、时间序列预测模型、文本分类模型、序列到序列模型，甚至文本和图像生成模型。你已经掌握了所有基">
+    <meta name="description" content="第十八章 现实世界的最佳实践 Best practices for the real world 运行代码 在 Colab 上运行 在 GitHub 上查看 本章内容  超参数调优 模型集成 在多个 GPU 或 TPU 上训练 Keras 模型 混合精度训练 量子化 Hyperparameter tuning Model ensembling Training Keras models on mu">
 <meta property="og:type" content="article">
 <meta property="og:title" content="《DEEP LEARNING with Python》第十八章">
 <meta property="og:url" content="http://hongyitong.github.io/2026/03/08/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B18%E3%80%81%E7%8E%B0%E5%AE%9E%E4%B8%96%E7%95%8C%E7%9A%84%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/index.html">
 <meta property="og:site_name" content="墨语浮生">
-<meta property="og:description" content="第十八章 现实世界的最佳实践 运行代码 在 Colab 上运行 在 GitHub 上查看 本章内容  超参数调优 模型集成 在多个 GPU 或 TPU 上训练 Keras 模型 混合精度训练 量子化  从本书开头到现在，你已经取得了长足的进步。你现在可以训练图像分类模型、图像分割模型、矢量数据分类或回归模型、时间序列预测模型、文本分类模型、序列到序列模型，甚至文本和图像生成模型。你已经掌握了所有基">
+<meta property="og:description" content="第十八章 现实世界的最佳实践 Best practices for the real world 运行代码 在 Colab 上运行 在 GitHub 上查看 本章内容  超参数调优 模型集成 在多个 GPU 或 TPU 上训练 Keras 模型 混合精度训练 量子化 Hyperparameter tuning Model ensembling Training Keras models on mu">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/the_loop_of_progress.4bb26a08.png">
 <meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/data_and_model_parallelism.1d1087a1.png">
 <meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/floating_pi.b6d4aaaf.png">
 <meta property="article:published_time" content="2026-03-07T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-03-07T02:46:26.513Z">
+<meta property="article:modified_time" content="2026-03-27T03:51:42.488Z">
 <meta property="article:author" content="Rayman.hung">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/the_loop_of_progress.4bb26a08.png">
@@ -167,7 +167,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%85%E5%88%86%E5%88%A9%E7%94%A8%E6%82%A8%E7%9A%84%E6%A8%A1%E5%9E%8B"><span class="nav-text">充分利用您的模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B6%85%E5%8F%82%E6%95%B0%E4%BC%98%E5%8C%96"><span class="nav-text">超参数优化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-kerastuner"><span class="nav-text">使用 KerasTuner</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9E%84%E5%BB%BA%E5%90%88%E9%80%82%E7%9A%84%E6%90%9C%E7%B4%A2%E7%A9%BA%E9%97%B4%E7%9A%84%E8%89%BA%E6%9C%AF"><span class="nav-text">构建合适的搜索空间的艺术</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E9%9B%86%E6%88%90"><span class="nav-text">模型集成</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%A4%9A%E5%8F%B0%E8%AE%BE%E5%A4%87%E6%89%A9%E5%B1%95%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83"><span class="nav-text">使用多台设备扩展模型训练</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9Agpu%E8%AE%AD%E7%BB%83"><span class="nav-text">多GPU训练</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%B9%B6%E8%A1%8C%E5%9C%A8%E6%AF%8F%E4%B8%AA-gpu-%E4%B8%8A%E5%A4%8D%E5%88%B6%E6%A8%A1%E5%9E%8B"><span class="nav-text">数据并行：在每个 GPU 上复制模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E5%B9%B6%E8%A1%8C%E5%8C%96%E5%B0%86%E6%A8%A1%E5%9E%8B%E5%88%86%E5%B8%83%E5%9C%A8%E5%A4%9A%E4%B8%AAgpu%E4%B8%8A"><span class="nav-text">模型并行化：将模型分布在多个GPU上</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E5%AE%9E%E8%B7%B5%E5%9F%B9%E8%AE%AD"><span class="nav-text">分布式实践培训</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E4%B8%A4%E5%9D%97%E6%88%96%E6%9B%B4%E5%A4%9Agpu"><span class="nav-text">获取两块或更多GPU</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-jax-%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E5%B9%B6%E8%A1%8C"><span class="nav-text">使用 JAX 进行数据并行</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-jax-%E7%9A%84%E6%A8%A1%E5%9E%8B%E5%B9%B6%E8%A1%8C%E6%80%A7"><span class="nav-text">使用 JAX 的模型并行性</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#devicemesh-api"><span class="nav-text">DeviceMesh API</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%B8%83%E5%B1%80%E5%9C%B0%E5%9B%BE-api"><span class="nav-text">布局地图 API</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tpu%E5%9F%B9%E8%AE%AD"><span class="nav-text">TPU培训</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%87%87%E7%94%A8%E9%98%B6%E6%A2%AF%E5%BC%8F%E7%86%94%E8%9E%8D%E5%B7%A5%E8%89%BA%E6%8F%90%E9%AB%98tpu%E5%88%A9%E7%94%A8%E7%8E%87"><span class="nav-text">采用阶梯式熔融工艺提高TPU利用率</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%A9%E7%94%A8%E4%BD%8E%E7%B2%BE%E5%BA%A6%E8%AE%A1%E7%AE%97%E5%8A%A0%E9%80%9F%E8%AE%AD%E7%BB%83%E5%92%8C%E6%8E%A8%E7%90%86"><span class="nav-text">利用低精度计算加速训练和推理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%86%E8%A7%A3%E6%B5%AE%E7%82%B9%E7%B2%BE%E5%BA%A6"><span class="nav-text">了解浮点精度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#float16-%E6%8E%A8%E6%96%AD"><span class="nav-text">Float16 推断</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%B7%E5%90%88%E7%B2%BE%E5%BA%A6%E8%AE%AD%E7%BB%83"><span class="nav-text">混合精度训练</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%B7%B7%E5%90%88%E7%B2%BE%E5%BA%A6%E6%8D%9F%E5%A4%B1%E7%BC%A9%E6%94%BE"><span class="nav-text">使用混合精度损失缩放</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B6%85%E8%B6%8A%E6%B7%B7%E5%90%88%E7%B2%BE%E5%BA%A6float8-%E8%AE%AD%E7%BB%83"><span class="nav-text">超越混合精度：float8 训练</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%8F%E5%8C%96%E5%8A%A0%E9%80%9F%E6%8E%A8%E7%90%86"><span class="nav-text">量化加速推理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E6%8B%AC"><span class="nav-text">概括</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%85%E5%88%86%E5%88%A9%E7%94%A8%E6%82%A8%E7%9A%84%E6%A8%A1%E5%9E%8B"><span class="nav-text">充分利用您的模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B6%85%E5%8F%82%E6%95%B0%E4%BC%98%E5%8C%96"><span class="nav-text">超参数优化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-kerastuner"><span class="nav-text">使用 KerasTuner</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9E%84%E5%BB%BA%E5%90%88%E9%80%82%E7%9A%84%E6%90%9C%E7%B4%A2%E7%A9%BA%E9%97%B4%E7%9A%84%E8%89%BA%E6%9C%AF"><span class="nav-text">构建合适的搜索空间的艺术</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E9%9B%86%E6%88%90"><span class="nav-text">模型集成</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%A4%9A%E5%8F%B0%E8%AE%BE%E5%A4%87%E6%89%A9%E5%B1%95%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83"><span class="nav-text">使用多台设备扩展模型训练</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9Agpu%E8%AE%AD%E7%BB%83"><span class="nav-text">多GPU训练</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%B9%B6%E8%A1%8C%E5%9C%A8%E6%AF%8F%E4%B8%AA-gpu-%E4%B8%8A%E5%A4%8D%E5%88%B6%E6%A8%A1%E5%9E%8B"><span class="nav-text">数据并行：在每个 GPU 上复制模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E5%B9%B6%E8%A1%8C%E5%8C%96%E5%B0%86%E6%A8%A1%E5%9E%8B%E5%88%86%E5%B8%83%E5%9C%A8%E5%A4%9A%E4%B8%AAgpu%E4%B8%8A"><span class="nav-text">模型并行化：将模型分布在多个GPU上</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E5%AE%9E%E8%B7%B5%E5%9F%B9%E8%AE%AD"><span class="nav-text">分布式实践培训</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E4%B8%A4%E5%9D%97%E6%88%96%E6%9B%B4%E5%A4%9Agpu"><span class="nav-text">获取两块或更多GPU</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-jax-%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E5%B9%B6%E8%A1%8C"><span class="nav-text">使用 JAX 进行数据并行</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-jax-%E7%9A%84%E6%A8%A1%E5%9E%8B%E5%B9%B6%E8%A1%8C%E6%80%A7"><span class="nav-text">使用 JAX 的模型并行性</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#devicemesh-api"><span class="nav-text">DeviceMesh API</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%B8%83%E5%B1%80%E5%9C%B0%E5%9B%BE-api"><span class="nav-text">布局地图 API</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tpu%E8%AE%AD%E7%BB%83"><span class="nav-text">TPU训练</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%87%87%E7%94%A8%E6%AD%A5%E8%BF%9B%E8%9E%8D%E5%90%88%E6%8F%90%E9%AB%98tpu%E5%88%A9%E7%94%A8%E7%8E%87"><span class="nav-text">采用步进融合提高TPU利用率</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%A9%E7%94%A8%E4%BD%8E%E7%B2%BE%E5%BA%A6%E8%AE%A1%E7%AE%97%E5%8A%A0%E9%80%9F%E8%AE%AD%E7%BB%83%E5%92%8C%E6%8E%A8%E7%90%86"><span class="nav-text">利用低精度计算加速训练和推理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%86%E8%A7%A3%E6%B5%AE%E7%82%B9%E7%B2%BE%E5%BA%A6"><span class="nav-text">了解浮点精度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#float16-%E6%8E%A8%E6%96%AD"><span class="nav-text">Float16 推断</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%B7%E5%90%88%E7%B2%BE%E5%BA%A6%E8%AE%AD%E7%BB%83"><span class="nav-text">混合精度训练</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%B7%B7%E5%90%88%E7%B2%BE%E5%BA%A6%E6%8D%9F%E5%A4%B1%E7%BC%A9%E6%94%BE"><span class="nav-text">使用混合精度损失缩放</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B6%85%E8%B6%8A%E6%B7%B7%E5%90%88%E7%B2%BE%E5%BA%A6float8-%E8%AE%AD%E7%BB%83"><span class="nav-text">超越混合精度：float8 训练</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%8F%E5%8C%96%E5%8A%A0%E9%80%9F%E6%8E%A8%E7%90%86"><span class="nav-text">量化加速推理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E6%8B%AC"><span class="nav-text">概括</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -269,6 +269,7 @@
     
     
     <div class="post-body" itemprop="articleBody"><p><strong>第十八章 现实世界的最佳实践</strong></p>
+<p>Best practices for the real world</p>
 <p><strong>运行代码</strong></p>
 <p><a target="_blank" rel="noopener" href="https://colab.research.google.com/github/fchollet/deep-learning-with-python-notebooks/blob/master/chapter18_best-practices-for-the-real-world.ipynb">在 Colab 上运行</a></p>
 <p><a target="_blank" rel="noopener" href="https://github.com/fchollet/deep-learning-with-python-notebooks">在 GitHub 上查看</a></p>
@@ -279,17 +280,26 @@
 <li>在多个 GPU 或 TPU 上训练 Keras 模型</li>
 <li>混合精度训练</li>
 <li>量子化</li>
+<li>Hyperparameter tuning</li>
+<li>Model ensembling</li>
+<li>Training Keras models on multiple GPUs or on TPU</li>
+<li>Mixed-precision training</li>
+<li>Quantization</li>
 </ul>
 <p>从本书开头到现在，你已经取得了长足的进步。你现在可以训练图像分类模型、图像分割模型、矢量数据分类或回归模型、时间序列预测模型、文本分类模型、序列到序列模型，甚至文本和图像生成模型。你已经掌握了所有基础知识。</p>
 <p>然而，你目前的模型都是在小规模下训练的——使用小型数据集和单个GPU——而且在我们考察过的每个数据集上，它们通常都没有达到最佳性能。毕竟，这本书只是一本入门读物。如果你想在现实世界中，在全新的问题上取得最先进的成果，你仍然需要跨越一道鸿沟。</p>
 <p>本章旨在弥合机器学习学生与工程师之间的差距，并为你提供从机器学习学生成长为一名成熟的机器学习工程师所需的最佳实践。我们将回顾系统性提升模型性能的关键技术：超参数调优和模型集成。然后，我们将探讨如何利用多GPU和TPU训练、混合精度和量化等方法加速和扩展模型训练。</p>
 <span id="more"></span>
 <h2 id="充分利用您的模型">充分利用您的模型</h2>
+<p>Getting the most out of your models</p>
 <p>如果你只需要一个勉强能用的模型，盲目尝试不同的架构配置也无妨。但在本节中，我们将超越“勉强能用”的范畴，通过一份简明指南，介绍构建最先进深度学习模型所需的一系列必备技巧，助你打造“卓越性能，赢得机器学习竞赛”的模型。</p>
 <h3 id="超参数优化">超参数优化</h3>
+<p>Hyperparameter optimization</p>
 <p>构建深度学习模型时，你需要做出许多看似任意的决定：应该堆叠多少层？每层应该有多少个单元或滤波器？应该使用哪个函数<code>relu</code>作为激活函数？是否应该<code>BatchNormalization</code>在特定层之后使用？应该使用多少 dropout？等等。这些架构层面的参数被称为<em>超参数，</em>以区别于 通过反向传播训练的模型<em>参数</em>。</p>
-<p>在实践中，经验丰富的机器学习工程师和研究人员会随着时间的推移，逐渐建立起对这些选择的有效与无效的直觉——他们发展出超参数调优的技能。但这并没有什么正式的规则。如果你想在给定任务上达到性能极限，就不能满足于这种随意的选择。即使你拥有非常敏锐的直觉，你的初始决策几乎总是次优的。你可以通过手动调整并反复重新训练模型来优化你的选择——这正是机器学习工程师和研究人员花费大部分时间的工作。但作为人类，你不应该整天摆弄超参数——这最好交给机器来完成。</p>
+<p>These architecture-level parameters are called hyperparameters to distinguish them from the parameters of a model, which are trained via backpropagation.</p>
+<p>在实践中，经验丰富的机器学习工程师和研究人员会随着时间的推移，逐渐建立起对这些选择的有效与无效的直觉——他们发展出超参数调优的技能 ( hyperparameter-tuning skills )。但这并没有什么正式的规则。如果你想在给定任务上达到性能极限，就不能满足于这种随意的选择。即使你拥有非常敏锐的直觉，你的初始决策几乎总是次优的。你可以通过手动调整并反复重新训练模型来优化你的选择——这正是机器学习工程师和研究人员花费大部分时间的工作。但作为人类，你不应该整天摆弄超参数——这最好交给机器来完成。</p>
 <p>因此，你需要以系统且有原则的方式，自动地探索所有可能的决策空间。你需要搜索架构空间，并通过经验找到性能最佳的架构。这就是自动超参数优化领域的核心所在：它是一个完整的、重要的研究领域。</p>
+<p>Thus, you need to explore <strong>the space of possible decision</strong>s automatically and systematically in a principled way. You need to search the <strong>architecture space</strong> and find the best-performing ones empirically. That’s what the field of automatic hyperparameter optimization is about: it’s an entire field of research, and an important one.</p>
 <p>超参数优化过程通常如下所示：</p>
 <ol type="1">
 <li>自动选择一组超参数。</li>
@@ -299,18 +309,33 @@
 <li>重复。</li>
 <li>最后，根据测试数据衡量性能。</li>
 </ol>
+<hr />
+<ol type="1">
+<li>Choose a set of hyperparameters (automatically).</li>
+<li>Build the corresponding model.</li>
+<li>Fit it to your training data, and measure performance on the validation data.</li>
+<li>Choose the next set of hyperparameters to try (automatically).</li>
+<li>Repeat.</li>
+<li>Eventually, measure performance on your test data.</li>
+</ol>
 <p>该过程的关键在于分析验证性能与各种超参数值之间关系的算法，从而选择下一组需要评估的超参数。有很多不同的技术可供选择：贝叶斯优化、遗传算法、简单随机搜索等等。</p>
+<p>Many different techniques are possible: Bayesian optimization, genetic algorithms, simple random search, and so on.</p>
 <p>训练模型权重相对容易：只需在小批量数据上计算损失函数，然后使用反向传播算法将权重调整到正确的方向即可。而更新超参数则面临着独特的挑战。请考虑以下几点：</p>
 <ul>
-<li>超参数空间通常由离散决策构成，因此它既不连续也不可微。所以，你通常无法在超参数空间中使用梯度下降法。相反，你必须依赖无梯度优化技术，而这些技术的效率自然远低于梯度下降法。</li>
+<li>超参数空间通常由<strong>离散决策</strong>构成，因此它既不连续也不可微。所以，你通常<strong>无法在超参数空间中使用梯度下降法</strong>。相反，你必须依赖无梯度优化技术，而这些技术的效率自然远低于梯度下降法。</li>
 <li>计算此优化过程的反馈信号（这组超参数是否能使模型在此任务上表现优异？）可能非常昂贵：它需要从头开始在您的数据集上创建和训练一个新模型。</li>
 <li>反馈信号可能存在噪声：如果一次训练运行的性能提高了 0.2%，是因为模型配置更好，还是因为初始权重值比较理想？</li>
+<li>The hyperparameter space is typically made of discrete decisions and thus isn’t continuous or differentiable. Hence, you typically can’t do gradient descent in hyperparameter space. Instead, you must rely on gradient-free optimization techniques, which, naturally, are far less efficient than gradient descent.</li>
+<li>Computing the feedback signal of this optimization process (does this set of hyperparameters lead to a high-performing model on this task?) can be extremely expensive: it requires creating and training a new model from scratch on your dataset.</li>
+<li>The feedback signal may be noisy: if a training run performs 0.2% better, is that because of a better model configuration or because you got lucky with the initial weight values?</li>
 </ul>
 <p>幸好，有一个工具可以简化超参数调优：KerasTuner。让我们一起来看看。</p>
 <h4 id="使用-kerastuner">使用 KerasTuner</h4>
+<p>Using KerasTuner</p>
 <p>我们先来安装 KerasTuner：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">!pip install keras-tuner -q</span><br></pre></td></tr></table></figure>
-<p>KerasTuner 的核心思想是允许您将硬编码的超参数值（例如<code>units=32</code>）替换为一系列可能的选择值（例如<code>Int(name="units", min_value=16, max_value=64, step=16)</code>）。给定模型中此类选择的集合称为 超参数调优过程的<em>搜索空间。</em></p>
+<p>KerasTuner 的核心思想是允许您将硬编码的超参数值（例如<code>units=32</code>）替换为一系列可能的选择值（例如<code>Int(name="units", min_value=16, max_value=64, step=16)</code>）。给定模型中此类选择的集合称为 超参数调优过程的<em><strong>搜索空间</strong>。</em></p>
+<p>The set of such choices in a given model is called the <strong>search space of the hyperparameter</strong> tuning process.</p>
 <p>要指定搜索空间，请定义一个模型构建函数（参见下一个例子）。该函数接受一个<code>hp</code>参数，您可以从中采样超参数范围，并返回一个已编译的 Keras 模型。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> keras</span><br><span class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> layers</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">build_model</span>(<span class="params">hp</span>):</span><br><span class="line">    <span class="comment"># Sample hyperparameter values from the hp object. After sampling,</span></span><br><span class="line">    <span class="comment"># these values (such as the &quot;units&quot; variable here) are just regular</span></span><br><span class="line">    <span class="comment"># Python constants.</span></span><br><span class="line">    units = hp.Int(name=<span class="string">&quot;units&quot;</span>, min_value=<span class="number">16</span>, max_value=<span class="number">64</span>, step=<span class="number">16</span>)</span><br><span class="line">    model = keras.Sequential(</span><br><span class="line">        [</span><br><span class="line">            layers.Dense(units, activation=<span class="string">&quot;relu&quot;</span>),</span><br><span class="line">            layers.Dense(<span class="number">10</span>, activation=<span class="string">&quot;softmax&quot;</span>),</span><br><span class="line">        ]</span><br><span class="line">    )</span><br><span class="line">    <span class="comment"># Different kinds of hyperparameters are available: Int, Float,</span></span><br><span class="line">    <span class="comment"># Boolean, Choice.</span></span><br><span class="line">    optimizer = hp.Choice(name=<span class="string">&quot;optimizer&quot;</span>, values=[<span class="string">&quot;rmsprop&quot;</span>, <span class="string">&quot;adam&quot;</span>])</span><br><span class="line">    model.<span class="built_in">compile</span>(</span><br><span class="line">        optimizer=optimizer,</span><br><span class="line">        loss=<span class="string">&quot;sparse_categorical_crossentropy&quot;</span>,</span><br><span class="line">        metrics=[<span class="string">&quot;accuracy&quot;</span>],</span><br><span class="line">    )</span><br><span class="line">    <span class="comment"># The function returns a compiled model.</span></span><br><span class="line">    <span class="keyword">return</span> model</span><br></pre></td></tr></table></figure>
 <p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter18_best-practices-for-the-real-world/#listing-18-1">清单 18.1</a>：KerasTuner 模型构建函数</p>
@@ -318,16 +343,21 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> keras_tuner <span class="keyword">as</span> kt</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">SimpleMLP</span>(kt.HyperModel):</span><br><span class="line">    <span class="comment"># Thanks to the object-oriented approach, we can configure model</span></span><br><span class="line">    <span class="comment"># constants as constructor arguments (instead of hardcoding them in</span></span><br><span class="line">    <span class="comment"># the model-building function).</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, num_classes</span>):</span><br><span class="line">        self.num_classes = num_classes</span><br><span class="line"></span><br><span class="line">    <span class="comment"># The build method is identical to our prior build_model standalone</span></span><br><span class="line">    <span class="comment"># function.</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">build</span>(<span class="params">self, hp</span>):</span><br><span class="line">        units = hp.Int(name=<span class="string">&quot;units&quot;</span>, min_value=<span class="number">16</span>, max_value=<span class="number">64</span>, step=<span class="number">16</span>)</span><br><span class="line">        model = keras.Sequential(</span><br><span class="line">            [</span><br><span class="line">                layers.Dense(units, activation=<span class="string">&quot;relu&quot;</span>),</span><br><span class="line">                layers.Dense(self.num_classes, activation=<span class="string">&quot;softmax&quot;</span>),</span><br><span class="line">            ]</span><br><span class="line">        )</span><br><span class="line">        optimizer = hp.Choice(name=<span class="string">&quot;optimizer&quot;</span>, values=[<span class="string">&quot;rmsprop&quot;</span>, <span class="string">&quot;adam&quot;</span>])</span><br><span class="line">        model.<span class="built_in">compile</span>(</span><br><span class="line">            optimizer=optimizer,</span><br><span class="line">            loss=<span class="string">&quot;sparse_categorical_crossentropy&quot;</span>,</span><br><span class="line">            metrics=[<span class="string">&quot;accuracy&quot;</span>],</span><br><span class="line">        )</span><br><span class="line">        <span class="keyword">return</span> model</span><br><span class="line"></span><br><span class="line">hypermodel = SimpleMLP(num_classes=<span class="number">10</span>)</span><br></pre></td></tr></table></figure>
 <p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter18_best-practices-for-the-real-world/#listing-18-2">列表 18.2</a>：KerasTuner<code>HyperModel</code></p>
 <p>下一步是定义“调谐器”。从示意图上看，你可以把调谐器想象成一个<code>for</code>循环，它会重复执行相同的操作。</p>
+<p>The next step is to define a “tuner.” Schematically, you can think of a tuner as a <code>for</code> loop, which will repeatedly</p>
 <ul>
-<li>选择一组超参数值</li>
-<li>使用这些值调用模型构建函数来创建模型</li>
-<li>训练模型并记录其指标</li>
+<li><p>Pick a set of hyperparameter values</p></li>
+<li><p>Call the model-building function with these values to create a model</p></li>
+<li><p>Train the model and record its metrics</p></li>
+<li><p>选择一组超参数值</p></li>
+<li><p>使用这些值调用模型构建函数来创建模型</p></li>
+<li><p>训练模型并记录其指标</p></li>
 </ul>
 <p>KerasTuner 内置了几个调优器——<code>tuner_tuner</code> <code>RandomSearch</code>、<code>BayesianOptimization``tuner_tuner</code> 和 <code>tuner_tuner</code> <code>Hyperband</code>。我们来试试<code>BayesianOptimization``tuner_tuner</code>，它能根据之前的选择结果，智能预测哪些新的超参数值可能表现最佳：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">tuner = kt.BayesianOptimization(</span><br><span class="line">    <span class="comment"># Specifies the model-building function (or hypermodel instance)</span></span><br><span class="line">    build_model,</span><br><span class="line">    <span class="comment"># Specifies the metric that the tuner will seek to optimize. Always</span></span><br><span class="line">    <span class="comment"># specify validation metrics, since the goal of the search process</span></span><br><span class="line">    <span class="comment"># is to find models that generalize!</span></span><br><span class="line">    objective=<span class="string">&quot;val_accuracy&quot;</span>,</span><br><span class="line">    <span class="comment"># Maximum number of different model configurations (&quot;trials&quot;) to</span></span><br><span class="line">    <span class="comment"># try before ending the search</span></span><br><span class="line">    max_trials=<span class="number">20</span>,</span><br><span class="line">    <span class="comment"># To reduce metrics variance, you can train the same model multiple</span></span><br><span class="line">    <span class="comment"># times and average the results. executions_per_trial is how many</span></span><br><span class="line">    <span class="comment"># training rounds (executions) to run for each model configuration</span></span><br><span class="line">    <span class="comment"># (trial).</span></span><br><span class="line">    executions_per_trial=<span class="number">2</span>,</span><br><span class="line">    <span class="comment"># Where to store search logs</span></span><br><span class="line">    directory=<span class="string">&quot;mnist_kt_test&quot;</span>,</span><br><span class="line">    <span class="comment"># Whether to overwrite data in the directory to start a new search.</span></span><br><span class="line">    <span class="comment"># Set this to True if you&#x27;ve modified the model-building function</span></span><br><span class="line">    <span class="comment"># or to False to resume a previously started search with the same</span></span><br><span class="line">    <span class="comment"># model-building function.</span></span><br><span class="line">    overwrite=<span class="literal">True</span>,</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
 <p>您可以通过以下方式显示搜索范围概览<code>search_space_summary()</code>：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; tuner.search_space_summary()</span><br><span class="line">Search space summary</span><br><span class="line">Default search space size: 2</span><br><span class="line">units (Int)</span><br><span class="line">&#123;&quot;default&quot;: None,</span><br><span class="line"> &quot;conditions&quot;: [],</span><br><span class="line"> &quot;min_value&quot;: 128,</span><br><span class="line"> &quot;max_value&quot;: 1024,</span><br><span class="line"> &quot;step&quot;: 128,</span><br><span class="line"> &quot;sampling&quot;: None&#125;</span><br><span class="line">optimizer (Choice)</span><br><span class="line">&#123;&quot;default&quot;: &quot;rmsprop&quot;,</span><br><span class="line"> &quot;conditions&quot;: [],</span><br><span class="line"> &quot;values&quot;: [&quot;rmsprop&quot;, &quot;adam&quot;],</span><br><span class="line"> &quot;ordered&quot;: False&#125;</span><br></pre></td></tr></table></figure>
 <p><strong>目标最大化和最小化</strong></p>
+<p>Objective maximization and minimization</p>
 <p>对于内置指标（例如本例中的准确率）， KerasTuner 会推断指标的<em>方向</em>（准确率应最大化，损失应最小化）。但是，对于自定义指标，您需要自行指定，如下所示：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">objective = kt.Objective(</span><br><span class="line">    <span class="comment"># The metric&#x27;s name, as found in epoch logs</span></span><br><span class="line">    name=<span class="string">&quot;val_accuracy&quot;</span>,</span><br><span class="line">    <span class="comment"># The metric&#x27;s desired direction: &quot;min&quot; or &quot;max&quot;</span></span><br><span class="line">    direction=<span class="string">&quot;max&quot;</span>,</span><br><span class="line">)</span><br><span class="line">tuner = kt.BayesianOptimization(</span><br><span class="line">    build_model,</span><br><span class="line">    objective=objective,</span><br><span class="line">    ...</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
 <p>最后，我们开始搜索。别忘了传递验证数据，并确保不要使用测试集作为验证数据——否则，你会很快对测试数据产生过拟合，并且你将无法再信任你的测试指标：</p>
@@ -337,7 +367,74 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">top_n = <span class="number">4</span></span><br><span class="line"><span class="comment"># Returns a list of HyperParameters objects, which you can pass to the</span></span><br><span class="line"><span class="comment"># model-building function</span></span><br><span class="line">best_hps = tuner.get_best_hyperparameters(top_n)</span><br></pre></td></tr></table></figure>
 <p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter18_best-practices-for-the-real-world/#listing-18-3">清单 18.3</a>：查询最佳超参数配置</p>
 <p>通常情况下，在重新训练这些模型时，由于不会再对超参数进行任何更改，因此可能需要将验证数据包含在训练数据中，这样就无需再在验证数据上评估模型性能。在我们的示例中，我们将使用原始 MNIST 训练数据集的全部数据来训练最终模型，而不保留验证集。</p>
-<p>不过，在利用完整训练数据集进行训练之前，我们还需要确定最后一个参数：最佳训练轮数。通常，新模型的训练时间会比搜索阶段更长：在回调<code>patience</code>函数中使用过大的轮数<code>EarlyStopping</code>可以节省搜索时间，但可能导致模型欠拟合。只需使用验证集即可找到最佳轮数：</p>
+<blockquote>
+<p>个人注：怎么理解以上这句话？</p>
+<p>这句话描述的是机器学习工作流中一个非常经典、但也常让初学者纠结的<strong>“最后一步”</strong>。</p>
+<p>简单来说，它的核心逻辑是：<strong>一旦你通过“模拟考试”选出了最好的学生（参数），正式上考场前，你应该让他把模拟考题也背下来，以获得最大的知识量。</strong></p>
+<p>我们可以从以下三个维度来拆解这个逻辑：</p>
+<ol type="1">
+<li>验证集（Validation Set）的使命已完成</li>
+</ol>
+<p>在开发模型时，我们把数据切分为“训练集”和“验证集”。</p>
+<ul>
+<li><strong>训练集</strong>：让模型学知识（调权重）。</li>
+<li><strong>验证集</strong>：用来调参数（比如学习率、层数、Top-k 值）。</li>
+<li><strong>现状</strong>：当你决定不再修改任何超参数（Hyperparameter）时，验证集作为“裁判”的使命就结束了。此时，这部分数据如果闲置，就是对<strong>宝贵数据资源</strong>的浪费。</li>
+</ul>
+<ol start="2" type="1">
+<li>“数据量”即“模型上限”</li>
+</ol>
+<p>在深度学习（如 MNIST 手写数字识别或大模型训练）中，<strong>数据越多，模型越稳</strong>。</p>
+<ul>
+<li>验证集通常占 10%~20% 的数据。</li>
+<li>如果你在最终发布模型前，把这 20% 的数据重新喂给模型，模型就能看到更多奇异的数字样本、更多的噪声和更多的边缘情况。</li>
+<li><strong>结果</strong>：最终得到的模型虽然无法再被“验证”（因为没有留出的数据了），但它在面对真实世界（测试集/生产环境）时的泛化能力通常会更强。</li>
+</ul>
+<ol start="3" type="1">
+<li>操作流程的“三部曲”</li>
+</ol>
+<p>这句话实际上是在建议你执行以下流程：</p>
+<ol type="1">
+<li><strong>实验阶段</strong>：用 50,000 张图训练，10,000 张图验证。不停调整，直到在验证集上达到 99% 准确率。</li>
+<li><strong>锁定阶段</strong>：记录下表现最好的超参数（比如：3 层隐藏层，Dropout=0.5）。</li>
+<li><strong>最终生产</strong>：使用这组<strong>锁定的超参数</strong>，用全部 60,000 张图（训练+验证）从头开始训练一个新模型。<strong>这个模型就是你最终交付给用户的产品。</strong></li>
+</ol>
+</blockquote>
+<p>不过，在利用完整训练数据集进行训练之前，我们还需要确定最后一个参数：最佳训练轮数。</p>
+<blockquote>
+<p>个人注：怎么理解以上这句话？</p>
+<p>这句话紧接你上一条关于“合并训练集和验证集”的逻辑。它指出了一项关键的工程挑战：<strong>如果你打算用“全部数据”训练最终模型，你该训练多少轮（Epochs）？</strong></p>
+<p>理解这句话的关键在于：<strong>当验证集消失后，你就失去了“喊停”的信号灯。</strong></p>
+<ol type="1">
+<li>为什么这是一个“最后的问题”？</li>
+</ol>
+<p>在开发阶段，我们通常使用 <strong>提前停止（Early Stopping）</strong>：</p>
+<ul>
+<li>我们一边训练，一边盯着验证集的损失函数（Validation Loss）。</li>
+<li>当验证集损失不再下降、反而开始上升时，说明模型开始<strong>过拟合（Overfitting）</strong>了，我们会立刻停止训练。</li>
+<li><strong>此时，我们记录下了那个“最佳训练轮数”（例如：第 25 轮效果最好）。</strong></li>
+</ul>
+<p>但是，当你按照前文的建议，把验证集并入训练集进行“最终训练”时：</p>
+<ul>
+<li>你没有独立的验证集来监控了。</li>
+<li>如果你练得太少，模型没吃透新增的数据；</li>
+<li>如果你练得太多，模型会把所有数据死记硬背下来，导致泛化能力下降。</li>
+</ul>
+<ol start="2" type="1">
+<li>这里的“Settle（确定）”是指什么？</li>
+</ol>
+<p>作者的意思是：在丢掉验证集、开启“全量训练”之前，你必须先通过之前的实验<strong>锁定一个确定的数字</strong>。</p>
+<p><strong>操作逻辑通常是这样的：</strong></p>
+<ol type="1">
+<li><p><strong>实验中</strong>：发现模型在第 <span class="math inline">\(N\)</span> 轮时，验证集表现达到巅峰。</p></li>
+<li><p><strong>锁定</strong>：确定 <span class="math inline">\(N\)</span> 就是这个任务的“黄金训练时长”。</p></li>
+<li><p><strong>最终全量训练</strong>：把训练集和验证集加在一起，<strong>不多不少，正好只练 <span class="math inline">\(N\)</span> 轮</strong>。</p></li>
+<li><p>为什么不能在全量训练时重新寻找 <span class="math inline">\(N\)</span>？</p></li>
+</ol>
+<p>因为在全量数据上，模型看到的样本变多了，它的“训练曲线”会发生偏移。但由于你已经没有验证集做参考了，你无法在全量训练的过程中判断当前是第几轮最合适。</p>
+<p>所以，你必须<strong>“信任”</strong>之前在子集上实验得出的结果，并将其作为最终生产的硬性标准。</p>
+</blockquote>
+<p>通常，新模型的训练时间会比搜索阶段更长：在回调<code>patience</code>函数中使用过大的轮数<code>EarlyStopping</code>可以节省搜索时间，但可能导致模型欠拟合。只需使用验证集即可找到最佳轮数：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">get_best_epoch</span>(<span class="params">hp</span>):</span><br><span class="line">    model = build_model(hp)</span><br><span class="line">    callbacks = [</span><br><span class="line">        keras.callbacks.EarlyStopping(</span><br><span class="line">            <span class="comment"># Note the very high patience value.</span></span><br><span class="line">            monitor=<span class="string">&quot;val_loss&quot;</span>, mode=<span class="string">&quot;min&quot;</span>, patience=<span class="number">10</span></span><br><span class="line">        )</span><br><span class="line">    ]</span><br><span class="line">    history = model.fit(</span><br><span class="line">        x_train,</span><br><span class="line">        y_train,</span><br><span class="line">        validation_data=(x_val, y_val),</span><br><span class="line">        epochs=<span class="number">100</span>,</span><br><span class="line">        batch_size=<span class="number">128</span>,</span><br><span class="line">        callbacks=callbacks,</span><br><span class="line">    )</span><br><span class="line">    val_loss_per_epoch = history.history[<span class="string">&quot;val_loss&quot;</span>]</span><br><span class="line">    best_epoch = val_loss_per_epoch.index(<span class="built_in">min</span>(val_loss_per_epoch)) + <span class="number">1</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;Best epoch: <span class="subst">&#123;best_epoch&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="keyword">return</span> best_epoch</span><br></pre></td></tr></table></figure>
 <p>最后，由于训练数据量更大（在本例中为 20%），因此需要在完整数据集上进行比当前 epoch 数稍长一些的训练：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">get_best_trained_model</span>(<span class="params">hp</span>):</span><br><span class="line">    best_epoch = get_best_epoch(hp)</span><br><span class="line">    model = build_model(hp)</span><br><span class="line">    model.fit(</span><br><span class="line">        x_train_full, y_train_full, batch_size=<span class="number">128</span>, epochs=<span class="built_in">int</span>(best_epoch * <span class="number">1.2</span>)</span><br><span class="line">    )</span><br><span class="line">    <span class="keyword">return</span> model</span><br><span class="line"></span><br><span class="line">best_models = []</span><br><span class="line"><span class="keyword">for</span> hp <span class="keyword">in</span> best_hps:</span><br><span class="line">    model = get_best_trained_model(hp)</span><br><span class="line">    model.evaluate(x_test, y_test)</span><br><span class="line">    best_models.append(model)</span><br></pre></td></tr></table></figure>
@@ -345,11 +442,53 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">best_models = tuner.get_best_models(top_n)</span><br></pre></td></tr></table></figure>
 <p>在进行大规模自动超参数优化时，需要注意的一个重要问题是验证集过拟合。因为超参数的更新是基于使用验证数据计算出的信号，所以实际上是在用验证数据训练模型，因此模型很快就会过拟合验证数据。务必牢记这一点。</p>
 <h4 id="构建合适的搜索空间的艺术">构建合适的搜索空间的艺术</h4>
-<p>总而言之，超参数优化是一项强大的技术，是构建任何任务上最先进模型或在机器学习竞赛中获胜的绝对必要条件。想想看：曾经，人们需要手工精心设计浅层机器学习模型的特征。这远非最优解。如今，深度学习实现了分层特征工程的自动化——特征是通过反馈信号学习的，而不是手动调整，这才是正确的方向。同样，你不应该手工构建模型架构；你应该以一种有原则的方式对其进行优化。</p>
+<p>The art of crafting the right search space</p>
+<p>总而言之，超参数优化是一项强大的技术，是构建任何任务上最先进模型或在机器学习竞赛中获胜的绝对必要条件。想想看：<strong>曾经，人们需要手工精心设计浅层机器学习模型的特征。这远非最优解。如今，深度学习实现了分层特征工程的自动化——特征是通过反馈信号学习的，而不是手动调整，这才是正确的方向。</strong>同样，你不应该手工构建模型架构；你应该以一种有原则的方式对其进行优化。</p>
+<p>Now deep learning automates the task of hierarchical feature engineering—features are learned using a feedback signal, not hand-tuned, and that’s the way it should be.</p>
 <p>然而，进行超参数调优并不能取代熟悉模型架构最佳实践：搜索空间会随着选择数量的增加而呈组合式增长，因此将所有因素都转化为超参数并让调优器自动处理成本过高。你需要巧妙地设计合适的搜索空间。超参数调优是自动化，而非魔法：它用于自动化原本需要手动运行的实验，但你仍然需要精心挑选那些有可能产生良好指标的实验配置。</p>
 <p>好消息是：通过超参数调优，您需要做的配置决策将从微观决策（例如，这一层应该选择多少个单元？）提升到更高层次的架构决策（例如，是否应该在整个模型中使用残差连接？）。微观决策往往针对特定模型和特定数据集，而更高层次的决策则具有更好的泛化能力，能够更好地应用于不同的任务和数据集：例如，几乎所有图像分类问题都可以通过类似的搜索空间模板来解决。</p>
-<p>基于此逻辑，KerasTuner 致力于提供 与各类问题（例如图像分类）相关的<em>预构建搜索空间</em><code>kt.applications.HyperXception</code>。只需添加数据、运行搜索，即可获得相当不错的模型。您还可以尝试超模型，<code>kt.applications.HyperResNet</code>它们实际上是 Keras Applications 模型的可调版本。</p>
+<blockquote>
+<p>个人注：怎么理解以上这个好消息？</p>
+<p>这句话揭示了<strong>超参数调优（Hyperparameter Tuning）</strong>在深度学习工程实践中的“层次进化”。</p>
+<p>你的理解完全正确：<strong>层数和单元数确实是超参数</strong>。但作者想表达的是，当你引入了自动化的调优流程（比如使用 KerasTuner, Ray Tune 或 Optuna）后，你的工作重心会发生<strong>质变</strong>。</p>
+<p>我们可以从以下三个维度来理解这种“决策等级的跃升”：</p>
+<ol type="1">
+<li>从“手动拨号”到“自动驾驶”</li>
+</ol>
+<p>在没有自动化调优工具时，你不得不像调收音机频率一样微调每一个数字：</p>
+<ul>
+<li><p><strong>微观决策（Micro-decisions）</strong>：</p>
+<ul>
+<li><p>“第一层是用 32 个单元还是 64 个？”</p></li>
+<li><p>“学习率是 0.001 还是 0.0005？”</p>
+<p>这些决策非常琐碎，且极其耗费人力。</p></li>
+</ul></li>
+</ul>
+<ol start="2" type="1">
+<li>超参数调优的“外包”</li>
+</ol>
+<p>当你搭建好一个自动调优系统后，你不再需要自己去拍脑袋定这些数字。你只需要给出一个<strong>范围（Search Space）</strong>：</p>
+<ul>
+<li>你告诉系统：“单元数在 32 到 512 之间找，层数在 2 到 10 层之间找。”</li>
+<li>系统会通过算法（如贝叶斯优化）自动帮你选出那个最优的数字。</li>
+</ul>
+<ol start="3" type="1">
+<li>什么是“更高层级的架构决策”？</li>
+</ol>
+<p>当数字问题交给机器后，人类专家的精力就被释放出来去思考更本质的<strong>架构设计（Architecture Decisions）</strong>：</p>
+<ul>
+<li><strong>残差连接（Residual Connections）</strong>：我们要不要加一条“捷径”来解决深层网络的梯度消失问题？</li>
+<li><strong>注意力机制（Attention）</strong>：这个任务是否需要引入自注意力来捕捉长距离依赖？</li>
+<li><strong>正则化策略</strong>：是使用 Dropout 还是 Batch Normalization？</li>
+</ul>
+<p>这些决策无法简单地通过在一个范围内“滑动机标”来解决，它们涉及到对模型<strong>信息流</strong>的根本性改动。</p>
+<p>核心总结</p>
+<p>这句话的意思是：</p>
+<p><strong>“有了自动调优，你不再是一个‘调参工人’（天天纠结该选 128 还是 256），而变成了一个‘架构设计师’（思考模型的骨架该怎么搭）。那些细微的数字交给算法去跑，你来决定模型的大方向。”</strong></p>
+</blockquote>
+<p>基于此逻辑，KerasTuner 致力于提供 与各类问题（例如图像分类）相关的<em>预构建搜索空间</em>（ premade search spaces ）<code>kt.applications.HyperXception</code>。只需添加数据、运行搜索，即可获得相当不错的模型。您还可以尝试超模型，<code>kt.applications.HyperResNet</code>它们实际上是 Keras Applications 模型的可调版本。</p>
 <h3 id="模型集成">模型集成</h3>
+<p>Model ensembling</p>
 <p>另一种在任务上获得最佳结果的强大技术是<em>模型集成</em>。集成是指将一组不同模型的预测结果汇集在一起，从而产生更优的预测结果。如果你观察机器学习竞赛——尤其是 Kaggle 上的竞赛——你会发现，获胜者通常使用非常庞大的模型集成，这些集成模型最终都能胜过任何单个模型，无论单个模型多么优秀。</p>
 <p>集成学习依赖于这样一个假设：独立训练的不同模型之所以表现良好，很可能是因为它们各自基于不同的原因：每个模型都会关注数据的不同方面来进行预测，从而获得部分“真相”，但并非全部。你可能熟悉盲人摸象的寓言：一群盲人第一次遇到大象，试图通过触摸来了解大象。每个人都触摸大象身体的不同部位——例如象鼻或象腿。然后，他们互相描述大象的样子：“像蛇一样”、“像柱子或树一样”，等等。这些盲人本质上就是机器学习模型，它们试图理解训练数据的复杂性，每个模型都从自己的角度出发，基于各自的假设（这些假设由模型的独特架构和独特的随机权重初始化提供）。每个模型都获得了部分数据真相，但并非全部真相。通过汇集它们的视角，你可以获得对数据更准确的描述。大象是由各个部分组成的：没有哪个盲人能够完全了解它，但如果把它们放在一起采访，就能讲述一个相当准确的故事。</p>
 <p>我们以分类为例。将一组分类器的预测结果汇总起来（即<em>集成分类器</em>）的最简单方法是在推理时对它们的预测结果取平均值：</p>
@@ -358,48 +497,136 @@
 <p>更智能的集成分类器方法是进行加权平均，其中权重是在验证数据上学习得到的——通常，性能更好的分类器会被赋予更高的权重，而性能较差的分类器会被赋予更低的权重。为了找到一组好的集成权重，可以使用随机搜索或简单的优化算法，例如 Nelder-Mead 算法：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">preds_a = model_a.predict(x_val)</span><br><span class="line">preds_b = model_b.predict(x_val)</span><br><span class="line">preds_c = model_c.predict(x_val)</span><br><span class="line">preds_d = model_d.predict(x_val)</span><br><span class="line"><span class="comment"># These weights (0.5, 0.25, 0.1, 0.15) are assumed to be learned</span></span><br><span class="line"><span class="comment"># empirically.</span></span><br><span class="line">final_preds = <span class="number">0.5</span> * preds_a + <span class="number">0.25</span> * preds_b + <span class="number">0.1</span> * preds_c + <span class="number">0.15</span> * preds_d</span><br></pre></td></tr></table></figure>
 <p>有很多可能的变体：例如，你可以对预测结果进行指数平均。一般来说，使用基于验证数据优化的权重进行简单的加权平均，可以提供一个非常可靠的基准。</p>
-<p>集成学习成功的关键在于分类器集合的<em>多样性</em>。多样性就是力量。如果所有盲人摸象都只摸到象鼻，他们就会认为大象像蛇，永远无法了解大象的真相。多样性正是集成学习成功的关键。用机器学习的术语来说，如果所有模型都存在相同的偏差，那么集成模型也会保留这种偏差。如果模型存在 <em>不同的偏差</em>，这些偏差就会相互抵消，集成模型就会更加稳健、更加准确。</p>
+<p>集成学习成功的关键在于分类器集合的<em>多样性</em>（diversity）。多样性就是力量。如果所有盲人摸象都只摸到象鼻，他们就会认为大象像蛇，永远无法了解大象的真相。多样性正是集成学习成功的关键。用机器学习的术语来说，如果所有模型都存在相同的偏差，那么集成模型也会保留这种偏差。<strong>如果模型存在 <em>不同的偏差</em>，这些偏差就会相互抵消，集成模型就会更加稳健、更加准确。</strong></p>
+<p>If your models are biased in different ways, the biases will cancel each other out, and the ensemble will be more robust and more accurate.</p>
 <p>因此，你应该集成<em>尽可能优秀</em> 且<em>尽可能不同的</em>模型。这通常意味着使用截然不同的架构，甚至不同品牌的机器学习方法。一种基本不值得尝试的做法是，将同一个网络使用不同的随机初始化独立训练多次后再进行集成。如果模型之间的唯一区别在于它们的随机初始化以及它们接触训练数据的顺序，那么你的集成模型多样性将很低，并且相比任何单个模型，性能提升都非常有限。</p>
 <p>我发现，在实践中效果显著的一种方法——尽管它并非适用于所有问题领域——是将基于树的方法（例如随机森林或梯度提升树）与深度神经网络集成起来。2014 年，我和 Andrei Kolev 在 Kaggle 上的希格斯玻色子衰变检测挑战赛（www.kaggle.com/c/higgs-boson）中，使用各种树模型和深度神经网络的集成模型获得了第四名。值得注意的是，集成模型中的一个模型与其他模型采用的方法不同（它是一个正则化的贪婪森林），并且得分明显低于其他模型。不出所料，它在集成模型中的权重很小。但令我们惊讶的是，它最终大幅提升了整体集成模型的性能，因为它与其他所有模型都截然不同：它提供了其他模型无法获取的信息。这正是集成方法的意义所在。关键不在于你最好的模型有多好，而在于你的候选模型集的多样性。</p>
+<blockquote>
+<p>个人注：随机森林（Random Forest）和梯度提升树（Gradient Boosting Decision Tree, GBDT）的核心思想。</p>
+<p>随机森林（Random Forest）和梯度提升树（Gradient Boosting Decision Tree, GBDT）是机器学习中表现最稳健的两大“集成学习”算法。虽然它们都由<strong>决策树</strong>组成，但它们的底层哲学完全不同。</p>
+<p>我们可以把它们类比为<strong>“民主投票”</strong>与<strong>“学霸纠错”</strong>。</p>
+<ol type="1">
+<li>随机森林 (Random Forest)：民主投票</li>
+</ol>
+<p>随机森林的核心思想是<strong>“并行集成（Bagging）”</strong>。它的目标是通过“群体智慧”来降低单个模型的误差（方差）。</p>
+<ul>
+<li><p><strong>核心逻辑</strong>：</p>
+<ol type="1">
+<li><strong>随机采样（Bootstrap）</strong>：从原始数据中有放回地抽取多份不同的子集。</li>
+<li><strong>特征随机</strong>：在构建每一棵决策树时，只随机选取一部分特征（属性），而不是全部特征。</li>
+<li><strong>独立生长</strong>：让成百上千棵决策树互不干扰地生长。</li>
+<li><strong>多数表决</strong>：对于分类任务，每棵树投一票，得票最多的类别为最终结果。</li>
+</ol></li>
+<li><p><strong>直观理解</strong>：</p>
+<p>想象你由于身体不适去求医。你找了 100 个背景各异的普通医生，每个人只看你的部分检查报告。虽然单个医生可能看走眼，但如果 80 个医生都说你是“感冒”，那么最终结论大概率就是感冒。<strong>这种方法极其耐造，不容易过拟合。</strong></p></li>
+</ul>
+<ol start="2" type="1">
+<li>梯度提升树 (GBDT)：学霸纠错</li>
+</ol>
+<p>梯度提升树的核心思想是<strong>“串行集成（Boosting）”</strong>。它的目标是通过“不断迭代”来减少模型与真实值之间的差距（偏差）。</p>
+<ul>
+<li><p><strong>核心逻辑</strong>：</p>
+<ol type="1">
+<li><strong>起步</strong>：先建立第一棵非常简单的树（通常表现很差）。</li>
+<li><strong>计算残差（Residual）</strong>：计算这棵树的预测值与真实值之间的差距（即“错误在哪里”）。</li>
+<li><strong>针对性改进</strong>：建立第二棵树，这棵树不负责预测原始目标，而是专门负责预测第一棵树留下的<strong>残差</strong>。</li>
+<li><strong>累加迭代</strong>：将新树的结果加到旧模型上，再计算新的残差，循环往复。</li>
+</ol></li>
+<li><p><strong>直观理解</strong>：</p>
+<p>想象一个学生在做数学卷子。</p>
+<ul>
+<li><p>第一遍做完，得了 60 分。</p></li>
+<li><p>第二遍，他专门盯着错题本（残差）练，下次能得 80 分。</p></li>
+<li><p>第三遍，他再盯着剩下那 20 分的难点练。</p>
+<p>经过多次迭代，他的成绩会无限趋近于 100 分。<strong>这种方法精度极高，是各大算法竞赛的常客（如 XGBoost, LightGBM）。</strong></p></li>
+</ul></li>
+</ul>
+<ol start="3" type="1">
+<li>核心差异对比</li>
+</ol>
+<table>
+<thead>
+<tr class="header">
+<th><strong>特性</strong></th>
+<th><strong>随机森林 (Random Forest)</strong></th>
+<th><strong>梯度提升树 (GBDT)</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>构建方式</strong></td>
+<td>并行（树与树之间独立）</td>
+<td>串行（后一棵树依赖前一棵）</td>
+</tr>
+<tr class="even">
+<td><strong>主要目标</strong></td>
+<td>降低<strong>方差</strong>（防止过拟合）</td>
+<td>降低<strong>偏差</strong>（提高准确度）</td>
+</tr>
+<tr class="odd">
+<td><strong>对异常值</strong></td>
+<td>非常鲁棒，不易受噪声影响</td>
+<td>比较敏感，容易学到噪声（过拟合）</td>
+</tr>
+<tr class="even">
+<td><strong>调参难度</strong></td>
+<td>容易（树越多越稳，不会变差）</td>
+<td>较难（需要细心控制步长和树的数量）</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
 <h2 id="使用多台设备扩展模型训练">使用多台设备扩展模型训练</h2>
+<p>Scaling up model training with multiple devices</p>
 <p>回想一下我们在第7章中介绍的“进步循环”概念：你的想法的<em>质量</em>取决于它经历了多少次改进循环（图18.1）。而你迭代想法的速度取决于你设置实验的速度、运行实验的速度，以及最终分析结果数据的能力。</p>
-<p><img src="/img3/DEEP%20LEARNING%20with%20Python/the_loop_of_progress.4bb26a08.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter18_best-practices-for-the-real-world/#figure-18-1">图 18.1</a>：进度循环</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/the_loop_of_progress.4bb26a08.png" alt="img" />图 18.1：进度循环</p>
 <p>随着你对 Keras API 的熟练掌握，编写深度学习实验代码的速度将不再是瓶颈。下一个瓶颈将是模型训练的速度。快速的训练基础设施意味着你可以在 10 到 15 分钟内获得结果，从而每天进行数十次迭代。更快的训练速度能够直接提升 深度学习解决方案的<em>质量。</em></p>
 <p>在本节中，您将学习如何通过使用多个 GPU 或 TPU 来扩展训练运行规模。</p>
 <h3 id="多gpu训练">多GPU训练</h3>
-<p>尽管GPU的性能每年都在提升，但深度学习模型的规模也越来越大，需要越来越多的计算资源。在单个GPU上进行训练会严重限制训练速度。解决方案是什么？只需增加GPU数量，即可开始进行<em>多GPU分布式训练</em>。</p>
-<p>有两种方法可以将计算分布到多个设备上： <em>数据并行</em>和<em>模型并行</em>。</p>
+<p>Multi-GPU training</p>
+<p>尽管GPU的性能每年都在提升，但深度学习模型的规模也越来越大，需要越来越多的计算资源。在单个GPU上进行训练会严重限制训练速度。解决方案是什么？只需增加GPU数量，即可开始进行<em>多GPU分布式训练</em>（ multi-GPU distributed training ）。</p>
+<p>有两种方法可以将计算分布到多个设备上： <em>数据并行</em>和<em>模型并行</em>。（data parallelism and model parallelism.）</p>
 <p>利用数据并行技术，单个模型会被复制到多个设备或多台机器上。每个模型副本处理不同的数据批次，然后将结果合并。</p>
 <p>模型并行是指将单个模型的不同部分运行在不同的设备上，同时处理同一批数据。这种方法最适用于本身就具有并行架构的模型，例如具有多个分支的模型。实际上，模型并行仅用于模型过大而无法在任何单个设备上运行的情况：它并非用于加速常规模型的训练，而是用于训练更大型的模型。</p>
 <p>当然，你也可以将数据并行和模型并行结合起来：一个模型可以拆分到多个设备（例如 4 个设备）上，并且该拆分后的模型可以复制到多个设备组（例如，复制两次，总共使用 2 * 4 = 8 个设备）。</p>
 <p>让我们详细看看它是如何运作的。</p>
 <h4 id="数据并行在每个-gpu-上复制模型">数据并行：在每个 GPU 上复制模型</h4>
-<p>数据并行是分布式训练中最常见的形式。它的工作原理很简单：分而治之。每个GPU都会收到整个模型的副本，称为一个<em>模型副本</em>。传入的数据批次会被分成<em>N</em> 个子批次，每个子批次由一个模型副本并行处理。这就是它被称为<em>数据并行的</em>原因：不同的样本（数据点）被并行处理。例如，使用两块GPU，一个大小为128的批次会被分成两个大小为64的子批次，分别由两个模型副本处理。</p>
+<p>Data parallelism: Replicating your model on each gpu</p>
+<p>数据并行是分布式训练中最常见的形式。它的工作原理很简单：分而治之。每个GPU都会收到整个模型的副本，称为一个<em>模型副本（replica）</em>。传入的数据批次会被分成<em>N</em> 个子批次，每个子批次由一个模型副本并行处理。这就是它被称为<em>数据并行的</em>原因：不同的样本（数据点）被并行处理。例如，使用两块GPU，一个大小为128的批次会被分成两个大小为64的子批次，分别由两个模型副本处理。</p>
 <ul>
 <li><em>在推理过程中</em>——我们会检索每个子批次的预测结果，并将它们连接起来以获得整个批次的预测结果。</li>
 <li><em>在训练过程中</em>，我们会获取每个子批次的梯度，求平均值，并基于梯度平均值更新所有模型副本。此时，模型的状态与使用包含 128 个样本的完整批次进行训练时的状态相同。这被称为<em>同步</em>训练，因为所有副本都保持同步——它们的权重始终相同。虽然存在非同步训练方法，但效率较低，在实践中已不再使用。</li>
+<li><em>In inference</em> — We would retrieve the predictions for each sub-batch and concatenate them to obtain the predictions for the full batch.</li>
+<li><em>In training</em> — We would retrieve the gradients for each sub-batch, average them, and update all model replicas based on the gradient average. The state of the model would then be the same as if you had trained it on the full batch of 128 samples. This is called <em>synchronous</em> training, since all replicas are kept in sync — their weights have the same value at all times. Nonsynchronous alternatives exist, but they are less efficient and aren’t used anymore in practice.</li>
 </ul>
 <p>数据并行是一种简单且高度可扩展的模型训练加速方式。如果设备数量增加，只需增大批次大小，训练吞吐量就会相应提高。但它也有一个限制：模型必须能够放入单个设备中。然而，现在训练拥有数百亿参数的基础模型已十分常见，而这些模型无法放入任何单个 GPU 中。</p>
 <h4 id="模型并行化将模型分布在多个gpu上">模型并行化：将模型分布在多个GPU上</h4>
+<p>Model parallelism: Splitting your model across multiple gpus</p>
 <p>这就是<em>模型并行</em>发挥作用的地方。数据并行是通过将数据批次拆分成子批次并并行处理这些子批次来实现的，而模型并行则是通过将模型拆分成子模型并在不同的设备上并行运行每个子模型来实现的。例如，考虑以下模型。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">model = keras.Sequential(</span><br><span class="line">    [</span><br><span class="line">        keras.layers.Input(shape=(<span class="number">16000</span>,)),</span><br><span class="line">        keras.layers.Dense(<span class="number">64000</span>, activation=<span class="string">&quot;relu&quot;</span>),</span><br><span class="line">        keras.layers.Dense(<span class="number">8000</span>, activation=<span class="string">&quot;sigmoid&quot;</span>),</span><br><span class="line">    ]</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
 <p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter18_best-practices-for-the-real-world/#listing-18-4">清单 18.4</a>：大型密集连接模型</p>
-<p>每个样本有 16,000 个特征，并通过两层模型被分类到 8,000 个可能重叠的类别中<code>Dense</code>。这两层模型规模庞大——第一层约有 10 亿个参数，最后一层约有 5.12 亿个参数。如果您使用两台小型设备，则无法使用数据并行，因为单个设备无法容纳如此庞大的模型。您可以将模型的单个实例 *拆分到多个设备上。这通常称为模型**分片<em>或</em>分区*。将模型拆分到多个设备主要有两种方式：水平分区和垂直分区。</p>
+<p>每个样本有 16,000 个特征，并通过两层模型被分类到 8,000 个可能重叠的类别中<code>Dense</code>。这两层模型规模庞大——第一层约有 10 亿个参数，最后一层约有 5.12 亿个参数。如果您使用两台小型设备，则无法使用数据并行，因为单个设备无法容纳如此庞大的模型。您可以将模型的单个实例 <em>拆分到多个设备上。这通常称为模型分片</em>或<em>分区</em>。将模型拆分到多个设备主要有两种方式：水平分区和垂直分区。</p>
+<p>This is often called <strong>sharding or partitioning a model</strong>. There are two main ways to split a model across devices: horizontal partitioning and vertical partitioning.</p>
 <p>在水平分区中，每个设备处理模型的不同层。例如，在之前的模型中，一个GPU处理第一<code>Dense</code>层，另一个GPU处理第二<code>Dense</code>层。这种方法的主要缺点是会引入通信开销。例如，第一层的输出需要先复制到第二个设备，才能被第二层处理。这可能会成为瓶颈，尤其是在第一层的输出很大的情况下——否则可能会导致GPU闲置。</p>
 <p>在垂直分区中，每一层都会被分配到所有可用设备上。由于层通常以 <code>matmul``or``convolution</code>操作来实现，而这些操作具有高度并行性，因此这种策略在实践中易于实现，并且几乎总是大型模型的最佳选择。例如，在前面的模型中，您可以将第一<code>Dense</code>层的内核和偏置分成两半，这样每个设备就只接收一个形状为 <code>k</code> <code>(16000, 32000)</code>（沿其最后一个轴分割）的内核和一个形状为 <code>k</code> 的偏置 <code>(32000,)</code>。您可以<code>matmul(inputs, kernel) + bias</code>使用每个设备的这半个内核和半个偏置进行计算，并将两个输出通过如下方式连接起来：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">half_kernel_0 = kernel[:, :<span class="number">32000</span>]</span><br><span class="line">half_bias_0 = bias[:<span class="number">32000</span>]</span><br><span class="line"></span><br><span class="line">half_kernel_1 = kernel[:, <span class="number">32000</span>:]</span><br><span class="line">half_bias_1 = bias[<span class="number">32000</span>:]</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> keras.device(<span class="string">&quot;gpu:0&quot;</span>):</span><br><span class="line">    half_output_0 = keras.ops.matmul(inputs, half_kernel_0) + half_bias_0</span><br><span class="line"></span><br><span class="line"><span class="keyword">with</span> keras.device(<span class="string">&quot;gpu:1&quot;</span>):</span><br><span class="line">    half_output_1 = keras.ops.matmul(inputs, half_kernel_1) + half_bias_1</span><br></pre></td></tr></table></figure>
 <p>实际上，您需要将数据并行和模型并行结合起来。例如，您可以将模型拆分到四个设备上运行，然后将拆分后的模型复制到多个两台设备一组的设备组（假设每组两台设备）中，每个设备组并行处理一个数据子批次。这样，您将拥有两个副本，每个副本运行在四个设备上，总共使用八个设备（图 18.2）。</p>
-<p><img src="/img3/DEEP%20LEARNING%20with%20Python/data_and_model_parallelism.1d1087a1.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter18_best-practices-for-the-real-world/#figure-18-2">图 18.2</a>：将模型分布在八个设备上：两个模型副本，每个副本由一组四个设备处理。</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/data_and_model_parallelism.1d1087a1.png" alt="img" />图 18.2：将模型分布在八个设备上：两个模型副本，每个副本由一组四个设备处理。</p>
 <h3 id="分布式实践培训">分布式实践培训</h3>
+<p>Distributed training in practice</p>
 <p>现在让我们看看如何在实践中应用这些概念。我们将只介绍 JAX 后端，因为它是各种 Keras 后端中性能最高、可扩展性最强的，遥遥领先。如果你正在进行任何类型的大规模分布式训练，却没有使用 JAX，那就大错特错了——你会浪费大量资金，消耗远超实际所需的计算资源。</p>
 <h4 id="获取两块或更多gpu">获取两块或更多GPU</h4>
+<p>Getting your hands on two or more gpus</p>
 <p>首先，你需要获取多个 GPU 的访问权限。目前，Google Colab 只允许你使用单个 GPU，因此你需要执行以下两项操作之一：</p>
 <ul>
 <li>购置两到八块GPU，将它们安装在一台机器上（这将需要一个功率强大的电源），并安装CUDA驱动程序、cuDNN等。对于大多数人来说，这并不是最佳选择。</li>
 <li>在 Google Cloud、Azure 或 AWS 上租用多 GPU 虚拟机 (VM)。您可以使用预装了驱动程序和软件的虚拟机镜像，几乎无需任何设置。对于不需要 24/7 全天候训练模型的用户来说，这可能是最佳选择。</li>
+<li>Acquire two to eight GPUs, mount them on a single machine (it will require a beefy power supply), and install CUDA drivers, cuDNN, etc. For most people, this isn’t the best option.</li>
+<li>Rent a multi-GPU virtual machine (VM) on Google Cloud, Azure, or AWS. You’ll be able to use VM images with pre-installed drivers and software, and you’ll have very little setup overhead. This is likely the best option for anyone who isn’t training models 24/7.</li>
 </ul>
 <p>我们不会详细介绍如何启动多 GPU 云虚拟机，因为此类说明的生命周期相对较短，而且这些信息很容易在网上找到。</p>
 <h4 id="使用-jax-进行数据并行">使用 JAX 进行数据并行</h4>
+<p>Using data parallelism with JAX</p>
 <p>使用 Keras 和 JAX 进行数据并行非常简单：在构建模型之前，只需添加以下代码行：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">keras.distribution.set_distribution(keras.distribution.DataParallel())</span><br></pre></td></tr></table></figure>
 <p>就是这样。</p>
@@ -415,8 +642,10 @@
 </ul>
 <p>这假设你使用了足够大的全局批处理大小，以确保每个 GPU 都满负荷运行。如果你的批处理大小太小，局部批处理大小将不足以让 GPU 保持满负荷运转。</p>
 <h4 id="使用-jax-的模型并行性">使用 JAX 的模型并行性</h4>
+<p>Using model parallelism with JAX</p>
 <p>Keras 还提供了强大的工具，可以完全自定义分布式训练的方式，包括模型并行训练以及你能想到的任何数据并行和模型并行训练的组合。让我们深入了解一下。</p>
 <h5 id="devicemesh-api">DeviceMesh API</h5>
+<p>The DeviceMesh api</p>
 <p><em>首先，你需要理解设备网格</em>的概念。设备网格就是一个设备阵列。例如，考虑以下包含八个 GPU 的场景：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">gpu:0   |   gpu:4</span><br><span class="line">--------|---------</span><br><span class="line">gpu:1   |   gpu:5</span><br><span class="line">--------|---------</span><br><span class="line">gpu:2   |   gpu:6</span><br><span class="line">--------|---------</span><br><span class="line">gpu:3   |   gpu:7</span><br></pre></td></tr></table></figure>
 <p>其核心思想是将设备分成若干组，并按轴线进行组织。通常，一个轴线负责数据并行，另一个轴线负责模型并行（如图 18.2 所示，您的设备形成一个网格，其中水平轴处理数据并行，垂直轴处理模型并行）。</p>
@@ -428,11 +657,14 @@
 <p>正如您可能从论证中猜到的那样<code>axis_names</code>，我们打算使用沿轴 0 的设备进行数据并行处理，使用沿轴 1 的设备进行模型并行处理。由于沿轴 0 有两个设备，沿轴 1 有四个设备，我们将把模型的计算任务分配到四个 GPU 上，并创建两个模型副本，分别并行运行这两个副本，每个副本处理不同的数据子批次。</p>
 <p>现在我们已经有了网格模型，接下来需要告诉 Keras 如何将不同的计算任务分配到各个设备上。为此，我们将使用<code>LayoutMap</code>API。</p>
 <h5 id="布局地图-api">布局地图 API</h5>
+<p>The LayoutMap api</p>
 <p>为了指定不同计算步骤的执行位置，我们使用<em>变量</em> 作为参照系。我们会将变量拆分或复制到不同的设备上，并让编译器将与该变量相应部分关联的所有计算任务转移到对应的设备上。</p>
 <p>考虑一个变量。假设它的形状是<code>(32, 64)</code>。你可以对这个变量做两件事：</p>
 <ul>
 <li>您可以沿着网格的某个轴复制它，以便该轴上的每个设备都能看到相同的值<em>。</em></li>
 <li>您可以沿着网格的轴线<em>将其分割</em><code>(32, 16)</code>（拆分）——例如，您可以将其分割成四个形状的块——这样，沿该轴线的每个设备都可以看到一个不同的块。</li>
+<li>You could <em>replicate it</em> (copy it) across an axis of your mesh so each device along that axis sees the same value.</li>
+<li>You could <em>shard it</em> (split it) across an axis of your mesh — for instance, you could shard it into four chunks of shape <code>(32, 16)</code> — so that each device along that axis sees one different chunk.</li>
 </ul>
 <p>请注意，我们的变量有两个维度。重要的是，您可以针对变量的每个维度分别独立地做出“分片”或“复制”决策。</p>
 <p>您将使用 API 来告知 Keras 此类决策，该 API 是 <code></code>LayoutMap<code>A</code> 类。<code>A``LayoutMap</code>类似于字典。它将模型变量（例如，模型中第一个密集层的内核变量）映射到有关如何在设备网格上复制或分片该变量的信息。具体来说，它将<em>变量路径</em>映射 到一个元组，该元组的条目数与变量的维度数相同，其中每个条目指定如何处理该变量维度。它的结构如下：</p>
@@ -457,38 +689,100 @@
 <p>您甚至可以通过 JAX 工具将其可视化<code>jax.debug.visualize_sharding</code>：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> jax</span><br><span class="line"></span><br><span class="line">value = model.layers[<span class="number">0</span>].kernel.value</span><br><span class="line">jax.debug.visualize_sharding(value.shape, value.sharding)</span><br></pre></td></tr></table></figure>
 <p><strong>tf.data 性能提升技巧</strong></p>
+<p>tf.data performance tips</p>
 <p><code>tf.data.Dataset</code>进行分布式训练时，为了保证最佳性能，请始终以对象的形式提供数据（以 NumPy 数组的形式传递数据也可以，因为 <code>map</code> 会将其转换为<code>Dataset</code>对象<code>fit()</code>）。此外，您还应该确保使用数据预取：在将数据集传递给 <code>map</code> 之前<code>fit()</code>，调用 <code>map.prefetch</code> <code>dataset.prefetch(buffer_size)</code>。如果您不确定应该选择多大的缓冲区大小，可以尝试使用 <code>--buffer-size``dataset.prefetch(tf.data.AUTOTUNE)</code>选项，该选项会自动为您选择一个缓冲区大小。</p>
-<h3 id="tpu培训">TPU培训</h3>
-<p>除了GPU之外，深度学习领域普遍存在一种趋势，即把工作流程迁移到专为深度学习工作流程设计的专用硬件上；这种单用途芯片被称为ASIC（专用集成电路）。许多大大小小的公司都在研发新型芯片，但目前这方面最引人注目的是谷歌的张量处理单元（TPU），它可在谷歌云和谷歌Colab上使用。</p>
+<h3 id="tpu训练">TPU训练</h3>
+<p>TPU training</p>
+<p>除了GPU之外，深度学习领域普遍存在一种趋势，即把工作流程迁移到专为深度学习工作流程设计的专用硬件上；这种单用途芯片被称为ASIC（专用集成电路）。许多大大小小的公司都在研发新型芯片，但目前这方面最引人注目的是谷歌的张量处理单元（ Tensor Processing Unit ）（TPU），它可在谷歌云和谷歌Colab上使用。</p>
 <p>在 TPU 上进行训练确实需要一些额外的步骤，但这些额外的工作是值得的：TPU 的速度真的非常快。在 TPU v2（可在 Colab 上获取）上进行训练通常比在 NVIDIA P100 GPU 上训练快 15 倍。对于大多数模型而言，TPU 训练的平均成本效益比 GPU 训练低 3 倍。</p>
 <p>实际上，您可以在 Colab 中免费使用 TPU v2。在 Colab 菜单的“运行时”选项卡下，找到“更改运行时类型”选项，您会发现除了 GPU 运行时之外，还可以访问 TPU 运行时。对于更复杂的训练任务，Google Cloud 还提供速度更快的 TPU v3 到 v5。</p>
 <p>在支持 TPU 的笔记本上运行使用 JAX 后端的 Keras 代码时，只需调用 <code></code>keras.distribution.set_distribution(distribution)<code>tpu.env</code> 并传入一个<code>DataParallel</code>TPU<code>ModelParallel</code>分发实例即可开始使用 TPU 核心。请务必在创建模型之前调用此方法！</p>
 <p>由于 TPU 可以极快地处理批量数据，因此从 Google Cloud Storage (GCS) 读取数据的速度很容易成为瓶颈。如果您的数据集足够小，则应将其保存在虚拟机内存中。您可以通过调用实例来实现这一点<code>dataset.cache()</code>。<code>tf.data.Dataset</code>这样，数据只需从 GCS 读取一次。</p>
-<h4 id="采用阶梯式熔融工艺提高tpu利用率">采用阶梯式熔融工艺提高TPU利用率</h4>
+<h4 id="采用步进融合提高tpu利用率">采用步进融合提高TPU利用率</h4>
+<p>Using step fusing to improve tpu utilization</p>
 <p>由于 TPU 拥有强大的计算能力，你需要使用非常大的批次进行训练，才能让 TPU 核心保持满负荷运转。对于小型模型，所需的批次大小可能非常大——每个批次超过 10,000 个样本。使用超大批次时，你应该相应地提高优化器的学习率：虽然权重更新的次数会减少，但每次更新的精度会更高（因为梯度是基于更多的数据点计算的）；因此，每次更新时，权重的调整幅度应该更大。</p>
 <p>不过，有一个简单的技巧可以帮助你在保持 TPU 充分利用的同时，控制训练批次的大小：<em>步进融合（step fusing）</em>。其思路是在每个 TPU 执行步骤中运行多个训练步骤。简单来说，就是在虚拟机内存和 TPU 之间进行两次往返操作，从而完成更多的工作。要实现这一点，只需<code>steps_per_execution</code>在 <code>tpu.tpu.stepfusing</code> 函数中指定参数即可<code>compile()</code>——例如， <code>steps_per_execution=8</code>在每次 TPU 执行期间运行八个训练步骤。对于 TPU 利用率不足的小型模型，这可以显著提升速度：</p>
+<blockquote>
+<p>个人注：步进融合的主要思想。</p>
+<p>在深度学习的大规模训练中，<strong>步进融合（Step Fusing）</strong> 是一种专门针对 TPU（张量处理单元）等高速硬件的优化技术。它的核心思想可以用一句话概括：<strong>“合多次小步为一次大步，减少 CPU 与 TPU 之间的打招呼次数。”</strong></p>
+<p>为了理解它，我们需要先看看 TPU 的一个“脾气”：<strong>启动开销（Launch Overhead）</strong>。</p>
+<ol type="1">
+<li>核心矛盾：计算太快，指挥太慢</li>
+</ol>
+<p>TPU 的计算速度极快，但它需要听从 CPU 的指令。</p>
+<ul>
+<li><strong>普通模式</strong>：每训练一个批次（Batch），CPU 都要发指令给 TPU：“嘿，算一下这 128 个数据。” TPU 算完后反馈，CPU 再发下一条。</li>
+<li><strong>问题</strong>：如果你的 Batch Size 设得很小（比如为了优化模型效果），TPU 可能花 1 毫秒就算完了，但 CPU 发指令和处理反馈可能要花 2 毫秒。</li>
+<li><strong>结果</strong>：TPU 大部分时间都在等指令，<strong>利用率极低</strong>。</li>
+</ul>
+<ol start="2" type="1">
+<li>步进融合（Step Fusing）是怎么做的？</li>
+</ol>
+<p>步进融合不再是“一个批次发一次指令”，而是<strong>“一次性发 <span class="math inline">\(N\)</span> 个批次的指令”</strong>。</p>
+<ul>
+<li><strong>逻辑变化</strong>：CPU 告诉 TPU：“这里有 10 组数据，你一口气把这 10 个步骤（Steps）全部跑完，中间不要停，最后再把结果告诉我。”</li>
+<li><strong>硬件视角</strong>：在 TPU 内部，这 <span class="math inline">\(N\)</span> 个步骤被串联成了一个大的计算图（Graph）。TPU 会在自己的高带宽内存（HBM）中循环处理这些数据。</li>
+</ul>
+<ol start="3" type="1">
+<li>它解决了什么核心权衡？</li>
+</ol>
+<p>在没有步进融合之前，你面临一个艰难的选择：</p>
+<ul>
+<li><strong>选大 Batch Size</strong>：TPU 利用率高，但模型收敛可能变差，或者显存溢出。</li>
+<li><strong>选小 Batch Size</strong>：模型收敛好，但 TPU 跑得像蜗牛一样慢。</li>
+</ul>
+<p><strong>步进融合的魔力</strong>：</p>
+<p>它让你在数学上维持<strong>小 Batch Size</strong> 的更新逻辑（梯度依然按小批次计算和更新），但在硬件执行层面享受到了<strong>大任务</strong>的高效率。</p>
+<ol start="4" type="1">
+<li>形象类比：去餐厅点菜</li>
+</ol>
+<ul>
+<li><strong>普通模式</strong>：你每吃一口菜，就叫一次服务员：“再给我夹一口肉。” 服务员跑来跑去（CPU 开销），你等得心烦（TPU 空转）。</li>
+<li><strong>步进融合</strong>：你直接跟服务员说：“把这盘肉分成 10 份，每隔 1 分钟给我端上一份，剩下的时间你不用管我。” 你吃得节奏没变（小 Batch），但服务员只需要来一次（单次指令）。</li>
+</ul>
+<ol start="5" type="1">
+<li>什么时候需要它？</li>
+</ol>
+<p>如果你发现：</p>
+<ol type="1">
+<li>你的训练任务在 TPU 上运行，但 <strong>TPU 利用率（Utilization）</strong> 很低。</li>
+<li>你的模型逻辑比较简单（单步计算极快），导致 <strong>输入流水线（Input Pipeline）</strong> 成了瓶颈。</li>
+<li>你需要保持较小的全域批次大小（Global Batch Size）来稳定训练。</li>
+</ol>
+</blockquote>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">model.<span class="built_in">compile</span>(..., steps_per_execution=<span class="number">8</span>)</span><br></pre></td></tr></table></figure>
 <h2 id="利用低精度计算加速训练和推理">利用低精度计算加速训练和推理</h2>
+<p>Speeding up training and inference with lower-precision computation</p>
 <p>如果我告诉你有一种简单的技巧，可以让你几乎免费地将任何模型的训练和推理速度提高两倍，你会相信吗？这听起来好得难以置信，但这种技巧确实存在。要理解它的原理，首先我们需要了解计算机科学中的“精度”概念。</p>
 <h3 id="了解浮点精度">了解浮点精度</h3>
-<p>精度之于数字，正如分辨率之于图像。由于计算机只能处理 1 和 0，因此计算机看到的任何数字都必须编码为二进制字符串。例如，你可能熟悉<code>uint8</code>整数，整数是用 8 位编码的：1<code>00000000</code>表示255，255表示 255。要表示大于 255 的整数，你需要增加位数——8 位不够用。大多数整数都存储在 32 位上，用 32 位可以表示从 -2147483648 到 2147483647 的有符号整数。<code>0``uint8``11111111</code></p>
+<p>Understanding floating-point precision</p>
+<p><strong>精度之于数字，正如分辨率之于图像。</strong>由于计算机只能处理 1 和 0，因此计算机看到的任何数字都必须编码为二进制字符串。例如，你可能熟悉<code>uint8</code>整数，整数是用 8 位编码的：1<code>00000000</code>表示255，255表示 255。要表示大于 255 的整数，你需要增加位数——8 位不够用。大多数整数都存储在 32 位上，用 32 位可以表示从 -2147483648 到 2147483647 的有符号整数。<code>0``uint8``11111111</code></p>
 <p>浮点数也是如此。在数学中，实数构成一个连续的轴：任意两个实数之间都有无穷多个点。你可以随时放大实数轴。但在计算机科学中，情况并非如此：例如，3 和 4 之间只有有限个中间点。具体有多少个呢？这取决于你使用的<em>精度</em>：也就是你用来存储数字的位数。你只能放大到一定的分辨率。</p>
 <p>通常情况下，你会用到三个精度级别：</p>
 <ul>
 <li>半精度，或<code>float16</code>称16位精度，其中数字存储在16位上。</li>
 <li>单精度浮点数，或<code>float32</code>称32位精度浮点数，其中数字存储在32位上。</li>
 <li>双精度浮点数，或<code>float64</code>称 64 位浮点数，其中数字存储在 64 位上。</li>
+<li>Half precision, or <code>float16</code>, where numbers are stored on 16 bits</li>
+<li>Single precision, or <code>float32</code>, where numbers are stored on 32 bits</li>
+<li>Double precision, or <code>float64</code>, where numbers are stored on 64 bits</li>
 </ul>
 <p>你甚至可以达到更高的水平<code>float8</code>，稍后你就会看到了。</p>
 <p><strong>关于浮点编码</strong></p>
-<p>关于浮点数的一个反直觉的事实是，可表示的数字并非均匀分布。较大的数字精度较低：对于任何<em>N</em><code>2 ** N</code> ，介于 1 和 2 之间的可表示值的数量与介于 1 和 2 之间的可表示值的数量相同。<code>2 ** (N + 1)</code></p>
+<p>On floating-point encoding</p>
+<p><strong>关于浮点数的一个反直觉的事实是，可表示的数字并非均匀分布。较大的数字精度较低</strong>：对于任何<em>N</em><code>2 ** N</code> ，介于 1 和 2 之间的可表示值的数量与介于 1 和 2 之间的可表示值的数量相同。<code>2 ** (N + 1)</code></p>
+<p>A counterintuitive fact about floating-point numbers is that representable numbers are not uniformly distributed. Larger numbers have lower precision: there’s the same number of representable values between <code>2 ** N</code> and <code>2 ** (N + 1)</code> as there is between 1 and 2, for any <em>N</em>.</p>
+<p>That’s because floating-point numbers are encoded in three parts — the sign, the significant value (called the <em>mantissa</em>), and the exponent in the form</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;sign&#125; * (2 ** (&#123;exponent&#125; - 127)) * 1.&#123;mantissa&#125;</span><br></pre></td></tr></table></figure>
+<p>For example, figure 18.3 demonstrates how you would encode the closest <code>float32</code> value approximating Pi:</p>
 <p>这是因为浮点数由三部分编码而成——符号、有效值（称为<em>尾数</em>）和指数，形式为：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;sign&#125; * (2 ** (&#123;exponent&#125; - 127)) * 1.&#123;mantissa&#125;</span><br></pre></td></tr></table></figure>
 <p>例如，图 18.3 展示了如何对最接近<code>float32</code>π 的值进行编码：</p>
-<p><img src="/img3/DEEP%20LEARNING%20with%20Python/floating_pi.b6d4aaaf.png" alt="img" /><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter18_best-practices-for-the-real-world/#figure-18-3">图 18.3</a>：π 的单精度编码，由符号位、整数指数和整数尾数组成。</p>
-<p>因此，将数字转换为浮点表示时产生的数值误差会因所考虑的具体值而异，并且对于绝对值较大的数字，误差往往会更大。</p>
-<p>理解浮点数分辨率的方法是，看它能安全处理的两个任意数字之间的最小距离。单精度浮点数的最小距离约为 1e-7，双精度浮点数约为 1e-16，而半精度浮点数的最小距离仅为 1e-3。</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/floating_pi.b6d4aaaf.png" alt="img" />图 18.3：π 的单精度编码，由符号位、整数指数和整数尾数组成。</p>
+<p><strong>因此，将数字转换为浮点表示时产生的数值误差会因所考虑的具体值而异，并且对于绝对值较大的数字，误差往往会更大。</strong></p>
+<p><strong>理解浮点数分辨率的方法是，看它能安全处理的两个任意数字之间的最小距离。单精度浮点数的最小距离约为 1e-7，双精度浮点数约为 1e-16，而半精度浮点数的最小距离仅为 1e-3。</strong></p>
 <h3 id="float16-推断">Float16 推断</h3>
+<p>Float16 inference</p>
 <p>到目前为止，本书中你看到的每一个模型都使用了单精度数：它将状态存储为<code>float32</code>权重变量，并对输入进行计算<code>float32</code>。这种精度足以运行模型的前向和后向传播而不会丢失任何信息——尤其是在进行小梯度更新时（回想一下，典型的学习率为 1e-3，而权重更新在 1e-6 量级是很常见的）。</p>
 <p>现代 GPU 和 TPU 配备了专用硬件，可以比执行等效的 32 位运算更快地运行 16 位运算，并且占用更少的内存。尽可能使用这些低精度运算，可以显著提高在这些设备上的训练速度。您可以<code>float16</code> 通过以下方式在 Keras 中设置默认浮点精度：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> keras</span><br><span class="line"></span><br><span class="line">keras.config.set_dtype_policy(<span class="string">&quot;float16&quot;</span>)</span><br></pre></td></tr></table></figure>
@@ -522,6 +816,7 @@
 </table>
 <p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter18_best-practices-for-the-real-world/#table-18-1">表 18.1</a>：<code>float16</code>两者之间的差异<code>bfloat16</code></p>
 <h3 id="混合精度训练">混合精度训练</h3>
+<p>Mixed-precision training</p>
 <p>将默认浮点精度设置为 16 位是加快推理速度的有效方法。然而，在训练过程中，情况就变得复杂了。梯度下降过程在<code>float16</code>或 中无法顺利运行<code>bfloa16</code>，因为我们无法表示像 1e-5 或 1e-6 这样非常常见的微小梯度更新。</p>
 <p>不过，您也可以采用混合方法：这就是<em>混合精度训练的</em>核心。其理念是在精度要求不高的地方使用 16 位计算，而在其他地方使用 32 位值以保持数值稳定性——尤其是在处理梯度和变量更新时。通过保持模型中对精度敏感的部分使用全精度，您可以在不显著影响模型质量的前提下，获得 16 位计算的大部分速度优势。</p>
 <p>你可以像这样启用混合精度：</p>
@@ -530,6 +825,7 @@
 <p>Keras 层具有 <code>int``variable_dtype</code>和 <code>int``compute_dtype</code>属性。默认情况下，这两个属性都设置为 <code>int</code> <code>float32</code>。启用混合精度后， <code>compute_dtype</code>大多数层的 <code>int</code> 属性会切换到 <code>int</code> <code>float16</code>。因此，这些层会将它们的输入转换为 <code>int</code> <code>float16</code>，并在 <code>int</code> 中执行计算<code>float16</code> （使用权重的半精度副本）。但是，由于它们的 <code>int</code> 属性<code>variable_dtype</code> 仍然是 <code>int</code> <code>float32</code>，因此它们的权重能够<code>float32</code>从优化器接收精确更新，而不是半精度更新。</p>
 <p>某些运算（特别是 softmax 和交叉熵运算）在数值上可能不稳定<code>float16</code>。如果您需要为特定层禁用混合精度，只需将参数传递<code>dtype="float32"</code>给该层的构造函数即可。</p>
 <h3 id="使用混合精度损失缩放">使用混合精度损失缩放</h3>
+<p>Using loss scaling with mixed precision</p>
 <p>在训练过程中，梯度可能会变得非常小。使用混合精度时，梯度值会保持不变<code>float16</code>（与前向传播相同）。因此，可表示数值范围有限会导致较小的梯度值被向下舍入为零。这会阻碍模型有效地学习。</p>
 <p>梯度值与损失值成正比，因此，为了使梯度值更大，一个简单的技巧是将损失值乘以一个较大的标量因子。这样，梯度值被舍入为零的可能性就会大大降低。</p>
 <p>Keras 让这一切变得简单。如果您想使用固定的损失缩放因子，只需<code>loss_scale_factor</code>像这样向优化器传递一个参数即可：</p>
@@ -538,12 +834,15 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">optimizer = keras.optimizers.LossScaleOptimizer(</span><br><span class="line">    keras.optimizers.Adam(learning_rate=<span class="number">1e-3</span>)</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
 <p>使用<code>LossScaleOptimizer</code>通常是最佳选择：正确的缩放值可以在训练过程中发生变化！</p>
 <h3 id="超越混合精度float8-训练">超越混合精度：float8 训练</h3>
+<p>Beyond mixed precision: float8 training</p>
 <p>如果以 16 位精度运行前向传播能带来如此显著的性能提升，你可能会问：我们能否进一步降低精度？8 位精度呢？4 位呢？2 位呢？答案是，这很复杂。</p>
 <p>在前向传播中使用混合精度训练<code>float16</code>是最后一个“即插即用”的精度级别——<code>float16</code>该精度拥有足够的位数来表示所有中间张量（梯度更新除外，这也是我们使用<code>float32</code>更高精度的原因）。如果精度降低到更低，情况就不同了<code>float8</code>：你会丢失太多信息。虽然<code>float8</code>在某些计算中仍然可以使用，但这需要对前向传播进行大量修改。你<em>不能</em>简单地将精度设置<code>compute_dtype</code>为 1<code>float8</code>就运行。</p>
 <p>Keras 框架提供了一个内置的<code>float8</code>训练实现。由于它专门针对 Transformer 的使用场景，因此仅涵盖了有限的几层：<code>Dense``T</code>、<code>T</code>（该层使用<code>EinsumDense</code>的版本）和<code>T</code> 层。它的工作原理并不简单——它会跟踪过去的激活值，以便在每一步重新调整激活值，从而利用 <code>T</code> 中可表示的全部值范围。它还需要重写反向传播的一部分，以便对梯度值执行相同的操作。<code>Dense``MultiHeadAttention``Embedding``float8</code></p>
 <p>重要的是，这种额外的开销会带来计算成本。如果你的模型太小，或者你的GPU性能不够强，那么这种成本就会超过在<code>np.mt</code>中执行某些操作所带来的收益<code>float8</code>，你会看到速度下降而不是加快。<code>np.mt``float8</code>训练仅适用于非常大的模型（通常超过50亿个参数）以及NVIDIA H100等大型、最新的GPU。<code>float8</code>除了基础模型训练之外，<code>np.mt</code>在实践中很少使用。</p>
 <h3 id="量化加速推理">量化加速推理</h3>
-<p>在模型内部运行推理<code>float16</code>（甚至直接运行<code>float8</code>）可以显著提升模型速度。但你还可以使用另一种技巧：<em><code>int8</code>量化</em>。其核心思想是，将已训练好的模型及其权重<code>float32</code>转换为低精度数据类型（通常为<code>int8</code>），同时尽可能保持前向传播的数值准确性。</p>
+<p>Faster inference with quantization</p>
+<p>在模型内部运行<strong>推理</strong><code>float16</code>（甚至直接运行<code>float8</code>）可以显著提升模型速度。但你还可以使用另一种技巧：<em><code>int8</code>量化</em>。其核心思想是，将已训练好的模型及其权重<code>float32</code>转换为低精度数据类型（通常为<code>int8</code>），同时尽可能保持前向传播的数值准确性。</p>
+<p>Running inference in float16—or even float8—will result in a nice speedup for your models. But there’s also another trick you can use: int8 quantization. The big idea is to take an already trained model with weights in float32 and convert these weights to a lower-precision dtype (typically int8) while preserving the numerical correctness of the forward pass as much as possible.</p>
 <p>如果你想从头开始实现量化，数学原理很简单：基本思路是将所有<code>matmul</code>输入张量乘以一个特定的因子，使其系数落在 的可表示范围内<code>int8</code>，即<code>[-127, 127]</code>总共 256 个可能的值。缩放输入后，将它们转换为<code>int8</code>并以 的精度执行<code>matmul</code>操作<code>int8</code>，这应该比 快得多<code>float16</code>。最后，将输出转换回<code>float32</code>，并除以输入缩放因子的乘积。由于<code>matmul</code>是一个线性运算，最终的反缩放操作会抵消初始缩放，你应该得到与使用原始值相同的输出——任何精度损失都仅来自将输入转换为 时发生的数值舍入<code>int8</code>。</p>
 <p>让我们用一个例子来具体说明。假设你想执行以下操作<code>matmul(x, kernel)</code>，并使用以下值：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> ops</span><br><span class="line"></span><br><span class="line">x = ops.array([[<span class="number">0.1</span>, <span class="number">0.9</span>], [<span class="number">1.2</span>, -<span class="number">0.8</span>]])</span><br><span class="line">kernel = ops.array([[-<span class="number">0.1</span>, -<span class="number">2.2</span>], [<span class="number">1.1</span>, <span class="number">0.7</span>]])</span><br></pre></td></tr></table></figure>
@@ -556,6 +855,91 @@
 <p>相当准确！对于大型数据集<code>matmul</code>，这样做可以节省大量计算资源，因为<code>int8</code>计算速度可能比计算速度快得多<code>float16</code>，而你只需要在计算图中添加相当快的逐元素操作即可<code>abs</code>—— <code>max</code>，，，，，，。<code>clip``cast``divide``multiply</code></p>
 <p>当然，我并不指望你手动实现量化——那极其不切实际。与此类似<code>float8</code>，<code>int8</code>量化功能直接内置于特定的 Keras 层中：<code>&lt;T&gt;</code> <code>Dense</code>、<code>EinsumDense``&lt;T&gt;</code> 和<code></code>Embedding<code>&lt;T&gt;</code>。这使得<code>int8</code>任何基于 Transformer 的模型都能进行推理。以下是如何将其与包含这些层的任何 Keras 模型一起使用：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Instantiates a model (or any quantizable layer)</span></span><br><span class="line">model = ...</span><br><span class="line"><span class="comment"># Boom!</span></span><br><span class="line">model.quantize(<span class="string">&quot;int8&quot;</span>)</span><br><span class="line"><span class="comment"># Now predict() and call() will run (partially) in int8!</span></span><br><span class="line">predictions = model.predict(...)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>个人注：</p>
+<p><strong>Int8 量化（Int8 Quantization）</strong> 的核心思想是将模型中原本使用 30 位浮点数（FP32）表示的数值，压缩为 8 位整数（Int8）。</p>
+<p>这就像是将一把刻度极其精细的<strong>长钢尺</strong>，映射到一把只有 256 个刻度的<strong>短塑料尺</strong>上。</p>
+<ol type="1">
+<li>Int8 量化的核心思想：映射与缩放</li>
+</ol>
+<p>Int8 量化本质上是一个<strong>线性映射</strong>过程。其数学公式通常表示为：</p>
+<p><span class="math display">\[Real\_Value = Scale \times (Quantized\_Value - Zero\_Point)\]</span></p>
+<ul>
+<li><strong>Scale（缩放因子）</strong>：确定 FP32 的范围如何对应到 Int8 的 -128 到 127。</li>
+<li><strong>Zero-Point（零点）</strong>：确保 FP32 中的“0”在量化后也能精确表示（这对 ReLU 等激活函数至关重要）。</li>
+</ul>
+<ol start="2" type="1">
+<li>模型参数需要改变吗？</li>
+</ol>
+<p><strong>是的，参数必须改变。</strong></p>
+<p>为了实现 Int8 推理，模型的权重（Weights）必须经历以下变化：</p>
+<ol type="1">
+<li><p><strong>数值转换</strong>：原本存储在内存里的 <code>0.123456...</code> 这样的浮点数，会被转换成类似 <code>42</code> 这样的整数。</p></li>
+<li><p><strong>存储空间压缩</strong>：参数在磁盘和内存中的占用直接减少为原来的 <strong>1/4</strong>（从 4 字节降到 1 字节）。</p></li>
+<li><p><strong>计算算子切换</strong>：推理时不再调用昂贵的浮点运算单元（FPU），而是调用极快的整数运算单元（ALU）或专用的向量指令集。</p></li>
+<li><p>如何理解“精度损失仅来自输入转换时的舍入”？</p></li>
+</ol>
+<p>你提到的这句话（通常出现在特定的硬件优化文档中，如 TPU 或特定的推理引擎介绍）看起来与“改变参数会带来损失”相矛盾，但实际上它是在<strong>特定的计算假设</strong>下说的。我们可以从以下两个角度来理解：</p>
+<p>A. 参数已经“离线”补偿（离线量化）</p>
+<p>在模型部署前，我们会进行<strong>量化感知训练（QAT）*<em>或*</em>校准（Calibration）</strong>。</p>
+<ul>
+<li>我们通过复杂的算法，尽可能找到一组 Int8 权重，使其在矩阵运算后的效果与 FP32 几乎一致。</li>
+<li><strong>理解点</strong>：此时我们认为参数的精度损失在“部署前”已经通过优化降到了最低。在<strong>实际推理（Inference）</strong>瞬间，参数是固定的常数。</li>
+</ul>
+<p>B. 动态范围的“瓶颈”在于输入</p>
+<p>在很多硬件加速器中，最不稳定的因素是<strong>实时输入的信号</strong>：</p>
+<ol type="1">
+<li><strong>输入是连续的</strong>：模型参数是死数据，可以反复打磨；但每一个进入模型的输入数据（如一张图片的像素、一段音频的采样）都是实时的。</li>
+<li><strong>舍入误差（Rounding Error）</strong>：当你把输入的 FP32 乘以 Scale 变成 Int8 时，必须进行四舍五入。例如 <code>1.6</code> 变成 <code>2</code>。</li>
+<li><strong>累积效应</strong>：如果输入端的舍入误差很大，那么即便后续的整数矩阵运算（GEMM）在数学上是“精确的整数相乘”，最终还原回浮点数的结果也会偏离真实值。</li>
+</ol>
+<p><strong>更严谨的解释：</strong> &gt; 很多高性能推理框架会使用 <strong>Int32</strong> 来存储中间累加结果。这意味着，在矩阵相乘的中间步骤里，并没有精度损失。真正的损失发生在两头：</p>
+<ul>
+<li><strong>开头</strong>：将输入（Input）舍入为 Int8。</li>
+<li><strong>结尾</strong>：将计算结果重新缩放（Re-scale）回下一层所需的范围。</li>
+</ul>
+<p>所以，那句话的意思是：<strong>只要参数已经通过校准达到了最优，那么推理过程中最大的不确定性就来自于将“瞬息万变”的输入信号强行塞进 8 位刻度时产生的舍入偏差。</strong></p>
+<p>要把原本“精细”的浮点数权重 <span class="math inline">\(W_{fp32}\)</span> 变成“粗糙”的 <span class="math inline">\(Int8\)</span> 整数 <span class="math inline">\(W_{int8}\)</span>，且保证误差最小，这本质上是一个<strong>寻找最优映射范围</strong>的过程。</p>
+<p>这个过程主要通过以下三个关键步骤实现：</p>
+<ol type="1">
+<li>寻找“统计分布”的边界（关键的第一步）</li>
+</ol>
+<p>权重并不是均匀分布在所有数值上的。如果你画出模型权重的直方图，通常会发现它们呈现一个以 0 为中心的<strong>正态分布</strong>（长尾分布）。</p>
+<ul>
+<li><strong>问题</strong>：如果权重里有一个极大的离群值（比如 <span class="math inline">\(100.0\)</span>），而 99% 的权重都在 <span class="math inline">\([-1, 1]\)</span> 之间，如果你直接按 <span class="math inline">\(100\)</span> 来缩放，那么 <span class="math inline">\([-1, 1]\)</span> 之间的微小差异在 <span class="math inline">\(Int8\)</span> 里就会全部变成同一个整数（比如都变成了 <span class="math inline">\(0\)</span>）。</li>
+<li><strong>解决方法</strong>：校准过程会使用成千上万个样本来观察权重的分布。它不会死板地取“最大值”，而是使用 <strong>KL 散度（Kullback-Leibler Divergence）</strong> 等数学工具。
+<ul>
+<li>它会尝试不同的截断点（Clipping Threshold）。</li>
+<li>计算“截断后的 <span class="math inline">\(Int8\)</span> 分布”与“原始 <span class="math inline">\(FP32\)</span> 分布”之间的信息损失。</li>
+<li>找到那个让两个分布最接近的<strong>最佳截断范围</strong>。</li>
+</ul></li>
+</ul>
+<ol start="2" type="1">
+<li>计算缩放因子（Scale）</li>
+</ol>
+<p>一旦选定了最佳范围（假设是 <span class="math inline">\([ -max_{clip}, +max_{clip} ]\)</span>），计算 <span class="math inline">\(Scale\)</span> 就变成了简单的除法：</p>
+<p><span class="math display">\[Scale = \frac{max_{clip}}{127}\]</span></p>
+<p>有了这个 <span class="math inline">\(Scale\)</span>，原本的浮点数权重就可以通过以下公式变成整数：</p>
+<p><span class="math display">\[W_{int8} = \text{round} \left( \frac{W_{fp32}}{Scale} \right)\]</span></p>
+<p><em>注意：在这个过程中，我们已经把最适合这个模型特征的“刻度”找出来了。</em></p>
+<ol start="3" type="1">
+<li>“离线”优化的优势</li>
+</ol>
+<p>为什么说这有“充足的时间”？</p>
+<ul>
+<li><strong>不计成本</strong>：在部署到手机或嵌入式设备之前，我们可以在强大的服务器上跑好几个小时的校准算法。</li>
+<li><strong>误差补偿</strong>：有些高级技术（如 <strong>AdaRound</strong>）甚至会微调 <span class="math inline">\(Int8\)</span> 的取值。比如一个数是 <span class="math inline">\(1.5\)</span>，通常四舍五入是 <span class="math inline">\(2\)</span>，但如果把它变成 <span class="math inline">\(1\)</span> 能让这一层的整体输出误差更小，算法就会强制让它变成 <span class="math inline">\(1\)</span>。</li>
+<li><strong>结果固定</strong>：一旦这套 <span class="math inline">\(W_{int8}\)</span> 和 <span class="math inline">\(Scale\)</span> 算好了，它们就被硬编码进模型文件中。推理时，硬件直接读取这些整数常数，不再需要任何复杂的寻找过程。</li>
+</ul>
+<p>核心总结</p>
+<p>模型部署前的“校准”就像是<strong>给模型量体裁衣</strong>：</p>
+<ol type="1">
+<li>先看模型权重的“身材”分布（统计分析）。</li>
+<li>确定最合适的尺码范围（确定截断点）。</li>
+<li>把浮点数按比例“刻”进 <span class="math inline">\(Int8\)</span> 的格子里（生成固定常量）。</li>
+</ol>
+<p>所以，当你最终运行模型时，权重已经是经过“千锤百炼”筛选出的、最能代表原始逻辑的整数了。</p>
+</blockquote>
 <h2 id="概括">概括</h2>
 <ul>
 <li>您可以使用超参数调优和 KerasTuner 来自动完成寻找最佳模型配置的繁琐工作。但请注意验证集过拟合！</li>

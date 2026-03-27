@@ -44,7 +44,7 @@
 <meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/slerp.eea42213.png">
 <meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/sd3-morph.40f60bd8.png">
 <meta property="article:published_time" content="2026-03-06T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-03-26T04:09:40.630Z">
+<meta property="article:modified_time" content="2026-03-27T02:20:18.692Z">
 <meta property="article:author" content="Rayman.hung">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/image_gen.d02c5d8f.png">
@@ -462,6 +462,38 @@
 <h2 id="扩散模型">扩散模型</h2>
 <p>Diffusion models</p>
 <p>自编码器（autoencoders）的一个长期应用是<em>去噪</em>（denoising）：将包含少量噪声的输入（例如低质量的JPEG图像）输入模型，然后返回同一输入的去噪（cleaned-up version）版本。这是自编码器最擅长的任务。在2010年代后期，这一理念催生了非常成功的<em>图像超分辨率</em>（image super-resolution）模型，这些模型能够接收低分辨率、可能存在噪声的图像，并输出高质量、高分辨率的版本（见图17.6）。过去几年，几乎所有主流智能手机相机应用都内置了此类模型。</p>
+<blockquote>
+<p>个人注：把一个模糊的图像变成高清图片，是去噪的过程，而不是添加像素的过程吗？</p>
+<p>这是一个非常精辟的观察。从视觉上看，图片确实变“多”了细节，但从底层数学逻辑来看，<strong>这确实是一个“去噪”和“纠错”的过程，而不是简单的“无中生有”。</strong></p>
+<p>我们可以从以下三个维度来拆解这个看似矛盾的现象：</p>
+<ol type="1">
+<li>模糊（Blur）在数学上被视为一种“噪声”</li>
+</ol>
+<p>在信号处理中，模糊通常被建模为<strong>卷积噪声（Convolutional Noise）或退化（Degradation）</strong>。</p>
+<ul>
+<li><strong>原始信息</strong>：原本有一张高清的图片，包含清晰的边缘（高频信号）。</li>
+<li><strong>退化过程</strong>：由于镜头抖动、对焦失败或低分辨率压缩，这些高频信号被“抹平”了，变成了模糊的色块。</li>
+<li><strong>去噪逻辑</strong>：AI 模型（如扩散模型）的任务是<strong>预测并剔除</strong>这些让图片变模糊的“干扰因子”，从而找回隐藏在迷雾下的原始信号。</li>
+</ul>
+<ol start="2" type="1">
+<li>“预测”像素，而不是“添加”像素</li>
+</ol>
+<p>当你觉得 AI “添加”了像素时，它实际上是在做<strong>概率推理</strong>。</p>
+<ul>
+<li><strong>填补空白</strong>：当 AI 看到一个模糊的边缘时，它通过之前学习过的数万亿词元（Token）和图像特征，判断出：“这个模糊的灰色地带，有 99% 的概率是一根根清晰的睫毛。”</li>
+<li><strong>去噪还原</strong>：AI 将“模糊”视为一种不确定性（噪声），然后通过<strong>采样（Sampling）</strong>过程，将这种不确定性剔除，代之以符合逻辑的高清细节。</li>
+<li><strong>本质</strong>：这更像是根据线索<strong>“找回”</strong>丢失的信息，而不是像在画布上随便画新东西。</li>
+</ul>
+<ol start="3" type="1">
+<li>扩散模型是如何实现“变高清”的？</li>
+</ol>
+<p>在 <strong>Stable Diffusion</strong> 等模型中，这个过程通常被称为 <strong>SDEdit</strong> 或 <strong>图生图 (Img2Img)</strong>：</p>
+<ol type="1">
+<li><strong>加噪</strong>：首先给你的模糊图片手动加上一点点噪声，让它变得更“混乱”。</li>
+<li><strong>引导去噪</strong>：告诉模型：“这是一张高清的人像”。</li>
+<li><strong>重构</strong>：模型在去噪的过程中，会利用 Prompt 的引导，把模糊的色块当作“有待修正的噪声”，一步步引导其坍缩成清晰的像素排列。</li>
+</ol>
+</blockquote>
 <p><img src="/img3/DEEP%20LEARNING%20with%20Python/superresolution.0d8b50ab.png" alt="img" />图 17.6：图像超分辨率</p>
 <p>当然，这些模型并不会像<em>《银翼杀手》</em>（1982）里的“增强”场景那样，神奇地恢复输入图像中隐藏的细节。相反，它们只是对图像的预期效果进行推测——它们会<em>“臆想”出</em>一个更清晰、更高分辨率的图像版本。这可能会导致一些意想不到的“事故”。例如，使用某些人工智能增强型相机，你可以拍摄一张看起来有点像月球的物体（比如一张严重模糊的月球照片的打印件），然后你的相机胶卷里就会出现一张清晰的月球环形山照片。很多原本在打印件中根本不存在的细节都被相机“臆想”了出来，因为它使用的超分辨率模型过度拟合了月球摄影图像。所以，千万别像瑞克·戴克那样，把这种技术用在法医鉴定上！</p>
 <p><strong>图像去噪领域的早期成功让研究人员产生了一个引人注目的想法：既然可以使用自编码器去除图像中的少量噪声，那么肯定可以通过循环多次重复该过程来去除大量噪声。最终，我们能否对<em>完全由噪声</em>组成的图像进行去噪呢？</strong></p>
