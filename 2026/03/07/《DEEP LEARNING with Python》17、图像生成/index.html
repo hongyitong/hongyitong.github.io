@@ -26,10 +26,28 @@
 <meta property="og:site_name" content="墨语浮生">
 <meta property="og:description" content="第十七章 图像生成 Image generation 运行代码 在 Colab 上运行 在 GitHub 上查看 本章内容  变分自编码器 扩散模型 使用预训练的文本到图像模型 探索文本到图像模型学习到的潜在图像空间 Variational autoencoders Diffusion models Using a pretrained text-to-image model Exploring">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/image_gen.d02c5d8f.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/text-to-image.d51ae48c.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/autoencoder.71a857ef.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/vae.df3af572.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/vae_grid.6152810c.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/superresolution.0d8b50ab.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/diffusion.184e1d12.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/oxford_flower.215934bb.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/unet.20eacd7d.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/cosine_relationship.c5f419f0.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/diffusion_schedule.52ecea17.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/generated_flowers.614c95f0.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/sd3-output.6c189acc.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/sd3-output-negative.32fbdbe2.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/sd3-output-steps.c490d938.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/slerp.eea42213.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/sd3-morph.40f60bd8.png">
 <meta property="article:published_time" content="2026-03-06T16:00:00.000Z">
 <meta property="article:modified_time" content="2026-03-29T03:32:46.302Z">
 <meta property="article:author" content="Rayman.hung">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/image_gen.d02c5d8f.png">
 
 
 <link rel="canonical" href="http://hongyitong.github.io/2026/03/07/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B17%E3%80%81%E5%9B%BE%E5%83%8F%E7%94%9F%E6%88%90/">
@@ -134,7 +152,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%A8%E4%BA%8E%E5%9B%BE%E5%83%8F%E7%94%9F%E6%88%90%E7%9A%84%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0"><span class="nav-text">用于图像生成的深度学习</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%8E%E5%9B%BE%E5%83%8F%E7%9A%84%E6%BD%9C%E5%9C%A8%E7%A9%BA%E9%97%B4%E8%BF%9B%E8%A1%8C%E9%87%87%E6%A0%B7"><span class="nav-text">从图像的潜在空间进行采样</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%98%E5%88%86%E8%87%AA%E7%BC%96%E7%A0%81%E5%99%A8"><span class="nav-text">变分自编码器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-Keras-%E5%AE%9E%E7%8E%B0-VAE"><span class="nav-text">使用 Keras 实现 VAE</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B"><span class="nav-text">扩散模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%89%9B%E6%B4%A5%E8%8A%B1%E5%8D%89%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="nav-text">牛津花卉数据集</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#U-Net%E5%8E%BB%E5%99%AA%E8%87%AA%E7%BC%96%E7%A0%81%E5%99%A8"><span class="nav-text">U-Net去噪自编码器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%A9%E6%95%A3%E6%97%B6%E9%97%B4%E5%92%8C%E6%89%A9%E6%95%A3%E6%97%B6%E9%97%B4%E8%A1%A8%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="nav-text">扩散时间和扩散时间表的概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%AD%E7%BB%83%E8%BF%87%E7%A8%8B"><span class="nav-text">训练过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E8%BF%87%E7%A8%8B"><span class="nav-text">生成过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E8%87%AA%E5%AE%9A%E4%B9%89%E5%9B%9E%E8%B0%83%E5%87%BD%E6%95%B0%E5%8F%AF%E8%A7%86%E5%8C%96%E7%BB%93%E6%9E%9C"><span class="nav-text">使用自定义回调函数可视化结果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A1%8C%E5%8A%A8%E6%97%B6%E9%97%B4%E5%88%B0%E4%BA%86%EF%BC%81"><span class="nav-text">行动时间到了！</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E6%9C%AC%E8%BD%AC%E5%9B%BE%E5%83%8F%E6%A8%A1%E5%9E%8B"><span class="nav-text">文本转图像模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%A2%E7%B4%A2%E6%96%87%E6%9C%AC%E5%88%B0%E5%9B%BE%E5%83%8F%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%BD%9C%E5%9C%A8%E7%A9%BA%E9%97%B4"><span class="nav-text">探索文本到图像模型的潜在空间</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E6%8B%AC"><span class="nav-text">概括</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%A8%E4%BA%8E%E5%9B%BE%E5%83%8F%E7%94%9F%E6%88%90%E7%9A%84%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0"><span class="nav-text">用于图像生成的深度学习</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%8E%E5%9B%BE%E5%83%8F%E7%9A%84%E6%BD%9C%E5%9C%A8%E7%A9%BA%E9%97%B4%E8%BF%9B%E8%A1%8C%E9%87%87%E6%A0%B7"><span class="nav-text">从图像的潜在空间进行采样</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%98%E5%88%86%E8%87%AA%E7%BC%96%E7%A0%81%E5%99%A8"><span class="nav-text">变分自编码器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-keras-%E5%AE%9E%E7%8E%B0-vae"><span class="nav-text">使用 Keras 实现 VAE</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B"><span class="nav-text">扩散模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%89%9B%E6%B4%A5%E8%8A%B1%E5%8D%89%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="nav-text">牛津花卉数据集</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#u-net%E5%8E%BB%E5%99%AA%E8%87%AA%E7%BC%96%E7%A0%81%E5%99%A8"><span class="nav-text">U-Net去噪自编码器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%A9%E6%95%A3%E6%97%B6%E9%97%B4%E5%92%8C%E6%89%A9%E6%95%A3%E6%97%B6%E9%97%B4%E8%A1%A8%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="nav-text">扩散时间和扩散时间表的概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%AD%E7%BB%83%E8%BF%87%E7%A8%8B"><span class="nav-text">训练过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E8%BF%87%E7%A8%8B"><span class="nav-text">生成过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E8%87%AA%E5%AE%9A%E4%B9%89%E5%9B%9E%E8%B0%83%E5%87%BD%E6%95%B0%E5%8F%AF%E8%A7%86%E5%8C%96%E7%BB%93%E6%9E%9C"><span class="nav-text">使用自定义回调函数可视化结果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A1%8C%E5%8A%A8%E6%97%B6%E9%97%B4%E5%88%B0%E4%BA%86"><span class="nav-text">行动时间到了！</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E6%9C%AC%E8%BD%AC%E5%9B%BE%E5%83%8F%E6%A8%A1%E5%9E%8B"><span class="nav-text">文本转图像模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%A2%E7%B4%A2%E6%96%87%E6%9C%AC%E5%88%B0%E5%9B%BE%E5%83%8F%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%BD%9C%E5%9C%A8%E7%A9%BA%E9%97%B4"><span class="nav-text">探索文本到图像模型的潜在空间</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E6%8B%AC"><span class="nav-text">概括</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -252,7 +270,7 @@
 <li>Exploring the latent image spaces learned by text-to-image models</li>
 </ul>
 <p>当今最流行、最成功的创意人工智能应用是图像生成：学习潜在的视觉空间并从中采样，从而创建全新的图像，这些图像是从真实图像中插值而来的——虚构的人物、虚构的地点、虚构的猫狗等等。</p>
-<span id="more"></span>  
+<span id="more"></span>
 <h2 id="用于图像生成的深度学习">用于图像生成的深度学习</h2>
 <p>Deep learning for image generation</p>
 <p>在本节和下一节中，我们将回顾一些与图像生成相关的高级概念，以及该领域两种主要技术——<em>变分自编码器</em>（VAE）和<em>扩散模型——的</em>实现细节。需要注意的是，我们在此介绍的技术并非仅限于图像——您可以使用类似的模型来构建声音或音乐的潜在空间——但在实践中，目前为止最有趣的结果都来自图像，这也是我们在此重点讨论的内容。</p>
@@ -261,17 +279,17 @@
 <p>图像生成的核心思想是构建一个低维的<em>潜在</em>表征空间（与深度学习中的其他一切一样，它是一个向量空间），其中任何一点都可以映射到一幅“有效”图像：一幅看起来像真实物体的图像。能够实现这种映射的模块，以潜在点作为输入并输出图像（像素网格），通常被称为<em>生成器</em>，有时也称为<em>解码器</em>。一旦学习到这样的潜在空间，就可以从中采样点，并通过将它们映射回图像空间，生成以前从未见过的图像（参见图 17.1）——即训练图像的中间状态。</p>
 <blockquote>
 <p>个人注：在文本的表征中，向量空间的任何一个点映射到的是一个词元，还是一段话？</p>
-<p>这是一个非常深刻的类比问题。你敏锐地抓住了**“生成模型”<strong>与</strong>“表示学习”**之间最核心的差异。</p>
+<p>这是一个非常深刻的类比问题。你敏锐地抓住了<strong>“生成模型”</strong>与<strong>“表示学习”</strong>之间最核心的差异。</p>
 <p>简单直接的回答是：<strong>在文本生成的潜在空间（Latent Space）中，一个点映射的通常是“一整段话（或一个完整的语义概念）”，而不是单个词元。</strong></p>
 <p>为了让你理解得更透彻，我们需要对比一下你提到的“图像空间”和“文本空间”：</p>
-<ol>
+<ol type="1">
 <li>为什么不是“词元”？</li>
 </ol>
 <ul>
 <li><strong>词元嵌入空间（Token Embedding Space）</strong>：这是你之前问过的 <code>nn.Embedding</code> 层。在这个空间里，一个点确实对应一个<strong>词元</strong>（如“苹果”）。但这个空间是<strong>静态的、零散的</strong>，它没有生成能力，只能告诉你词与词的关系。</li>
 <li><strong>潜在表征空间（Latent Space）</strong>：当你谈论像 GPT 或变分自编码器（VAE）这种“生成式”模型时，我们进入了一个更高维的层面。</li>
 </ul>
-<ol start="2">
+<ol start="2" type="1">
 <li>文本潜在空间：一束“意义”的集合</li>
 </ol>
 <p>想象一下图像生成的逻辑：一个点 = 一张完整的猫的照片。</p>
@@ -286,7 +304,7 @@
 <li>点 B 映射为：“阳光明媚，适合户外活动。”</li>
 <li><strong>神奇之处</strong>：如果你取点 A 和点 B 的<strong>中点 C</strong>，解码出来的可能就是：“今天是个大晴天，出门走走吧。”（这就是所谓的潜在空间插值）。</li>
 </ul>
-<ol start="3">
+<ol start="3" type="1">
 <li>GPT 的特殊性：动态生成的轨迹</li>
 </ol>
 <p>你可能会问：“GPT 每次不是只出一个词元（Token）吗？”</p>
@@ -295,13 +313,13 @@
 <li>这个隐藏状态其实就是当前语境在潜在空间里的<strong>一个点</strong>。</li>
 <li><strong>核心区别</strong>：图像是一次性从点映射到像素；而 GPT 是从这个点出发，预测下一个最可能的词元，然后移动到下一个点，再预测…… 就像在潜在空间里画出一条<strong>轨迹</strong>，这条轨迹最终形成了一段话。</li>
 </ul>
-<p>术语一致性**：你可以总结为：**“词元嵌入（Token Embedding）映射的是离散的单位，而潜在表征（Latent Representation）映射的是连续的语义空间。”</p>
+<p>术语一致性<strong>：你可以总结为：</strong>“词元嵌入（Token Embedding）映射的是离散的单位，而潜在表征（Latent Representation）映射的是连续的语义空间。”</p>
 </blockquote>
-<p>![img](/img3/DEEP LEARNING with Python/image_gen.d02c5d8f.png)图 17.1：使用潜在向量空间对新图像进行采样</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/image_gen.d02c5d8f.png" alt="img" />图 17.1：使用潜在向量空间对新图像进行采样</p>
 <p>此外，<em>文本条件化</em>使得将自然语言提示空间映射到潜在空间成为可能（见图17.2），从而可以进行 <em>语言引导的图像生成</em>——生成与文本描述相对应的图片。这类模型被称为<em>文本到图像</em>模型。</p>
 <p>Further, <strong>text-conditioning</strong> makes it possible to map a space of prompts in natural language to the latent space (see figure 17.2), making it possible to do language-guided image generation—generating pictures that correspond to a text description. This category of models is called <strong>text-to-image models</strong>.</p>
 <p>通过对潜在空间中大量训练图像进行插值，这类模型能够生成无限多种视觉概念组合，其中许多组合甚至是前所未有的。比如，一匹马在月球上骑自行车？没问题。这使得图像生成成为富有创造力的人们挥洒创意的强大工具。</p>
-<p>![img](/img3/DEEP LEARNING with Python/text-to-image.d51ae48c.png)图 17.2：语言引导的图像生成</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/text-to-image.d51ae48c.png" alt="img" />图 17.2：语言引导的图像生成</p>
 <p>当然，仍有一些挑战需要克服。与所有深度学习模型一样，潜在空间并未编码物理世界的统一模型，因此您偶尔可能会看到手指过多的手、光照不协调或物体模糊不清等情况。生成图像的连贯性仍然是一个活跃的研究领域。以图 17.2 为例，尽管该模型已经看过数万张骑自行车的人的图像，但它并不理解人类意义上的“骑自行车”——例如踩踏板、转向或保持平衡等概念。这就是为什么您看到的“骑自行车的马”不太可能像人类艺术家笔下那样，以可信的方式用后腿蹬踏板。</p>
 <p>学习图像表征的潜在空间有多种不同的策略，每种策略都有其自身的特点。最常见的图像生成模型类型包括：</p>
 <ul>
@@ -309,31 +327,25 @@
 <li>变分自动编码器（Variational autoencoders (VAEs)）</li>
 <li>生成对抗网络（Generative adversarial networks (GANs)）</li>
 </ul>
-<p>**本书之前的版本虽然涵盖了生成对抗网络（GAN），但近年来GAN逐渐式微，几乎完全被扩散模型所取代。本版将同时介绍变分自编码器（VAE）和扩散模型，不再涉及GAN。**在我们自行构建的模型中，我们将重点关注无条件图像生成——即在不依赖文本条件的情况下，从潜在空间中采样图像。此外，您还将学习如何使用预训练的文本到图像模型，以及如何探索其潜在空间。</p>
+<p><strong>本书之前的版本虽然涵盖了生成对抗网络（GAN），但近年来GAN逐渐式微，几乎完全被扩散模型所取代。本版将同时介绍变分自编码器（VAE）和扩散模型，不再涉及GAN。</strong>在我们自行构建的模型中，我们将重点关注无条件图像生成——即在不依赖文本条件的情况下，从潜在空间中采样图像。此外，您还将学习如何使用预训练的文本到图像模型，以及如何探索其潜在空间。</p>
 <h3 id="变分自编码器">变分自编码器</h3>
 <p>Variational autoencoders</p>
 <p>VAE，由Kingma和Welling于2013年12月同时发现。[1]以及 Rezende、Mohamed 和 Wierstra，2014 年 1 月，[2]是一种特别适合通过概念向量进行图像编辑的生成模型。它们是一种<em>自编码器</em>——一种旨在将输入编码到低维潜在空间，然后再将其解码回来的网络——它融合了深度学习和贝叶斯推理的思想。</p>
 <p>They’re a kind of autoencoder—a type of network that aims to encode an input to a low-dimensional latent space and then decode it back—that mixes ideas from deep learning with Bayesian inference.</p>
 <p>变分自编码器（VAE）已经存在十多年了，但时至今日仍然具有重要意义，并在近期的研究中得到广泛应用。虽然VAE永远不会成为生成高保真图像的首选（扩散模型在这方面表现出色），但它仍然是深度学习工具箱中的重要工具，尤其是在可解释性、对潜在空间的控制以及数据重构能力至关重要的情况下。VAE也是你首次接触自编码器概念的机会，了解自编码器的概念非常有用。VAE完美地诠释了这类模型的核心思想。</p>
 <p>经典的图像自编码器接收一幅图像，通过编码器模块将其映射到潜在向量空间，然后通过解码器模块将其解码回与原始图像维度相同的输出（参见图 17.3）。它使用与输入图像<em>相同的图像</em>作为目标数据进行训练，这意味着自编码器学习重构原始输入。通过对编码（编码器的输出）施加各种约束，可以使自编码器学习到或多或少有意义的数据潜在表示。<strong>最常见的是将编码约束为低维且稀疏（主要为零），在这种情况下，编码器的作用是将输入数据压缩成更少的信息比特。</strong></p>
-<p>![img](/img3/DEEP LEARNING with Python/autoencoder.71a857ef.png)图 17.3：自编码器：将输入映射<code>x</code>到压缩表示，然后将其解码回原始数据。<code>x'</code></p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/autoencoder.71a857ef.png" alt="img" />图 17.3：自编码器：将输入映射<code>x</code>到压缩表示，然后将其解码回原始数据。<code>x'</code></p>
 <p><strong>实际上，这类传统的自编码器并不能产生特别有用或结构良好的潜在空间，而且压缩效果也不理想。正因如此，它们已逐渐被淘汰。然而，变分自编码器（VAE）通过一些统计技巧增强了自编码器，使其能够学习连续且高度结构化的潜在空间。事实证明，VAE 已成为图像生成的一种强大工具。</strong></p>
 <p>VAE（变分自编码器）并非将输入图像压缩成潜在空间中的固定编码，而是将图像转换为统计分布的参数：均值和方差。本质上，这意味着我们假设输入图像是由统计过程生成的，并且在编码和解码过程中应考虑该过程的随机性。VAE 使用均值和方差参数随机采样该分布的一个元素，并将该元素解码回原始输入（参见图 17.4）。该过程的随机性提高了鲁棒性，并迫使潜在空间在所有位置都编码有意义的表示：潜在空间中采样的每个点都会被解码为有效的输出。</p>
-<p>![img](/img3/DEEP LEARNING with Python/vae.df3af572.png)图 17.4：VAE 将图像映射到两个向量<code>z_mean</code>和<code>z_log_sigma</code>，这两个向量定义了潜在空间上的概率分布，用于采样潜在点以进行解码。</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/vae.df3af572.png" alt="img" />图 17.4：VAE 将图像映射到两个向量<code>z_mean</code>和<code>z_log_sigma</code>，这两个向量定义了潜在空间上的概率分布，用于采样潜在点以进行解码。</p>
 <p>从技术角度来说，VAE 的工作原理如下：</p>
-<ol>
-<li>
-<p>编码器模块将输入样本转换<code>input_img</code>为潜在表示空间中的两个参数，<code>z_mean</code>和<code>z_log_variance</code>。</p>
-</li>
-<li>
-<p><code>z</code>你通过 从假定用于生成输入图像的潜在正态分布中 随机抽取一个点<code>z = z_mean + exp(z_log_variance) * epsilon</code>，其中<code>epsilon</code> 是一个小值的随机张量。</p>
-</li>
-<li>
-<p>解码器模块将潜在空间中的这一点映射回原始输入图像。</p>
+<ol type="1">
+<li><p>编码器模块将输入样本转换<code>input_img</code>为潜在表示空间中的两个参数，<code>z_mean</code>和<code>z_log_variance</code>。</p></li>
+<li><p><code>z</code>你通过 从假定用于生成输入图像的潜在正态分布中 随机抽取一个点<code>z = z_mean + exp(z_log_variance) * epsilon</code>，其中<code>epsilon</code> 是一个小值的随机张量。</p></li>
+<li><p>解码器模块将潜在空间中的这一点映射回原始输入图像。</p>
 <p>An encoder module turns the input sample <code>input_img</code> into two parameters in a latent space of representations, <code>z_mean</code> and <code>z_log_variance</code>.</p>
 <p>You randomly sample a point <code>z</code> from the latent normal distribution that’s assumed to generate the input image, via <code>z = z_mean + exp(z_log_variance) * epsilon</code>, where <code>epsilon</code> is a random tensor of small values.</p>
-<p>A decoder module maps this point in the latent space back to the original input image</p>
-</li>
+<p>A decoder module maps this point in the latent space back to the original input image</p></li>
 </ol>
 <p>由于<code>epsilon</code>是随机的，该过程确保了每个靠近你编码的潜在位置<code>input_img</code>（<code>z-mean</code>）的点都可以解码成与相似的值<code>input_img</code>，从而迫使潜在空间保持连续的意义。潜在空间中任意两个相邻的点都会解码成高度相似的图像。连续性，加上潜在空间的低维度，迫使潜在空间中的每个方向都编码一个有意义的数据变化轴，使得潜在空间结构化程度很高，因此非常适合通过概念向量进行操作。</p>
 <p>VAE 的参数训练通过两个损失函数实现：<em>重构损失</em>，用于强制解码后的样本与初始输入相匹配；以及<em>正则化损失</em>，用于帮助学习更完善的潜在分布并减少对训练数据的过拟合。</p>
@@ -342,7 +354,7 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Encodes the input into a mean and variance parameter</span></span><br><span class="line">z_mean, z_log_variance = encoder(input_img)</span><br><span class="line"><span class="comment"># Draws a latent point using a small random epsilon</span></span><br><span class="line">z = z_mean + exp(z_log_variance) * epsilon</span><br><span class="line"><span class="comment"># Decodes z back to an image</span></span><br><span class="line">reconstructed_img = decoder(z)</span><br><span class="line"><span class="comment"># Instantiates the autoencoder model, which maps an input image to its</span></span><br><span class="line"><span class="comment"># reconstruction</span></span><br><span class="line">model = Model(input_img, reconstructed_img)</span><br></pre></td></tr></table></figure>
 <p>然后，您可以使用重构损失和正则化损失来训练模型。对于正则化损失，我们通常使用一个表达式（Kullback-Leibler散度），旨在使编码器输出的分布向以0为中心的良好正态分布靠拢。这为编码器提供了一个关于其所建模的潜在空间结构的合理假设。</p>
 <p>现在让我们来看看在实践中如何实现 VAE！</p>
-<h3 id="使用-Keras-实现-VAE">使用 Keras 实现 VAE</h3>
+<h3 id="使用-keras-实现-vae">使用 Keras 实现 VAE</h3>
 <p>Implementing a VAE with Keras</p>
 <p>我们将实现一个能够生成 MNIST 数字的 VAE。它将包含三个部分：</p>
 <ul>
@@ -381,24 +393,24 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line"><span class="comment"># We&#x27;ll display a grid of 30 × 30 digits (900 digits total).</span></span><br><span class="line">n = <span class="number">30</span></span><br><span class="line">digit_size = <span class="number">28</span></span><br><span class="line">figure = np.zeros((digit_size * n, digit_size * n))</span><br><span class="line"></span><br><span class="line"><span class="comment"># Samples points linearly on a 2D grid</span></span><br><span class="line">grid_x = np.linspace(-<span class="number">1</span>, <span class="number">1</span>, n)</span><br><span class="line">grid_y = np.linspace(-<span class="number">1</span>, <span class="number">1</span>, n)[::-<span class="number">1</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># Iterates over grid locations</span></span><br><span class="line"><span class="keyword">for</span> i, yi <span class="keyword">in</span> <span class="built_in">enumerate</span>(grid_y):</span><br><span class="line">    <span class="keyword">for</span> j, xi <span class="keyword">in</span> <span class="built_in">enumerate</span>(grid_x):</span><br><span class="line">        <span class="comment"># For each location, samples a digit and adds it to our figure</span></span><br><span class="line">        z_sample = np.array([[xi, yi]])</span><br><span class="line">        x_decoded = vae.decoder.predict(z_sample)</span><br><span class="line">        digit = x_decoded[<span class="number">0</span>].reshape(digit_size, digit_size)</span><br><span class="line">        figure[</span><br><span class="line">            i * digit_size : (i + <span class="number">1</span>) * digit_size,</span><br><span class="line">            j * digit_size : (j + <span class="number">1</span>) * digit_size,</span><br><span class="line">        ] = digit</span><br><span class="line"></span><br><span class="line">plt.figure(figsize=(<span class="number">15</span>, <span class="number">15</span>))</span><br><span class="line">start_range = digit_size // <span class="number">2</span></span><br><span class="line">end_range = n * digit_size + start_range</span><br><span class="line">pixel_range = np.arange(start_range, end_range, digit_size)</span><br><span class="line">sample_range_x = np.<span class="built_in">round</span>(grid_x, <span class="number">1</span>)</span><br><span class="line">sample_range_y = np.<span class="built_in">round</span>(grid_y, <span class="number">1</span>)</span><br><span class="line">plt.xticks(pixel_range, sample_range_x)</span><br><span class="line">plt.yticks(pixel_range, sample_range_y)</span><br><span class="line">plt.xlabel(<span class="string">&quot;z[0]&quot;</span>)</span><br><span class="line">plt.ylabel(<span class="string">&quot;z[1]&quot;</span>)</span><br><span class="line">plt.axis(<span class="string">&quot;off&quot;</span>)</span><br><span class="line">plt.imshow(figure, cmap=<span class="string">&quot;Greys_r&quot;</span>)</span><br></pre></td></tr></table></figure>
 <p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter17_image-generation/#listing-17-6">清单 17.6</a>：从二维潜在空间中采样点网格并将其解码为图像</p>
 <p>采样数字网格（见图 17.5）显示了不同数字类别的完全连续分布，沿着潜在空间中的路径，一个数字会逐渐演变成另一个数字。该空间中的特定方向具有特定含义：例如，存在代表“四（four-ness）”的方向、代表“一（one-ness）”的方向等等。</p>
-<p>![img](/img3/DEEP LEARNING with Python/vae_grid.6152810c.png)图 17.5：从潜在空间解码的数字网格</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/vae_grid.6152810c.png" alt="img" />图 17.5：从潜在空间解码的数字网格</p>
 <blockquote>
 <p>个人注：其中图17.5怎么来的？</p>
 <p>你提到的图 17.5是一个非常经典的 <strong>VAE（变分自编码器）</strong> 实验结果。</p>
 <p>简单来说，这张图不是“画”出来的，而是通过<strong>在 2D 潜在空间中进行均匀采样并解码</strong>得到的。</p>
-<ol>
+<ol type="1">
 <li>它是如何生成的？（技术原理）</li>
 </ol>
 <p>这张图的生成逻辑分为三个核心步骤：</p>
 <p>第一阶段：压缩（维度缩减）</p>
-<p>模型（VAE）将成千上万张手写数字（MNIST 数据集）压缩到一个仅有 <strong>2 维</strong> 的潜在空间中（即 $x, y$ 轴坐标）。</p>
+<p>模型（VAE）将成千上万张手写数字（MNIST 数据集）压缩到一个仅有 <strong>2 维</strong> 的潜在空间中（即 <span class="math inline">\(x, y\)</span> 轴坐标）。</p>
 <ul>
 <li>此时，所有的“1”会聚集在坐标系的一个区域，“4”会聚集在另一个区域。</li>
 </ul>
 <p>第二阶段：网格采样 (Grid Sampling)</p>
 <p>作者并不是随机挑几个点，而是像在地图上画经纬线一样，在潜在空间中定义了一个 <strong>等间距的网格</strong>。</p>
 <ul>
-<li>例如：从 $x \in [-2, 2]$，每隔 0.2 取一个点；$y$ 轴同理。这样就得到了一个 20x20 的坐标矩阵。</li>
+<li>例如：从 <span class="math inline">\(x \in [-2, 2]\)</span>，每隔 0.2 取一个点；<span class="math inline">\(y\)</span> 轴同理。这样就得到了一个 20x20 的坐标矩阵。</li>
 </ul>
 <p>第三阶段：解码还原 (Decoding)</p>
 <p>这是最关键的一步。模型将这 400 个坐标点逐一输入 <strong>解码器 (Decoder)</strong>：</p>
@@ -406,15 +418,15 @@
 <li>解码器并不知道这是坐标，它只负责把这组连续的浮点数还原成图像。</li>
 <li>因为潜在空间是<strong>连续的</strong>（Continuous），所以当你从代表“1”的坐标点慢慢移动到代表“4”的坐标点时，解码器输出的图像也会发生“渐变”。</li>
 </ul>
-<ol start="2">
+<ol start="2" type="1">
 <li>为什么会有“方向”的含义？</li>
 </ol>
 <p>你提到的“four-ness”方向，本质上是<strong>潜在空间的语义对齐</strong>：</p>
 <ul>
-<li><strong>向量算术</strong>：如果你发现从 $(0, 0)$ 移动到 $(0, 1)$ 图像会变胖，那么在整个空间里，“向上移动”这个向量就代表了“变胖”这个语义。</li>
+<li><strong>向量算术</strong>：如果你发现从 <span class="math inline">\((0, 0)\)</span> 移动到 <span class="math inline">\((0, 1)\)</span> 图像会变胖，那么在整个空间里，“向上移动”这个向量就代表了“变胖”这个语义。</li>
 <li><strong>线性流形</strong>：在训练过程中，模型为了降低损失（Loss），会自动把具有相同特征的数据归类在一起。因此，空间中的某个角度或直线路径，往往对应着数字的笔画倾斜度、粗细或类别变换。</li>
 </ul>
-<p>术语统一**：你可以写成：**“通过在潜在空间采样并解码，我们可以观察到词元（Token）或图像特征在连续向量空间中的平滑演变。”</p>
+<p>术语统一<strong>：你可以写成：</strong>“通过在潜在空间采样并解码，我们可以观察到词元（Token）或图像特征在连续向量空间中的平滑演变。”</p>
 </blockquote>
 <p>下一节，<strong>我们将详细介绍另一个用于生成图像的主要工具：扩散模型，它是当今几乎所有商业图像生成服务背后的架构。</strong></p>
 <p>In the next section, we’ll cover in detail another major tool for generating images: <strong>diffusion models</strong>, the architecture behind nearly all commercial image generation services today.</p>
@@ -425,7 +437,7 @@
 <p>个人注：把一个模糊的图像变成高清图片，是去噪的过程，而不是添加像素的过程吗？</p>
 <p>这是一个非常精辟的观察。从视觉上看，图片确实变“多”了细节，但从底层数学逻辑来看，<strong>这确实是一个“去噪”和“纠错”的过程，而不是简单的“无中生有”。</strong></p>
 <p>我们可以从以下三个维度来拆解这个看似矛盾的现象：</p>
-<ol>
+<ol type="1">
 <li>模糊（Blur）在数学上被视为一种“噪声”</li>
 </ol>
 <p>在信号处理中，模糊通常被建模为<strong>卷积噪声（Convolutional Noise）或退化（Degradation）</strong>。</p>
@@ -434,35 +446,35 @@
 <li><strong>退化过程</strong>：由于镜头抖动、对焦失败或低分辨率压缩，这些高频信号被“抹平”了，变成了模糊的色块。</li>
 <li><strong>去噪逻辑</strong>：AI 模型（如扩散模型）的任务是<strong>预测并剔除</strong>这些让图片变模糊的“干扰因子”，从而找回隐藏在迷雾下的原始信号。</li>
 </ul>
-<ol start="2">
+<ol start="2" type="1">
 <li>“预测”像素，而不是“添加”像素</li>
 </ol>
 <p>当你觉得 AI “添加”了像素时，它实际上是在做<strong>概率推理</strong>。</p>
 <ul>
 <li><strong>填补空白</strong>：当 AI 看到一个模糊的边缘时，它通过之前学习过的数万亿词元（Token）和图像特征，判断出：“这个模糊的灰色地带，有 99% 的概率是一根根清晰的睫毛。”</li>
-<li><strong>去噪还原</strong>：AI 将“模糊”视为一种不确定性（噪声），然后通过**采样（Sampling）**过程，将这种不确定性剔除，代之以符合逻辑的高清细节。</li>
-<li><strong>本质</strong>：这更像是根据线索**“找回”**丢失的信息，而不是像在画布上随便画新东西。</li>
+<li><strong>去噪还原</strong>：AI 将“模糊”视为一种不确定性（噪声），然后通过<strong>采样（Sampling）</strong>过程，将这种不确定性剔除，代之以符合逻辑的高清细节。</li>
+<li><strong>本质</strong>：这更像是根据线索<strong>“找回”</strong>丢失的信息，而不是像在画布上随便画新东西。</li>
 </ul>
-<ol start="3">
+<ol start="3" type="1">
 <li>扩散模型是如何实现“变高清”的？</li>
 </ol>
 <p>在 <strong>Stable Diffusion</strong> 等模型中，这个过程通常被称为 <strong>SDEdit</strong> 或 <strong>图生图 (Img2Img)</strong>：</p>
-<ol>
+<ol type="1">
 <li><strong>加噪</strong>：首先给你的模糊图片手动加上一点点噪声，让它变得更“混乱”。</li>
 <li><strong>引导去噪</strong>：告诉模型：“这是一张高清的人像”。</li>
 <li><strong>重构</strong>：模型在去噪的过程中，会利用 Prompt 的引导，把模糊的色块当作“有待修正的噪声”，一步步引导其坍缩成清晰的像素排列。</li>
 </ol>
 </blockquote>
-<p>![img](/img3/DEEP LEARNING with Python/superresolution.0d8b50ab.png)图 17.6：图像超分辨率</p>
-<p>当然，这些模型并不会像*《银翼杀手》<em>（1982）里的“增强”场景那样，神奇地恢复输入图像中隐藏的细节。相反，它们只是对图像的预期效果进行推测——它们会</em>“臆想”出*一个更清晰、更高分辨率的图像版本。这可能会导致一些意想不到的“事故”。例如，使用某些人工智能增强型相机，你可以拍摄一张看起来有点像月球的物体（比如一张严重模糊的月球照片的打印件），然后你的相机胶卷里就会出现一张清晰的月球环形山照片。很多原本在打印件中根本不存在的细节都被相机“臆想”了出来，因为它使用的超分辨率模型过度拟合了月球摄影图像。所以，千万别像瑞克·戴克那样，把这种技术用在法医鉴定上！</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/superresolution.0d8b50ab.png" alt="img" />图 17.6：图像超分辨率</p>
+<p>当然，这些模型并不会像<em>《银翼杀手》</em>（1982）里的“增强”场景那样，神奇地恢复输入图像中隐藏的细节。相反，它们只是对图像的预期效果进行推测——它们会<em>“臆想”出</em>一个更清晰、更高分辨率的图像版本。这可能会导致一些意想不到的“事故”。例如，使用某些人工智能增强型相机，你可以拍摄一张看起来有点像月球的物体（比如一张严重模糊的月球照片的打印件），然后你的相机胶卷里就会出现一张清晰的月球环形山照片。很多原本在打印件中根本不存在的细节都被相机“臆想”了出来，因为它使用的超分辨率模型过度拟合了月球摄影图像。所以，千万别像瑞克·戴克那样，把这种技术用在法医鉴定上！</p>
 <p><strong>图像去噪领域的早期成功让研究人员产生了一个引人注目的想法：既然可以使用自编码器去除图像中的少量噪声，那么肯定可以通过循环多次重复该过程来去除大量噪声。最终，我们能否对<em>完全由噪声</em>组成的图像进行去噪呢？</strong></p>
 <p><strong>事实证明，确实可以。通过这种方式，你可以凭空创造出全新的图像，如图 17.7 所示。这就是扩散模型背后的关键原理，更准确地说，应该称之为<em>反向扩散</em>模型，因为“扩散”指的是逐渐向图像添加噪声，直到图像最终消失的过程。</strong></p>
-<p>![img](/img3/DEEP LEARNING with Python/diffusion.184e1d12.png)图 17.7：反向扩散：通过重复去噪将纯噪声转化为图像</p>
-<p><strong>扩散模型本质上是一个循环的去噪自编码器，能够将纯噪声转化为清晰逼真的图像。你或许听过米开朗基罗的这句名言：“每一块石头里都藏着一座雕像，雕塑家的任务就是把它发现出来（<strong>Every block of stone has a statue inside it and it is the task of the sculptor to discover it</strong>）”——同样，每一块白噪声里都藏着一幅图像，扩散模型的任务就是把它发现出来。</strong></p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/diffusion.184e1d12.png" alt="img" />图 17.7：反向扩散：通过重复去噪将纯噪声转化为图像</p>
+<p><strong>扩散模型本质上是一个循环的去噪自编码器，能够将纯噪声转化为清晰逼真的图像。你或许听过米开朗基罗的这句名言：“每一块石头里都藏着一座雕像，雕塑家的任务就是把它发现出来（</strong>Every block of stone has a statue inside it and it is the task of the sculptor to discover it<strong>）”——同样，每一块白噪声里都藏着一幅图像，扩散模型的任务就是把它发现出来。</strong></p>
 <p>现在，让我们用 Keras 构建一个。</p>
 <h3 id="牛津花卉数据集">牛津花卉数据集</h3>
 <p>The Oxford Flowers dataset</p>
-<p>我们将使用的数据集是牛津花卉数据集（<a target="_blank" rel="noopener" href="https://www.robots.ox.ac.uk/~vgg/data/flowers/102/%EF%BC%89%EF%BC%8C%E5%85%B6%E4%B8%AD%E5%8C%85%E5%90%AB">https://www.robots.ox.ac.uk/~vgg/data/flowers/102/），其中包含</a> 8,189 张属于 102 个不同物种的花卉图像。</p>
+<p>我们将使用的数据集是牛津花卉数据集（https://www.robots.ox.ac.uk/~vgg/data/flowers/102/），其中包含 8,189 张属于 102 个不同物种的花卉图像。</p>
 <p>让我们获取数据集存档并将其提取出来：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line">fpath = keras.utils.get_file(</span><br><span class="line">    origin=<span class="string">&quot;https://www.robots.ox.ac.uk/~vgg/data/flowers/102/102flowers.tgz&quot;</span>,</span><br><span class="line">    extract=<span class="literal">True</span>,</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
 <p><code>fpath</code>现在，<code>.</code> 是提取目录的本地路径。图像包含在<code>jpg</code>该目录的子目录中。让我们使用 <code>.</code> 将它们转换为可迭代数据集<code>image_dataset_from_directory()</code>。</p>
@@ -470,14 +482,14 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">batch_size = <span class="number">32</span></span><br><span class="line">image_size = <span class="number">128</span></span><br><span class="line">images_dir = os.path.join(fpath, <span class="string">&quot;jpg&quot;</span>)</span><br><span class="line">dataset = keras.utils.image_dataset_from_directory(</span><br><span class="line">    images_dir,</span><br><span class="line">    <span class="comment"># We won&#x27;t need the labels, just the images.</span></span><br><span class="line">    labels=<span class="literal">None</span>,</span><br><span class="line">    image_size=(image_size, image_size),</span><br><span class="line">    <span class="comment"># Crops images when resizing them to preserve their aspect ratio</span></span><br><span class="line">    crop_to_aspect_ratio=<span class="literal">True</span>,</span><br><span class="line">)</span><br><span class="line">dataset = dataset.rebatch(</span><br><span class="line">    <span class="comment"># We&#x27;d like all batches to have the same size, so we drop the last</span></span><br><span class="line">    <span class="comment"># (irregular) batch.</span></span><br><span class="line">    batch_size,</span><br><span class="line">    drop_remainder=<span class="literal">True</span>,</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
 <p>以下是一个示例图像（图 17.8）：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> matplotlib <span class="keyword">import</span> pyplot <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> batch <span class="keyword">in</span> dataset:</span><br><span class="line">    img = batch.numpy()[<span class="number">0</span>]</span><br><span class="line">    <span class="keyword">break</span></span><br><span class="line">plt.imshow(img.astype(<span class="string">&quot;uint8&quot;</span>))</span><br></pre></td></tr></table></figure>
-<p>![img](/img3/DEEP LEARNING with Python/oxford_flower.215934bb.png)图 17.8：牛津花卉数据集中的示例图像</p>
-<h3 id="U-Net去噪自编码器">U-Net去噪自编码器</h3>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/oxford_flower.215934bb.png" alt="img" />图 17.8：牛津花卉数据集中的示例图像</p>
+<h3 id="u-net去噪自编码器">U-Net去噪自编码器</h3>
 <p>A U-Net denoising autoencoder</p>
 <p>在扩散去噪过程的每次迭代中，都会重复使用同一个去噪模型，每次都去除少量噪声。为了简化模型的工作，我们会告诉它对于给定的输入图像应该去除多少噪声——这就是输入<code>noise_rates</code>。我们不直接输出去噪后的图像，而是让模型输出一个预测的噪声掩码，我们可以用这个掩码从输入图像中减去，从而对输入图像进行去噪。</p>
 <p>对于我们的去噪模型，我们将使用 U-Net——一种最初为图像分割而开发的卷积神经网络。它看起来像图 17.9。</p>
-<p>![img](/img3/DEEP LEARNING with Python/unet.20eacd7d.png)图 17.9：我们提出的 U-Net 式去噪自编码器架构</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/unet.20eacd7d.png" alt="img" />图 17.9：我们提出的 U-Net 式去噪自编码器架构</p>
 <p>该架构（architecture）分为三个阶段：</p>
-<ol>
+<ol type="1">
 <li>下<em>采样阶段</em>由多个卷积层组成，其中输入从其原始的 128 × 128 大小下采样到更小的大小（在我们的例子中是 16 × 16）。</li>
 <li><em>中间阶段</em>，特征图的大小保持不变。</li>
 <li>上<em>采样阶段</em>，将特征图上采样回 128 × 128。</li>
@@ -497,10 +509,10 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">diffusion_schedule</span>(<span class="params"></span></span><br><span class="line"><span class="params">    diffusion_times,</span></span><br><span class="line"><span class="params">    min_signal_rate=<span class="number">0.02</span>,</span></span><br><span class="line"><span class="params">    max_signal_rate=<span class="number">0.95</span>,</span></span><br><span class="line"><span class="params"></span>):</span><br><span class="line">    start_angle = ops.cast(ops.arccos(max_signal_rate), <span class="string">&quot;float32&quot;</span>)</span><br><span class="line">    end_angle = ops.cast(ops.arccos(min_signal_rate), <span class="string">&quot;float32&quot;</span>)</span><br><span class="line">    diffusion_angles = start_angle + diffusion_times * (end_angle - start_angle)</span><br><span class="line">    signal_rates = ops.cos(diffusion_angles)</span><br><span class="line">    noise_rates = ops.sin(diffusion_angles)</span><br><span class="line">    <span class="keyword">return</span> noise_rates, signal_rates</span><br></pre></td></tr></table></figure>
 <p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter17_image-generation/#listing-17-7">清单 17.7</a>：扩散时间表</p>
 <p>该<code>diffusion_schedule()</code>函数以一个<code>diffusion_times</code>张量作为输入，该张量表示扩散过程的进展，并返回相应的<code>noise_rates</code>张<code>signal_rates</code>量。这些张量将用于指导去噪过程。使用余弦调度背后的逻辑是为了保持关系<code>noise_rates ** 2 + signal_rates ** 2 == 1</code>（参见图 17.10）。</p>
-<p>![img](/img3/DEEP LEARNING with Python/cosine_relationship.c5f419f0.png)图 17.10：噪声率与信号率之间的余弦关系</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/cosine_relationship.c5f419f0.png" alt="img" />图 17.10：噪声率与信号率之间的余弦关系</p>
 <p>让我们绘制一下该函数如何将扩散时间（介于 0 和 1 之间）映射到特定的噪声率和信号率（见图 17.11）：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">diffusion_times = ops.arange(<span class="number">0.0</span>, <span class="number">1.0</span>, <span class="number">0.01</span>)</span><br><span class="line">noise_rates, signal_rates = diffusion_schedule(diffusion_times)</span><br><span class="line"></span><br><span class="line"><span class="comment"># These lines are only necessary if you&#x27;re using PyTorch, in which case</span></span><br><span class="line"><span class="comment"># tensor conversion to NumPy is no longer trivial.</span></span><br><span class="line">diffusion_times = ops.convert_to_numpy(diffusion_times)</span><br><span class="line">noise_rates = ops.convert_to_numpy(noise_rates)</span><br><span class="line">signal_rates = ops.convert_to_numpy(signal_rates)</span><br><span class="line"></span><br><span class="line">plt.plot(diffusion_times, noise_rates, label=<span class="string">&quot;Noise rate&quot;</span>)</span><br><span class="line">plt.plot(diffusion_times, signal_rates, label=<span class="string">&quot;Signal rate&quot;</span>)</span><br><span class="line"></span><br><span class="line">plt.xlabel(<span class="string">&quot;Diffusion time&quot;</span>)</span><br><span class="line">plt.legend()</span><br></pre></td></tr></table></figure>
-<p>![img](/img3/DEEP LEARNING with Python/diffusion_schedule.52ecea17.png)图 17.11：我们的余弦扩散方案</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/diffusion_schedule.52ecea17.png" alt="img" />图 17.11：我们的余弦扩散方案</p>
 <h3 id="训练过程">训练过程</h3>
 <p>The training process</p>
 <p>让我们创建一个<code>DiffusionModel</code>类来实现训练过程。它的属性之一将包含我们的去噪自编码器。此外，我们还需要以下几点：</p>
@@ -516,7 +528,7 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">denoise</span>(<span class="params">self, noisy_images, noise_rates, signal_rates</span>):</span><br><span class="line">    <span class="comment"># Calls the denoising model</span></span><br><span class="line">    pred_noise_masks = self.denoising_model([noisy_images, noise_rates])</span><br><span class="line">    <span class="comment"># Reconstructs the predicted clean image</span></span><br><span class="line">    pred_images = (</span><br><span class="line">        noisy_images - noise_rates * pred_noise_masks</span><br><span class="line">    ) / signal_rates</span><br><span class="line">    <span class="keyword">return</span> pred_images, pred_noise_masks</span><br></pre></td></tr></table></figure>
 <p>接下来是训练逻辑。这是最重要的部分！就像在 VAE 示例中一样，我们将实现一个自定义<code>compute_loss()</code> 方法，以确保模型与后端无关。当然，如果您坚持使用某个特定的后端，也可以编写一个<code>train_step()</code>包含完全相同逻辑的自定义方法，外加后端特有的梯度计算和权重更新逻辑。</p>
 <p>由于<code>compute_loss()</code>接收 的输出作为输入<code>call()</code>，我们将把去噪前向传播过程放在 中<code>call()</code>。我们的<code>call()</code>接收一批干净的输入图像，并应用以下步骤：</p>
-<ol>
+<ol type="1">
 <li>对图像进行归一化处理</li>
 <li>随机采样扩散时间（去噪模型需要用完整的扩散时间范围进行训练）</li>
 <li>计算相应的噪声率和信号率（使用扩散方案）</li>
@@ -529,7 +541,7 @@
 <li>预测噪声掩蔽</li>
 <li>它实际应用的噪声掩蔽</li>
 </ul>
-<ol>
+<ol type="1">
 <li>Normalizes the images</li>
 <li>Samples random diffusion times (the denoising model needs to be trained on the full spectrum of diffusion times)</li>
 <li>Computes corresponding noise rates and signal rates (using the diffusion schedule)</li>
@@ -552,20 +564,19 @@
 <p>这是一个非常深刻的哲学与数学兼具的问题。简单直接的答案是：<strong>不唯一。 （仁者见仁智者见智）</strong></p>
 <p>虽然你从“同一段纯噪声”出发，但在实际的 AI 生成（如 Stable Diffusion 或 DALL-E）过程中，去噪后的结果取决于多个<strong>变量</strong>。如果这些变量稍有不同，最终的图像就会完全不同。</p>
 <p>我们可以从以下三个层面来理解这种“不唯一性”：</p>
-<ol>
+<ol type="1">
 <li>引导信号的力量（Prompt / Conditioning）</li>
 </ol>
 <p>纯噪声本身是“混沌”的，它包含了生成任何图像的可能性。去噪过程之所以能产生有意义的图像，是因为模型接收到了<strong>引导信号</strong>。</p>
 <ul>
 <li><strong>实验</strong>：如果你给同一段噪声（相同的 Seed），但输入不同的 Prompt：
 <ul>
-<li>Prompt A：“一只奔跑的柯基” $\rightarrow$ 生成图像 A。</li>
-<li>Prompt B：“星空下的雪山” $\rightarrow$ 生成图像 B。</li>
-</ul>
-</li>
+<li>Prompt A：“一只奔跑的柯基” <span class="math inline">\(\rightarrow\)</span> 生成图像 A。</li>
+<li>Prompt B：“星空下的雪山” <span class="math inline">\(\rightarrow\)</span> 生成图像 B。</li>
+</ul></li>
 <li><strong>原理</strong>：去噪函数 <code>denoise()</code> 每一轮都在问：“在这团噪声中，哪个方向最像‘柯基’？”由于你的目标（Prompt）不同，噪声被剔除的方向就完全不同。</li>
 </ul>
-<ol start="2">
+<ol start="2" type="1">
 <li>采样算法的随机性（Stochastic Sampling）</li>
 </ol>
 <p>即便噪声相同、Prompt 也相同，图像依然可能不唯一，这取决于你使用的 <strong>采样器（Sampler）</strong>：</p>
@@ -573,22 +584,22 @@
 <li><strong>确定性采样（如 DDIM）</strong>：如果你固定了所有参数，它确实会产生唯一的图像。</li>
 <li><strong>随机性采样（如 Ancestral Samplers）</strong>：在每一轮 <code>denoise()</code> 的过程中，算法会故意注入一丁点<strong>新的微小噪声</strong>，以增加图像的细节和多样性。这就像是在下山的过程中，每走一步都轻微摇晃一下身体，最终落脚的点就会有偏差。</li>
 </ul>
-<ol start="3">
+<ol start="3" type="1">
 <li>潜在空间的“多对一”映射</li>
 </ol>
-<p>你摘录的那句话提到“从纯随机噪声开始”，这实际上是在**潜在空间（Latent Space）**中探路。</p>
+<p>你摘录的那句话提到“从纯随机噪声开始”，这实际上是在<strong>潜在空间（Latent Space）</strong>中探路。</p>
 <ul>
-<li><strong>多路径效应</strong>：去噪过程本质上是一个**常微分方程（ODE）**的求解过程。从一个起点（噪声）出发，理论上可以有无数条平滑的曲线通往不同的“有效图像”区域。</li>
+<li><strong>多路径效应</strong>：去噪过程本质上是一个<strong>常微分方程（ODE）</strong>的求解过程。从一个起点（噪声）出发，理论上可以有无数条平滑的曲线通往不同的“有效图像”区域。</li>
 <li><strong>收敛点</strong>：正如你之前看到的图 17.5，潜在空间是连续的。纯噪声就像是站在山顶，而每一幅“有效图像”都是山脚下的一个村庄。虽然你从同一个山顶出发，但只要下山时的重心稍微偏了一点点，你最终到达的村庄就可能完全不同。</li>
 </ul>
-<p>术语统一**：既然我们之前统一了术语，你可以写成：**“去噪过程实际上是在不断修正词元（Token）或像素的分布，使其从无意义的噪声回归到高概率的语义空间。”</p>
+<p>术语统一<strong>：既然我们之前统一了术语，你可以写成：</strong>“去噪过程实际上是在不断修正词元（Token）或像素的分布，使其从无意义的噪声回归到高概率的语义空间。”</p>
 </blockquote>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">generate</span>(<span class="params">self, num_images, diffusion_steps</span>):</span><br><span class="line">    noisy_images = keras.random.normal(</span><br><span class="line">        <span class="comment"># Starts from pure noise</span></span><br><span class="line">        (num_images, self.image_size, self.image_size, <span class="number">3</span>),</span><br><span class="line">        seed=self.seed_generator,</span><br><span class="line">    )</span><br><span class="line">    step_size = <span class="number">1.0</span> / diffusion_steps</span><br><span class="line">    <span class="keyword">for</span> step <span class="keyword">in</span> <span class="built_in">range</span>(diffusion_steps):</span><br><span class="line">        <span class="comment"># Computes appropriate noise rates and signal rates</span></span><br><span class="line">        diffusion_times = ops.ones((num_images, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>)) - step * step_size</span><br><span class="line">        noise_rates, signal_rates = diffusion_schedule(diffusion_times)</span><br><span class="line">        <span class="comment"># Calls denoising model</span></span><br><span class="line">        pred_images, pred_noises = self.denoise(</span><br><span class="line">            noisy_images, noise_rates, signal_rates</span><br><span class="line">        )</span><br><span class="line">        <span class="comment"># Prepares noisy images for the next iteration</span></span><br><span class="line">        next_diffusion_times = diffusion_times - step_size</span><br><span class="line">        next_noise_rates, next_signal_rates = diffusion_schedule(</span><br><span class="line">            next_diffusion_times</span><br><span class="line">        )</span><br><span class="line">        noisy_images = (</span><br><span class="line">            next_signal_rates * pred_images + next_noise_rates * pred_noises</span><br><span class="line">        )</span><br><span class="line">    <span class="comment"># Denormalizes images so their values fit between 0 and 255</span></span><br><span class="line">    images = (</span><br><span class="line">        self.normalizer.mean + pred_images * self.normalizer.variance**<span class="number">0.5</span></span><br><span class="line">    )</span><br><span class="line">    <span class="keyword">return</span> ops.clip(images, <span class="number">0.0</span>, <span class="number">255.0</span>)</span><br></pre></td></tr></table></figure>
 <h3 id="使用自定义回调函数可视化结果">使用自定义回调函数可视化结果</h3>
 <p>Visualizing results with a custom callback</p>
 <p>我们目前没有合适的指标来评判生成图像的质量，因此你需要在训练过程中自行可视化生成的图像，以判断模型是否取得了进展。一个简单的方法是使用自定义回调函数。以下回调函数<code>generate()</code>在每个训练周期结束时使用该方法显示一个 3 × 6 的生成图像网格：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">VisualizationCallback</span>(keras.callbacks.Callback):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, diffusion_steps=<span class="number">20</span>, num_rows=<span class="number">3</span>, num_cols=<span class="number">6</span></span>):</span><br><span class="line">        self.diffusion_steps = diffusion_steps</span><br><span class="line">        self.num_rows = num_rows</span><br><span class="line">        self.num_cols = num_cols</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">on_epoch_end</span>(<span class="params">self, epoch=<span class="literal">None</span>, logs=<span class="literal">None</span></span>):</span><br><span class="line">        generated_images = self.model.generate(</span><br><span class="line">            num_images=self.num_rows * self.num_cols,</span><br><span class="line">            diffusion_steps=self.diffusion_steps,</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">        plt.figure(figsize=(self.num_cols * <span class="number">2.0</span>, self.num_rows * <span class="number">2.0</span>))</span><br><span class="line">        <span class="keyword">for</span> row <span class="keyword">in</span> <span class="built_in">range</span>(self.num_rows):</span><br><span class="line">            <span class="keyword">for</span> col <span class="keyword">in</span> <span class="built_in">range</span>(self.num_cols):</span><br><span class="line">                i = row * self.num_cols + col</span><br><span class="line">                plt.subplot(self.num_rows, self.num_cols, i + <span class="number">1</span>)</span><br><span class="line">                img = ops.convert_to_numpy(generated_images[i]).astype(<span class="string">&quot;uint8&quot;</span>)</span><br><span class="line">                plt.imshow(img)</span><br><span class="line">                plt.axis(<span class="string">&quot;off&quot;</span>)</span><br><span class="line">        plt.tight_layout()</span><br><span class="line">        plt.show()</span><br><span class="line">        plt.close()</span><br></pre></td></tr></table></figure>
-<h3 id="行动时间到了！">行动时间到了！</h3>
+<h3 id="行动时间到了">行动时间到了！</h3>
 <p>It’s go time!</p>
 <p>现在终于到了用牛津花卉数据集训练扩散模型的时候了。让我们实例化模型：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">model = DiffusionModel(image_size, widths=[<span class="number">32</span>, <span class="number">64</span>, <span class="number">96</span>, <span class="number">128</span>], block_depth=<span class="number">2</span>)</span><br><span class="line"><span class="comment"># Computes the mean and variance necessary to perform normalization —</span></span><br><span class="line"><span class="comment"># don&#x27;t forget it!</span></span><br><span class="line">model.normalizer.adapt(dataset)</span><br></pre></td></tr></table></figure>
@@ -605,7 +616,7 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">model.fit(</span><br><span class="line">    dataset,</span><br><span class="line">    epochs=<span class="number">100</span>,</span><br><span class="line">    callbacks=[</span><br><span class="line">        VisualizationCallback(),</span><br><span class="line">        keras.callbacks.ModelCheckpoint(</span><br><span class="line">            filepath=<span class="string">&quot;diffusion_model.weights.h5&quot;</span>,</span><br><span class="line">            save_weights_only=<span class="literal">True</span>,</span><br><span class="line">            save_best_only=<span class="literal">True</span>,</span><br><span class="line">        ),</span><br><span class="line">    ],</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
 <p>如果您在 Colab 上运行程序，可能会遇到“缓冲数据达到输出大小限制后被截断”的错误。这是因为日志中<code>fit()</code>包含图像，图像会占用大量空间，而单个笔记本单元格允许的输出大小有限。要解决此问题，您可以简单地<code>model.fit(..., epochs=20)</code>在五个连续的单元格中调用五个函数。这相当于一次<code>fit(..., epochs=100)</code>调用。</p>
 <p>经过 100 个 epoch（在免费的 Colab GPU T4 上大约需要 90 分钟），我们得到了像这样的非常有生成性的花朵（见图 17.12）。</p>
-<p>![img](/img3/DEEP LEARNING with Python/generated_flowers.614c95f0.png)图 17.12：生成的花朵示例</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/generated_flowers.614c95f0.png" alt="img" />图 17.12：生成的花朵示例</p>
 <p>你可以继续训练更长时间，并获得越来越接近实际效果的结果。</p>
 <p>这就是扩散图像生成的工作原理！现在，要充分发挥它们的潜力，下一步就是添加<em>文本条件</em>，这将产生一个文本到图像的模型，能够生成与给定文本描述相匹配的图像。</p>
 <h2 id="文本转图像模型">文本转图像模型</h2>
@@ -616,11 +627,11 @@
 <p>我们来试试看。本书中我们不会从头开始训练这些模型——虽然你已经拥有所有必要的条件，但训练一个效果良好的文本到图像扩散模型既费时又费钱。因此，我们将使用 KerasHub 上一个流行的预训练模型，名为 Stable Diffusion（图 17.13）。Stable Diffusion 由一家名为 Stability AI 的公司开发，该公司专门制作用于图像和视频生成的开源模型。我们只需几行代码即可在 KerasHub 上使用他们的第三版图像生成模型：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> keras_hub</span><br><span class="line"></span><br><span class="line">height, width = <span class="number">512</span>, <span class="number">512</span></span><br><span class="line">task = keras_hub.models.TextToImage.from_preset(</span><br><span class="line">    <span class="string">&quot;stable_diffusion_3_medium&quot;</span>,</span><br><span class="line">    image_shape=(height, width, <span class="number">3</span>),</span><br><span class="line">    <span class="comment"># A trick to keep memory usage down. More details in chapter 18.</span></span><br><span class="line">    dtype=<span class="string">&quot;float16&quot;</span>,</span><br><span class="line">)</span><br><span class="line">prompt = <span class="string">&quot;A NASA astraunaut riding an origami elephant in New York City&quot;</span></span><br><span class="line">task.generate(prompt)</span><br></pre></td></tr></table></figure>
 <p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter17_image-generation/#listing-17-8">清单 17.8</a>：创建稳定的扩散文本到图像模型</p>
-<p>![img](/img3/DEEP LEARNING with Python/sd3-output.6c189acc.png)图 17.13：我们Stable Diffusion模型的一个输出示例</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/sd3-output.6c189acc.png" alt="img" />图 17.13：我们Stable Diffusion模型的一个输出示例</p>
 <p><code>CausalLM</code>和上一章介绍的任务类似，这个<code>TextToImage</code>任务是一个高级类，用于根据文本输入生成图像。它将分词和扩散过程封装到一个高级的生成调用中。</p>
 <p>Stable Diffusion模型实际上在其模型中添加了第二个“负面提示”，该提示可用于引导扩散过程避开某些文本输入。这并非什么神奇之处。要添加负面提示，只需训练一个基于三元组的模型即可：<code>(image, positive_prompt, negative_prompt)</code>，其中正面提示是对图像的描述，而负面提示是一系列不描述图像的词语。通过将正面和负面文本嵌入输入到去噪器中，去噪器将学习如何引导噪声流向与正面提示匹配的图像，并避开与负面提示匹配的图像（图 17.14）。让我们尝试从输入中移除蓝色：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">task.generate(</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="string">&quot;prompts&quot;</span>: prompt,</span><br><span class="line">        <span class="string">&quot;negative_prompts&quot;</span>: <span class="string">&quot;blue color&quot;</span>,</span><br><span class="line">    &#125;</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
-<p>![img](/img3/DEEP LEARNING with Python/sd3-output-negative.32fbdbe2.png)图 17.14：使用否定提示引导模型避开蓝色</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/sd3-output-negative.32fbdbe2.png" alt="img" />图 17.14：使用否定提示引导模型避开蓝色</p>
 <p><strong>Stable Diffusion输出中的视觉伪影</strong></p>
 <p>Visual artifacts in the Stable Diffusion output</p>
 <p>仔细观察我们的Stable Diffusion输出结果，你会发现很多视觉瑕疵。尤其值得注意的是，我们的第二头大象竟然有两根相同的象牙！</p>
@@ -628,7 +639,7 @@
 <p>然而，还有一个很容易解决的问题：我们使用的是 Stable Diffusion 3 的低配版。我们使用的“中等”模型是 Stability AI 发布的最小版本，总共使用了约 30 亿个参数。还有一个更大的模型，拥有 90 亿个参数，可以生成质量更高、视觉伪影更少的图像。我们没有使用它，仅仅是为了让本书中的代码示例易于理解——90 亿个参数需要大量的内存！</p>
 <p><code>generate()</code>与上一章中用于文本模型的方法类似，我们可以传递一些额外的参数来控制生成过程。让我们尝试向模型传递可变数量的扩散步骤，以观察去噪过程（图 17.15）：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">from</span> PIL <span class="keyword">import</span> Image</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">display</span>(<span class="params">images</span>):</span><br><span class="line">    <span class="keyword">return</span> Image.fromarray(np.concatenate(images, axis=<span class="number">1</span>))</span><br><span class="line"></span><br><span class="line">display([task.generate(prompt, num_steps=x) <span class="keyword">for</span> x <span class="keyword">in</span> [<span class="number">5</span>, <span class="number">10</span>, <span class="number">15</span>, <span class="number">20</span>, <span class="number">25</span>]])</span><br></pre></td></tr></table></figure>
-<p>![img](/img3/DEEP LEARNING with Python/sd3-output-steps.c490d938.png)图 17.15：控制扩散步骤数</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/sd3-output-steps.c490d938.png" alt="img" />图 17.15：控制扩散步骤数</p>
 <h3 id="探索文本到图像模型的潜在空间">探索文本到图像模型的潜在空间</h3>
 <p>Exploring the latent space of a text-to-image model</p>
 <p>要了解<strong>深度神经网络的插值特性</strong>，文本扩散模型或许是最佳途径。我们模型使用的文本编码器会学习一个平滑的低维流形来表示输入提示。它是连续的，这意味着我们学习到了一个空间，在这个空间中，我们可以从一个提示的文本表示延伸到另一个提示的文本表示，并且每个中间点都具有语义意义。我们可以将此与扩散过程相结合，只需用文本提示描述每个最终状态，即可在两幅图像之间进行变形。</p>
@@ -636,13 +647,13 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> keras <span class="keyword">import</span> random</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_text_embeddings</span>(<span class="params">prompt</span>):</span><br><span class="line">    token_ids = task.preprocessor.generate_preprocess([prompt])</span><br><span class="line">    <span class="comment"># We don&#x27;t care about negative prompts here, but the model expects</span></span><br><span class="line">    <span class="comment"># them.</span></span><br><span class="line">    negative_token_ids = task.preprocessor.generate_preprocess([<span class="string">&quot;&quot;</span>])</span><br><span class="line">    <span class="keyword">return</span> task.backbone.encode_text_step(token_ids, negative_token_ids)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">denoise_with_text_embeddings</span>(<span class="params">embeddings, num_steps=<span class="number">28</span>, guidance_scale=<span class="number">7.0</span></span>):</span><br><span class="line">    <span class="comment"># Creates pure noise to denoise into an image</span></span><br><span class="line">    latents = random.normal((<span class="number">1</span>, height // <span class="number">8</span>, width // <span class="number">8</span>, <span class="number">16</span>))</span><br><span class="line">    <span class="keyword">for</span> step <span class="keyword">in</span> <span class="built_in">range</span>(num_steps):</span><br><span class="line">        latents = task.backbone.denoise_step(</span><br><span class="line">            latents,</span><br><span class="line">            embeddings,</span><br><span class="line">            step,</span><br><span class="line">            num_steps,</span><br><span class="line">            guidance_scale,</span><br><span class="line">        )</span><br><span class="line">    <span class="keyword">return</span> task.backbone.decode_step(latents)[<span class="number">0</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># Rescales our images back to [0, 255]</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">scale_output</span>(<span class="params">x</span>):</span><br><span class="line">    x = ops.convert_to_numpy(x)</span><br><span class="line">    x = np.clip((x + <span class="number">1.0</span>) / <span class="number">2.0</span>, <span class="number">0.0</span>, <span class="number">1.0</span>)</span><br><span class="line">    <span class="keyword">return</span> np.<span class="built_in">round</span>(x * <span class="number">255.0</span>).astype(<span class="string">&quot;uint8&quot;</span>)</span><br><span class="line"></span><br><span class="line">embeddings = get_text_embeddings(prompt)</span><br><span class="line">image = denoise_with_text_embeddings(embeddings)</span><br><span class="line">scale_output(image)</span><br></pre></td></tr></table></figure>
 <p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter17_image-generation/#listing-17-9">清单 17.9</a><code>generate()</code> ：函数 分解</p>
 <p>我们的生成过程分为三个不同的步骤：</p>
-<ol>
+<ol type="1">
 <li>首先，我们将提示信息进行分词，然后使用文本编码器将其嵌入文本中。</li>
 <li>其次，我们利用文本嵌入和纯噪声，逐步“去噪”，最终得到一幅图像。这与我们刚才构建的花朵模型相同。</li>
 <li>最后，我们将模型输出映射回<code>[-1, 1]</code>原点<code>[0, 255]</code> ，以便渲染图像。</li>
 </ol>
-<hr>
-<ol>
+<hr />
+<ol type="1">
 <li>First, we take our prompts, tokenize them, and embed them with our text encoder.</li>
 <li>Second, we take our text embeddings and pure noise and progressively “denoise” the noise into an image. This is the same as the flower model we just built.</li>
 <li>Lastly, we map our model outputs, which are from <code>[-1, 1]</code> back to <code>[0, 255]</code> so we can render the image.</li>
@@ -666,11 +677,11 @@
 <p>你会注意到我们使用了一种名为“<code>slerp</code>在文本嵌入之间移动”的特殊插值函数。它是<em>球面线性插值</em>的缩写 ——这种函数在计算机图形学中已经使用了几十年，用于对球面上的点进行插值。</p>
 <p>You’ll notice we use a special interpolation function called slerp to walk between our text embeddings. This is short for spherical linear interpolation—it’s a function that has been used in computer graphics for decades to interpolate points on a sphere.</p>
 <p>不必过于纠结数学细节；它对我们的例子并不重要，但理解其背后的动机至关重要。如果我们把文本流形想象成一个球体，把两个提示信息想象成球体上的随机点，那么直接在这两个点之间进行线性插值会将我们置于球体内部，不再位于球面上。我们希望保持在由文本嵌入学习到的光滑流形的表面上——这正是嵌入点对我们的去噪模型有意义的地方。参见图 17.16。</p>
-<p>![img](/img3/DEEP LEARNING with Python/slerp.eea42213.png)图 17.16：球面插值使我们靠近流形的表面。</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/slerp.eea42213.png" alt="img" />图 17.16：球面插值使我们靠近流形的表面。</p>
 <p>当然，我们的文本嵌入模型学习到的流形实际上并不是球面。但它是一个由数值构成的光滑曲面，所有数值的大小大致相同——它<em>类似于球面</em>，而且像在球面上一样进行插值比像在直线上一样进行插值要好得多。</p>
 <p>定义好插值后，我们尝试在两个提示的文本嵌入之间移动，并在每个插值输出处生成图像。我们将 slerp 函数从 0.5 运行到 0.6（范围为 0 到 1），以放大插值区域的中心，此时“变形”在视觉上变得明显（图 17.17）：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">prompt1 = <span class="string">&quot;A friendly dog looking up in a field of flowers&quot;</span></span><br><span class="line">prompt2 = <span class="string">&quot;A horrifying, tentacled creature hovering over a field of flowers&quot;</span></span><br><span class="line">e1 = get_text_embeddings(prompt1)</span><br><span class="line">e2 = get_text_embeddings(prompt2)</span><br><span class="line"></span><br><span class="line">images = []</span><br><span class="line"><span class="comment"># Zooms in to the middle of the overall interpolation from [0, 1]</span></span><br><span class="line"><span class="keyword">for</span> et <span class="keyword">in</span> interpolate_text_embeddings(e1, e2, start=<span class="number">0.5</span>, stop=<span class="number">0.6</span>, num=<span class="number">9</span>):</span><br><span class="line">    image = denoise_with_text_embeddings(et)</span><br><span class="line">    images.append(scale_output(image))</span><br><span class="line">display(images)</span><br></pre></td></tr></table></figure>
-<p>![img](/img3/DEEP LEARNING with Python/sd3-morph.40f60bd8.png)图 17.17：在两个提示之间进行插值并生成输出</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/sd3-morph.40f60bd8.png" alt="img" />图 17.17：在两个提示之间进行插值并生成输出</p>
 <p><strong>第一次尝试时，你可能会觉得这很神奇，但其实并非如此——插值是深度神经网络学习的基础。这将是本书中我们讨论的最后一个实质性模型，也是一个绝佳的视觉隐喻，可以作为本书的结尾。深度神经网络本质上就是插值机器；它们将复杂的现实世界概率分布映射到低维流形上。即使对于像人类语言这样复杂的输入和像自然图像这样复杂的输出，我们也能利用这一特性。</strong></p>
 <h2 id="概括">概括</h2>
 <ul>
@@ -681,31 +692,31 @@
 <li>此类文本到图像扩散模型学习到的视觉潜在空间本质上是插值的。这一点可以通过对用作扩散过程输入的文本嵌入进行插值，并在输出图像之间实现平滑插值来验证。</li>
 </ul>
 <p><strong>脚注</strong></p>
-<ol>
-<li>Diederik P. Kingma 和 Max Welling，“自编码变分贝叶斯”，arXiv (2013)，<a target="_blank" rel="noopener" href="https://arxiv.org/abs/1312.6114%E3%80%82">https://arxiv.org/abs/1312.6114。</a></li>
-<li>Danilo Jimenez Rezende、Shakir Mohamed 和 Daan Wierstra，“深度生成模型中的随机反向传播和近似推理”，arXiv (2014)，<a target="_blank" rel="noopener" href="https://arxiv.org/abs/1401.4082%E3%80%82">https://arxiv.org/abs/1401.4082。</a></li>
+<ol type="1">
+<li>Diederik P. Kingma 和 Max Welling，“自编码变分贝叶斯”，arXiv (2013)，https://arxiv.org/abs/1312.6114。</li>
+<li>Danilo Jimenez Rezende、Shakir Mohamed 和 Daan Wierstra，“深度生成模型中的随机反向传播和近似推理”，arXiv (2014)，https://arxiv.org/abs/1401.4082。</li>
 </ol>
-<p>书籍各章的机翻md文件：</p>
-<a href="/2026/02/16/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B1%E3%80%81%E4%BB%80%E4%B9%88%E6%98%AF%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" title="《DEEP LEARNING with Python》第一章 什么是深度学习？">《DEEP LEARNING with Python》第一章 什么是深度学习？</a>  
-<a href="/2026/02/17/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B2%E3%80%81%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/" title="《DEEP LEARNING with Python》第二章 神经网络的数学基础">《DEEP LEARNING with Python》第二章 神经网络的数学基础</a>  
-<a href="/2026/02/18/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B3%E3%80%81TensorFlow%E3%80%81PyTorch%E3%80%81JAX%20%E5%92%8C%20Keras%20%E7%AE%80%E4%BB%8B/" title="《DEEP LEARNING with Python》第三章 TensorFlow、PyTorch、JAX 和 Keras 简介">《DEEP LEARNING with Python》第三章 TensorFlow、PyTorch、JAX 和 Keras 简介</a>  
-<a href="/2026/02/19/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B4%E3%80%81%E5%88%86%E7%B1%BB%E4%B8%8E%E5%9B%9E%E5%BD%92/" title="《DEEP LEARNING with Python》第四章 分类与回归">《DEEP LEARNING with Python》第四章 分类与回归</a>  
-<a href="/2026/02/20/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B5%E3%80%81%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80/" title="《DEEP LEARNING with Python》第五章 机器学习基础">《DEEP LEARNING with Python》第五章 机器学习基础</a>  
-<a href="/2026/02/21/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B6%E3%80%81%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E9%80%9A%E7%94%A8%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B/" title="《DEEP LEARNING with Python》第六章 机器学习的通用工作流程">《DEEP LEARNING with Python》第六章 机器学习的通用工作流程</a>  
-<a href="/2026/02/22/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B7%E3%80%81%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3%20Keras/" title="《DEEP LEARNING with Python》第七章 深入了解 Keras">《DEEP LEARNING with Python》第七章 深入了解 Keras</a>  
-<a href="/2026/02/23/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B8%E3%80%81%E5%9B%BE%E5%83%8F%E5%88%86%E7%B1%BB/" title="《DEEP LEARNING with Python》第八章 图像分类">《DEEP LEARNING with Python》第八章 图像分类</a>  
-<a href="/2026/02/24/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B9%E3%80%81%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E6%9E%B6%E6%9E%84%E6%A8%A1%E5%BC%8F/" title="《DEEP LEARNING with Python》第九章 卷积神经网络架构模式">《DEEP LEARNING with Python》第九章 卷积神经网络架构模式</a>  
-<a href="/2026/02/25/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B10%E3%80%81%E8%A7%A3%E8%AF%BB%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%9A%84%E5%AD%A6%E4%B9%A0%E6%88%90%E6%9E%9C/" title="《DEEP LEARNING with Python》第十章 解读卷积神经网络的学习成果">《DEEP LEARNING with Python》第十章 解读卷积神经网络的学习成果</a>  
-<a href="/2026/02/26/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B11%E3%80%81%E5%9B%BE%E5%83%8F%E5%88%86%E5%89%B2/" title="《DEEP LEARNING with Python》第十一章 图像分割">《DEEP LEARNING with Python》第十一章 图像分割</a>  
-<a href="/2026/02/27/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B12%E3%80%81%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/" title="《DEEP LEARNING with Python》第十二章 目标检测">《DEEP LEARNING with Python》第十二章 目标检测</a>  
-<a href="/2026/02/28/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B13%E3%80%81%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E9%A2%84%E6%B5%8B/" title="《DEEP LEARNING with Python》第十三章 时间序列预测">《DEEP LEARNING with Python》第十三章 时间序列预测</a>  
-<a href="/2026/03/04/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B14%E3%80%81%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB/" title="《DEEP LEARNING with Python》第十四章 文本分类">《DEEP LEARNING with Python》第十四章 文本分类</a>  
-<a href="/2026/03/05/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B15%E3%80%81%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%92%8CTransformer/" title="《DEEP LEARNING with Python》第十五章 语言模型和Transformer">《DEEP LEARNING with Python》第十五章 语言模型和Transformer</a>  
-<a href="/2026/03/06/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B16%E3%80%81%E6%96%87%E6%9C%AC%E7%94%9F%E6%88%90/" title="《DEEP LEARNING with Python》第十六章 文本生成">《DEEP LEARNING with Python》第十六章 文本生成</a>  
-<a href="/2026/03/07/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B17%E3%80%81%E5%9B%BE%E5%83%8F%E7%94%9F%E6%88%90/" title="《DEEP LEARNING with Python》第十七章 图像生成">《DEEP LEARNING with Python》第十七章 图像生成</a>  
-<a href="/2026/03/08/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B18%E3%80%81%E7%8E%B0%E5%AE%9E%E4%B8%96%E7%95%8C%E7%9A%84%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/" title="《DEEP LEARNING with Python》第十八章 现实世界的最佳实践">《DEEP LEARNING with Python》第十八章 现实世界的最佳实践</a>  
-<a href="/2026/03/09/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B19%E3%80%81%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD%E7%9A%84%E6%9C%AA%E6%9D%A5/" title="《DEEP LEARNING with Python》第十九章 人工智能的未来">《DEEP LEARNING with Python》第十九章 人工智能的未来</a>  
-<a href="/2026/03/10/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B20%E3%80%81%E7%BB%93%E8%AE%BA/" title="《DEEP LEARNING with Python》第二十章 结论">《DEEP LEARNING with Python》第二十章 结论</a>  
+<p>书籍各章的机翻md文件：<br />
+<a href="/2026/02/16/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B1%E3%80%81%E4%BB%80%E4%B9%88%E6%98%AF%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" title="《DEEP LEARNING with Python》第一章 什么是深度学习？">《DEEP LEARNING with Python》第一章 什么是深度学习？</a><br />
+<a href="/2026/02/17/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B2%E3%80%81%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/" title="《DEEP LEARNING with Python》第二章 神经网络的数学基础">《DEEP LEARNING with Python》第二章 神经网络的数学基础</a><br />
+<a href="/2026/02/18/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B3%E3%80%81TensorFlow%E3%80%81PyTorch%E3%80%81JAX%20%E5%92%8C%20Keras%20%E7%AE%80%E4%BB%8B/" title="《DEEP LEARNING with Python》第三章 TensorFlow、PyTorch、JAX 和 Keras 简介">《DEEP LEARNING with Python》第三章 TensorFlow、PyTorch、JAX 和 Keras 简介</a><br />
+<a href="/2026/02/19/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B4%E3%80%81%E5%88%86%E7%B1%BB%E4%B8%8E%E5%9B%9E%E5%BD%92/" title="《DEEP LEARNING with Python》第四章 分类与回归">《DEEP LEARNING with Python》第四章 分类与回归</a><br />
+<a href="/2026/02/20/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B5%E3%80%81%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80/" title="《DEEP LEARNING with Python》第五章 机器学习基础">《DEEP LEARNING with Python》第五章 机器学习基础</a><br />
+<a href="/2026/02/21/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B6%E3%80%81%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E9%80%9A%E7%94%A8%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B/" title="《DEEP LEARNING with Python》第六章 机器学习的通用工作流程">《DEEP LEARNING with Python》第六章 机器学习的通用工作流程</a><br />
+<a href="/2026/02/22/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B7%E3%80%81%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3%20Keras/" title="《DEEP LEARNING with Python》第七章 深入了解 Keras">《DEEP LEARNING with Python》第七章 深入了解 Keras</a><br />
+<a href="/2026/02/23/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B8%E3%80%81%E5%9B%BE%E5%83%8F%E5%88%86%E7%B1%BB/" title="《DEEP LEARNING with Python》第八章 图像分类">《DEEP LEARNING with Python》第八章 图像分类</a><br />
+<a href="/2026/02/24/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B9%E3%80%81%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E6%9E%B6%E6%9E%84%E6%A8%A1%E5%BC%8F/" title="《DEEP LEARNING with Python》第九章 卷积神经网络架构模式">《DEEP LEARNING with Python》第九章 卷积神经网络架构模式</a><br />
+<a href="/2026/02/25/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B10%E3%80%81%E8%A7%A3%E8%AF%BB%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%9A%84%E5%AD%A6%E4%B9%A0%E6%88%90%E6%9E%9C/" title="《DEEP LEARNING with Python》第十章 解读卷积神经网络的学习成果">《DEEP LEARNING with Python》第十章 解读卷积神经网络的学习成果</a><br />
+<a href="/2026/02/26/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B11%E3%80%81%E5%9B%BE%E5%83%8F%E5%88%86%E5%89%B2/" title="《DEEP LEARNING with Python》第十一章 图像分割">《DEEP LEARNING with Python》第十一章 图像分割</a><br />
+<a href="/2026/02/27/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B12%E3%80%81%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/" title="《DEEP LEARNING with Python》第十二章 目标检测">《DEEP LEARNING with Python》第十二章 目标检测</a><br />
+<a href="/2026/02/28/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B13%E3%80%81%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E9%A2%84%E6%B5%8B/" title="《DEEP LEARNING with Python》第十三章 时间序列预测">《DEEP LEARNING with Python》第十三章 时间序列预测</a><br />
+<a href="/2026/03/04/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B14%E3%80%81%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB/" title="《DEEP LEARNING with Python》第十四章 文本分类">《DEEP LEARNING with Python》第十四章 文本分类</a><br />
+<a href="/2026/03/05/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B15%E3%80%81%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%92%8CTransformer/" title="《DEEP LEARNING with Python》第十五章 语言模型和Transformer">《DEEP LEARNING with Python》第十五章 语言模型和Transformer</a><br />
+<a href="/2026/03/06/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B16%E3%80%81%E6%96%87%E6%9C%AC%E7%94%9F%E6%88%90/" title="《DEEP LEARNING with Python》第十六章 文本生成">《DEEP LEARNING with Python》第十六章 文本生成</a><br />
+<a href="/2026/03/07/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B17%E3%80%81%E5%9B%BE%E5%83%8F%E7%94%9F%E6%88%90/" title="《DEEP LEARNING with Python》第十七章 图像生成">《DEEP LEARNING with Python》第十七章 图像生成</a><br />
+<a href="/2026/03/08/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B18%E3%80%81%E7%8E%B0%E5%AE%9E%E4%B8%96%E7%95%8C%E7%9A%84%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/" title="《DEEP LEARNING with Python》第十八章 现实世界的最佳实践">《DEEP LEARNING with Python》第十八章 现实世界的最佳实践</a><br />
+<a href="/2026/03/09/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B19%E3%80%81%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD%E7%9A%84%E6%9C%AA%E6%9D%A5/" title="《DEEP LEARNING with Python》第十九章 人工智能的未来">《DEEP LEARNING with Python》第十九章 人工智能的未来</a><br />
+<a href="/2026/03/10/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B20%E3%80%81%E7%BB%93%E8%AE%BA/" title="《DEEP LEARNING with Python》第二十章 结论">《DEEP LEARNING with Python》第二十章 结论</a></p>
 
     </div>
 
@@ -774,5 +785,14 @@
   <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
 </noscript>
 
-</body>
+
+    <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+    <script src="/_pagefind/pagefind-ui.js"></script>
+    <div id="search" style="margin: 20px; border-top: 1px solid #eee;"></div>
+    <script>
+      window.addEventListener('DOMContentLoaded', (event) => {
+          new PagefindUI({ element: "#search", showImages: false });
+      });
+    </script>
+  </body>
 </html>
