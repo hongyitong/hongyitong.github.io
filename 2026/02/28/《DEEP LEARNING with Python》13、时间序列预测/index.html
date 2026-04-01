@@ -26,10 +26,24 @@
 <meta property="og:site_name" content="墨语浮生">
 <meta property="og:description" content="第十三章 时间序列预测 Timeseries forecasting 运行代码 在 Colab 上运行 在 GitHub 上查看 本章内容  时间序列机器学习概述 理解循环神经网络（RNN） 将循环神经网络应用于温度预测示例 An overview of machine learning for timeseries Understanding recurrent neural networks">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/temperature_over_several_years.365f2e2e.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/temperature_over_several_days.975eb51a.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/dense_model_metrics.8448f47a.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/conv_model_metrics.fe487977.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/lstm_model_metrics.ae01dd09.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/simplernn.822d53ed.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/unrolled_lstm_1.d9bee30c.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/unrolled_lstm_1.d9bee30c.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/unrolled_lstm_2.4145ecdf.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/unrolled_lstm_3.1f68b33f.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/lstm_dropout_model_metrics.a624dc88.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/stacked_gru_dropout_model_metrics.5bfbf251.png">
+<meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/bidirectional_rnn.a38aaba4.png">
 <meta property="article:published_time" content="2026-02-27T16:00:00.000Z">
 <meta property="article:modified_time" content="2026-03-29T03:32:14.550Z">
 <meta property="article:author" content="Rayman.hung">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/temperature_over_several_years.365f2e2e.png">
 
 
 <link rel="canonical" href="http://hongyitong.github.io/2026/02/28/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B13%E3%80%81%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E9%A2%84%E6%B5%8B/">
@@ -134,7 +148,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8D%E5%90%8C%E7%B1%BB%E5%9E%8B%E7%9A%84%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E4%BB%BB%E5%8A%A1"><span class="nav-text">不同类型的时间序列任务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B8%A9%E5%BA%A6%E9%A2%84%E6%B5%8B%E7%A4%BA%E4%BE%8B"><span class="nav-text">温度预测示例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%87%86%E5%A4%87"><span class="nav-text">数据准备</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E4%B8%AA%E7%AC%A6%E5%90%88%E5%B8%B8%E8%AF%86%E3%80%81%E9%9D%9E%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E5%9F%BA%E7%BA%BF"><span class="nav-text">一个符合常识、非机器学习的基线</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%88%91%E4%BB%AC%E6%9D%A5%E5%B0%9D%E8%AF%95%E4%B8%80%E4%B8%AA%E5%9F%BA%E6%9C%AC%E7%9A%84%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%A8%A1%E5%9E%8B"><span class="nav-text">我们来尝试一个基本的机器学习模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%88%91%E4%BB%AC%E6%9D%A5%E5%B0%9D%E8%AF%95%E4%B8%80%E4%B8%8B%E4%B8%80%E7%BB%B4%E5%8D%B7%E7%A7%AF%E6%A8%A1%E5%9E%8B"><span class="nav-text">我们来尝试一下一维卷积模型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BE%AA%E7%8E%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C"><span class="nav-text">循环神经网络</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%90%86%E8%A7%A3%E5%BE%AA%E7%8E%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C"><span class="nav-text">理解循环神经网络</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Keras-%E4%B8%AD%E7%9A%84%E9%87%8D%E5%A4%8D%E5%B1%82"><span class="nav-text">Keras 中的重复层</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%85%E5%88%86%E5%8F%91%E6%8C%A5%E5%BE%AA%E7%8E%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%9A%84%E6%BD%9C%E5%8A%9B"><span class="nav-text">充分发挥循环神经网络的潜力</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%A9%E7%94%A8%E5%BE%AA%E7%8E%AF%E4%B8%A2%E5%BC%83%E6%9D%A5%E5%AF%B9%E6%8A%97%E8%BF%87%E6%8B%9F%E5%90%88"><span class="nav-text">利用循环丢弃来对抗过拟合</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A0%86%E5%8F%A0%E5%BE%AA%E7%8E%AF%E5%B1%82"><span class="nav-text">堆叠循环层</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%8F%8C%E5%90%91%E5%BE%AA%E7%8E%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C"><span class="nav-text">使用双向循环神经网络</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9B%B4%E8%BF%9B%E4%B8%80%E6%AD%A5"><span class="nav-text">更进一步</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E6%8B%AC"><span class="nav-text">概括</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8D%E5%90%8C%E7%B1%BB%E5%9E%8B%E7%9A%84%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E4%BB%BB%E5%8A%A1"><span class="nav-text">不同类型的时间序列任务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B8%A9%E5%BA%A6%E9%A2%84%E6%B5%8B%E7%A4%BA%E4%BE%8B"><span class="nav-text">温度预测示例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%87%86%E5%A4%87"><span class="nav-text">数据准备</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E4%B8%AA%E7%AC%A6%E5%90%88%E5%B8%B8%E8%AF%86%E9%9D%9E%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E5%9F%BA%E7%BA%BF"><span class="nav-text">一个符合常识、非机器学习的基线</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%88%91%E4%BB%AC%E6%9D%A5%E5%B0%9D%E8%AF%95%E4%B8%80%E4%B8%AA%E5%9F%BA%E6%9C%AC%E7%9A%84%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%A8%A1%E5%9E%8B"><span class="nav-text">我们来尝试一个基本的机器学习模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%88%91%E4%BB%AC%E6%9D%A5%E5%B0%9D%E8%AF%95%E4%B8%80%E4%B8%8B%E4%B8%80%E7%BB%B4%E5%8D%B7%E7%A7%AF%E6%A8%A1%E5%9E%8B"><span class="nav-text">我们来尝试一下一维卷积模型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BE%AA%E7%8E%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C"><span class="nav-text">循环神经网络</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%90%86%E8%A7%A3%E5%BE%AA%E7%8E%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C"><span class="nav-text">理解循环神经网络</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#keras-%E4%B8%AD%E7%9A%84%E9%87%8D%E5%A4%8D%E5%B1%82"><span class="nav-text">Keras 中的重复层</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%85%E5%88%86%E5%8F%91%E6%8C%A5%E5%BE%AA%E7%8E%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%9A%84%E6%BD%9C%E5%8A%9B"><span class="nav-text">充分发挥循环神经网络的潜力</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%A9%E7%94%A8%E5%BE%AA%E7%8E%AF%E4%B8%A2%E5%BC%83%E6%9D%A5%E5%AF%B9%E6%8A%97%E8%BF%87%E6%8B%9F%E5%90%88"><span class="nav-text">利用循环丢弃来对抗过拟合</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A0%86%E5%8F%A0%E5%BE%AA%E7%8E%AF%E5%B1%82"><span class="nav-text">堆叠循环层</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%8F%8C%E5%90%91%E5%BE%AA%E7%8E%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C"><span class="nav-text">使用双向循环神经网络</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9B%B4%E8%BF%9B%E4%B8%80%E6%AD%A5"><span class="nav-text">更进一步</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E6%8B%AC"><span class="nav-text">概括</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -247,10 +261,10 @@
 <li>将循环神经网络应用于温度预测示例</li>
 <li>An overview of machine learning for timeseries</li>
 <li>Understanding recurrent neural networks (RNNs)</li>
-<li>Applying RNNs to a temperature forecasting  example</li>
+<li>Applying RNNs to a temperature forecasting example</li>
 </ul>
 <p>本章探讨时间序列，其中时间顺序至关重要。我们将重点关注最常见且最有价值的时间序列任务：预测。利用近期数据预测未来趋势是一项强大的能力，无论您是想预测能源需求、管理库存，还是仅仅预测天气。</p>
-<span id="more"></span>  
+<span id="more"></span>
 <h2 id="不同类型的时间序列任务">不同类型的时间序列任务</h2>
 <p>Different kinds of timeseries tasks</p>
 <p>时间<em>序列</em>可以是任何通过定期测量获得的数据，例如股票的每日价格、城市的每小时用电量或商店的每周销售额。时间序列无处不在，无论我们观察的是自然现象（例如地震活动、河流中鱼类种群的演变或某个地点的天气），还是人类活动模式（例如网站访问量、国家GDP或信用卡交易）。与您目前接触过的数据类型不同，处理时间序列需要理解系统的<em>动态特性</em>——其周期性变化、随时间推移的趋势、常规状态以及突发峰值。</p>
@@ -259,7 +273,7 @@
 <li><em>异常检测</em>——检测连续数据流中发生的任何异常情况。企业网络出现异常活动？可能是攻击者。生产线上的读数异常？需要人工检查。异常检测通常采用无监督学习，因为您通常不知道要查找哪种异常，因此无法使用特定的异常示例进行训练。</li>
 <li><em>分类</em>——为时间序列分配一个或多个类别标签。例如，给定网站访问者的活动时间序列，判断该访问者是机器人还是真人。</li>
 <li><em>事件检测</em>——识别连续数据流中特定预期事件的发生情况。一个特别有用的应用是“热词检测”，其中模型监控音频流并检测诸如“OK Google”或“Hey Alexa”之类的语音指令。</li>
-<li>Anomaly detection—Detect anything unusual happening within a continuous  data stream. Unusual activity on your corporate network? Might be an attacker. Unusual readings on a manufacturing line? Time for a human to go take a look. Anomaly detection is typically done via unsupervised learning, because you often don’t know what kind of anomaly you’relooking for, and thus you can’t train on specific anomaly examples.</li>
+<li>Anomaly detection—Detect anything unusual happening within a continuous data stream. Unusual activity on your corporate network? Might be an attacker. Unusual readings on a manufacturing line? Time for a human to go take a look. Anomaly detection is typically done via unsupervised learning, because you often don’t know what kind of anomaly you’relooking for, and thus you can’t train on specific anomaly examples.</li>
 <li>Classification—Assign one or more categorical labels to a timeseries. For instance, given the timeseries of activity of a visitor on a website, classify whether the visitor is a bot or a human.</li>
 <li>Event detection—Identify the occurrence of a specific, expected event within a continuous data stream. A particularly useful application is “hotword detection,” where a model monitors an audio stream and detects utterances like “OK, Google” or “Hey, Alexa.”</li>
 </ul>
@@ -282,15 +296,15 @@
 <p>图 13.1 显示了温度（单位：摄氏度）随时间变化的曲线图。从图中可以清晰地看出温度的年度周期性变化——数据跨越了八年。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> matplotlib <span class="keyword">import</span> pyplot <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line">plt.plot(<span class="built_in">range</span>(<span class="built_in">len</span>(temperature)), temperature)</span><br></pre></td></tr></table></figure>
 <p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter13_timeseries-forecasting/#listing-13-3">清单 13.3</a>：绘制温度时间序列图</p>
-<p>![img](/img3/DEEP LEARNING with Python/temperature_over_several_years.365f2e2e.png)图 13.1：数据集整个时间范围内的温度（ºC）</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/temperature_over_several_years.365f2e2e.png" alt="img" />图 13.1：数据集整个时间范围内的温度（ºC）</p>
 <p>图 13.2 显示了前 10 天温度数据的更窄范围图。由于数据每 10 分钟记录一次，因此每天有 24 × 6 = 144 个数据点。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">plt.plot(<span class="built_in">range</span>(<span class="number">1440</span>), temperature[:<span class="number">1440</span>])</span><br></pre></td></tr></table></figure>
 <p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter13_timeseries-forecasting/#listing-13-4">清单 13.4</a>：绘制温度时间序列的前 10 天</p>
-<p>![img](/img3/DEEP LEARNING with Python/temperature_over_several_days.975eb51a.png)图 13.2：数据集前 10 天的温度（ºC）</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/temperature_over_several_days.975eb51a.png" alt="img" />图 13.2：数据集前 10 天的温度（ºC）</p>
 <p>从这张图中可以看出每日周期性变化，尤其最近四天更为明显。另外需要注意的是，这十天的周期应该来自一个相当寒冷的冬季月份。</p>
-<p>**时间序列数据具有跨多个时间尺度的周期性，这是一个重要且非常常见的特征。**无论是天气、商场停车场占用率、网站流量、超市销售额，还是健身追踪器记录的步数，你都会看到每日周期和年度周期（人为生成的数据通常也具有每周周期）。在探索数据时，务必留意这些模式。</p>
+<p><strong>时间序列数据具有跨多个时间尺度的周期性，这是一个重要且非常常见的特征。</strong>无论是天气、商场停车场占用率、网站流量、超市销售额，还是健身追踪器记录的步数，你都会看到每日周期和年度周期（人为生成的数据通常也具有每周周期）。在探索数据时，务必留意这些模式。</p>
 <p>如果使用我们的数据集，根据过去几个月的数据预测下个月的平均气温，由于数据具有可靠的年度周期性，这个问题很容易解决。但如果将数据尺度缩小到天，气温的变化就显得更加混乱。那么，这个时间序列在日尺度上是可以预测的吗？让我们一探究竟。</p>
-<p>在所有实验中，我们将使用前 50% 的数据进行训练，接下来的 25% 用于验证，最后 25% 用于测试。**处理时间序列数据时，使用比训练数据更新的验证和测试数据至关重要，因为我们试图根据过去预测未来，而不是反过来，因此验证/测试数据的划分应该反映这种时间顺序。**有些问题如果反转时间轴，反而会变得简单得多！</p>
+<p>在所有实验中，我们将使用前 50% 的数据进行训练，接下来的 25% 用于验证，最后 25% 用于测试。<strong>处理时间序列数据时，使用比训练数据更新的验证和测试数据至关重要，因为我们试图根据过去预测未来，而不是反过来，因此验证/测试数据的划分应该反映这种时间顺序。</strong>有些问题如果反转时间轴，反而会变得简单得多！</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; num_train_samples = int(0.5 * len(raw_data))</span><br><span class="line">&gt;&gt;&gt; num_val_samples = int(0.25 * len(raw_data))</span><br><span class="line">&gt;&gt;&gt; num_test_samples = len(raw_data) - num_train_samples - num_val_samples</span><br><span class="line">&gt;&gt;&gt; print(&quot;num_train_samples:&quot;, num_train_samples)</span><br><span class="line">&gt;&gt;&gt; print(&quot;num_val_samples:&quot;, num_val_samples)</span><br><span class="line">&gt;&gt;&gt; print(&quot;num_test_samples:&quot;, num_test_samples)</span><br><span class="line">num_train_samples: 210225</span><br><span class="line">num_val_samples: 105112</span><br><span class="line">num_test_samples: 105114</span><br></pre></td></tr></table></figure>
 <p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter13_timeseries-forecasting/#listing-13-5">清单 13.5</a>：计算每次数据分割的样本数量</p>
 <h3 id="数据准备">数据准备</h3>
@@ -327,15 +341,15 @@
 <p>个人注：</p>
 <p>在处理时间序列时，初学者往往会陷入一个直觉误区：认为“<strong>训练过程的随机化</strong>”会破坏“<strong>时间维度的连续性</strong>”。</p>
 <p>其实，我们需要区分两个完全不同的概念：<strong>序列内部的连续性</strong>（Temporal Order inside a sample）和<strong>样本之间的顺序</strong>（Order of samples in a batch）。</p>
-<ol>
+<ol type="1">
 <li>序列内部：必须严格有序</li>
 </ol>
 <p>对于每一个单独的样本（Sample），比如你提到的那 <strong>120 小时</strong> 的数据，它的内部逻辑必须是严格按时间排序的：</p>
 <ul>
-<li>$t_1, t_2, \ldots, t_{120}$ $\rightarrow$ 预测 $t_{121}$。</li>
+<li><span class="math inline">\(t_1, t_2, \ldots, t_{120}\)</span> <span class="math inline">\(\rightarrow\)</span> 预测 <span class="math inline">\(t_{121}\)</span>。</li>
 <li>如果你把这 120 小时内部打乱，模型就无法学习到“趋势”和“周期”，卷积或循环神经网络也就失去了意义。</li>
 </ul>
-<ol start="2">
+<ol start="2" type="1">
 <li>样本之间：为什么要随机打乱（Shuffle）？</li>
 </ol>
 <p>当你把成千上万个“120 小时长”的片段喂给模型时，为什么要打乱这些片段的先后顺序（比如让 <code>samples[0]</code> 是 1 月份的数据，<code>samples[1]</code> 是 8 月份的数据）？</p>
@@ -348,14 +362,14 @@
 </ul>
 <p>B. 避免过拟合到特定序列</p>
 <p>如果模型总是以相同的顺序看到数据，它可能会产生一种“作弊”式记忆，记住“1 月之后必接 2 月”这种宏观顺序，而不是学习如何根据前 120 小时的特征来推断未来。</p>
-<ol start="3">
+<ol start="3" type="1">
 <li>形象的类比：就像考卷上的题目</li>
 </ol>
 <ul>
 <li><strong>序列内部</strong>：就像一道数学证明题。步骤 1、步骤 2、步骤 3 必须按顺序写，否则逻辑不通。</li>
 <li><strong>样本打乱</strong>：就像整张考卷有 100 道证明题。你可以先做第 50 题，再做第 1 题，这并不会影响你完成某一道具体题目时的逻辑，反而能防止你因为疲劳或思维定式（比如以为后面的题一定比前面的难）而产生偏差。</li>
 </ul>
-<ol start="4">
+<ol start="4" type="1">
 <li>例外情况：什么时候不能打乱？</li>
 </ol>
 <p>只有在一种特殊情况下，样本顺序不能乱：<strong>有状态的 RNN (Stateful RNN)</strong>。</p>
@@ -363,7 +377,7 @@
 </blockquote>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; for samples, targets in train_dataset:</span><br><span class="line">&gt;&gt;&gt;     print(&quot;samples shape:&quot;, samples.shape)</span><br><span class="line">&gt;&gt;&gt;     print(&quot;targets shape:&quot;, targets.shape)</span><br><span class="line">&gt;&gt;&gt;     break</span><br><span class="line">samples shape: (256, 120, 14)</span><br><span class="line">targets shape: (256,)</span><br></pre></td></tr></table></figure>
 <p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter13_timeseries-forecasting/#listing-13-8">清单 13.8</a>：检查数据集</p>
-<h3 id="一个符合常识、非机器学习的基线">一个符合常识、非机器学习的基线</h3>
+<h3 id="一个符合常识非机器学习的基线">一个符合常识、非机器学习的基线</h3>
 <p>A commonsense, non-machine-learning baseline</p>
 <p><strong>在你开始使用黑盒深度学习模型解决温度预测问题之前，让我们先尝试一种简单易懂的方法。这可以作为一次合理的检验，并建立一个基准线，你需要超越这个基准线才能证明更高级的机器学习模型的有效性。当你遇到一个尚无已知解决方案的新问题时，这种常识性的基准线就非常有用。一个经典的例子是不平衡分类任务，其中某些类别远比其他类别常见。如果你的数据集包含 90% 的 A 类样本和 10% 的 B 类样本，那么一种符合常理的分类方法是，当遇到新样本时，始终预测为“A”。这样的分类器总体准确率为 90%，因此任何基于机器学习的方法都应该超过 90% 的准确率才能证明其有效性。有时，这种基本的基准线可能会出乎意料地难以超越。</strong></p>
 <p>在这种情况下，可以合理地假设温度时间序列是连续的（明天的温度很可能与今天的温度接近），并且具有日周期性。因此，一种合理的做法是始终预测24小时后的温度等于当前温度。让我们使用平均绝对误差（MAE）指标来评估这种方法，其定义如下：</p>
@@ -375,26 +389,26 @@
 <h3 id="我们来尝试一个基本的机器学习模型">我们来尝试一个基本的机器学习模型</h3>
 <p>Let’s try a basic machine learning model</p>
 <p>就像在尝试机器学习方法之前建立一个符合常识的基准模型很有用一样，在研究复杂且计算成本高的模型（例如循环神经网络）之前，尝试简单、低成本的机器学习模型（例如小型、密集连接的网络）也很有用。这是确保你为解决问题引入的任何更复杂的模型都是合理且能带来实际收益的最佳方法。</p>
-<p>清单 13.10 展示了一个全连接模型，该模型首先对数据进行展平，然后经过两层网络进行处理<code>Dense</code>。**请注意最后一层没有激活函数<code>Dense</code>，这在回归问题中很常见。**我们使用均方误差 (MSE) 作为损失函数，而不是平均绝对误差 (MAE)，因为与 MAE 不同，MSE 在零附近是平滑的，这对于梯度下降来说是一个有用的特性。我们将通过将其作为指标来监控 MAE <code>compile()</code>。</p>
+<p>清单 13.10 展示了一个全连接模型，该模型首先对数据进行展平，然后经过两层网络进行处理<code>Dense</code>。<strong>请注意最后一层没有激活函数<code>Dense</code>，这在回归问题中很常见。</strong>我们使用均方误差 (MSE) 作为损失函数，而不是平均绝对误差 (MAE)，因为与 MAE 不同，MSE 在零附近是平滑的，这对于梯度下降来说是一个有用的特性。我们将通过将其作为指标来监控 MAE <code>compile()</code>。</p>
 <blockquote>
 <p>个人注：这句话揭示了<strong>分类问题</strong>与<strong>回归问题</strong>在神经网络输出层设计上的本质区别。</p>
 <p>简单来说：<strong>激活函数就像是一个“过滤器”或“缩减器”，而回归问题需要的是“真实原值”。</strong></p>
-<ol>
+<ol type="1">
 <li>为什么回归问题通常不加激活函数？</li>
 </ol>
 <p>在回归任务中（比如预测房价、明天的气温、股票走势），你的目标输出是一个<strong>连续的数值</strong>。这个数值的范围理论上是无限制的：</p>
 <ul>
 <li>房价可能是 50 万，也可能是 500 万。</li>
-<li>气温可能是 $-10$ 度，也可能是 $40$ 度。</li>
+<li>气温可能是 <span class="math inline">\(-10\)</span> 度，也可能是 <span class="math inline">\(40\)</span> 度。</li>
 </ul>
 <p>如果你在最后一层加了常见的激活函数，会发生什么？</p>
 <ul>
-<li><strong>Sigmoid</strong>：会将输出强制压缩在 $[0, 1]$ 之间。你永远无法预测出 2 块钱以外的价格。</li>
+<li><strong>Sigmoid</strong>：会将输出强制压缩在 <span class="math inline">\([0, 1]\)</span> 之间。你永远无法预测出 2 块钱以外的价格。</li>
 <li><strong>ReLU</strong>：会将所有负数变成 0。你永远无法预测出零下摄氏度。</li>
-<li><strong>Tanh</strong>：会将输出压缩在 $[-1, 1]$ 之间。</li>
+<li><strong>Tanh</strong>：会将输出压缩在 <span class="math inline">\([-1, 1]\)</span> 之间。</li>
 </ul>
-<p><strong>不加激活函数（即“线性激活”）</strong>，意味着输出层的神经元仅仅执行 $y = wx + b$ 的线性变换，保持了数值的自由度，让模型能输出从负无穷到正无穷的任何值。</p>
-<ol start="2">
+<p><strong>不加激活函数（即“线性激活”）</strong>，意味着输出层的神经元仅仅执行 <span class="math inline">\(y = wx + b\)</span> 的线性变换，保持了数值的自由度，让模型能输出从负无穷到正无穷的任何值。</p>
+<ol start="2" type="1">
 <li>只有一种例外：限制输出范围</li>
 </ol>
 <p>只有当你明确知道预测的目标值<strong>一定</strong>在某个范围内时，才会加激活函数：</p>
@@ -403,30 +417,30 @@
 <li>如果你预测的是<strong>非负数</strong>（比如降雨量），有时会加 <code>ReLU</code>。</li>
 <li>但在大多数通用回归任务中，保持 Dense 层“裸奔”是最稳妥的选择。</li>
 </ul>
-<ol start="3">
+<ol start="3" type="1">
 <li>与分类问题的对比</li>
 </ol>
 <p>为了方便记忆，你可以看下表：</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th><strong>任务类型</strong></th>
 <th><strong>输出层激活函数</strong></th>
 <th><strong>输出含义</strong></th>
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td><strong>回归 (Regression)</strong></td>
 <td><strong>None (无)</strong></td>
 <td>具体数值（如 152.5）</td>
 </tr>
-<tr>
+<tr class="even">
 <td><strong>二分类</strong></td>
 <td><code>Sigmoid</code></td>
 <td>概率（0 或 1）</td>
 </tr>
-<tr>
+<tr class="odd">
 <td><strong>多分类</strong></td>
 <td><code>Softmax</code></td>
 <td>属于各类的概率分布</td>
@@ -439,7 +453,7 @@
 <p>让我们展示验证和训练的损失曲线（见图 13.3）。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line">loss = history.history[<span class="string">&quot;mae&quot;</span>]</span><br><span class="line">val_loss = history.history[<span class="string">&quot;val_mae&quot;</span>]</span><br><span class="line">epochs = <span class="built_in">range</span>(<span class="number">1</span>, <span class="built_in">len</span>(loss) + <span class="number">1</span>)</span><br><span class="line">plt.figure()</span><br><span class="line">plt.plot(epochs, loss, <span class="string">&quot;r--&quot;</span>, label=<span class="string">&quot;Training MAE&quot;</span>)</span><br><span class="line">plt.plot(epochs, val_loss, <span class="string">&quot;b&quot;</span>, label=<span class="string">&quot;Validation MAE&quot;</span>)</span><br><span class="line">plt.title(<span class="string">&quot;Training and validation MAE&quot;</span>)</span><br><span class="line">plt.legend()</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
 <p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter13_timeseries-forecasting/#listing-13-11">清单 13.11</a>：绘图结果</p>
-<p>![img](/img3/DEEP LEARNING with Python/dense_model_metrics.8448f47a.png)图 13.3：使用简单、密集连接的网络在 Jena 温度预测任务上的训练和验证 MAE</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/dense_model_metrics.8448f47a.png" alt="img" />图 13.3：使用简单、密集连接的网络在 Jena 温度预测任务上的训练和验证 MAE</p>
 <p><strong>部分验证损失接近于未进行任何学习的基线模型，但这种接近并不稳定。这恰恰说明了设立该基线模型的价值：事实证明，超越它并非易事。你的常识蕴含着许多机器学习模型无法获取的宝贵信息。</strong></p>
 <p><strong>你可能会疑惑，如果存在一个简单且性能良好的模型能够从数据推导出目标值（即常识性的基线模型），为什么你正在训练的模型找不到它并对其进行改进呢？这是因为你寻找解决方案的模型空间——也就是你的假设空间——实际上是所有具有你定义的配置的双层网络的空间。常识性的启发式模型只是这个空间中数百万个模型中的一个。这就像大海捞针。即使一个好的解决方案理论上存在于你的假设空间中，也不意味着你就能通过梯度下降找到它。</strong></p>
 <p><em><u><strong>这是机器学习的一个相当重要的局限性：除非学习算法被硬编码为寻找特定类型的简单模型，否则它有时可能无法找到简单问题的简单解决方案。因此，使用良好的特征工程和相关的架构先验至关重要：你需要精确地告诉模型它应该寻找什么。</strong></u></em></p>
@@ -450,7 +464,7 @@
 <p>因此，您可以构建一维卷积神经网络，它与二维卷积神经网络完全类似。它们非常适合任何符合平移不变性假设的序列数据（这意味着，如果您在序列上滑动一个窗口，窗口的内容应该遵循相同的属性，而与窗口的位置无关）。</p>
 <p>让我们用温度预测问题来尝试一下。我们选择初始窗口长度为 24，这样我们每次就能查看 24 小时的数据（一个周期）。随着我们对序列进行下采样（通过<code>MaxPooling1D</code>分层），我们将相应地减小窗口大小（图 13.4）：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">inputs = keras.Input(shape=(sequence_length, raw_data.shape[-<span class="number">1</span>]))</span><br><span class="line">x = layers.Conv1D(<span class="number">8</span>, <span class="number">24</span>, activation=<span class="string">&quot;relu&quot;</span>)(inputs)</span><br><span class="line">x = layers.MaxPooling1D(<span class="number">2</span>)(x)</span><br><span class="line">x = layers.Conv1D(<span class="number">8</span>, <span class="number">12</span>, activation=<span class="string">&quot;relu&quot;</span>)(x)</span><br><span class="line">x = layers.MaxPooling1D(<span class="number">2</span>)(x)</span><br><span class="line">x = layers.Conv1D(<span class="number">8</span>, <span class="number">6</span>, activation=<span class="string">&quot;relu&quot;</span>)(x)</span><br><span class="line">x = layers.GlobalAveragePooling1D()(x)</span><br><span class="line">outputs = layers.Dense(<span class="number">1</span>)(x)</span><br><span class="line">model = keras.Model(inputs, outputs)</span><br><span class="line"></span><br><span class="line">callbacks = [</span><br><span class="line">    keras.callbacks.ModelCheckpoint(<span class="string">&quot;jena_conv.keras&quot;</span>, save_best_only=<span class="literal">True</span>)</span><br><span class="line">]</span><br><span class="line">model.<span class="built_in">compile</span>(optimizer=<span class="string">&quot;adam&quot;</span>, loss=<span class="string">&quot;mse&quot;</span>, metrics=[<span class="string">&quot;mae&quot;</span>])</span><br><span class="line">history = model.fit(</span><br><span class="line">    train_dataset,</span><br><span class="line">    epochs=<span class="number">10</span>,</span><br><span class="line">    validation_data=val_dataset,</span><br><span class="line">    callbacks=callbacks,</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">model = keras.models.load_model(<span class="string">&quot;jena_conv.keras&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;Test MAE: <span class="subst">&#123;model.evaluate(test_dataset)[<span class="number">1</span>]:<span class="number">.2</span>f&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
-<p>![img](/img3/DEEP LEARNING with Python/conv_model_metrics.fe487977.png)图 13.4：使用一维卷积神经网络在耶拿温度预测任务上的训练和验证平均绝对误差 (MAE)。</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/conv_model_metrics.fe487977.png" alt="img" />图 13.4：使用一维卷积神经网络在耶拿温度预测任务上的训练和验证平均绝对误差 (MAE)。</p>
 <p>结果表明，该模型的性能甚至比密集连接模型还要差，验证集的平均绝对误差 (MAE) 仅为 2.9 度左右，远低于合理的基准值。问题出在哪里？原因有二：</p>
 <ul>
 <li>首先，天气数据并不完全符合平移不变性假设。虽然数据确实呈现出每日周期性变化，但早晨的数据与傍晚或深夜的数据具有不同的特性。天气数据仅在非常特定的时间尺度内才具有平移不变性。</li>
@@ -463,14 +477,14 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">inputs = keras.Input(shape=(sequence_length, raw_data.shape[-<span class="number">1</span>]))</span><br><span class="line">x = layers.LSTM(<span class="number">16</span>)(inputs)</span><br><span class="line">outputs = layers.Dense(<span class="number">1</span>)(x)</span><br><span class="line">model = keras.Model(inputs, outputs)</span><br><span class="line"></span><br><span class="line">callbacks = [</span><br><span class="line">    keras.callbacks.ModelCheckpoint(<span class="string">&quot;jena_lstm.keras&quot;</span>, save_best_only=<span class="literal">True</span>)</span><br><span class="line">]</span><br><span class="line">model.<span class="built_in">compile</span>(optimizer=<span class="string">&quot;adam&quot;</span>, loss=<span class="string">&quot;mse&quot;</span>, metrics=[<span class="string">&quot;mae&quot;</span>])</span><br><span class="line">history = model.fit(</span><br><span class="line">    train_dataset,</span><br><span class="line">    epochs=<span class="number">10</span>,</span><br><span class="line">    validation_data=val_dataset,</span><br><span class="line">    callbacks=callbacks,</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">model = keras.models.load_model(<span class="string">&quot;jena_lstm.keras&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Test MAE: &#123;model.evaluate(test_dataset)[1]:.2f&#125;&quot;</span>)</span><br></pre></td></tr></table></figure>
 <p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter13_timeseries-forecasting/#listing-13-12">清单 13.12</a>：一个简单的基于 LSTM 的模型</p>
 <p>图 13.5 显示了结果。效果显著提升！我们实现了低至 2.39 度的验证平均绝对误差 (MAE) 和 2.55 度的测试平均绝对误差。基于 LSTM 的模型终于能够超越传统的基线模型（尽管目前优势并不明显），这充分展现了机器学习在该任务上的价值。</p>
-<p>![img](/img3/DEEP LEARNING with Python/lstm_model_metrics.ae01dd09.png)图 13.5：基于 LSTM 模型在耶拿温度预测任务上的训练和验证 MAE。（请注意，由于第 1 个 epoch 的训练 MAE 较高 (7.75)，会扭曲图表的比例，因此本图中省略了第 1 个 epoch 的数据。）</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/lstm_model_metrics.ae01dd09.png" alt="img" />图 13.5：基于 LSTM 模型在耶拿温度预测任务上的训练和验证 MAE。（请注意，由于第 1 个 epoch 的训练 MAE 较高 (7.75)，会扭曲图表的比例，因此本图中省略了第 1 个 epoch 的数据。）</p>
 <p>但是，为什么LSTM模型比全连接模型或卷积神经网络表现得明显更好？我们又该如何进一步改进模型呢？为了解答这些问题，让我们更深入地了解一下循环神经网络。</p>
 <h3 id="理解循环神经网络">理解循环神经网络</h3>
 <p>Understanding recurrent neural networks</p>
 <p>你目前为止所看到的神经网络，例如全连接网络和卷积神经网络（ConvNet），一个主要特点是它们没有记忆。每个输入都是独立处理的，输入之间不保留任何状态。对于这类网络，要处理一个序列或时间序列的数据点，你必须一次性将整个序列输入网络：将其转换为单个数据点。例如，我们在全连接网络示例中就是这样做的：我们将五天的数据展平为一个大的向量，并一次性处理完毕。这类网络被称为<em>前馈网络</em>（feedforward networks）。</p>
 <p>相比之下，当你阅读当前句子时，你是逐字逐句地处理信息——或者更确切地说，是逐次扫视——同时还要记住前面的内容；这让你能够流畅地理解句子所传达的含义。生物智能则以增量的方式处理信息，同时维护一个基于过往信息构建并随着新信息的到来不断更新的内部模型。</p>
 <p>循环<em>神经网络</em>（RNN）采用相同的原理，尽管形式极其简化：它通过遍历序列元素并维护一个包含当前已处理信息的<em>状态来处理序列。实际上，RNN 是一种具有内部</em>循环的神经网络（参见图 13.6）。</p>
-<p>![img](/img3/DEEP LEARNING with Python/simplernn.822d53ed.png)图 13.6：循环网络：一个带有环路的网络</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/simplernn.822d53ed.png" alt="img" />图 13.6：循环网络：一个带有环路的网络</p>
 <p><strong>在处理两个不同的独立序列（例如同一批次中的两个样本）之间，循环神经网络 (RNN) 的状态会被重置，因此您仍然将一个序列视为一个单独的数据点：网络的一个输入。变化之处在于，该数据点不再一次性处理；相反，网络会在内部循环处理序列元素。</strong></p>
 <p><em>为了更清晰地理解循环</em>和<em>状态</em>的概念，我们来实现一个简单的循环神经网络（RNN）的前向传播过程。这个RNN的输入是一个向量序列，我们将其编码为一个大小为n的秩为2的张量<code>(timesteps, input_features)</code>。它循环遍历时间步，在每个时间步，它考虑其在t=1时的状态<code>t</code>和在t=2时输入的向量<code>t</code>（形状为n=1 <code>(input_features,)</code>），并将它们组合起来得到在t=2时的输出<code>t</code>。然后，我们将下一步的状态设置为前一步的输出。对于第一个时间步，前一步的输出尚未定义；因此，没有当前状态。所以我们将状态初始化为一个全零向量，称为网络的<em>初始状态。</em></p>
 <p>用伪代码表示，这就是循环神经网络（RNN）。</p>
@@ -484,9 +498,9 @@
 <p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter13_timeseries-forecasting/#listing-13-15">清单 13.15</a>：简单循环神经网络的 NumPy 实现</p>
 <p>很简单：总而言之，RNN 就是一个<code>for</code>循环，它会重用上一次循环迭代中计算出的量，仅此而已。当然，符合这个定义的 RNN 有很多种——这个例子只是最简单的 RNN 形式之一。RNN 的特征在于其阶跃函数，例如本例中的以下函数（参见图 13.7）：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">output_t = tanh(matmul(input_t, W) + matmul(state_t, U) + b)</span><br></pre></td></tr></table></figure>
-<p>![img](/img3/DEEP LEARNING with Python/unrolled_lstm_1.d9bee30c.png)图 13.7：一个简单的 RNN，随时间展开</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/unrolled_lstm_1.d9bee30c.png" alt="img" />图 13.7：一个简单的 RNN，随时间展开</p>
 <p>在这个例子中，最终输出是一个形状为 的秩为 2 的张量<code>(timesteps, output_features)</code>，其中每个时间步都是循环在时间 的输出。输出张量中的 <code>t</code>每个时间步都包含输入序列中从 到 的时间步的信息——也就是关于整个过去时间的信息。因此，在很多情况下，你不需要完整的输出序列；你只需要最后一个输出（循环结束时的输出），因为它已经包含了整个序列的信息。<code>t``0``t``output_t</code></p>
-<h3 id="Keras-中的重复层">Keras 中的重复层</h3>
+<h3 id="keras-中的重复层">Keras 中的重复层</h3>
 <p>A recurrent layer in Keras</p>
 <p>你刚才在 NumPy 中简单地实现的过程对应于一个实际的 Keras 层——<code>SimpleRNN</code>层。</p>
 <p>有一个细微的区别：<code>SimpleRNN</code>与其他 Keras 层一样，它处理的是一批序列，而不是像 NumPy 示例中那样处理单个序列。这意味着它接受形状为 <code>n</code> 的输入，<code>(batch_size, timesteps, input_features)</code> 而不是 <code>n</code> <code>(timesteps, input_features)</code>。在指定<code>shape</code>初始 <code>n</code> 参数时<code>Input()</code>，请注意您可以将该<code>timesteps</code>参数设置为 <code>n</code> <code>None</code>，这将使您的网络能够处理任意长度的序列。</p>
@@ -507,9 +521,9 @@
 <p>我们来看一下这<code>LSTM</code>一层。底层的长短期记忆（LSTM）算法是由Hochreiter和Schmidhuber于1997年开发的；[4]这是他们对梯度消失问题研究的最终成果。</p>
 <p>这一层是你已经了解的那层的变体<code>SimpleRNN</code>；它增加了一种跨多个时间步传递信息的方法。想象一下，有一条传送带与你正在处理的序列平行运行。序列中的信息可以随时跳上传送带，被运送到后面的时间步，并在你需要的时候完整地跳下来。这本质上就是 LSTM 的工作原理：它将信息保存下来以备后用，从而防止旧信号在处理过程中逐渐消失。这应该会让你想起你在第 9 章学到的<em>残差连接</em>：它们的思想基本相同。</p>
 <p>为了详细了解这个过程，让我们从<code>SimpleRNN</code>单元格开始（参见图 13.8）。因为你会有很多权重矩阵，所以 用字母（和）来索引单元格中的<code>W</code>和矩阵，以便<em>输出</em>。<code>U``o``Wo``Uo</code></p>
-<p>![img](/img3/DEEP LEARNING with Python/unrolled_lstm_1.d9bee30c.png)图 13.8：层的起始点<code>LSTM</code>：a<code>SimpleRNN</code></p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/unrolled_lstm_1.d9bee30c.png" alt="img" />图 13.8：层的起始点<code>LSTM</code>：a<code>SimpleRNN</code></p>
 <p>让我们在这个图中增加一个跨时间步传递信息的额外数据流。我们称其在不同时间步的值分别为 和<code>Ct</code>，其中<em>C</em>代表<em>进位</em>（carry）。该信息将对单元产生以下影响：它将与输入连接和循环连接结合（通过稠密变换：先与权重矩阵进行点积运算，然后加上偏置项并应用激活函数），并且它会影响传递到下一个时间步的状态（通过激活函数和乘法运算）。从概念上讲，进位数据流是一种调节下一个输出和下一个状态的方法（参见图 13.9）。到目前为止都很简单。</p>
-<p>![img](/img3/DEEP LEARNING with Python/unrolled_lstm_2.4145ecdf.png)图 13.9：从 SimpleRNN 到 LSTM：添加进位轨迹</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/unrolled_lstm_2.4145ecdf.png" alt="img" />图 13.9：从 SimpleRNN 到 LSTM：添加进位轨迹</p>
 <p>现在来说说其中的微妙之处：进位数据流的下一个值是如何计算的。它涉及三种不同的转换。这三种转换都以 <code>SimpleRNN</code>单元格的形式呈现：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">y = activation(dot(state_t, U) + dot(input_t, W) + b)</span><br></pre></td></tr></table></figure>
 <p>但是这三种变换都有各自的权重矩阵，分别用字母 、 和 进行索引<code>i</code>。<code>f</code>以下<code>k</code>是您目前所拥有的（可能看起来有点随意，但请耐心听我说完）。</p>
@@ -519,7 +533,7 @@
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">c_t+1 = i_t * k_t + c_t * f_t</span><br></pre></td></tr></table></figure>
 <p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter13_timeseries-forecasting/#listing-13-21">清单 13.21</a>：LSTM 架构的伪代码细节（2/2）</p>
 <p>如图 13.10 所示添加即可。就这么简单。并不复杂——只是稍微有点繁琐。</p>
-<p>![img](/img3/DEEP LEARNING with Python/unrolled_lstm_3.1f68b33f.png)图 13.10：解剖结构<code>LSTM</code></p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/unrolled_lstm_3.1f68b33f.png" alt="img" />图 13.10：解剖结构<code>LSTM</code></p>
 <p>如果你想从哲学角度来探讨，你可以解释每个运算的用途。例如，你可以说乘法运算<code>c_t</code> 是<code>f_t</code>为了有意地忽略进位数据流中的无关信息。同时，<code>i_t</code>乘法运算<code>k_t</code>提供关于当前状态的信息，用新信息更新进位轨迹。但归根结底，这些解释意义不大，因为这些运算的 <em>实际</em>作用取决于参数化它们的权重，而权重是以端到端的方式学习的，每次训练都会重新开始，因此无法将某个运算的具体用途归功于它。RNN 单元的规范（如前所述）决定了你的假设空间——也就是你在训练过程中寻找良好模型配置的空间——但它并不决定单元的具体功能；这取决于单元的权重。同一个单元，不同的权重可以执行截然不同的操作。<strong>因此，构成 RNN 单元的运算组合最好被理解为一组对搜索的<em>约束</em>，而不是工程意义上的<em>设计。</em></strong></p>
 <p>可以说，选择这些约束条件——也就是如何实现RNN单元——最好交给优化算法（例如遗传算法或强化学习过程）来处理，而不是交给人类工程师。未来，我们将采用这种方式构建模型。<strong>总之，你不需要了解LSTM单元的具体架构；作为人类，理解它不应该是你的工作。你只需要记住LSTM单元的作用：允许在稍后重新注入过去的信息，从而解决梯度消失问题。</strong></p>
 <h3 id="充分发挥循环神经网络的潜力">充分发挥循环神经网络的潜力</h3>
@@ -536,7 +550,7 @@
 <p>接下来，我们将回顾循环神经网络 (RNN) 的一些更高级的特性，这些特性可以帮助您最大限度地发挥深度学习序列模型的效用。在本节结束时，您将掌握使用 Keras 构建循环神经网络的大部分知识。</p>
 <p>我们将涵盖以下内容：</p>
 <ul>
-<li><em>循环 dropout</em>  — 这是 dropout 的一种变体，用于防止循环层过拟合。</li>
+<li><em>循环 dropout</em> — 这是 dropout 的一种变体，用于防止循环层过拟合。</li>
 <li><em>堆叠循环层</em>  ——这可以提高模型的表示能力（但会增加计算负荷）。</li>
 <li><em>双向循环层</em>——这些层以不同的方式向循环网络呈现相同的信息，从而提高准确性并缓解遗忘问题。</li>
 <li>Recurrent dropout—This is a variant of dropout, used to fight overfitting in recurrent layers.</li>
@@ -547,13 +561,13 @@
 <h3 id="利用循环丢弃来对抗过拟合">利用循环丢弃来对抗过拟合</h3>
 <p>Using recurrent dropout to fight overfitting</p>
 <p>让我们回到本章前面用到的基于 LSTM 的模型——这是我们第一个能够超越常识基线模型的模型。观察训练曲线和验证曲线，可以明显看出，尽管模型单元数量很少，但它很快就出现了过拟合：训练损失和验证损失在几个 epoch 后就开始显著偏离。你可能已经熟悉一种经典的应对过拟合的技术：dropout。dropout 会随机将层中的输入单元置零，以打破该层所接触的训练数据中偶然存在的相关性。但是，如何在循环神经网络中正确应用 dropout 并非易事。</p>
-<p>人们早已知道，在循环层之前应用 dropout 会阻碍学习，而不是有助于正则化。**2015 年，Yarin Gal 在他的贝叶斯深度学习博士论文中指出，[5]确定了循环神经网络中使用dropout的正确方法：在每个时间步应用相同的dropout掩码（相同的丢弃单元模式），而不是使用随时间步随机变化的dropout掩码。**此外，为了规范由诸如和<code>GRU</code>之类的循环门控层形成的表征<code>LSTM</code>，应该对该层的内部循环激活应用一个时间恒定的dropout掩码（循环dropout掩码）。在每个时间步使用相同的dropout掩码可以使网络正确地随时间传播其学习误差；时间随机的dropout掩码会扰乱这种误差信号，并对学习过程造成损害。</p>
+<p>人们早已知道，在循环层之前应用 dropout 会阻碍学习，而不是有助于正则化。<strong>2015 年，Yarin Gal 在他的贝叶斯深度学习博士论文中指出，[5]确定了循环神经网络中使用dropout的正确方法：在每个时间步应用相同的dropout掩码（相同的丢弃单元模式），而不是使用随时间步随机变化的dropout掩码。</strong>此外，为了规范由诸如和<code>GRU</code>之类的循环门控层形成的表征<code>LSTM</code>，应该对该层的内部循环激活应用一个时间恒定的dropout掩码（循环dropout掩码）。在每个时间步使用相同的dropout掩码可以使网络正确地随时间传播其学习误差；时间随机的dropout掩码会扰乱这种误差信号，并对学习过程造成损害。</p>
 <p>Yarin Gal 使用 Keras 进行了研究，并帮助将这种机制直接集成到 Keras 的循环层中。Keras 中的每个循环层都有两个与 dropout 相关的参数：<code>dropout``dropout_replacement</code>，一个浮点数，用于指定该层输入单元的 dropout 率；以及<code>dropout_replacement</code> <code>recurrent_dropout</code>，用于指定循环单元的 dropout 率。让我们将循环 dropout 添加到<code>LSTM</code> 第一个 LSTM 示例的循环层中，看看这样做会对过拟合产生什么影响。</p>
 <p>由于使用了 dropout，我们无需过多依赖网络规模进行正则化，因此我们将使用<code>LSTM</code>单元数量翻倍的层，这应该会提升模型的表达能力（如果没有 dropout，这个网络会立即过拟合——不妨试试）。由于使用 dropout 进行正则化的网络需要更长的时间才能完全收敛，我们将训练模型的轮数增加五倍。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">inputs = keras.Input(shape=(sequence_length, raw_data.shape[-<span class="number">1</span>]))</span><br><span class="line">x = layers.LSTM(<span class="number">32</span>, recurrent_dropout=<span class="number">0.25</span>)(inputs)</span><br><span class="line"><span class="comment"># To regularize the Dense layer, we also add a Dropout layer after the</span></span><br><span class="line"><span class="comment"># LSTM.</span></span><br><span class="line">x = layers.Dropout(<span class="number">0.5</span>)(x)</span><br><span class="line">outputs = layers.Dense(<span class="number">1</span>)(x)</span><br><span class="line">model = keras.Model(inputs, outputs)</span><br><span class="line"></span><br><span class="line">callbacks = [</span><br><span class="line">    keras.callbacks.ModelCheckpoint(</span><br><span class="line">        <span class="string">&quot;jena_lstm_dropout.keras&quot;</span>, save_best_only=<span class="literal">True</span></span><br><span class="line">    )</span><br><span class="line">]</span><br><span class="line">model.<span class="built_in">compile</span>(optimizer=<span class="string">&quot;adam&quot;</span>, loss=<span class="string">&quot;mse&quot;</span>, metrics=[<span class="string">&quot;mae&quot;</span>])</span><br><span class="line">history = model.fit(</span><br><span class="line">    train_dataset,</span><br><span class="line">    epochs=<span class="number">50</span>,</span><br><span class="line">    validation_data=val_dataset,</span><br><span class="line">    callbacks=callbacks,</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
 <p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter13_timeseries-forecasting/#listing-13-22">清单 13.22</a>：训练和评估 dropout 正则化的 LSTM。</p>
 <p>图 13.11 显示了结果。成功！在前 20 个 epoch 中，我们不再出现过拟合。验证集的平均绝对误差 (MAE) 低至 2.27 度（比未进行任何学习的基线模型提高了 7%），测试集的 MAE 为 2.45 度（比基线模型提高了 6.5%）。相当不错。</p>
-<p>![img](/img3/DEEP LEARNING with Python/lstm_dropout_model_metrics.a624dc88.png)图 13.11：使用 dropout 正则化 LSTM 在 Jena 温度预测任务上的训练损失和验证损失。</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/lstm_dropout_model_metrics.a624dc88.png" alt="img" />图 13.11：使用 dropout 正则化 LSTM 在 Jena 温度预测任务上的训练损失和验证损失。</p>
 <p><strong>关于 RNN 运行时性能</strong></p>
 <p>On RNN runtime performance</p>
 <p>参数极少的循环神经网络模型（例如本章中介绍的模型）在多核 CPU 上的运行速度通常比在 GPU 上快得多，因为它们只涉及少量矩阵乘法，而且由于循环的存在，乘法链难以并行化<code>for</code>。但规模较大的循环神经网络则可以从 GPU 运行时中获益匪浅。</p>
@@ -565,11 +579,11 @@
 <p>因为你的模型不再过拟合，但似乎遇到了性能瓶颈，所以你应该考虑提升网络的容量和表达能力。回顾一下通用机器学习工作流程的描述：通常来说，提升模型的容量直到过拟合成为主要障碍是明智之举（假设你已经采取了一些缓解过拟合的基本措施，例如使用 dropout）。只要过拟合程度不是太严重，你的模型容量可能就还不够。</p>
 <p>通常，增加网络容量是通过增加层中的单元数量或添加更多层来实现的。循环层堆叠是构建更强大循环网络的经典方法：<strong>例如，不久前谷歌翻译算法就是由七个大型<code>LSTM</code> 层堆叠而成的——这非常强大。</strong></p>
 <p>在 Keras 中，要将循环层堆叠在一起，所有中间层都应该返回其完整的输出序列（一个秩为 3 的张量），而不是最后一个时间步的输出。正如你已经了解到的，这可以通过指定来实现<code>return_sequences=True</code>。</p>
-<p>在下面的例子中，我们将尝试两个经过 dropout 正则化的循环层堆叠。为了有所改变，我们将使用<code>GRU</code>层而不是<code>LSTM</code>。**门控循环单元（Gated Recurrent Unit ） (GRU) 与 LSTM 非常相似——您可以将其视为 LSTM 架构的一个略微简化、精简的版本。**它由 Cho 等人于 2014 年提出，当时循环网络刚刚开始在当时规模还很小的研究领域重新引起人们的兴趣。[6]</p>
+<p>在下面的例子中，我们将尝试两个经过 dropout 正则化的循环层堆叠。为了有所改变，我们将使用<code>GRU</code>层而不是<code>LSTM</code>。<strong>门控循环单元（Gated Recurrent Unit ） (GRU) 与 LSTM 非常相似——您可以将其视为 LSTM 架构的一个略微简化、精简的版本。</strong>它由 Cho 等人于 2014 年提出，当时循环网络刚刚开始在当时规模还很小的研究领域重新引起人们的兴趣。[6]</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">inputs = keras.Input(shape=(sequence_length, raw_data.shape[-<span class="number">1</span>]))</span><br><span class="line">x = layers.GRU(<span class="number">32</span>, recurrent_dropout=<span class="number">0.5</span>, return_sequences=<span class="literal">True</span>)(inputs)</span><br><span class="line">x = layers.GRU(<span class="number">32</span>, recurrent_dropout=<span class="number">0.5</span>)(x)</span><br><span class="line">x = layers.Dropout(<span class="number">0.5</span>)(x)</span><br><span class="line">outputs = layers.Dense(<span class="number">1</span>)(x)</span><br><span class="line">model = keras.Model(inputs, outputs)</span><br><span class="line"></span><br><span class="line">callbacks = [</span><br><span class="line">    keras.callbacks.ModelCheckpoint(</span><br><span class="line">        <span class="string">&quot;jena_stacked_gru_dropout.keras&quot;</span>, save_best_only=<span class="literal">True</span></span><br><span class="line">    )</span><br><span class="line">]</span><br><span class="line">model.<span class="built_in">compile</span>(optimizer=<span class="string">&quot;adam&quot;</span>, loss=<span class="string">&quot;mse&quot;</span>, metrics=[<span class="string">&quot;mae&quot;</span>])</span><br><span class="line">history = model.fit(</span><br><span class="line">    train_dataset,</span><br><span class="line">    epochs=<span class="number">50</span>,</span><br><span class="line">    validation_data=val_dataset,</span><br><span class="line">    callbacks=callbacks,</span><br><span class="line">)</span><br><span class="line">model = keras.models.load_model(<span class="string">&quot;jena_stacked_gru_dropout.keras&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;Test MAE: <span class="subst">&#123;model.evaluate(test_dataset)[<span class="number">1</span>]:<span class="number">.2</span>f&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
 <p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter13_timeseries-forecasting/#listing-13-23">清单 13.23</a>：训练和评估 dropout 正则化的堆叠 GRU 模型</p>
 <p>图 13.12 显示了测试结果。我们获得了 2.39 度的测试 MAE（比基准值提高了 8.8%）。可以看出，新增的层确实略微改善了结果，但改善幅度并不显著。此时，增加网络容量的收益可能已经递减。</p>
-<p>![img](/img3/DEEP LEARNING with Python/stacked_gru_dropout_model_metrics.5bfbf251.png)图 13.12：使用堆叠式 GRU 网络在 Jena 温度预测任务上的训练损失和验证损失</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/stacked_gru_dropout_model_metrics.5bfbf251.png" alt="img" />图 13.12：使用堆叠式 GRU 网络在 Jena 温度预测任务上的训练损失和验证损失</p>
 <h3 id="使用双向循环神经网络">使用双向循环神经网络</h3>
 <p>Using bidirectional RNNs</p>
 <p>本节介绍的最后一种技术是<em>双向循环神经网络（ bidirectional RNNs）</em>。<strong>双向RNN是一种常见的RNN变体，在某些任务上可以比常规RNN提供更优的性能。它常用于自然语言处理——你可以称它为深度学习在自然语言处理领域的瑞士军刀。</strong></p>
@@ -579,8 +593,8 @@
 <p><strong>然而，对于许多其他问题，包括自然语言处理，情况并非如此：直觉上，一个词在理解句子中的重要性并不强烈依赖于它在句子中的位置。对于文本数据，反向处理与按时间顺序处理的效果一样好——你可以倒着读文本，完全没问题（试试看！）。虽然词序在理解语言中确实很重要，但你使用<em>哪种顺序</em>并非关键。</strong></p>
 <p>重要的是，用反向序列训练的循环神经网络（RNN）会学习到与用原始序列训练的RNN不同的表征，这就像现实世界中时间倒流时，你的心智模型也会有所不同——如果你的一生中第一天就去世，最后一天才出生。在<strong>机器学习中，不同<em>但</em>有用 <em>的</em>表征总是值得利用的，而且差异越大越好：它们提供了一个新的视角来审视你的数据，捕捉到其他方法遗漏的数据特征，从而有助于提升任务性能。这就是<em>集成学习</em>（ensembling）背后的直觉</strong>，我们将在第18章探讨这个概念。</p>
 <p>双向循环神经网络利用这一思想来提升按时间顺序排列的循环神经网络的性能。它以两种方式处理输入序列（见图 13.13），从而获得更丰富的表示，并捕捉到仅按时间顺序排列的循环神经网络可能遗漏的模式。</p>
-<p>![img](/img3/DEEP LEARNING with Python/bidirectional_rnn.a38aaba4.png)图 13.13：双向 RNN 层的工作原理</p>
-<p>要在 Keras 中实例化双向 RNN，可以使用 <code> </code>Bidirectional<code>recurrentlayer</code> 层，它的第一个参数是一个循环层实例。<code>recurrentlayer``Bidirectional</code> 会创建该循环层的第二个独立实例，并使用一个实例按时间顺序处理输入序列，另一个实例按相反顺序处理输入序列。您可以在我们的温度预测任务上尝试一下。</p>
+<p><img src="/img3/DEEP%20LEARNING%20with%20Python/bidirectional_rnn.a38aaba4.png" alt="img" />图 13.13：双向 RNN 层的工作原理</p>
+<p>要在 Keras 中实例化双向 RNN，可以使用 <code></code>Bidirectional<code>recurrentlayer</code> 层，它的第一个参数是一个循环层实例。<code>recurrentlayer``Bidirectional</code> 会创建该循环层的第二个独立实例，并使用一个实例按时间顺序处理输入序列，另一个实例按相反顺序处理输入序列。您可以在我们的温度预测任务上尝试一下。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">inputs = keras.Input(shape=(sequence_length, raw_data.shape[-<span class="number">1</span>]))</span><br><span class="line">x = layers.Bidirectional(layers.LSTM(<span class="number">16</span>))(inputs)</span><br><span class="line">outputs = layers.Dense(<span class="number">1</span>)(x)</span><br><span class="line">model = keras.Model(inputs, outputs)</span><br><span class="line"></span><br><span class="line">model.<span class="built_in">compile</span>(optimizer=<span class="string">&quot;adam&quot;</span>, loss=<span class="string">&quot;mse&quot;</span>, metrics=[<span class="string">&quot;mae&quot;</span>])</span><br><span class="line">history = model.fit(</span><br><span class="line">    train_dataset,</span><br><span class="line">    epochs=<span class="number">10</span>,</span><br><span class="line">    validation_data=val_dataset,</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
 <p><a target="_blank" rel="noopener" href="https://deeplearningwithpython.io/chapters/chapter13_timeseries-forecasting/#listing-13-24">清单 13.24</a>：训练和评估双向 LSTM。</p>
 <p><strong>你会发现它的性能不如普通<code>LSTM</code>层。原因很容易理解：所有的预测能力都必须来自网络的按时间顺序排列的部分，因为众所周知，按时间顺序排列的部分在这项任务上的表现非常糟糕（同样，因为在这种情况下，近期过去比遥远过去重要得多）。与此同时，按时间顺序排列的部分的存在使网络的容量翻倍，并导致它更早地出现过拟合现象。</strong></p>
@@ -599,45 +613,45 @@
 <p><strong>市场与机器学习</strong></p>
 <p>Markets and machine learning</p>
 <p><strong>一些读者肯定会想运用我们在此介绍的技术，尝试预测股票市场（或货币汇率等）的未来价格。然而，市场的统计特征与天气模式等自然现象截然不同。就市场而言，过去的表现并不能<em>很好</em>地预测未来的收益——就像开车时总是回头看后视镜一样，毫无益处。另一方面，机器学习则适用于那些过去数据<em>能够</em>很好地预测未来的数据集，例如天气、电力消耗或商店客流量。</strong></p>
-<p><strong>请始终记住，所有交易的本质都是<em>信息套利</em>（information arbitrage）：利用其他市场参与者所缺乏的数据或洞察来获取优势（</strong> gaining an advantage by using data or insights that other market participants are missing.  <strong>）。试图利用众所周知的机器学习技术和公开数据来战胜市场实际上是一条死路，因为你与其他参与者相比没有任何信息优势。你很可能白白浪费时间和资源，一无所获。</strong></p>
+<p><strong>请始终记住，所有交易的本质都是<em>信息套利</em>（information arbitrage）：利用其他市场参与者所缺乏的数据或洞察来获取优势（</strong> gaining an advantage by using data or insights that other market participants are missing. <strong>）。试图利用众所周知的机器学习技术和公开数据来战胜市场实际上是一条死路，因为你与其他参与者相比没有任何信息优势。你很可能白白浪费时间和资源，一无所获。</strong></p>
 <h2 id="概括">概括</h2>
 <ul>
 <li>正如你在第六章中学到的，在着手解决一个新问题时，最好先为你选择的衡量标准建立一些符合常理的基准线。如果没有基准线可以超越，你就无法判断自己是否取得了真正的进步。</li>
 <li>先尝试简单的型号，再考虑昂贵的型号，这样才能证明额外花费是值得的。有时候，简单的型号反而是最佳选择。</li>
-<li>当数据顺序至关重要时——特别是时间序列数据—— *循环神经网络 (RNN)*非常适用，并且能够轻松超越那些先对时间数据进行展平的模型。Keras 中提供的两个基本 RNN 层分别是 <code>std:: </code>LSTM<code> set</code> 层和 <code> </code>GRU<code>std::set</code> 层。</li>
+<li>当数据顺序至关重要时——特别是时间序列数据—— <em>循环神经网络 (RNN)</em>非常适用，并且能够轻松超越那些先对时间数据进行展平的模型。Keras 中提供的两个基本 RNN 层分别是 <code>std::</code>LSTM<code>set</code> 层和 <code></code>GRU<code>std::set</code> 层。</li>
 <li>要在循环神经网络中使用 dropout，您应该使用时间常数 dropout 掩码和循环 dropout 掩码。这些掩码已内置于 Keras 循环层中，因此您只需使用<code>recurrent_dropout</code> 循环层的参数即可。</li>
 <li>堆叠式循环神经网络（RNN）比单层RNN具有更强的表征能力。但它们的计算成本也更高，因此并非总是物有所值。尽管它们在复杂问题（例如机器翻译）上表现出明显的优势，但对于规模较小、较为简单的问题，它们可能并不总是适用。</li>
 </ul>
 <p><strong>脚注</strong></p>
-<ol>
-<li>亚当·埃里克森和奥拉夫·科勒，<a target="_blank" rel="noopener" href="https://www.bgc-jena.mpg.de/wetter%E3%80%82">https://www.bgc-jena.mpg.de/wetter。</a></li>
+<ol type="1">
+<li>亚当·埃里克森和奥拉夫·科勒，https://www.bgc-jena.mpg.de/wetter。</li>
 <li>目前还没有这个<code>SeparableConv3D</code>层，并非出于任何理论原因，而是因为我们还没有实现它。</li>
 <li>例如，参见 Yoshua Bengio、Patrice Simard 和 Paolo Frasconi 的论文“使用梯度下降法学习长期依赖关系很困难”，<em>发表于 IEEE 神经网络学报</em>第 5 卷第 2 期（1994 年）。</li>
 <li>Sepp Hochreiter 和 Jürgen Schmidhuber，“长短期记忆”，<em>神经计算</em>9，第 1 期。 8（1997）。</li>
-<li>参见 Yarin Gal，“深度学习中的不确定性（博士论文）”，2016 年 10 月 13 日，<a target="_blank" rel="noopener" href="https://www.cs.ox.ac.uk/people/yarin.gal/website/blog_2248.html%E3%80%82">https://www.cs.ox.ac.uk/people/yarin.gal/website/blog_2248.html。</a></li>
-<li>参见 Cho 等人，“论神经机器翻译的性质：编码器-解码器方法”，2014 年，<a target="_blank" rel="noopener" href="https://arxiv.org/abs/1409.1259%E3%80%82">https://arxiv.org/abs/1409.1259。</a></li>
+<li>参见 Yarin Gal，“深度学习中的不确定性（博士论文）”，2016 年 10 月 13 日，https://www.cs.ox.ac.uk/people/yarin.gal/website/blog_2248.html。</li>
+<li>参见 Cho 等人，“论神经机器翻译的性质：编码器-解码器方法”，2014 年，https://arxiv.org/abs/1409.1259。</li>
 </ol>
-<p>书籍各章的机翻md文件：</p>
-<a href="/2026/02/16/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B1%E3%80%81%E4%BB%80%E4%B9%88%E6%98%AF%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" title="《DEEP LEARNING with Python》第一章 什么是深度学习？">《DEEP LEARNING with Python》第一章 什么是深度学习？</a>  
-<a href="/2026/02/17/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B2%E3%80%81%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/" title="《DEEP LEARNING with Python》第二章 神经网络的数学基础">《DEEP LEARNING with Python》第二章 神经网络的数学基础</a>  
-<a href="/2026/02/18/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B3%E3%80%81TensorFlow%E3%80%81PyTorch%E3%80%81JAX%20%E5%92%8C%20Keras%20%E7%AE%80%E4%BB%8B/" title="《DEEP LEARNING with Python》第三章 TensorFlow、PyTorch、JAX 和 Keras 简介">《DEEP LEARNING with Python》第三章 TensorFlow、PyTorch、JAX 和 Keras 简介</a>  
-<a href="/2026/02/19/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B4%E3%80%81%E5%88%86%E7%B1%BB%E4%B8%8E%E5%9B%9E%E5%BD%92/" title="《DEEP LEARNING with Python》第四章 分类与回归">《DEEP LEARNING with Python》第四章 分类与回归</a>  
-<a href="/2026/02/20/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B5%E3%80%81%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80/" title="《DEEP LEARNING with Python》第五章 机器学习基础">《DEEP LEARNING with Python》第五章 机器学习基础</a>  
-<a href="/2026/02/21/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B6%E3%80%81%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E9%80%9A%E7%94%A8%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B/" title="《DEEP LEARNING with Python》第六章 机器学习的通用工作流程">《DEEP LEARNING with Python》第六章 机器学习的通用工作流程</a>  
-<a href="/2026/02/22/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B7%E3%80%81%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3%20Keras/" title="《DEEP LEARNING with Python》第七章 深入了解 Keras">《DEEP LEARNING with Python》第七章 深入了解 Keras</a>  
-<a href="/2026/02/23/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B8%E3%80%81%E5%9B%BE%E5%83%8F%E5%88%86%E7%B1%BB/" title="《DEEP LEARNING with Python》第八章 图像分类">《DEEP LEARNING with Python》第八章 图像分类</a>  
-<a href="/2026/02/24/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B9%E3%80%81%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E6%9E%B6%E6%9E%84%E6%A8%A1%E5%BC%8F/" title="《DEEP LEARNING with Python》第九章 卷积神经网络架构模式">《DEEP LEARNING with Python》第九章 卷积神经网络架构模式</a>  
-<a href="/2026/02/25/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B10%E3%80%81%E8%A7%A3%E8%AF%BB%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%9A%84%E5%AD%A6%E4%B9%A0%E6%88%90%E6%9E%9C/" title="《DEEP LEARNING with Python》第十章 解读卷积神经网络的学习成果">《DEEP LEARNING with Python》第十章 解读卷积神经网络的学习成果</a>  
-<a href="/2026/02/26/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B11%E3%80%81%E5%9B%BE%E5%83%8F%E5%88%86%E5%89%B2/" title="《DEEP LEARNING with Python》第十一章 图像分割">《DEEP LEARNING with Python》第十一章 图像分割</a>  
-<a href="/2026/02/27/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B12%E3%80%81%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/" title="《DEEP LEARNING with Python》第十二章 目标检测">《DEEP LEARNING with Python》第十二章 目标检测</a>  
-<a href="/2026/02/28/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B13%E3%80%81%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E9%A2%84%E6%B5%8B/" title="《DEEP LEARNING with Python》第十三章 时间序列预测">《DEEP LEARNING with Python》第十三章 时间序列预测</a>  
-<a href="/2026/03/04/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B14%E3%80%81%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB/" title="《DEEP LEARNING with Python》第十四章 文本分类">《DEEP LEARNING with Python》第十四章 文本分类</a>  
-<a href="/2026/03/05/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B15%E3%80%81%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%92%8CTransformer/" title="《DEEP LEARNING with Python》第十五章 语言模型和Transformer">《DEEP LEARNING with Python》第十五章 语言模型和Transformer</a>  
-<a href="/2026/03/06/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B16%E3%80%81%E6%96%87%E6%9C%AC%E7%94%9F%E6%88%90/" title="《DEEP LEARNING with Python》第十六章 文本生成">《DEEP LEARNING with Python》第十六章 文本生成</a>  
-<a href="/2026/03/07/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B17%E3%80%81%E5%9B%BE%E5%83%8F%E7%94%9F%E6%88%90/" title="《DEEP LEARNING with Python》第十七章 图像生成">《DEEP LEARNING with Python》第十七章 图像生成</a>  
-<a href="/2026/03/08/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B18%E3%80%81%E7%8E%B0%E5%AE%9E%E4%B8%96%E7%95%8C%E7%9A%84%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/" title="《DEEP LEARNING with Python》第十八章 现实世界的最佳实践">《DEEP LEARNING with Python》第十八章 现实世界的最佳实践</a>  
-<a href="/2026/03/09/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B19%E3%80%81%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD%E7%9A%84%E6%9C%AA%E6%9D%A5/" title="《DEEP LEARNING with Python》第十九章 人工智能的未来">《DEEP LEARNING with Python》第十九章 人工智能的未来</a>  
-<a href="/2026/03/10/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B20%E3%80%81%E7%BB%93%E8%AE%BA/" title="《DEEP LEARNING with Python》第二十章 结论">《DEEP LEARNING with Python》第二十章 结论</a>  
+<p>书籍各章的机翻md文件：<br />
+<a href="/2026/02/16/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B1%E3%80%81%E4%BB%80%E4%B9%88%E6%98%AF%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" title="《DEEP LEARNING with Python》第一章 什么是深度学习？">《DEEP LEARNING with Python》第一章 什么是深度学习？</a><br />
+<a href="/2026/02/17/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B2%E3%80%81%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/" title="《DEEP LEARNING with Python》第二章 神经网络的数学基础">《DEEP LEARNING with Python》第二章 神经网络的数学基础</a><br />
+<a href="/2026/02/18/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B3%E3%80%81TensorFlow%E3%80%81PyTorch%E3%80%81JAX%20%E5%92%8C%20Keras%20%E7%AE%80%E4%BB%8B/" title="《DEEP LEARNING with Python》第三章 TensorFlow、PyTorch、JAX 和 Keras 简介">《DEEP LEARNING with Python》第三章 TensorFlow、PyTorch、JAX 和 Keras 简介</a><br />
+<a href="/2026/02/19/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B4%E3%80%81%E5%88%86%E7%B1%BB%E4%B8%8E%E5%9B%9E%E5%BD%92/" title="《DEEP LEARNING with Python》第四章 分类与回归">《DEEP LEARNING with Python》第四章 分类与回归</a><br />
+<a href="/2026/02/20/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B5%E3%80%81%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80/" title="《DEEP LEARNING with Python》第五章 机器学习基础">《DEEP LEARNING with Python》第五章 机器学习基础</a><br />
+<a href="/2026/02/21/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B6%E3%80%81%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E9%80%9A%E7%94%A8%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B/" title="《DEEP LEARNING with Python》第六章 机器学习的通用工作流程">《DEEP LEARNING with Python》第六章 机器学习的通用工作流程</a><br />
+<a href="/2026/02/22/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B7%E3%80%81%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3%20Keras/" title="《DEEP LEARNING with Python》第七章 深入了解 Keras">《DEEP LEARNING with Python》第七章 深入了解 Keras</a><br />
+<a href="/2026/02/23/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B8%E3%80%81%E5%9B%BE%E5%83%8F%E5%88%86%E7%B1%BB/" title="《DEEP LEARNING with Python》第八章 图像分类">《DEEP LEARNING with Python》第八章 图像分类</a><br />
+<a href="/2026/02/24/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B9%E3%80%81%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E6%9E%B6%E6%9E%84%E6%A8%A1%E5%BC%8F/" title="《DEEP LEARNING with Python》第九章 卷积神经网络架构模式">《DEEP LEARNING with Python》第九章 卷积神经网络架构模式</a><br />
+<a href="/2026/02/25/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B10%E3%80%81%E8%A7%A3%E8%AF%BB%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%9A%84%E5%AD%A6%E4%B9%A0%E6%88%90%E6%9E%9C/" title="《DEEP LEARNING with Python》第十章 解读卷积神经网络的学习成果">《DEEP LEARNING with Python》第十章 解读卷积神经网络的学习成果</a><br />
+<a href="/2026/02/26/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B11%E3%80%81%E5%9B%BE%E5%83%8F%E5%88%86%E5%89%B2/" title="《DEEP LEARNING with Python》第十一章 图像分割">《DEEP LEARNING with Python》第十一章 图像分割</a><br />
+<a href="/2026/02/27/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B12%E3%80%81%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/" title="《DEEP LEARNING with Python》第十二章 目标检测">《DEEP LEARNING with Python》第十二章 目标检测</a><br />
+<a href="/2026/02/28/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B13%E3%80%81%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E9%A2%84%E6%B5%8B/" title="《DEEP LEARNING with Python》第十三章 时间序列预测">《DEEP LEARNING with Python》第十三章 时间序列预测</a><br />
+<a href="/2026/03/04/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B14%E3%80%81%E6%96%87%E6%9C%AC%E5%88%86%E7%B1%BB/" title="《DEEP LEARNING with Python》第十四章 文本分类">《DEEP LEARNING with Python》第十四章 文本分类</a><br />
+<a href="/2026/03/05/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B15%E3%80%81%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%92%8CTransformer/" title="《DEEP LEARNING with Python》第十五章 语言模型和Transformer">《DEEP LEARNING with Python》第十五章 语言模型和Transformer</a><br />
+<a href="/2026/03/06/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B16%E3%80%81%E6%96%87%E6%9C%AC%E7%94%9F%E6%88%90/" title="《DEEP LEARNING with Python》第十六章 文本生成">《DEEP LEARNING with Python》第十六章 文本生成</a><br />
+<a href="/2026/03/07/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B17%E3%80%81%E5%9B%BE%E5%83%8F%E7%94%9F%E6%88%90/" title="《DEEP LEARNING with Python》第十七章 图像生成">《DEEP LEARNING with Python》第十七章 图像生成</a><br />
+<a href="/2026/03/08/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B18%E3%80%81%E7%8E%B0%E5%AE%9E%E4%B8%96%E7%95%8C%E7%9A%84%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/" title="《DEEP LEARNING with Python》第十八章 现实世界的最佳实践">《DEEP LEARNING with Python》第十八章 现实世界的最佳实践</a><br />
+<a href="/2026/03/09/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B19%E3%80%81%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD%E7%9A%84%E6%9C%AA%E6%9D%A5/" title="《DEEP LEARNING with Python》第十九章 人工智能的未来">《DEEP LEARNING with Python》第十九章 人工智能的未来</a><br />
+<a href="/2026/03/10/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B20%E3%80%81%E7%BB%93%E8%AE%BA/" title="《DEEP LEARNING with Python》第二十章 结论">《DEEP LEARNING with Python》第二十章 结论</a></p>
 
     </div>
 
