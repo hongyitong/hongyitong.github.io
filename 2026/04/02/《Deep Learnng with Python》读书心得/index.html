@@ -28,7 +28,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://hongyitong.github.io/img4/%E3%80%8ADeep%20Learning%20with%20Python%203%E3%80%8B/DeepLearningWithPython%E5%B0%81%E9%9D%A2.png">
 <meta property="article:published_time" content="2026-04-01T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-04-04T02:15:45.900Z">
+<meta property="article:modified_time" content="2026-04-04T02:33:03.769Z">
 <meta property="article:author" content="Rayman.hung">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://hongyitong.github.io/img4/%E3%80%8ADeep%20Learning%20with%20Python%203%E3%80%8B/DeepLearningWithPython%E5%B0%81%E9%9D%A2.png">
@@ -273,6 +273,7 @@
 <p>想当年，那会刚毕业，为了第一时间阅读当年最经典《Thinking in Java》这本书，一边阅读，一边拿着一本厚字典查单词，那种痛苦，历历在目。</p>
 <p>言归正传，这套书带给我最大的感触是，其<strong>宏观的视野与对本质的洞察</strong>。作者不仅能将深度学习和相关AI的核心概念梳理得极其清晰，更能通过深入浅出的语言或形象的比喻，一针见血地揭示事物背后的逻辑和本质。我始终相信，概念与定义是事物的本质，也是一切知识体系的基础与核心。</p>
 <p>此外，作者对 AI 的优势、局限及未来发展的论述客观且务实，不故弄玄虚，这种实事求是的态度在当下的技术浪潮中显得尤为珍贵。</p>
+<span id="more"></span>
 <p>以下是本书的一些重要摘录。</p>
 <h4 id="第一章-什么是深度学习">第一章 什么是深度学习？</h4>
 <ul>
@@ -290,6 +291,19 @@
 <ul>
 <li>搭建深度学习环境来运行这些笔记本最简单的方法是使用Google Colaboratory（简称 Colab），它是一个托管的 Jupyter Notebook 环境，已成为机器学习从业者的行业标准。</li>
 <li>NumPy 是一个非常流行的 Python 数值计算库。在你的机器学习学习过程中，你会经常看到它的身影。由于缺乏 GPU 和自动微分支持，它很少用于实现现代机器学习算法，但 NumPy 数组经常被用作数值数据交换格式。</li>
+<li>张量（模型中存储数据的对象）、张量运算（构成模型的层）以及梯度下降（使模型能够从训练样本中学习）。</li>
+<li>不要把五维向量和五维张量混淆！五维向量只有一个轴，沿该轴有五个维度，而五维张量有五个轴（每个轴的维度数可以任意）。 维度可以表示特定轴上的元素个数（如我们的五维向量），也可以表示张量的轴数（例如五维张量），这有时会让人感到困惑。</li>
+<li>张量由三个关键属性定义：<em>轴数（秩）Number of axes (rank)</em> ——例如，秩为 3 的张量有三个轴，而矩阵有两个轴。<em>形状 Shape</em>——这是一个整数元组，用于<strong>描述张量在每个轴上的维度数</strong>。例如，前面的矩阵示例的形状为<code>(3, 5)</code>，而秩为 3 的张量示例的形状为<code>(3, 3, 5)</code>。<em>数据类型</em>。</li>
+<li>选择张量中的特定元素称为 张量切片(tensor slicing)。</li>
+<li>使数据张量的概念更加具体。你将要处理的数据几乎总是属于以下几类之一：
+<ul>
+<li><em>向量数据(Vector data)</em>——形状为 的秩 2 张量<code>(samples, features)</code>，其中每个样本都是一个数值属性（“特征”）的向量</li>
+<li><em>时间序列数据或序列数据(Timeseries data or sequence data)</em> ——形状为 的秩 3 张量<code>(samples, timesteps, features)</code>，其中每个样本都是一个（长度为<code>timesteps</code>）特征向量序列。</li>
+<li><em>图像(Images)</em>——形状为 的 4 阶张量<code>(samples, height, width, channels)</code>，其中每个样本都是一个二维像素网格，每个像素由一个值向量（“通道”）表示。</li>
+<li><em>视频(Video)</em>——形状为 的 5 阶张量<code>(samples, frames, height, width, channels)</code>，其中每个样本都是一个（长度为<code>frames</code>）的图像序列。</li>
+</ul></li>
+<li>当在 GPU 上运行 JAX/TensorFlow/PyTorch 代码时，逐元素操作是通过完全向量化的 CUDA 实现来执行的，这样可以最大限度地利用高度并行的 GPU 芯片架构。</li>
+<li><em>线性变换</em>——任意矩阵的乘积即可实现线性变换。请注意，前面提到的缩放和旋转，根据定义，都是线性变换。<em>仿射变换</em>——仿射变换（见图 2.12）是线性变换（通过矩阵乘法实现）和平移（通过向量加法实现）的组合。正如你可能已经意识到的，这正是<code>y = W @ x + b</code>该<code>Dense</code>层实现的计算！<code>Dense</code>没有激活函数的层就是仿射层。<strong>关于仿射变换的一个重要观察结果是，即使重复应用多个仿射变换，最终得到的仍然是仿射变换（所以一开始只需应用一个仿射变换即可）</strong>。<strong>借助激活函数，<code>Dense</code>我们可以构建一个层链来实现非常复杂的非线性几何变换，从而为深度神经网络提供非常丰富的假设空间。</strong></li>
 <li></li>
 </ul>
 <p>未完待续......</p>
