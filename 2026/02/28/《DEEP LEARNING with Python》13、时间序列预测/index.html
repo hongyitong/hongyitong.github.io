@@ -40,7 +40,7 @@
 <meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/stacked_gru_dropout_model_metrics.5bfbf251.png">
 <meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/bidirectional_rnn.a38aaba4.png">
 <meta property="article:published_time" content="2026-02-27T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-03-29T03:32:14.550Z">
+<meta property="article:modified_time" content="2026-04-06T03:27:42.423Z">
 <meta property="article:author" content="Rayman.hung">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/temperature_over_several_years.365f2e2e.png">
@@ -553,6 +553,112 @@
 <p><img src="/img3/DEEP%20LEARNING%20with%20Python/unrolled_lstm_1.d9bee30c.png" alt="img" />图 13.8：层的起始点<code>LSTM</code>：a<code>SimpleRNN</code></p>
 <p>让我们在这个图中增加一个跨时间步传递信息的额外数据流。我们称其在不同时间步的值分别为 和<code>Ct</code>，其中<em>C</em>代表<em>进位</em>（carry）。该信息将对单元产生以下影响：它将与输入连接和循环连接结合（通过稠密变换：先与权重矩阵进行点积运算，然后加上偏置项并应用激活函数），并且它会影响传递到下一个时间步的状态（通过激活函数和乘法运算）。从概念上讲，进位数据流是一种调节下一个输出和下一个状态的方法（参见图 13.9）。到目前为止都很简单。</p>
 <p><img src="/img3/DEEP%20LEARNING%20with%20Python/unrolled_lstm_2.4145ecdf.png" alt="img" />图 13.9：从 SimpleRNN 到 LSTM：添加进位轨迹</p>
+<blockquote>
+<p>个人注： <span class="math inline">\(C_t\)</span>的意义？</p>
+<p>这里的 <span class="math inline">\(C_t\)</span>（或文中提到的“进位” Carry）代表的是 <strong>LSTM（长短期记忆网络）中的“细胞状态”（Cell State）</strong>。</p>
+<p>在深度学习的语境下，你可以从以下三个层面来理解它的意义：</p>
+<ol type="1">
+<li>概念层面：长期记忆的“传送带”</li>
+</ol>
+<p>如果说普通的 RNN 状态 <span class="math inline">\(h_t\)</span> 像是一个人的“瞬时反应”，那么 <span class="math inline">\(C_t\)</span> 就像是一本<strong>“长期备忘录”</strong>。</p>
+<ul>
+<li>它贯穿于整个序列的处理过程，像一条传送带一样跨越不同的时间步。</li>
+<li><strong>“Carry（进位）”</strong> 这个词用得很精妙，它意味着这一步处理不完的信息、或者需要长期保留的信息，被“进位”到了下一步。</li>
+</ul>
+<ol start="2" type="1">
+<li>功能层面：信息调节阀</li>
+</ol>
+<p>文中提到 <span class="math inline">\(C_t\)</span> 会“影响下一个输出和下一个状态”，这正是 LSTM 核心的 <strong>“门控机制”</strong>：</p>
+<ul>
+<li><strong>遗忘与保留</strong>：模型会决定 <span class="math inline">\(C_t\)</span> 中哪些旧信息该丢弃，哪些新信息该存入。</li>
+<li><strong>调节（Modulation）</strong>：它作为一个“背景背景”或“上下文”，去调制（乘以）当前的计算结果。
+<ul>
+<li><em>举例</em>：如果你在读一段话，前面出现了“他（男）”，这个性别信息就会存在 <span class="math inline">\(C_t\)</span> 里。当你后面读到动词时，<span class="math inline">\(C_t\)</span> 就会调节输出，让模型知道接下来的代词应该对应“Him”而不是“Her”。</li>
+</ul></li>
+</ul>
+<ol start="3" type="1">
+<li>数学与物理层面：解决梯度消失</li>
+</ol>
+<p>这是 <span class="math inline">\(C_t\)</span> 存在的最硬核原因。</p>
+<ul>
+<li>在普通 RNN 中，信息传递是连乘运算，传久了梯度就没了（梯度消失）。</li>
+<li>而在包含 <span class="math inline">\(C_t\)</span> 的结构中，信息的流动主要是<strong>加法运算</strong>。这种“线性连接”形成了一条<strong>梯度高速公路</strong>，使得神经网络能够“记住”成百上千个时间步之前的信息。</li>
+</ul>
+<p>总结</p>
+<p>文中的 <span class="math inline">\(C_t\)</span> 就是 <strong>Cell State</strong>。它通过<strong>稠密变换</strong>（权重点积）融合了当前输入，又通过<strong>乘法运算</strong>（门控）决定了给下一步留多少。</p>
+<p><strong>你可以把它理解为：</strong> 一个带有“开关控制”的全局变量，专门用来保存那些需要跨越长距离、不能被轻易覆盖掉的关键背景信息。</p>
+</blockquote>
+<blockquote>
+<p>个人注：和那个 state t有什么不同？</p>
+<p>这是一个非常经典的问题。在 LSTM（长短期记忆网络）中，同时存在两个状态：<strong><span class="math inline">\(C_t\)</span>（细胞状态/Cell State）</strong>和 <strong><span class="math inline">\(h_t\)</span>（隐藏状态/Hidden State）</strong>。</p>
+<p>虽然它们都在时间步之间传递信息，但它们的<strong>分工</strong>和<strong>性质</strong>完全不同。</p>
+<ol type="1">
+<li>核心定位对比：备忘录 vs. 当前输出</li>
+</ol>
+<table>
+<thead>
+<tr class="header">
+<th><strong>状态</strong></th>
+<th><strong>符号</strong></th>
+<th><strong>比喻</strong></th>
+<th><strong>作用</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>细胞状态</strong></td>
+<td><span class="math inline">\(C_t\)</span></td>
+<td><strong>长期备忘录</strong></td>
+<td>负责保存跨越长距离的、相对稳定的原始信息。</td>
+</tr>
+<tr class="even">
+<td><strong>隐藏状态</strong></td>
+<td><span class="math inline">\(h_t\)</span></td>
+<td><strong>即时工作记忆</strong></td>
+<td>负责根据当前的备忘录和当前输入，决定此刻要“表现”出什么。</td>
+</tr>
+</tbody>
+</table>
+<ol start="2" type="1">
+<li>数学特性的不同（为什么 <span class="math inline">\(C_t\)</span> 能解决梯度消失）</li>
+</ol>
+<p>这是两者在算法层面上最根本的区别：</p>
+<ul>
+<li><p><strong><span class="math inline">\(h_t\)</span> 是“剧烈变化”的：</strong></p>
+<p>在普通的 RNN（以及 LSTM 的输出部分）中，<span class="math inline">\(h_t\)</span> 每一层都要经过一个激活函数（如 <span class="math inline">\(tanh\)</span> 或 <span class="math inline">\(ReLU\)</span>）和复杂的矩阵点积运算。这就像“传声筒游戏”，每传一次，信息都会被扭曲或缩小一点点。传到 50 步之后，最初的信息基本就消失了。</p></li>
+<li><p><strong><span class="math inline">\(C_t\)</span> 是“线性流动”的：</strong></p>
+<p><span class="math inline">\(C_t\)</span> 在时间轴上的流动主要是<strong>加法运算</strong>。它就像一条传送带，信息可以通过“遗忘门”丢弃一点，通过“输入门”增加一点，但主体信息是线性传递的。这种设计让梯度（误差信号）可以像走高速公路一样，无损地回传到很远之前。</p></li>
+</ul>
+<ol start="3" type="1">
+<li>一个直观的生活例子：读长篇小说</li>
+</ol>
+<p>假设你正在读一本长篇侦探小说：</p>
+<ul>
+<li><strong><span class="math inline">\(C_t\)</span> (Cell State)</strong>：是你脑子里的<strong>主线剧情备忘录</strong>。
+<ul>
+<li>你记得：主角是个警察，受害者是张三，案件发生在雨天。</li>
+<li>这些信息非常稳定，不会因为你读到某一个描写风景的词就变了。</li>
+</ul></li>
+<li><strong><span class="math inline">\(h_t\)</span> (Hidden State)</strong>：是你读到<strong>当前这一行文字时的反应</strong>。
+<ul>
+<li>当你读到“凶手推开了门”时，<span class="math inline">\(h_t\)</span> 会立刻让你感到紧张。</li>
+<li><span class="math inline">\(h_t\)</span> 是由 <span class="math inline">\(C_t\)</span>（你知道门后可能是凶手）和当前输入（推门这个动作）共同产生的。</li>
+<li>读完这一行，你的紧张感（<span class="math inline">\(h_t\)</span>）可能会消失，但主线剧情（<span class="math inline">\(C_t\)</span>）依然保留。</li>
+</ul></li>
+</ul>
+<ol start="4" type="1">
+<li>它们之间的互动关系</li>
+</ol>
+<p>在 LSTM 的内部逻辑里：</p>
+<ol type="1">
+<li>先更新 <strong><span class="math inline">\(C_t\)</span></strong>（决定忘掉什么旧的，记住什么新的）。</li>
+<li>然后把 <strong><span class="math inline">\(C_t\)</span></strong> 放进一个 <span class="math inline">\(tanh\)</span> 函数里压减一下（变成 <span class="math inline">\(-1\)</span> 到 <span class="math inline">\(1\)</span> 之间的数值）。</li>
+<li>最后用一个“输出门”去过滤这个 <span class="math inline">\(C_t\)</span>，得到 <strong><span class="math inline">\(h_t\)</span></strong>。</li>
+</ol>
+<p><strong>结论：</strong></p>
+<p><span class="math inline">\(h_t\)</span> 其实是 <span class="math inline">\(C_t\)</span> 的一个<strong>过滤后的副本</strong>。<span class="math inline">\(C_t\)</span> 包含了所有的潜力信息，而 <span class="math inline">\(h_t\)</span> 只展示当前任务需要的那一部分。</p>
+<p>在书中，Francois Chollet 把 <span class="math inline">\(C_t\)</span> 称为“进位（Carry）”，就是因为它像数学加法里的进位一样，是直接“平移”到下一位的，不参与那种容易让信息丢失的复杂非线性变换。</p>
+</blockquote>
 <p>现在来说说其中的微妙之处：进位数据流的下一个值是如何计算的。它涉及三种不同的转换。这三种转换都以 <code>SimpleRNN</code>单元格的形式呈现：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">y = activation(dot(state_t, U) + dot(input_t, W) + b)</span><br></pre></td></tr></table></figure>
 <p>但是这三种变换都有各自的权重矩阵，分别用字母 、 和 进行索引<code>i</code>。<code>f</code>以下<code>k</code>是您目前所拥有的（可能看起来有点随意，但请耐心听我说完）。</p>

@@ -36,7 +36,7 @@
 <meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/cam.b66fff28.png">
 <meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/elephant_cam.73b7f8e0.jpg">
 <meta property="article:published_time" content="2026-02-24T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-03-29T03:31:34.859Z">
+<meta property="article:modified_time" content="2026-04-05T04:20:26.719Z">
 <meta property="article:author" content="Rayman.hung">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/cat.135f6a4b.png">
@@ -459,6 +459,84 @@
 <li>堆栈上层一些的滤镜，例如<code>block4_sepconv1</code>，对由边缘和颜色组合而成的简单纹理进行编码。</li>
 <li>更高层级的滤镜开始呈现出类似自然图像中的纹理：羽毛、眼睛、树叶等等。</li>
 </ul>
+<blockquote>
+<p>个人注：可视化中间激活（Visualizing intermediate activations） 和可视化卷积神经网络滤波器（Visualizing ConvNet filters）的区别？</p>
+<p>在深度学习的调试和理解中，这两者虽然都涉及“看一眼模型内部”，但它们的<strong>视角</strong>和<strong>目的</strong>完全不同。</p>
+<p>简单来说：<strong>“中间激活”看的是数据，“滤波器”看的是知识。</strong></p>
+<ol type="1">
+<li>可视化中间激活 (Visualizing Intermediate Activations)</li>
+</ol>
+<p><strong>核心定义：</strong> 展示特定输入（如一张猫的照片）经过某一隐藏层后，输出的特征图（Feature Maps）。</p>
+<ul>
+<li><strong>看的是什么：</strong> 看的是<strong>“这张具体的图在这一层变成了什么样？”</strong>。</li>
+<li><strong>输入依赖性：</strong> 强依赖。换一张狗的照片，激活图就会完全不同。</li>
+<li><strong>直观表现：</strong>
+<ul>
+<li><strong>浅层</strong>：保留了原图的大部分轮廓、边缘（比如猫的胡须、耳朵轮廓）。</li>
+<li><strong>深层</strong>：图像变得越来越抽象、稀疏。你可能看不出那是猫，但模型在这一层可能只激活了“眼睛”或“耳朵”的抽象特征点。</li>
+</ul></li>
+<li><strong>目的：</strong> 了解模型是如何层层分解、过滤输入数据的，以及哪些特征对当前预测起到了作用。</li>
+</ul>
+<ol start="2" type="1">
+<li>可视化卷积神经网络滤波器 (Visualizing ConvNet Filters)</li>
+</ol>
+<p><strong>核心定义：</strong> 展示卷积层里的权重（Weights）本身，通常通过“梯度上升”法生成一张<strong>最能让该滤波器兴奋</strong>的图像。</p>
+<ul>
+<li><strong>看的是什么：</strong> 看的是<strong>“这个神经元（滤波器）到底在找什么？”</strong>。</li>
+<li><strong>输入依赖性：</strong> 无。它只与模型的权重有关，反映的是模型通过训练“学到了什么规律”。</li>
+<li><strong>直观表现：</strong>
+<ul>
+<li><strong>浅层滤波器</strong>：通常是简单的线条、颜色块、特定角度的边缘。</li>
+<li><strong>中层滤波器</strong>：开始出现纹理、复杂的几何图案（如圆圈、格子）。</li>
+<li><strong>深层滤波器</strong>：呈现出具体的物体局部（如鸟的羽毛、眼睛、植物的叶脉）。</li>
+</ul></li>
+<li><strong>目的：</strong> 探索模型内部的“知识库”。它能告诉我们，模型并不是在乱猜，而是真的学会了识别特定模式。</li>
+</ul>
+<ol start="3" type="1">
+<li>形象对比表</li>
+</ol>
+<table>
+<thead>
+<tr class="header">
+<th><strong>特性</strong></th>
+<th><strong>可视化中间激活 (Activations)</strong></th>
+<th><strong>可视化滤波器 (Filters)</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>比喻</strong></td>
+<td><strong>“X光片”</strong>：看特定的病人在扫描仪下是什么样。</td>
+<td><strong>“模板/模具”</strong>：看工厂里生产零件的模具长什么样。</td>
+</tr>
+<tr class="even">
+<td><strong>对象</strong></td>
+<td>层的输出（Feature Maps）。</td>
+<td>层的权重（Weights/Patterns）。</td>
+</tr>
+<tr class="odd">
+<td><strong>变化</strong></td>
+<td>给它一张猫，它变样；给它一张狗，它又变样。</td>
+<td>只要模型训练好了，它就固定在那。</td>
+</tr>
+<tr class="even">
+<td><strong>解释力</strong></td>
+<td>解释<strong>为什么</strong>这张图被判定为“猫”。</td>
+<td>解释模型<strong>具备</strong>识别哪些视觉模式的能力。</td>
+</tr>
+<tr class="odd">
+<td><strong>技术手段</strong></td>
+<td>直接提取 <code>model.predict()</code> 的中间层输出。</td>
+<td>梯度上升法（由噪声图演化出能让激活值最大的图）。</td>
+</tr>
+</tbody>
+</table>
+<p>总结</p>
+<ul>
+<li>如果你想知道<strong>模型现在在看这张图的哪里</strong>，去看<strong>激活（Activations）</strong>。</li>
+<li>如果你想知道<strong>模型这辈子都学到了哪些视觉概念</strong>，去看<strong>滤波器（Filters）</strong>。</li>
+</ul>
+</blockquote>
 <h2 id="可视化类别激活热图">可视化类别激活热图</h2>
 <p>Visualizing heatmaps of class activation</p>
 <p>最后介绍一种可视化技术——它有助于理解给定图像的哪些部分引导卷积神经网络（ConvNet）做出最终分类决策。这对于“调试”卷积神经网络的决策过程非常有帮助，尤其是在出现分类错误的情况下（这属于<em>模型可解释性</em>问题）。它还可以帮助你定位图像中的特定对象。</p>
@@ -635,7 +713,58 @@
 <p>现在只有一个障碍。人类的视觉系统非常局限于低维物体。我们可以理解二维、三维，或许还有四维的可视化。我们通常最习惯简单的二维空间。而我们想要绘制的点坐标通常处在几百甚至几千维的空间中。为了可视化它们，我们需要将它们投影到二维平面上，同时尽力保留原始流形中尽可能多的组织结构。</p>
 <p>这项任务并非听起来那么不可能。你看，虽然你处理的点可能是 2048 维的，但它们所代表的曲线具有更低的固有维度。这正是我们将其称为“流形”的原因——流形是高维空间内部的低维曲线。例如，虽然地球是一个三维物体，但它的表面实际上是二维的，因此将其投影到二维平面上是可能的。世界地图正是为此而存在的。</p>
 <p>事实上，世界地图既展示了高维流形低维投影的可行性，也展示了其挑战。所有的投影都会扭曲现实。广泛使用的墨卡托（Mercator）地图投影会扭曲距离，特别是使赤道附近的区域看起来比实际小，反之使两极附近的区域向无穷大延伸。即使你投影的表面实际上是二维的，情况也是如此——而深度学习的潜流形维度可能比这高得多。</p>
-<p>没有任何投影是不破坏至少一部分信息的。</p>
+<p><strong>没有任何投影是不破坏至少一部分信息的。</strong></p>
+</blockquote>
+<blockquote>
+<p>个人注：什么是<strong>潜空间（Latent Space）</strong></p>
+<p>在深度学习（尤其是生成模型，如变分自编码器 VAE 或 GAN）中，<strong>潜空间（Latent Space）</strong> 是一个非常核心且迷人的概念。</p>
+<p>简单来说，潜空间就是<strong>数据的“灵魂压缩包”</strong>。它是一个低维的空间，里面存储着数据最本质、最核心的特征。</p>
+<ol type="1">
+<li>形象的比喻：警察画肖像</li>
+</ol>
+<p>想象一个警察正在根据目击者的描述画嫌疑人的肖像：</p>
+<ul>
+<li><strong>原始数据空间（高维）</strong>：嫌疑人的真实照片。这张照片包含数百万个像素点（高维度），每个像素都有颜色和亮度信息。</li>
+<li><strong>潜空间（低维）</strong>：目击者大脑中的记忆。目击者不会记得每一个像素，他只记得几个<strong>核心特征（Latent Variables）</strong>：
+<ol type="1">
+<li>性别（男/女）</li>
+<li>脸型（圆/长）</li>
+<li>是否戴眼镜（是/否）</li>
+<li>头发长度（长/短）</li>
+</ol></li>
+<li><strong>潜空间的意义</strong>：这 4 个简单的维度，就足以“重建”出一张像模像样的肖像。这 4 个维度构成的空间，就是<strong>潜空间</strong>。</li>
+</ul>
+<ol start="2" type="1">
+<li>潜空间的三大特性</li>
+</ol>
+<p>A. 降维（Compression）</p>
+<p>原始数据（如一张 <span class="math inline">\(256 \times 256\)</span> 的彩色图片）拥有 <span class="math inline">\(196,608\)</span> 个维度。但在潜空间中，我们可能只需要 <span class="math inline">\(128\)</span> 个维度就能表达这张图。模型学会了丢弃掉那些“没用的噪声”（比如背景里的微小尘埃），只保留最重要的信息。</p>
+<p>B. 语义聚类（Semantic Clustering）</p>
+<p>在理想的潜空间里，<strong>相似的事物会靠在一起</strong>。</p>
+<ul>
+<li>如果你在潜空间里找到“猫”的点，稍微移动一点点距离，你可能会找到“长毛猫”或者“小老虎”。</li>
+<li>这意味着潜空间捕捉到了数据背后的数学规律，而不仅仅是像素的堆砌。</li>
+</ul>
+<p>C. 可流形操作（Latent Space Arithmetic）</p>
+<p>这是潜空间最神奇的地方。因为它是连续的数学空间，你可以进行“向量加减法”。</p>
+<p>最经典的例子：</p>
+<p><span class="math display">\[\text{国王的向量} - \text{男性的向量} + \text{女性的向量} = \text{女王的向量}\]</span></p>
+<p>这说明潜空间真的理解了“性别”和“地位”这两个隐藏的概念。</p>
+<ol start="3" type="1">
+<li>为什么叫“潜”空间？</li>
+</ol>
+<p>之所以叫“潜（Latent）”，是因为这些特征是<strong>隐藏的、不可直接观测的</strong>。</p>
+<ul>
+<li>在原始照片里，你看不到一个专门标着“性别”的像素。</li>
+<li>但在潜空间里，模型通过训练，自动挖掘出了这些支撑数据生成的隐藏变量。</li>
+</ul>
+<p>作者 Francois Chollet 经常提到“学习表示（Learning Representations）”。<strong>潜空间其实就是模型学到的最极致的“表示”。</strong></p>
+<ul>
+<li><strong>编码器（Encoder）</strong>：负责把繁琐的原始数据“压缩”进潜空间。</li>
+<li><strong>解码器（Decoder）</strong>：负责把潜空间里的一个点“翻译”回人能看懂的数据（图片、文字）。</li>
+</ul>
+<p><strong>总结一下：</strong></p>
+<p>潜空间就像是数据的一种<strong>“数学速记法”</strong>。它去掉了表面的冗余，把万千世界的规律浓缩成了空间里的坐标点。当你掌握了潜空间，你也就掌握了生成新数据的“上帝视角”。</p>
 </blockquote>
 <h2 id="概括">概括</h2>
 <ul>

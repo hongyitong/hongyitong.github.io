@@ -33,7 +33,7 @@
 <meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/embedding-dictionary.80faa429.png">
 <meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/cbow.01aaf529.png">
 <meta property="article:published_time" content="2026-03-03T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-03-29T03:32:24.614Z">
+<meta property="article:modified_time" content="2026-04-06T03:51:10.901Z">
 <meta property="article:author" content="Rayman.hung">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/text-pipeline.c09bbad6.png">
@@ -486,6 +486,50 @@
 <p>在所有应用机器学习中，预处理的速度和效率都是至关重要的。更快的程序运行速度固然重要，但当加速器（GPU 和 TPU）成本如此之高时，这一点就显得尤为迫切。您肯定不希望在预处理输入数据时让昂贵的 GPU 闲置！</p>
 <p><strong>文本预处理的特殊之处在于它必须始终在 CPU 上运行。GPU 严格处理数值输入，因此所有分词都必须在 GPU 的训练步骤之前完成。一种方法是预先计算分词后的输入——分词不依赖于模型权重，因此您可以在开始训练之前对所有输入文本文件进行分词，并将其重新保存为整数序列。</strong>然而，这种方法并非总是可行。动态分词可以实现更快速的实验。如果您要对一个未见过的样本进行推理，则无法预先计算分词后的输入；您需要快速地进行分词并运行前向传播。</p>
 <p>实时预处理文本输入的关键在于“速度要足够快”。你需要确保昂贵的GPU始终有新的预处理数据可供处理。如果这样做，GPU就成了瓶颈，提升分词速度也就毫无意义了。</p>
+<blockquote>
+<p>个人注：文本预处理的特殊之处在于它必须始终在 CPU 上运行。GPU 严格处理数值输入，因此所有分词都必须在 GPU 的训练步骤之前完成。</p>
+<p>这句话揭示了深度学习流水线中一个非常底层的<strong>硬件分工问题</strong>。</p>
+<p>简单来说：<strong>GPU 是一个极其强大的“算盘”，而 CPU 是一个灵活的“调度员”。</strong></p>
+<p>以下是文本预处理必须在 CPU 上运行的几个核心原因：</p>
+<ol type="1">
+<li>GPU 只认数字，不认字符</li>
+</ol>
+<p>GPU 的核心设计目标是进行大规模的<strong>并行浮点运算</strong>（矩阵点积、加法等）。它的内部架构（CUDA 核心）是为处理张量（Tensor）而生的。</p>
+<ul>
+<li><strong>文本是什么？</strong> 文本是字符串（String），是变长的、非数值的数据。</li>
+<li><strong>预处理做了什么？</strong> 分词（Tokenization）、查表（Vocabulary Lookup）、标准化。这些操作涉及大量的字符串匹配、逻辑判断（if-else）和字典查找。</li>
+<li><strong>冲突点：</strong> GPU 无法直接对“Hello World”进行矩阵运算。在数据进入 GPU 的内存（显存）之前，必须先由 CPU 将其转化成数字（整数索引或 Embedding）。</li>
+</ul>
+<ol start="2" type="1">
+<li>逻辑复杂性与分支预测</li>
+</ol>
+<p>文本预处理通常包含复杂的逻辑：</p>
+<ul>
+<li><strong>分词规则：</strong> 遇到空格切分，遇到标点符号过滤，处理特殊的前缀/后缀。</li>
+<li><strong>字典映射：</strong> 将每个词映射为数字 <code>&#123;"apple": 1, "banana": 2&#125;</code>。</li>
+<li><strong>CPU 的优势：</strong> CPU 拥有复杂的控制流单元和强大的分支预测能力，处理这种“如果遇到 A，就执行 B，否则查字典”的逻辑任务非常快。</li>
+<li><strong>GPU 的短板：</strong> GPU 擅长的是“对 100 万个数字同时做平方”。一旦出现复杂的逻辑分支（Branching），GPU 的数千个核心就会被迫等待彼此，性能严重下降。</li>
+</ul>
+<ol start="3" type="1">
+<li>内存访问模式</li>
+</ol>
+<ul>
+<li><strong>CPU 缓存（Cache）：</strong> 文本预处理涉及频繁访问词典。词典通常存储在系统内存（RAM）中，CPU 的多级缓存可以极快地加速这种随机查找。</li>
+<li><strong>数据搬运成本：</strong> 如果把原始字符串传给 GPU 处理，GPU 需要频繁地回访 CPU 的内存来查找词典，这种跨硬件的通信开销（PCIe 总线带宽限制）远比在 CPU 上直接处理完再传数字要大得多。</li>
+</ul>
+<ol start="4" type="1">
+<li>异步并行处理（流水线优化）</li>
+</ol>
+<p>在现代深度学习架构（如 TensorFlow 的 <code>tf.data</code> 或 PyTorch 的 <code>DataLoader</code>）中，通常采用<strong>生产者-消费者模型</strong>：</p>
+<ul>
+<li><strong>CPU（生产者）：</strong> 负责从硬盘读文本、分词、转成数字张量。</li>
+<li><strong>GPU（消费者）：</strong> 负责拿着这些张量跑反向传播、更新权重。</li>
+<li><strong>优势：</strong> 当 GPU 正在计算第 <span class="math inline">\(N\)</span> 个批次（Batch）时，CPU 已经在提前预处理第 <span class="math inline">\(N+1\)</span> 个批次了。这种并行协作能让 GPU 始终处于满载状态，不被缓慢的字符串操作拖后腿。</li>
+</ul>
+<p>总结</p>
+<p><strong>“分词”本质上是一个逻辑查找过程，而不是数学运算过程。</strong></p>
+<p>正如你读到的那本书所言，GPU 就像一个只吃“加工好的数字罐头”的猛兽。CPU 则负责在厨房里把原始的“文本蔬菜”洗净、切好（分词）、装罐（数值化），然后通过 PCIe 总线递给 GPU。如果让 GPU 自己去洗菜，它那笨拙的“手指”会效率极低。</p>
+</blockquote>
 <p><strong>我们在前面的章节中已经看到<code>tf.data</code>，我们使用它的一个重要原因是，该库旨在避免 CPU 成为 GPU 或 TPU 的瓶颈。</strong>本章中我们将使用它——例如，<code>keras.utils.text_dataset_from_directory()</code>加载一个模型<code>tf.data.Dataset</code>，并通过应用一个转换层来转换我们的输入数据。<strong>它的工作原理是在多个 CPU 核心上并行运行文本预处理，这通常足以避免在训练过程中出现加速器瓶颈。</strong><code>map()``TextVectorization``tf.data</code></p>
 <p>需要注意的是，本章中的代码仍然是多后端兼容的（实际上，本章的输出是使用 Jax 生成的）。您可以将其 <code>tf.data</code>与 PyTorch、JAX 或 TensorFlow 本身一起使用——Keras 会自动将输入张量转换为给定后端所需的正确格式。</p>
 <h3 id="训练二元语法模型">训练二元语法模型</h3>
