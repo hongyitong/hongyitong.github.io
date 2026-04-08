@@ -35,7 +35,7 @@
 <meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/gemma-test-image.ddb3b630.png">
 <meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/llm-sizes.34d71a34.png">
 <meta property="article:published_time" content="2026-03-05T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-03-29T03:25:10.866Z">
+<meta property="article:modified_time" content="2026-04-08T02:22:01.668Z">
 <meta property="article:author" content="Rayman.hung">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/keras-midjourney-image.edfbf674.png">
@@ -387,7 +387,7 @@
 <li><strong>输入文本</strong>："I love AI"</li>
 <li><strong>词元化 (Tokenization)</strong>：变成词元序列 <code>[40, 3021, 15592]</code>。</li>
 <li><strong>词嵌入 (Token Embedding)</strong>：将每个 ID 换成高维向量。</li>
-<li><strong>位置嵌入 (Positional Embedding)</strong>：<strong>正如你上一条问的</strong>，把位置信息加到词向量上。</li>
+<li><strong>位置嵌入 (Positional Embedding)</strong>：把位置信息加到词向量上。</li>
 <li><strong>Transformer 层</strong>：进行多次“自注意力”运算。</li>
 <li><strong>输出预测</strong>：最后再变回概率，挑出下一个词元</li>
 </ol>
@@ -477,6 +477,48 @@
 <p>我们刚刚构建的生成函数中还存在一个主要的效率低下之处。你能发现它吗？</p>
 <p>每次调用模型时，我们都会针对<em>整个序列</em>进行调用，然后丢弃除单个位置预测结果之外的所有内容。这很浪费——序列在生成步骤之间只会改变一个词元。我们在第 15 章使用 RNN 进行生成时，可以保留 RNN 的状态，并且在每个步骤中只计算单个词元的输出。这个状态向量包含了模型所需的关于过去序列的所有信息。使用因果注意力机制的 Transformer 模型（例如 GPT）实际上也有类似的状态概念。</p>
 <p>如果我们仔细思考一下刚刚构建的整个模型，就会发现注意力机制是模型中<em>唯一能够将信息从一个位置传递到另一个位置的地方。Transformer 的前馈模块只是独立地修改每个标记位置的隐藏表示。</em></p>
+<blockquote>
+<p>个人注：怎么理解以上这段话？</p>
+<p>这句话深刻地揭示了 <strong>Transformer 架构的核心本质</strong>。我们可以从“分工”的角度来拆解这个逻辑：</p>
+<ol type="1">
+<li>核心矛盾：位置与交互</li>
+</ol>
+<p>在处理序列（比如一句话或一段代码）时，模型有两个任务：</p>
+<ol type="1">
+<li><p><strong>理解每个词自己：</strong> 比如“逻辑”是什么意思。</p></li>
+<li><p><strong>理解词与词的关系：</strong> 比如“逻辑”和“回归”连在一起是什么意思。</p></li>
+<li><p>前馈模块（FFN）：“孤独的加工厂”</p></li>
+</ol>
+<p>Transformer 每一层都有一个前馈神经网络（Feed-Forward Network）。</p>
+<ul>
+<li><strong>独立性</strong>：它对每个位置（Token）的操作是完全一样的。它只看当前位置的向量，不看左边，也不看右边。</li>
+<li><strong>比喻</strong>：就像工厂流水线上有 100 个工位，每个工位上的工人都只埋头处理自己手里的零件。即使两个工位挨在一起，他们也<strong>互不说话，互不传球</strong>。</li>
+<li><strong>结果</strong>：如果只有 FFN，模型永远无法知道第 1 个词和第 10 个词之间有什么联系。</li>
+</ul>
+<ol start="3" type="1">
+<li>注意力机制（Attention）：“唯一的传声筒”</li>
+</ol>
+<p>这是模型中<strong>唯一</strong>打破“地理位置”限制的地方。</p>
+<ul>
+<li><strong>跨位置通信</strong>：只有在注意力层，第 5 个位置的向量才会去询问第 1 个位置：“你那里有什么信息是对我有用的？”</li>
+<li><strong>信息流动</strong>：它计算权重，然后把其他位置的信息“加权求和”到当前位置。</li>
+<li><strong>结论</strong>：正如你引用的那句话所说，<strong>如果没有注意力机制，Transformer 内部的信息就像一潭死水，每个位置都是孤岛。</strong></li>
+</ul>
+<ol start="4" type="1">
+<li>为什么要这样设计？（架构之美）</li>
+</ol>
+<p>这种设计实现了极高的<strong>并行效率</strong>：</p>
+<ul>
+<li><strong>通信归通信</strong>：由注意力机制集中负责（复杂度较高，需要计算两两关系）。</li>
+<li><strong>加工归加工</strong>：由前馈模块负责。既然信息已经通过注意力机制“传”过来了，前馈模块只需要专注于深度挖掘当前位置融合后的特征即可。</li>
+</ul>
+<p>💡 总结理解</p>
+<ul>
+<li><strong>注意力机制</strong> = <strong>路由器/交换机</strong>（负责把各处的信息导流、汇聚）。</li>
+<li><strong>前馈模块</strong> = <strong>单核 CPU</strong>（负责对汇聚后的数据进行非线性计算和特征提取）。</li>
+</ul>
+<p>这就是为什么说注意力机制是模型中唯一能“传递信息”的地方。如果把 Transformer 比作一个团队，<strong>注意力机制就是开会讨论，而前馈模块就是散会后每个人回到工位上写自己的报告。</strong> 没有会议，大家就永远不知道彼此在干什么。</p>
+</blockquote>
 <p><code>key</code> 在注意力机制内部，我们通过向量和向量来整合过去标记的信息<code>value</code>。对于给定<code>query</code>位置的标记，我们通过将标记<code>query</code>与所有先前的<code>key</code>向量进行点积运算，并将所有先前的<code>value</code>向量组合起来，来计算注意力得分。这些向量<code>key</code>和<code>value</code>向量对于序列中过去的标记始终保持不变——过去的输入是固定的，并且因果掩码阻止了Transformer“预见”未来的标记。因此，如果我们缓存所有向量<code>key</code>和 <code>value</code>向量，那么在Transformer的每一层，我们就拥有了相当于RNN状态的信息。我们可以利用这些信息来一次计算单个位置的Transformer输出。</p>
 <p>实现起来有点繁琐，因为它涉及到保存和重用Transformer中每个注意力层的中间数组，但这至关重要。你的模型输入长度可以从与输出最大长度相同的长度，到单个标记的长度不等。如果你生成的序列包含数千个标记，缓存可以带来千倍的速度提升！任何高效的生成式采样实现都将包含<code>key</code>缓存 <code>value</code>。</p>
 <h3 id="抽样策略">抽样策略</h3>
