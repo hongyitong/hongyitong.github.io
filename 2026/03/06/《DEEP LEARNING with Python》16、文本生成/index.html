@@ -35,7 +35,7 @@
 <meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/gemma-test-image.ddb3b630.png">
 <meta property="og:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/llm-sizes.34d71a34.png">
 <meta property="article:published_time" content="2026-03-05T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-04-08T02:22:01.668Z">
+<meta property="article:modified_time" content="2026-04-08T03:18:52.582Z">
 <meta property="article:author" content="Rayman.hung">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://hongyitong.github.io/img3/DEEP%20LEARNING%20with%20Python/keras-midjourney-image.edfbf674.png">
@@ -763,6 +763,56 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; # Limits the maximum input size of the model</span><br><span class="line">&gt;&gt;&gt; gemma_lm.preprocessor.max_images_per_prompt = 1</span><br><span class="line">&gt;&gt;&gt; gemma_lm.preprocessor.sequence_length = 512</span><br><span class="line">&gt;&gt;&gt; prompt = &quot;What is going on in this image? Be concise!&lt;start_of_image&gt;&quot;</span><br><span class="line">&gt;&gt;&gt; gemma_lm.generate(&#123;</span><br><span class="line">...     &quot;prompts&quot;: PROMPT_TEMPLATE.format(prompt),</span><br><span class="line">...     &quot;images&quot;: [image],</span><br><span class="line">... &#125;)</span><br><span class="line">&lt;start_of_turn&gt;user</span><br><span class="line">What is going on in this image? Be concise!</span><br><span class="line"></span><br><span class="line">&lt;start_of_image&gt;</span><br><span class="line"></span><br><span class="line">&lt;end_of_turn&gt;</span><br><span class="line">&lt;start_of_turn&gt;model</span><br><span class="line">A snake wearing glasses is sitting in a leather armchair, surrounded by a large</span><br><span class="line">bookshelf, and reading a book. It&#x27;s a whimsical, slightly surreal image.</span><br><span class="line">&lt;end_of_turn&gt;</span><br><span class="line">&gt;&gt;&gt; prompt = &quot;What is the snake wearing?&lt;start_of_image&gt;&quot;</span><br><span class="line">&gt;&gt;&gt; gemma_lm.generate(&#123;</span><br><span class="line">...     &quot;prompts&quot;: PROMPT_TEMPLATE.format(prompt),</span><br><span class="line">...     &quot;images&quot;: [image],</span><br><span class="line">... &#125;)</span><br><span class="line">&lt;start_of_turn&gt;user</span><br><span class="line">What is the snake wearing?</span><br><span class="line"></span><br><span class="line">&lt;start_of_image&gt;</span><br><span class="line"></span><br><span class="line">&lt;end_of_turn&gt;</span><br><span class="line">&lt;start_of_turn&gt;model</span><br><span class="line">The snake is wearing a pair of glasses! They are red-framed and perched on its</span><br><span class="line">head.&lt;end_of_turn&gt;</span><br></pre></td></tr></table></figure>
 <p>我们的每个输入提示都包含一个特殊标记<code>&lt;start_of_image&gt;</code>。该标记在我们的输入序列中被转换为 256 个占位符值，而这些占位符值又会被替换为代表我们图像的软标记。</p>
 <p>训练这种多模态模型与常规的LLM预训练和微调非常相似。通常，你需要先单独预训练图像编码器，就像我们在本书第8章中所做的那样。然后，你可以简单地进行相同的“猜测下一个词”预训练，并将混合的图像和文本内容输入到一个序列中。我们的Transformer模型不会被训练来输出图像软标记；我们只需将这些图像标记位置的损失值设为零即可。</p>
+<blockquote>
+<p>个人注：</p>
+<p>这句话描述了当前多模态大模型（如 GPT-4o, Llama-3-Vision）最主流的训练范式。我们可以把这个过程拆解为三个通俗的步骤来理解：</p>
+<ol type="1">
+<li>零件准备：单独预训练图像编码器</li>
+</ol>
+<ul>
+<li><strong>理解</strong>：在让模型“看图说话”之前，它必须先具备“看懂图片”的基础能力。</li>
+<li><strong>做法</strong>：通常会找一个现成的骨干网络（Backbone），比如 CLIP。这个编码器的作用是把一张复杂的图片变成一串数字（向量）。</li>
+<li><strong>比喻</strong>：就像在教学生写看图作文前，先确保他不是色盲，且能分辨出什么是猫、什么是树。</li>
+</ul>
+<ol start="2" type="1">
+<li>核心逻辑：“猜词”游戏的升级版</li>
+</ol>
+<ul>
+<li><strong>理解</strong>：多模态训练并没有发明什么新的魔法，它依然沿用了 LLM 最擅长的 <strong>Next Token Prediction（预测下一个词）</strong>。</li>
+<li><strong>操作</strong>：
+<ol type="1">
+<li>把图片切成小块（Patches），通过编码器转成“图像标记”（Image Tokens）。</li>
+<li>把这些“图像标记”和普通的“文本标记”拼在一起，塞进一个序列里。</li>
+<li>输入序列：<code>[图像标记1][图像标记2]...[图像标记n] 请问这张图里有什么？</code></li>
+<li>输出序列：<code>图中</code> <code>有</code> <code>一只</code> <code>猫</code>。</li>
+</ol></li>
+<li><strong>本质</strong>：Transformer 根本不在乎输入的是文字还是图片转换来的数字，它只负责根据前面的数据，预测后面该出现什么字。</li>
+</ul>
+<ol start="3" type="1">
+<li>“屏蔽”图像输出：损失值设为零</li>
+</ol>
+<p>这是你引用的段落中最关键的技术细节。</p>
+<ul>
+<li><strong>为什么这么做？</strong> * 这个模型的目标是<strong>理解图像并输出文字</strong>，而不是<strong>生成图像</strong>。
+<ul>
+<li>在预训练时，模型会尝试预测序列中的每一个位置。如果让它去预测下一个“图像标记”长什么样（输出图像软标记），那它就变成了一个图像生成模型（类似 Stable Diffusion），这会让任务变得极其复杂且难以收敛。</li>
+</ul></li>
+<li><strong>怎么操作？（Loss Masking）</strong>：
+<ul>
+<li>计算损失函数（Loss）时，我们只关心它预测的那个“字”对不对。</li>
+<li>对于那些属于“图片”本身的位置，模型预测得再离谱，我们也给它 <strong>0 权重</strong>（损失值为零）。</li>
+</ul></li>
+<li><strong>比喻</strong>：这就像闭卷考试。卷子上给了一张图，让你写描述。我们只根据你写的<strong>文字内容</strong>打分，至于你脑子里脑补出来的图片细节（图像标记位）对不对，老师完全不在乎，也不给你打分。</li>
+</ul>
+<p>总结</p>
+<p>这段话的意思是：</p>
+<ol type="1">
+<li><strong>架构通用</strong>：多模态模型依然是一个 Transformer。</li>
+<li><strong>输入混合</strong>：图片和文字被“平等”地喂给模型。</li>
+<li><strong>目标纯粹</strong>：我们只训练它<strong>理解</strong>图片后<strong>说出</strong>正确的话，而不要求它掌握<strong>画出</strong>图片的能力。</li>
+</ol>
+<p>这种“偷懒”的做法极大地降低了多模态模型的训练难度，也是为什么现在的 AI 进步如此神速的原因。</p>
+</blockquote>
 <p>我们只需将图像数据添加到语言学习模型（LLM）中，这听起来似乎很神奇，但考虑到我们所用的序列模型的强大功能，这其实是一个意料之中的结果。我们使用了一个Transformer模型，将图像输入转换为序列数据，并进行了大量的额外训练。该模型既保留了原语言模型接收和生成文本的能力，又学会了将图像嵌入到Transformer的潜在空间中。</p>
 <h4 id="基础模型">基础模型</h4>
 <p>Foundation models</p>
@@ -807,6 +857,77 @@
 </ol>
 </blockquote>
 <p>一般来说，你可以把基础模型理解为：给定互联网上大量数据的部分表示，学习如何<em>重构</em> 这些数据。虽然LLMs是这类模型中最早也是最知名的，但还有许多其他模型。基础模型的显著特征是：其目标函数是自监督学习（即重构损失），并且这些模型并非专门针对单一任务，而是可以用于多种下游应用。</p>
+<blockquote>
+<p>个人注：基础模型 (Foundation Models)和骨干网络 (Backbone)的区别？</p>
+<p>简单来说：<strong>它们不是同一个意思</strong>。虽然它们都处于模型的核心位置，但<strong>“基础模型”是一个行业地位和商业概念</strong>，而<strong>“骨干网络”是一个纯粹的架构和工程概念</strong>。</p>
+<p>你可以把它们想象成：<strong>“全才天才（基础模型）”</strong> 和 <strong>“人体的脊椎（骨干网络）”</strong>。</p>
+<ol type="1">
+<li>骨干网络 (Backbone)：战术层面的“特征提取器”</li>
+</ol>
+<p>在深度学习的架构中，Backbone 指的是模型中<strong>最底层的、负责提取原始特征的部分</strong>。</p>
+<ul>
+<li><strong>功能</strong>：它的任务是把原始数据（如像素、音频波形、文本序列）转化成计算机能理解的“高级向量”。</li>
+<li><strong>结构</strong>：它通常不包含最后处理具体任务的“头”（Head，如分类头、检测头）。</li>
+<li><strong>例子</strong>：在计算机视觉中，ResNet、EfficientNet、Swin Transformer 都是经典的 Backbone。你可以把这些 Backbone 后面接个“检测头”用来找猫，或者接个“分割头”用来自动驾驶。</li>
+</ul>
+<ol start="2" type="1">
+<li>基础模型 (Foundation Models)：战略层面的“通才大脑”</li>
+</ol>
+<p>这是一个由斯坦福大学提出的术语，指代那些<strong>在大规模数据上训练、可以适应多种下游任务的模型</strong>。</p>
+<ul>
+<li><strong>核心特征</strong>：
+<ol type="1">
+<li><strong>规模大</strong>（海量参数）。</li>
+<li><strong>通用性</strong>（一个模型能写诗、写代码、翻译、做数学题）。</li>
+<li><strong>可塑性</strong>：通过微调（Fine-tuning）或提示词（Prompting），它可以变身成任何工具。</li>
+</ol></li>
+<li><strong>例子</strong>：GPT-4、Claude 3.5、Llama 3、BERT、CLIP。</li>
+</ul>
+<ol start="3" type="1">
+<li>两者的本质区别</li>
+</ol>
+<table>
+<thead>
+<tr class="header">
+<th><strong>维度</strong></th>
+<th><strong>骨干网络 (Backbone)</strong></th>
+<th><strong>基础模型 (Foundation Model)</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>定义角度</strong></td>
+<td><strong>软件工程/架构</strong>（它是模型的一部分）</td>
+<td><strong>功能/生态</strong>（它是整个 AI 的基石）</td>
+</tr>
+<tr class="even">
+<td><strong>关注点</strong></td>
+<td>关注<strong>算子</strong>（卷积、注意力机制、层数）</td>
+<td>关注<strong>能力</strong>（推理、跨模态、通用知识）</td>
+</tr>
+<tr class="odd">
+<td><strong>独立性</strong></td>
+<td>通常只是模型的一个组件，不能单独工作</td>
+<td>作为一个完整的黑盒系统，可以直接通过对话使用</td>
+</tr>
+<tr class="even">
+<td><strong>比喻</strong></td>
+<td><strong>发动机</strong>（需要装在车、船或飞机上）</td>
+<td><strong>电力基础设施</strong>（插上插头就能用在任何电器上）</td>
+</tr>
+</tbody>
+</table>
+<ol start="4" type="1">
+<li>它们什么时候会产生联系？</li>
+</ol>
+<p>在现代 AI 开发中，它们经常重合：</p>
+<ul>
+<li><strong>基础模型包含 Backbone</strong>：比如 GPT-4 这个基础模型，它的内部架构（Transformer）就是它的 Backbone。</li>
+<li><strong>Backbone 进化为基础模型</strong>：以前 ResNet 只是一个 Backbone，但现在有些像 DINOv2 这样的大规模视觉模型，既可以被看作是超强的 Backbone，也可以被称作是视觉领域的基础模型。</li>
+</ul>
+<p>一句话总结</p>
+<p><strong>骨干网络</strong>说的是这个模型<strong>长什么样</strong>（它的物理结构），而<strong>基础模型</strong>说的是这个模型<strong>能干什么</strong>（它的社会功能）。你现在用的 DeepSeek，是一个基础模型，而它内部复杂的 MoE 架构，就是它的骨干网络。</p>
+</blockquote>
 <p><strong>这是机器学习漫长发展历程中近期发生的一项重要且引人注目的转变。与其从零开始训练模型来处理你的数据集，通常情况下，使用基础模型来获取输入（无论是图像、文本或其他类型）的丰富表征会更好，然后针对最终的下游任务对该模型进行专门化处理。</strong>当然，这样做也存在缺点，即需要运行具有数十亿参数的大型模型，因此它并不适用于所有机器学习的实际应用。</p>
 <h3 id="检索增强生成">检索增强生成</h3>
 <p>Retrieval Augmented Generation (RAG)</p>
@@ -864,7 +985,7 @@
 <p>Where are LLMs heading next?</p>
 <p>鉴于本章开头讨论的LLM发展轨迹，LLM的未来发展方向似乎显而易见：更多参数！更优的性能！从总体上看，这或许没错，但我们的发展轨迹可能并非如此线性。</p>
 <p>假设你有一个固定的预训练预算，比如一百万美元，你可以大致把它理解为购买一定数量的计算资源或浮点运算次数（flops）。你可以选择用这些浮点运算次数来训练更多的数据，或者训练一个更大的模型。最近的研究指出，GPT-3 拥有 1750 亿个参数，远远超出了其计算预算。如果用更多的数据训练一个更小的模型，就能获得更好的模型性能。因此，近年来，模型规模的增长趋势趋于平缓，而数据规模的增长趋势却在不断上升。</p>
-<p>但这并不意味着扩展会停止——更强大的计算能力通常<em>会</em> 带来更好的LLM性能，而且我们尚未看到任何迹象表明下一代币预测性能会趋于平缓。各公司仍在持续投入数十亿美元用于扩展LLM，并探索由此产生的新功能。</p>
+<p>但这并不意味着扩展会停止——更强大的计算能力通常<em>会</em> 带来更好的LLM性能，而且我们尚未看到任何迹象表明下一词元预测性能（ next token prediction performance ）会趋于平缓。各公司仍在持续投入数十亿美元用于扩展LLM，并探索由此产生的新功能。</p>
 <p>图 16.8 展示了 2018 年至 2025 年间发布的一些主要 LLM 的详细信息。我们可以注意到，虽然用于预训练的 token 总数稳步且大幅增长，但自 GPT-3 以来，模型参数数量却发生了显著变化。部分原因是我们现在知道 GPT-3 存在欠训练问题，但更实际的原因也在于此。在部署模型时，为了获得更适合低成本硬件的小型模型，牺牲一些性能通常是值得的。如果运行成本过高，即使模型性能再好也无济于事。</p>
 <p><img src="/img3/DEEP%20LEARNING%20with%20Python/llm-sizes.34d71a34.png" alt="img" />图 16.8：LLM 参数数量（左）和预训练数据集大小（右）随时间的变化。许多近期推出的专有 LLM（例如 GPT-4 和 Gemini）未包含在内，因为模型细节尚未公开。</p>
 <p>我们可能无法盲目地扩展这些模型，还有另一个原因：预训练数据开始告罄！科技公司越来越难以找到更多高质量、公开的、由人类撰写的内容用于预训练。<strong>模型甚至开始“自相矛盾”，大量使用其他语言学习模型（LLM）创建的内容进行训练，这又引发了一系列新的问题。这也是强化学习近期备受关注的原因之一。如果你能创建一个具有挑战性的、自包含的<em>环境</em>，为语言学习模型生成新的问题，你就找到了一种利用模型自身输出继续训练的方法——无需再费力地在网络上搜寻更多优质文本素材。</strong></p>
