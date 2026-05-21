@@ -179,7 +179,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives">
-          <span class="site-state-item-count">269</span>
+          <span class="site-state-item-count">270</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -207,6 +207,98 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2025/08/12/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E7%AC%AC12%E7%AB%A0%22%E6%94%AF%E6%8C%81%E5%90%91%E9%87%8F%E6%9C%BA%E5%88%86%E7%B1%BB%22/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2025/08/12/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E7%AC%AC12%E7%AB%A0%22%E6%94%AF%E6%8C%81%E5%90%91%E9%87%8F%E6%9C%BA%E5%88%86%E7%B1%BB%22/" class="post-title-link" itemprop="url">《机器学习的数学基础》第12章"支持向量机分类"</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-08-12 00:00:00" itemprop="dateCreated datePublished" datetime="2025-08-12T00:00:00+08:00">2025-08-12</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="第12章-支持向量机分类">第12章 支持向量机分类</h2>
+<p>在许多情况下，我们希望机器学习算法能够预测若干（离散）结果中的一个。例如，电子邮件客户端会将邮件分为个人邮件和垃圾邮件，这就有两个结果。另一个例子是望远镜识别夜空中的天体是星系、恒星还是行星。通常结果的数量较少，更重要的是，这些结果之间往往没有额外的结构。 在本章中，我们考虑输出二元值的预测器，也就是说，只有两种可能的结果。这种机器学习任务称为<strong>二分类（binary classification）</strong>。这与第 9 章形成对比，当时我们讨论的是连续值输出的预测问题。对于二分类，标签/输出可以取的值是二元的，本章中我们用 {+1,−1} 表示。换句话说，我们考虑的预测器形式为 <span class="math display">\[
+f:\mathbb{R}^D \to \{+1,-1\}. \tag{12.1}
+\]</span></p>
+<p>回忆第 8 章，我们用 <span class="math inline">\(D\)</span> 个实数的特征向量表示每个样本（数据点）<span class="math inline">\(x_n\)</span>。标签通常分别称为正类（positive class）和负类（negative class）。但应当注意，不要根据“正”或“负”字面意义推断+1类的直观属性。例如，在癌症检测任务中，有癌症的患者往往被标记为+1。原则上可以使用任何两个不同的值，例如{True,False}、{0,1}或{red,blue}。二分类问题研究得比较充分，其他方法的综述我们放到 12.6 节再介绍。我们将介绍一种称为<strong>支持向量机（Support Vector Machine, SVM）</strong>的方法，它用于解决二分类任务。与回归类似，这是一个<strong>监督学习</strong>任务：我们有一组样本 <span class="math inline">\(x_n \in \mathbb{R}^D\)</span>，以及对应的（二元）标签 <span class="math inline">\(y_n \in \{+1,-1\}\)</span>。给定一个包含样本–标签对 <span class="math inline">\(\{(x_1,y_1),\dots,(x_N,y_N)\}\)</span> 的训练数据集，我们希望估计模型参数，使分类错误率最小。类似第 9 章，<strong>我们考虑线性模型，并把非线性隐藏在对样本的一个变换 <span class="math inline">\(\phi\)</span> 中（见式(9.13)）</strong>。我们将在 12.4 节重新讨论 <span class="math inline">\(\phi\)</span>。</p>
+<p>支持向量机（SVM）在许多应用中都能提供最先进的结果，并且具有坚实的理论保证（Steinwart 和 Christmann, 2008）。我们之所以选择用 SVM 来说明二分类问题，主要有两个原因。</p>
+<p>首先，SVM 提供了一种<strong>几何方式</strong>来思考监督学习问题。 在第 9 章中，我们是从<strong>概率模型</strong>的角度来看待机器学习问题，并用极大似然估计和贝叶斯推断来解决。而在这里，我们考虑一种替代的方法，即从几何角度来推理机器学习任务。这种方法高度依赖于我们在第 3 章讨论过的<strong>内积</strong>和<strong>投影</strong>等概念。</p>
+<p>第二个原因是，与第 9 章不同，SVM 的优化问题<strong>没有解析解</strong>，因此需要借助第 7 章介绍的各种优化工具。 SVM 对机器学习的理解与第 9 章的极大似然方法存在细微的差异：极大似然方法是基于数据分布的概率观点提出一个模型，再由此推导出一个优化问题；而 SVM 的方法则是从几何直觉出发，先设计一个需要在训练过程中被优化的函数。我们已经在第 10 章看到过类似的情况，当时我们从几何原理出发推导了 PCA。在 SVM 的例子中，我们通过设计一个损失函数来度量训练数据上的误差，并遵循<strong>经验风险最小化原则</strong>（第 8.2 节），在训练中加以最小化。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2025/08/12/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E7%AC%AC12%E7%AB%A0%22%E6%94%AF%E6%8C%81%E5%90%91%E9%87%8F%E6%9C%BA%E5%88%86%E7%B1%BB%22/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1013,96 +1105,6 @@ T_{\infty}(x) = \sum_{k=0}^{\infty} \frac{f^{(k)}\left(x_{0}\right)}{k !} \left(
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2025/08/03/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B9%8B%E4%B8%89/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2025/08/02/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B9%8B%E4%BA%8C/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Rayman.hung">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="墨语浮生">
-      <meta itemprop="description" content="技术分享、读书心得、心情记录">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | 墨语浮生">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2025/08/02/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B9%8B%E4%BA%8C/" class="post-title-link" itemprop="url">《机器学习的数学基础》（2/7）</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2025-08-02 00:00:00" itemprop="dateCreated datePublished" datetime="2025-08-02T00:00:00+08:00">2025-08-02</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E8%AF%BB%E4%B9%A6%E5%BF%83%E5%BE%97%EF%BC%88%E6%8A%80%E6%9C%AF%EF%BC%89/" itemprop="url" rel="index"><span itemprop="name">读书心得（技术）</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="线性代数">2、线性代数</h2>
-<p>Linear Algebra</p>
-<p>在形式化一些直观概念时，常见的方法是构造一组对象(符号)和一些操作这些对象的规则。 这就是所谓的代数(algebra)。线性代数是研究向量以及使用某些确定的规则来操作向量的 一门学科。 我们许多人从学校里知道的向量被称为“几何向量”，通常用上方带一个小箭头的字母表示。</p>
-<blockquote>
-<p>向量是特殊的对象，将它们<strong><u>相加并乘以</u></strong>标量产生的是另一个相同类型的对象。从抽象的数学来看，任何满足这两个性质的物体都可以被认为是向量。</p>
-</blockquote>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2025/08/02/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B9%8B%E4%BA%8C/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>

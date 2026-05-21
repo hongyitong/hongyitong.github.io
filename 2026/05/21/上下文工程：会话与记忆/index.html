@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false,"path":"/search.json"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="上下文工程：会话与记忆 Context Engineering: Sessions, Memory  Stateful and personal AI begins with Context Engineering. 有状态且个性化的 AI 始于上下文工程。  引言 本白皮书探讨了“会话”（Sessions）与“记忆”（Memory）在构建有状态、智能 LLM 智能体（Agent）中的关键作用，旨">
+<meta property="og:type" content="article">
+<meta property="og:title" content="上下文工程：会话与记忆">
+<meta property="og:url" content="http://hongyitong.github.io/2026/05/21/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B%EF%BC%9A%E4%BC%9A%E8%AF%9D%E4%B8%8E%E8%AE%B0%E5%BF%86/index.html">
+<meta property="og:site_name" content="墨语浮生">
+<meta property="og:description" content="上下文工程：会话与记忆 Context Engineering: Sessions, Memory  Stateful and personal AI begins with Context Engineering. 有状态且个性化的 AI 始于上下文工程。  引言 本白皮书探讨了“会话”（Sessions）与“记忆”（Memory）在构建有状态、智能 LLM 智能体（Agent）中的关键作用，旨">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/img4/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B/f1.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B/f2.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B/f3.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B/f4.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B/f5.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B/t1.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B/f6.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B/f7.png">
+<meta property="article:published_time" content="2026-05-20T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-05-21T04:13:26.197Z">
+<meta property="article:author" content="Rayman.hung">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hongyitong.github.io/img4/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B/f1.png">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2026/05/21/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B%EF%BC%9A%E4%BC%9A%E8%AF%9D%E4%B8%8E%E8%AE%B0%E5%BF%86/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2026/05/21/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B%EF%BC%9A%E4%BC%9A%E8%AF%9D%E4%B8%8E%E8%AE%B0%E5%BF%86/","path":"2026/05/21/上下文工程：会话与记忆/","title":"上下文工程：会话与记忆"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>上下文工程：会话与记忆 | 墨语浮生</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZXGEJDXQ33"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-ZXGEJDXQ33","only_pageview":false,"measure_protocol_api_secret":null}</script>
+  <script src="/js/third-party/analytics/google-analytics.js" defer></script>
+
+  <script src="/js/third-party/analytics/baidu-analytics.js" defer></script>
+  <script async src="https://hm.baidu.com/hm.js?ff358b9c7e949787b074bfc9c8019a9d"></script>
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js" defer></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">墨语浮生</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B%EF%BC%9A%E4%BC%9A%E8%AF%9D%E4%B8%8E%E8%AE%B0%E5%BF%86"><span class="nav-text">上下文工程：会话与记忆</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%95%E8%A8%80"><span class="nav-text">引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B"><span class="nav-text">上下文工程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BC%9A%E8%AF%9D"><span class="nav-text">会话</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%8D%E5%90%8C%E6%A1%86%E6%9E%B6%E4%B8%8E%E6%A8%A1%E5%9E%8B%E4%B9%8B%E9%97%B4%E7%9A%84%E5%B7%AE%E5%BC%82"><span class="nav-text">不同框架与模型之间的差异</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A4%9A%E6%99%BA%E8%83%BD%E4%BD%93%E7%B3%BB%E7%BB%9F%E7%9A%84%E4%BC%9A%E8%AF%9D"><span class="nav-text">多智能体系统的会话</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%A4%9A%E6%99%BA%E8%83%BD%E4%BD%93%E6%A1%86%E6%9E%B6%E9%97%B4%E7%9A%84%E4%BA%92%E6%93%8D%E4%BD%9C%E6%80%A7"><span class="nav-text">多智能体框架间的互操作性</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BC%9A%E8%AF%9D%E7%9A%84%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E8%80%83%E9%87%8F"><span class="nav-text">会话的生产环境考量</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AE%89%E5%85%A8%E6%80%A7%E4%B8%8E%E9%9A%90%E7%A7%81"><span class="nav-text">安全性与隐私</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%AE%8C%E6%95%B4%E6%80%A7%E4%B8%8E%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E7%AE%A1%E7%90%86"><span class="nav-text">数据完整性与生命周期管理</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%80%A7%E8%83%BD%E4%B8%8E%E5%8F%AF%E6%89%A9%E5%B1%95%E6%80%A7"><span class="nav-text">性能与可扩展性</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AE%A1%E7%90%86%E9%95%BF%E4%B8%8A%E4%B8%8B%E6%96%87%E5%AF%B9%E8%AF%9D%EF%BC%9A%E6%9D%83%E8%A1%A1%E4%B8%8E%E4%BC%98%E5%8C%96"><span class="nav-text">管理长上下文对话：权衡与优化</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%B0%E5%BF%86"><span class="nav-text">记忆</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%B0%E5%BF%86%E7%9A%84%E7%B1%BB%E5%9E%8B"><span class="nav-text">记忆的类型</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BF%A1%E6%81%AF%E7%B1%BB%E5%9E%8B"><span class="nav-text">信息类型</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%BB%84%E7%BB%87%E6%A8%A1%E5%BC%8F"><span class="nav-text">组织模式</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AD%98%E5%82%A8%E6%9E%B6%E6%9E%84"><span class="nav-text">存储架构</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E6%9C%BA%E5%88%B6"><span class="nav-text">创建机制</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%AE%B0%E5%BF%86%E4%BD%9C%E7%94%A8%E5%9F%9F"><span class="nav-text">记忆作用域</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%A4%9A%E6%A8%A1%E6%80%81%E8%AE%B0%E5%BF%86"><span class="nav-text">多模态记忆</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%B0%E5%BF%86%E7%94%9F%E6%88%90%EF%BC%9A%E6%8F%90%E5%8F%96%E4%B8%8E%E5%B7%A9%E5%9B%BA"><span class="nav-text">记忆生成：提取与巩固</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90%EF%BC%9A%E8%AE%B0%E5%BF%86%E6%8F%90%E5%8F%96"><span class="nav-text">深度解析：记忆提取</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90%EF%BC%9A%E8%AE%B0%E5%BF%86%E5%B7%A9%E5%9B%BA"><span class="nav-text">深度解析：记忆巩固</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%AE%B0%E5%BF%86%E6%BA%AF%E6%BA%90"><span class="nav-text">记忆溯源</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#%E8%AE%B0%E5%BF%86%E7%AE%A1%E7%90%86%E4%B8%AD%E5%AF%B9%E8%AE%B0%E5%BF%86%E8%B0%B1%E7%B3%BB%E7%9A%84%E8%80%83%E9%87%8F"><span class="nav-text">记忆管理中对记忆谱系的考量</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#%E5%9C%A8%E6%8E%A8%E7%90%86%E6%9C%9F%E9%97%B4%E5%AF%B9%E8%AE%B0%E5%BF%86%E8%B0%B1%E7%B3%BB%E7%9A%84%E8%80%83%E9%87%8F"><span class="nav-text">在推理期间对记忆谱系的考量</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%A7%A6%E5%8F%91%E8%AE%B0%E5%BF%86%E7%94%9F%E6%88%90"><span class="nav-text">触发记忆生成</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#%E8%AE%B0%E5%BF%86%E5%8D%B3%E5%B7%A5%E5%85%B7"><span class="nav-text">记忆即工具</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#%E5%90%8E%E5%8F%B0%E6%93%8D%E4%BD%9C-vs-%E9%98%BB%E5%A1%9E%E6%93%8D%E4%BD%9C"><span class="nav-text">后台操作 vs. 阻塞操作</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2"><span class="nav-text">记忆检索</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#%E6%A3%80%E7%B4%A2%E6%97%B6%E6%9C%BA"><span class="nav-text">检索时机</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%BB%93%E5%90%88%E8%AE%B0%E5%BF%86%E8%BF%9B%E8%A1%8C%E6%8E%A8%E7%90%86"><span class="nav-text">结合记忆进行推理</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#%E7%B3%BB%E7%BB%9F%E6%8C%87%E4%BB%A4%E4%B8%AD%E7%9A%84%E8%AE%B0%E5%BF%86"><span class="nav-text">系统指令中的记忆</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#%E5%AF%B9%E8%AF%9D%E5%8E%86%E5%8F%B2%E4%B8%AD%E7%9A%84%E8%AE%B0%E5%BF%86"><span class="nav-text">对话历史中的记忆</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%A8%8B%E5%BA%8F%E6%80%A7%E8%AE%B0%E5%BF%86"><span class="nav-text">程序性记忆</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E4%B8%8E%E8%AF%84%E4%BC%B0"><span class="nav-text">测试与评估</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#%E8%AE%B0%E5%BF%86%E7%94%9F%E6%88%90%E8%B4%A8%E9%87%8F%E6%8C%87%E6%A0%87"><span class="nav-text">记忆生成质量指标</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87"><span class="nav-text">记忆检索性能指标</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#%E7%AB%AF%E5%88%B0%E7%AB%AF%E4%BB%BB%E5%8A%A1%E6%88%90%E5%8A%9F%E7%8E%87%E6%8C%87%E6%A0%87"><span class="nav-text">端到端任务成功率指标</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%AE%B0%E5%BF%86%E7%9A%84%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E8%80%83%E9%87%8F"><span class="nav-text">记忆的生产环境考量</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#%E9%9A%90%E7%A7%81%E4%B8%8E%E5%AE%89%E5%85%A8%E9%A3%8E%E9%99%A9"><span class="nav-text">隐私与安全风险</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%93%E8%AE%BA"><span class="nav-text">结论</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、心情记录</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives">
+          <span class="site-state-item-count">270</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/05/21/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B%EF%BC%9A%E4%BC%9A%E8%AF%9D%E4%B8%8E%E8%AE%B0%E5%BF%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="上下文工程：会话与记忆 | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          上下文工程：会话与记忆
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-05-21 00:00:00" itemprop="dateCreated datePublished" datetime="2026-05-21T00:00:00+08:00">2026-05-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h3 id="上下文工程：会话与记忆"><strong>上下文工程：会话与记忆</strong></h3>
+<p>Context Engineering: Sessions, Memory</p>
+<blockquote>
+<p>Stateful and personal AI begins with Context Engineering.</p>
+<p>有状态且个性化的 AI 始于上下文工程。</p>
+</blockquote>
+<h3 id="引言">引言</h3>
+<p>本白皮书探讨了“会话”（Sessions）与“记忆”（Memory）在构建有状态、智能 LLM 智能体（Agent）中的关键作用，旨在赋能开发者创造出更强大、更具个性化且具备持久性的 AI 体验。为了让大型语言模型（LLM）能够记忆、学习并实现个性化交互，开发者必须在其上下文窗口内动态组合并管理信息——这一过程被称为“上下文工程”（Context Engineering）。</p>
+<p>本白皮书的核心概念总结如下：</p>
+<ul>
+<li>
+<p><strong>上下文工程：</strong> 在 LLM 的上下文窗口内动态组合与管理信息的过程，旨在构建有状态、智能的智能体。</p>
+</li>
+<li>
+<p><strong>会话：</strong> 与智能体进行完整对话的容器，保存了对话的按时序排列的历史记录以及智能体的微调工作记忆（Working Memory）。</p>
+</li>
+<li>
+<p><strong>记忆：</strong> 长期<strong>持久化的机制</strong>，跨越多个会话捕获并巩固关键信息，从而为 LLM 智能体提供连续且个性化的体验。</p>
+</li>
+</ul>
+<span id="more"></span>  
+<blockquote>
+<p>个人注：</p>
+<p><strong>会话包含：</strong></p>
+<ul>
+<li>纯粹的单条线对话历史记录。</li>
+<li>该段对话中的临时状态（如用户这堂课问了几个问题）。</li>
+</ul>
+<p><strong>上下文包含（范围更广）：</strong></p>
+<ul>
+<li><strong>会话历史：</strong> 从当前会话中筛选或总结出的对话记录。</li>
+<li><strong>系统指令：</strong> 智能体的角色设定、行为边界（Prompt Engineering 的部分）。</li>
+<li><strong>外部知识：</strong> 从知识库（RAG）中检索出来的相关文档片段。</li>
+<li><strong>长期记忆：</strong> 从历史其他会话中固化下来的用户偏好（Memory）。</li>
+</ul>
+</blockquote>
+<h3 id="上下文工程">上下文工程</h3>
+<p>Context Engineering</p>
+<p>LLM 本质上是无状态的。除了训练数据之外，它们的推理和感知能力完全被局限在单次 API 调用所提供的“上下文窗口”信息内。这带来了一个根本性的问题，因为 AI 智能体必须配备操作指令（明确可采取的操作）、供其推理的证据与事实数据，以及定义当前任务的即时对话信息。为了构建能够记忆、学习并实现个性化交互的有状态、智能智能体，开发者必须为对话的每一次交互（Turn）构建这种上下文。这种为 LLM 动态组合与管理信息的过程，就被称为上下文工程。</p>
+<p>上下文工程代表了从传统“提示词工程”（Prompt Engineering）演进的新阶段。提示词工程专注于设计最佳的、通常是静态的系统指令。相反，上下文工程则处理整个数据载荷（Payload），根据用户、对话历史和外部数据动态构建具备状态感知能力的提示词。它涉及策略性地筛选、总结和注入不同类型的信息，以在<strong>最大化相关性的同时最小化噪声</strong>。外部系统——例如 RAG 数据库、会话存储和记忆管理器——管理着这其中的大部分上下文。<strong>智能体框架必须编排这些系统，以检索上下文并将其组装成最终的提示词。</strong></p>
+<p>可以将上下文工程视为智能体的“备料”（Mise en place）——即厨师在烹饪前收集并准备好所有食材的关键步骤。如果你只给厨师菜谱（提示词），他们可能会用手头现有的任何随机食材做出一顿差强人意的饭菜。然而，如果你首先确保他们拥有所有正确、优质的食材、专业工具以及对摆盘风格的清晰理解，他们就能稳定地烹饪出绝佳的定制佳肴。<strong>上下文工程的目标，就是确保模型拥有完成其任务所需的最相关信息，不多也不少。</strong></p>
+<p>上下文工程（Context Engineering）掌控着复杂数据载荷（Payload）的组装，该载荷可包含多种不同的组件：</p>
+<ul>
+<li><strong>用于引导推理的上下文</strong>：定义了智能体的基本推理模式和可用操作，决定了其行为方式：</li>
+<li><strong>系统指令（System Instructions）</strong>：定义智能体角色设定（Persona）、能力和约束条件的高级指令。</li>
+<li><strong>工具定义（Tool Definitions）</strong>：供智能体与外部世界交互使用的 API 或函数的 Schema（架构定义）。</li>
+<li><strong>少样本示例（Few-Shot Examples）</strong>：通过语境学习（In-Context Learning）引导模型推理过程的精选示例。</li>
+<li><strong>实证与事实数据</strong>：是智能体进行推理的实质性数据，包括先前存在的知识以及针对特定任务动态检索的信息；它为智能体的回答提供“证据”：</li>
+<li><strong>长期记忆（Long-Term Memory）</strong>：跨越多个会话收集到的、关于用户或特定主题的持久化知识。</li>
+<li><strong>外部知识（External Knowledge）</strong>：从数据库或文档中检索到的信息，通常通过检索增强生成（RAG）技术获取。</li>
+<li><strong>工具输出（Tool Outputs）</strong>：工具执行后返回的数据或结果。</li>
+<li><strong>子智能体输出（Sub-Agent Outputs）</strong>：被委派了特定子任务的专用智能体所返回的结论或结果。</li>
+<li><strong>制品（Artifacts）</strong>：与用户或会话关联的非文本数据（如文件、图像）。</li>
+<li><strong>即时对话信息</strong>：将智能体锚定在当前的交互中，定义了眼前的任务：</li>
+<li><strong>对话历史（Conversation History）</strong>：当前交互中逐轮（Turn-by-turn）对话的记录。</li>
+<li><strong>状态/暂存区（State / Scratchpad）</strong>：智能体在即时推理过程中使用的临时、进行中的信息或计算。</li>
+<li><strong>用户提示词（User’s Prompt）</strong>：当前需要解决的即时查询。</li>
+</ul>
+<p><strong>上下文的动态构建至关重要。以记忆为例，它们并非一成不变；随着用户与智能体的交互或新数据的摄入，必须选择性地检索和更新记忆。<strong>此外，高效的推理通常</strong>依赖于语境学习（in-context learning）</strong>（LLM 从提示词中的示例中学习如何执行任务的过程）。当智能体使用与当前任务相关的少样本示例，而不是依赖硬编码的示例时，语境学习会更加有效。同样，外部知识也是由 RAG 工具基于用户的即时查询进行检索的。</p>
+<p>构建具备上下文感知能力的智能体，最核心的挑战之一就是管理不断增长的对话历史。理论上，拥有超大上下文窗口的模型可以处理冗长的对话文本；但在实践中，随着上下文的增加，成本和延迟都会上升。<strong>此外，模型还会遭遇“上下文腐败”（Context Rot）现象，即随着上下文的增加，模型关注关键信息的能力会减弱。上下文工程直接解决了这一问题，它采用动态改变历史记录的策略——如摘要提取（Summarization）、选择性剪枝（Selective Pruning）或其他压缩技术——在管理总 Token 数量的同时保留核心信息，最终带来更稳健、更个性化的 AI 体验。</strong></p>
+<p><img src="/img4/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B/f1.png" alt="f1"></p>
+<p>这一实践在对话的每轮交互中，都表现为智能体运行循环内的持续循环：</p>
+<ol>
+<li><strong>获取上下文 (Fetch Context)</strong>：智能体首先会检索上下文——例如用户记忆、RAG（检索增强生成）文档以及最近的对话事件。对于动态上下文检索，智能体将利用用户查询和其他元数据来确定需要检索哪些信息。</li>
+<li><strong>准备上下文 (Prepare Context)</strong>：智能体框架动态构建用于调用大语言模型（LLM）的完整提示词。尽管单个 API 调用可能是异步的，但准备上下文是一个阻塞式的“热路径（hot-path）”过程。在上下文准备就绪之前，智能体无法继续执行。</li>
+<li><strong>调用 LLM 与工具 (Invoke LLM and Tools)</strong>：智能体交替迭代地调用 LLM 和任何必要的工具，直到生成给用户的最终回复。工具和模型的输出会被追加到上下文中。</li>
+<li><strong>上传上下文 (Upload Context)</strong>：在本轮交互中收集到的新信息会被上传到持久化存储中。这通常是一个“后台”进程，允许智能体完成执行，同时异步进行记忆巩固或其他后处理工作。</li>
+</ol>
+<p>在这一生命周期的核心，有两个至关重要的基本组件：<strong>会话（Session）<strong>与</strong>记忆（Memory）</strong>。会话负责管理单次对话中逐轮交互的状态。相比之下，记忆则提供了长期持久化的机制，能够跨越多个会话捕获并巩固关键信息。</p>
+<p>你可以把“会话”想象成你在进行特定项目时使用的<strong>工作台</strong>或<strong>办公桌</strong>。当你工作时，桌上摆满了所有必需的工具、笔记和参考资料。所有东西都触手可及，但同时它们也是临时的、特定于当前任务的。</p>
+<p>一旦项目完成，你不会把整张凌乱的办公桌直接塞进储藏室。相反，你会开始建立“记忆”的过程，这就像一个<strong>井井有条的文件柜</strong>。你检查桌上的资料，丢弃草稿和冗余笔记，只把最关键、最定型的文档归档到贴有标签的文件夹中。这确保了文件柜始终是一个干净、可靠且高效的“事实来源（Source of Truth）”，可供未来的所有项目使用，而不会被工作台上的暂时性混乱所堆满。</p>
+<p>这个比喻直接映射了高效智能体的运行方式：<strong>会话充当单次对话的临时工作台，而智能体的记忆则是精心组织的文件柜，使其能够在未来的互动中召回关键信息。</strong></p>
+<p>基于对上下文工程（Context Engineering）的这一宏观概述，我们现在可以深入探讨两个核心组件：会话与记忆，首先从会话开始。</p>
+<h3 id="会话">会话</h3>
+<p>Sessions</p>
+<p>上下文工程（Context Engineering）的一个基石要素就是<strong>会话</strong>，它封装了单次连续对话的即时对话历史和工作记忆。每个会话都是一个独立的记录，并与特定的用户绑定。会话使智能体能够在单次对话的范围内维持上下文并提供连贯的回复。一个用户可以拥有多个会话，但每个会话都作为一个特定交互的、彼此独立的日志来运行。每个会话都包含两个核心组件：<strong>按时间顺序排列的历史记录（事件）<strong>和</strong>智能体的工作记忆（状态）</strong>。</p>
+<p>事件（Events）是构建对话的基石。常见的事件类型包括：用户输入（来自用户的消息，如文本、音频、图像等）、智能体回复（智能体对用户的回答）、工具调用（智能体决定使用外部工具或 API）以及工具输出（从工具调用中返回的数据，智能体用其继续进行推理）。</p>
+<p><strong>除了聊天历史记录之外，会话通常还包含一个状态（State）——即结构化的“工作记忆”或暂存器（Scratchpad）。它保存着与当前对话相关的临时结构化数据，例如购物车中包含哪些商品。</strong></p>
+<p>随着对话的推进，智能体向会话中追加新的事件。此外，它还可能根据智能体内部的逻辑来改变（Mutate）该状态。</p>
+<p>事件的结构类似于传递给 Gemini API 的 Content 对象列表，其中每个带有角色（Role）和部分（Parts）的条目都代表对话中的一轮交互——或者说一个事件。</p>
+<p>生产环境下的智能体执行环境通常是<strong>无状态的（Stateless）</strong>，这意味着它在请求完成后不会保留任何信息。因此，必须将其对话历史保存到持久化存储中，以维持连贯的用户体验。虽然内存存储（In-memory storage）适用于开发阶段，但生产级应用应当利用成熟的数据库来可靠地存储和管理会话。例如，你可以将对话历史存储在诸如 Agent Engine Sessions 等托管解决方案中。</p>
+<p>Snippet 1: Example multi-turn call to Gemini</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">contents = [ </span><br><span class="line">  &#123; </span><br><span class="line">    <span class="string">&quot;role&quot;</span>: <span class="string">&quot;user&quot;</span>, </span><br><span class="line">    <span class="string">&quot;parts&quot;</span>: [ &#123;<span class="string">&quot;text&quot;</span>: <span class="string">&quot;What is the capital of France?&quot;</span>&#125; ] </span><br><span class="line">  &#125;, &#123; </span><br><span class="line">    <span class="string">&quot;role&quot;</span>: <span class="string">&quot;model&quot;</span>, </span><br><span class="line">    <span class="string">&quot;parts&quot;</span>: [ &#123;<span class="string">&quot;text&quot;</span>: <span class="string">&quot;The capital of France is Paris.&quot;</span>&#125; ] </span><br><span class="line">  &#125; </span><br><span class="line">] </span><br><span class="line">response = client.models.generate_content( </span><br><span class="line">  model=<span class="string">&quot;gemini-2.5-flash&quot;</span>, </span><br><span class="line">  contents=contents </span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<h4 id="不同框架与模型之间的差异">不同框架与模型之间的差异</h4>
+<p>Variance across frameworks and models</p>
+<p>尽管核心思想非常相似，但不同的智能体框架在实现会话、事件和状态时采用了截然不同的方式。<strong><u>智能体框架</u>负责为大语言模型（LLM）维护对话历史和状态，利用这些上下文构建 LLM 请求，并对 LLM 的回复进行解析和存储。</strong></p>
+<p>智能体框架扮演着你的代码与 LLM 之间“通用翻译官”的角色。作为开发者，你只需在每一轮对话交互中处理框架内部一致的数据结构，而框架则负责处理一项关键任务——将这些结构转换为 LLM 所要求的精确格式。这种抽象极其强大，因为它将你的智能体逻辑与你所使用的特定 LLM 解耦，从而防止了供应商锁定（Vendor Lock-in）。</p>
+<p><img src="/img4/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B/f2.png" alt="f2"></p>
+<p>归根结底，其目标是生成一个 LLM 能够理解的“请求”。对于 Google 的 Gemini 模型，这个请求就是一个 <code>List[Content]</code>。每个 <code>Content</code> 对象都是一个简单的类似字典的结构，包含两个键：<code>role</code>（定义说话者是谁，如 “user” 或 “model”）和 <code>parts</code>（定义消息的实际内容，如文本、图像、工具调用等）。</p>
+<p>在发起 API 调用之前，框架会自动处理数据映射，将其内部对象（例如 ADK 的 Event）转换为 <code>Content</code> 对象中对应的 <code>role</code> 和 <code>parts</code>。从本质上讲，框架为开发者提供了一个稳定的内部 API，同时在后台管理着不同 LLM 复杂且多样的外部 API。</p>
+<p>ADK 使用了一个显式的 <code>Session</code> 对象，其中包含一个 <code>Event</code> 对象列表和一个独立的 <code>state</code> 对象。这里的 <code>Session</code> 就像一个文件柜，一个抽屉用来放对话历史（事件），另一个抽屉用来放工作记忆（状态）。</p>
+<p>LangGraph 则没有正式的“会话（Session）”对象。相反，它的状态（State）就是会话。这个包罗万象的状态对象保存着对话历史（作为一个 <code>Message</code> 对象列表）以及所有其他工作数据。与传统会话那种“只能追加（Append-only）”的日志不同，LangGraph 的状态是可变的（Mutable）。它可以被转换，并且可以通过历史压缩（History Compaction）等策略来改变记录。这在管理长对话和应对 Token 限制时非常有用。</p>
+<h4 id="多智能体系统的会话">多智能体系统的会话</h4>
+<p>Sessions for multi-agent systems</p>
+<p>在多智能体系统中，多个智能体协同工作。每个智能体都专注于一个更小、更专业化的任务。为了让这些智能体能够高效地协同工作，它们必须共享信息。系统的架构定义了它们用来共享信息的通信模式。这一架构的核心组件，在于系统如何处理会话历史（Session History）——即所有交互的持久化日志。</p>
+<p>在探讨管理该历史记录的架构模式之前，将其与发送给 LLM 的上下文（Context）区分开来至关重要。你可以将“会话历史”视为整个对话的永久性、未删节的完整笔录。而“上下文”则是针对单轮交互发送给 LLM 的、经过精心构建的信息载荷。智能体在构建此上下文时，可能只会从历史记录中选择相关的摘录，或者添加特殊的格式（如引导性的前导词）来引导模型的回复。本节重点关注在智能体之间传递了什么信息，而不一定是发送给 LLM 的上下文。</p>
+<p><img src="/img4/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B/f3.png" alt="f3"></p>
+<p>智能体框架主要使用以下两种方法之一来处理多智能体系统的会话历史：<strong>共享的统一历史记录</strong>（所有智能体共同向单个日志中写入内容）或<strong>独立的个体历史记录</strong>（每个智能体维持各自的视角）。在这两种模式之间做出选择，取决于任务的性质以及智能体之间所期望的协作方式。</p>
+<p>对于<strong>共享的统一历史记录</strong>模型，系统中的所有智能体都从同一个单一对话历史中读取并向其写入所有事件。每个智能体的消息、工具调用和观察结果都会按时间顺序追加到一个中央日志中。这种方法最适合紧密耦合、需要单一事实来源（Single Source of Truth）的协作任务，例如一个多步骤的问答或解决问题流程，其中一个智能体的输出直接是下一个智能体的输入。即使在共享历史记录的情况下，子智能体在将日志传递给 LLM 之前也可能会对其进行处理。例如，它可以过滤出相关事件的子集，或者添加标签以识别每个事件是由哪个智能体生成的。</p>
+<p>如果你使用 ADK 的 LLM 驱动型委托（LLM-driven delegation）来移交给子智能体，那么该子智能体的所有中间事件都将写入与根智能体相同的会话中。</p>
+<p>在<strong>独立的个体历史记录</strong>模型中，每个智能体都维护自己私有的对话历史，对其他智能体而言就像一个黑盒。所有内部流程——例如中间思考、工具使用和推理步骤——都保留在智能体的私有日志中，对外部不可见。通信仅通过明确的消息进行，智能体在消息中分享的是其最终输出，而非其产生过程。</p>
+<p>这种交互通常通过实现“智能体即工具（Agent-as-a-tool）”或使用“智能体间（Agent-to-Agent, A2A）协议”来实现。在“智能体即工具”模式下，一个智能体像调用标准工具一样调用另一个智能体，传递输入并接收一个最终的、自包含的输出。而在“智能体间（A2A）协议”中，智能体则使用结构化协议进行直接消息传递。</p>
+<p>我们将在下一节中更详细地探讨 A2A 协议。</p>
+<p>Snippet 2: A2A communication across multiple agent frameworks</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> google.adk.agents <span class="keyword">import</span> LlmAgent</span><br><span class="line"><span class="comment"># The sub-agent has access to Session and writes events to it.</span></span><br><span class="line">sub_agent_1 = LlmAgent(...)</span><br><span class="line"><span class="comment"># Optionally, the sub-agent can save the final response text (or structured output) to the specified state key.</span></span><br><span class="line">sub_agent_2 = LlmAgent(</span><br><span class="line">  ...,</span><br><span class="line">  output_key=<span class="string">&quot;...&quot;</span></span><br><span class="line">)</span><br><span class="line"><span class="comment"># Parent agent.</span></span><br><span class="line">root_agent = LlmAgent(</span><br><span class="line">  ...,</span><br><span class="line">  sub_agents=[sub_agent_1, sub_agent_2]</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<h5 id="多智能体框架间的互操作性">多智能体框架间的互操作性</h5>
+<p>Interoperability across multiple agent frameworks</p>
+<p><img src="/img4/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B/f4.png" alt="f4"></p>
+<p>框架对内部数据表示的使用，为多智能体系统引入了一项关键的架构权衡：这种将智能体与 LLM 解耦的抽象本身，同时也将其与使用其他智能体框架的智能体隔离开来。这种隔离在持久化层得到了固化。**会话（Session）的存储模型通常会将数据库模式（Schema）直接与框架的内部对象相耦合，从而创建出一种僵硬、相对难以迁移的对话记录。**因此，基于 LangGraph 构建的智能体无法原生解读由基于 ADK 的智能体持久化的、截然不同的 Session 和 Event 对象，这使得无缝的任务移交变得不可能。</p>
+<p>为了协调这些相互隔离的智能体之间的协作，一种新兴的架构模式是<strong>智能体间（Agent-to-Agent, A2A）通信</strong>。尽管这种模式允许智能体相互交换消息，但它未能解决共享丰富的上下文状态这一核心问题。每个智能体的对话历史都是用其自身框架的内部模式进行编码的。因此，任何包含会话事件的 A2A 消息都需要一个翻译层才能发挥作用。</p>
+<p>一种更具鲁棒性的互操作性架构模式，涉及将共享知识抽象为一个独立于框架的数据层，例如<strong>记忆（Memory）</strong>。**会话存储保留的是原始的、特定于框架的对象（如 Event 和 Message），而记忆层与之不同，它旨在保存经过处理的规范化信息。关键信息——如摘要、提取出的实体和事实——是从对话中提取出来的，并且通常以字符串或字典的形式存储。记忆层的数据结构不与任何单一框架的内部数据表示相耦合，这使得它能够充当一个通用的、公共的数据层。**这种模式允许异构智能体通过共享公共的认知资源来实现真正的协同智能，而无需定制翻译器。</p>
+<h4 id="会话的生产环境考量">会话的生产环境考量</h4>
+<p>Production Considerations for Sessions</p>
+<p>当将智能体部署到生产环境时，其会话管理系统必须从简单的日志记录演变为成熟的企业级服务。关键考量因素主要涵盖三个核心领域：安全性与隐私、数据完整性，以及性能。<strong>像 Agent Engine Sessions 这样的托管会话存储，正是专为满足这些生产环境要求而设计的</strong>。</p>
+<h5 id="安全性与隐私">安全性与隐私</h5>
+<p>Security and Privacy</p>
+<p>保护会话中包含的敏感信息是一项不可逾越的底线要求。严格隔离是最关键的安全原则。会话归单一用户所有，系统必须执行严格的隔离措施（例如通过访问控制列表 ACL），以确保一个用户永远无法访问另一个用户的会话数据。对会话存储的每一次请求，都必须针对会话所有者进行身份验证和授权。</p>
+<p>处理个人身份信息（PII）的最佳实践是在将会话数据写入存储之前对其进行脱敏（Redact）。这是一项根本性的安全措施，能够大幅降低潜在数据泄露的风险和“爆炸半径（Blast Radius）”。通过<strong>使用 Model Armor 等工具确保敏感数据绝不被持久化</strong>，可以简化对 GDPR 和 CCPA 等隐私法规的合规流程，并建立用户信任。</p>
+<h5 id="数据完整性与生命周期管理">数据完整性与生命周期管理</h5>
+<p>Data Integrity and Lifecycle Management</p>
+<p>生产系统需要对会话数据随时间的存储和维护制定明确的规则。**会话不应该永久存在。**你可以实施生存时间（TTL）策略来自动删除不活跃的会话，以此管理存储成本并减少数据管理开销。这需要一份明确的数据留存政策，来定义会话在被归档或永久删除之前应该保存多长时间。</p>
+<p>此外，系统必须保证各项操作按确定性的顺序追加到会话历史中。保持正确的事件时间顺序，对于维护对话日志的完整性至关重要。</p>
+<h5 id="性能与可扩展性">性能与可扩展性</h5>
+<p>Performance and Scalability</p>
+<p>**会话数据处于每次用户交互的“热路径（Hot Path）”上，这使得其性能成为首要关注的问题。**读取和写入会话历史必须极其迅速，以确保响应及时的用户体验。智能体运行时通常是无状态的，因此在每轮交互开始时，都必须从中央数据库检索整个会话历史，这会带来网络传输延迟。</p>
+<p>为了缓解延迟，减少传输的数据量至关重要。一项关键的优化措施是在将会话历史发送给智能体之前对其进行过滤或压缩。例如，你可以移除陈旧、不相关的函数调用输出，因为当前对话状态已不再需要这些内容。下一节将详细介绍几种压缩历史记录的策略，以有效管理长上下文对话。</p>
+<h4 id="管理长上下文对话：权衡与优化">管理长上下文对话：权衡与优化</h4>
+<p>Managing long context conversation: tradeoffs and optimizations</p>
+<p>在简单架构中，会话是用户与智能体之间对话的不可变日志。然而，随着对话规模的扩大，对话的 Token 使用量也会随之增加。现代 LLM 虽然能够处理长上下文，但在面对延迟敏感型应用时，依然存在诸多限制：</p>
+<ol>
+<li><strong>上下文窗口限制</strong>：每个 LLM 都有一次性能够处理的最大文本量（上下文窗口）。如果对话历史超过此限制，API 调用将会失败。</li>
+<li><strong>API 成本 ($)</strong>：大多数 LLM 供应商都根据你发送和接收的 Token 数量来计费。历史记录越短，意味着每轮交互所需的 Token 越少，成本也越低。</li>
+<li><strong>延迟（速度）</strong>：向模型发送更多文本需要更长的处理时间，从而导致用户等待回复的时间变长。通过压缩（Compaction）可以保持智能体的高效与快速响应。</li>
+<li><strong>质量</strong>：随着 Token 数量的增加，上下文中的额外噪点以及自回归错误可能会导致模型性能下降。</li>
+</ol>
+<p>**管理智能体的长对话，可以比作一位精明的旅行者为长期旅行整理行李箱。行李箱代表智能体有限的上下文窗口，而衣物和物品则是对话中的信息片段。**如果你只是盲目地把所有东西都塞进去，行李箱就会变得过于沉重且杂乱无章，导致你很难快速找到需要的东西——这正如同过载的上下文窗口会增加处理成本并降低响应速度一样。相反，如果你装得太少，就有可能漏掉护照或厚外套等必需品，从而影响整个行程——这就像智能体可能丢失关键上下文，导致给出不相关或不正确的答案。旅行者和智能体都面临着相似的约束：成功与否并不取决于你能带多少东西，而取决于是否只带了你所需要的东西。</p>
+<p>压缩策略通过缩减冗长对话历史、浓缩对话内容来使其适应模型的上下文窗口，从而降低 API 成本和延迟。随着对话的延长，每轮发送给模型的历史记录可能会变得过于庞大。压缩策略通过智能地修剪历史记录，同时努力保留最重要的上下文，从而解决了这一问题。</p>
+<p>那么，如何知道可以从会话中丢弃哪些内容而又不丢失有价值的信息呢？可选的策略涵盖了从简单截断到高级压缩的多种方案：</p>
+<ul>
+<li><strong>保留最后 N 轮</strong>：这是最简单的策略。智能体仅保留对话中最近的 N 轮交互（即“滑动窗口sliding window”），并丢弃所有更早的内容。</li>
+<li><strong>基于 Token 的截断</strong>：在将历史记录发送给模型之前，智能体从最近的消息开始反向计算消息的 Token 数。它会在不超过预设 Token 限制（例如 4000 Token）的前提下，尽可能多地包含消息。所有更早的内容则直接被切除。</li>
+<li><strong>递归摘要 (Recursive Summarization)</strong>：<strong>对话中较早的部分会被 AI 生成的摘要所替代</strong>。随着对话的增长，智能体定期通过另一次 LLM 调用来总结最早的消息。随后，该摘要将作为历史记录的浓缩形式，通常作为前缀放在更近期的、逐字记录的消息之前。</li>
+</ul>
+<p>例如，在 ADK 中，你可以通过使用内置插件来限制发送给模型的上下文，从而保留最后 N 轮内容。这并不会修改存储在会话存储中的历史事件：</p>
+<p>Snippet 3: Session truncation to only use the last N turns with ADK</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> google.adk.apps <span class="keyword">import</span> App</span><br><span class="line"><span class="keyword">from</span> google.adk.plugins.context_filter_plugin <span class="keyword">import</span> ContextFilterPlugin</span><br><span class="line">app = App(</span><br><span class="line">  name=<span class="string">&#x27;hello_world_app&#x27;</span>,</span><br><span class="line">  root_agent=agent,</span><br><span class="line">  plugins=[</span><br><span class="line">    <span class="comment"># Keep the last 10 turns and the most recent user query.</span></span><br><span class="line">    ContextFilterPlugin(num_invocations_to_keep=<span class="number">10</span>),</span><br><span class="line">  ],</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>鉴于高级压缩策略旨在降低成本和延迟，在后台异步执行高能耗操作（如递归摘要）并持久化其结果就显得至关重要。“在后台”确保了客户端无需等待，而“持久化”则确保了昂贵的计算不会被过度重复。通常，智能体的记忆管理器（Memory Manager）会同时负责生成和持久化这些递归摘要。此外，智能体必须记录哪些事件已被包含在压缩摘要中，这可以防止原始且更冗长的事件被不必要地再次发送给 LLM。</p>
+<p>此外，智能体还必须决定何时需要进行压缩。触发机制通常分为以下几个不同类别：</p>
+<ul>
+<li><strong>基于计数的触发器（如 Token 大小或轮数阈值）</strong>：一旦对话超过某个预设的阈值，就会触发对话压缩。这种方法对于管理上下文长度通常“足够好”。</li>
+<li><strong>基于时间的触发器</strong>：压缩的触发并非由对话规模决定，而是由于缺乏活动。如果用户在设定的一段时间内（例如 15 或 30 分钟）停止交互，系统可以在后台运行压缩任务。</li>
+<li><strong>基于事件的触发器（如语义/任务完成）</strong>：当智能体检测到某个特定任务、子目标或对话主题已经结束时，决定触发压缩。</li>
+</ul>
+<p>例如，你可以使用 ADK 的 <code>EventsCompactionConfig</code>，在达到配置的交互轮数后触发基于 LLM 的摘要生成：</p>
+<p>Snippet 4: Session compaction using summarization with ADK</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> google.adk.apps <span class="keyword">import</span> App</span><br><span class="line"><span class="keyword">from</span> google.adk.apps.app <span class="keyword">import</span> EventsCompactionConfig</span><br><span class="line">app = App(</span><br><span class="line">  name=<span class="string">&#x27;hello_world_app&#x27;</span>,</span><br><span class="line">  root_agent=agent,</span><br><span class="line">  events_compaction_config=EventsCompactionConfig(</span><br><span class="line">    compaction_interval=<span class="number">5</span>,</span><br><span class="line">    overlap_size=<span class="number">1</span>,</span><br><span class="line">  ),</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>记忆生成（Memory Generation）是从冗长且嘈杂的数据源中提取持久化知识的泛化能力。在本节中，我们介绍了一个从对话历史中提取信息的首要示例：会话压缩。压缩提炼了整个对话的逐字笔录，在丢弃对话废话的同时，提取出了关键事实和摘要。</p>
+<p>在压缩的基础上，下一节将更广泛地探讨记忆的生成与管理。我们将讨论创建、存储和检索记忆的各种方式，以构建智能体的长期知识库。</p>
+<blockquote>
+<p>个人注：会话压缩和记忆的区别</p>
+<table>
+<thead>
+<tr>
+<th><strong>维度</strong></th>
+<th><strong>会话压缩 (Session Compaction)</strong></th>
+<th><strong>记忆 (Memory)</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>打个比方</strong></td>
+<td>电影的**“前情提要”**</td>
+<td>你的**“个人档案/记事本”**</td>
+</tr>
+<tr>
+<td><strong>关注的时间线</strong></td>
+<td><strong>当下这一场对话</strong>（单次会话内）</td>
+<td><strong>过去、现在和未来</strong>（跨多次会话）</td>
+</tr>
+<tr>
+<td><strong>处理的对象</strong></td>
+<td>原始的、流水账式的<strong>对话字面内容</strong></td>
+<td>从对话中<strong>提炼出的事实、偏好和知识</strong></td>
+</tr>
+<tr>
+<td><strong>生命周期</strong></td>
+<td>随着单次会话的结束而销毁</td>
+<td>长期持久化，跨会话永久存在</td>
+</tr>
+<tr>
+<td><strong>核心算法</strong></td>
+<td>滑动窗口、Token截断、<strong>递归摘要</strong></td>
+<td><strong>提取（Extraction）与巩固（Consolidation）</strong></td>
+</tr>
+<tr>
+<td><strong>主要解决问题</strong></td>
+<td>防止当前对话因为太长而塞不下或变慢</td>
+<td>让智能体真正“懂你”，实现跨时间个性化</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<h3 id="记忆">记忆</h3>
+<p>Memory</p>
+<p>记忆（Memory）与会话（Session）之间存在着深层的共生关系：会话是生成记忆的首要数据源，而记忆则是管理会话规模的一项关键策略。<strong>记忆是从对话或数据源中提取出的、有意义的信息的快照</strong>。它是一种能够保留重要上下文的浓缩表示，因而对未来的交互非常有用。通常，记忆会跨会话进行持久化，以提供连续且个性化的体验。</p>
+<p>作为一个专门且解耦的服务，“记忆管理器（Memory Manager）”为多智能体之间的互操作性提供了基础。记忆管理器经常使用与框架无关的数据结构，例如简单的字符串和字典。这使得基于不同框架构建的智能体能够连接到同一个记忆存储中，从而能够创建一个任何相连的智能体都可以利用的共享知识库。</p>
+<blockquote>
+<p><strong>注意</strong>：某些框架可能也会将会话或逐字记录的对话称为“短期记忆”。在本白皮书中，记忆被定义为<strong>提取出的信息</strong>，而非逐轮交互的原始对话。</p>
+</blockquote>
+<p>对于构建复杂且智能的智能体而言，存储和检索记忆至关重要。一个鲁棒的记忆系统通过解锁以下几项核心能力，将一个基础的聊天机器人转变为真正智能的智能体：</p>
+<ul>
+<li><strong>个性化</strong>：最常见的应用场景是记住用户的偏好、事实和过去的交互，以量身定制未来的回复。例如，记住用户最喜欢的运动队或他们在飞机上偏好的座位，可以创造一种更实用且更具个人色彩的体验。</li>
+<li><strong>上下文窗口管理</strong>：随着对话变长，完整的历史记录可能会超过 LLM 的上下文窗口。记忆系统可以通过创建摘要或提取关键事实来压缩这些历史，在不需在每轮交互中发送数千个 Token 的情况下保留上下文。这同时降低了成本和延迟。</li>
+<li><strong>数据挖掘与洞察</strong>：通过跨大量用户分析存储的记忆（以聚合且保护隐私的方式），你可以从噪点中提取出深度洞察。例如，零售聊天机器人可能会识别出许多用户都在询问某款特定产品的退货政策，从而标记出潜在的问题。</li>
+<li><strong>智能体自我提升与适应</strong>：智能体通过对其自身表现创建程序性记忆（Procedural Memories），从以前的运行中学习——记录哪些策略、工具或推理路径导向了成功的共识。这使智能体能够建立起一套高效解决方案的复盘手册（Playbook），使其能够随着时间的推移不断适应并提高其解决问题的能力。</li>
+</ul>
+<p>在 AI 系统中创建、存储和利用记忆是一个协同的过程。架构栈中的每个组件——从最终用户到开发者的代码——都有着各自明确的角色：</p>
+<ol>
+<li><strong>用户</strong>：为记忆提供原始源数据。在某些系统中，用户也可以直接提供记忆（例如通过表单）。</li>
+<li><strong>智能体（开发者逻辑）</strong>：配置如何决定记住什么以及何时记住，并编排对记忆管理器的调用。在简单的架构中，开发者可以实现让记忆<em>总是</em>被检索且<em>总是</em>触发生成的逻辑。在更高级的架构中，开发者可以将记忆实现为“工具（Memory-as-a-tool）”，由智能体（通过 LLM）来决定何时应当检索或生成记忆。</li>
+<li><strong>智能体框架（如 ADK、LangGraph）</strong>：为记忆交互提供结构和工具。<strong>框架充当着管道（Plumbing）的角色</strong>。它定义了开发者的逻辑如何访问对话历史以及如何与记忆管理器交互，但它本身不管理长期存储。它还定义了如何将检索到的记忆填充到上下文窗口中。</li>
+<li><strong>会话存储（如 Agent Engine Sessions、Spanner、Redis）</strong>：存储会话中逐轮交互的对话。原始对话将被摄取到记忆管理器中，以便生成记忆。</li>
+<li><strong>记忆管理器（如 Agent Engine Memory Bank、Mem0、Zep）</strong>：处理记忆的存储、检索和压缩。存储和检索记忆的机制取决于使用的是哪个供应商。这是一个专门的服务或组件，它接收智能体识别出的潜在记忆，并处理其整个生命周期。
+<ul>
+<li><strong>提取（Extraction）</strong>：从源数据中提炼关键信息。</li>
+<li><strong>巩固（Consolidation）</strong>：维护记忆以合并重复的实体。</li>
+<li><strong>存储（Storage）</strong>：将记忆持久化到持久化数据库中。</li>
+<li><strong>检索（Retrieval）</strong>：获取相关的记忆，为新的交互提供上下文。</li>
+</ul>
+</li>
+</ol>
+<p>**职责的划分确保了开发者可以专注于智能体特有的业务逻辑，而不必构建用于记忆持久化和管理的复杂底层基础设施。**必须要认识到，记忆管理器是一个主动的系统，而不仅仅是一个被动的向量数据库。虽然它使用相似度搜索进行检索，但其核心价值在于它能够随着时间的推移，智能地提取、巩固和维护记忆。像 Agent Engine Memory Bank 这样的托管记忆服务可以处理记忆生成和存储的整个生命周期，让你能够专注于智能体的核心逻辑。</p>
+<p><img src="/img4/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B/f5.png" alt="f5"></p>
+<p>这种检索能力也是记忆频繁被拿来与另一种关键架构模式——检索增强生成（RAG）进行对比的原因。然而，它们是建立在不同的架构原则之上的：**RAG 处理的是静态的外部数据，而记忆则维护着动态的、特定于用户的上下文。**它们履行着两个截然不同且互补的角色：<strong>RAG 让智能体成为事实领域的专家，而记忆让它成为用户领域的专家</strong>。下表打破了它们在宏观上的差异：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><strong>RAG 引擎 (RAG Engines)</strong></th>
+<th><strong>记忆管理器 (Memory Managers)</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>首要目标 (Primary Goal)</td>
+<td>将<strong>外部的、事实性的</strong>知识注入到上下文中。</td>
+<td>创建个性化且有状态的体验。智能体能够记住事实，随着时间的推移适应用户，并维护长期运行的上下文。</td>
+</tr>
+<tr>
+<td>数据源 (Data source)</td>
+<td>静态的、预先索引的外部知识库（例如：PDF、wiki、文档、API）。</td>
+<td>用户与智能体之间的对话。</td>
+</tr>
+<tr>
+<td>隔离级别 (Isolation Level)</td>
+<td><strong>通常是共享的</strong>。知识库通常是一个全局的、只读的资源，所有用户均可访问，以确保给出一致、客观的答案。</td>
+<td><strong>高度隔离</strong>：记忆几乎总是限定在每个用户的作用域内，以防止数据泄露。</td>
+</tr>
+<tr>
+<td>信息类型 (Information type)</td>
+<td>静态的、事实性的且权威的信息。通常包含特定领域的行业数据、产品细节或技术文档。</td>
+<td>动态的且（通常）特定于用户的信息。记忆衍生自对话，因此具有固有的不确定性。</td>
+</tr>
+<tr>
+<td>写入模式 (Write patterns)</td>
+<td>批处理  通过离线的管理操作触发。</td>
+<td>基于事件的处理  按一定节奏触发（即每轮交互触发或在会话结束时触发），或者采用“记忆即工具（Memory-as-a-tool）”模式（由智能体决定何时生成记忆）。</td>
+</tr>
+<tr>
+<td>读取模式 (Read patterns)</td>
+<td>RAG 数据几乎总是以**“工具（as-a-tool）”**的方式进行检索。当智能体判定用户的查询需要外部信息时，就会触发检索。</td>
+<td>存在两种常见的读取模式： • <strong>记忆即工具 (Memory-as-a-tool)</strong>：当用户的查询需要关于用户（或其他主体）的补充信息时进行检索。 • <strong>静态检索 (Static retrieval)</strong>：在每轮交互开始时总是自动检索记忆。</td>
+</tr>
+<tr>
+<td>数据格式 (Data Format)</td>
+<td>自然语言的“文本块（chunk）”。</td>
+<td>自然语言片段或结构化的画像（profile）。</td>
+</tr>
+<tr>
+<td>数据准备 (Data preparation)</td>
+<td><strong>分块与索引 (Chunking and Indexing)</strong>：源文档被拆分为更小的文本块，然后转换为向量嵌入（embeddings）并存储，以便快速查找。</td>
+<td><strong>提取与巩固 (Extraction and consolidation)</strong>：从对话中提取关键细节，确保内容不重复、不矛盾。</td>
+</tr>
+</tbody>
+</table>
+<p><strong>表 1：RAG 引擎与记忆管理器的对比</strong></p>
+<p><img src="/img4/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B/t1.png" alt="t1"></p>
+<p>理解这一区别的一个有用方法是将 RAG 视为智能体的<strong>研究馆员</strong>，而将记忆管理器视为它的<strong>私人助理</strong>。</p>
+<p>研究馆员（RAG）在一个巨大的公共图书馆里工作，馆内装满了百科全书、教科书和官方文件。当智能体需要一个既定的事实时——比如某个产品的技术规格或一个历史日期——它就会咨询这位馆员。馆员从这个静态、共享且权威的知识库中检索信息，以提供一致、客观的答案。馆员是世界事实方面的专家，但他们对提出问题的用户没有任何个人层面的了解。</p>
+<p>相比之下，私人助理（记忆）则跟随在智能体身边，随身携带一本私密笔记本，记录着与特定用户每次交互的细节。这本笔记本是动态的且高度隔离的，包含着个人偏好、过去的对话以及不断演变的目标。当智能体需要回忆用户最喜欢的运动队或上周项目讨论的上下文时，它就会求助于助理。助理的专业知识不在于全球的事实，而在于用户本身。</p>
+<p>归根结底，一个真正智能的智能体两者都需要。RAG 为其提供了关于世界的专家知识，而记忆则为其提供了对所服务用户的深刻理解。</p>
+<p>下一节将通过检查记忆的核心组件来对这一概念进行解构：它所存储的信息类型、其组织模式、其存储与创建的机制、其作用域的策略性定义，以及它对多模态与文本数据的处理。</p>
+<h4 id="记忆的类型">记忆的类型</h4>
+<p>Types of memory</p>
+<p>智能体的记忆可以根据信息的存储方式以及捕获方式来进行分类。这些不同类型的记忆协同工作，共同构建出对用户及其需求的丰富且具上下文特征的理解。在所有类型的记忆中，都遵循一个普遍规则：<strong>记忆是描述性的，而非预测性的。</strong></p>
+<p>一条“记忆（Memory）”是记忆管理器返回并由智能体用作上下文的原子化上下文片段。虽然确切的模式（Schema）可能有所不同，但单条记忆通常由两个主要部分组成：<strong>内容（Content）<strong>与</strong>元数据（Metadata）</strong>。</p>
+<ul>
+<li><strong>内容</strong>是从源数据（即会话的原始对话）中提取出的记忆实质。至关重要的一点是，内容被设计为与框架无关，使用的是任何智能体都能轻松摄取的简单数据结构。内容既可以是结构化数据，也可以是非结构化数据。<strong>结构化记忆</strong>包含的信息通常以通用格式（如字典或 JSON）存储。其模式通常由开发者定义，而非由特定框架定义。例如：<code>&#123;&quot;seat_preference&quot;: &quot;Window&quot;&#125;</code>。<strong>非结构化记忆</strong>则是自然语言描述，用以捕获更长交互、事件或主题的核心实质。例如：“该用户偏好靠窗的座位。”</li>
+<li><strong>元数据</strong>提供了关于该记忆的上下文，通常存储为简单的字符串。这可以包括该记忆的唯一标识符、记忆“所有者”的标识符，以及描述记忆内容或数据源的标签。</li>
+</ul>
+<h5 id="信息类型">信息类型</h5>
+<p>Types of information</p>
+<p>除了基本结构之外，记忆还可以根据它们所代表的根本知识类型进行分类。这种区分对于理解智能体如何使用记忆至关重要，它将记忆划分为源自认知科学的两个主要功能类别：<strong>陈述性记忆（Declarative Memory，即“知道是什么”）<strong>和</strong>程序性记忆（Procedural Memory，即“知道怎么做”）</strong>。</p>
+<ul>
+<li><strong>陈述性记忆</strong>是智能体对事实、数字和事件的知识。它是智能体可以明确陈述或“宣告”的所有信息。如果某条记忆是对“什么（what）”这一问题的回答，那它就是陈述性的。这一类别既涵盖了通用的世界知识（语义记忆），也涵盖了特定的用户事实（实体/情景记忆）。</li>
+<li><strong>程序性记忆</strong>是智能体对技能和工作流的知识。它通过隐式地展示如何正确执行任务来指导智能体的行动。如果某条记忆有助于回答“如何（how）”这一问题——例如预订行程所需的正确工具调用顺序——那它就是程序性的。</li>
+</ul>
+<h5 id="组织模式">组织模式</h5>
+<p>Organization patterns</p>
+<p>记忆创建完成后，接下来的问题就是如何组织它。记忆管理器通常采用以下一种或多种模式来组织记忆：<strong>集合（Collections）</strong>、<strong>结构化用户画像（Structured User Profile）<strong>或</strong>“滚动摘要（Rolling Summary）”</strong>。这些模式定义了单个记忆之间以及记忆与用户之间的关联方式。</p>
+<ul>
+<li><strong>集合模式</strong>将内容组织为单个用户的多个自包含的、自然语言形式的记忆。每条记忆都是一个独立的事件、摘要或观察结果，尽管在集合中可能会针对同一个宏观主题存在多条记忆。集合模式允许在更大、结构化程度较低的信息池中存储和搜索与特定目标或主题相关的信息。</li>
+<li><strong>结构化用户画像模式</strong>将记忆组织为一组关于用户的核心事实，就像一张会随着新的稳定信息而不断更新的联系人卡片。它旨在快速查找姓名、偏好和账户详情等核心事实信息。</li>
+<li><strong>“滚动”摘要模式</strong>与结构化用户画像不同，它将所有信息整合到一条不断演变的单一记忆中，代表了整个用户与智能体关系的自然语言摘要。管理器不会创建新的、独立的记忆，而是持续更新这一份主文档。这种模式经常用于压缩长会话，在管理整体 Token 数量的同时保留至关密要的信息。</li>
+</ul>
+<h5 id="存储架构">存储架构</h5>
+<p>Storage architectures</p>
+<p>此外，存储架构是一项至关重要的抉择，它决定了智能体检索记忆的速度和智能程度。架构的选择决定了智能体是擅长寻找概念相似的想法、理解结构化的关系，还是两者兼顾。</p>
+<p>记忆通常存储在<strong>向量数据库</strong>和/或<strong>知识图谱</strong>中。向量数据库有助于查找与查询在概念上相似的记忆；知识图谱则将记忆存储为实体及其关系的网状网络。</p>
+<ul>
+<li><strong>向量数据库</strong>是最常用的方法，它能够基于语义相似度而非精确关键字进行检索。记忆被转换为嵌入向量（Embedding Vectors），数据库会找出与用户查询最接近的概念匹配项。这种方式极其擅长检索上下文和含义至关重要的非结构化自然语言记忆（即“原子事实”）。</li>
+<li><strong>知识图谱</strong>用于将记忆存储为实体（节点）及其关系（边）的网络。检索过程涉及遍历该图谱以寻找直接和间接的联系，从而允许智能体对不同事实是如何关联的进行推理。它非常适合结构化的关系查询，以及理解数据内部复杂的连接关系（即“知识三元组”）。</li>
+<li>你还可以通过用向量嵌入来丰富知识图谱中的结构化实体，将这两种方法结合为<strong>混合方法</strong>。这使得系统能够同时进行关系搜索和语义搜索，兼具图谱的结构化推理能力与向量数据库的细腻概念搜索能力，融合了双方的优势。</li>
+</ul>
+<h5 id="创建机制">创建机制</h5>
+<p>Creation mechanisms</p>
+<p>我们还可以根据记忆的创建方式（包括信息的衍生方式）对记忆进行分类：</p>
+<ul>
+<li><strong>显式记忆 (Explicit Memory)</strong>：当用户向智能体发出明确命令要求记住某事时创建（例如，“记住我的结婚纪念日是10月26日”）。</li>
+<li><strong>隐式记忆 (Implicit Memory)</strong>：当智能体在没有直接命令的情况下，从对话中推断并提取信息时创建（例如，“下周就是我的结婚纪念日了。你能帮我给伴侣挑件礼物吗？”）。</li>
+</ul>
+<p>记忆还可以根据<strong>提取逻辑是位于智能体框架内部还是外部</strong>来区分：</p>
+<ul>
+<li><strong>内部记忆 (Internal Memory)</strong>：指直接内置在智能体框架中的记忆管理。它极大地方便了快速上手，但通常缺乏高级功能。内部记忆可以使用外部存储，但生成记忆的机制是智能体自带的。</li>
+<li><strong>外部记忆 (External Memory)</strong>：涉及使用独立的、专门用于记忆管理的专业服务（例如 Agent Engine Memory Bank、Mem0、Zep）。智能体框架向该外部服务发起 API 调用，以存储、检索和处理记忆。这种方法提供了更高级的功能，如语义搜索、实体提取和自动摘要，将复杂的记忆管理任务卸载给了专用工具。</li>
+</ul>
+<h5 id="记忆作用域">记忆作用域</h5>
+<p>Memory Scope</p>
+<p>你还需要考虑记忆所描述的对象是谁或是什么。这会影响你使用哪个实体（如用户、会话或应用程序）来聚合和检索记忆。</p>
+<ul>
+<li><strong>用户级作用域 (User-Level)</strong>：这是最常见的实现方式，旨在为每个个体创建连续的个性化体验；例如，“用户偏好中间座位”。记忆与特定的用户 ID 绑定，并跨其所有会话持久存在，使智能体能够建立对其偏好和历史的长期理解。</li>
+<li><strong>会话级作用域 (Session-Level)</strong>：专为压缩长对话而设计；例如，“用户正在选购 2025年11月7日至11月14日期间往返纽约和巴黎的机票。他们偏好直飞航班和中间座位”。它创建了从单次会话中提炼出的见解的持久记录，允许智能体用一组精简的关键事实来取代冗长、耗费 Token 的逐字笔录。至关重要的一点是，这种记忆与原始的会话日志不同——它只包含从对话中处理后的见解，而非对话本身，且其上下文被隔离在特定会话中。</li>
+<li><strong>应用级作用域 (Application-Level / 全局上下文)</strong>：指应用程序的所有用户都能访问的记忆；例如，“代号 XYZ 指的是……项目”。该作用域用于提供共享上下文、广播系统级信息或建立公共知识底线。应用级记忆的一个常见用例是程序性记忆，它为智能体提供“操作指南”指令；这些记忆通常旨在帮助智能体对所有用户进行推理。<strong>至关重要的一点是，必须对这些记忆进行脱敏，清除所有敏感内容，以防止用户之间的数据泄露。</strong></li>
+</ul>
+<h5 id="多模态记忆">多模态记忆</h5>
+<p>Multimodal Memory</p>
+<p>“多模态记忆”是一个关键概念，它描述了智能体如何处理图像、视频和音频等非文本信息。这里的核心在于要区分<strong>记忆衍生自的数据（其源头）<strong>与</strong>记忆存储为的数据（其内容）</strong>。</p>
+<ul>
+<li><strong>来自多模态源的记忆 (Memory from a multimodal source)</strong>：这是最常见的实现方式。智能体可以处理各种数据类型（文本、图像、音频），但它创建的记忆是从该源头衍生出的<strong>文本见解</strong>。例如，智能体可以处理用户的语音备忘录来创建记忆。它不存储音频文件本身，而是将音频转录并创建一条文本记忆，如：“用户对最近的物流延迟表达了沮丧。”</li>
+<li><strong>具有多模态内容的记忆 (Memory with Multimodal Content)</strong>：这是一种更高级的方法，记忆本身就包含非文本媒介。智能体不仅描述内容，还直接存储内容。例如，用户可以上传一张图片并说：“记住我们标志的这个设计。”智能体会创建一条直接包含该图片文件的记忆，并将其与用户的请求链接起来。</li>
+</ul>
+<p>目前大多数当代的记忆管理器都专注于<strong>处理多模态源并生成文本内容</strong>。这是因为针对特定记忆去生成和检索像图像或音频这样的非结构化二进制数据，需要专门的模型、算法和基础设施。将所有输入转换为一种通用的、可搜索的格式——文本，要简单得多。</p>
+<p>例如，你可以使用 Agent Engine Memory Bank 从多模态输入中生成记忆。输出的记忆将是从内容中提取出的文本见解：</p>
+<p>Snippet 5: Example memory generation API call for Agent Engine Memory Bank</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> google.genai <span class="keyword">import</span> types</span><br><span class="line">client = vertexai.Client(project=..., location=...)</span><br><span class="line">response = client.agent_engines.memories.generate(</span><br><span class="line">  name=agent_engine_name,</span><br><span class="line">  direct_contents_source=&#123;</span><br><span class="line">    <span class="string">&quot;events&quot;</span>: [</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="string">&quot;content&quot;</span>: types.Content(</span><br><span class="line">          role=<span class="string">&quot;user&quot;</span>,</span><br><span class="line">          parts=[</span><br><span class="line">            types.Part.from_text(</span><br><span class="line">              <span class="string">&quot;This is context about the multimodal input.&quot;</span></span><br><span class="line">            ),</span><br><span class="line">            types.Part.from_bytes(</span><br><span class="line">              data=CONTENT_AS_BYTES,</span><br><span class="line">              mime_type=MIME_TYPE</span><br><span class="line">            ),</span><br><span class="line">            types.Part.from_uri(</span><br><span class="line">              file_uri=<span class="string">&quot;file/path/to/content&quot;</span>,</span><br><span class="line">              mime_type=MIME_TYPE</span><br><span class="line">            )</span><br><span class="line">          ])&#125;]&#125;,</span><br><span class="line">  scope=&#123;<span class="string">&quot;user_id&quot;</span>: user_id&#125;</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>下一节将检查记忆生成的机制，详细拆解两个核心阶段：从源数据中提取新信息，以及随后将该信息与现有记忆语料库进行巩固。</p>
+<h4 id="记忆生成：提取与巩固">记忆生成：提取与巩固</h4>
+<p>Memory Generation: Extraction and Consolidation</p>
+<p>记忆生成能够自主地将原始对话数据转化为结构化且有意义的见解。<strong>你可以把它想象成一个由 LLM 驱动的 ETL（提取、转换、加载）管道，专为提取和浓缩记忆而设计</strong>。记忆生成的 ETL 管道正是记忆管理器区别于 RAG 引擎和传统数据库的核心所在。记忆管理器不需要开发人员手动指定数据库操作，而是利用 LLM 来智能决定何时添加、更新或合并记忆。这种自动化是记忆管理器的核心优势：它抽象掉了管理数据库内容、串联 LLM 调用以及部署后台服务进行数据处理的复杂性。</p>
+<p><img src="/img4/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B/f6.png" alt="f6"></p>
+<p>虽然具体算法因平台而异（例如 Agent Engine Memory Bank、Mem0、Zep），但记忆生成的宏观流程通常遵循以下四个阶段：</p>
+<ol>
+<li><strong>摄取 (Ingestion)</strong>：当客户端向记忆管理器提供原始数据源（通常是对话历史记录）时，流程便开始了。</li>
+<li><strong>提取与过滤 (Extraction &amp; Filtering)</strong>：记忆管理器使用 LLM 从源数据中提取有意义的内容。关键在于，这个 LLM 并不会提取所有内容，它只捕获符合预设主题定义的信息。如果摄取的数据中没有与这些主题匹配的信息，则不会创建任何记忆。</li>
+<li><strong>巩固 (Consolidation)</strong>：这是最复杂的阶段，记忆管理器在此阶段处理冲突解决和去重。它执行一个“自我编辑”的过程，利用 LLM 将新提取的信息与现有记忆进行对比。为了确保用户的知识库保持连贯、准确，并能根据新信息随时间演进，管理器可以决定：
+<ul>
+<li>将新见解<strong>合并</strong>到现有记忆中。</li>
+<li>如果现有记忆现在已失效，则将其<strong>删除</strong>。</li>
+<li>如果主题是全新的，则<strong>创建</strong>一条完全崭新的记忆。</li>
+</ul>
+</li>
+<li><strong>存储 (Storage)</strong>：最后，新创建或更新的记忆会被持久化到耐用的存储层（如向量数据库或知识图谱）中，以便在未来的交互中进行检索。</li>
+</ol>
+<p>像 Agent Engine Memory Bank 这样的托管记忆管理器完全实现了这一管道的自动化。它们提供了一个单一且连贯的系统，将对话中的噪点转化为结构化的知识，使开发人员能够专注于智能体自身的逻辑，而不是亲自去构建和维护底层的数据基础设施。例如，使用 Memory Bank 触发记忆生成只需要一次简单的 API 调用：</p>
+<p>Snippet 6: Generate memories with Agent Engine Memory Bank</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> google.cloud <span class="keyword">import</span> vertexai</span><br><span class="line">client = vertexai.Client(project=..., location=...)</span><br><span class="line">client.agent_engines.memories.generate(</span><br><span class="line">  name=<span class="string">&quot;projects/.../locations/...reasoningEngines/...&quot;</span>,</span><br><span class="line">  scope=&#123;<span class="string">&quot;user_id&quot;</span>: <span class="string">&quot;123&quot;</span>&#125;,</span><br><span class="line">  direct_contents_source=&#123;</span><br><span class="line">    <span class="string">&quot;events&quot;</span>: [...]</span><br><span class="line">  &#125;,</span><br><span class="line">  config=&#123;</span><br><span class="line">    <span class="comment"># Run memory generation in the background.</span></span><br><span class="line">    <span class="string">&quot;wait_for_completion&quot;</span>: <span class="literal">False</span></span><br><span class="line">  &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>记忆生成的过程可以比作一位勤劳的花匠在打理花园。<strong>提取</strong>就像是收到了新的种子和幼苗（来自对话的新信息）。花匠不会把它们随意扔在土地上，相反，他们通过拔除杂草（<strong>删除冗余或冲突的数据</strong>）、修剪过度生长的枝条以促进现有植物的健康（<strong>精炼和总结现有记忆</strong>）来进行<strong>巩固</strong>，然后将新幼苗仔细种植在最佳位置。这种持续、贴心的维护确保了花园始终保持健康、井井有条并持续繁茂，而不会变成一片杂草丛生、无法利用的荒地。这一异步过程在后台发生，确保花园随时为下一次造访做好准备。</p>
+<p>现在，让我们深入探讨记忆生成的两个关键步骤：提取与巩固。</p>
+<h5 id="深度解析：记忆提取">深度解析：记忆提取</h5>
+<p>Deep-dive: Memory Extraction</p>
+<p>记忆提取的目标是为了回答一个根本性的问题：“这次对话中的哪些信息具有足够重要的意义，能够转化为一条记忆？”这并不是简单的摘要生成，而是一个具有针对性的、智能的过滤过程，<strong>旨在从噪点（客套话、填充文本）中分离出信号（重要事实、偏好、目标）</strong>。</p>
+<p><strong>“有意义”并不是一个通用的概念，它完全由智能体的目的和应用场景来决定。客户支持智能体需要记住的内容（如订单号、技术问题）与个人健康教练需要记住的内容（如长期目标、情感状态）有着本质的不同。因此，定制化地保留哪些信息，是构建一个真正高效智能体的关键所在。</strong></p>
+<p>记忆管理器的 LLM 通过遵循一组精心构建的程序化护栏和指令（通常嵌入在复杂的系统提示词中）来决定提取什么。该提示词通过向 LLM 提供一组<strong>主题定义（Topic Definitions）<strong>来界定“有意义”的含义。在</strong>基于模式和模板的提取</strong>中，系统会利用结构化输出等 LLM 特性，为 LLM 提供一个预定义的 JSON 模式或模板，并指令 LLM 利用对话中的对应信息来构建该 JSON。或者，在<strong>自然语言主题定义</strong>中，LLM 则通过对主题的简单自然语言描述来获得引导。</p>
+<p>在<strong>少样本提示 (Few-shot prompting)</strong> 中，系统会通过示例向 LLM “展示”需要提取哪些信息。提示词中包含了若干输入文本示例以及应当提取出的理想、高保真记忆。LLM 从这些示例中学习到所需的提取模式，这使得它在处理难以用模式或简单定义来描述的定制化或微妙主题时极其高效。</p>
+<p><strong>大多数记忆管理器在开箱即用时，都会寻找一些常见主题，例如用户偏好、关键事实或目标。许多平台还允许开发人员定义自己的自定义主题，从而让提取过程适配其特定的专业领域。例如，你可以通过提供自己的主题定义和少样本示例，来定制 Agent Engine Memory Bank 认为有必要持久化的“有意义”信息</strong>：</p>
+<p>Snippet 7: Customizing what information Agent Engine Memory Bank considers meaningful to persist</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> google.genai.types <span class="keyword">import</span> Content, Part</span><br><span class="line"><span class="comment"># See https://cloud.google.com/agent-builder/agent-engine/memory-bank/set-up for</span></span><br><span class="line">more information.</span><br><span class="line">memory_bank_config = &#123;</span><br><span class="line">  <span class="string">&quot;customization_configs&quot;</span>: [&#123;</span><br><span class="line">    <span class="string">&quot;memory_topics&quot;</span>: [</span><br><span class="line">      &#123; <span class="string">&quot;managed_memory_topic&quot;</span>: &#123;<span class="string">&quot;managed_topic_enum&quot;</span>: <span class="string">&quot;USER_PERSONAL_INFO&quot;</span> &#125;&#125;,</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="string">&quot;custom_memory_topic&quot;</span>: &#123;</span><br><span class="line">          <span class="string">&quot;label&quot;</span>: <span class="string">&quot;business_feedback&quot;</span>,</span><br><span class="line">          <span class="string">&quot;description&quot;</span>: <span class="string">&quot;&quot;&quot;Specific user feedback about their experience at the coffee</span></span><br><span class="line"><span class="string">shop. This includes opinions on drinks, food, pastries, ambiance, staff friendliness,</span></span><br><span class="line"><span class="string">service speed, cleanliness, and any suggestions for improvement.&quot;&quot;&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    ],</span><br><span class="line">    <span class="string">&quot;generate_memories_examples&quot;</span>: &#123;</span><br><span class="line">      <span class="string">&quot;conversationSource&quot;</span>: &#123;</span><br><span class="line">        <span class="string">&quot;events&quot;</span>: [</span><br><span class="line">          &#123;</span><br><span class="line">            <span class="string">&quot;content&quot;</span>: Content(</span><br><span class="line">              role=<span class="string">&quot;model&quot;</span>,</span><br><span class="line">              parts=[Part(text=<span class="string">&quot;Welcome back to The Daily Grind! We&#x27;d love to hear</span></span><br><span class="line"><span class="string">                          your feedback on your visit.&quot;</span>)])</span><br><span class="line">                          &#125;,&#123;</span><br><span class="line">                            <span class="string">&quot;content&quot;</span>: Content(</span><br><span class="line">                              role=<span class="string">&quot;user&quot;</span>,</span><br><span class="line">                              parts=[Part(text= <span class="string">&quot;Hey. The drip coffee was a bit lukewarm today, which</span></span><br><span class="line"><span class="string">                                          was a bummer. Also, the music was way too loud, I could barely hear my friend.&quot;</span>)])</span><br><span class="line">                                          &#125;]</span><br><span class="line">                                          &#125;,</span><br><span class="line">                                          <span class="string">&quot;generatedMemories&quot;</span>: [</span><br><span class="line">                                            &#123;<span class="string">&quot;fact&quot;</span>: <span class="string">&quot;The user reported that the drip coffee was lukewarm.&quot;</span>&#125;,</span><br><span class="line">                                            &#123;<span class="string">&quot;fact&quot;</span>: <span class="string">&quot;The user felt the music in the shop was too loud.&quot;</span>&#125;</span><br><span class="line">                                          ]</span><br><span class="line">                                          &#125;</span><br><span class="line">                                          &#125;]</span><br><span class="line">                                          &#125;</span><br><span class="line">                                          agent_engine = client.agent_engines.create(</span><br><span class="line">                                            config=&#123;</span><br><span class="line">                                              <span class="string">&quot;context_spec&quot;</span>: &#123;<span class="string">&quot;memory_bank_config&quot;</span>: memory_bank_config &#125;</span><br><span class="line">                                            &#125;</span><br><span class="line">                                          )</span><br></pre></td></tr></table></figure>
+<p>尽管记忆提取本身不是“摘要生成”，但该算法可能会融入摘要技术来提炼信息。为了提高效率，许多记忆管理器会直接将对话的<strong>滚动摘要</strong>合并到记忆提取提示词中。这种浓缩的历史记录提供了必要的上下文，以便从最近的交互中提取关键信息。它避免了每轮交互都必须重复处理完整、冗长的对话才能维持上下文的麻烦。</p>
+<p>一旦从数据源中提取出信息，就必须通过巩固（Consolidation）来更新现有的记忆语料库，以反映这些新信息。</p>
+<h5 id="深度解析：记忆巩固">深度解析：记忆巩固</h5>
+<p>Deep-dive: Memory Consolidation</p>
+<p>在从冗长的对话中提取出记忆之后，巩固过程应当将新信息整合到一个连贯、准确且不断演进的知识库中。这可以说是记忆生命周期中最复杂的阶段，它将一个简单的事实集合转化为对用户经过精细维护的理解。如果没有巩固，智能体的记忆会迅速变成一个嘈杂、矛盾且不可靠的日志，记录着曾经捕获过的每一片段信息。这种“自我维护”通常由 LLM 管理，也是将记忆管理器提升到超越简单数据库水平的核心所在。</p>
+<p>巩固解决了源自对话数据的根本问题，包括：</p>
+<ul>
+<li><strong>信息重复</strong>：用户可能会在不同的对话中以多种方式提及同一个事实（例如，“我需要一张去纽约的机票”，随后又说“我正在计划去纽约旅行”）。简单的提取过程会创建两条冗余的记忆。</li>
+<li><strong>信息冲突</strong>：用户的状态会随着时间而改变。如果没有巩固，智能体的记忆中就会包含相互矛盾的事实。</li>
+<li><strong>信息演进</strong>：一个简单的事实可能会变得更加微妙。最初“用户对营销感兴趣”的记忆，可能会演变为“用户正在领导一个专注于第四季度客户获取的营销项目”。</li>
+<li><strong>记忆相关性衰减</strong>：并非所有记忆都能永远发挥作用。智能体必须进行遗忘——主动修剪陈旧、过期或低置信度的记忆，以保持知识库的相关性和高效性。遗忘可以通过在巩固期间指令 LLM 顺应更新的信息来实现，也可以通过生存时间（TTL）进行自动删除。</li>
+</ul>
+<p>巩固过程是一个由 LLM 驱动的工作流，它将新提取的见解与用户现有的记忆进行对比。首先，工作流会尝试检索与新提取的记忆相似的现有记忆。这些现有记忆便是巩固的候选对象。如果现有记忆与新信息相冲突，它可能会被删除；如果它得到了补充，则可能会被更新。</p>
+<p>其次，LLM 会同时看到现有记忆和新信息。其核心任务是联合分析它们并确定应当执行哪些操作。主要操作包括：</p>
+<ul>
+<li><strong>UPDATE（更新）</strong>：用新的或修正后的信息修改现有记忆。</li>
+<li><strong>CREATE（创建）</strong>：如果新见解完全是全新的，且与现有记忆无关，则创建一条新记忆。</li>
+<li><strong>DELETE / INVALIDATE（删除/使失效）</strong>：如果新信息使旧记忆完全不相关或不正确，则删除该记忆或使其失效。</li>
+</ul>
+<p>最后，记忆管理器将 LLM 的决定转化为一项事务（Transaction），从而更新记忆存储。</p>
+<h5 id="记忆溯源">记忆溯源</h5>
+<p>Memory Provenance</p>
+<p><strong>经典机器学习中的公理“垃圾进，垃圾出（garbage in, garbage out）”在 LLM 时代变得更为致命，因为此时的结果往往会变成“垃圾进，自信的垃圾出”。<strong>为了让智能体做出可靠的决策，并让记忆管理器有效地巩固记忆，它们必须能够批判性地评估自身记忆的质量。而这种可信度直接源自记忆的</strong>溯源（Provenance）</strong>——即关于其起源和历史的详细记录。</p>
+<p><img src="/img4/%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B/f7.png" alt="f7"></p>
+<p>记忆巩固的过程——将来自多个源头的信息合并为一条不断演进的单一记忆——催生了追踪其谱系（Lineage）的需求。正如上图所示，单条记忆可能是多种数据源的融合物，而单个数据源也可能被分割切块到多条记忆中。</p>
+<p>为了评估可信度，智能体必须追踪每个源头的关键细节，例如其起源（<strong>源头类型</strong>）和时间（<strong>“新鲜度”</strong>）。这些细节至关重要，原因有二：它们决定了在记忆巩固期间每个源头所占的权重，并决定了智能体在推理期间应当对该记忆给予多大程度的依赖。</p>
+<p>源头类型是决定信任度最重要的因素之一。数据源主要分为以下三大类：</p>
+<ul>
+<li><strong>引导数据 (Bootstrapped Data)</strong>：从内部系统（如 CRM）预先加载的信息。这种高信任度的数据可用于初始化用户的记忆，以解决“冷启动”问题——即向智能体从未接触过的用户提供个性化体验的挑战。</li>
+<li><strong>用户输入 (User Input)</strong>：这包括显式提供的数据（例如通过表单，这属于高信任度）或从对话中隐式提取的信息（这通常信任度较低）。</li>
+<li><strong>工具输出 (Tool Output)</strong>：从外部工具调用返回的数据。通常<strong>不鼓励</strong>根据工具输出生成记忆，因为这些记忆往往脆弱且容易过时，这使得该源头类型更适合用于短期缓存。</li>
+</ul>
+<h6 id="记忆管理中对记忆谱系的考量">记忆管理中对记忆谱系的考量</h6>
+<p>Accounting for memory lineage during memory management</p>
+<p>这种动态的、多源的记忆处理方法在管理记忆时带来了两个主要的运行挑战：<strong>冲突解决</strong>与<strong>删除衍生数据</strong>。</p>
+<p>记忆巩固不可避免地会导致冲突，即一个数据源与另一个数据源发生矛盾。记忆的溯源允许记忆管理器为其信息源建立一套信任层级。当来自不同源头的记忆相互矛盾时，智能体必须在冲突解决策略中使用这一层级。常见的策略包括：优先考虑最受信任的源头、偏向最新的信息，或者寻找跨多个数据点的相互佐证。</p>
+<p>管理记忆的另一个挑战发生在删除记忆时。一条记忆可能是从多个数据源衍生而来的。当用户撤销对某个数据源的访问权限时，从该源头衍生出的数据也应当被移除。然而，直接删除被该源头“触及”的每一条记忆可能过于激进。一种更精确但计算成本更高的方法是，仅使用剩余的、有效的源头，从头开始重新生成受影响的记忆。</p>
+<p>除了静态的溯源细节外，对一条记忆的置信度也必须不断演变。置信度会通过相互佐证而提升，例如当多个受信任的源头提供了一致的信息时。然而，一个高效的记忆系统还必须通过记忆修剪（Memory Pruning）来主动维护其现有的知识库——这是一个识别并“遗忘”不再有用的记忆的过程。这种修剪可以由以下几个因素触发：</p>
+<ul>
+<li><strong>基于时间的衰减 (Time-based Decay)</strong>：记忆的重要性可能会随着时间推移而降低。关于两年前一次会议的记忆，其相关性很可能不如上周的会议。</li>
+<li><strong>低置信度 (Low Confidence)</strong>：如果某条记忆是基于微弱的推断创建的，且从未得到其他源头的佐证，则可能会被修剪掉。</li>
+<li><strong>不相关性 (Irrelevance)</strong>：随着智能体对用户的理解变得更加深入，它可能会判定某些陈旧、琐碎的记忆已不再与用户当前的目标相关。</li>
+</ul>
+<p>通过将响应式的巩固管道与主动式的修剪机制相结合，记忆管理器能够确保智能体的知识库不会仅仅变成一个记录了所有过往言论的、不断膨胀的日志。相反，它会成为对用户的一种经过精细维护、准确且高度相关的理解。</p>
+<h6 id="在推理期间对记忆谱系的考量">在推理期间对记忆谱系的考量</h6>
+<p>Accounting for memory lineage during inference</p>
+<p>除了在维护语料库内容时需要考虑记忆的谱系外，在推理时间（Inference Time）同样应当考量记忆的可信度。智能体对某条记忆的置信度不应该是静态的，它必须根据新信息和时间的推移而不断演变。置信度会通过相互佐证而提升，例如当多个受信任的源头提供了一致的信息时。相反，随着旧记忆变得陈旧，置信度会随时间降低（或衰减），且在引入矛盾信息时也会下降。最终，系统可以通过归档或删除低置信度的记忆来实现“遗忘”。这种动态的置信度评分在推理期间至关重要。这些记忆以及可用的置信度评分并不是直接展示给用户的，而是被注入到提示词中，从而使 LLM 能够评估信息的可靠性并做出更细腻的决策。</p>
+<p>这整套信任框架都是为智能体的内部推理过程服务的。记忆及其置信度评分通常不会直接呈现给用户。相反，它们被注入到系统提示词（System Prompt）中，允许 LLM 权衡证据、考量其信息的可靠性，并最终做出更细腻、更值得信赖的决策。</p>
+<h5 id="触发记忆生成">触发记忆生成</h5>
+<p>Triggering memory generation</p>
+<p>尽管一旦触发生成后，记忆管理器就会自动进行记忆的提取与巩固，但智能体仍必须决定何时应当尝试进行记忆生成。这是一项关键的架构抉择，需要在数据新鲜度与计算成本及延迟之间取得平衡。这一决策通常由智能体的逻辑来管理，并可以采用以下几种触发策略。记忆生成可以基于各种事件来启动：</p>
+<ul>
+<li><strong>会话结束 (Session Completion)</strong>：在多轮会话结束时触发生成。</li>
+<li><strong>轮次步调 (Turn Cadence)</strong>：在达到特定交互轮数后运行该流程（例如，每 5 轮运行一次）。</li>
+<li><strong>实时 (Real-Time)</strong>：在每单轮交互之后立即生成记忆。</li>
+<li><strong>显式命令 (Explicit Command)</strong>：根据用户的直接命令激活该流程（例如，“记住这一点”）。</li>
+</ul>
+<p>触发器的选择涉及成本与保真度之间的直接权衡。频繁的生成（如实时生成）可以确保记忆高度详细且新鲜，捕获到对话的每一个细微差别。然而，这会带来高昂的 LLM 和数据库成本，且处理不当还会引入延迟。而不频繁的生成（如在会话结束时）则经济得多，但存在创建低保真度记忆的风险，因为 LLM 必须一次性总结大得多的对话块。此外，你还需要注意，确保记忆管理器不会多次重复处理相同的事件，因为那会引入不必要的成本。</p>
+<h6 id="记忆即工具">记忆即工具</h6>
+<p>Memory-as-a-Tool</p>
+<p>一种更高级的方法是允许智能体<strong>自行决定</strong>何时创建记忆。在这种模式下，记忆生成被封装为一个工具（例如 <code>create_memory</code>）；该工具的定义应当界定哪些类型的信息应被视为有意义的。随后，智能体可以分析对话，并在识别出有必要持久化的有意义信息时，自主决定调用该工具。<strong>这把识别“有意义信息”的责任从外部记忆管理器转移到了智能体本身（从而也转移到了作为开发者的你身上）</strong>。</p>
+<p>例如，在 ADK 中，你可以通过将记忆生成代码打包进一个工具（Tool）来实现这一点，智能体在其认为对话有必要持久化时会决定调用该工具。你可以将会话（Session）发送给 Memory Bank，Memory Bank 将会从对话历史中提取并巩固记忆：</p>
+<p>Snippet 8: ADK agent using a custom tool to trigger memory generation. Memory Bank will extract and consolidate the memories.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> google.adk.agents <span class="keyword">import</span> LlmAgent</span><br><span class="line"><span class="keyword">from</span> google.adk.memory <span class="keyword">import</span> VertexAiMemoryBankService</span><br><span class="line"><span class="keyword">from</span> google.adk.runners <span class="keyword">import</span> Runner</span><br><span class="line"><span class="keyword">from</span> google.adk.tools <span class="keyword">import</span> ToolContext</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">generate_memories</span>(<span class="params">tool_context: ToolContext</span>):</span><br><span class="line">  <span class="string">&quot;&quot;&quot;Triggers memory generation to remember the session.&quot;&quot;&quot;</span></span><br><span class="line">  <span class="comment"># Option 1: Extract memories from the complete conversation history using the</span></span><br><span class="line">  <span class="comment"># ADK memory service.</span></span><br><span class="line">  tool_context._invocation_context.memory_service.add_session_to_memory(</span><br><span class="line">    session)</span><br><span class="line">  <span class="comment"># Option 2: Extract memories from the last conversation turn.</span></span><br><span class="line">  client.agent_engines.memories.generate(</span><br><span class="line">    name=<span class="string">&quot;projects/.../locations/...reasoningEngines/...&quot;</span>,</span><br><span class="line">    direct_contents_source=&#123;</span><br><span class="line">      <span class="string">&quot;events&quot;</span>: [</span><br><span class="line">        &#123;<span class="string">&quot;content&quot;</span>: tool_context._invocation_context.user_content&#125;</span><br><span class="line">      ]</span><br><span class="line">    &#125;,</span><br><span class="line">    scope=&#123;</span><br><span class="line">      <span class="string">&quot;user_id&quot;</span>: tool_context._invocation_context.user_id,</span><br><span class="line">      <span class="string">&quot;app_name&quot;</span>: tool_context._invocation_context.app_name</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="comment"># Generate memories in the background</span></span><br><span class="line">    config=&#123;<span class="string">&quot;wait_for_completion&quot;</span>: <span class="literal">False</span>&#125;</span><br><span class="line">  )</span><br><span class="line">  <span class="keyword">return</span> &#123;<span class="string">&quot;status&quot;</span>: <span class="string">&quot;success&quot;</span>&#125;</span><br><span class="line">agent = LlmAgent(</span><br><span class="line">  ...,</span><br><span class="line">  tools=[generate_memories]</span><br><span class="line">)</span><br><span class="line">runner = Runner(</span><br><span class="line">  agent=agent,</span><br><span class="line">  app_name=APP_NAME,</span><br><span class="line">  session_service=session_service,</span><br><span class="line">  memory_service=VertexAiMemoryBankService(</span><br><span class="line">    agent_engine_id=AGENT_ENGINE_ID,</span><br><span class="line">    project=PROJECT,</span><br><span class="line">    location=LOCATION</span><br><span class="line">  )</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>个人注：<strong>Option 1 和 Option 2 只是硬编码在同一个函数里的两段“示例备选代码”</strong>（所以它们被注释为了 Option 1 和 Option 2）。在实际丢给 <code>LlmAgent</code> 运行之前，你必须通过上述三种方式之一，把它们改造成具有明确触发逻辑的生产级代码。</p>
+</blockquote>
+<p>另一种方法是利用内部记忆，由智能体主动决定从对话中记住什么。在这一工作流中，智能体负责提取关键信息。随后，这些提取出的记忆可以有选择性地发送给 Agent Engine Memory Bank，以便与用户现有的记忆进行巩固：</p>
+<p>Snippet 9: ADK agent using a custom tool to extract memories from the conversation and trigger consolidation with Agent Engine Memory Bank. Unlike Snippet 8, the agent is responsible for extracting memories, not Memory Bank.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">extract_memories</span>(<span class="params">query: <span class="built_in">str</span>, tool_context: ToolContext</span>):</span><br><span class="line">  <span class="string">&quot;&quot;&quot;Triggers memory generation to remember information.</span></span><br><span class="line"><span class="string">Args:</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line">  query: Meaningful information that should be persisted about the user.</span><br><span class="line">  client.agent_engines.memories.generate(</span><br><span class="line">    name=<span class="string">&quot;projects/.../locations/...reasoningEngines/...&quot;</span>,</span><br><span class="line">    <span class="comment"># The meaningful information is already extracted from the conversation, so we</span></span><br><span class="line">    <span class="comment"># just want to consolidate it with existing memories for the same user.</span></span><br><span class="line">    direct_memories_source=&#123;</span><br><span class="line">      <span class="string">&quot;direct_memories&quot;</span>: [&#123;<span class="string">&quot;fact&quot;</span>: query&#125;]</span><br><span class="line">    &#125;,</span><br><span class="line">    scope=&#123;</span><br><span class="line">      <span class="string">&quot;user_id&quot;</span>: tool_context._invocation_context.user_id,</span><br><span class="line">      <span class="string">&quot;app_name&quot;</span>: tool_context._invocation_context.app_name</span><br><span class="line">    &#125;,</span><br><span class="line">    config=&#123;<span class="string">&quot;wait_for_completion&quot;</span>: <span class="literal">False</span>&#125;</span><br><span class="line">  )</span><br><span class="line">  <span class="keyword">return</span> &#123;<span class="string">&quot;status&quot;</span>: <span class="string">&quot;success&quot;</span>&#125;</span><br><span class="line">agent = LlmAgent(</span><br><span class="line">  ...,</span><br><span class="line">  tools=[extract_memories]</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<h6 id="后台操作-vs-阻塞操作">后台操作 vs. 阻塞操作</h6>
+<p>Background vs. Blocking Operations</p>
+<p>记忆生成是一项昂贵的操作，需要消耗 LLM 调用和数据库写入。对于生产环境中的智能体，记忆生成几乎总是应当作为后台进程异步处理。</p>
+<p>在智能体向用户发送回复之后，记忆生成管道可以并行运行，而不会阻塞用户体验。这种解耦对于保持智能体的高效和快速响应至关重要。如果采用阻塞（或同步）方法，即用户必须等待记忆写入完成才能收到回复，将会造成不可接受的缓慢且令人沮丧的用户体验。因此，这要求记忆生成必须在一个在架构上与智能体核心运行时相分离的服务中进行。</p>
+<h5 id="记忆检索">记忆检索</h5>
+<p>Memory Retrieval</p>
+<p>在建立了记忆生成机制后，你的核心关注点可以转向检索（Retrieval）这一关键任务。智能的检索策略对于智能体的性能至关重要，它涵盖了关于应该检索哪些记忆以及何时检索它们的决策。</p>
+<p>检索记忆的策略很大程度上取决于记忆的组织方式。对于<strong>结构化用户画像</strong>，检索通常是对完整画像或特定属性的直接查找。然而，对于记忆集合（Collection）而言，检索则是一个复杂得多的搜索问题。其目标是从庞大的非结构化或半结构化数据池中，发掘出最贴切、概念上最相关的探究信息。本节所讨论的策略正是为了解决记忆集合中这一复杂的检索挑战而设计的。</p>
+<p><strong>记忆检索旨在寻找与当前对话最相关的记忆</strong>。高效的检索策略至关重要：提供不相关的记忆会干扰模型并降低其回复质量，而找到完美的上下文片段则能带来令人惊叹的智能交互。核心挑战在于<strong>在严格的延迟预算内平衡记忆的“实用性”</strong>。</p>
+<p>高级记忆系统超越了简单的搜索，会从多个维度对潜在记忆进行评估评分，以找到最佳匹配：</p>
+<ul>
+<li><strong>相关性（语义相似度）</strong>：这条记忆与当前对话在概念上的关联度有多高？</li>
+<li><strong>时效性（基于时间）</strong>：这条记忆是多久前创建的？</li>
+<li><strong>重要性（显著程度）</strong>：总体而言，这条记忆有多关键？与相关性不同，记忆的“重要性”通常是在生成阶段就定义好的。</li>
+</ul>
+<p>仅仅依赖基于向量的相关性是一个常见的陷阱。相似度评分可能会使那些在概念上相似、但陈旧或琐碎的记忆浮出水面。最有效的策略是<strong>结合这三个维度评分的混合方法</strong>。</p>
+<p>对于准确性至关重要的应用，可以使用查询重写（Query Rewriting）、重排（Reranking）或专用检索器（Specialized Retrievers）等方法来精细化检索。然而，这些技术计算成本高昂且会带来显着的延迟，因此不适合大多数实时应用。在必须使用这些复杂算法且记忆不会迅速过时的场景下，缓存层（Caching Layer）是一种有效的缓解手段。缓存允许将高能耗的检索查询结果临时存储起来，从而在后续的相同请求中绕过高延迟成本。</p>
+<ul>
+<li>在<strong>查询重写</strong>中，可以使用 LLM 来改进搜索查询本身。这可能包括将用户模糊的输入重写为更精确的查询，或者将单个查询扩展为多个相关的查询，以捕获主题的不同侧面。虽然这能显著提高初始搜索结果的质量，但由于在流程开始时增加了一次额外的 LLM 调用，因此会带来延迟。</li>
+<li>在<strong>重排</strong>中，初始检索先通过相似度搜索获取一个范围较广的候选记忆集（例如前 50 个结果）。随后，利用 LLM 对这组较小的集合进行重新评估和重新排序，以生成更准确的最终列表。</li>
+<li>最后，你可以通过微调（Fine-tuning）来训练<strong>专用的检索器</strong>。然而，这需要获取标注数据，并且会大幅增加成本。</li>
+</ul>
+<p>归根结底，**实现优秀检索的最佳途径始于更好的记忆生成。**确保记忆语料库具备高质量且不含无关信息，是保证任何检索到的记忆集都有所帮助的最有效方法。</p>
+<h6 id="检索时机">检索时机</h6>
+<p>Timing for Retrieval</p>
+<p>关于检索的最后一项架构决策是何时去检索记忆。一种方法是<strong>主动检索（Proactive Retrieval）</strong>，即在每轮交互开始时自动加载记忆。这可以确保上下文随时可用，但对于不需要访问记忆的交互轮次，会引入不必要的延迟。由于记忆在单轮交互中保持静态，因此可以通过高效缓存来缓解这一性能开销。</p>
+<p>例如，你可以使用内置的 <code>PreloadMemoryTool</code> 或自定义回调在 ADK 中实现主动检索：</p>
+<p>Snippet 10: Retrieve memories at the start of every turn with ADK using a built-in tool or custom callback</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Option 1: Use the built-in PreloadMemoryTool which retrieves memories with</span></span><br><span class="line">similarity search every turn.</span><br><span class="line">agent = LlmAgent(</span><br><span class="line">  ...,</span><br><span class="line">  tools=[adk.tools.preload_memory_tool.PreloadMemoryTool()]</span><br><span class="line">)</span><br><span class="line"><span class="comment"># Option 2: Use a custom callback to have more control over how memories</span></span><br><span class="line">are retrieved.</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">retrieve_memories_callback</span>(<span class="params">callback_context, llm_request</span>):</span><br><span class="line">  user_id = callback_context._invocation_context.user_id</span><br><span class="line">  app_name = callback_context._invocation_context.app_name</span><br><span class="line">  response = client.agent_engines.memories.retrieve(</span><br><span class="line">    name=<span class="string">&quot;projects/.../locations/...reasoningEngines/...&quot;</span>,</span><br><span class="line">    scope=&#123;</span><br><span class="line">      <span class="string">&quot;user_id&quot;</span>: user_id,</span><br><span class="line">      <span class="string">&quot;app_name&quot;</span>: app_name</span><br><span class="line">    &#125;</span><br><span class="line">  )</span><br><span class="line">  memories = [<span class="string">f&quot;* <span class="subst">&#123;memory.memory.fact&#125;</span>&quot;</span> <span class="keyword">for</span> memory <span class="keyword">in</span> <span class="built_in">list</span>(response)]</span><br><span class="line">  <span class="keyword">if</span> <span class="keyword">not</span> memories:</span><br><span class="line">    <span class="comment"># No memories to add to System Instructions.</span></span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">  <span class="comment"># Append formatted memories to the System Instructions</span></span><br><span class="line">  llm_request.config.system_instruction += <span class="string">&quot;\nHere is information that you have</span></span><br><span class="line"><span class="string">  about the user:\n&quot;</span></span><br><span class="line">  llm_request.config.system_instruction += <span class="string">&quot;\n&quot;</span>.join(memories)</span><br><span class="line">  agent = LlmAgent(</span><br><span class="line">    ...,</span><br><span class="line">    before_model_callback=retrieve_memories_callback,</span><br><span class="line">  )</span><br></pre></td></tr></table></figure>
+<p>另一种选择是使用<strong>响应式检索（Reactive Retrieval，即“记忆即工具”）</strong>，在这种模式下，智能体被赋予一个查询其记忆的工具，由其自行决定何时检索上下文。这种方法更高效且更具鲁棒性，但需要额外进行一次 LLM 调用，从而增加了延迟和成本；然而，由于只有在必要时才会检索记忆，因此产生延迟开销的频率较低。此外，智能体可能无法提前获知是否存在相关的可检索信息。不过，这一问题可以通过让智能体知晓可用的记忆类型来缓解（例如，如果你使用自定义工具，可以在工具的描述中进行说明），从而使其在决定何时发起查询时能够做出更明智的决策。</p>
+<p>Snippet 11: Configure your ADK agent to decide when memories should be retrieved using a built-in or custom tool</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Option 1: Use the built-in LoadMemory.</span></span><br><span class="line">agent = LlmAgent(</span><br><span class="line">  ...,</span><br><span class="line">  tools=[adk.tools.load_memory_tool.LoadMemoryTool()],</span><br><span class="line">)</span><br><span class="line"><span class="comment"># Option 2: Use a Custom tool where you can describe what type of information</span></span><br><span class="line"><span class="comment"># might be available.</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">load_memory</span>(<span class="params">query: <span class="built_in">str</span>, tool_context: ToolContext</span>):</span><br><span class="line">  <span class="string">&quot;&quot;&quot;Retrieves memories for the user.</span></span><br><span class="line"><span class="string">The following types of information may be stored for the user:</span></span><br><span class="line"><span class="string">* User preferences, like the user&#x27;s favorite foods.</span></span><br><span class="line"><span class="string">...</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line">  <span class="comment"># Retrieve memories using similarity search.</span></span><br><span class="line">  response = tool_context.search_memory(query)</span><br><span class="line">  <span class="keyword">return</span> response.memories</span><br><span class="line">agent = LlmAgent(</span><br><span class="line">  ...,</span><br><span class="line">  tools=[load_memory],</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<h5 id="结合记忆进行推理">结合记忆进行推理</h5>
+<p>Inference with Memories</p>
+<p>一旦检索到相关的记忆，最后一步就是将它们策略性地放入模型的上下文窗口中。这是一个至关重要的过程：记忆的放置位置会显著影响 LLM 的推理、影响运行成本，并最终决定最终回答的质量。</p>
+<p>呈现记忆的主要方式是将它们追加到<strong>系统指令（System Instructions）<strong>中，或者将其注入到</strong>对话历史</strong>中。在实践中，混合策略往往是最有效的：将系统提示词用于应当始终存在的稳定的、全局性记忆（如用户画像）；而在其他情况下，针对仅与当前对话即时上下文相关的短暂的情景记忆，则使用对话注入或“记忆即工具”的方式。这在持久上下文的需求与即时信息检索的灵活性之间取得了平衡。</p>
+<h6 id="系统指令中的记忆">系统指令中的记忆</h6>
+<p>Memories in the System Instructions</p>
+<p>在推理中使用记忆的一个简单选择是将记忆追加到系统指令中。该方法通过将检索到的记忆与前导词直接追加到系统提示词中，将其框架化为整个交互的基础上下文，从而保持了对话历史的干净。例如，你可以使用 Jinja 来动态地将记忆添加到你的系统指令中：</p>
+<p>Snippet 12: Build your system instruction using retrieved memories</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> jinja2 <span class="keyword">import</span> Template</span><br><span class="line">template = Template(<span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">&#123;&#123; system_instructions &#125;&#125;&#125;</span></span><br><span class="line"><span class="string">&lt;MEMORIES&gt;</span></span><br><span class="line"><span class="string">Here is some information about the user:</span></span><br><span class="line"><span class="string">&#123;% for retrieved_memory in data %&#125;* &#123;&#123; retrieved_memory.memory.fact &#125;&#125;</span></span><br><span class="line"><span class="string">&#123;% endfor %&#125;&lt;/MEMORIES&gt;</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span>)</span><br><span class="line">prompt = template.render(</span><br><span class="line">  system_instructions=system_instructions,</span><br><span class="line">  data=retrieved_memories</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>在系统指令中包含记忆会赋予记忆极高的权威性，将上下文与对话清晰地隔离开来，并且非常适合像用户画像这样稳定的、“全局性”的信息。然而，这也存在“过度引导”的风险，智能体可能会试图将每个话题都与核心指令中的记忆联系起来，即使在不合适的场景下也是如此。</p>
+<p>这种架构模式引入了几项限制：</p>
+<ol>
+<li>它要求智能体框架支持在每次调用 LLM 之前动态构建系统提示词，而这一功能并不总是开箱即用。</li>
+<li>这一模式与“记忆即工具”不兼容，因为系统提示词必须在 LLM 决定调用记忆检索工具之前完成定型。</li>
+<li>它很难处理非文本记忆。大多数 LLM 的系统指令仅接受文本，这使得直接在提示词中嵌入图像或音频等多模态内容变得充满挑战。</li>
+</ol>
+<h6 id="对话历史中的记忆">对话历史中的记忆</h6>
+<p>Memories in the Conversation History</p>
+<p>在这种方法中，检索到的记忆被直接注入到逐轮进行的对话交互中。记忆既可以放置在完整对话历史的前面，也可以紧接在最新的用户查询之前。</p>
+<p>然而，这种方法可能会引入噪点，增加 Token 成本，并且在检索到的记忆不相关时可能会干扰模型。其主要风险在于对话混淆（ Dialogue Injection ），即模型可能会错误地将某条记忆视为对话中真正说过的话。此外，你还需要更加注意注入到对话中的记忆的<strong>人称视角</strong>；例如，如果你使用的是“user（用户）”角色和用户级的记忆，那么记忆应当以第一人称的视角来撰写。</p>
+<p>将记忆注入对话历史的一种特例是通过工具调用来检索记忆。这些记忆将作为工具输出的一部分，直接包含在对话中。</p>
+<p>Snippet 13: Retrieve memories as a tool, which directly inserts memories into the conversation</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">load_memory</span>(<span class="params">query: <span class="built_in">str</span>, tool_context: ToolContext</span>):</span><br><span class="line">  <span class="string">&quot;&quot;&quot;Loads memories into the conversation history...&quot;&quot;&quot;</span></span><br><span class="line">  response = tool_context.search_memory(query)</span><br><span class="line">  <span class="keyword">return</span> response.memories</span><br><span class="line">agent = LlmAgent(</span><br><span class="line">  ...,</span><br><span class="line">  tools=[load_memory],</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<h5 id="程序性记忆">程序性记忆</h5>
+<p>Procedural Memories</p>
+<p>本白皮书主要聚焦于陈述性记忆，这一侧重点也反映了当前商业记忆领域的现状。大多数记忆管理平台也都是为这种陈述性方法而设计的，擅长提取、存储和检索“是什么（what）”—— 即事实、历史和用户数据。</p>
+<p>然而，这些系统并不是为了管理<strong>程序性记忆</strong>而设计的，而程序性记忆是改进智能体工作流和推理能力的一种机制。存储“怎么做（how）”并不是一个信息检索问题，而是一个推理增强（Reasoning Augmentation）问题。管理这种“知道怎么做”需要一套完全独立且专门的算法生命周期，尽管它在宏观结构上与陈述性记忆类似：</p>
+<ol>
+<li><strong>提取 (Extraction)</strong>：程序性提取需要专门的提示词，旨在从一次成功的交互中提炼出一套可复用的策略或“复盘手册（Playbook）”，而不仅仅是捕获某个事实或有意义的信息。</li>
+<li><strong>巩固 (Consolidation)</strong>：陈述性巩固合并的是相关事实（“是什么”），而程序性巩固维护的则是工作流本身（“怎么做”）。这是一个主动的逻辑管理过程，侧重于将新的成功方法与现有的“最佳实践”相融合，修补已知计划中的缺陷步骤，并修剪掉过时或低效的程序。</li>
+<li><strong>检索 (Retrieval)</strong>：其目标不是检索数据来回答问题，而是检索一套能够指导智能体如何执行复杂任务的计划。因此，程序性记忆可能拥有与陈述性记忆不同的数据模式（Data Schema）。</li>
+</ol>
+<p>智能体这种让自身逻辑“自我演进”的能力，自然会让人联想到一种常见的适配方法：<strong>微调（Fine-tuning）</strong>——通常是通过来自人类反馈的强化学习（RLHF）。虽然这两个过程都旨在改善智能体的行为，但它们的机制和应用有着本质的不同。微调是一个相对缓慢、离线的训练过程，它会改变模型的权重。而程序性记忆则通过动态地将正确的“复盘手册”注入到提示词中，提供了快速、在线的适配，通过上下文学习（In-Context Learning）来引导智能体，而不需要进行任何微调。</p>
+<h5 id="测试与评估">测试与评估</h5>
+<p>Testing and Evaluation</p>
+<p>现在你已经拥有了一个具备记忆能力的智能体，你应当通过全面的质量和评估测试来验证其行为。评估智能体的记忆是一个多层面的过程。评估需要验证智能体是否记住了正确的事情（质量）、在需要时能否找到这些记忆（检索），以及使用这些记忆是否切实帮助它实现了目标（任务成功率）。虽然学术界专注于可复现的基准测试，但工业界的评估则聚焦于记忆如何直接影响生产级智能体的性能和可用性。</p>
+<h6 id="记忆生成质量指标">记忆生成质量指标</h6>
+<p>记忆生成质量指标（Memory generation quality metrics）用于评估记忆内容本身，回答以下问题：“智能体是否记住了正确的事情？”这通常是通过将智能体生成的记忆与人工创建的理想记忆“黄金数据集（Golden Set）”进行对比来衡量的。</p>
+<ul>
+<li><strong>精准率 (Precision)</strong>：在智能体创建的所有记忆中，准确且相关的记忆占多大比例？高精准率能够防止记忆系统“过于积极”地用无关的噪点去污染知识库。</li>
+<li><strong>召回率 (Recall)</strong>：在智能体本应从源数据中记住的所有相关事实中，它实际捕获到了多大比例？高召回率可以确保智能体不会漏掉关键信息。</li>
+<li><strong>F1 分数 (F1-Score)</strong>：精准率和召回率的调和平均数，提供了一个单一且平衡的质量衡量标准。</li>
+</ul>
+<h6 id="记忆检索性能指标">记忆检索性能指标</h6>
+<p>记忆检索性能指标（Memory retrieval performance metrics）用于评估智能体在正确的时间找到正确记忆的能力。</p>
+<ul>
+<li><strong>Recall@K</strong>：当需要某条记忆时，能否在检索到的前 “K” 个结果中找到正确的那一条？这是衡量检索系统准确性的首要指标。</li>
+<li><strong>延迟 (Latency)</strong>：检索处于智能体回复的“热路径（Hot Path）”上。整个检索过程必须在严格的延迟预算（例如 200 毫秒以内）内执行完毕，以避免降低用户体验。</li>
+</ul>
+<h6 id="端到端任务成功率指标">端到端任务成功率指标</h6>
+<p>端到端任务成功率指标（End-to-End task success metrics）是终极测试，回答以下问题：“记忆是否真正帮助智能体把工作做得更好？”这通过评估智能体在使用其记忆时在下游任务中的表现来衡量，通常由一个 LLM 充当“裁判（Judge）”，将智能体的最终输出与黄金标准答案进行对比。裁判会判定智能体的回答是否准确，从而有效衡量记忆系统对最终结果的贡献程度。</p>
+<p>评估不是一劳永逸的事件，它是持续改进的引擎。上述指标提供了发现薄弱环节并随着时间的推移系统性增强记忆系统所需的数据。这个迭代过程包括建立基线、分析失败案例、调优系统（例如精炼提示词、调整检索算法）以及重新评估以衡量更改带来的影响。</p>
+<p>虽然上述指标专注于质量，但生产就绪度（Production-readiness）同样取决于性能。对于每个评估领域，测量底层算法的延迟以及它们在负载下的扩展能力都至关重要。在“热路径”上检索记忆可能有着严格的、亚秒级的延迟预算。而生成和巩固虽然通常是异步的，但必须具备足够的吞吐量才能跟上用户的需求。归根结底，一个成功的记忆系统必须足够智能、高效且鲁棒，才能胜任现实世界的使用。</p>
+<h5 id="记忆的生产环境考量">记忆的生产环境考量</h5>
+<p>Production considerations for Memory</p>
+<p>除了性能之外，将具备记忆能力的智能体从原型过渡到生产环境，还需要将重心放在企业级的架构问题上。这一转变对可扩展性、弹性和安全性提出了严苛的要求。一个生产级别的系统不仅要设计得足够智能，还要具备企业级的鲁棒性。</p>
+<p>为了确保计算密集型的记忆生成过程永远不会阻塞用户体验，鲁棒的架构必须将记忆处理与主应用程序逻辑进行解耦。虽然这是一个事件驱动的模式，但它通常是通过向专用的记忆服务发起直接、非阻塞的 API 调用来实现的，而不是通过自行管理的消息队列。其流程如下：</p>
+<ol>
+<li><strong>智能体推送数据</strong>：在发生相关事件（例如会话结束）后，智能体应用程序向记忆管理器发起非阻塞的 API 调用，“推送”原始源数据（如对话笔录）以供处理。</li>
+<li><strong>记忆管理器在后台处理</strong>：记忆管理器服务会立即确认（Acknowledge）该请求，并将生成任务放入其自身的内部托管队列中。随后，它将全权负责异步的高能耗工作：发起必要的 LLM 调用以提取、巩固并格式化记忆。管理器可能会延迟处理这些事件，直到过去了一段特定的非活跃时间。</li>
+<li><strong>记忆持久化</strong>：该服务将最终的记忆（可能是新条目，也可能是对现有条目的更新）写入专用的持久数据库。对于托管型的记忆管理器，这种存储功能是内置的。</li>
+<li><strong>智能体检索记忆</strong>：当主智能体应用程序需要为新的用户交互检索上下文时，它可以直接查询该记忆存储。</li>
+</ol>
+<p>这种<strong>基于服务的非阻塞方法</strong>可以确保记忆管道中的故障或延迟不会直接影响面向用户的应用程序，从而使系统具备更强的弹性。它也有助于在<strong>在线（实时）生成</strong>与<strong>离线（批处理）处理</strong>之间做出抉择——前者是保持对话新鲜度的理想之选，后者则对利用历史数据填充系统非常有用。</p>
+<p>随着应用程序的增长，记忆系统必须能够毫无差错地处理高频事件。考虑到并发请求的存在，当多个事件尝试修改同一条记忆时，系统必须防止死锁或竞态条件（Race Conditions）。你可以使用事务型数据库操作或乐观锁来缓解竞态条件；然而，当多个请求试图修改相同的记忆时，这可能会引入排队或限流。一个鲁棒的消息队列对于缓冲大量事件、防止记忆生成服务被压垮至关重要。</p>
+<p>记忆服务还必须对瞬时错误具备弹性（故障处理）。如果 LLM 调用失败，系统应当使用带有指数退避（Exponential Backoff）的重试机制，并将持续的失败路由到死信队列（Dead-letter Queue）中进行分析。</p>
+<p>对于全球化应用，记忆管理器必须使用具备内置多区域复制（Multi-region Replication）功能的数据库，以确保低延迟和高可用性。客户端复制是不可行的，因为记忆巩固需要一个单一的、事务一致的数据视图来防止冲突。因此，记忆系统必须在内部处理复制，在向开发人员呈现单一逻辑数据存储的同时，确保底层知识库的全球一致性。</p>
+<p>像 Agent Engine Memory Bank 这样的托管记忆系统应当能够帮助你解决这些生产环境中的考量，从而让你能够专注于核心的智能体逻辑。</p>
+<h6 id="隐私与安全风险">隐私与安全风险</h6>
+<p>Privacy and security risks</p>
+<p><strong>记忆衍生自并包含用户数据，因此它们需要严格的隐私和安全控制</strong>。一个有用的比喻是将系统的记忆视为由专业档案管理员管理的、安全的实体企业档案库，其工作是在保护公司的同时保存有价值的知识。</p>
+<p>该档案库的首要原则是<strong>数据隔离</strong>。正如档案管理员绝不会将不同部门的机密文件混在一起一样，记忆必须在用户或租户级别进行严格隔离。服务于某一用户的智能体绝不能访问另一个用户的记忆，这必须通过限制性的访问控制列表（ACL）来强制执行。此外，用户必须对自己的数据拥有程序化的控制权，并拥有明确的选项来选择退出记忆生成，或请求从档案库中删除其所有文件。</p>
+<p>在归档任何文件之前，档案管理员都会执行关键的安全步骤。首先，他们会细致地检查每一页，以<strong>脱敏敏感的个人身份信息（PII）</strong>，确保在保存知识的同时不会带来合规隐患。其次，档案管理员经过专门培训，能够发现并丢弃伪造或故意误导的文件——这是防范记忆毒化（Memory Poisoning）的一种安全机制。同样地，系统必须在将信息提交到长期记忆之前对其进行验证和清洗，以防止恶意用户通过提示词注入（Prompt Injection）来破坏智能体的持久化知识。系统必须包含诸如 Model Armor 之类的安全防护机制，在信息写入长期记忆之前对其进行验证和清洗。</p>
+<p>此外，如果多个用户共享同一组记忆，例如在处理<strong>程序性记忆</strong>（用于教导智能体如何做某事）时，会存在<strong>数据外泄风险</strong>。例如，如果来自一个用户的程序性记忆被用作另一个用户的示例——就像在全公司范围内共享一份备忘录一样——档案管理员必须首先进行严格的匿名化处理，以防止敏感信息跨越用户边界发生泄漏。</p>
+<h3 id="结论">结论</h3>
+<p>本白皮书探讨了上下文工程（Context Engineering）这一学科，并重点关注了其两个核心组件：<strong>会话（Sessions）<strong>和</strong>记忆（Memory）</strong>。从简单的对话轮次演变为持久、可执行的智能体的整个旅程都受到这一实践的管辖，它涉及将所有必要的信息——包括对话历史、记忆和外部知识——动态地组合到 LLM 的上下文窗口中。这整个过程都依赖于两个独立但又相互关联的系统之间的协同作用：即时的会话与长期的记忆。</p>
+<ul>
+<li>会话（Session）主导着“当下”，充当单次对话的低延迟、按时间顺序排列的容器。它的主要挑战在于性能和安全性，需要低延迟的访问和严格的隔离。为了防止上下文窗口溢出和延迟，你必须使用诸如基于 Token 的截断或递归摘要等提取技术，来压缩会话历史或单次请求载荷中的内容。此外，安全性至关重要，要求在持久化会话数据之前必须进行 PII 脱敏。</li>
+<li><strong>记忆（Memory）<strong>是长期个性化的引擎，也是跨多个会话实现持久化的核心机制。它超越了 RAG（RAG 让智能体成为事实领域的专家），从而让智能体成为用户领域的专家。记忆是一个主动的、由 LLM 驱动的 ETL 管道——负责提取、巩固和检索——它从对话历史中提炼出最重要的信息。通过</strong>提取</strong>，系统将最关键的信息浓缩为核心记忆点。随后，<strong>巩固</strong>过程维护这些新信息并将其与现有语料库进行整合，解决冲突并删除冗余数据，以确保知识库的连贯性。为了保持清爽、敏捷的用户体验，在智能体做出回复后，记忆生成必须作为异步的后台进程运行。</li>
+</ul>
+<p>通过追踪记忆溯源并采用防范记忆毒化等风险的安全防护措施，开发人员能够构建出值得信赖、具备自适应能力的助手，真正做到与用户共同学习和成长。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/05/19/%E6%99%BA%E8%83%BD%E4%BD%93%E5%B7%A5%E5%85%B7%E5%8F%8A%E4%B8%8E%20MCP%20%E7%9A%84%E4%BA%92%E6%93%8D%E4%BD%9C%E6%80%A7/" rel="prev" title="智能体工具及与 MCP 的互操作性">
+                  <i class="fa fa-angle-left"></i> 智能体工具及与 MCP 的互操作性
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+    <div id="search-container" style="margin: 20px auto; max-width: 600px;">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js"></script>
+      <div id="search"></div>
+      <script>
+        window.addEventListener('DOMContentLoaded', (event) => {
+            new PagefindUI({ 
+                element: "#search", 
+                showImages: false,
+                translations: {
+                    placeholder: "搜搜看...",
+                    clear_search: "清除",
+                    load_more: "加载更多",
+                    search_label: "搜索",
+                    filters_label: "筛选",
+                    zero_results: "未找到关于 [SEARCH_TERM] 的结果",
+                    many_results: "找到 [COUNT] 条关于 [SEARCH_TERM] 的结果",
+                    one_result: "找到 1 条关于 [SEARCH_TERM] 的结果",
+                    searching: "正在搜索..."
+                }
+            });
+        });
+      </script>
+    </div>
+  
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>
