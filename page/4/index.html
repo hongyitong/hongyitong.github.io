@@ -179,7 +179,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives">
-          <span class="site-state-item-count">270</span>
+          <span class="site-state-item-count">271</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -207,6 +207,115 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/02/25/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B10%E3%80%81%E8%A7%A3%E8%AF%BB%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%9A%84%E5%AD%A6%E4%B9%A0%E6%88%90%E6%9E%9C/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/02/25/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B10%E3%80%81%E8%A7%A3%E8%AF%BB%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%9A%84%E5%AD%A6%E4%B9%A0%E6%88%90%E6%9E%9C/" class="post-title-link" itemprop="url">《DEEP LEARNING with Python》第十章 解读卷积神经网络的学习成果</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-02-25 00:00:00" itemprop="dateCreated datePublished" datetime="2026-02-25T00:00:00+08:00">2026-02-25</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p><strong>第十章 解读卷积神经网络的学习成果</strong></p>
+<p>Interpreting what ConvNets learn</p>
+<p><strong>运行代码</strong></p>
+<p><a target="_blank" rel="noopener" href="https://colab.research.google.com/github/fchollet/deep-learning-with-python-notebooks/blob/master/chapter10_interpreting-what-convnets-learn.ipynb">在 Colab 上运行</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/fchollet/deep-learning-with-python-notebooks">在 GitHub 上查看</a></p>
+<p>本章内容</p>
+<ul>
+<li>解释卷积神经网络如何分解输入图像</li>
+<li>可视化卷积神经网络学习到的滤波器</li>
+<li>可视化图像中负责特定分类决策的区域</li>
+<li>Interpreting how ConvNets decompose an input image</li>
+<li>Visualizing the filters learned by ConvNets</li>
+<li>Visualizing areas in an image responsible for a certain classification decision</li>
+</ul>
+<p>构建计算机视觉应用时，一个根本性问题是可<em>解释性</em>：<em>为什么</em>分类器会认为某张图像中包含冰箱，而你看到的明明是一辆卡车？这在深度学习用于辅助人类专业知识的应用场景中尤为重要，例如医学影像应用。本章将介绍一系列不同的可视化卷积神经网络学习内容和理解其决策的技术。</p>
+<p><strong>人们常说深度学习模型是“黑箱”：它们学习到的表征难以提取并以人类可读的形式呈现。虽然这种说法对某些类型的深度学习模型部分正确，但对卷积神经网络（ConvNets）而言则完全不成立。卷积神经网络学习到的表征非常易于可视化，这很大程度上是因为它们是 <em>对视觉概念的表征</em>（representations of visual concepts）。</strong>自 2013 年以来，人们开发了多种可视化和解释这些表征的技术。我们不会一一介绍，但会重点介绍其中三种最易于理解和使用的方法：</p>
+<ul>
+<li><em>可视化卷积神经网络的中间输出（中间激活值）</em> ——有助于理解连续的卷积神经网络层如何转换其输入，并初步了解各个卷积神经网络滤波器的含义。</li>
+<li><em>可视化卷积神经网络的滤波器</em>——有助于精确理解卷积神经网络中每个滤波器所响应的视觉模式或概念。</li>
+<li><em>可视化图像中类别激活的热图</em>——有助于了解图像中哪些部分被识别为属于特定类别，从而帮助您定位图像中的对象。</li>
+<li><em>Visualizing intermediate ConvNet outputs (intermediate activations)</em> — Useful for understanding how successive ConvNet layers transform their input, and for getting a first idea of the meaning of individual ConvNet filters</li>
+<li><em>Visualizing ConvNets filters</em> — Useful for understanding precisely what visual pattern or concept each filter in a ConvNet is receptive to</li>
+<li><em>Visualizing heatmaps of class activation in an image</em> — Useful for understanding which parts of an image were identified as belonging to a given class, thus allowing you to localize objects in images</li>
+</ul>
+<p>对于第一种方法——激活可视化——你将使用你在第 8 章中从头开始训练的用于解决猫狗分类问题的小型卷积神经网络。对于接下来的两种方法，你将使用预训练的 Xception 模型。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2026/02/25/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B10%E3%80%81%E8%A7%A3%E8%AF%BB%E5%8D%B7%E7%A7%AF%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%9A%84%E5%AD%A6%E4%B9%A0%E6%88%90%E6%9E%9C/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1096,94 +1205,8 @@
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/02/15/%E3%80%8AIntroduction-to-Probability%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Rayman.hung">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="墨语浮生">
-      <meta itemprop="description" content="技术分享、读书心得、心情记录">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | 墨语浮生">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/02/15/%E3%80%8AIntroduction-to-Probability%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" class="post-title-link" itemprop="url">《Introduction to Probability》读书笔记</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-02-15 00:00:00" itemprop="dateCreated datePublished" datetime="2026-02-15T00:00:00+08:00">2026-02-15</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E8%AF%BB%E4%B9%A6%E5%BF%83%E5%BE%97%EF%BC%88%E6%8A%80%E6%9C%AF%EF%BC%89/" itemprop="url" rel="index"><span itemprop="name">读书心得（技术）</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>花了一个半月的时间，终于把《Introduction to Probability》（《概率导论》）读完。机翻并核对后（R部分未核对）的md文件见“书籍翻译”分类。</p>
-<p>前段时间集中看一些文学类书籍，把自己变得太感性了，故而决心转到技术类书籍上来。之前看了很多关于深度学习、大语言模型、统计、数据类的书籍，过程中发现自己对很多概率的基本概念及各类分布处于一知半解和零零碎碎了解的层面，故找到了这本经典的《概率导论》。看完之后，才明白一本数学类的书籍可以编写得这么引人入胜，相比大学期间教材的劝退，这本书通过日常生活的例子和故事，逐渐引入了各种概率概念和分布，让人印象深刻和爱不释手。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2026/02/15/%E3%80%8AIntroduction-to-Probability%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
-    <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/page/3/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/27/">27</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/5/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/page/3/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/28/">28</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/5/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 </div>
