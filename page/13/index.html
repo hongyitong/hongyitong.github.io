@@ -179,7 +179,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives">
-          <span class="site-state-item-count">271</span>
+          <span class="site-state-item-count">272</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -207,6 +207,386 @@
     </div>
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2025/04/13/Hands-On%20Large%20Language%20Models%2012/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2025/04/13/Hands-On%20Large%20Language%20Models%2012/" class="post-title-link" itemprop="url">《Hands-On Large Language Models》第12章 生成模型的微调</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-04-13 00:00:00" itemprop="dateCreated datePublished" datetime="2025-04-13T00:00:00+08:00">2025-04-13</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="第-text12-章-生成模型的微调"><strong>第 <span class="math inline">\(\text{12}\)</span> 章</strong> <strong>生成模型的微调</strong></h2>
+<p>Fine-Tuning Generation Models</p>
+<p>在本章中，我们将采用一个<strong>预训练文本生成模型</strong>，并介绍<strong>微调</strong>它的过程。这一微调步骤是<strong>产生高质量模型的关键</strong>，也是我们<strong>工具箱中</strong>用于使模型<strong>适应特定期望行为</strong>的重要工具。微调使我们能够将模型<strong>适应特定的数据集或领域</strong>。</p>
+<p>在本章中，我们将指导您了解<strong>微调文本生成模型最常用的两种方法</strong>：<strong>有监督微调</strong> (<span class="math inline">\(\text{supervised fine-tuning}\)</span>) 和<strong>偏好调整</strong> (<span class="math inline">\(\text{preference tuning}\)</span>)。我们将探索<strong>微调预训练文本生成模型的变革潜力</strong>，使其成为您应用程序的更有效工具。</p>
+<h3 id="大语言模型-textllm-的三个训练步骤预训练有监督微调和偏好调整">大语言模型 (<span class="math inline">\(\text{LLM}\)</span>) 的三个训练步骤：预训练、有监督微调和偏好调整</h3>
+<p>The Three LLM Training Steps: Pretraining, Supervised Fine-Tuning, and Preference Tuning</p>
+<p>创建高质量大语言模型 (<span class="math inline">\(\text{LLM}\)</span>) 通常有<strong>三个常见步骤</strong>：</p>
+<ol type="1">
+<li><p><strong>语言建模</strong></p>
+<p><span class="math inline">\(\text{Language modeling}\)</span></p>
+<p>创建高质量 <span class="math inline">\(\text{LLM}\)</span> 的<strong>第一步</strong>是使用<strong>一个或多个海量文本数据集</strong>对其进行<strong>预训练</strong>（图 <span class="math inline">\(\text{12}-1\)</span>）。在训练过程中，它尝试<strong>预测下一个词元</strong> (<span class="math inline">\(\text{token}\)</span>)，以准确学习文本中发现的<strong>语言和语义表征</strong>。正如我们在第 <span class="math inline">\(\text{3}\)</span> 章和第 <span class="math inline">\(\text{11}\)</span> 章中看到的那样，这被称为<strong>语言建模</strong>，是一种<strong>自监督方法</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.1.png" alt="F12.1" style="zoom:67%;" /></p></li>
+</ol>
+<p>这会产生一个<strong>基础模型</strong> (<span class="math inline">\(\text{base model}\)</span>)，通常也称为<strong>预训练模型</strong> (<span class="math inline">\(\text{pretrained}\)</span>) 或<strong>基础模型</strong> (<span class="math inline">\(\text{foundation model}\)</span>)。基础模型是训练过程中的一个<strong>关键产物</strong>，但<strong>终端用户</strong>处理起来<strong>比较困难</strong>。这就是为什么<strong>下一步很重要</strong>。</p>
+<ol start="2" type="1">
+<li><p><strong>微调 <span class="math inline">\(\text{1}\)</span> (有监督微调)</strong></p>
+<p><span class="math inline">\(\text{Fine-tuning 1 (supervised fine-tuning)}\)</span></p>
+<p>如果 <span class="math inline">\(\text{LLM}\)</span> 对<strong>指令反应良好并尝试遵循它们</strong>，它们就会更有用。当人类要求模型写一篇文章时，他们期望模型<strong>生成文章</strong>，而不是<strong>列出其他指令</strong>（这可能是基础模型会做的事情）。</p>
+<p>通过<strong>有监督微调 (<span class="math inline">\(\text{SFT}\)</span>)</strong>，我们可以使基础模型<strong>适应遵循指令</strong>。在此微调过程中，<strong>基础模型的参数会更新</strong>，使其<strong>更符合我们的目标任务</strong>，例如<strong>遵循指令</strong>。与预训练模型一样，它也是<strong>使用下一个词元预测进行训练</strong>，但它<strong>不是仅预测下一个词元</strong>，而是<strong>基于用户输入进行预测</strong>（图 <span class="math inline">\(\text{12}-2\)</span>）。</p></li>
+</ol>
+<p><img src="/img3/Hands-On Large Language Models/F12.2.png" alt="F12.1" style="zoom:67%;" /></p>
+<p><span class="math inline">\(\text{SFT}\)</span> 也可用于<strong>其他任务</strong>，例如分类，但<strong>通常用于将基础生成模型转换为指令（或聊天）生成模型</strong>。</p>
+<ol start="3" type="1">
+<li><p><strong>微调 <span class="math inline">\(\text{2}\)</span> (偏好调整)</strong></p>
+<p><span class="math inline">\(\text{Fine-tuning 2 (preference tuning)}\)</span></p>
+<p><strong>最后一步</strong>是<strong>进一步提高模型的质量</strong>，使其<strong>更符合 <span class="math inline">\(\text{AI}\)</span> 安全或人类偏好的预期行为</strong>。这被称为<strong>偏好调整</strong> (<span class="math inline">\(\text{preference tuning}\)</span>)。<strong>偏好调整</strong>是微调的一种形式，顾名思义，它使模型的输出<strong>与我们的偏好对齐</strong>，这些偏好由我们提供给它的数据定义。与 <span class="math inline">\(\text{SFT}\)</span> 一样，它可以<strong>改进原始模型</strong>，但<strong>增加了在训练过程中提炼输出偏好</strong>的好处。这<strong>三个步骤</strong>如图 <span class="math inline">\(\text{12}-3\)</span> 所示，展示了<strong>从一个未经训练的架构开始到以一个经过偏好调整的 <span class="math inline">\(\text{LLM}\)</span> 结束</strong>的整个过程。</p></li>
+</ol>
+<p><img src="/img3/Hands-On Large Language Models/F12.3.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>在本章中，我们使用一个<strong>已经在海量数据集上训练过的基础模型</strong>，并探索如何使用<strong>这两种微调策略</strong>对其进行微调。对于每种方法，我们都从<strong>理论基础</strong>开始，然后将其<strong>应用于实践</strong>。</p>
+<h3 id="有监督微调"><strong>有监督微调</strong></h3>
+<p>Supervised Fine-Tuning (SFT)</p>
+<p>在<strong>大型数据集</strong>上<strong>预训练模型</strong>的目的是使其能够<strong>再现语言及其含义</strong>。在这个过程中，模型学习<strong>完成输入短语</strong>，如图 <span class="math inline">\(\text{12}-4\)</span> 所示。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.4.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>这个例子也说明模型<strong>没有经过遵循指令的训练</strong>，而是会<strong>尝试完成一个问题</strong>而不是回答它（图 <span class="math inline">\(\text{12}-5\)</span>）。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.5.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>我们可以使用这个<strong>基础模型</strong>，并通过<strong>微调</strong>将其<strong>适应某些用例</strong>，例如<strong>遵循指令</strong>。</p>
+<h4 id="完全微调"><strong>完全微调</strong></h4>
+<p>Full Fine-Tuning</p>
+<p>最常见的微调过程是<strong>完全微调</strong> (<span class="math inline">\(\text{full fine-tuning}\)</span>)。与预训练 <span class="math inline">\(\text{LLM}\)</span> 一样，这个过程涉及<strong>更新模型的所有参数</strong>，使其<strong>与您的目标任务保持一致</strong>。主要的区别在于我们现在使用<strong>更小但有标签的数据集</strong>，而预训练过程是在<strong>没有标签的</strong>大型数据集上完成的（图 <span class="math inline">\(\text{12}-6\)</span>）。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.6.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>您可以将<strong>任何有标签的数据</strong>用于完全微调，这也使其成为<strong>学习特定领域表征</strong>的绝佳技术。为了让我们的 <span class="math inline">\(\text{LLM}\)</span> <strong>遵循指令</strong>，我们将需要<strong>问题-回答数据</strong>。如图 <span class="math inline">\(\text{12}-7\)</span> 所示，这些数据是<strong>用户查询</strong>及其<strong>对应的答案</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.7.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>在<strong>完全微调</strong>过程中，模型接收<strong>输入</strong>（指令），并对<strong>输出</strong>（回答）应用<strong>下一个词元预测</strong>。反过来，它将<strong>遵循指令</strong>，而不是生成新的问题。</p>
+<h4 id="参数高效微调"><strong>参数高效微调</strong></h4>
+<p>Parameter-Efficient Fine-Tuning (PEFT)</p>
+<p><strong>更新模型的所有参数</strong>具有<strong>提高其性能的巨大潜力</strong>，但也伴随着<strong>几个缺点</strong>。它<strong>训练成本高昂</strong>，<strong>训练时间缓慢</strong>，并且需要<strong>大量的存储空间</strong>。为了解决这些问题，人们将注意力转向了<strong>参数高效微调 (<span class="math inline">\(\text{PEFT}\)</span>) 替代方案</strong>，这些方案<strong>专注于以更高的计算效率微调预训练模型</strong>。</p>
+<p><strong>适配器</strong></p>
+<p>Adapters</p>
+<p><strong>适配器</strong>是许多基于 <span class="math inline">\(\text{PEFT}\)</span> 的技术的核心组件。该方法提出了 <strong><span class="math inline">\(\text{Transformer}\)</span> 内部的一组附加的模块化组件</strong>，可以对其进行<strong>微调</strong>以<strong>提高模型在特定任务上的性能</strong>，而<strong>无需微调所有模型权重</strong>。这节省了大量的时间和计算资源。</p>
+<p>适配器在论文<strong>《Parameter-efficient transfer learning for NLP》</strong>中得到了描述，该论文表明，<strong>仅微调 <span class="math inline">\(\text{BERT}\)</span> <span class="math inline">\(\text{3.6\%}\)</span> 的参数</strong>即可在任务上<strong>产生与微调所有模型权重相当的性能</strong>。在 <span class="math inline">\(\text{GLUE}\)</span> 基准测试中，作者表明他们的性能达到了<strong>完全微调性能的 <span class="math inline">\(\text{0.4\%}\)</span> 以内</strong>。在一<strong>个 <span class="math inline">\(\text{Transformer}\)</span> 块</strong>中，该论文提出的架构将<strong>适配器</strong>放置在<strong>注意力层</strong>和<strong>前馈神经网络</strong>之后，如图 <span class="math inline">\(\text{12}-8\)</span> 所示。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.8.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>然而，<strong>仅更改一个 <span class="math inline">\(\text{Transformer}\)</span> 块是不够的</strong>，因此这些组件是<strong>模型中每个块的一部分</strong>，如图 <span class="math inline">\(\text{12}-9\)</span> 所示。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.9.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>像这样查看<strong>模型中所有的适配器组件</strong>，使我们能够看到<strong>单个适配器</strong>，如图 <span class="math inline">\(\text{12}-10\)</span> 所示，它是<strong>跨越模型所有块的这些组件的集合</strong>。<strong>适配器 <span class="math inline">\(\text{1}\)</span></strong> 可以是<strong>医学文本分类的专家</strong>，而<strong>适配器 <span class="math inline">\(\text{2}\)</span></strong> 可以<strong>专注于命名实体识别 (<span class="math inline">\(\text{NER}\)</span>)</strong>。您可以从 <a target="_blank" rel="noopener" href="https://oreil.ly/XraXg">https://oreil.ly/XraXg</a> 下载专业适配器。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.10.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>论文<strong>《AdapterHub: A framework for adapting transformers》</strong>引入了 <strong><span class="math inline">\(\text{Adapter Hub}\)</span></strong> 作为<strong>共享适配器的中央存储库</strong>。许多早期的适配器<strong>更侧重于 <span class="math inline">\(\text{BERT}\)</span> 架构</strong>。最近，这个概念已被应用于文本生成 <span class="math inline">\(\text{Transformer}\)</span> 模型中，例如论文<strong>《LLaMA-Adapter: Efficient fine-tuning of language models with zero-init attention》</strong>。</p>
+<p><strong>低秩适应</strong></p>
+<p>Low-Rank Adaptation (LoRA)</p>
+<p>作为<strong>适配器</strong>的一种替代方案，<strong>低秩适应 (<span class="math inline">\(\text{LoRA}\)</span>)</strong> 被引入，并且在撰写本文时是一种<strong>广泛使用且有效</strong>的 <span class="math inline">\(\text{PEFT}\)</span> 技术。<span class="math inline">\(\text{LoRA}\)</span> 是一种（像适配器一样）<strong>只需要更新一小组参数</strong>的技术。如图 <span class="math inline">\(\text{12}-11\)</span> 所示，它<strong>创建了基础模型的一个小子集</strong>进行微调，<strong>而不是向模型添加层</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.11.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>与<strong>适配器</strong> (<span class="math inline">\(\text{adapters}\)</span>) 类似，这个<strong>子集</strong>使得微调<strong>快得多</strong>，因为我们<strong>只需要更新基础模型的一小部分</strong>。我们通过用<strong>较小的矩阵</strong>来<strong>近似</strong>伴随原始 <span class="math inline">\(\text{LLM}\)</span> 的<strong>大矩阵</strong>，从而创建这个<strong>参数子集</strong>。然后，我们可以使用这些<strong>较小的矩阵作为替代品</strong>，并<strong>微调它们</strong>而不是原始的大矩阵。以我们在图 <span class="math inline">\(\text{12}-12\)</span> 中看到的 <span class="math inline">\(\text{10} \times \text{10}\)</span> 矩阵为例。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.12.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>我们可以设计出<strong>两个较小的矩阵</strong>，当它们相乘时，可以<strong>重构一个 <span class="math inline">\(\text{10} \times \text{10}\)</span> 矩阵</strong>。这是一个<strong>主要的效率胜利</strong>，因为我们现在<strong>只有 <span class="math inline">\(\text{20}\)</span> 个权重</strong> (<span class="math inline">\(\text{10}\)</span> 加 <span class="math inline">\(\text{10}\)</span>)，而<strong>不是使用 <span class="math inline">\(\text{100}\)</span> 个权重</strong> (<span class="math inline">\(\text{10}\)</span> 乘以 <span class="math inline">\(\text{10}\)</span>)，如图 <span class="math inline">\(\text{12}-13\)</span> 所示。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.13.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>在训练过程中，我们<strong>只需要更新这些较小的矩阵</strong>，而<strong>不需要更新完整的权重变化</strong>。然后，<strong>更新后的变化矩阵</strong>（较小的矩阵）会<strong>与完整的（冻结的）权重结合</strong>，如图 <span class="math inline">\(\text{12}-14\)</span> 所示。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.14.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>但您可能会怀疑<strong>性能会下降</strong>。您猜对了。但这种<strong>权衡在什么地方是合理的</strong>呢？</p>
+<p>像<strong>《Intrinsic dimensionality explains the effectiveness of language model fine-tuning》</strong>这样的论文表明，语言模型“<strong>具有非常低的内在维度</strong>。”这意味着我们可以找到<strong>小的秩</strong> (<span class="math inline">\(\text{ranks}\)</span>) 来<strong>近似</strong> <span class="math inline">\(\text{LLM}\)</span> 中<strong>即使是巨大的矩阵</strong>。例如，像 <span class="math inline">\(\text{GPT-3}\)</span> 这样的 <span class="math inline">\(\text{175B}\)</span> 模型，在其 <strong><span class="math inline">\(\text{96}\)</span> 个 <span class="math inline">\(\text{Transformer}\)</span> 块</strong>中的每个块中都会有一个 <span class="math inline">\(\text{12,288} \times \text{12,288}\)</span> 的权重矩阵。这是 <span class="math inline">\(\text{1.5}\)</span> 亿个参数<strong>。如果我们可以成功地将该矩阵</strong>适应到秩 <span class="math inline">\(\text{8}\)</span><strong>，那么</strong>每个块<strong>将只需要</strong>两个 <span class="math inline">\(\text{12,288} \times \text{8}\)</span> 的矩阵<strong>，从而产生 </strong><span class="math inline">\(\text{197K}\)</span> 个参数<strong>。正如之前引用的 <span class="math inline">\(\text{LoRA}\)</span> 论文中进一步解释的那样，这在</strong>速度<strong>、</strong>存储<strong>和</strong>计算<strong>方面</strong>节省了大量资源。</p>
+<p>这种<strong>较小的表征</strong>非常<strong>灵活</strong>，您可以<strong>选择基础模型的哪些部分进行微调</strong>。例如，我们可以<strong>只微调每个 <span class="math inline">\(\text{Transformer}\)</span> 层中的 <span class="math inline">\(\text{Query}\)</span> 和 <span class="math inline">\(\text{Value}\)</span> 权重矩阵</strong>。</p>
+<p><strong>压缩模型以实现（更）高效的训练</strong></p>
+<p>Compressing the model for (more) efficient training</p>
+<p>我们可以通过在<strong>将模型的原始权重投影到较小的矩阵之前</strong>，<strong>减少其内存需求</strong>，从而使 <span class="math inline">\(\text{LoRA}\)</span> <strong>更加高效</strong>。<span class="math inline">\(\text{LLM}\)</span> 的权重是具有给定精度的<strong>数值</strong>，可以用<strong>浮点数（如 <span class="math inline">\(\text{float64}\)</span> 或 <span class="math inline">\(\text{float32}\)</span>）</strong>来表示。如图 <span class="math inline">\(\text{12}-15\)</span> 所示，如果我们<strong>降低表示一个值的位数</strong>，我们得到的<strong>结果准确性就会降低</strong>。然而，如果<strong>降低位数</strong>，我们也会<strong>降低该模型的内存需求</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.15.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>通过<strong>量化</strong> (<span class="math inline">\(\text{quantization}\)</span>)，我们的目标是<strong>在准确表示原始权重值的同时降低位数</strong>。然而，如图 <span class="math inline">\(\text{12}-16\)</span> 所示，当<strong>直接将更高精度值映射到更低精度值</strong>时，<strong>多个更高精度值</strong>最终可能<strong>被同一个更低精度值表示</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.16.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>相反，<span class="math inline">\(\text{LoRA}\)</span> 的量化版本 <span class="math inline">\(\text{QLoRA}\)</span> 的作者找到了一种方法，可以在<strong>不与原始权重产生太大差异</strong>的情况下，<strong>从较高的位数转换到较低的值</strong>，反之亦然。</p>
+<p>他们使用了<strong>块状量化</strong> (<span class="math inline">\(\text{blockwise quantization}\)</span>) 将<strong>某些块的较高精度值</strong>映射到<strong>较低精度值</strong>。不是直接将较高精度映射到较低精度值，而是<strong>创建额外的块</strong>，<strong>允许量化相似的权重</strong>。如图 <span class="math inline">\(\text{12}-17\)</span> 所示，这使得<strong>值可以用较低的精度准确表示</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.17.png" alt="F12.1" style="zoom:67%;" /></p>
+<p><strong>神经网络</strong>的一个<strong>很好的特性</strong>是它们的<strong>值通常呈正态分布</strong>在 <span class="math inline">\(\text{-1}\)</span> 和 <span class="math inline">\(\text{1}\)</span> 之间。正如<strong>图 <span class="math inline">\(\text{12}-18\)</span></strong> 所示，这种特性允许我们<strong>根据权重的相对密度</strong>将原始权重<strong>分箱到较低的位数</strong>。<strong>权重之间的映射效率更高</strong>，因为它<strong>考虑了权重的相对频率</strong>。这也<strong>减少了异常值的问题</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.18.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>结合<strong>块状量化</strong> (<span class="math inline">\(\text{blockwise quantization}\)</span>)，这种<strong>归一化过程</strong>允许<strong>低精度值准确表示高精度值</strong>，而<strong>大语言模型的性能只会略有下降</strong>。因此，我们可以从 <strong><span class="math inline">\(\text{16}\)</span> 位浮点表示</strong>转换为<strong>区区 <span class="math inline">\(\text{4}\)</span> 位归一化浮点表示</strong>。<strong><span class="math inline">\(\text{4}\)</span> 位表示</strong>可以<strong>显著减少 <span class="math inline">\(\text{LLM}\)</span> 在训练期间的内存需求</strong>。请注意，<strong><span class="math inline">\(\text{LLM}\)</span> 的量化</strong>通常也<strong>有助于推理</strong>，因为<strong>量化后的 <span class="math inline">\(\text{LLM}\)</span> 体积更小</strong>，因此<strong>需要的 <span class="math inline">\(\text{VRAM}\)</span> 也更少</strong>。</p>
+<p>还有<strong>更多优雅的方法</strong>可以进一步优化这一点，例如<strong>双重量化</strong> (<span class="math inline">\(\text{double quantization}\)</span>) 和<strong>分页优化器</strong> (<span class="math inline">\(\text{paged optimizers}\)</span>)，您可以在前面讨论的 <strong><span class="math inline">\(\text{QLoRA}\)</span> 论文</strong>中阅读更多相关内容。如需完整的、高度可视化的量化指南，请参阅<strong>这篇博客文章</strong>。</p>
+<h3 id="使用-textqlora-进行指令调整"><strong>使用 <span class="math inline">\(\text{QLoRA}\)</span> 进行指令调整</strong></h3>
+<p>Instruction Tuning with QLoRA</p>
+<p>现在我们已经探索了 <strong><span class="math inline">\(\text{QLoRA}\)</span> 的工作原理</strong>，让我们将这些知识付诸实践！在本节中，我们将<strong>微调 <span class="math inline">\(\text{Llama}\)</span> 的一个完全开源和更小版本 <span class="math inline">\(\text{TinyLlama}\)</span></strong>，以使用 <strong><span class="math inline">\(\text{QLoRA}\)</span> 流程</strong>来<strong>遵循指令</strong>。将该模型视为<strong>一个基础或预训练模型</strong>，它<strong>经过语言建模训练</strong>，但<strong>尚不能遵循指令</strong>。</p>
+<h4 id="模板化指令数据"><strong>模板化指令数据</strong></h4>
+<p>Templating Instruction Data</p>
+<p>为了让 <span class="math inline">\(\text{LLM}\)</span> 遵循指令，我们需要准备<strong>遵循聊天模板的指令数据</strong>。正如<strong>图 <span class="math inline">\(\text{12}-19\)</span></strong> 所示，这个<strong>聊天模板</strong>区分了 <strong><span class="math inline">\(\text{LLM}\)</span> 生成的内容</strong>和<strong>用户生成的内容</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.19.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>我们选择在<strong>整个示例中使用这个聊天模板</strong>，因为 <span class="math inline">\(\text{TinyLlama}\)</span> 的聊天版本<strong>使用了相同的格式</strong>。我们使用的数据是 <strong><span class="math inline">\(\text{UltraChat}\)</span> 数据集的一个小规模子集</strong>。该数据集是原始 <span class="math inline">\(\text{UltraChat}\)</span> 数据集的<strong>过滤版本</strong>，其中包含<strong>近 <span class="math inline">\(\text{200,000}\)</span> 个用户和 <span class="math inline">\(\text{LLM}\)</span> 之间的对话</strong>。</p>
+<p>我们创建一个名为 <strong><span class="math inline">\(\text{format\_prompt}\)</span></strong> 的函数，以确保对话<strong>遵循此模板</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> AutoTokenizer</span><br><span class="line"><span class="keyword">from</span> datasets <span class="keyword">import</span> load_dataset</span><br><span class="line"><span class="comment"># Load a tokenizer to use its chat template</span></span><br><span class="line">template_tokenizer = AutoTokenizer.from_pretrained(</span><br><span class="line"><span class="string">&quot;TinyLlama/TinyLlama-1.1BChat-v1.0&quot;</span></span><br><span class="line">)</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">format_prompt</span>(<span class="params">example</span>):</span><br><span class="line"><span class="string">&quot;&quot;&quot;Format the prompt to using the &lt;|user|&gt; template TinyLLama is using&quot;&quot;&quot;</span></span><br><span class="line"><span class="comment"># Format answers</span></span><br><span class="line">chat = example[<span class="string">&quot;messages&quot;</span>]</span><br><span class="line">prompt = template_tokenizer.apply_chat_template(chat, tokenize=<span class="literal">False</span>)</span><br><span class="line"><span class="keyword">return</span> &#123;<span class="string">&quot;text&quot;</span>: prompt&#125;</span><br><span class="line"><span class="comment"># Load and format the data using the template TinyLLama is using</span></span><br><span class="line">dataset = (</span><br><span class="line">load_dataset(<span class="string">&quot;HuggingFaceH4/ultrachat_200k&quot;</span>, split=<span class="string">&quot;test_sft&quot;</span>)</span><br><span class="line">.shuffle(seed=<span class="number">42</span>)</span><br><span class="line">.select(<span class="built_in">range</span>(<span class="number">3_000</span>))</span><br><span class="line">)</span><br><span class="line">dataset = dataset.<span class="built_in">map</span>(format_prompt)</span><br></pre></td></tr></table></figure>
+<p>我们选择了 <strong><span class="math inline">\(\text{3,000}\)</span> 个文档的子集</strong>来<strong>减少训练时间</strong>，但您可以<strong>增加这个值</strong>以获得<strong>更准确的结果</strong>。</p>
+<p>使用 <strong><span class="math inline">\(\text{&quot;text&quot;}\)</span> 列</strong>，我们可以探索这些<strong>格式化的提示</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Example of formatted prompt</span></span><br><span class="line"><span class="built_in">print</span>(dataset[<span class="string">&quot;text&quot;</span>][<span class="number">2576</span>])</span><br><span class="line">&lt;|user|&gt;</span><br><span class="line">Given the text: Knock, knock. Who<span class="string">&#x27;s there? Hike.</span></span><br><span class="line"><span class="string">Can you continue the joke based on the given text material &quot;Knock, knock.</span></span><br><span class="line"><span class="string">Who&#x27;</span>s there? Hike<span class="string">&quot;?&lt;/s&gt;</span></span><br><span class="line"><span class="string">&lt;|assistant|&gt;</span></span><br><span class="line"><span class="string">Sure! Knock, knock. Who&#x27;s there? Hike. Hike who? Hike up your pants, it&#x27;s cold</span></span><br><span class="line"><span class="string">outside!&lt;/s&gt;</span></span><br><span class="line"><span class="string">&lt;|user|&gt;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Can you tell me another knock-knock joke based on the same text material</span></span><br><span class="line"><span class="string">&quot;</span>Knock, knock. Who<span class="string">&#x27;s there? Hike&quot;?&lt;/s&gt;</span></span><br><span class="line"><span class="string">&lt;|assistant|&gt;</span></span><br><span class="line"><span class="string">Of course! Knock, knock. Who&#x27;</span>s there? Hike. Hike who? Hike your way over here</span><br><span class="line"><span class="keyword">and</span> let<span class="string">&#x27;s go for a walk!&lt;/s&gt;</span></span><br></pre></td></tr></table></figure>
+<h4 id="模型量化"><strong>模型量化</strong></h4>
+<p>Model Quantization</p>
+<p>现在我们有了数据，就可以开始<strong>加载我们的模型</strong>了。这就是我们应用 <strong><span class="math inline">\(\text{QLoRA}\)</span> 中的 <span class="math inline">\(\text{Q}\)</span></strong>，即<strong>量化</strong> (<span class="math inline">\(\text{quantization}\)</span>) 的地方。我们使用 <strong><span class="math inline">\(\text{bitsandbytes}\)</span> 包</strong>将预训练模型<strong>压缩为 <span class="math inline">\(\text{4}\)</span> 位表示</strong>。</p>
+<p>在 <span class="math inline">\(\text{BitsAndBytesConfig}\)</span> 中，您可以定义<strong>量化方案</strong>。我们遵循<strong>原始 <span class="math inline">\(\text{QLoRA}\)</span> 论文中使用的步骤</strong>，以 <strong><span class="math inline">\(\text{4}\)</span> 位</strong>加载模型（<span class="math inline">\(\text{load\_in\_4bit}\)</span>），使用<strong>归一化浮点表示</strong>（<span class="math inline">\(\text{bnb\_4bit\_quant\_type}\)</span>）和<strong>双重量化</strong>（<span class="math inline">\(\text{bnb\_4bit\_use\_double\_quant}\)</span>）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig</span><br><span class="line">model_name = <span class="string">&quot;TinyLlama/TinyLlama-1.1B-intermediate-step-1431k-3T&quot;</span></span><br><span class="line"><span class="comment"># 4-bit quantization configuration - Q in QLoRA</span></span><br><span class="line">bnb_config = BitsAndBytesConfig(</span><br><span class="line">load_in_4bit=<span class="literal">True</span>, <span class="comment"># Use 4-bit precision model loading</span></span><br><span class="line">bnb_4bit_quant_type=<span class="string">&quot;nf4&quot;</span>, <span class="comment"># Quantization type</span></span><br><span class="line">bnb_4bit_compute_dtype=<span class="string">&quot;float16&quot;</span>, <span class="comment"># Compute dtype</span></span><br><span class="line">bnb_4bit_use_double_quant=<span class="literal">True</span>, <span class="comment"># Apply nested quantization</span></span><br><span class="line">)</span><br><span class="line"><span class="comment"># Load the model to train on the GPU</span></span><br><span class="line">model = AutoModelForCausalLM.from_pretrained(</span><br><span class="line">model_name,</span><br><span class="line">device_map=<span class="string">&quot;auto&quot;</span>,</span><br><span class="line"><span class="comment"># Leave this out for regular SFT</span></span><br><span class="line">quantization_config=bnb_config,</span><br><span class="line">)</span><br><span class="line">model.config.use_cache = <span class="literal">False</span></span><br><span class="line">model.config.pretraining_tp = <span class="number">1</span></span><br><span class="line"><span class="comment"># Load LLaMA tokenizer</span></span><br><span class="line">tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=<span class="literal">True</span>)</span><br><span class="line">tokenizer.pad_token = <span class="string">&quot;&lt;PAD&gt;&quot;</span></span><br><span class="line">tokenizer.padding_side = <span class="string">&quot;left&quot;</span></span><br></pre></td></tr></table></figure>
+<p>这种<strong>量化过程</strong>使我们能够<strong>减小原始模型的尺寸</strong>，同时<strong>保留大部分原始权重的精度</strong>。现在加载模型<strong>只需要 <span class="math inline">\(\sim 1 GB\)</span> 的显存 (<span class="math inline">\(\text{VRAM}\)</span>)</strong>，而<strong>不进行量化</strong>则需要 <strong><span class="math inline">\(\sim 4 GB\)</span> 的显存</strong>。请注意，在<strong>微调期间</strong>，将需要<strong>更多的显存</strong>，因此它<strong>不会限制</strong>在加载模型所需的 <span class="math inline">\(\sim 1 GB\)</span> 显存上。</p>
+<h4 id="textlora-配置"><span class="math inline">\(\text{LoRA}\)</span> 配置</h4>
+<p>LoRA Configuration</p>
+<p>接下来，我们需要使用 <strong><span class="math inline">\(\text{peft}\)</span> 库</strong>来定义我们的 <strong><span class="math inline">\(\text{LoRA}\)</span> 配置</strong>，它代表了<strong>微调过程的超参数</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> peft <span class="keyword">import</span> LoraConfig, prepare_model_for_kbit_training, get_peft_model</span><br><span class="line"><span class="comment"># Prepare LoRA Configuration</span></span><br><span class="line">peft_config = LoraConfig(</span><br><span class="line">lora_alpha=<span class="number">32</span>, <span class="comment"># LoRA Scaling</span></span><br><span class="line">lora_dropout=<span class="number">0.1</span>, <span class="comment"># Dropout for LoRA Layers</span></span><br><span class="line">r=<span class="number">64</span>, <span class="comment"># Rank</span></span><br><span class="line">bias=<span class="string">&quot;none&quot;</span>,</span><br><span class="line">task_type=<span class="string">&quot;CAUSAL_LM&quot;</span>,</span><br><span class="line">target_modules= <span class="comment"># Layers to target</span></span><br><span class="line">[<span class="string">&quot;k_proj&quot;</span>, <span class="string">&quot;gate_proj&quot;</span>, <span class="string">&quot;v_proj&quot;</span>, <span class="string">&quot;up_proj&quot;</span>, <span class="string">&quot;q_proj&quot;</span>, <span class="string">&quot;o_proj&quot;</span>,</span><br><span class="line"><span class="string">&quot;down_proj&quot;</span>]</span><br><span class="line">)</span><br><span class="line"><span class="comment"># Prepare model for training</span></span><br><span class="line">model = prepare_model_for_kbit_training(model)</span><br><span class="line">model = get_peft_model(model, peft_config)</span><br></pre></td></tr></table></figure>
+<p>有几个参数值得一提：</p>
+<ul>
+<li><strong><span class="math inline">\(\text{r}\)</span></strong> 这是<strong>压缩矩阵的秩</strong>（回想图 <span class="math inline">\(\text{12}-13\)</span> 中的内容）。<strong>增加这个值</strong>也会<strong>增加压缩矩阵的大小</strong>，从而<strong>降低压缩率</strong>，进而<strong>提高代表能力</strong>。该值通常在 <span class="math inline">\(\text{4}\)</span> 到 <span class="math inline">\(\text{64}\)</span> 之间。</li>
+<li><strong><span class="math inline">\(\text{lora\_alpha}\)</span></strong> <strong>控制添加到原始权重的变化量</strong>。本质上，它<strong>平衡了原始模型的知识与新任务的知识</strong>。一个经验法则是<strong>选择 <span class="math inline">\(\text{r}\)</span> 两倍大小的值</strong>。</li>
+<li><strong><span class="math inline">\(\text{target\_modules}\)</span></strong> <strong>控制要针对哪些层</strong>。<span class="math inline">\(\text{LoRA}\)</span> 过程可以选择<strong>忽略特定层</strong>，例如特定的投影层。这可以<strong>加快训练速度，但会降低性能</strong>，反之亦然。</li>
+</ul>
+<p><strong>尝试调整这些参数</strong>是一个<strong>有价值的实验</strong>，可以<strong>直观地理解哪些值有效，哪些值无效</strong>。您可以在 <strong><span class="math inline">\(\text{Sebastian Raschka}\)</span> 的 <span class="math inline">\(\text{Ahead of AI}\)</span> 时事通讯</strong>中找到关于 <span class="math inline">\(\text{LoRA}\)</span> 微调的<strong>额外技巧</strong>的精彩资源。</p>
+<blockquote>
+<p>本示例展示了<strong>高效微调模型的形式</strong>。如果您想进行<strong>完全微调</strong> (<span class="math inline">\(\text{full fine-tuning}\)</span>)，您可以在<strong>加载模型时移除 <span class="math inline">\(\text{quantization\_config}\)</span> 参数</strong>，并<strong>跳过 <span class="math inline">\(\text{peft\_config}\)</span> 的创建</strong>。通过移除这些内容，我们将从“<strong>使用 <span class="math inline">\(\text{QLoRA}\)</span> 进行指令调整</strong>”转变为“<strong>完全指令调整</strong>” (<span class="math inline">\(\text{full instruction tuning}\)</span>)。</p>
+</blockquote>
+<h4 id="训练配置"><strong>训练配置</strong></h4>
+<p>Training Configuration</p>
+<p>最后，我们需要像<strong>第 <span class="math inline">\(\text{11}\)</span> 章</strong>中那样<strong>配置我们的训练参数</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> TrainingArguments</span><br><span class="line">output_dir = <span class="string">&quot;./results&quot;</span></span><br><span class="line"><span class="comment"># Training arguments</span></span><br><span class="line">training_arguments = TrainingArguments(</span><br><span class="line">output_dir=output_dir,</span><br><span class="line">per_device_train_batch_size=<span class="number">2</span>,</span><br><span class="line">gradient_accumulation_steps=<span class="number">4</span>,</span><br><span class="line">optim=<span class="string">&quot;paged_adamw_32bit&quot;</span>,</span><br><span class="line">learning_rate=<span class="number">2e-4</span>,</span><br><span class="line">lr_scheduler_type=<span class="string">&quot;cosine&quot;</span>,</span><br><span class="line">num_train_epochs=<span class="number">1</span>,</span><br><span class="line">logging_steps=<span class="number">10</span>,</span><br><span class="line">fp16=<span class="literal">True</span>,</span><br><span class="line">gradient_checkpointing=<span class="literal">True</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>有几个参数值得一提：</p>
+<ul>
+<li><strong><span class="math inline">\(\text{num\_train\_epochs}\)</span></strong> <strong>总训练轮数</strong>。较高的值往往会<strong>降低性能</strong>，因此我们通常倾向于<strong>保持较低</strong>。</li>
+<li><strong><span class="math inline">\(\text{learning\_rate}\)</span></strong> <strong>决定了权重更新的每一步的大小</strong>。<span class="math inline">\(\text{QLoRA}\)</span> 的作者发现<strong>较高的学习率</strong>更适用于<strong>更大的模型</strong>（<span class="math inline">\(&gt;\)</span> <span class="math inline">\(\text{33B}\)</span> 参数）。</li>
+<li><strong><span class="math inline">\(\text{lr\_scheduler\_type}\)</span></strong> 一种<strong>基于余弦的调度器</strong>，用于<strong>动态调整学习率</strong>。它将从零开始<strong>线性增加学习率</strong>，直到达到<strong>设定的值</strong>。之后，学习率将<strong>遵循余弦函数的值进行衰减</strong>。</li>
+<li><strong><span class="math inline">\(\text{optim}\)</span></strong> <strong>原始 <span class="math inline">\(\text{QLoRA}\)</span> 论文中使用的分页优化器</strong> (<span class="math inline">\(\text{paged optimizers}\)</span>)。</li>
+</ul>
+<p><strong>优化这些参数是一项困难的任务</strong>，并且<strong>没有固定的指导方针</strong>。它需要<strong>进行实验</strong>才能找出<strong>最适合特定数据集、模型大小和目标任务的方案</strong>。</p>
+<blockquote>
+<p>尽管本节描述的是<strong>指令调整</strong> (<span class="math inline">\(\text{instruction tuning}\)</span>)，我们也可以<strong>使用 <span class="math inline">\(\text{QLoRA}\)</span> 来微调一个指令模型</strong>。例如，我们可以<strong>微调一个聊天模型</strong>来生成<strong>特定的 <span class="math inline">\(\text{SQL}\)</span> 代码</strong>，或<strong>创建遵循特定格式的 <span class="math inline">\(\text{JSON}\)</span> 输出</strong>。只要您<strong>有可用的数据</strong>（带有适当的查询-回答项），<span class="math inline">\(\text{QLoRA}\)</span> 就是一种<strong>极好的技术</strong>，可以<strong>推动现有聊天模型更适合您的用例</strong>。</p>
+</blockquote>
+<h4 id="训练"><strong>训练</strong></h4>
+<p>Training</p>
+<p>现在我们已经<strong>准备好所有的模型和参数</strong>，就可以开始<strong>微调我们的模型</strong>了。我们加载 <strong><span class="math inline">\(\text{SFTTrainer}\)</span></strong> 并简单地运行 <span class="math inline">\(\text{trainer.train()}\)</span>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> trl <span class="keyword">import</span> SFTTrainer</span><br><span class="line"><span class="comment"># Set supervised fine-tuning parameters</span></span><br><span class="line">trainer = SFTTrainer(</span><br><span class="line">model=model,</span><br><span class="line">train_dataset=dataset,</span><br><span class="line">dataset_text_field=<span class="string">&quot;text&quot;</span>,</span><br><span class="line">tokenizer=tokenizer,</span><br><span class="line">args=training_arguments,</span><br><span class="line">max_seq_length=<span class="number">512</span>,</span><br><span class="line"><span class="comment"># Leave this out for regular SFT</span></span><br><span class="line">peft_config=peft_config,</span><br><span class="line">)</span><br><span class="line"><span class="comment"># Train model</span></span><br><span class="line">trainer.train()</span><br><span class="line"><span class="comment"># Save QLoRA weights</span></span><br><span class="line">trainer.model.save_pretrained(<span class="string">&quot;TinyLlama-1.1B-qlora&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p>在训练过程中，损失将根据 <span class="math inline">\(\text{logging\_steps}\)</span> 参数<strong>每 <span class="math inline">\(\text{10}\)</span> 步打印一次</strong>。如果您使用的是 <strong><span class="math inline">\(\text{Google Colab}\)</span> 提供的免费 <span class="math inline">\(\text{GPU}\)</span></strong>（在撰写本文时是 <strong><span class="math inline">\(\text{Tesla T4}\)</span></strong>），那么<strong>训练可能需要长达一个小时</strong>。是时候休息一下了！</p>
+<h4 id="合并权重"><strong>合并权重</strong></h4>
+<p>Merge Weights</p>
+<p>在训练完我们的 <strong><span class="math inline">\(\text{QLoRA}\)</span> 权重</strong>后，我们仍然需要<strong>将它们与原始权重结合</strong>起来才能使用。我们<strong>以 <span class="math inline">\(\text{16}\)</span> 位</strong>（而不是量化后的 <span class="math inline">\(\text{4}\)</span> 位）<strong>重新加载模型</strong>以合并权重。尽管 <span class="math inline">\(\text{tokenizer}\)</span> 在训练期间<strong>没有更新</strong>，但我们将其<strong>保存到与模型相同的文件夹中</strong>，以便于访问：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> peft <span class="keyword">import</span> AutoPeftModelForCausalLM</span><br><span class="line">model = AutoPeftModelForCausalLM.from_pretrained(</span><br><span class="line"><span class="string">&quot;TinyLlama-1.1B-qlora&quot;</span>,</span><br><span class="line">low_cpu_mem_usage=<span class="literal">True</span>,</span><br><span class="line">device_map=<span class="string">&quot;auto&quot;</span>,</span><br><span class="line">)</span><br><span class="line"><span class="comment"># Merge LoRA and base model</span></span><br><span class="line">merged_model = model.merge_and_unload()</span><br></pre></td></tr></table></figure>
+<p>将<strong>适配器与基础模型合并</strong>后，我们就可以使用我们<strong>之前定义的提示模板</strong>来使用它：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> pipeline</span><br><span class="line"><span class="comment"># Use our predefined prompt template</span></span><br><span class="line">prompt = <span class="string">&quot;&quot;&quot;&lt;|user|&gt;</span></span><br><span class="line"><span class="string">Tell me something about Large Language Models.&lt;/s&gt;</span></span><br><span class="line"><span class="string">&lt;|assistant|&gt;</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="comment"># Run our instruction-tuned model</span></span><br><span class="line">pipe = pipeline(task=<span class="string">&quot;text-generation&quot;</span>, model=merged_model, tokenizer=tokenizer)</span><br><span class="line"><span class="built_in">print</span>(pipe(prompt)[<span class="number">0</span>][<span class="string">&quot;generated_text&quot;</span>])</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Large Language Models (LLMs) are artificial intelligence (AI) models that</span><br><span class="line">learn language and understand what it means to say things in a particular</span><br><span class="line">language. They are trained on huge amounts of text…</span><br></pre></td></tr></table></figure>
+<p><strong>汇总输出</strong>显示模型现在<strong>密切遵循我们的指令</strong>，这在<strong>基础模型</strong>中是<strong>不可能</strong>的。</p>
+<h3 id="评估生成模型"><strong>评估生成模型</strong></h3>
+<p>Evaluating Generative Models</p>
+<p><strong>评估生成模型</strong>提出了一个<strong>重大挑战</strong>。生成模型用于<strong>许多不同的用例</strong>，这使得<strong>依赖单一指标进行判断</strong>成为一个挑战。与更专业的模型不同，<strong>生成模型解决数学问题的能力</strong>并<strong>不保证</strong>在解决<strong>编码问题</strong>上也能成功。</p>
+<p>与此同时，<strong>评估这些模型至关重要</strong>，尤其是在<strong>一致性很重要的生产环境</strong>中。鉴于它们的<strong>概率性质</strong>，生成模型<strong>不一定会产生一致的输出</strong>；因此需要<strong>稳健的评估</strong>。</p>
+<p>在本节中，我们将<strong>探索几种常见的评估方法</strong>，但我们想要强调<strong>当前缺乏黄金标准</strong>。<strong>没有一个指标</strong>是<strong>适用于所有用例的完美衡量标准</strong>。</p>
+<h4 id="词汇级别指标"><strong>词汇级别指标</strong></h4>
+<p>Word-Level Metrics</p>
+<p>一种<strong>常见的比较生成模型的指标类别</strong>是<strong>词汇级别评估</strong> (<span class="math inline">\(\text{word-level evaluation}\)</span>)。这些<strong>经典技术</strong>在<strong>词元（集）级别</strong>上<strong>比较参考数据集和生成的词元</strong>。常见的词汇级别指标包括<strong>困惑度</strong> (<span class="math inline">\(\text{perplexity}\)</span>)、<span class="math inline">\(\text{ROUGE}\)</span>、<span class="math inline">\(\text{BLEU}\)</span> 和 <span class="math inline">\(\text{BERTScore}\)</span>。</p>
+<p>值得注意的是<strong>困惑度</strong>，它<strong>衡量语言模型预测文本的准确程度</strong>。给定输入文本，模型<strong>预测下一个词元的可能性</strong>。使用困惑度，我们假设如果模型<strong>赋予下一个词元高概率</strong>，则<strong>性能更好</strong>。换句话说，当呈现<strong>一篇写得好的文档</strong>时，模型<strong>不应该感到“困惑”</strong>。</p>
+<p>如图 <span class="math inline">\(\text{12}-20\)</span> 所示，当呈现输入 “<span class="math inline">\(\text{When a measure becomes a}\)</span>” 时，模型被问及“<span class="math inline">\(\text{target}\)</span>” 作为下一个词的可能性有多大。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.20.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>尽管<strong>困惑度</strong>以及其他<strong>词汇级别指标</strong>是<strong>理解模型置信度的有用指标</strong>，但它们<strong>并非完美的衡量标准</strong>。它们<strong>没有考虑到生成文本的一致性、流畅性、创造性，甚至正确性</strong>。</p>
+<h4 id="基准测试"><strong>基准测试</strong></h4>
+<p>Benchmarks</p>
+<p><strong>评估生成模型</strong>在<strong>语言生成和理解任务</strong>上性能的一种<strong>常用方法</strong>是使用<strong>众所周知的公共基准测试</strong> (<span class="math inline">\(\text{benchmarks}\)</span>)，例如 <strong><span class="math inline">\(\text{MMLU}\)</span></strong>、<strong><span class="math inline">\(\text{GLUE}\)</span></strong>、<strong><span class="math inline">\(\text{TruthfulQA}\)</span></strong>、<strong><span class="math inline">\(\text{GSM8k}\)</span></strong> 和 <strong><span class="math inline">\(\text{HellaSwag}\)</span></strong>。这些基准测试为我们提供了<strong>基础语言理解</strong>以及<strong>复杂分析回答</strong>（例如数学问题）的<strong>信息</strong>。</p>
+<p>除了<strong>自然语言任务</strong>，一些模型<strong>专注于其他领域</strong>，例如<strong>编程</strong>。这些模型通常在<strong>不同的基准测试</strong>上进行评估，例如 <strong><span class="math inline">\(\text{HumanEval}\)</span></strong>，它包含<strong>具有挑战性的编程任务</strong>供模型解决。<strong>表 <span class="math inline">\(\text{12}-1\)</span></strong> 概述了<strong>生成模型的常见公共基准测试</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/T12.1.png" alt="F12.1" style="zoom:67%;" /></p>
+<p><strong>基准测试</strong>是<strong>了解模型在各种任务上表现如何</strong>的好方法。公共基准测试的一个<strong>缺点</strong>是，模型可能会<strong>过度拟合</strong> (<span class="math inline">\(\text{overfitted}\)</span>) 这些基准测试以<strong>生成最佳回复</strong>。此外，这些仍然是<strong>广泛的基准测试</strong>，可能<strong>无法涵盖非常具体的用例</strong>。最后，另一个缺点是，有些基准测试需要<strong>强大的 <span class="math inline">\(\text{GPU}\)</span></strong> 才能计算，并且<strong>运行时间长</strong>（超过数小时），这使得<strong>迭代变得困难</strong>。</p>
+<h4 id="排行榜">排行榜</h4>
+<p>Leaderboards</p>
+<p>有如此多不同的基准测试，<strong>很难选择哪个基准测试最适合您的模型</strong>。每当模型发布时，您通常会看到它在<strong>多个基准测试上进行评估</strong>，以展示其<strong>全面表现</strong>。</p>
+<p>因此，开发了<strong>包含多个基准测试的排行榜</strong> (<span class="math inline">\(\text{leaderboards}\)</span>)。一个常见的排行榜是 <strong><span class="math inline">\(\text{Open LLM Leaderboard}\)</span></strong>，在撰写本文时，它<strong>包括六个基准测试</strong>，其中包括 <span class="math inline">\(\text{HellaSwag}\)</span>、<span class="math inline">\(\text{MMLU}\)</span>、<span class="math inline">\(\text{TruthfulQA}\)</span> 和 <span class="math inline">\(\text{GSM8k}\)</span>。位居<strong>排行榜榜首</strong>的模型（假设它们<strong>没有在数据上过度拟合</strong>）通常被认为是“<strong>最好的</strong>”模型。然而，由于这些排行榜通常包含<strong>公开可用的基准测试</strong>，因此存在<strong>在排行榜上过度拟合的风险</strong>。</p>
+<h4 id="自动化评估"><strong>自动化评估</strong></h4>
+<p>Automated Evaluation</p>
+<p>评估<strong>生成输出</strong>的一部分是其<strong>文本的质量</strong>。例如，即使两个模型对一个问题给出了<strong>相同的正确答案</strong>，它们<strong>得出该答案的方式</strong>也可能不同。这通常<strong>不仅仅是最终答案的问题</strong>，还关乎<strong>其构造</strong>。类似地，尽管两个摘要可能相似，但<strong>其中一个可能明显短于另一个</strong>，这对于一个好的摘要来说<strong>通常很重要</strong>。</p>
+<p>为了<strong>评估生成文本的质量</strong>而<strong>不仅仅是最终答案的正确性</strong>，引入了<strong>“<span class="math inline">\(\text{LLM}\)</span> 即评审”</strong> (<span class="math inline">\(\text{LLM-as-a-judge}\)</span>) 的方法。实质上，<strong>一个单独的 <span class="math inline">\(\text{LLM}\)</span> 被要求判断待评估 <span class="math inline">\(\text{LLM}\)</span> 的质量</strong>。这种方法的一个<strong>有趣的变体</strong>是<strong>成对比较</strong> (<span class="math inline">\(\text{pairwise comparison}\)</span>)。<strong>两个不同的 <span class="math inline">\(\text{LLM}\)</span></strong> 将生成一个问题的答案，而<strong>第三个 <span class="math inline">\(\text{LLM}\)</span> 将充当评委</strong>来裁定<strong>哪个更好</strong>。</p>
+<p>因此，这种方法论<strong>允许对开放式问题进行自动化评估</strong>。一个<strong>主要优势</strong>是，随着 <span class="math inline">\(\text{LLM}\)</span> 的改进，它们<strong>判断输出质量的能力也会提高</strong>。换句话说，这种<strong>评估方法与该领域共同发展</strong>。</p>
+<h4 id="人工评估"><strong>人工评估</strong></h4>
+<p>Human Evaluation</p>
+<p>尽管<strong>基准测试很重要</strong>，但<strong>评估的黄金标准</strong>通常被认为是<strong>人工评估</strong> (<span class="math inline">\(\text{human evaluation}\)</span>)。即使一个 <span class="math inline">\(\text{LLM}\)</span> 在<strong>广泛的基准测试上得分很高</strong>，它<strong>仍可能在领域特定的任务上得分不高</strong>。此外，<strong>基准测试并不能完全捕捉人类偏好</strong>，而<strong>之前讨论的所有方法都仅仅是人类偏好的替代指标</strong>。</p>
+<p>一个<strong>基于人工评估技术的绝佳示例</strong>是 <strong><span class="math inline">\(\text{Chatbot Arena}\)</span></strong>（https://lmarena.ai/）。当您进入这个排行榜时，您会看到<strong>两个（匿名）<span class="math inline">\(\text{LLM}\)</span></strong>，您可以与之互动。您提出的<strong>任何问题或提示</strong>都将发送给<strong>这两个模型</strong>，并且您将<strong>收到它们的输出</strong>。然后，您可以<strong>决定您更喜欢哪个输出</strong>。这个过程允许<strong>社区对他们更喜欢的模型进行投票</strong>，而<strong>不知道呈现给他们的是哪个模型</strong>。<strong>只有在您投票后</strong>，您才会看到<strong>哪个模型生成了哪个文本</strong>。</p>
+<p>在撰写本文时，这种方法已经<strong>产生了 <span class="math inline">\(\text{800,000}\)</span> 多次人工投票</strong>，用于计算<strong>排行榜</strong>。这些投票用于<strong>根据 <span class="math inline">\(\text{LLM}\)</span> 的胜率</strong>来计算其<strong>相对技能水平</strong>。例如，如果一个<strong>低排名的 <span class="math inline">\(\text{LLM}\)</span> 击败了一个高排名的 <span class="math inline">\(\text{LLM}\)</span></strong>，它的<strong>排名就会显著变化</strong>。在国际象棋中，这被称为 <strong><span class="math inline">\(\text{Elo}\)</span> 等级分系统</strong>。</p>
+<p>因此，这种方法论使用了<strong>众包投票</strong>（crowdsourced vote），这有助于我们<strong>了解 <span class="math inline">\(\text{LLM}\)</span> 的质量</strong>。然而，它仍然是<strong>广泛用户群体的聚合意见</strong>，<strong>可能与您的用例不相关</strong>。</p>
+<p>因此，<strong>没有一种完美的 <span class="math inline">\(\text{LLM}\)</span> 评估方法</strong>。所有提到的方法论和基准测试都提供了<strong>重要但有限的评估视角</strong>。我们的建议是<strong>根据预期的用例来评估您的 <span class="math inline">\(\text{LLM}\)</span></strong>。对于<strong>编码</strong>，<strong><span class="math inline">\(\text{HumanEval}\)</span></strong> 会比 <span class="math inline">\(\text{GSM8k}\)</span> 更合乎逻辑。</p>
+<p>但最重要的是，我们相信<strong>您是最好的评估者</strong>。<strong>人工评估</strong>仍然是<strong>黄金标准</strong>，因为<strong>最终由您决定 <span class="math inline">\(\text{LLM}\)</span> 是否适用于您预期的用例</strong>。与本章中的示例一样，我们<strong>强烈建议您也尝试这些模型</strong>，并<strong>自己设计一些问题</strong>。例如，本书的作者是阿拉伯人 (<span class="math inline">\(\text{Jay Alammar}\)</span>) 和荷兰人 (<span class="math inline">\(\text{Maarten Grootendorst}\)</span>)，当我们接触新模型时，我们经常<strong>用我们的母语提问</strong>。</p>
+<p>关于这个主题的<strong>最后一点</strong>是我们<strong>珍视的一句话</strong>：</p>
+<blockquote>
+<p><strong>当一个衡量标准变成一个目标时，它就不再是一个好的衡量标准了。</strong> — <strong>古德哈特定律</strong> (<span class="math inline">\(\text{Goodhart’s Law}\)</span>)</p>
+</blockquote>
+<p>在 <span class="math inline">\(\text{LLM}\)</span> 的背景下，当使用<strong>特定的基准测试</strong>时，我们倾向于<strong>为该基准测试进行优化，而不顾后果</strong>。例如，如果我们<strong>纯粹专注于优化生成语法正确的句子</strong>，模型可能会学会<strong>只输出一个句子</strong>：“<span class="math inline">\(\text{This is a sentence.}\)</span>”（这是一个句子。）它在语法上是正确的，但<strong>没有告诉你任何关于其语言理解能力的信息</strong>。因此，模型可能<strong>擅长某个特定的基准测试</strong>，但<strong>可能会牺牲其他有用的能力</strong>。</p>
+<h3 id="偏好调整对齐强化学习自人类反馈"><strong>偏好调整/对齐/强化学习自人类反馈</strong></h3>
+<p>Preference-Tuning / Alignment / RLHF</p>
+<p>尽管我们的模型现在可以<strong>遵循指令</strong>，但我们可以通过<strong>最后的训练阶段</strong>进一步<strong>改进其行为</strong>，使其<strong>与我们期望它在不同场景下的行为保持一致</strong>。例如，当被问到“<span class="math inline">\(\text{What is an LLM?}\)</span>”（什么是 <span class="math inline">\(\text{LLM}\)</span>？）时，我们可能<strong>更喜欢一个详细描述 <span class="math inline">\(\text{LLM}\)</span> 内部结构的答案</strong>，而不是<strong>没有进一步解释的“<span class="math inline">\(\text{It is a large language model}\)</span>”（它是一个大型语言模型）</strong>这样的答案。我们究竟<strong>如何将我们（人类）对一个答案的偏好（优于另一个答案）与 <span class="math inline">\(\text{LLM}\)</span> 的输出对齐</strong>呢？</p>
+<p>首先，回想一下 <span class="math inline">\(\text{LLM}\)</span> <strong>接受一个提示并输出一个生成结果</strong>，如图 <span class="math inline">\(\text{12}-21\)</span> 所示。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.21.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>我们可以要求<strong>一个人</strong>（<strong>偏好评估者</strong> <span class="math inline">\(\text{preference evaluator}\)</span>）<strong>评估该模型生成的质量</strong>。假设他们给它分配了<strong>某个分数</strong>，比如 <span class="math inline">\(\text{4}\)</span> 分（参见图 <span class="math inline">\(\text{12}-22\)</span>）。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.22.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>图 <span class="math inline">\(\text{12}-23\)</span> 显示了<strong>基于该分数更新模型</strong>的<strong>偏好调整步骤</strong>：</p>
+<ul>
+<li>如果<strong>分数很高</strong>，则<strong>更新模型</strong>以<strong>鼓励</strong>它生成<strong>更多此类生成结果</strong>。</li>
+<li>如果<strong>分数很低</strong>，则<strong>更新模型</strong>以<strong>阻止</strong>此类生成结果。</li>
+</ul>
+<p><img src="/img3/Hands-On Large Language Models/F12.23.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>一如既往，我们需要<strong>许多训练示例</strong>。那么，我们<strong>能否将偏好评估自动化</strong>呢？是的，我们可以通过<strong>训练一个不同的模型</strong>，称为<strong>奖励模型</strong> (<span class="math inline">\(\text{reward model}\)</span>)，来实现。</p>
+<h3 id="使用奖励模型实现偏好评估自动化"><strong>使用奖励模型实现偏好评估自动化</strong></h3>
+<p>Automating Preference Evaluation Using Reward Models</p>
+<p>为了<strong>实现偏好评估的自动化</strong>，我们需要在<strong>偏好调整步骤之前</strong>增加一个步骤，即<strong>训练一个奖励模型</strong> (<span class="math inline">\(\text{reward model}\)</span>)，如图 <span class="math inline">\(\text{12}-24\)</span> 所示。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.24.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>图 <span class="math inline">\(\text{12}-25\)</span> 显示，为了创建<strong>奖励模型</strong>，我们<strong>复制了经过指令调整的模型</strong> (<span class="math inline">\(\text{instruction-tuned model}\)</span>)，并对其进行了<strong>微小改动</strong>，使其<strong>不再生成文本</strong>，而是<strong>输出一个单一的分数</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.25.png" alt="F12.1" style="zoom:67%;" /></p>
+<h4 id="奖励模型的输入和输出"><strong>奖励模型的输入和输出</strong></h4>
+<p>The Inputs and Outputs of a Reward Model</p>
+<p>我们期望这个<strong>奖励模型</strong>的工作方式是：我们<strong>给它一个提示和一个生成结果</strong>，它会<strong>输出一个单一的数字</strong>，表明该生成结果<strong>对该提示的偏好/质量</strong>。图 <span class="math inline">\(\text{12}-26\)</span> 显示了<strong>奖励模型生成这个单一数字</strong>的过程。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.26.png" alt="F12.1" style="zoom:67%;" /></p>
+<h4 id="训练奖励模型"><strong>训练奖励模型</strong></h4>
+<p>Training a Reward Model</p>
+<p>我们<strong>不能直接使用奖励模型</strong>。它需要<strong>先经过训练</strong>才能正确地给生成结果评分。因此，让我们<strong>获取一个模型可以学习的偏好数据集</strong>。</p>
+<p><strong>奖励模型训练数据集</strong></p>
+<p>Reward model training dataset</p>
+<p>偏好数据集的一种<strong>常见形式</strong>是，一个训练示例包含<strong>一个提示</strong>、<strong>一个被接受的生成结果</strong> (<span class="math inline">\(\text{accepted generation}\)</span>) 和<strong>一个被拒绝的生成结果</strong> (<span class="math inline">\(\text{rejected generation}\)</span>)。(细微差别：它<strong>不总是好与坏的生成结果</strong>；它可能是<strong>两个生成结果都很好</strong>，但<strong>其中一个比另一个更好</strong>)。图 <span class="math inline">\(\text{12}-27\)</span> 显示了一个包含<strong>两个训练示例</strong>的偏好训练集。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.27.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>生成<strong>偏好数据</strong>的一种方法是<strong>向 <span class="math inline">\(\text{LLM}\)</span> 呈现一个提示</strong>，让它<strong>生成两个不同的结果</strong>。如图 <span class="math inline">\(\text{12}-28\)</span> 所示，我们可以<strong>询问人类标注者</strong>他们<strong>更喜欢哪一个</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.28.png" alt="F12.1" style="zoom:67%;" /></p>
+<p><strong>奖励模型训练步骤</strong> (<span class="math inline">\(\text{Reward model training step}\)</span>)</p>
+<p>现在我们有了<strong>偏好训练数据集</strong>，我们就可以继续<strong>训练奖励模型</strong>了。</p>
+<p>一个简单的步骤是<strong>我们使用奖励模型来</strong>：</p>
+<ol type="1">
+<li>给<strong>被接受的生成结果</strong>评分。</li>
+<li>给<strong>被拒绝的生成结果</strong>评分。</li>
+</ol>
+<p>图 <span class="math inline">\(\text{12}-29\)</span> 显示了<strong>训练目标</strong>：<strong>确保被接受的生成结果得分高于被拒绝的生成结果</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.29.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>当我们将所有内容组合在一起时（如图 <span class="math inline">\(\text{12}-30\)</span> 所示），我们就得到了<strong>偏好调整的三个阶段</strong>：</p>
+<ol type="1">
+<li><strong>收集偏好数据</strong></li>
+<li><strong>训练奖励模型</strong></li>
+<li><strong>使用奖励模型微调 <span class="math inline">\(\text{LLM}\)</span></strong>（作为偏好评估者）</li>
+</ol>
+<p><img src="/img3/Hands-On Large Language Models/F12.30.png" alt="F12.1" style="zoom:67%;" /></p>
+<p><strong>奖励模型是一个绝妙的想法</strong>，可以<strong>进一步扩展和发展</strong>。例如，<strong><span class="math inline">\(\text{Llama 2}\)</span> 训练了两个奖励模型</strong>：一个<strong>对有用性进行评分</strong>，另一个<strong>对安全性进行评分</strong>（图 <span class="math inline">\(\text{12}-31\)</span>）。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.31.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>使用<strong>训练好的奖励模型</strong>来微调 <span class="math inline">\(\text{LLM}\)</span> 的一种<strong>常用方法</strong>是<strong>近端策略优化 (<span class="math inline">\(\text{Proximal Policy Optimization, PPO}\)</span>)</strong>。<span class="math inline">\(\text{PPO}\)</span> 是一种<strong>流行的强化学习技术</strong>，它通过<strong>确保 <span class="math inline">\(\text{LLM}\)</span> 不会偏离预期奖励太多</strong>来<strong>优化经过指令调整的 <span class="math inline">\(\text{LLM}\)</span></strong>。它甚至被用于<strong>训练 <span class="math inline">\(\text{2022}\)</span> 年 <span class="math inline">\(\text{11}\)</span> 月发布的最初 <span class="math inline">\(\text{ChatGPT}\)</span></strong>。</p>
+<h4 id="无需训练奖励模型"><strong>无需训练奖励模型</strong></h4>
+<p>Training No Reward Model</p>
+<p><span class="math inline">\(\text{PPO}\)</span> 的一个<strong>缺点</strong>是它是一种<strong>复杂的方法</strong>，需要<strong>训练至少两个模型</strong>：<strong>奖励模型</strong>和 <strong><span class="math inline">\(\text{LLM}\)</span></strong>，这可能<strong>比必要的更昂贵</strong>。</p>
+<p><strong>直接偏好优化 (<span class="math inline">\(\text{Direct Preference Optimization, DPO}\)</span>)</strong> 是 <span class="math inline">\(\text{PPO}\)</span> 的<strong>一种替代方案</strong>，它<strong>摒弃了基于强化学习的过程</strong>。<strong>我们不再使用奖励模型来判断生成结果的质量</strong>，而是<strong>让 <span class="math inline">\(\text{LLM}\)</span> 本身来做这件事</strong>。如图 <span class="math inline">\(\text{12}-32\)</span> 所示，我们使用 <strong><span class="math inline">\(\text{LLM}\)</span> 的一个副本作为参考模型</strong> (<span class="math inline">\(\text{reference model}\)</span>)，来<strong>判断被接受的生成结果和被拒绝的生成结果的质量</strong>在<strong>参考模型</strong>和<strong>可训练模型</strong> (<span class="math inline">\(\text{trainable model}\)</span>) 之间的<strong>偏移</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.32.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>通过在训练期间<strong>计算这种偏移</strong>，我们可以通过<strong>跟踪参考模型和可训练模型之间的差异</strong>，来<strong>优化被接受的生成结果的似然性</strong>（优于被拒绝的生成结果）。</p>
+<blockquote>
+<p>个人注：参考模型 是为了防止模型在对齐过程中偏离得太远，从而避免生成无意义的文本。</p>
+</blockquote>
+<p>为了<strong>计算这种偏移及其相关分数</strong>，需要从<strong>两个模型</strong>中提取<strong>被拒绝生成结果和被接受生成结果的对数概率</strong> (<span class="math inline">\(\text{log probabilities}\)</span>)。如图 <span class="math inline">\(\text{12}-33\)</span> 所示，这个过程在<strong>词元级别</strong> (<span class="math inline">\(\text{token level}\)</span>) 进行，其中<strong>概率被组合起来计算参考模型和可训练模型之间的偏移</strong>。</p>
+<p><img src="/img3/Hands-On Large Language Models/F12.33.png" alt="F12.1" style="zoom:67%;" /></p>
+<blockquote>
+<p>个人注：你看到的那两组输出（上面是 <em>“I got no clue !”</em>，下面是 <em>“I have no idea !”</em>）分别对应模型生成的两种候选回答，而图中列出 <code>"I"</code>, <code>"have"</code>, <code>"no"</code>, <code>"idea"</code>, <code>"!"</code> 的 token，其实是为了 <strong>展示模型在“较优回答”这条序列上的逐词概率变化</strong>。</p>
+</blockquote>
+<p>利用这些分数，我们可以<strong>优化可训练模型的参数</strong>，使其<strong>对生成被接受的生成结果更有信心</strong>，而<strong>对生成被拒绝的生成结果信心不足</strong>。与 <span class="math inline">\(\text{PPO}\)</span> 相比，作者发现 <span class="math inline">\(\text{DPO}\)</span> 在训练期间<strong>更稳定</strong>且<strong>更准确</strong>。由于其稳定性，我们将<strong>使用它作为我们偏好调整</strong>之前经过指令调整的模型的<strong>主要模型</strong>。</p>
+<h3 id="使用-textdpo-进行偏好调整"><strong>使用 <span class="math inline">\(\text{DPO}\)</span> 进行偏好调整</strong></h3>
+<p>Preference Tuning with DPO</p>
+<p>当我们使用 <strong><span class="math inline">\(\text{Hugging Face}\)</span> 堆栈</strong>时，<strong>偏好调整</strong>与我们之前介绍的<strong>指令调整非常相似</strong>，只有一些<strong>细微差别</strong>。我们将<strong>继续使用 <span class="math inline">\(\text{TinyLlama}\)</span></strong>，但这次是<strong>一个经过指令调整的版本</strong>，它<strong>首先使用完全微调进行训练</strong>，然后<strong>使用 <span class="math inline">\(\text{DPO}\)</span> 进一步对齐</strong>。与我们最初经过指令调整的模型相比，这个 <span class="math inline">\(\text{LLM}\)</span> 是在<strong>更大的数据集</strong>上进行训练的。</p>
+<p>在本节中，我们将演示<strong>如何使用 <span class="math inline">\(\text{DPO}\)</span> 和基于奖励的数据集</strong>来<strong>进一步对齐该模型</strong>。</p>
+<h4 id="模板化对齐数据"><strong>模板化对齐数据</strong></h4>
+<p>Templating Alignment Data</p>
+<p>我们将使用一个<strong>对于每个提示都包含一个被接受的生成结果和一个被拒绝的生成结果的数据集</strong>。该数据集<strong>部分由 <span class="math inline">\(\text{ChatGPT}\)</span> 生成</strong>，并附带了关于<strong>哪个输出应该被接受、哪个应该被拒绝的评分</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> datasets <span class="keyword">import</span> load_dataset</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">format_prompt</span>(<span class="params">example</span>):</span><br><span class="line"><span class="string">&quot;&quot;&quot;Format the prompt to using the &lt;|user|&gt; template TinyLLama is using&quot;&quot;&quot;</span></span><br><span class="line"><span class="comment"># Format answers</span></span><br><span class="line">system = <span class="string">&quot;&lt;|system|&gt;\n&quot;</span> + example[<span class="string">&quot;system&quot;</span>] + <span class="string">&quot;&lt;/s&gt;\n&quot;</span></span><br><span class="line">prompt = <span class="string">&quot;&lt;|user|&gt;\n&quot;</span> + example[<span class="string">&quot;input&quot;</span>] + <span class="string">&quot;&lt;/s&gt;\n&lt;|assistant|&gt;\n&quot;</span></span><br><span class="line">chosen = example[<span class="string">&quot;chosen&quot;</span>] + <span class="string">&quot;&lt;/s&gt;\n&quot;</span></span><br><span class="line">rejected = example[<span class="string">&quot;rejected&quot;</span>] + <span class="string">&quot;&lt;/s&gt;\n&quot;</span></span><br><span class="line"><span class="keyword">return</span> &#123;</span><br><span class="line"><span class="string">&quot;prompt&quot;</span>: system + prompt,</span><br><span class="line"><span class="string">&quot;chosen&quot;</span>: chosen,</span><br><span class="line"><span class="string">&quot;rejected&quot;</span>: rejected,</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment"># Apply formatting to the dataset and select relatively short answers</span></span><br><span class="line">dpo_dataset = load_dataset(</span><br><span class="line"><span class="string">&quot;argilla/distilabel-intel-orca-dpo-pairs&quot;</span>, split=<span class="string">&quot;train&quot;</span></span><br><span class="line">)</span><br><span class="line">dpo_dataset = dpo_dataset.<span class="built_in">filter</span>(</span><br><span class="line"><span class="keyword">lambda</span> r:</span><br><span class="line">r[<span class="string">&quot;status&quot;</span>] != <span class="string">&quot;tie&quot;</span> <span class="keyword">and</span></span><br><span class="line">r[<span class="string">&quot;chosen_score&quot;</span>] &gt;= <span class="number">8</span> <span class="keyword">and</span></span><br><span class="line"><span class="keyword">not</span> r[<span class="string">&quot;in_gsm8k_train&quot;</span>]</span><br><span class="line">)</span><br><span class="line">dpo_dataset = dpo_dataset.<span class="built_in">map</span>(</span><br><span class="line">format_prompt, remove_columns=dpo_dataset.column_names</span><br><span class="line">)</span><br><span class="line">dpo_dataset</span><br></pre></td></tr></table></figure>
+<p>请注意，我们应用了额外的过滤，将数据的规模从原来的 <strong><span class="math inline">\(\text{13,000}\)</span> 个示例进一步减少到大约 <span class="math inline">\(\text{6,000}\)</span> 个示例</strong>。</p>
+<h4 id="模型量化-1"><strong>模型量化</strong></h4>
+<p>Model Quantization</p>
+<p>我们加载<strong>基础模型</strong>，并加载我们<strong>先前创建的 <span class="math inline">\(\text{LoRA}\)</span></strong>。和以前一样，我们<strong>对模型进行量化</strong>以<strong>减少训练所需的 <span class="math inline">\(\text{VRAM}\)</span></strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> peft <span class="keyword">import</span> AutoPeftModelForCausalLM</span><br><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> BitsAndBytesConfig, AutoTokenizer</span><br><span class="line"><span class="comment"># 4-bit quantization configuration - Q in QLoRA</span></span><br><span class="line">bnb_config = BitsAndBytesConfig(</span><br><span class="line">load_in_4bit=<span class="literal">True</span>, <span class="comment"># Use 4-bit precision model loading</span></span><br><span class="line"></span><br><span class="line">bnb_4bit_quant_type=<span class="string">&quot;nf4&quot;</span>, <span class="comment"># Quantization type</span></span><br><span class="line">bnb_4bit_compute_dtype=<span class="string">&quot;float16&quot;</span>, <span class="comment"># Compute dtype</span></span><br><span class="line">bnb_4bit_use_double_quant=<span class="literal">True</span>, <span class="comment"># Apply nested quantization</span></span><br><span class="line">)</span><br><span class="line"><span class="comment"># Merge LoRA and base model</span></span><br><span class="line">model = AutoPeftModelForCausalLM.from_pretrained(</span><br><span class="line"><span class="string">&quot;TinyLlama-1.1B-qlora&quot;</span>,</span><br><span class="line">low_cpu_mem_usage=<span class="literal">True</span>,</span><br><span class="line">device_map=<span class="string">&quot;auto&quot;</span>,</span><br><span class="line">quantization_config=bnb_config,</span><br><span class="line">)</span><br><span class="line">merged_model = model.merge_and_unload()</span><br><span class="line"><span class="comment"># Load LLaMA tokenizer</span></span><br><span class="line">model_name = <span class="string">&quot;TinyLlama/TinyLlama-1.1B-intermediate-step-1431k-3T&quot;</span></span><br><span class="line">tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=<span class="literal">True</span>)</span><br><span class="line">tokenizer.pad_token = <span class="string">&quot;&lt;PAD&gt;&quot;</span></span><br><span class="line">tokenizer.padding_side = <span class="string">&quot;left&quot;</span></span><br></pre></td></tr></table></figure>
+<p>接下来，我们使用<strong>与之前相同的 <span class="math inline">\(\text{LoRA}\)</span> 配置</strong>来执行 <span class="math inline">\(\text{DPO}\)</span> 训练：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> peft <span class="keyword">import</span> LoraConfig, prepare_model_for_kbit_training, get_peft_model</span><br><span class="line"><span class="comment"># Prepare LoRA configuration</span></span><br><span class="line">peft_config = LoraConfig(</span><br><span class="line">lora_alpha=<span class="number">32</span>, <span class="comment"># LoRA Scaling</span></span><br><span class="line">lora_dropout=<span class="number">0.1</span>, <span class="comment"># Dropout for LoRA Layers</span></span><br><span class="line">r=<span class="number">64</span>, <span class="comment"># Rank</span></span><br><span class="line">bias=<span class="string">&quot;none&quot;</span>,</span><br><span class="line">task_type=<span class="string">&quot;CAUSAL_LM&quot;</span>,</span><br><span class="line">target_modules= <span class="comment"># Layers to target</span></span><br><span class="line">[<span class="string">&quot;k_proj&quot;</span>, <span class="string">&quot;gate_proj&quot;</span>, <span class="string">&quot;v_proj&quot;</span>, <span class="string">&quot;up_proj&quot;</span>, <span class="string">&quot;q_proj&quot;</span>, <span class="string">&quot;o_proj&quot;</span>,</span><br><span class="line"><span class="string">&quot;down_proj&quot;</span>]</span><br><span class="line">)</span><br><span class="line"><span class="comment"># prepare model for training</span></span><br><span class="line">model = prepare_model_for_kbit_training(model)</span><br><span class="line">model = get_peft_model(model, peft_config)</span><br></pre></td></tr></table></figure>
+<h4 id="训练配置-1"><strong>训练配置</strong></h4>
+<p>Training Configuration</p>
+<p>为了<strong>简单起见</strong>，我们将使用<strong>与之前相同的训练参数</strong>，但有<strong>一个区别</strong>。为了说明目的，我们<strong>运行 <span class="math inline">\(\text{200}\)</span> 步</strong>，而<strong>不是运行一个 <span class="math inline">\(\text{epoch}\)</span></strong>（可能需要长达两小时）。此外，我们<strong>添加了 <span class="math inline">\(\text{warmup\_ratio}\)</span> 参数</strong>，它在<strong>前 <span class="math inline">\(\text{10\%}\)</span> 的步骤</strong>中将<strong>学习率</strong>从 <span class="math inline">\(\text{0}\)</span> 增加到我们设定的 <span class="math inline">\(\text{learning\_rate}\)</span> 值。通过在<strong>开始时保持较小的学习率</strong>（即<strong>预热期</strong> <span class="math inline">\(\text{warmup period}\)</span>），我们允许模型在应用较大的学习率之前<strong>调整以适应数据</strong>，从而<strong>避免有害的发散</strong> (<span class="math inline">\(\text{divergence}\)</span>):</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> trl <span class="keyword">import</span> DPOConfig</span><br><span class="line">output_dir = <span class="string">&quot;./results&quot;</span></span><br><span class="line"><span class="comment"># Training arguments</span></span><br><span class="line">training_arguments = DPOConfig(</span><br><span class="line">output_dir=output_dir,</span><br><span class="line">per_device_train_batch_size=<span class="number">2</span>,</span><br><span class="line">gradient_accumulation_steps=<span class="number">4</span>,</span><br><span class="line">optim=<span class="string">&quot;paged_adamw_32bit&quot;</span>,</span><br><span class="line">learning_rate=<span class="number">1e-5</span>,</span><br><span class="line">lr_scheduler_type=<span class="string">&quot;cosine&quot;</span>,</span><br><span class="line">max_steps=<span class="number">200</span>,</span><br><span class="line">logging_steps=<span class="number">10</span>,</span><br><span class="line">fp16=<span class="literal">True</span>,</span><br><span class="line">gradient_checkpointing=<span class="literal">True</span>,</span><br><span class="line">warmup_ratio=<span class="number">0.1</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<h4 id="训练-1"><strong>训练</strong></h4>
+<p>Training</p>
+<p>现在我们已经<strong>准备好所有的模型和参数</strong>，就可以开始<strong>微调我们的模型</strong>了：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> trl <span class="keyword">import</span> DPOTrainer</span><br><span class="line"><span class="comment"># Create DPO trainer</span></span><br><span class="line">dpo_trainer = DPOTrainer(</span><br><span class="line">model,</span><br><span class="line">args=training_arguments,</span><br><span class="line">train_dataset=dpo_dataset,</span><br><span class="line">tokenizer=tokenizer,</span><br><span class="line">peft_config=peft_config,</span><br><span class="line">beta=<span class="number">0.1</span>,</span><br><span class="line">max_prompt_length=<span class="number">512</span>,</span><br><span class="line">max_length=<span class="number">512</span>,</span><br><span class="line">)</span><br><span class="line"><span class="comment"># Fine-tune model with DPO</span></span><br><span class="line">dpo_trainer.train()</span><br><span class="line"><span class="comment"># Save adapter</span></span><br><span class="line">dpo_trainer.model.save_pretrained(<span class="string">&quot;TinyLlama-1.1B-dpo-qlora&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p>我们<strong>创建了第二个适配器</strong>。为了<strong>合并这两个适配器</strong>，我们<strong>迭代地将适配器与基础模型合并</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> peft <span class="keyword">import</span> PeftModel</span><br><span class="line"><span class="comment"># Merge LoRA and base model</span></span><br><span class="line">model = AutoPeftModelForCausalLM.from_pretrained(</span><br><span class="line"><span class="string">&quot;TinyLlama-1.1B-qlora&quot;</span>,</span><br><span class="line"></span><br><span class="line">low_cpu_mem_usage=<span class="literal">True</span>,</span><br><span class="line">device_map=<span class="string">&quot;auto&quot;</span>,</span><br><span class="line">)</span><br><span class="line">sft_model = model.merge_and_unload()</span><br><span class="line"><span class="comment"># Merge DPO LoRA and SFT model</span></span><br><span class="line">dpo_model = PeftModel.from_pretrained(</span><br><span class="line">sft_model,</span><br><span class="line"><span class="string">&quot;TinyLlama-1.1B-dpo-qlora&quot;</span>,</span><br><span class="line">device_map=<span class="string">&quot;auto&quot;</span>,</span><br><span class="line">)</span><br><span class="line">dpo_model = dpo_model.merge_and_unload()</span><br></pre></td></tr></table></figure>
+<p>这种 <strong><span class="math inline">\(\text{SFT}\)</span> + <span class="math inline">\(\text{DPO}\)</span> 的组合</strong>是<strong>首先微调模型以执行基本聊天</strong>，然后<strong>将其答案与人类偏好对齐</strong>的<strong>绝佳方式</strong>。然而，它确实<strong>需要付出代价</strong>，因为我们需要<strong>执行两个训练循环</strong>，并且可能需要<strong>调整两个过程中的参数</strong>。</p>
+<p>自从 <span class="math inline">\(\text{DPO}\)</span> 发布以来，<strong>新的对齐偏好的方法</strong>不断被开发出来。值得注意的是<strong>赔率比偏好优化 (<span class="math inline">\(\text{Odds Ratio Preference Optimization, ORPO}\)</span>)</strong>，这是一个<strong>将 <span class="math inline">\(\text{SFT}\)</span> 和 <span class="math inline">\(\text{DPO}\)</span> 结合到一个单一训练过程中的流程</strong>。它<strong>消除了执行两个独立训练循环的需要</strong>，<strong>进一步简化了训练过程</strong>，同时<strong>允许使用 <span class="math inline">\(\text{QLoRA}\)</span></strong>。</p>
+<h3 id="总结"><strong>总结</strong></h3>
+<p>在本章中，我们探索了<strong>微调预训练 <span class="math inline">\(\text{LLM}\)</span> 的不同步骤</strong>。我们通过<strong>低秩适应 (<span class="math inline">\(\text{LoRA}\)</span>) 技术</strong>，利用<strong>参数高效微调 (<span class="math inline">\(\text{PEFT}\)</span>)</strong> 来执行微调。我们解释了<strong>如何通过量化</strong> (<span class="math inline">\(\text{quantization}\)</span>) <strong>扩展 <span class="math inline">\(\text{LoRA}\)</span></strong>，量化是一种在<strong>表示模型和适配器的参数时减少内存限制的技术</strong>。</p>
+<p>我们探索的<strong>微调过程包含两个步骤</strong>。</p>
+<p>在<strong>第一步</strong>中，我们使用<strong>指令数据</strong>对<strong>预训练 <span class="math inline">\(\text{LLM}\)</span></strong> 执行了<strong>有监督微调</strong> (<span class="math inline">\(\text{supervised fine-tuning}\)</span>)，这通常称为<strong>指令调整</strong> (<span class="math inline">\(\text{instruction tuning}\)</span>)。这产生了一个<strong>具有聊天式行为</strong>并能<strong>密切遵循指令的模型</strong>。</p>
+<p>在<strong>第二步</strong>中，我们通过使用<strong>对齐数据</strong>（即表示<strong>哪种类型的答案优于其他答案</strong>的数据）对其进行微调，进一步改进了模型。这个过程被称为<strong>偏好调整</strong> (<span class="math inline">\(\text{preference tuning}\)</span>)，它将<strong>人类偏好</strong>提炼到<strong>先前经过指令调整的模型</strong>中。</p>
+<p>总而言之，本章展示了<strong>微调预训练 <span class="math inline">\(\text{LLM}\)</span> 的两个主要步骤</strong>，以及这<strong>如何能够产生更准确、信息更丰富的输出</strong>。</p>
+<h2 id="afterword"><strong>Afterword</strong></h2>
+<p>感谢所有加入我们，一同完成这次穿越大型语言模型世界的迷人旅程的读者。我们感激您致力于学习这些功能强大、彻底革新了语言处理领域的模型。</p>
+<p>在整本书中，我们看到了 <span class="math inline">\(\text{LLM}\)</span> 的工作原理，以及如何利用它们来创建各种应用，从简单的聊天机器人到更复杂的系统，例如搜索引擎。我们还探索了各种方法，用于针对特定任务（包括分类、生成和语言表示）对预训练的 <span class="math inline">\(\text{LLM}\)</span> 进行微调。通过掌握这些技术，读者将能够释放 <span class="math inline">\(\text{LLM}\)</span> 的潜力，并创建可从其能力中受益的创新解决方案。这些知识将使读者能够保持领先地位，并适应该领域的新发展。</p>
+<p>在本书即将结束之际，我们要强调，我们对 <span class="math inline">\(\text{LLM}\)</span> 的探索仅仅是一个开始。未来还有更多激动人心的发展，我们鼓励您继续关注该领域的进展。为了协助这个过程，请继续关注本书的存储库，我们会在其中持续添加资源。</p>
+<p>我们希望通过阅读本书，您对 <span class="math inline">\(\text{LLM}\)</span> 如何应用于各种应用程序以及它们如何具备改变各行各业的潜力，有了更深入的理解。</p>
+<p>以本书为指导，我们相信您将有充足的准备来驾驭 <span class="math inline">\(\text{LLM}\)</span> 这一令人兴奋的领域，并为这个快速发展的领域做出有意义的贡献。</p>
+<p>书籍各章的机翻md文件：<br />
+<a href="/2025/04/01/Hands-On%20Large%20Language%20Models%20%E7%9B%AE%E5%BD%95%20%E5%89%8D%E8%A8%80/" title="《Hands-On Large Language Models》目录及前言">《Hands-On Large Language Models》目录及前言</a><br />
+<a href="/2025/04/02/Hands-On%20Large%20Language%20Models%201/" title="《Hands-On Large Language Models》第1章 大型语言模型简介">《Hands-On Large Language Models》第1章 大型语言模型简介</a><br />
+<a href="/2025/04/03/Hands-On%20Large%20Language%20Models%202/" title="《Hands-On Large Language Models》第2章 词元与嵌入">《Hands-On Large Language Models》第2章 词元与嵌入</a><br />
+<a href="/2025/04/04/Hands-On%20Large%20Language%20Models%203/" title="《Hands-On Large Language Models》第3章 深入了解大型语言模型">《Hands-On Large Language Models》第3章 深入了解大型语言模型</a><br />
+<a href="/2025/04/05/Hands-On%20Large%20Language%20Models%204/" title="《Hands-On Large Language Models》第4章 文本分类">《Hands-On Large Language Models》第4章 文本分类</a><br />
+<a href="/2025/04/06/Hands-On%20Large%20Language%20Models%205/" title="《Hands-On Large Language Models》第5章 文本聚类和主题建模">《Hands-On Large Language Models》第5章 文本聚类和主题建模</a><br />
+<a href="/2025/04/07/Hands-On%20Large%20Language%20Models%206/" title="《Hands-On Large Language Models》第6章 提示工程">《Hands-On Large Language Models》第6章 提示工程</a><br />
+<a href="/2025/04/08/Hands-On%20Large%20Language%20Models%207/" title="《Hands-On Large Language Models》第7章 高级文本生成技术与工具">《Hands-On Large Language Models》第7章 高级文本生成技术与工具</a><br />
+<a href="/2025/04/09/Hands-On%20Large%20Language%20Models%208/" title="《Hands-On Large Language Models》第8章 语义搜索与检索增强生成">《Hands-On Large Language Models》第8章 语义搜索与检索增强生成</a><br />
+<a href="/2025/04/10/Hands-On%20Large%20Language%20Models%209/" title="《Hands-On Large Language Models》第9章 多模态大型语言模型">《Hands-On Large Language Models》第9章 多模态大型语言模型</a><br />
+<a href="/2025/04/11/Hands-On%20Large%20Language%20Models%2010/" title="《Hands-On Large Language Models》第10章 创建文本嵌入模型">《Hands-On Large Language Models》第10章 创建文本嵌入模型</a><br />
+<a href="/2025/04/12/Hands-On%20Large%20Language%20Models%2011/" title="《Hands-On Large Language Models》第11章 微调用于分类的表征模型">《Hands-On Large Language Models》第11章 微调用于分类的表征模型</a><br />
+<a href="/2025/04/13/Hands-On%20Large%20Language%20Models%2012/" title="《Hands-On Large Language Models》第12章 生成模型的微调">《Hands-On Large Language Models》第12章 生成模型的微调</a></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -3149,494 +3529,6 @@
 <li><span class="math inline">\(\text{Transformer}\)</span> 在不断出现新的发展和拟议的调整，以在不同的场景中改进它们，包括<strong>语言模型</strong>和其他<strong>领域和应用</strong>。</li>
 </ul>
 <p>在本书的<strong>第二部分</strong>，我们将涵盖 <span class="math inline">\(\text{LLM}\)</span> 的一些<strong>实际应用</strong>。在<strong>第 <span class="math inline">\(\text{4}\)</span> 章</strong>中，我们将从<strong>文本分类</strong>开始，这是<strong>语言 <span class="math inline">\(\text{AI}\)</span></strong> 中的一个常见任务。下一章将作为<strong>应用生成式和表征模型</strong>的介绍。</p>
-<p>书籍各章的机翻md文件：<br />
-<a href="/2025/04/01/Hands-On%20Large%20Language%20Models%20%E7%9B%AE%E5%BD%95%20%E5%89%8D%E8%A8%80/" title="《Hands-On Large Language Models》目录及前言">《Hands-On Large Language Models》目录及前言</a><br />
-<a href="/2025/04/02/Hands-On%20Large%20Language%20Models%201/" title="《Hands-On Large Language Models》第1章 大型语言模型简介">《Hands-On Large Language Models》第1章 大型语言模型简介</a><br />
-<a href="/2025/04/03/Hands-On%20Large%20Language%20Models%202/" title="《Hands-On Large Language Models》第2章 词元与嵌入">《Hands-On Large Language Models》第2章 词元与嵌入</a><br />
-<a href="/2025/04/04/Hands-On%20Large%20Language%20Models%203/" title="《Hands-On Large Language Models》第3章 深入了解大型语言模型">《Hands-On Large Language Models》第3章 深入了解大型语言模型</a><br />
-<a href="/2025/04/05/Hands-On%20Large%20Language%20Models%204/" title="《Hands-On Large Language Models》第4章 文本分类">《Hands-On Large Language Models》第4章 文本分类</a><br />
-<a href="/2025/04/06/Hands-On%20Large%20Language%20Models%205/" title="《Hands-On Large Language Models》第5章 文本聚类和主题建模">《Hands-On Large Language Models》第5章 文本聚类和主题建模</a><br />
-<a href="/2025/04/07/Hands-On%20Large%20Language%20Models%206/" title="《Hands-On Large Language Models》第6章 提示工程">《Hands-On Large Language Models》第6章 提示工程</a><br />
-<a href="/2025/04/08/Hands-On%20Large%20Language%20Models%207/" title="《Hands-On Large Language Models》第7章 高级文本生成技术与工具">《Hands-On Large Language Models》第7章 高级文本生成技术与工具</a><br />
-<a href="/2025/04/09/Hands-On%20Large%20Language%20Models%208/" title="《Hands-On Large Language Models》第8章 语义搜索与检索增强生成">《Hands-On Large Language Models》第8章 语义搜索与检索增强生成</a><br />
-<a href="/2025/04/10/Hands-On%20Large%20Language%20Models%209/" title="《Hands-On Large Language Models》第9章 多模态大型语言模型">《Hands-On Large Language Models》第9章 多模态大型语言模型</a><br />
-<a href="/2025/04/11/Hands-On%20Large%20Language%20Models%2010/" title="《Hands-On Large Language Models》第10章 创建文本嵌入模型">《Hands-On Large Language Models》第10章 创建文本嵌入模型</a><br />
-<a href="/2025/04/12/Hands-On%20Large%20Language%20Models%2011/" title="《Hands-On Large Language Models》第11章 微调用于分类的表征模型">《Hands-On Large Language Models》第11章 微调用于分类的表征模型</a><br />
-<a href="/2025/04/13/Hands-On%20Large%20Language%20Models%2012/" title="《Hands-On Large Language Models》第12章 生成模型的微调">《Hands-On Large Language Models》第12章 生成模型的微调</a></p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2025/04/03/Hands-On%20Large%20Language%20Models%202/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Rayman.hung">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="墨语浮生">
-      <meta itemprop="description" content="技术分享、读书心得、心情记录">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | 墨语浮生">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2025/04/03/Hands-On%20Large%20Language%20Models%202/" class="post-title-link" itemprop="url">《Hands-On Large Language Models》第2章 词元与嵌入</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2025-04-03 00:00:00" itemprop="dateCreated datePublished" datetime="2025-04-03T00:00:00+08:00">2025-04-03</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="第-text2-章-词元与嵌入"><strong>第 <span class="math inline">\(\text{2}\)</span> 章</strong> <strong>词元与嵌入</strong></h2>
-<p>Tokens and Embeddings</p>
-<p><strong>词元</strong>（<span class="math inline">\(\text{Tokens}\)</span>）和<strong>嵌入</strong>（<span class="math inline">\(\text{embeddings}\)</span>）是使用大型语言模型（<span class="math inline">\(\text{LLM}\)</span>）的两个<strong>核心概念</strong>。正如我们在第一章中所见，它们不仅对于理解语言 <span class="math inline">\(\text{AI}\)</span> 的历史很重要，而且如果不能很好地理解词元和嵌入，我们就无法清晰地了解 <span class="math inline">\(\text{LLM}\)</span> 是如何工作的、是如何构建的以及它们未来的发展方向，如图 <span class="math inline">\(\text{2}-1\)</span> 所示。</p>
-<p><img src="/img3/Hands-On Large Language Models/F2.1.png" alt="F2.1" style="zoom:67%;" /></p>
-<p>在本章中，我们将更仔细地研究什么是词元以及用于驱动 <span class="math inline">\(\text{LLM}\)</span> 的<strong>分词方法</strong>。然后，我们将深入探讨在现代 <span class="math inline">\(\text{LLM}\)</span> 之前出现的著名的 <strong><span class="math inline">\(\text{word}2\text{vec}\)</span> 嵌入方法</strong>，并了解它如何将词元嵌入的概念扩展到构建<strong>商业推荐系统</strong>，这些系统为我们使用的许多应用程序提供支持。最后，我们将从<strong>词元嵌入</strong>转向<strong>句子或文本嵌入</strong>，其中整个句子或文档可以拥有一个代表它的向量——从而支持<strong>语义搜索</strong>和<strong>主题建模</strong>等应用，我们将在本书的第二部分看到这些应用。</p>
-<h3 id="textllm-分词"><strong><span class="math inline">\(\text{LLM}\)</span> 分词</strong></h3>
-<p>LLM Tokenization</p>
-<p>在撰写本文时，大多数人与语言模型交互的方式是通过一个<strong>网页演练场</strong>（<span class="math inline">\(\text{web playground}\)</span>），它呈现了一个用户与语言模型之间的<strong>聊天界面</strong>。您可能会注意到，模型不会一次性生成所有输出响应；它实际上是<strong>一次生成一个词元</strong>。</p>
-<p>但词元不仅仅是模型的<strong>输出</strong>，它们也是模型<strong>看待输入</strong>的方式。发送给模型的文本提示首先会被分解成词元，我们现在就来看看。</p>
-<h4 id="分词器如何准备语言模型的输入"><strong>分词器如何准备语言模型的输入</strong></h4>
-<p>How Tokenizers Prepare the Inputs to the Language Model</p>
-<p>从外部来看，生成式 <span class="math inline">\(\text{LLM}\)</span> 接收一个输入提示并生成一个响应，如图 <span class="math inline">\(\text{2}-2\)</span> 所示。</p>
-<p><img src="/img3/Hands-On Large Language Models/F2.2.png" alt="F2.1" style="zoom:67%;" /></p>
-<p>然而，在提示呈现给语言模型之前，它必须先经过一个<strong>分词器</strong>，将其分解成碎片。您可以在 <span class="math inline">\(\text{OpenAI Platform}\)</span> 上找到一个展示 <span class="math inline">\(\text{GPT}-4\)</span> 分词器的示例。如果我们向其输入文本，它会显示图 <span class="math inline">\(\text{2}-3\)</span> 中的输出，其中每个词元都用不同的颜色显示。</p>
-<p><img src="/img3/Hands-On Large Language Models/F2.3.png" alt="F2.1" style="zoom:67%;" /></p>
-<p>让我们看一个代码示例，自己来与这些词元进行交互。在这里，我们将下载一个 <span class="math inline">\(\text{LLM}\)</span>，并看看如何在用 <span class="math inline">\(\text{LLM}\)</span> 生成文本之前对输入进行分词。</p>
-<h4 id="下载和运行-textllm"><strong>下载和运行 <span class="math inline">\(\text{LLM}\)</span></strong></h4>
-<p>Downloading and Running an LLM</p>
-<p>让我们从加载模型及其分词器开始，就像我们在第 <span class="math inline">\(\text{1}\)</span> 章中所做的那样：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> AutoModelForCausalLM, AutoTokenizer</span><br><span class="line"><span class="comment"># Load model and tokenizer</span></span><br><span class="line">model = AutoModelForCausalLM.from_pretrained(</span><br><span class="line"><span class="string">&quot;microsoft/Phi-3-mini-4k-instruct&quot;</span>,</span><br><span class="line">device_map=<span class="string">&quot;cuda&quot;</span>,</span><br><span class="line">torch_dtype=<span class="string">&quot;auto&quot;</span>,</span><br><span class="line">trust_remote_code=<span class="literal">True</span>,</span><br><span class="line">)</span><br><span class="line">tokenizer = AutoTokenizer.from_pretrained(<span class="string">&quot;microsoft/Phi-3-mini-4k-instruct&quot;</span>)</span><br></pre></td></tr></table></figure>
-<p>然后我们可以继续进行实际的生成。我们首先声明我们的提示，然后对其进行<strong>分词</strong>，然后将这些词元传递给模型，模型将生成其输出。在这种情况下，我们要求模型只生成 <span class="math inline">\(\text{20}\)</span> 个新的词元：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">prompt = <span class="string">&quot;Write an email apologizing to Sarah for the tragic gardening mishap.</span></span><br><span class="line"><span class="string">Explain how it happened.&lt;|assistant|&gt;&quot;</span></span><br><span class="line"><span class="comment"># Tokenize the input prompt</span></span><br><span class="line">input_ids = tokenizer(prompt, return_tensors=<span class="string">&quot;pt&quot;</span>).input_ids.to(<span class="string">&quot;cuda&quot;</span>)</span><br><span class="line"><span class="comment"># Generate the text</span></span><br><span class="line">generation_output = model.generate(</span><br><span class="line">input_ids=input_ids,</span><br><span class="line">max_new_tokens=<span class="number">20</span></span><br><span class="line">)</span><br><span class="line"><span class="comment"># Print the output</span></span><br><span class="line"><span class="built_in">print</span>(tokenizer.decode(generation_output[<span class="number">0</span>]))</span><br></pre></td></tr></table></figure>
-<p>输出：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;s&gt; Write an email apologizing to Sarah for the tragic gardening mishap.</span><br><span class="line">Explain how it happened.&lt;|assistant|&gt; Subject: My Sincere Apologies for the</span><br><span class="line">Gardening Mishap</span><br><span class="line">Dear</span><br></pre></td></tr></table></figure>
-<p><strong>粗体</strong>文本是模型生成的 <span class="math inline">\(\text{20}\)</span> 个词元(Subject: My Sincere Apologies for the Gardening Mishap Dear)。</p>
-<p>查看代码，我们可以看到模型实际上<strong>并没有接收文本提示</strong>。相反，<strong>分词器</strong>处理了输入提示，并在 <span class="math inline">\(\text{input\_ids}\)</span> 变量中返回了模型所需的信息，模型将此作为其输入。</p>
-<p>让我们打印 <span class="math inline">\(\text{input\_ids}\)</span> 来看看它里面包含什么：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">tensor([[ <span class="number">1</span>, <span class="number">14350</span>, <span class="number">385</span>, <span class="number">4876</span>, <span class="number">27746</span>, <span class="number">5281</span>, <span class="number">304</span>, <span class="number">19235</span>, <span class="number">363</span>, <span class="number">278</span>, <span class="number">25305</span>, <span class="number">293</span>,</span><br><span class="line"><span class="number">16423</span>, <span class="number">292</span>, <span class="number">286</span>, <span class="number">728</span>, <span class="number">481</span>, <span class="number">29889</span>, <span class="number">12027</span>, <span class="number">7420</span>, <span class="number">920</span>, <span class="number">372</span>, <span class="number">9559</span>, <span class="number">29889</span>, <span class="number">32001</span>]],</span><br><span class="line">device=<span class="string">&#x27;cuda:0&#x27;</span>)</span><br></pre></td></tr></table></figure>
-<p>这揭示了 <span class="math inline">\(\text{LLM}\)</span> 响应的输入：一个<strong>整数序列</strong>，如图 <span class="math inline">\(\text{2}-4\)</span> 所示。每个整数都是特定词元（字符、词或词的一部分）的<strong>唯一 <span class="math inline">\(\text{ID}\)</span></strong>。这些 <span class="math inline">\(\text{ID}\)</span> 引用了分词器内部的一个表，该表包含它所知道的所有词元。</p>
-<p><img src="/img3/Hands-On Large Language Models/F2.4.png" alt="F2.1" style="zoom:67%;" /></p>
-<p>如果我们想检查这些 <span class="math inline">\(\text{ID}\)</span>，我们可以使用分词器的 <span class="math inline">\(\text{decode}\)</span> 方法将 <span class="math inline">\(\text{ID}\)</span> 翻译回我们可以阅读的文本：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> <span class="built_in">id</span> <span class="keyword">in</span> input_ids[<span class="number">0</span>]:</span><br><span class="line"><span class="built_in">print</span>(tokenizer.decode(<span class="built_in">id</span>))</span><br></pre></td></tr></table></figure>
-<p>这将打印出（每个词元在单独的一行）：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">&lt;s&gt;</span><br><span class="line">Write</span><br><span class="line">an</span><br><span class="line">email</span><br><span class="line">apolog</span><br><span class="line">izing</span><br><span class="line">to</span><br><span class="line">Sarah</span><br><span class="line">for</span><br><span class="line">the</span><br><span class="line">trag</span><br><span class="line">ic</span><br><span class="line">garden</span><br><span class="line">ing</span><br><span class="line">m</span><br><span class="line">ish</span><br><span class="line">ap</span><br><span class="line">.</span><br><span class="line">Exp</span><br><span class="line">lain</span><br><span class="line">how</span><br><span class="line">it</span><br><span class="line">happened</span><br><span class="line">.</span><br><span class="line">&lt;|assistant|&gt;</span><br></pre></td></tr></table></figure>
-<p>这就是分词器<strong>分解我们输入提示</strong>的方式。请注意以下几点：</p>
-<ul>
-<li>第一个词元是 <span class="math inline">\(\text{ID 1}\)</span>（<span class="math inline">\(\text{&lt;s&gt;}\)</span>），这是一个<strong>特殊词元</strong>，表示文本的开头。</li>
-<li>一些词元是<strong>完整的词</strong>（例如，<span class="math inline">\(\text{Write}\)</span>、<span class="math inline">\(\text{an}\)</span>、<span class="math inline">\(\text{email}\)</span>）。</li>
-<li>一些词元是<strong>词的一部分</strong>（例如，<span class="math inline">\(\text{apolog}\)</span>、<span class="math inline">\(\text{izing}\)</span>、<span class="math inline">\(\text{trag}\)</span>、<span class="math inline">\(\text{ic}\)</span>）。</li>
-<li><strong>标点符号</strong>是它们自己的词元。</li>
-</ul>
-<p>请注意<strong>空格字符</strong>本身没有自己的词元。相反，部分词元（如“<span class="math inline">\(\text{izing}\)</span>”和“<span class="math inline">\(\text{ic}\)</span>”）的开头有一个<strong>特殊的隐藏字符</strong>，表示它们与文本中<strong>前一个词元是连接在一起</strong>的。没有该特殊字符的词元被假定<strong>前面有一个空格</strong>。</p>
-<p>在输出端，我们也可以通过打印 <span class="math inline">\(\text{generation\_output}\)</span> 变量来检查模型生成的词元。这会显示输入词元以及输出词元（我们用粗体突出显示新词元）：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">tensor([[ <span class="number">1</span>, <span class="number">14350</span>, <span class="number">385</span>, <span class="number">4876</span>, <span class="number">27746</span>, <span class="number">5281</span>, <span class="number">304</span>, <span class="number">19235</span>, <span class="number">363</span>, <span class="number">278</span>,</span><br><span class="line"><span class="number">25305</span>, <span class="number">293</span>, <span class="number">16423</span>, <span class="number">292</span>, <span class="number">286</span>, <span class="number">728</span>, <span class="number">481</span>, <span class="number">29889</span>, <span class="number">12027</span>, <span class="number">7420</span>,</span><br><span class="line"><span class="number">920</span>, <span class="number">372</span>, <span class="number">9559</span>, <span class="number">29889</span>, <span class="number">32001</span>, <span class="number">3323</span>, <span class="number">622</span>, <span class="number">29901</span>, <span class="number">1619</span>, <span class="number">317</span>,</span><br><span class="line"><span class="number">3742</span>, <span class="number">406</span>, <span class="number">6225</span>, <span class="number">11763</span>, <span class="number">363</span>, <span class="number">278</span>, <span class="number">19906</span>, <span class="number">292</span>, <span class="number">341</span>, <span class="number">728</span>,</span><br><span class="line"><span class="number">481</span>, <span class="number">13</span>, <span class="number">13</span>, <span class="number">29928</span>, <span class="number">799</span>]], device=<span class="string">&#x27;cuda:0&#x27;</span>)</span><br></pre></td></tr></table></figure>
-<p>这告诉我们模型生成了词元 <span class="math inline">\(\text{3323}\)</span>，即“<span class="math inline">\(\text{Sub}\)</span>”，紧接着是词元 <span class="math inline">\(\text{622}\)</span>，“<span class="math inline">\(\text{ject}\)</span>”。它们一起构成了“<span class="math inline">\(\text{Subject}\)</span>”这个词。然后紧跟着是词元 <span class="math inline">\(\text{29901}\)</span>，它是冒号“<span class="math inline">\(\text{:}\)</span>”……依此类推。就像在输入端一样，我们在输出端也需要<strong>分词器</strong>将词元 <span class="math inline">\(\text{ID}\)</span> 翻译成实际的文本。我们使用分词器的 <span class="math inline">\(\text{decode}\)</span> 方法来实现这一点。我们可以向它传递单个词元 <span class="math inline">\(\text{ID}\)</span> 或 <span class="math inline">\(\text{ID}\)</span> 列表：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(tokenizer.decode(<span class="number">3323</span>))</span><br><span class="line"><span class="built_in">print</span>(tokenizer.decode(<span class="number">622</span>))</span><br><span class="line"><span class="built_in">print</span>(tokenizer.decode([<span class="number">3323</span>, <span class="number">622</span>]))</span><br><span class="line"><span class="built_in">print</span>(tokenizer.decode(<span class="number">29901</span>))</span><br></pre></td></tr></table></figure>
-<p>输出：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Sub</span><br><span class="line">ject</span><br><span class="line">Subject</span><br><span class="line">:</span><br></pre></td></tr></table></figure>
-<h4 id="分词器如何分解文本"><strong>分词器如何分解文本？</strong></h4>
-<p>How Does the Tokenizer Break Down Text?</p>
-<p>有三个主要因素决定了分词器如何分解输入提示。</p>
-<p>首先，在<strong>模型设计时</strong>，模型的创建者会选择一种<strong>分词方法</strong>。流行的方法包括<strong>字节对编码 (<span class="math inline">\(\text{BPE}\)</span>)</strong>（<span class="math inline">\(\text{GPT}\)</span> 模型广泛使用）和 <strong><span class="math inline">\(\text{WordPiece}\)</span></strong>（<span class="math inline">\(\text{BERT}\)</span> 使用）。这些方法相似之处在于它们都旨在优化一组高效的词元来表征一个文本数据集，但它们以不同的方式实现这一目标。</p>
-<p>其次，在选择了方法之后，我们需要做出一些<strong>分词器设计选择</strong>，例如<strong>词汇量大小</strong>以及要使用的<strong>特殊词元</strong>。更多内容请参见第 <span class="math inline">\(\text{46}\)</span> 页的“比较经过训练的 <span class="math inline">\(\text{LLM}\)</span> 分词器”。</p>
-<p>第三，分词器需要在一个<strong>特定的数据集</strong>上进行训练，以确定它可用于表征该数据集的最佳词汇表。即使我们设置了相同的方法和参数，在一个<strong>英文文本数据集</strong>上训练的分词器也会与在<strong>代码数据集</strong>或<strong>多语言文本数据集</strong>上训练的分词器不同。</p>
-<p>如图 <span class="math inline">\(\text{2}-5\)</span> 所示，除了用于将输入文本处理成语言模型外，分词器还用于语言模型的输出端，将生成的词元 <span class="math inline">\(\text{ID}\)</span> 转换成与之关联的输出词语或词元。</p>
-<p><img src="/img3/Hands-On Large Language Models/F2.5.png" alt="F2.1" style="zoom:67%;" /></p>
-<h4 id="词语词元子词词元字符词元与字节词元"><strong>词语词元、子词词元、字符词元与字节词元</strong></h4>
-<p>Word Versus Subword Versus Character Versus Byte Tokens</p>
-<p>我们刚刚讨论的<strong>分词方案</strong>被称为<strong>子词分词</strong>（<span class="math inline">\(\text{subword tokenization}\)</span>）。它是最常用的分词方案，但并非唯一的一个。图 <span class="math inline">\(\text{2}-6\)</span> 中展示了四种值得注意的分词方式。我们来回顾一下：</p>
-<p><img src="/img3/Hands-On Large Language Models/F2.6.png" alt="F2.1" style="zoom:67%;" /></p>
-<p><strong>词语词元 (<span class="math inline">\(\text{Word tokens}\)</span>)</strong> 这种方法在像 <strong><span class="math inline">\(\text{word}2\text{vec}\)</span></strong> 这样的早期方法中很常见，但在 <span class="math inline">\(\text{NLP}\)</span> 中使用得越来越少。然而，它的用处使其在 <span class="math inline">\(\text{NLP}\)</span> 之外被用于<strong>推荐系统</strong>等用例，正如我们将在本章后面看到的那样。词语分词的一个挑战是分词器<strong>可能无法处理在训练后进入数据集的新词</strong>。这也导致词汇表中有许多词元之间只有微小差异（例如，<span class="math inline">\(\text{apology}\)</span>、<span class="math inline">\(\text{apologize}\)</span>、<span class="math inline">\(\text{apologetic}\)</span>、<span class="math inline">\(\text{apologist}\)</span>）。后一个挑战通过<strong>子词分词</strong>得到解决，因为它有一个用于 <span class="math inline">\(\text{apolog}\)</span> 的词元，然后是与其他许多词元常见的后缀词元（例如，<span class="math inline">\(\text{-y}\)</span>、<span class="math inline">\(\text{-ize}\)</span>、<span class="math inline">\(\text{-etic}\)</span>、<span class="math inline">\(\text{-ist}\)</span>），从而形成了<strong>更具表达力</strong>的词汇表。</p>
-<p><strong>子词词元 (<span class="math inline">\(\text{Subword tokens}\)</span>）</strong> 这种方法包含<strong>完整词</strong>和<strong>部分词</strong>。除了前面提到的词汇表表达力之外，这种方法的另一个好处是它能够通过将新词元分解成更小的字符来<strong>表征新词</strong>，这些字符往往是词汇表的一部分。</p>
-<p><strong>字符词元 (<span class="math inline">\(\text{Character tokens}\)</span>）</strong> 这是另一种可以成功处理<strong>新词</strong>的方法，因为它可以回退到<strong>原始字母</strong>。虽然这使得表征更容易分词，但它使<strong>建模更加困难</strong>。对于使用子词分词的模型，它可以将“<span class="math inline">\(\text{play}\)</span>”表征为一个词元，而使用字符级别词元的模型除了对序列的其余部分进行建模外，还需要对信息进行建模以拼写出“<span class="math inline">\(\text{p}-\text{l}-\text{a}-\text{y}\)</span>”。 子词词元比字符词元具有优势，因为它能够在 <span class="math inline">\(\text{Transformer}\)</span> 模型<strong>有限的上下文长度内拟合更多的文本</strong>。因此，对于上下文长度为 <span class="math inline">\(\text{1,024}\)</span> 的模型，使用子词分词可以拟合的文本量大约是使用字符词元的<strong>三倍</strong>（子词词元平均每个词元大约包含三个字符）。</p>
-<p><strong>字节词元 (<span class="math inline">\(\text{Byte tokens}\)</span>）</strong> 另一种分词方法将词元分解成用于表征 <span class="math inline">\(\text{unicode}\)</span> 字符的<strong>单个字节</strong>。像 <strong>《<span class="math inline">\(\text{CANINE}\)</span>：预训练一个高效的无分词编码器用于语言表征》</strong> 这样的论文概述了类似的方法，这也被称为<strong>“无分词编码”</strong>。其他著作，例如 <strong>《<span class="math inline">\(\text{ByT5}\)</span>：迈向预训练的字节到字节模型的无词元未来》</strong>，表明这是一种有竞争力的方​​法，尤其是在<strong>多语言</strong>场景中。</p>
-<blockquote>
-<p>个人注：字节词元和字符词元的区别见《字节词元和字符词元的区别.md》</p>
-</blockquote>
-<p>这里需要强调一个区别：一些<strong>子词分词器</strong>也会将<strong>字节</strong>作为词元包含在它们的词汇表中，作为当它们遇到无法以其他方式表征的字符时可以回退的<strong>最终构建块</strong>。例如，<span class="math inline">\(\text{GPT}-2\)</span> 和 <span class="math inline">\(\text{RoBERTa}\)</span> 分词器就采用了这种做法。但这并不会使它们成为<strong>无分词的字节级别分词器</strong>，因为它们<strong>不使用这些字节来表征所有内容</strong>，而只表征一个子集，正如我们将在下一节中看到的那样。</p>
-<p>如果您想更深入地了解分词器，<strong>《设计大型语言模型应用》</strong>(《Designing Large Language Model Applications》 by Suhas Pai) 一书中对其进行了更详细的讨论。</p>
-<h4 id="比较经过训练的-textllm-分词器"><strong>比较经过训练的 <span class="math inline">\(\text{LLM}\)</span> 分词器</strong></h4>
-<p>Comparing Trained LLM Tokenizers</p>
-<p>我们前面指出，有三个主要因素决定了分词器中出现的词元：<strong>分词方法</strong>、我们用于初始化分词器的<strong>参数和特殊词元</strong>，以及训练分词器的<strong>数据集</strong>。让我们比较和对比一些实际的、经过训练的分词器，看看这些选择如何改变它们的行为。这种比较将向我们展示较新的分词器是如何改变它们的行为以提高模型性能的，我们还将看到<strong>专业化模型</strong>（例如代码生成模型）通常如何需要<strong>专业化分词器</strong>。</p>
-<p>我们将使用一些分词器对以下文本进行编码：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">text =</span><br><span class="line">&quot;&quot;&quot;</span><br><span class="line">English and CAPITALIZATION</span><br><span class="line">🎵鸟</span><br><span class="line">show_tokens False None elif == &gt;= else: two tabs:&quot; &quot; Three tabs: &quot; &quot;</span><br><span class="line">12.0*50=600</span><br><span class="line">&quot;&quot;&quot;</span><br></pre></td></tr></table></figure>
-<p><img src="/img3/Hands-On Large Language Models/F2.0.png" alt="F2.0" style="zoom:67%;" /></p>
-<p>这将使我们能够看到每个分词器如何处理多种不同类型的词元：</p>
-<ul>
-<li><strong>大小写</strong>。</li>
-<li><strong>非英语语言</strong>。</li>
-<li><strong>表情符号</strong>。</li>
-<li>带有关键字和常用于缩进的空格的<strong>编程代码</strong>（例如在 <span class="math inline">\(\text{Python}\)</span> 等语言中）。</li>
-<li><strong>数字和位数</strong>。</li>
-<li><strong>特殊词元</strong>。这些是具有<strong>表征文本以外角色</strong>的唯一词元。它们包括指示<strong>文本开始</strong>或<strong>文本结束</strong>的词元（模型就是通过这种方式向系统发出信号，表示它已完成此次生成），或我们稍后将看到的其他功能。</li>
-</ul>
-<p>让我们从较旧的分词器到较新的分词器依次查看它们如何对这段文本进行分词，以及这可能说明了语言模型的哪些信息。我们将对文本进行分词，然后使用以下函数将每个词元以带颜色背景的方式打印出来：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">colors_list = [</span><br><span class="line"><span class="string">&#x27;102;194;165&#x27;</span>, <span class="string">&#x27;252;141;98&#x27;</span>, <span class="string">&#x27;141;160;203&#x27;</span>,</span><br><span class="line"><span class="string">&#x27;231;138;195&#x27;</span>, <span class="string">&#x27;166;216;84&#x27;</span>, <span class="string">&#x27;255;217;47&#x27;</span></span><br><span class="line">]</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">show_tokens</span>(<span class="params">sentence, tokenizer_name</span>):</span><br><span class="line">tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)</span><br><span class="line">token_ids = tokenizer(sentence).input_ids</span><br><span class="line"><span class="keyword">for</span> idx, t <span class="keyword">in</span> <span class="built_in">enumerate</span>(token_ids):</span><br><span class="line"><span class="built_in">print</span>(</span><br><span class="line"><span class="string">f&#x27;\x1b[0;30;48;2;<span class="subst">&#123;colors_list[idx % <span class="built_in">len</span>(colors_list)]&#125;</span>m&#x27;</span> +</span><br><span class="line">tokenizer.decode(t) +</span><br><span class="line"><span class="string">&#x27;\x1b[0m&#x27;</span>,</span><br><span class="line">end=<span class="string">&#x27; &#x27;</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
-<p><strong><span class="math inline">\(\text{BERT}\)</span> 基础模型（未区分大小写）（<span class="math inline">\(\text{2018}\)</span>）</strong></p>
-<p><a target="_blank" rel="noopener" href="https://huggingface.co/google-bert/bert-base-uncased">HuggingFace 模型 <span class="math inline">\(\text{hub}\)</span> 上的模型链接</a></p>
-<p><strong>分词方法</strong>：<span class="math inline">\(\text{WordPiece}\)</span>，在《日语和韩语语音搜索》（<span class="math inline">\(\text{Japanese and Korean voice search}\)</span>） 中引入。 <strong>词汇量大小</strong>：<span class="math inline">\(\text{30,522}\)</span> <strong>特殊词元</strong>：</p>
-<ul>
-<li><strong><span class="math inline">\(\text{unk\_token}\)</span> [UNK]</strong> 分词器没有特定编码的<strong>未知词元</strong>。</li>
-<li><strong><span class="math inline">\(\text{sep\_token}\)</span> [SEP]</strong> 一种<strong>分隔符</strong>，可启用需要向模型提供两段文本的某些任务（在这种情况下，模型被称为<strong>交叉编码器</strong>）。一个例子是<strong>重排序</strong>，正如我们将在<strong>第 <span class="math inline">\(\text{8}\)</span> 章</strong>中看到的那样。</li>
-<li><strong><span class="math inline">\(\text{pad\_token}\)</span> [PAD]</strong> 一种<strong>填充词元</strong>，用于填充模型输入中未使用的位置（因为模型期望一定的输入长度，即其<strong>上下文大小</strong>）。</li>
-<li><strong><span class="math inline">\(\text{cls\_token}\)</span> [CLS]</strong> 用于<strong>分类任务</strong>的特殊<strong>分类词元</strong>，正如我们将在<strong>第 <span class="math inline">\(\text{4}\)</span> 章</strong>中看到的那样。</li>
-<li><strong><span class="math inline">\(\text{mask\_token}\)</span> [MASK]</strong> 在<strong>训练过程</strong>中用于隐藏词元的<strong>掩码词元</strong>。</li>
-</ul>
-<p><strong>分词文本</strong>：</p>
-<p><img src="/img3/Hands-On Large Language Models/F0.2.png" alt="F2.1" style="zoom:67%;" /></p>
-<p><strong><span class="math inline">\(\text{BERT}\)</span></strong> 发布时有两个主要版本：<strong>区分大小写</strong>（<span class="math inline">\(\text{cased}\)</span>，保留大小写）和<strong>不区分大小写</strong>（<span class="math inline">\(\text{uncased}\)</span>，所有大写字母首先转换为小写字母）。对于不区分大小写（且更受欢迎）的 <span class="math inline">\(\text{BERT}\)</span> 分词器版本，我们注意到以下几点：</p>
-<ul>
-<li><strong>换行符消失</strong>了，这使得模型<strong>无法感知</strong>编码在换行符中的信息（例如，聊天日志中每回合都在新的一行）。</li>
-<li>所有文本都变成了<strong>小写</strong>。</li>
-<li>“<span class="math inline">\(\text{capitalization}\)</span>”这个词被编码为两个子词元：<span class="math inline">\(\text{capital}\)</span> <code>##ization</code>。<strong><code>##</code> 字符</strong>用于表示该词元是一个<strong>部分词元</strong>，连接到它在文本中前面的词元。这也是一种指示<strong>空格位置</strong>的方法，因为假定前面没有 <code>##</code> 的词元前面有一个空格。</li>
-<li><strong>表情符号</strong>和<strong>中文字符</strong>消失了，被 <strong><span class="math inline">\([\text{UNK}]\)</span> 特殊词元</strong>取代，表示“未知词元”。</li>
-</ul>
-<p><strong><span class="math inline">\(\text{BERT}\)</span> 基础模型（区分大小写）（<span class="math inline">\(\text{2018}\)</span>）</strong></p>
-<p><a target="_blank" rel="noopener" href="https://huggingface.co/google-bert/bert-base-cased">HuggingFace 模型 <span class="math inline">\(\text{hub}\)</span> 上的模型链接</a></p>
-<p><strong>分词方法</strong>：<span class="math inline">\(\text{WordPiece}\)</span> <strong>词汇量大小</strong>：<span class="math inline">\(\text{28,996}\)</span> <strong>特殊词元</strong>：与不区分大小写的版本相同</p>
-<p><strong>分词文本</strong>：</p>
-<p><img src="/img3/Hands-On Large Language Models/F0.3.png" alt="F2.1" style="zoom:67%;" /></p>
-<p><strong><span class="math inline">\(\text{BERT}\)</span> 区分大小写版本</strong>的分词器主要的区别在于<strong>包含了大写词元</strong>。</p>
-<ul>
-<li><p>请注意“<span class="math inline">\(\text{CAPITALIZATION}\)</span>”现在被表征为<strong>八个词元</strong>：<span class="math inline">\(\text{CA}\)</span> <code>##PI</code> <code>##TA</code> <code>##L</code> <code>##</code> <code>##Z</code> <code>##AT</code> <code>##ION</code>。</p></li>
-<li><p>两个 <span class="math inline">\(\text{BERT}\)</span> 分词器都将输入文本包装在一个起始的 <strong><span class="math inline">\(\text{[CLS]}\)</span> 词元</strong>和一个结束的 <strong><span class="math inline">\(\text{[SEP]}\)</span> 词元</strong>之中。<span class="math inline">\(\text{[CLS]}\)</span> 和 <span class="math inline">\(\text{[SEP]}\)</span> 是用于包装输入文本的<strong>实用词元</strong>，它们有各自的用途。<span class="math inline">\(\text{[CLS]}\)</span> 代表<strong>分类</strong>（<span class="math inline">\(\text{classification}\)</span>），因为它有时用作<strong>句子分类</strong>的词元。<span class="math inline">\(\text{[SEP]}\)</span> 代表<strong>分隔符</strong>（<span class="math inline">\(\text{separator}\)</span>），因为它在某些需要向模型传递两个句子的应用中用于分隔句子（例如，在<strong>第 <span class="math inline">\(\text{8}\)</span> 章</strong>中，我们将使用一个 <span class="math inline">\(\text{[SEP]}\)</span> 词元来分隔查询文本和候选结果）。</p></li>
-</ul>
-<p><strong><span class="math inline">\(\text{GPT}-2\)</span> (<span class="math inline">\(\text{2019}\)</span>)</strong></p>
-<p><a target="_blank" rel="noopener" href="https://huggingface.co/openai-community/gpt2">HuggingFace 模型 <span class="math inline">\(\text{hub}\)</span> 上的模型链接</a></p>
-<p><strong>分词方法</strong>：<strong>字节对编码 (<span class="math inline">\(\text{BPE}\)</span>)</strong>，在<strong>《使用子词单元的稀有词神经机器翻译》（<span class="math inline">\(\text{Neural machine translation of rare words with subword units}\)</span>）</strong> 中引入。</p>
-<p><strong>词汇量大小</strong>：<span class="math inline">\(\text{50,257}\)</span></p>
-<p><strong>特殊词元</strong>：<strong><span class="math inline">\(\text{&lt;|endoftext|&gt;}\)</span></strong></p>
-<p><img src="/img3/Hands-On Large Language Models/F0.4.png" alt="F2.1" style="zoom:67%;" /></p>
-<p>对于 <strong><span class="math inline">\(\text{GPT}-2\)</span> 分词器</strong>，我们注意到以下几点：</p>
-<ul>
-<li><p><strong>换行符</strong>在分词器中得到了<strong>表征</strong>。</p></li>
-<li><p><strong>大小写得以保留</strong>，“<span class="math inline">\(\text{CAPITALIZATION}\)</span>”一词被表征为<strong>四个词元</strong>。</p></li>
-<li><p><strong>🎵鸟</strong> 字符现在<strong>每个都被多个词元表征</strong>。虽然我们看到这些词元被打印为 字符，但它们实际上代表了不同的词元。例如，🎵 表情符号被分解成词元 <span class="math inline">\(\text{ID}\)</span> 为 <span class="math inline">\(\text{8582}\)</span>、<span class="math inline">\(\text{236}\)</span> 和 <span class="math inline">\(\text{113}\)</span> 的词元。分词器成功地从这些词元<strong>重构了原始字符</strong>。我们可以通过打印 <span class="math inline">\(\text{tokenizer.decode([8582, 236, 113])}\)</span> 来看到这一点，它会打印出 🎵。</p></li>
-<li><p><strong>两个制表符</strong>被表征为<strong>两个词元</strong>（词汇表中的词元编号都是 <span class="math inline">\(\text{197}\)</span>），而<strong>四个空格</strong>被表征为<strong>三个词元</strong>（编号都是 <span class="math inline">\(\text{220}\)</span>），最后一个空格是闭合引号字符词元的一部分。</p></li>
-</ul>
-<blockquote>
-<p><strong>空白字符</strong>的意义是什么？它们对于模型理解或生成代码<strong>非常重要</strong>。一个使用<strong>单个词元</strong>来表征<strong>四个连续空白字符</strong>的模型，更适合<span class="math inline">\(\text{Python}\)</span> 代码数据集。虽然模型也可以将其表征为四个不同的词元，但这会使<strong>建模更加困难</strong>，因为模型需要跟踪<strong>缩进级别</strong>，这通常会导致性能下降。这是一个<strong>分词选择</strong>如何帮助模型在特定任务上改进的例子。</p>
-</blockquote>
-<p><strong><span class="math inline">\(\text{Flan-T5}\)</span> (<span class="math inline">\(\text{2022}\)</span>)</strong></p>
-<p><strong>分词方法</strong>：<span class="math inline">\(\text{Flan-T5}\)</span> 使用一个名为 <strong><span class="math inline">\(\text{SentencePiece}\)</span></strong> 的分词器实现，它在《<span class="math inline">\(\text{SentencePiece}\)</span>：一个用于神经文本处理的简单且语言无关的子词分词器和反分词器》 中引入，支持 <span class="math inline">\(\text{BPE}\)</span> 和<strong>一元语言模型</strong>（<span class="math inline">\(\text{unigram language model}\)</span>，在《子词正则化：使用多个子词候选改进神经网络翻译模型》 中描述）。</p>
-<p><strong>词汇量大小</strong>：<span class="math inline">\(\text{32,100}\)</span></p>
-<p><strong>特殊词元</strong>：</p>
-<ul>
-<li><strong><span class="math inline">\(\text{unk\_token}\)</span> <span class="math inline">\(\text{&lt;unk&gt;}\)</span></strong></li>
-<li><strong><span class="math inline">\(\text{pad\_token}\)</span> <span class="math inline">\(\text{&lt;pad&gt;}\)</span></strong></li>
-</ul>
-<p><strong>分词文本</strong>：</p>
-<p><img src="/img3/Hands-On Large Language Models/F0.5.png" alt="F2.1" style="zoom:67%;" /></p>
-<p><strong><span class="math inline">\(\text{Flan-T5}\)</span></strong> 系列模型使用 <strong><span class="math inline">\(\text{SentencePiece}\)</span></strong> 方法。我们注意到以下几点：</p>
-<ul>
-<li><strong>没有换行符或空白词元</strong>；这将使模型处理代码变得具有挑战性。</li>
-<li><strong>表情符号</strong>和<strong>中文字符</strong>都被 <strong><span class="math inline">\(\text{&lt;unk&gt;}\)</span> 词元</strong>取代，使模型完全无法识别它们。</li>
-</ul>
-<p><strong><span class="math inline">\(\text{GPT}-4\)</span> (<span class="math inline">\(\text{2023}\)</span>)</strong></p>
-<p><strong>分词方法</strong>：<span class="math inline">\(\text{BPE}\)</span></p>
-<p><strong>词汇量大小</strong>：略超 <strong><span class="math inline">\(\text{10}\)</span> 万</strong></p>
-<p><strong>特殊词元</strong>：</p>
-<ul>
-<li><p><strong><span class="math inline">\(\text{&lt;|endoftext|&gt;}\)</span></strong></p></li>
-<li><p><strong>中间填充词元</strong>（<span class="math inline">\(\text{Fill in the middle tokens}\)</span>）。这三个词元使 <span class="math inline">\(\text{LLM}\)</span> 能够在不仅给定它之前的文本，而且<strong>考虑到它之后的文本</strong>的情况下生成补全。这种方法在论文《高效训练语言模型以填充中间部分》（<span class="math inline">\(\text{Efficient training of language models to fill in the middle}\)</span>） 中有更详细的解释；其确切细节超出了本书的范围。这些特殊词元是：</p>
-<ul>
-<li><strong><span class="math inline">\(\text{&lt;|fim\_prefix|&gt;}\)</span></strong></li>
-<li><strong><span class="math inline">\(\text{&lt;|fim\_middle|&gt;}\)</span></strong></li>
-<li><strong><span class="math inline">\(\text{&lt;|fim\_suffix|&gt;}\)</span></strong></li>
-</ul></li>
-</ul>
-<p><strong>分词文本</strong>：</p>
-<p><img src="/img3/Hands-On Large Language Models/F0.6.png" alt="F2.1" style="zoom:67%;" /></p>
-<p><strong><span class="math inline">\(\text{GPT}-4\)</span> 分词器</strong>的行为与其祖先 <span class="math inline">\(\text{GPT}-2\)</span> 分词器相似。一些不同之处在于：</p>
-<ul>
-<li><strong><span class="math inline">\(\text{GPT}-4\)</span> 分词器</strong>将<strong>四个空格</strong>表征为<strong>单个词元</strong>。事实上，它为<strong>每个最多 <span class="math inline">\(\text{83}\)</span> 个空白字符的序列</strong>都有一个特定的词元。</li>
-<li><span class="math inline">\(\text{Python}\)</span> 关键字 <span class="math inline">\(\text{elif}\)</span> 在 <span class="math inline">\(\text{GPT}-4\)</span> 中有<strong>自己的词元</strong>。这一点和前一点都源于模型除了自然语言之外对<strong>代码</strong>的关注。</li>
-<li><span class="math inline">\(\text{GPT}-4\)</span> 分词器使用<strong>更少的词元</strong>来表征大多数词语。这里的例子包括“<span class="math inline">\(\text{CAPITALIZATION}\)</span>”（两个词元，而 <span class="math inline">\(\text{GPT}-2\)</span> 是四个）和“<span class="math inline">\(\text{tokens}\)</span>”（一个词元，而 <span class="math inline">\(\text{GPT}-2\)</span> 是三个）。</li>
-<li>请回顾我们关于 <span class="math inline">\(\text{GPT}-2\)</span> 分词器中关于 🎵 词元所说的内容。</li>
-</ul>
-<p><strong><span class="math inline">\(\text{StarCoder}2\)</span> (<span class="math inline">\(\text{2024}\)</span>)</strong></p>
-<p><strong><span class="math inline">\(\text{StarCoder}2\)</span></strong> 是一个 <span class="math inline">\(\text{150}\)</span> 亿参数<strong>的模型，专注于</strong>生成代码，在论文《<span class="math inline">\(\text{StarCoder 2}\)</span> 和 <span class="math inline">\(\text{stack v2}\)</span>：下一代》 中有所描述，它延续了《<span class="math inline">\(\text{StarCoder}\)</span>：愿源代码与你同在！（may the source be with you!）》（https://arxiv.org/abs/2305.06161） 中描述的原始 <span class="math inline">\(\text{StarCoder}\)</span> 的工作。</p>
-<p><strong>分词方法</strong>：<strong>字节对编码 (<span class="math inline">\(\text{BPE}\)</span>)</strong></p>
-<p><strong>词汇量大小</strong>：<span class="math inline">\(\text{49,152}\)</span></p>
-<p><strong>特殊词元示例</strong>：</p>
-<ul>
-<li><strong><span class="math inline">\(\text{&lt;|endoftext|&gt;}\)</span></strong></li>
-<li><strong>中间填充词元</strong>（<span class="math inline">\(\text{Fill in the middle tokens}\)</span>）：
-<ul>
-<li><strong><span class="math inline">\(\text{&lt;fim\_prefix&gt;}\)</span></strong></li>
-<li><strong><span class="math inline">\(\text{&lt;fim\_middle&gt;}\)</span></strong></li>
-<li><strong><span class="math inline">\(\text{&lt;fim\_suffix&gt;}\)</span></strong></li>
-<li><strong><span class="math inline">\(\text{&lt;fim\_pad&gt;}\)</span></strong></li>
-</ul></li>
-<li>在表征代码时，<strong>管理上下文</strong>非常重要。一个文件可能会调用在<strong>不同文件</strong>中定义的函数。因此，模型需要一种方法来<strong>识别同一代码仓库中不同文件中的代码</strong>，同时区分不同仓库中的代码。这就是为什么 <span class="math inline">\(\text{StarCoder}2\)</span> 为<strong>仓库名称</strong>和<strong>文件名</strong>使用特殊词元：
-<ul>
-<li><strong><span class="math inline">\(\text{&lt;filename&gt;}\)</span></strong></li>
-<li><strong><span class="math inline">\(\text{&lt;reponame&gt;}\)</span></strong></li>
-<li><strong><span class="math inline">\(\text{&lt;gh\_stars&gt;}\)</span></strong></li>
-</ul></li>
-</ul>
-<p><strong>分词文本</strong>：</p>
-<p><img src="/img3/Hands-On Large Language Models/F0.7.png" alt="F2.1" style="zoom:67%;" /></p>
-<p>这是一个专注于<strong>代码生成</strong>的编码器：</p>
-<ul>
-<li>与 <span class="math inline">\(\text{GPT}-4\)</span> 类似，它将<strong>空白字符序列</strong>编码为<strong>单个词元</strong>。</li>
-<li>与我们迄今为止看到的所有模型的主要区别在于，它将<strong>每个数字</strong>分配了<strong>自己的词元</strong>（因此 <span class="math inline">\(\text{600}\)</span> 变成了 <span class="math inline">\(\text{6}\)</span> <span class="math inline">\(\text{0}\)</span> <span class="math inline">\(\text{0}\)</span>）。这里的假设是，这将有助于<strong>更好地表征数字和数学</strong>。例如，在 GPT-2 中，数字 870 被表征为单个词元。但 <span class="math inline">\(\text{871}\)</span> 被表征为两个词元（<span class="math inline">\(\text{8}\)</span> 和 <span class="math inline">\(\text{71}\)</span>）。您可以直观地看到这可能会如何使模型感到困惑，以及它如何表征数字。</li>
-</ul>
-<p><strong><span class="math inline">\(\text{Galactica}\)</span></strong></p>
-<p>论文《<span class="math inline">\(\text{Galactica}\)</span>：一个用于科学的大型语言模型》 中描述的 <strong><span class="math inline">\(\text{Galactica}\)</span> 模型</strong>专注于<strong>科学知识</strong>，并在许多科学论文、参考资料和知识库上进行训练。它特别关注<strong>分词</strong>，使其对它所表征的数据集的细微差别更加敏感。例如，它包含了用于<strong>引文、推理、数学、氨基酸序列和 <span class="math inline">\(\text{DNA}\)</span> 序列</strong>的特殊词元。</p>
-<p><strong>分词方法</strong>：<strong>字节对编码 (<span class="math inline">\(\text{BPE}\)</span>)</strong></p>
-<p><strong>词汇量大小</strong>：<span class="math inline">\(\text{50,000}\)</span></p>
-<p><strong>特殊词元</strong>：</p>
-<ul>
-<li><strong><span class="math inline">\(\text{&lt;s&gt;}\)</span></strong></li>
-<li><strong><span class="math inline">\(\text{&lt;pad&gt;}\)</span></strong></li>
-<li><strong><span class="math inline">\(\text{&lt;/s&gt;}\)</span></strong></li>
-<li><strong><span class="math inline">\(\text{&lt;unk&gt;}\)</span></strong></li>
-<li><strong>参考文献</strong>（<span class="math inline">\(\text{References}\)</span>）：引文被包裹在两个特殊词元中：
-<ul>
-<li><strong><span class="math inline">\(\text{[START\_REF]}\)</span></strong></li>
-<li><strong><span class="math inline">\(\text{[END\_REF]}\)</span></strong></li>
-<li>论文中的一个用法示例是：<span class="math inline">\(\text{Recurrent neural net}\text{works, long short-term memory [START\_REF]Long Short-Term Memory, Hochreiter[END\_REF]}\)</span></li>
-</ul></li>
-<li><strong>逐步推理</strong>（<span class="math inline">\(\text{Step-by-step reasoning}\)</span>）：
-<ul>
-<li><strong><span class="math inline">\(\text{&lt;work&gt;}\)</span></strong> 是一个有趣的词元，模型用它来进行<strong>思维链推理</strong>（<span class="math inline">\(\text{chain-of-thought rea}\text{soning}\)</span>）。</li>
-</ul></li>
-</ul>
-<p><strong>分词文本</strong>：</p>
-<p><img src="/img3/Hands-On Large Language Models/F0.8.png" alt="F2.1" style="zoom:67%;" /></p>
-<p><strong><span class="math inline">\(\text{Galactica}\)</span> 分词器</strong>的行为与 <span class="math inline">\(\text{StarCoder}2\)</span> 相似，因为它也考虑到了<strong>代码</strong>。它也以<strong>相同的方式编码空格</strong>：为不同长度的空格序列分配单个词元。然而，它的不同之处在于它<strong>也对制表符</strong>执行了相同的操作。因此，在我们目前所见的所有分词器中，它是唯一一个为由<strong>两个制表符</strong>（\t\t）组成的字符串<strong>分配单个词元</strong>的分词器。</p>
-<p><strong><span class="math inline">\(\text{Phi}-3\)</span>（和 <span class="math inline">\(\text{Llama 2}\)</span>）</strong></p>
-<p>我们在本书中关注的 <strong><span class="math inline">\(\text{Phi}-3\)</span> 模型</strong>重用了 <strong><span class="math inline">\(\text{Llama 2}\)</span></strong> 的分词器，但添加了一些<strong>特殊词元</strong>。</p>
-<p><strong>分词方法</strong>：<strong>字节对编码 (<span class="math inline">\(\text{BPE}\)</span>)</strong></p>
-<p><strong>词汇量大小</strong>：<span class="math inline">\(\text{32,000}\)</span></p>
-<p><strong>特殊词元</strong>：</p>
-<ul>
-<li><p><strong><span class="math inline">\(\text{&lt;|endoftext|&gt;}\)</span></strong></p></li>
-<li><p><strong>聊天词元</strong>（<span class="math inline">\(\text{Chat tokens}\)</span>）：随着聊天 <span class="math inline">\(\text{LLM}\)</span> 在 <span class="math inline">\(\text{2023}\)</span> 年的流行，<span class="math inline">\(\text{LLM}\)</span> 的<strong>对话性质</strong>开始成为一个主要的用例。分词器通过添加指示<strong>对话回合</strong>和<strong>每个说话者角色</strong>的词元来适应这一方向。这些特殊词元包括：</p>
-<ul>
-<li><strong><span class="math inline">\(\text{&lt;|user|&gt;}\)</span></strong></li>
-<li><strong><span class="math inline">\(\text{&lt;|assistant|&gt;}\)</span></strong></li>
-<li><strong><span class="math inline">\(\text{&lt;|system|&gt;}\)</span></strong></li>
-</ul></li>
-</ul>
-<p>我们现在可以并排查看所有这些示例，来回顾我们的旅程。</p>
-<p><img src="/img3/Hands-On Large Language Models/F0.9.png" alt="F2.1" style="zoom:67%;" /></p>
-<p><img src="/img3/Hands-On Large Language Models/F0.10.png" alt="F2.1" style="zoom:67%;" /></p>
-<h4 id="分词器属性"><strong>分词器属性</strong></h4>
-<p>Tokenizer Properties</p>
-<p>前面对经过训练的分词器的导览展示了实际分词器相互之间存在许多不同之处。但是，是什么决定了它们的分词行为呢？有<strong>三组主要的设计选择</strong>决定了分词器将如何分解文本：<strong>分词方法</strong>、<strong>初始化参数</strong>以及分词器所针对的<strong>数据领域</strong>。</p>
-<p><strong>分词方法</strong></p>
-<p>正如我们所见，有多种分词方法，其中<strong>字节对编码 (<span class="math inline">\(\text{BPE}\)</span>)</strong> 是更流行的一种。这些方法中的每一种都概述了一种<strong>算法</strong>，用于如何选择一组合适的词元来表征一个数据集。您可以在 <span class="math inline">\(\text{Hugging Face}\)</span> 总结分词器的页面上找到所有这些方法的精彩概述。</p>
-<p><strong>分词器参数</strong></p>
-<p>在选择了分词方法之后，<span class="math inline">\(\text{LLM}\)</span> 设计者需要对分词器的<strong>参数</strong>做出一些决定。其中包括：</p>
-<p><strong>词汇量大小 (<span class="math inline">\(\text{Vocabulary size}\)</span>)</strong> 要在分词器的词汇表中保留多少个词元？（<span class="math inline">\(\text{30K}\)</span> 和 <span class="math inline">\(\text{50K}\)</span> 经常被用作词汇量大小的值，但我们越来越多地看到更大的尺寸，例如 <span class="math inline">\(\text{100K}\)</span>。）</p>
-<p><strong>特殊词元 (<span class="math inline">\(\text{Special tokens}\)</span>)</strong> 我们希望模型跟踪哪些特殊词元？我们可以根据需要添加任意数量的特殊词元，特别是如果我们要为特殊用例构建 <span class="math inline">\(\text{LLM}\)</span> 时。常见的选择包括：</p>
-<ul>
-<li><strong>文本开始词元</strong>（例如，<span class="math inline">\(\text{&lt;s&gt;}\)</span>）</li>
-<li><strong>文本结束词元</strong></li>
-<li><strong>填充词元</strong></li>
-<li><strong>未知词元</strong></li>
-<li><strong><span class="math inline">\(\text{CLS}\)</span> 词元</strong></li>
-<li><strong>掩码词元</strong></li>
-</ul>
-<p>除了这些之外，<span class="math inline">\(\text{LLM}\)</span> 设计者还可以添加有助于更好地<strong>建模他们试图关注的问题领域</strong>的词元，正如我们在 <span class="math inline">\(\text{Galactica}\)</span> 的 <span class="math inline">\(\text{&lt;work&gt;}\)</span> 和 <span class="math inline">\(\text{[START\_REF]}\)</span> 词元中所看到的那样。</p>
-<p><strong>大小写 (<span class="math inline">\(\text{Capitalization}\)</span>)</strong> 在像英语这样的语言中，我们希望如何处理<strong>大小写</strong>？我们应该将所有内容都转换为小写吗？（<strong>名称的首字母大写</strong>通常带有有用的信息，但我们是否想在词汇表空间上浪费用于<strong>全大写版本词语</strong>的词元？）</p>
-<p><strong>数据的领域</strong></p>
-<p>即使我们选择了<strong>相同的方法和参数</strong>，分词器的行为也会因为<strong>训练所用的数据集</strong>而不同（甚至在我们开始模型训练之前）。前面提到的分词方法通过<strong>优化词汇表来表征特定数据集</strong>而发挥作用。从我们的导览中，我们已经看到这对<strong>代码</strong>和<strong>多语言文本</strong>等数据集产生了怎样的影响。</p>
-<p><img src="/img3/Hands-On Large Language Models/F0.11.png" alt="F2.1" style="zoom:67%;" /></p>
-<p>例如，对于代码，我们已经看到一个<strong>专注于文本的分词器</strong>可能会像这样对<strong>缩进空格</strong>进行分词（我们将用颜色突出显示一些词元）：</p>
-<p>这对一个<strong>专注于代码</strong>的模型来说可能不是最优的。通过做出不同的分词选择，专注于代码的模型通常会得到改进：</p>
-<p>这些<strong>分词选择</strong>使模型的工作变得<strong>更容易</strong>，从而使其<strong>性能改进</strong>的可能性更高。</p>
-<p>您可以在 <span class="math inline">\(\text{Hugging Face}\)</span> 课程的<strong>分词器</strong>部分和《基于 <span class="math inline">\(\text{Transformer}\)</span> 的自然语言处理（修订版）》(Natural Language Processing with Transformers, Revised Edition)(https://www.oreilly.com/library/view/natural-language-processing/9781098136789/) 中找到关于<strong>训练分词器</strong>的更详细教程。</p>
-<h3 id="词元嵌入"><strong>词元嵌入</strong></h3>
-<p>Token Embeddings</p>
-<p>既然我们理解了分词，我们就解决了向语言模型<strong>表征语言</strong>问题的一部分。从这个意义上说，语言是<strong>词元的序列</strong>。如果我们在一个足够大的词元集上训练一个足够好的模型，它就开始<strong>捕获</strong>训练数据集中出现的<strong>复杂模式</strong>：</p>
-<ul>
-<li>如果训练数据包含大量的<strong>英文文本</strong>，这种模式就会表现为模型<strong>能够表征和生成英语</strong>。</li>
-<li>如果训练数据包含<strong>事实信息</strong>（例如 <span class="math inline">\(\text{Wikipedia}\)</span>），模型将具备<strong>生成一些事实信息</strong>的能力（参见下面的注释）。</li>
-</ul>
-<p>这块拼图的下一部分是为这些词元找到<strong>最佳的数值表征</strong>，模型可以使用这些表征来计算和正确地<strong>建模</strong>文本中的模式。这些模式向我们展示为模型在特定语言中的<strong>连贯性</strong>、<strong>编程能力</strong>，或我们期望语言模型具备的不断增长的能力列表中的任何一项。</p>
-<p>正如我们在<strong>第 <span class="math inline">\(\text{1}\)</span> 章</strong>中看到的，这就是<strong>嵌入</strong>（<span class="math inline">\(\text{embeddings}\)</span>）的含义。它们是用于<strong>捕获语言中的含义和模式</strong>的数值表征空间。</p>
-<blockquote>
-<p><strong>哎呀！</strong>然而，达到<strong>语言连贯性</strong>和<strong>优于平均水平的事实生成</strong>的良好阈值开始带来了一个新的问题。一些用户开始<strong>信任模型的事实生成能力</strong>（例如，在 <span class="math inline">\(\text{2023}\)</span> 年初，一些语言模型被称为“<span class="math inline">\(\text{Google}\)</span> 杀手”）。但高级用户很快就认识到，<strong>单独的生成模型</strong>并<strong>不是可靠的搜索引擎</strong>。这导致了<strong>检索增强生成(</strong> retrieval-augmented generation)<strong>) (<span class="math inline">\(\text{RAG}\)</span>)</strong> 的兴起，它结合了<strong>搜索和 <span class="math inline">\(\text{LLM}\)</span></strong>。我们将在<strong>第 <span class="math inline">\(\text{8}\)</span> 章</strong>中更详细地介绍 <span class="math inline">\(\text{RAG}\)</span>。</p>
-</blockquote>
-<h4 id="语言模型为其分词器的词汇表持有嵌入"><strong>语言模型为其分词器的词汇表持有嵌入</strong></h4>
-<p>A Language Model Holds Embeddings for the Vocabulary of Its Tokenizer</p>
-<p>在分词器被初始化和训练之后，它随后被用于其关联<strong>语言模型的训练过程</strong>中。这就是为什么一个<strong>预训练的语言模型</strong>与其<strong>分词器是链接</strong>在一起的，并且<strong>无法在不进行训练的情况下使用不同的分词器</strong>。</p>
-<p>如图 <span class="math inline">\(\text{2}-7\)</span> 所示，语言模型为分词器词汇表中的<strong>每个词元</strong>持有一个<strong>嵌入向量</strong>。当我们下载一个<strong>预训练语言模型</strong>时，模型的一部分就是这个<strong>嵌入矩阵</strong>，它保存了所有这些向量。</p>
-<p>在训练过程开始之前，这些向量会像模型的其余权重一样<strong>随机初始化</strong>，但训练过程会为它们分配值，使它们能够执行训练它们所要完成的<strong>有用行为</strong>。</p>
-<p><img src="/img3/Hands-On Large Language Models/F2.7.png" alt="F2.1" style="zoom:67%;" /></p>
-<h4 id="使用语言模型创建情境化词嵌入">使用语言模型创建情境化词嵌入</h4>
-<p>Creating Contextualized Word Embeddings with Language Models</p>
-<p>既然我们已经介绍了<strong>词元嵌入</strong>作为语言模型的输入，接下来我们看看语言模型如何创建<strong>更好的词元嵌入</strong>。这是使用语言模型进行<strong>文本表征</strong>的主要方式之一。它增强了诸如<strong>命名实体识别</strong>(named-entity recognition)或<strong>抽取式文本摘要</strong>（通过突出显示文本中最重要的部分来总结长文本，而不是生成新的摘要文本）等应用的能力。</p>
-<p>语言模型不是用一个<strong>静态向量</strong>来表征每个词元或词语，而是创建<strong>情境化词嵌入</strong>（<span class="math inline">\(\text{contextualized word embeddings}\)</span>，如图 <span class="math inline">\(\text{2}-8\)</span> 所示），它根据一个词的<strong>上下文</strong>用一个不同的向量来表征它。然后，这些向量可以被其他系统用于各种任务。除了我们上一段提到的文本应用之外，这些情境化向量例如还驱动着像 <span class="math inline">\(\text{DALL}\cdot\text{E}\)</span>、<span class="math inline">\(\text{Midjourney}\)</span> 和 <span class="math inline">\(\text{Stable Diffusion}\)</span> 这样的 <strong><span class="math inline">\(\text{AI}\)</span> 图像生成系统</strong>。</p>
-<p><img src="/img3/Hands-On Large Language Models/F2.8.png" alt="F2.1" style="zoom:67%;" /></p>
-<p>让我们看看如何生成<strong>情境化词嵌入</strong>；现在您应该对大部分代码都比较熟悉了：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> AutoModel, AutoTokenizer</span><br><span class="line"><span class="comment"># Load a tokenizer</span></span><br><span class="line">tokenizer = AutoTokenizer.from_pretrained(<span class="string">&quot;microsoft/deberta-base&quot;</span>)</span><br><span class="line"><span class="comment"># Load a language model</span></span><br><span class="line">model = AutoModel.from_pretrained(<span class="string">&quot;microsoft/deberta-v3-xsmall&quot;</span>)</span><br><span class="line"><span class="comment"># Tokenize the sentence</span></span><br><span class="line">tokens = tokenizer(<span class="string">&#x27;Hello world&#x27;</span>, return_tensors=<span class="string">&#x27;pt&#x27;</span>)</span><br><span class="line"><span class="comment"># Process the tokens</span></span><br><span class="line">output = model(**tokens)[<span class="number">0</span>]</span><br></pre></td></tr></table></figure>
-<p>我们在这里使用的模型叫做 <strong><span class="math inline">\(\text{DeBERTa v3}\)</span></strong>，在撰写本文时，它是<strong>性能最佳</strong>的词元嵌入语言模型之一，同时体积小且效率高。它在论文《<span class="math inline">\(\text{DeBERTaV3}\)</span>：使用 <span class="math inline">\(\text{ELECTRA}\)</span> 式预训练梯度解耦嵌入共享改进 <span class="math inline">\(\text{DeBERTa}\)</span>》 中有所描述。</p>
-<p>这段代码下载了一个预训练的分词器和模型，然后用它们来处理字符串“<span class="math inline">\(\text{Hello world}\)</span>”。模型的输出随后保存在 <span class="math inline">\(\text{output}\)</span> 变量中。</p>
-<p>我们首先打印 <span class="math inline">\(\text{output}\)</span> 变量的维度来检查它（我们期望它是一个多维数组）：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">output.shape</span><br></pre></td></tr></table></figure>
-<p>这会打印出：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">torch.Size([1, 4, 384])</span><br></pre></td></tr></table></figure>
-<p>跳过第一维，我们可以将其解读为<strong>四个词元</strong>，每个词元都嵌入在<strong>一个包含 <span class="math inline">\(\text{384}\)</span> 个值</strong>的向量中。第一维是<strong>批次维度</strong>（<span class="math inline">\(\text{batch dimension}\)</span>），用于当我们希望同时向模型发送<strong>多条输入句子</strong>时（例如在训练时），它们会同时被处理，从而加快了处理过程。</p>
-<p>但是这<strong>四个向量</strong>是什么呢？分词器是将这两个词分成了四个词元，还是发生了其他事情？我们可以使用我们所学的关于分词器的知识来检查它们：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> token <span class="keyword">in</span> tokens[<span class="string">&#x27;input_ids&#x27;</span>][<span class="number">0</span>]:</span><br><span class="line"><span class="built_in">print</span>(tokenizer.decode(token))</span><br></pre></td></tr></table></figure>
-<p>这会打印出：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[CLS]</span><br><span class="line">Hello</span><br><span class="line">world</span><br><span class="line">[SEP]</span><br></pre></td></tr></table></figure>
-<p>这个特定的分词器和模型是通过在字符串的开头和结尾添加 <strong><span class="math inline">\(\text{[CLS]}\)</span></strong> 和 <strong><span class="math inline">\(\text{[SEP]}\)</span></strong> 词元来操作的。</p>
-<p>我们的语言模型现在已经处理了文本输入。其输出结果如下：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">tensor([[</span><br><span class="line">[-3.3060, -0.0507, -0.1098, ..., -0.1704, -0.1618, 0.6932],</span><br><span class="line">[ 0.8918, 0.0740, -0.1583, ..., 0.1869, 1.4760, 0.0751],</span><br><span class="line">[ 0.0871, 0.6364, -0.3050, ..., 0.4729, -0.1829, 1.0157],</span><br><span class="line">[-3.1624, -0.1436, -0.0941, ..., -0.0290, -0.1265, 0.7954]</span><br><span class="line">]], grad_fn=&lt;NativeLayerNormBackward0&gt;)</span><br></pre></td></tr></table></figure>
-<p>这是语言模型的<strong>原始输出</strong>。大型语言模型的应用都是构建在像这样的输出之上的。</p>
-<p>我们在图 <span class="math inline">\(\text{2}-9\)</span> 中概述了语言模型的输入分词和生成的输出。从技术上讲，从词元 <span class="math inline">\(\text{ID}\)</span> 转换为原始嵌入是语言模型<strong>内部发生的第一步</strong>。</p>
-<p><img src="/img3/Hands-On Large Language Models/F2.9.png" alt="F2.1" style="zoom:67%;" /></p>
-<p>像这样的可视化对于下一章我们开始研究<strong>基于 <span class="math inline">\(\text{Transformer}\)</span> 的 <span class="math inline">\(\text{LLM}\)</span></strong> 如何工作时<strong>至关重要</strong>。</p>
-<h3 id="文本嵌入用于句子和整个文档"><strong>文本嵌入（用于句子和整个文档）</strong></h3>
-<p>Text Embeddings (for Sentences and Whole Documents)</p>
-<p>虽然<strong>词元嵌入</strong>是 <span class="math inline">\(\text{LLM}\)</span> 运行的关键，但许多 <span class="math inline">\(\text{LLM}\)</span> 应用程序需要对<strong>整个句子、段落，甚至是文本文档</strong>进行操作。这催生了<strong>特殊语言模型</strong>，它们可以生成<strong>文本嵌入</strong>——一个<strong>单一的向量</strong>来表征<strong>比单个词元更长</strong>的一段文本。</p>
-<p>我们可以将<strong>文本嵌入模型</strong>视为接收一段文本，并最终生成一个<strong>单一向量</strong>，该向量以某种有用的形式<strong>表征该文本并捕获其含义</strong>。图 <span class="math inline">\(\text{2}-10\)</span> 展示了这一过程。</p>
-<p><img src="/img3/Hands-On Large Language Models/F2.10.png" alt="F2.1" style="zoom:67%;" /></p>
-<p>生成文本嵌入向量有多种方法。最常见的方法之一是<strong>平均模型生成的</strong>所有词元嵌入的值。然而，<strong>高质量的文本嵌入模型</strong>往往是<strong>专门针对文本嵌入任务进行训练</strong>的。</p>
-<p>我们可以使用 <strong><span class="math inline">\(\text{sentence}-\text{transformers}\)</span></strong> 来生成文本嵌入，这是一个用于利用<strong>预训练嵌入模型</strong>的流行软件包。像上一章的 <span class="math inline">\(\text{transformers}\)</span> 一样，该软件包可用于加载公开可用的模型。为了说明如何创建嵌入，我们使用 <strong><span class="math inline">\(\text{all-mpnet-base-v2}\)</span> 模型</strong>。请注意，在<strong>第 <span class="math inline">\(\text{4}\)</span> 章</strong>中，我们将进一步探讨如何为您的任务选择一个嵌入模型。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sentence_transformers <span class="keyword">import</span> SentenceTransformer</span><br><span class="line"><span class="comment"># Load model</span></span><br><span class="line">model = SentenceTransformer(<span class="string">&quot;sentence-transformers/all-mpnet-base-v2&quot;</span>)</span><br><span class="line"><span class="comment"># Convert text to text embeddings</span></span><br><span class="line">vector = model.encode(<span class="string">&quot;Best movie ever!&quot;</span>)</span><br></pre></td></tr></table></figure>
-<p>嵌入向量的<strong>数值数量</strong>，即<strong>维度</strong>，取决于底层的嵌入模型。让我们查看我们模型的维度：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vector.shape</span><br></pre></td></tr></table></figure>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(768,)</span><br></pre></td></tr></table></figure>
-<p>现在，这个句子被编码在<strong>这一个维度为 <span class="math inline">\(\text{768}\)</span> 个数值</strong>的向量中。在本书的<strong>第二部分</strong>，当我们开始研究应用程序时，我们将看到这些文本嵌入向量在支持<strong>从分类到语义搜索再到 <span class="math inline">\(\text{RAG}\)</span></strong> 的一切应用中的巨大作用。</p>
-<h3 id="超越-textllm-的词嵌入"><strong>超越 <span class="math inline">\(\text{LLM}\)</span> 的词嵌入</strong></h3>
-<p>Word Embeddings Beyond LLMs</p>
-<p>嵌入甚至在<strong>文本和语言生成之外</strong>也很有用。事实证明，<strong>嵌入</strong>，或者说为对象分配有意义的<strong>向量表征</strong>，在许多领域都很有用，包括<strong>推荐引擎</strong>和<strong>机器人技术</strong>。在本节中，我们将介绍如何使用<strong>预训练的 <span class="math inline">\(\text{word}2\text{vec}\)</span> 嵌入</strong>，并简要介绍该方法如何创建词嵌入。了解 <span class="math inline">\(\text{word}2\text{vec}\)</span> 是如何训练的，将为您学习<strong>第 <span class="math inline">\(\text{10}\)</span> 章</strong>中的<strong>对比训练</strong>打下基础。然后，在接下来的部分中，我们将看到这些嵌入如何用于<strong>推荐系统</strong>。</p>
-<h4 id="使用预训练词嵌入"><strong>使用预训练词嵌入</strong></h4>
-<p>Using pretrained Word Embeddings</p>
-<p>让我们看看如何使用 <strong><span class="math inline">\(\text{Gensim}\)</span> 库</strong>下载预训练的词嵌入（例如 <span class="math inline">\(\text{word}2\text{vec}\)</span> 或 <span class="math inline">\(\text{GloVe}\)</span>）：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> gensim.downloader <span class="keyword">as</span> api</span><br><span class="line"><span class="comment"># Download embeddings (66MB, glove, trained on wikipedia, vector size: 50)</span></span><br><span class="line"><span class="comment"># Other options include &quot;word2vec-google-news-300&quot;</span></span><br><span class="line"><span class="comment"># More options at https://github.com/RaRe-Technologies/gensim-data</span></span><br><span class="line">model = api.load(<span class="string">&quot;glove-wiki-gigaword-50&quot;</span>)</span><br></pre></td></tr></table></figure>
-<p>在这里，我们下载了在 <strong><span class="math inline">\(\text{Wikipedia}\)</span></strong> 上训练的大量词语的嵌入。然后，我们可以通过查看特定词语（例如“<span class="math inline">\(\text{king}\)</span>”）的<strong>最近邻</strong>来探索嵌入空间：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">model.most_similar([model[<span class="string">&#x27;king&#x27;</span>]], topn=<span class="number">11</span>)</span><br></pre></td></tr></table></figure>
-<p>输出：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[(&#x27;king&#x27;, 1.0000001192092896),</span><br><span class="line">(&#x27;prince&#x27;, 0.8236179351806641),</span><br><span class="line">(&#x27;queen&#x27;, 0.7839043140411377),</span><br><span class="line">(&#x27;ii&#x27;, 0.7746230363845825),</span><br><span class="line">(&#x27;emperor&#x27;, 0.7736247777938843),</span><br><span class="line">(&#x27;son&#x27;, 0.766719400882721),</span><br><span class="line">(&#x27;uncle&#x27;, 0.7627150416374207),</span><br><span class="line">(&#x27;kingdom&#x27;, 0.7542161345481873),</span><br><span class="line">(&#x27;throne&#x27;, 0.7539914846420288),</span><br><span class="line">(&#x27;brother&#x27;, 0.7492411136627197),</span><br><span class="line">(&#x27;ruler&#x27;, 0.7434253692626953)]</span><br></pre></td></tr></table></figure>
-<h4 id="textword2textvec-算法与对比训练"><strong><span class="math inline">\(\text{Word}2\text{vec}\)</span> 算法与对比训练</strong></h4>
-<p>The Word2vec Algorithm and Contrastive Training</p>
-<p>论文<strong>《向量空间中词语表征的有效估计》（<span class="math inline">\(\text{Efficient estimation of word representations in vector space}\)</span>）</strong> 中描述的 <strong><span class="math inline">\(\text{word}2\text{vec}\)</span> 算法</strong>在<strong>《<span class="math inline">\(\text{Illustrated Word}2\text{vec}\)</span>》</strong> 一书中有详细描述。我们将中心思想浓缩于此，因为我们将在下一节讨论创建<strong>推荐引擎嵌入</strong>的方法时以此为基础。</p>
-<p>就像 <span class="math inline">\(\text{LLM}\)</span> 一样，<span class="math inline">\(\text{word}2\text{vec}\)</span> 是在从文本生成的<strong>示例</strong>上进行训练的。例如，假设我们有弗兰克·赫伯特（<span class="math inline">\(\text{Frank Herbert}\)</span>）的《<strong>沙丘</strong>》小说中的文本：“<span class="math inline">\(\text{Thou shalt not make a machine in the likeness of a human mind}\)</span>”（你不可制造一台模仿人类心智的机器）。该算法使用一个<strong>滑动窗口</strong>来生成训练示例。例如，我们可以设置<strong>窗口大小为二</strong>，这意味着我们考虑中心词两侧的两个邻居。</p>
-<p>嵌入是从一个<strong>分类任务</strong>中生成的。该任务用于训练一个<strong>神经网络</strong>来<strong>预测词语是否通常出现在同一上下文中</strong>（这里的“上下文”指的是在我们建模的训练数据集中的许多句子中）。我们可以将其视为一个接收<strong>两个词语</strong>并输出 <span class="math inline">\(\text{1}\)</span>（如果它们倾向于出现在同一上下文中）或 <span class="math inline">\(\text{0}\)</span>（如果它们不出现）的神经网络。</p>
-<p>在滑动窗口的第一个位置，我们可以生成<strong>四个训练示例</strong>，如图 <span class="math inline">\(\text{2}-11\)</span> 所示。</p>
-<p><img src="/img3/Hands-On Large Language Models/F2.11.png" alt="F2.1" style="zoom:67%;" /></p>
-<p>在生成的每个训练示例中，<strong>中心词</strong>用作一个输入，其<strong>每个邻居</strong>在每个训练示例中都是一个<strong>不同的第二个输入</strong>。我们期望最终训练出的模型能够对这种<strong>邻居关系</strong>进行分类，并在它接收到的两个输入词语确实是邻居时输出 <span class="math inline">\(\text{1}\)</span>。这些训练示例如图 <span class="math inline">\(\text{2}-12\)</span> 所示。</p>
-<p><img src="/img3/Hands-On Large Language Models/F2.12.png" alt="F2.1" style="zoom:67%;" /></p>
-<p>然而，如果我们的数据集<strong>目标值只有 <span class="math inline">\(\text{1}\)</span></strong>，那么模型可以通过一直输出 <span class="math inline">\(\text{1}\)</span> 来<strong>作弊</strong>并取得满分。为了避免这种情况，我们需要用<strong>不典型为邻居的词语示例</strong>来丰富我们的训练数据集。这些被称为<strong>负面示例</strong>（<span class="math inline">\(\text{negative examples}\)</span>），如图 <span class="math inline">\(\text{2}-13\)</span> 所示。</p>
-<p><img src="/img3/Hands-On Large Language Models/F2.13.png" alt="F2.1" style="zoom:67%;" /></p>
-<p>事实证明，我们在选择负面示例时<strong>不必过于科学</strong>。许多有用的模型都是通过简单地从<strong>随机生成的示例</strong>中检测<strong>正面示例</strong>的能力而产生的（灵感来源于一个重要的思想，称为<strong>噪声对比估计</strong> (<span class="math inline">\(\text{noise-contrastive estimation}\)</span>)，并在<strong>《噪声对比估计：一种用于非标准化统计模型的新的估计原理》</strong> 中有所描述）。因此在这种情况下，我们获取<strong>随机词语</strong>并将它们添加到数据集中，并指出它们<strong>不是邻居</strong>（因此当模型看到它们时应该输出 <span class="math inline">\(\text{0}\)</span>）。</p>
-<p>通过这种方式，我们看到了 <span class="math inline">\(\text{word}2\text{vec}\)</span> 的两个主要概念（图 <span class="math inline">\(\text{2}-14\)</span>）：<strong>跳字模型</strong>（<span class="math inline">\(\text{skip-gram}\)</span>，选择相邻词语的方法），以及<strong>负采样</strong>（<span class="math inline">\(\text{negative sampling}\)</span>，通过从数据集中随机采样添加负面示例）。</p>
-<p><img src="/img3/Hands-On Large Language Models/F2.14.png" alt="F2.1" style="zoom:67%;" /></p>
-<p>我们可以从运行的文本中生成<strong>数百万甚至数十亿</strong>个这样的训练示例。在继续在这个数据集上训练神经网络之前，我们需要做出一些<strong>分词决策</strong>，就像我们对 <span class="math inline">\(\text{LLM}\)</span> 分词器所看到的那样，这些决策包括如何处理<strong>大小写</strong>和<strong>标点符号</strong>，以及我们希望词汇表中有多少个词元。</p>
-<p>然后我们为每个词元创建一个<strong>嵌入向量</strong>，并对其进行<strong>随机初始化</strong>，如图 <span class="math inline">\(\text{2}-15\)</span> 所示。在实践中，这是一个<strong>维度为 <span class="math inline">\(\text{vocab\_size} \times \text{embedding\_dimensions}\)</span></strong> 的矩阵。</p>
-<p><img src="/img3/Hands-On Large Language Models/F2.15.png" alt="F2.1" style="zoom:67%;" /></p>
-<p>然后，模型在每个示例上进行训练，以接收<strong>两个嵌入向量</strong>并<strong>预测它们是否相关</strong>。我们可以在图 <span class="math inline">\(\text{2}-16\)</span> 中看到它的样子。</p>
-<p><img src="/img3/Hands-On Large Language Models/F2.16.png" alt="F2.1" style="zoom:67%;" /></p>
-<p>根据其预测是否正确，典型的机器学习训练步骤会<strong>更新嵌入</strong>，以便下一次向模型展示这两个向量时，它有更大的机会是正确的。到训练过程结束时，我们就为词汇表中的所有词元获得了<strong>更好的嵌入</strong>。</p>
-<p>这种模型接收<strong>两个向量</strong>并预测它们是否具有某种关系的思想是机器学习中最强大的思想之一，并且一次又一次地证明它在语言模型中运作得非常好。这就是为什么我们用<strong>第 <span class="math inline">\(\text{10}\)</span> 章</strong>专门介绍这个概念以及它如何为特定任务（如<strong>句子嵌入和检索</strong>）优化语言模型。</p>
-<p>同样的想法也是<strong>弥合文本和图像等模态</strong>的核心，这对于 <span class="math inline">\(\text{AI}\)</span> 图像生成模型至关重要，正如我们将在关于<strong>多模态模型</strong>的<strong>第 <span class="math inline">\(\text{9}\)</span> 章</strong>中看到的那样。在这种公式中，模型会得到一张图像和一个标题，它应该预测该标题是否描述了该图像。</p>
-<h3 id="推荐系统的嵌入"><strong>推荐系统的嵌入</strong></h3>
-<p>Embeddings for Recommendation Systems</p>
-<p>正如我们所提到的，<strong>嵌入</strong>的概念在许多其他领域都很有用。例如，在工业界，它被广泛用于<strong>推荐系统</strong>。</p>
-<h4 id="通过嵌入推荐歌曲"><strong>通过嵌入推荐歌曲</strong></h4>
-<p>Recommending Songs by Embeddings</p>
-<p>在本节中，我们将使用 <strong><span class="math inline">\(\text{word}2\text{vec}\)</span> 算法</strong>，利用<strong>人工制作的音乐播放列表</strong>来<strong>嵌入歌曲</strong>。想象一下，我们将<strong>每首歌曲</strong>视为一个词语或词元，并将<strong>每个播放列表</strong>视为一个句子。然后，这些嵌入可用于<strong>推荐</strong>在播放列表中经常一起出现的<strong>相似歌曲</strong>。</p>
-<p>我们将使用由康奈尔大学的 <span class="math inline">\(\text{Shuo Chen}\)</span> 收集的数据集。它包含了美国数百个电台的播放列表。图 <span class="math inline">\(\text{2}-17\)</span> 展示了这个数据集。</p>
-<p><img src="/img3/Hands-On Large Language Models/F2.17.png" alt="F2.1" style="zoom:67%;" /></p>
-<p>在我们研究它是如何构建的之前，让我们先演示一下最终产品。因此，让我们给它几首歌曲，看看它会推荐什么。</p>
-<p>让我们从给出迈克尔·杰克逊的“<span class="math inline">\(\text{Billie Jean}\)</span>”开始，这首歌的 <span class="math inline">\(\text{ID}\)</span> 是 <span class="math inline">\(\text{3822}\)</span>：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># We will define and explore this function in detail below</span></span><br><span class="line">print_recommendations(<span class="number">3822</span>)</span><br></pre></td></tr></table></figure>
-<p><img src="/img3/Hands-On Large Language Models/F0.12.png" alt="F2.1" style="zoom:67%;" /></p>
-<p>看起来很合理。<strong>麦当娜</strong>（<span class="math inline">\(\text{Madonna}\)</span>）、<strong>普林斯</strong>（<span class="math inline">\(\text{Prince}\)</span>）以及<strong>迈克尔·杰克逊</strong>（<span class="math inline">\(\text{Michael Jackson}\)</span>）的<strong>其他歌曲</strong>都是最近的邻居。</p>
-<p>让我们从流行乐转向说唱乐，看看 <strong><span class="math inline">\(\text{2Pac}\)</span> 的“<span class="math inline">\(\text{California Love}\)</span>”</strong> 的邻居：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">print_recommendations(<span class="number">842</span>)</span><br></pre></td></tr></table></figure>
-<p><img src="/img3/Hands-On Large Language Models/F0.13.png" alt="F2.1" style="zoom:67%;" /></p>
-<p>又是一个<strong>非常合理的列表</strong>！既然我们知道它有效，那么让我们看看如何构建这样一个系统。</p>
-<h4 id="训练歌曲嵌入模型"><strong>训练歌曲嵌入模型</strong></h4>
-<p>Training a Song Embedding Model</p>
-<p>我们将从加载包含<strong>歌曲播放列表</strong>以及每首歌曲的<strong>元数据</strong>（例如它的标题和艺术家）的数据集开始：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">from</span> urllib <span class="keyword">import</span> request</span><br><span class="line"><span class="comment"># Get the playlist dataset file</span></span><br><span class="line">data = request.urlopen(<span class="string">&#x27;https://storage.googleapis.com/maps-premium/data</span></span><br><span class="line"><span class="string">set/yes_complete/train.txt&#x27;</span>)</span><br><span class="line"><span class="comment"># Parse the playlist dataset file. Skip the first two lines as</span></span><br><span class="line"><span class="comment"># they only contain metadata</span></span><br><span class="line">lines = data.read().decode(<span class="string">&quot;utf-8&quot;</span>).split(<span class="string">&#x27;\n&#x27;</span>)[<span class="number">2</span>:]</span><br><span class="line"><span class="comment"># Remove playlists with only one song</span></span><br><span class="line">playlists = [s.rstrip().split() <span class="keyword">for</span> s <span class="keyword">in</span> lines <span class="keyword">if</span> <span class="built_in">len</span>(s.split()) &gt; <span class="number">1</span>]</span><br><span class="line"><span class="comment"># Load song metadata</span></span><br><span class="line">songs_file = request.urlopen(<span class="string">&#x27;https://storage.googleapis.com/maps-premium/data</span></span><br><span class="line"><span class="string">set/yes_complete/song_hash.txt&#x27;</span>)</span><br><span class="line">songs_file = songs_file.read().decode(<span class="string">&quot;utf-8&quot;</span>).split(<span class="string">&#x27;\n&#x27;</span>)</span><br><span class="line">songs = [s.rstrip().split(<span class="string">&#x27;\t&#x27;</span>) <span class="keyword">for</span> s <span class="keyword">in</span> songs_file]</span><br><span class="line">songs_df = pd.DataFrame(data=songs, columns = [<span class="string">&#x27;id&#x27;</span>, <span class="string">&#x27;title&#x27;</span>, <span class="string">&#x27;artist&#x27;</span>])</span><br><span class="line">songs_df = songs_df.set_index(<span class="string">&#x27;id&#x27;</span>)</span><br></pre></td></tr></table></figure>
-<p>现在我们已经保存了它们，让我们检查一下 <span class="math inline">\(\text{playlists}\)</span> 列表。其中的每个元素都是一个包含<strong>歌曲 <span class="math inline">\(\text{ID}\)</span> 列表</strong>的<strong>播放列表</strong>：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>( <span class="string">&#x27;Playlist #1:\n &#x27;</span>, playlists[<span class="number">0</span>], <span class="string">&#x27;\n&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>( <span class="string">&#x27;Playlist #2:\n &#x27;</span>, playlists[<span class="number">1</span>])</span><br></pre></td></tr></table></figure>
-<p><img src="/img3/Hands-On Large Language Models/F0.14.png" alt="F2.1" style="zoom:67%;" /></p>
-<p>让我们来训练模型：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> gensim.models <span class="keyword">import</span> Word2Vec</span><br><span class="line"><span class="comment"># Train our Word2Vec model</span></span><br><span class="line">model = Word2Vec(</span><br><span class="line">playlists, vector_size=<span class="number">32</span>, window=<span class="number">20</span>, negative=<span class="number">50</span>, min_count=<span class="number">1</span>, workers=<span class="number">4</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
-<p>这需要一两分钟来训练，并为我们拥有的每首歌曲计算出嵌入。现在，我们可以使用这些嵌入来查找相似的歌曲，就像我们之前对词语所做的那样：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">song_id = <span class="number">2172</span></span><br><span class="line"><span class="comment"># Ask the model for songs similar to song #2172</span></span><br><span class="line">model.wv.most_similar(positive=<span class="built_in">str</span>(song_id))</span><br></pre></td></tr></table></figure>
-<p>输出：</p>
-<p><img src="/img3/Hands-On Large Language Models/F0.15.png" alt="F2.1" style="zoom:67%;" /></p>
-<p>这是<strong>嵌入与歌曲 <span class="math inline">\(\text{2172}\)</span> 最相似</strong>的歌曲列表。</p>
-<p>在这种情况下，这首歌是：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(songs_df.iloc[<span class="number">2172</span>])</span><br></pre></td></tr></table></figure>
-<p><img src="/img3/Hands-On Large Language Models/F0.16.png" alt="F2.1" style="zoom:67%;" /></p>
-<p>这产生了全部属于<strong>同一重金属和硬摇滚流派</strong>的推荐：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">print_recommendations</span>(<span class="params">song_id</span>):</span><br><span class="line">similar_songs = np.array(</span><br><span class="line">model.wv.most_similar(positive=<span class="built_in">str</span>(song_id),topn=<span class="number">5</span>)</span><br><span class="line">)[:,<span class="number">0</span>]</span><br><span class="line"><span class="keyword">return</span> songs_df.iloc[similar_songs]</span><br><span class="line"><span class="comment"># Extract recommendations</span></span><br><span class="line">print_recommendations(<span class="number">2172</span>)</span><br></pre></td></tr></table></figure>
-<p><img src="/img3/Hands-On Large Language Models/F0.17.png" alt="F2.1" style="zoom:67%;" /></p>
-<h3 id="总结"><strong>总结</strong></h3>
-<p>在本章中，我们涵盖了 <span class="math inline">\(\text{LLM}\)</span> 的<strong>词元</strong>、<strong>分词器</strong>，以及使用<strong>词元嵌入</strong>的有用方法。这为我们准备在下一章中更仔细地研究<strong>语言模型</strong>，同时也为我们打开了学习嵌入<strong>如何用于语言模型之外</strong>的大门。</p>
-<p>我们探讨了<strong>分词器</strong>是如何处理 <span class="math inline">\(\text{LLM}\)</span> <strong>输入</strong>的<strong>第一步</strong>，将原始文本输入转换为<strong>词元 <span class="math inline">\(\text{ID}\)</span></strong>。常见的<strong>分词方案</strong>包括将文本分解为<strong>词语、子词元、字符或字节</strong>，具体取决于给定应用程序的特定要求。</p>
-<p>对现实世界中<strong>预训练分词器</strong>（从 <span class="math inline">\(\text{BERT}\)</span> 到 <span class="math inline">\(\text{GPT}-2\)</span>、<span class="math inline">\(\text{GPT}-4\)</span> 和其他模型）的导览向我们展示了某些分词器<strong>更优秀</strong>的方面（例如，保留<strong>大小写、换行符</strong>或其他语言中的<strong>词元</strong>等信息），以及分词器之间<strong>仅仅不同</strong>的其他方面（例如，它们如何分解某些词语）。</p>
-<p>三个主要的分词器设计决策是<strong>分词器算法</strong>（例如，<span class="math inline">\(\text{BPE}\)</span>、<span class="math inline">\(\text{WordPiece}\)</span>、<span class="math inline">\(\text{SentencePiece}\)</span>）、<strong>分词参数</strong>（包括<strong>词汇量大小、特殊词元、大小写</strong>的处理以及不同语言的处理），以及<strong>训练分词器的数据集</strong>。</p>
-<p>语言模型也是<strong>高质量情境化词元嵌入</strong>的创建者，这些嵌入对原始<strong>静态嵌入</strong>进行了改进。这些<strong>情境化词元嵌入</strong>用于包括<strong>命名实体识别 (<span class="math inline">\(\text{NER}\)</span>)、抽取式文本摘要</strong>和<strong>文本分类</strong>在内的任务。除了生成<strong>词元嵌入</strong>，语言模型还可以生成涵盖<strong>整个句子甚至文档</strong>的<strong>文本嵌入</strong>。这为本书<strong>第二部分</strong>涵盖语言模型应用的许多应用程序提供了支持。</p>
-<p>在 <span class="math inline">\(\text{LLM}\)</span> 出现之前，<strong><span class="math inline">\(\text{word}2\text{vec}\)</span>、<span class="math inline">\(\text{GloVe}\)</span> 和 <span class="math inline">\(\text{fastText}\)</span></strong> 等词嵌入方法很流行。在语言处理中，它们已基本被语言模型生成的<strong>情境化词嵌入</strong>所取代。<strong><span class="math inline">\(\text{word}2\text{vec}\)</span> 算法</strong>依赖于两个主要思想：<strong>跳字模型</strong>（<span class="math inline">\(\text{skip}-\text{gram}\)</span>）和<strong>负采样</strong>（<span class="math inline">\(\text{negative sampling}\)</span>）。它还使用了与我们在<strong>第 <span class="math inline">\(\text{10}\)</span> 章</strong>中将看到的类型相似的<strong>对比训练</strong>。</p>
-<p>正如我们在使用<strong>精选歌曲播放列表</strong>构建的<strong>音乐推荐器</strong>中所讨论的，<strong>嵌入</strong>对于创建和改进<strong>推荐系统</strong>非常有用。</p>
-<p>在下一章中，我们将深入探讨<strong>分词之后的流程</strong>：<span class="math inline">\(\text{LLM}\)</span> <strong>如何处理这些词元并生成文本</strong>？我们将探讨使用 <span class="math inline">\(\text{Transformer}\)</span> 架构的 <span class="math inline">\(\text{LLM}\)</span> 如何工作的一些<strong>主要直觉</strong>。</p>
 <p>书籍各章的机翻md文件：<br />
 <a href="/2025/04/01/Hands-On%20Large%20Language%20Models%20%E7%9B%AE%E5%BD%95%20%E5%89%8D%E8%A8%80/" title="《Hands-On Large Language Models》目录及前言">《Hands-On Large Language Models》目录及前言</a><br />
 <a href="/2025/04/02/Hands-On%20Large%20Language%20Models%201/" title="《Hands-On Large Language Models》第1章 大型语言模型简介">《Hands-On Large Language Models》第1章 大型语言模型简介</a><br />
