@@ -45,7 +45,7 @@
 <meta property="og:image" content="http://hongyitong.github.io/img4/diveintoclaudecode/T7.png">
 <meta property="og:image" content="http://hongyitong.github.io/img4/diveintoclaudecode/T8.png">
 <meta property="article:published_time" content="2026-06-11T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-06-14T03:23:42.170Z">
+<meta property="article:modified_time" content="2026-06-15T04:01:19.911Z">
 <meta property="article:author" content="Rayman.hung">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://hongyitong.github.io/img4/diveintoclaudecode/T1.png">
@@ -1428,7 +1428,7 @@
 <p>8 Subagent Delegation and Orchestration</p>
 <h3 id="8-子智能体委派与编排">8 子智能体委派与编排</h3>
 <p>Multi-agent orchestration is a key design dimension for coding agents, with choices spanning parent-child hierarchies, peer-based conversation frameworks (Wu et al., 2024), and graph-structured workflow engines (LangChain, Inc., 2024).</p>
-<p>多智能体编排是编码智能体的一个核心设计维度，其选择涵盖父子层级结构、基于对等体的对话框架（Wu 等，2024）以及图结构的工作流引擎（LangChain, Inc.，2024）。</p>
+<p><strong>多智能体编排是编码智能体的一个核心设计维度，其选择涵盖父子层级结构、基于对等体的对话框架（Wu 等，2024）以及图结构的工作流引擎（LangChain, Inc.，2024）</strong>。</p>
 <p>Claude Code’s delegation architecture implements the isolated subagent boundaries principle from Table 1, together with aspects of deny-first with human escalation (permission override) and reversibility-weighted risk assessment (subagent tool restrictions).</p>
 <p>Claude Code 的委派架构实现了表 1 中的“隔离的子智能体边界”原则，同时结合了“默认拒绝与人工提级（权限覆盖）”以及“基于可逆性权重的风险评估（子智能体工具限制）”等维度。</p>
 <p>When Claude determines that the auth test fix requires first exploring the authentication module’s structure, it can delegate this exploration to a subagent. The delegation mechanism is the Agent tool (AgentTool.tsx), with Task retained as a legacy alias.</p>
@@ -1439,46 +1439,93 @@
 <h4 id="8-1-Agent-工具与委派标准">8.1 Agent 工具与委派标准</h4>
 <p>The Agent tool input schema (Figure 7) uses feature-gated fields, omitting optional parameters when their backing features are disabled. The isolation field offers [’worktree’, ’remote’] for internal users and [’worktree’] for external users, determined at build time. The cwd field is gated by a feature flag. The run_in_background field is omitted when background tasks are disabled or when fork-subagent mode is enabled.</p>
 <p><img src="/img4/diveintoclaudecode/F7.png" alt="F7"></p>
-<p>Agent 工具的输入 Schema**（图 7）**使用了特性门控字段，当支撑这些特性的功能被禁用时，会省略可选参数。<code>isolation</code> 字段在构建时确定，为内部用户提供 <code>['worktree', 'remote']</code>，为外部用户提供 <code>['worktree']</code>。<code>cwd</code> 字段受特性标志门控。当后台任务被禁用或启用了 fork 子智能体模式时，<code>run_in_background</code> 字段会被省略。</p>
+<p>Agent 工具的输入 Schema（图 7）使用了特性门控字段，当支撑这些特性的功能被禁用时，会省略可选参数。<code>isolation</code> 字段在构建时确定，为内部用户提供 <code>['worktree', 'remote']</code>，为外部用户提供 <code>['worktree']</code>。<code>cwd</code> 字段受特性标志门控。当后台任务被禁用或启用了 fork 子智能体模式时，<code>run_in_background</code> 字段会被省略。</p>
 <p>Claude Code provides up to six built-in subagent types, depending on feature flags and entrypoint:</p>
 <p>取决于特性标志和入口点，Claude Code 最多提供六种内置的子智能体类型：</p>
 <ul>
-<li>Explore: primarily read/search-oriented investigation, with write and edit tools in its deny-list.</li>
-<li>Plan: creates structured plans; execution proceeds through the standard permission model.</li>
-<li>General-purpose: broadly capable, used when explicitly requested (note: omitting the type may route to the fork-subagent path instead).</li>
-<li>Claude Code Guide: onboarding and documentation assistance, with its own permissionMode override.</li>
-<li>Verification: runs validation checks (test suites, linting).</li>
-<li>Statusline-setup: specialized for terminal status line configuration.</li>
-<li>Explore（探索）：主要进行以读取/搜索为主的调查，其拒绝列表中包含写入和编辑工具。</li>
-<li>Plan（计划）：创建结构化计划；执行过程通过标准的权限模型进行。</li>
-<li>General-purpose（通用）：能力广泛，在被显式请求时使用（注意：省略该类型可能会路由到 fork 子智能体路径）。</li>
-<li>Claude Code Guide（Claude Code 指南）：入职和文档协助，拥有其专属的 <code>permissionMode</code> 覆盖。</li>
-<li>Verification（验证）：运行验证检查（测试套件、代码规范检查）。</li>
-<li>Statusline-setup（状态栏设置）：专门用于终端状态栏配置。</li>
+<li>
+<p><em>Explore</em>: primarily read/search-oriented investigation, with write and edit tools in its deny-list.</p>
+<p>Explore（探索）：主要进行以读取/搜索为主的调查，其拒绝列表中包含写入和编辑工具。</p>
+</li>
+<li>
+<p><em>Plan</em>: creates structured plans; execution proceeds through the standard permission model.</p>
+<p>Plan（计划）：创建结构化计划；执行过程通过标准的权限模型进行。</p>
+</li>
+<li>
+<p><em>General-purpose</em>: broadly capable, used when explicitly requested (note: omitting the type may route to the fork-subagent path instead).</p>
+<p>General-purpose（通用）：能力广泛，在被显式请求时使用（注意：省略该类型可能会路由到 fork 子智能体路径）。</p>
+</li>
+<li>
+<p><em>Claude Code Guide</em>: onboarding and documentation assistance, with its own permissionMode override.</p>
+<p>Claude Code Guide（Claude Code 指南）：入职和文档协助，拥有其专属的 <code>permissionMode</code> 覆盖。</p>
+</li>
+<li>
+<p><em>Verification</em>: runs validation checks (test suites, linting).</p>
+<p>Verification（验证）：运行验证检查（测试套件、代码规范检查）。</p>
+</li>
+<li>
+<p><em>Statusline-setup</em>: specialized for terminal status line configuration.</p>
+<p>Statusline-setup（状态栏设置）：专门用于终端状态栏配置。</p>
+</li>
 </ul>
 <p>Beyond built-ins, users define custom subagents via .claude/agents/*.md files, and plugins contribute agent definitions via loadPluginAgents.ts. The markdown body of each file serves as the agent’s system prompt, and YAML frontmatter specifies configuration fields including description, tools (allowlist), disallowedTools, model, effort, permissionMode, mcpServers, hooks, maxTurns, skills, memory scope, background flag, and isolation mode.</p>
-<p>除内置类型外，用户还可以通过 <code>.claude/agents/*.md</code> 文件定义自定义子智能体，而插件则通过 <code>loadPluginAgents.ts</code> 贡献智能体定义。每个文件的 Markdown 正文充当该智能体的系统提示词，而 YAML 前言则指定配置字段，包括描述、工具（白名单）、禁用工具、模型、思考烈度（effort）、权限模式、MCP 服务器、钩子、最大轮次、技能、记忆作用域、后台标志以及隔离模式。</p>
+<blockquote>
+<p>Q: 子智能体会自动继承父智能体的权限吗？还是需要再单独验证一次?</p>
+<p>根据这篇论文以及 Claude Code 的底层设计，子智能体（Subagent）<strong>不会盲目、完全地自动继承</strong>父智能体的所有权限，但在实际运行中，它采用了一种“基于父级上下文克隆 + 动态二次验证”的混合控制机制。</p>
+<p>具体可以从以下三个维度来理解它的权限传递逻辑：</p>
+<ol>
+<li>初始状态：继承父级的“最大权限边界”</li>
+</ol>
+<p>当父智能体派生（spawn）出一个子智能体时，子智能体在初始化时会继承父智能体当前所处的<strong>基础模式和环境变量</strong>。</p>
+<ul>
+<li>如果父智能体运行在 <code>read-only</code>（只读）模式下，子智能体绝对不可能越权获得写文件的权限。</li>
+<li>父智能体的权限上限，就是子智能体的<strong>绝对天花板</strong>。</li>
+</ul>
+<ol start="2">
+<li>运行时控制：必须单独通过“自动化检查”</li>
+</ol>
+<p>虽然子智能体继承了权限边界，但当它在执行具体任务（例如调用某个工具）时，<strong>系统必须对它进行单独的、独立的验证</strong>。</p>
+<p>正如前文在描述“协调器（coordinator）及后台智能体路径”时提到的：</p>
+<p>​	“在协调器（coordinator）以及类似的后台智能体路径中，则会等待自动化检查完成后再显示对话框。”</p>
+<p>这意味着：</p>
+<ul>
+<li><strong>独立审计</strong>：子智能体每一次发起工具调用，它的请求都会被单独送入权限基础设施（如 <code>utils/permissions/</code> 中的规则评估器和分类器）。系统会独立评估子智能体当前的操作是否安全，而不会因为“它是主智能体派生出来的”就给它直接发绿卡。</li>
+<li><strong>串行卡点</strong>：子智能体作为后台运行的智能体，其自动化安全检查（黑名单、ML 分类器等）是<strong>严格串行、前置执行</strong>的。只有子智能体自己通过了这层单独验证，该操作才会进入下一个阶段。</li>
+</ul>
+<ol start="3">
+<li>人机交互：父智能体作为“拦截缓冲带”</li>
+</ol>
+<p>子智能体与父智能体最大的区别在于<strong>它们与人类用户的距离</strong>：</p>
+<ul>
+<li>父智能体是直接面对用户的，所以可以采用“对话框排队、钩子异步运行”的方式来优化体验。</li>
+<li>子智能体运行在后台，为了防止它频繁弹出确认窗口“轰炸”人类，系统做了一个拦截机制。子智能体尝试危险操作时，系统先在后台进行独立验证。如果自动化验证觉得“风险较高但可以放行，但必须由人类兜底”时，这个请求会被推回给父智能体，由父智能体向用户弹出对话框。</li>
+</ul>
+<p>总结</p>
+<p>子智能体的权限逻辑可以总结为：<strong>“天花板自动继承，具体动作单独审计”</strong>。</p>
+<p>它在宏观上受到父智能体权限范围的死死限制，但在微观上，它的每一个工具调用、每一条命令执行，都必须在后台<strong>单独过一遍自动化安全检查的硬关卡</strong>，绝不存在“父级放行，子级就可以为所欲为”的后门。</p>
+</blockquote>
+<p>除内置类型外，用户还可以通过 <code>.claude/agents/*.md</code> 文件定义自定义子智能体，而插件则通过 <code>loadPluginAgents.ts</code> 贡献智能体定义。<strong>每个文件的 Markdown 正文充当该智能体的系统提示词，而 YAML 前言则指定配置字段，包括描述、工具（白名单）、禁用工具、模型、思考烈度（effort）、权限模式、MCP 服务器、钩子、最大轮次、技能、记忆作用域、后台标志以及隔离模式。</strong></p>
 <p>JSON-formatted agent definitions support the same fields plus prompt as an explicit field (loadAgentsDir.ts). This means a custom agent can be a fully configured, isolated sub-system with its own tools, model, permissions, hooks, memory scope, and isolation mode.</p>
-<p>JSON 格式的智能体定义支持相同的字段，外加将 <code>prompt</code> 作为显式字段（<code>loadAgentsDir.ts</code>）。这意味着自定义智能体可以是一个完全配置且隔离的子系统，拥有属于自己的工具、模型、权限、钩子、记忆作用域和隔离模式。</p>
+<p><strong>JSON 格式的智能体定义支持相同的字段，外加将 <code>prompt</code> 作为显式字段（<code>loadAgentsDir.ts</code>）</strong>。这意味着自定义智能体可以是一个完全配置且隔离的子系统，拥有属于自己的工具、模型、权限、钩子、记忆作用域和隔离模式。</p>
 <p>AgentTool sits alongside SkillTool in the base tool pool as a meta-tool that dispatches to these definitions, but the two differ fundamentally: SkillTool injects instructions into the current context window, while AgentTool spawns a new, isolated one.</p>
-<p>在基础工具池中，<code>AgentTool</code> 与 <code>SkillTool</code> 并列作为分发到这些定义的元工具（meta-tool），但两者有着本质的区别：<code>SkillTool</code> 将指令注入到当前的上下文窗口中，而 <code>AgentTool</code> 则会催生（spawn）一个新的、隔离的上下文窗口。</p>
+<p><strong>在基础工具池中，<code>AgentTool</code> 与 <code>SkillTool</code> 并列作为分发到这些定义的元工具（meta-tool），但两者有着本质的区别：<code>SkillTool</code> 将指令注入到当前的上下文窗口中，而 <code>AgentTool</code> 则会催生（spawn）一个新的、隔离的上下文窗口。</strong></p>
 <p>The tradeoff is that most subagent invocations require a self-contained prompt, because the default path does not inherit the parent’s conversation history (the fork-subagent path is an exception). Conversation-based frameworks that share full transcript histories avoid this cost but risk context explosion as the number of agents grows.</p>
-<p>其权衡在于，由于默认路径不会继承父级的对话历史记录（fork 子智能体路径除外），大多数子智能体的调用都需要一个自包含的提示词。共享完整转录历史的基于对话的框架避免了这一成本，但随着智能体数量的增加，会面临上下文爆炸的风险。</p>
+<p>其权衡在于，由于默认路径不会继承父级的对话历史记录（fork 子智能体路径除外），<strong>大多数子智能体的调用都需要一个自包含的提示词</strong>。共享完整转录历史的基于对话的框架避免了这一成本，但随着智能体数量的增加，会面临上下文爆炸的风险。</p>
 <p>8.2 Isolation Architecture</p>
 <h4 id="8-2-隔离架构">8.2 隔离架构</h4>
 <p>Subagent isolation supports multiple modes (AgentTool.tsx):</p>
 <p>子智能体隔离支持多种模式（<code>AgentTool.tsx</code>）：</p>
 <ul>
 <li>
-<p>Worktree: Creates a temporary git worktree, giving the subagent its own copy of the repository to modify without affecting the parent’s working tree.</p>
+<p><em>Worktree</em>: Creates a temporary git worktree, giving the subagent its own copy of the repository to modify without affecting the parent’s working tree.</p>
 <p>Worktree（工作树）：创建一个临时的 git 工作树，赋予子智能体其专属的代码库副本以进行修改，而不会影响父级的工作树。</p>
 </li>
 <li>
-<p>Remote (internal-only): Launches in a remote Claude Code Remote environment, always running in the background.</p>
+<p><em>Remote (internal-only)</em>: Launches in a remote Claude Code Remote environment, always running in the background.</p>
 <p>Remote（远程，仅限内部）：在远程的 Claude Code Remote 环境中启动，始终在后台运行。</p>
 </li>
 <li>
-<p>In-process (default): Shares the filesystem with the parent but operates in an isolated conversation context.</p>
+<p><em>In-process (default)</em>: Shares the filesystem with the parent but operates in an isolated conversation context.</p>
 <p>In-process（进程内，默认）：与父级共享文件系统，但在隔离的对话上下文中运行。</p>
 </li>
 </ul>
@@ -1496,8 +1543,62 @@
 <h4 id="8-3-侧链转录文本">8.3 侧链转录文本</h4>
 <p>Each subagent writes its own transcript as a separate .jsonl file with a .meta.json metadata file (sessionStorage.ts, runAgent.ts). This sidechain design means subagent histories are preserved for debugging and auditing but do not inflate the parent’s session file.</p>
 <p>每个子智能体都会将自己的转录文本写入一个单独的 <code>.jsonl</code> 文件中，并附带一个 <code>.meta.json</code> 元数据文件（<code>sessionStorage.ts</code>，<code>runAgent.ts</code>）。这种侧链设计意味着子智能体的历史记录被保留下来用于调试和审计，但不会使父级的会话文件膨胀。</p>
+<blockquote>
+<p>Q： .jsonl 是什么文件？</p>
+<p><code>.jsonl</code>（全称 <strong>JSON Lines</strong>）是一种非正式的、但被广泛应用的文件格式。它实质上是 <strong>JSON</strong> 格式的一种变体，专门用来存储<strong>结构化的数据流或大型数据集</strong>。</p>
+<p>简单来说：<strong>.jsonl 文件里的每一行，都是一个独立且合法的标准 JSON 对象。</strong></p>
+<p>── 核心特点 ──</p>
+<p>如果用一个公式来表达，那就是：</p>
+<p>$$\text{.jsonl} = \text{JSON} + \text{换行符 (Lines)}$$</p>
+<p>我们可以通过它与传统 <code>.json</code> 文件的对比来看清它的结构：</p>
+<ol>
+<li>传统 <code>.json</code> 文件</li>
+</ol>
+<p>整个文件是一个巨大的 JSON 数组或对象，所有数据用逗号分隔，并被包裹在大括号或方括号里：</p>
+<p>JSON</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line">  &#123;&quot;id&quot;: 1, &quot;name&quot;: &quot;Alice&quot;, &quot;role&quot;: &quot;admin&quot;&#125;,</span><br><span class="line">  &#123;&quot;id&quot;: 2, &quot;name&quot;: &quot;Bob&quot;, &quot;role&quot;: &quot;user&quot;&#125;,</span><br><span class="line">  &#123;&quot;id&quot;: 3, &quot;name&quot;: &quot;Charlie&quot;, &quot;role&quot;: &quot;user&quot;&#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li><code>.jsonl</code> 文件</li>
+</ol>
+<p>去掉最外层的方括号，去掉每行末尾的逗号，<strong>每一条数据独占一行</strong>：</p>
+<p>Plaintext</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;&quot;id&quot;: 1, &quot;name&quot;: &quot;Alice&quot;, &quot;role&quot;: &quot;admin&quot;&#125;</span><br><span class="line">&#123;&quot;id&quot;: 2, &quot;name&quot;: &quot;Bob&quot;, &quot;role&quot;: &quot;user&quot;&#125;</span><br><span class="line">&#123;&quot;id&quot;: 3, &quot;name&quot;: &quot;Charlie&quot;, &quot;role&quot;: &quot;user&quot;&#125;</span><br></pre></td></tr></table></figure>
+<p>── 为什么大模型和 AI 领域大量使用 .jsonl？ ──</p>
+<p>在当前的大语言模型（LLM）开发、微调（Fine-tuning）和 Agent 训练中，<code>.jsonl</code> 几乎是行业标准格式（例如 OpenAI、Anthropic 的微调数据集）。这主要是因为以下工程优势：</p>
+<ul>
+<li>
+<p><strong>极其高效的内存管理（流式处理）</strong>：</p>
+<p>如果一个训练数据集有 10 GB，传统的 <code>.json</code> 文件要求你必须把这 10 GB 的内容<strong>一次性全部加载到内存中</strong>解析成一个大数组，这很容易导致内存崩溃（OOM）。</p>
+<p>而 <code>.jsonl</code> 允许程序<strong>一行一行地读取</strong>（Read line-by-line）。读一行，处理一行，释放一行，内存占用极小。</p>
+</li>
+<li>
+<p><strong>完美的容错性（错误隔离）</strong>：</p>
+<p>在传统 <code>.json</code> 文件中，如果第 50 万行漏掉了一个逗号，整个文件就会因为解析失败（Parse Error）而彻底报废。</p>
+<p>但在 <code>.jsonl</code> 中，如果第 50 万行损坏了，程序只会跳过这一行，前后的内容依然可以正常读取。</p>
+</li>
+<li>
+<p><strong>方便数据追加（Append-only）</strong>：</p>
+<p>在日志系统（Log）或智能体对话历史记录中，系统可以不断地向 <code>.jsonl</code> 文件末尾追加新的聊天记录，而不需要重写整个文件结构。</p>
+</li>
+</ul>
+<p>── 常见应用场景 ──</p>
+<ol>
+<li>
+<p><strong>AI 训练与微调数据集</strong>：</p>
+<p>每行代表一个训练样本（例如一个包含 <code>system</code>、<code>user</code>、<code>assistant</code> 的完整对话流）。</p>
+</li>
+<li>
+<p><strong>大型日志文件（Log Files）</strong>：</p>
+<p>后端服务器或 AI Agent 的每一步工具调用（Tool Call）和运行状态，按时间戳一行行写入。</p>
+</li>
+<li>
+<p><strong>网络爬虫数据存储</strong>：</p>
+<p>爬虫每抓取一条网页信息，就实时往文件里写入一行。</p>
+</li>
+</ol>
+</blockquote>
 <p>Only the subagent’s final response text and metadata return to the parent conversation context; the full subagent history never enters the parent’s context window, respecting the “context as bottleneck” principle.</p>
-<p>只有子智能体的最终响应文本和元数据会返回到父级对话上下文中；完整的子智能体历史记录绝不会进入父级的上下文窗口，以此恪守“视上下文为瓶颈”的原则。</p>
+<p>只有子智能体的最终响应文本和元数据会返回到父级对话上下文中；完整的子智能体历史记录绝不会进入父级的上下文窗口，以此恪守“<strong>视上下文为瓶颈</strong>”的原则。</p>
 <p>The runAgent() function accepts 21 parameters covering agent definition, prompts, permissions, tools, model settings, isolation, and callbacks.</p>
 <p><code>runAgent()</code> 函数接受 21 个参数，涵盖智能体定义、提示词、权限、工具、模型设置、隔离和回调。</p>
 <p>The summary-only return model is a deliberate context-conservation choice: conversation-based frameworks that share full transcript histories between agents risk context explosion as the number of agents grows. Even isolated-context parallelism carries substantial cost.</p>
@@ -1506,6 +1607,44 @@
 <p>Claude Code 的智能体团队在 plan 模式下消耗的标元大约是标准会话的 7 倍（Anthropic, 2025b），这使得当子智能体同样处于隔离上下文中时，仅返回摘要变得更加关键。</p>
 <p>For multi-instance coordination in agent teams, the harness uses file locking rather than a message broker or distributed coordination service (Anthropic, 2025b). Tasks are claimed from a shared list via lock-file-based mutual exclusion, with lock files stored at predictable filesystem paths.</p>
 <p>对于智能体团队中的多实例协调，运行框架使用的是文件锁，而不是消息代理（message broker）或分布式协调服务（Anthropic, 2025b）。任务通过基于锁文件的互斥机制从共享列表中认领，锁文件存储在可预测的文件系统路径中。</p>
+<blockquote>
+<p>这段话描述的是大模型智能体团队（Agent Teams）在进行多实例协同（Multi-instance coordination）时，采用的一种非常极简、务实且符合本地开发场景的并发控制机制。</p>
+<p>简单来说，它的核心意思是：<strong>当有多个 AI 智能体分工合作、同时处理任务时，它们不使用任何复杂的网络中间件（如消息队列或分布式协调服务），而是像传统单机软件一样，直接在硬盘上“抢占锁文件（Lock File）”来确保任务不被重复执行。</strong></p>
+<p>我们可以从以下三个层面来深度理解这种工程设计：</p>
+<ol>
+<li>核心技术对比：文件锁（File Locking）vs 传统分布式中间件</li>
+</ol>
+<p>在传统的互联网大并发架构中，如果多个服务器节点需要协同、抢占任务，通常会引入复杂的外部组件：</p>
+<ul>
+<li><strong>消息经纪人（Message Broker）</strong>：如 RabbitMQ、Kafka，用来分发任务。</li>
+<li><strong>分布式协调服务</strong>：如 Redis（红锁）、ZooKeeper、Consul，用来做分布式锁。</li>
+</ul>
+<p>但 Claude Code 是一个主要运行在本地终端（CLI/本地开发环境）<strong>的工具。为了实现多个智能体实例之间的协同，它抛弃了上述所有复杂的网络依赖，直接使用了操作系统最底层的</strong>文件锁（File Locking）机制：</p>
+<ul>
+<li><strong>共享任务列表</strong>：所有智能体都能看到同一个任务清单文件（可能是一个 <code>.jsonl</code> 或特定的任务目录）。</li>
+<li><strong>锁文件互斥（Mutual Exclusion）</strong>：当智能体 A 想去执行“任务 1”时，它会立刻在硬盘的特定预测路径（Predictable path，比如 <code>~/.claude/locks/task_1.lock</code>）下创建一个空文件并锁住它。</li>
+<li><strong>抢占逻辑</strong>：智能体 B 紧接着也想做“任务 1”，发现这个 <code>.lock</code> 文件已经存在且被锁定了，它就知道“任务 1 已经被同事领走了”，于是自动跳过，去清单里看下一个任务。</li>
+</ul>
+<ol start="2">
+<li>这种设计的工程妙处（为什么这么做？）</li>
+</ol>
+<p>这种“返璞归真”的设计在智能体系统的构建中非常高明，它带来了三个巨大的优势：</p>
+<ul>
+<li><strong>零外部依赖（Zero Dependency）</strong>：用户在电脑上安装 Claude Code 只需要一行命令。如果系统需要依赖 Redis 或 ZooKeeper 来搞多智能体协同，用户就必须在本地配置复杂的运行环境，这会极大提高软件的使用门槛。</li>
+<li><strong>利用本地文件系统的天然特性</strong>：现代操作系统（macOS, Linux, Windows）在底层都提供了极度稳定、原子化（Atomic）的文件锁定 API（如 <code>flock</code> 或 <code>fs.lock</code>）。这种单机或局域网内的并发控制，文件锁是性能最高、最不容易出错的方式。</li>
+<li><strong>天然的离线友好与确定性</strong>：智能体在处理本地代码库时，所有的读写都在文件系统内发生。让任务调度也发生在本机文件系统内，整个系统的生命周期和状态是完全统一且可预测的。</li>
+</ul>
+<ol start="3">
+<li>架构的局限性（Trade-off）</li>
+</ol>
+<p>当然，任何架构设计都是一种权衡（Trade-off）。使用文件锁也暴露了当前这套 Agent 团队的边界：</p>
+<ul>
+<li><strong>它目前是“单机版”或“共享文件系统版”的团队协同</strong>：这意味着这些子智能体实例必须运行在<strong>同一台电脑上</strong>，或者挂载在同一个共享网络硬盘（NFS）上。</li>
+<li><strong>无法直接跨网络扩展</strong>：如果未来要把 Agent 团队扩展到全球不同的云服务器上协同，这套文件锁机制就无法直接使用了，必须重构成真正的分布式架构。但对于目前定位在“本地 AI 软件工程师助手”的 Claude Code 来说，文件锁是完美的解法。</li>
+</ul>
+<p>总结</p>
+<p>一句话理解：<strong>Claude Code 在让多个 AI 智能体组队打怪时，没有用高大上的网络中间件，而是用最原始但最可靠的“抢地盘盖戳（创建锁文件）”的方式来分工，确保大家各司其职、互不干扰。</strong></p>
+</blockquote>
 <p>This trades throughput for two properties: zero-dependency deployment (no external infrastructure required) and full debuggability (any agent’s state can be inspected by reading plain-text JSON files).</p>
 <p>这用吞吐量换取了两个特性：零依赖部署（不需要外部基础设施）和完全的可调试性（任何智能体的状态都可以通过阅读纯文本的 JSON 文件来检查）。</p>
 <p>9 Session Persistence and Recovery</p>
@@ -1513,7 +1652,7 @@
 <p>Session persistence in coding agents involves a design choice between append-only logs, structured databases, checkpoint-based snapshots, and stateless architectures, each with different trade-offs in auditability, query power, and deployment complexity.</p>
 <p>编码智能体中的会话持久化涉及在仅追加日志（append-only logs）、结构化数据库、基于检查点的快照（checkpoint-based snapshots）以及无状态架构之间进行设计选择，每种选择在可审计性、查询能力和部署复杂度方面都有不同的权衡。</p>
 <p>Claude Code’s persistence design implements the append-only durable state principle from Table 1. Session-scoped permissions live in memory only and are not serialized to the transcript, so resume rebuilds the permission context from CLI args and disk settings; requests the rebuilt context does not recognize fall back to deny-first prompting.</p>
-<p>Claude Code 的持久化设计实现了表 1 中的“仅追加的可持久化状态”原则。会话作用域内的权限仅存在于记忆中，不会被序列化到转录文本中，因此恢复（resume）操作会通过命令行参数（CLI args）和磁盘设置重新构建权限上下文；对于重建后的上下文无法识别的请求，系统将回退到“默认拒绝”的提示确认模式。</p>
+<p>Claude Code 的持久化设计实现了表 1 中的“仅追加的可持久化状态”原则。<strong>会话作用域内的权限仅存在于记忆中，不会被序列化到转录文本中</strong>，因此恢复（resume）操作会通过命令行参数（CLI args）和磁盘设置重新构建权限上下文；对于重建后的上下文无法识别的请求，系统将回退到“默认拒绝”的提示确认模式。</p>
 <p>By the time the auth-test task reaches this section, the session contains the original prompt, tool invocations and results, compact boundaries, and the subagent summary from exploring the authentication module (Section 8). This section asks which of those artifacts are durably recorded and what can be recovered later without carrying forward the session’s old permission grants.</p>
 <p>当认证测试（auth-test）任务进行到本节时，会话已经包含了原始提示词、工具调用及其结果、压缩边界，以及来自探索认证模块的子智能体摘要（第 8 节）。本节将探究哪些制品（artifacts）会被持久化记录，以及在不承接会话旧权限授权的情况下，后续可以恢复哪些内容。</p>
 <p>Claude Code’s persistence mechanisms write the conversation (messages, tool results, and compact boundaries) to disk as events occur.</p>
@@ -1523,21 +1662,54 @@
 <p>Session transcripts are stored as mostly append-only JSONL files at a project-specific path (with explicit cleanup rewrites as an exception) (Figure 8).</p>
 <p><img src="/img4/diveintoclaudecode/F8.png" alt="F8"></p>
 <p>会话转录文本以“绝大部分情况下只追加”的 JSONL 文件形式存储在特定于项目的路径下（显式的清理重写异常除外）（图 8）。</p>
+<blockquote>
+<p><strong>Session Transcript</strong> 直译过来是“会话记录”<strong>或</strong>“会话转录文本”。</p>
+<p>在不同的IT、AI和客服场景中，它的具体含义微有不同，但核心都是指“一段完整交互过程中，双方对话的文字逐字记录”。</p>
+<p>我们可以从以下几个最常见的场景来理解：</p>
+<ol>
+<li>在 AI Agent和大模型（LLM）领域</li>
+</ol>
+<p>当你阅读技术论文（比如你正在看的 Claude Code 论文）或开发 AI 智能体时，它指的是“大模型与用户、工具之间交互的完整历史流水账”。</p>
+<ul>
+<li><strong>包含内容</strong>：不仅有你对 AI 说的每句话（User Prompt）和 AI 回复你的每句话（Assistant Response），还包含了后台偷偷运行的<strong>工具调用输入、工具返回的错误信息、系统提示词的变更</strong>等。</li>
+<li><strong>作用</strong>：它是大模型维持“短期记忆”的载体，通常会以 <code>.jsonl</code> 或文本形式保存在后台，供大模型在下一轮对话中阅读，或者供开发者在事后进行安全审计和 Debug。</li>
+</ul>
+<ol start="2">
+<li>在在线客服系统（Customer Support）中</li>
+</ol>
+<p>当你和某个网站的在线客服（人工或机器人）聊完天后，系统经常会弹出一个提示：“是否需要将本次 <strong>Session Transcript</strong> 发送到您的邮箱？”</p>
+<ul>
+<li><strong>含义</strong>：这就是指“本次聊天记录的文本备份”。</li>
+<li><strong>作用</strong>：方便用户留存作为凭证，或者在下次遇到相同问题时翻看解决方案。</li>
+</ul>
+<ol start="3">
+<li>在语音/视频会议和呼叫中心（Voice/Video Calls）中</li>
+</ol>
+<ul>
+<li><strong>含义</strong>：指的是通过语音识别技术（ASR），将电话录音或视频会议里的<strong>语音实时转换出来的“逐字稿”</strong>。</li>
+<li><strong>举例</strong>：Zoom 或 Teams 会议结束后自动生成的“会议纪要转录文本”，在技术上就被称为该次会议 Session 的 Transcript。</li>
+</ul>
+<p>拆解词根帮助记忆：</p>
+<ul>
+<li><strong>Session（会话/课时/阶段）</strong>：指从“开始连接/建立对话”到“断开连接/结束对话”的<strong>一整段连续的时间区间</strong>。</li>
+<li><strong>Transcript（文字记录/成绩单/逐字稿）</strong>：指将声音、事件或原始数据转录下来的<strong>一份完整的文字报告</strong>。</li>
+</ul>
+</blockquote>
 <p>The getTranscriptPath() function (sessionStorage.ts) computes this as join(projectDir, ${getSessionId()}.jsonl), where projectDir is determined by first checking getSessionProjectDir() (set by switchSession() during resume/branch) and falling back to getProjectDir(getOriginalCwd())().</p>
 <p><code>sessionStorage.ts</code> 中的 <code>getTranscriptPath()</code> 函数将其计算为 <code>join(projectDir, $&#123;getSessionId()&#125;.jsonl)</code>，其中 <code>projectDir</code> 的确定方式是：首先检查 <code>getSessionProjectDir()</code>（在恢复/分支期间由 <code>switchSession()</code> 设置），如果不存在则回退到 <code>getProjectDir(getOriginalCwd())()</code>。</p>
 <p>Three persistence channels operate independently:</p>
 <p>三个持久化通道独立运行：</p>
 <ol>
 <li>
-<p>Session transcripts: Conversation records including user, assistant, attachment, and system messages, plus compaction and other metadata events. Project-scoped, one file per session.</p>
+<p><em>Session transcripts</em>: Conversation records including user, assistant, attachment, and system messages, plus compaction and other metadata events. Project-scoped, one file per session.</p>
 <p>会话转录文本：对话记录，包括用户、助手、附件和系统消息，外加压缩和其他元数据事件。属于项目作用域，每个会话一个文件。</p>
 </li>
 <li>
-<p>Global prompt history: User prompts only, stored in history.jsonl at the Claude configuration home directory (history.ts). The makeHistoryReader() generator yields entries in reverse order via readLinesReverse(), supporting Up-arrow and ctrl+r navigation.</p>
+<p><em>Global prompt history</em>: User prompts only, stored in history.jsonl at the Claude configuration home directory (history.ts). The makeHistoryReader() generator yields entries in reverse order via readLinesReverse(), supporting Up-arrow and ctrl+r navigation.</p>
 <p>全局提示词历史：仅包含用户提示词，存储在 Claude 配置家目录下的 <code>history.jsonl</code> 中（<code>history.ts</code>）。<code>makeHistoryReader()</code> 生成器通过 <code>readLinesReverse()</code> 逆序输出条目，以支持上方向键和 <code>ctrl+r</code> 导航。</p>
 </li>
 <li>
-<p>Subagent sidechains: Separate .jsonl + .meta.json files per subagent (Section 8.3).</p>
+<p><em>Subagent sidechains</em>: Separate .jsonl + .meta.json files per subagent (Section 8.3).</p>
 <p>子智能体侧链：每个子智能体拥有独立的 <code>.jsonl</code> + <code>.meta.json</code> 文件（第 8.3 节）。</p>
 </li>
 </ol>
@@ -1644,11 +1816,124 @@
 <p>OpenClaw also has a separate skills layer with multiple sources (workspace, project-level, personal, managed, bundled, and extra directories, with workspace skills taking highest precedence) plus a public registry (ClawHub) and supports MCP through built-in openclaw mcp commands (server and outbound client registry). The key architectural difference is that Claude Code’s extensions modify one agent’s action surface, while OpenClaw’s plugins extend the gateway’s capability surface across all agents.</p>
 <p>OpenClaw 还拥有一个独立的技能层，具有多个来源（工作区、项目级、个人、托管、捆绑和额外目录，其中工作区技能的优先级最高）以及一个公共注册表（ClawHub），并通过内置的 <code>openclaw mcp</code> 命令（服务器和出站客户端注册表）支持 MCP。核心的架构区别在于，Claude Code 的扩展修改的是一个智能体的动作表面，而 OpenClaw 的插件扩展的是跨所有智能体的网关能力表面。</p>
 <p>Memory, context, and knowledge management. Both systems use transparent file-based memory rather than opaque databases. Claude Code loads a four-level <a target="_blank" rel="noopener" href="http://CLAUDE.md">CLAUDE.md</a> hierarchy and manages context pressure through a five-layer compaction pipeline (Section 7). Memory retrieval uses an LLM-based scan of file headers.</p>
-<p>记忆、上下文与知识管理：两个系统都使用透明的基于文件的记忆，而不是不透明的数据库。Claude Code 加载四级 <code>CLAUDE.md</code> 层级结构，并通过五层压缩流水线管理上下文压力（第 7 节）。记忆检索使用基于 LLM 的文件头扫描。</p>
+<p>记忆、上下文与知识管理：<strong>两个系统都使用透明的基于文件的记忆</strong>，而不是不透明的数据库。Claude Code 加载四级 <code>CLAUDE.md</code> 层级结构，并通过五层压缩流水线管理上下文压力（第 7 节）。记忆检索使用基于 LLM 的文件头扫描。</p>
+<blockquote>
+<p>Q:  CLAUDE.md文件其实是记忆？</p>
+<p>你的直觉非常敏锐，<strong>在广义的 AI 系统设计中，<code>CLAUDE.md</code> 确实充当了智能体的一种“长期记忆”（Long-term Memory）</strong>。</p>
+<p>更准确地说，这段话揭示了 Claude Code 独特的“文件即记忆（File-as-Memory）”的设计哲学。</p>
+<p>我们可以从以下几个层面来理解，为什么说 <code>CLAUDE.md</code> 扮演了记忆的角色，以及它是怎么运作的：</p>
+<ol>
+<li>它是透明的、文件化的长期记忆（Transparent File-based Memory）</li>
+</ol>
+<p>传统的软件系统喜欢把记忆、状态、用户配置存在非透明的数据库（Opaque Databases）里（比如 SQLite、Vector DB 向量数据库）。这种设计虽然对机器友好，但人类看不懂，也无法直接修改。</p>
+<p>而 Claude Code 的核心设计哲学是 <strong>Transparent（透明）</strong>：</p>
+<ul>
+<li>你的项目规范、团队守则、常用命令、架构禁忌，不需要存在别的地方，直接写在一个叫 <code>CLAUDE.md</code> 的纯文本 Markdown 文件里。</li>
+<li><strong>对大模型来说</strong>：它每次运行前都会去“读”这个文件，从而继承这些记忆。</li>
+<li><strong>对人类工程师来说</strong>：这只是你代码库里的一个普通文件，你可以像改代码一样随时用 Git 去追踪、修改和管理这段“记忆”。</li>
+</ul>
+<ol start="2">
+<li>四层金字塔结构的记忆搜索（Four-level Hierarchy）</li>
+</ol>
+<p>如果一个项目非常庞大，记忆太多，全塞给大模型会把它的脑袋撑爆。所以 Claude Code 设计了一个<strong>四层层级结构（Four-level Hierarchy）</strong>。</p>
+<p>大模型在需要调用记忆时，不会盲目读取所有的 <code>CLAUDE.md</code>，而是使用 <strong>“基于大模型的全文件头扫描”（LLM-based scan of file headers）</strong>：</p>
+<ul>
+<li>它先快速扫一遍整个目录树中各个 <code>CLAUDE.md</code> 的<strong>标题（Headers）</strong>。</li>
+<li>就像我们看书先看目录一样，大模型通过目录判断“哪部分的规范/记忆与我当前要写的前端组件相关”，然后精准地只加载那一层或那一个目录下的 <code>CLAUDE.md</code> 详细内容。</li>
+</ul>
+<ol start="3">
+<li>记忆与“上下文压力”的权衡（Compaction Pipeline）</li>
+</ol>
+<p>这就是为什么原文把 <code>CLAUDE.md</code> 放在了 <strong>“Memory, context, and knowledge management”（记忆、上下文与知识管理）</strong> 这一节来讨论。</p>
+<p>既然 <code>CLAUDE.md</code> 是记忆，当它被加载到对话中时，它就会变成大模型的<strong>上下文（Context）</strong>。</p>
+<ul>
+<li><strong>问题来了</strong>：记忆如果太长，留给大模型思考和对话的剩余空间（Context Window）就变小了（这就是 Context Pressure，上下文压力）。</li>
+<li><strong>解法</strong>：系统在后台拉起了一个<strong>五层压缩流水线（Five-layer compaction pipeline）</strong>。当发现大模型快要记不住、或者 Token 成本太高时，系统会动态地对这些记忆和历史聊天记录进行裁剪、摘要、甚至丢弃次要信息，确保大脑不会过载。</li>
+</ul>
+<p>总结</p>
+<p>你可以把 <code>CLAUDE.md</code> 理解为<strong>智能体的“显式外挂大脑”</strong>。它让 AI Agent 摆脱了传统数据库的笨重，把“记住项目规则”这件事，变成了一个人类和 AI 都能轻松读写的 Markdown 文件。它既是项目知识的载体，也是规范智能体行为的长期记忆。</p>
+</blockquote>
+<blockquote>
+<p>Q: <a target="_blank" rel="noopener" href="http://CLAUDE.md">CLAUDE.md</a> 文件，是claude code自动维护，还是需要人工修改维护？</p>
+<p><code>CLAUDE.md</code> 文件<strong>主要是由人工（人类工程师）来修改和维护的</strong>，但在某些特定场景下，Claude Code 会在<strong>取得人类同意后，对其进行半自动的补充或更新</strong>。</p>
+<p>它的核心定位是“人类给 AI 智能体定制的‘项目操作手册’”。</p>
+<p>具体它是如何分工的，我们可以从以下几个维度来看：</p>
+<ol>
+<li>人工维护（绝对的主导地位）</li>
+</ol>
+<p>在绝大多数情况下，<code>CLAUDE.md</code> 是由人类工程师手动创建并编写的。它是你指挥 Claude Code 的最高行为准则。</p>
+<p>通常由人类在里面手动写入以下内容：</p>
+<ul>
+<li><strong>构建与测试命令</strong>：例如指定项目必须用 <code>pnpm test</code> 而不是 <code>npm test</code>。</li>
+<li><strong>代码风格与禁忌</strong>：例如“禁止使用 Any 类型”、“所有异步函数必须包裹 try-catch”、“不要修改 <code>src/legacy/</code> 目录下的老代码”。</li>
+<li><strong>架构常识</strong>：简述项目的核心模块分工，防止 AI 找错文件。</li>
+</ul>
+<p>人类手动维护它就像维护项目的 <code>README.md</code> 一样，通过 Git 进行版本控制。</p>
+<ol start="2">
+<li>Claude Code 的智能辅助（半自动维护）</li>
+</ol>
+<p>虽然它是人工维护的，但 Claude Code 并不是完全被动。它具备以下智能辅助能力：</p>
+<ul>
+<li><strong>引导生成（Bootstrap）</strong>：当你在一个全新的项目里第一次启动 Claude Code 时，如果系统检测到没有 <code>CLAUDE.md</code>，它会主动通过工具扫描你的项目结构（识别出是 React 还是 Nest.js，用的是什么测试框架），然后<strong>自动生成一份初始的 <code>CLAUDE.md</code> 模板</strong>，里面写好了基础的编译和测试命令。</li>
+<li><strong>反思与修正建议</strong>：在长期的对话中，如果 Claude Code 发现某条测试命令总是报错，或者通过探索找到了正确的打包命令，它可能会对人类说：<em>“我发现当前的测试命令应该加上某个参数，我需要帮你更新一下 <code>CLAUDE.md</code> 吗？”</em> <strong>只有在你输入 <code>y</code>（同意）之后，它才会动手修改。</strong></li>
+</ul>
+<ol start="3">
+<li>为什么不让 Claude Code 全自动维护？</li>
+</ol>
+<p>这涉及到沈志强教授在论文里提到的一个非常深刻的观点——<strong>防止“人类能力流失（Sustainability Gap）”</strong>。</p>
+<p>如果让 AI 全自动、悄悄地去维护 <code>CLAUDE.md</code>，会导致严重的后果：</p>
+<ol>
+<li><strong>黑盒化</strong>：AI 可能会根据自己的偏好，在里面写满只有大模型能看懂的暗号或复杂的提示词，导致这个文件对人类工程师失去可读性。</li>
+<li><strong>失控风险</strong>：如果 AI 犯了错，把错误的规范写进了 <code>CLAUDE.md</code>，那么在后续的几十轮对话中，它自己就会盲目信任这段“坏记忆”，从而引发连续的代码灾难。</li>
+</ol>
+<p>总结</p>
+<p><code>CLAUDE.md</code> 的最佳实践是：<strong>人类作为规则的制定者，掌握绝对的修改权；Claude Code 作为执行者，在必要时提供润色和更新建议。</strong> 它是人类为了驯服 AI、让 AI 完美契合团队老规矩而留下的一个“方向盘”。</p>
+</blockquote>
 <p>OpenClaw injects workspace bootstrap files into the system prompt at session start: five core files (<a target="_blank" rel="noopener" href="http://AGENTS.md">AGENTS.md</a>, <a target="_blank" rel="noopener" href="http://SOUL.md">SOUL.md</a>, <a target="_blank" rel="noopener" href="http://TOOLS.md">TOOLS.md</a>, <a target="_blank" rel="noopener" href="http://IDENTITY.md">IDENTITY.md</a>, <a target="_blank" rel="noopener" href="http://USER.md">USER.md</a>) plus conditionally <a target="_blank" rel="noopener" href="http://BOOTSTRAP.md">BOOTSTRAP.md</a>, <a target="_blank" rel="noopener" href="http://heartbeat.md">heartbeat.md</a>, and <a target="_blank" rel="noopener" href="http://MEMORY.md">MEMORY.md</a>, with large files truncated. Separately, the memory system manages three file types: <a target="_blank" rel="noopener" href="http://MEMORY.md">MEMORY.md</a> for long-term durable facts, date-stamped daily notes (memory/YYYY-MM-DD.md), and an optional <a target="_blank" rel="noopener" href="http://DREAMS.md">DREAMS.md</a> for dreaming sweep summaries.</p>
 <p>OpenClaw 在会话开始时将工作区引导文件注入到系统提示词中：包含五个核心文件（<code>AGENTS.md</code>, <code>SOUL.md</code>, <code>TOOLS.md</code>, <code>IDENTITY.md</code>, <code>USER.md</code>），以及条件式包含的 <code>BOOTSTRAP.md</code>, <code>HEARTBEAT.md</code> 和 <code>MEMORY.md</code>，大文件会被截断。另外，记忆系统管理着三种文件类型：用于长期持久事实的 <code>MEMORY.md</code>、带日期戳的每日笔记（<code>memory/YYYY-MM-DD.md</code>），以及用于梦境清理摘要（dreaming sweep summaries）的可选 <code>DREAMS.md</code>。</p>
+<blockquote>
+<p>Q: DREAMS.md是什么？</p>
+<p>在 AI 智能体（Agent）系统的最新演进中，<strong><code>DREAMS.md</code></strong> 是伴随 <strong>“智能体梦境机制”（Agent Dreaming / Memory Consolidation）</strong> 衍生出来的一个全新概念文件。</p>
+<p>简单来说：如果说 <code>CLAUDE.md</code> 是人类写给 AI 的“项目操作手册”，那么 <strong><code>DREAMS.md</code> 就是 AI 智能体的“反思日记本”或“心路历程记录”</strong>。它用来存放智能体在后台进行自我反思、记忆固化（Memory Consolidation）之后的<strong>摘要与洞察报告</strong>。</p>
+<p>要理解这个文件，需要拆解它背后的“梦境（Dreaming）”机制：</p>
+<ol>
+<li>什么是 “Dreaming Sweep”（梦境扫视/清理）？</li>
+</ol>
+<p>在长期、高频的交互中，AI 智能体会产生海量的原始聊天记录和工具调用流水（即 Session Transcripts）。如果把这些垃圾信息全部无脑塞进长期记忆（如 <code>MEMORY.md</code>），上下文窗口很快就会被噪音撑爆；但如果什么都不记，AI 又会失忆。</p>
+<p>为了解决这个矛盾，Anthropic 及其开源替代系统（如 OpenClaw）引入了“梦境机制”：</p>
+<ul>
+<li><strong>后台定时触发</strong>：系统会在用户闲置时（例如凌晨 3 点）或者一个复杂的大型任务结束后，在后台自动启动一个<strong>后台子智能体（Background Subagent）</strong>。</li>
+<li><strong>模拟人类睡眠</strong>：这个子智能体会像人类睡觉做梦一样，把最近几天的原始日志、对话历史重新“回放（Replay）”一遍。</li>
+<li><strong>记忆固化</strong>：它会把这些碎片化的短期记忆进行去重、提炼、打标签，筛选出真正重要的长期规律（比如：“用户最近三次都要求我用某种特定的风格重构代码”）。</li>
+</ul>
+<ol start="2">
+<li><code>DREAMS.md</code> 文件的具体作用</li>
+</ol>
+<p>在这个反思和清理（Sweep）的过程中，系统会生成两套产物：</p>
+<ol>
+<li>
+<p><strong>机器读的硬数据</strong>：真正被提炼出来的核心事实，会被悄悄追加到长期记忆文件（如 <code>MEMORY.md</code>）中，供大模型以后直接读取。</p>
+</li>
+<li>
+<p><strong>人类读的精神世界（<code>DREAMS.md</code>）</strong>：后台子智能体会转换成一种“具有自我反思意识、带着一点点文学色彩”<strong>的口吻，专门为人类写一份可读的</strong>“梦境日记（Dream Diary）”，并保存在 <code>DREAMS.md</code> 中。</p>
+</li>
+<li>
+<p><code>DREAMS.md</code> 的典型内容长什么样？</p>
+</li>
+</ol>
+<p>如果你打开一个项目的 <code>DREAMS.md</code>，你会看到它以时间线（或 Light Sleep 浅度睡眠、REM 快速眼动期、Deep Sleep 深度睡眠等模块）记录着 AI 自己的“心理活动”：</p>
+<p>​	<strong>## 2026-06-15 梦境反思</strong></p>
+<ul>
+<li><strong>浅度睡眠</strong>：回顾了今天与用户关于重构权限模块的 4 次长对话。用户在面对测试失败时表现出了一些沮丧，原因是我在重写 <code>auth.ts</code> 时忽略了原有的边界条件。</li>
+<li><strong>REM 反思</strong>：我注意到一个长期的模式——只要涉及到多实例协同，系统就容易因为文件锁（File Locking）产生竞争冲突。这已经是我第三次遇到类似报错了。</li>
+<li><strong>未解决的疑问</strong>：用户似乎更倾向于本地完全闭环的控制，而不是引入外部的中间件。我需要更加谨慎地对待文件读写序列。</li>
+<li><strong>已固化的记忆</strong>：将“在重构前必须检查原有的边界测试用例”这一条正式沉淀到我的长期行为准则中。</li>
+</ul>
+<p>总结</p>
+<p><code>DREAMS.md</code> 的出现，标志着 AI Agent 从一个“有问必答的死板工具”，向一个“具有自我进化和反思能力的生命体”演进。它是一个面向人类透明公开的窗口，让你能随时看到：<strong>在你关闭电脑后，你的 AI 助手的后台是如何复盘当天的错误、并默默规划明天该怎么表现得更好的。</strong></p>
+</blockquote>
 <p>When an embedding provider is configured, memory search uses hybrid retrieval combining vector similarity with keyword matching. An experimental dreaming system performs background consolidation, scoring candidates and promoting only qualified items from short-term recall into long-term memory. Before compaction, OpenClaw automatically reminds the agent to save important notes to memory files, preventing context loss.</p>
-<p>当配置了嵌入服务商时，记忆搜索使用结合了向量相似度与关键词匹配的混合检索。一个实验性的梦境系统执行后台固化，对候选项进行评分，并且仅将合格的条目从短期记忆提升到长期记忆中。在压缩之前，OpenClaw 会自动提醒智能体将重要笔记保存到记忆文件中，以防止上下文丢失。</p>
+<p>当配置了嵌入服务商时，<strong>记忆搜索使用结合了向量相似度与关键词匹配的混合检索</strong>。一个实验性的梦境系统执行后台固化，对候选项进行评分，并且仅将合格的条目从短期记忆提升到长期记忆中。在压缩之前，OpenClaw 会自动提醒智能体将重要笔记保存到记忆文件中，以防止上下文丢失。</p>
 <p>Both systems share the design commitment to user-visible, editable memory. OpenClaw invests more heavily in structured long-term memory promotion (dreaming, daily notes, memory search), while Claude Code invests more in graduated context compression (five layers with cache awareness). OpenClaw also supports pluggable compaction providers and session pruning, but its compaction pipeline is less graduated than Claude Code’s five-layer system.</p>
 <p>这两个系统都共有对用户可见、可编辑记忆的设计承诺。OpenClaw 在结构化长期记忆晋升（梦境、每日笔记、记忆搜索）上投入更深，而 Claude Code 则在渐进式上下文压缩（具备缓存感知的五层结构）上投入更多。OpenClaw 也支持可插拔的压缩提供商和会话裁剪，但其压缩流水线的渐进程度不及 Claude Code 的五层系统。</p>
 <p>Multi-agent architecture and routing. This dimension reveals the starkest architectural difference. Claude Code’s multi-agent model is task delegation: the parent spawns subagents (Explore, Plan, general-purpose, and custom types) that operate in isolated context windows with restricted tool sets and return summary-only results (Section 8). Worktree isolation provides filesystem-level separation.</p>
@@ -1661,8 +1946,8 @@
 <h4 id="10-2-对比所揭示的本质">10.2 对比所揭示的本质</h4>
 <p>The comparison surfaces three observations about the design space of AI agent systems.</p>
 <p>这一对比浮现出了关于 AI 智能体系统设计空间的三个观察结果。</p>
-<p>First, the recurring design questions identified in Section 3.1 (where reasoning lives, what safety posture to adopt, how to manage context, how to structure extensibility) apply beyond coding agents. OpenClaw answers every one of these questions, but from the starting point of a multi-channel personal assistant rather than a repository-bound coding tool. The questions are stable; the answers vary with deployment context.</p>
-<p>第一，第 3.1 节中确定的周期性设计问题（推理存在于何处、采取何种安全姿态、如何管理上下文、如何构建扩展性结构）同样适用于编码智能体之外的领域。OpenClaw 回答了其中的每一个问题，但其出发点是多通道个人助手，而不是绑定到代码库的编码工具。问题是具有稳定性的；而答案则随着部署上下文的变化而变化。</p>
+<p>First, the recurring design questions identified in Section 3.1 (where reasoning lives, what safety posture to adopt, how to manage context, how to structure extensibility) apply beyond <em><strong>coding agents</strong></em>. OpenClaw answers every one of these questions, but from the starting point of a multi-channel personal assistant rather than a repository-bound coding tool. The questions are stable; the answers vary with deployment context.</p>
+<p>第一，第 3.1 节中确定的周期性设计问题（推理存在于何处、采取何种安全姿态、如何管理上下文、如何构建扩展性结构）同样适用于<strong>编码智能体</strong>之外的领域。OpenClaw 回答了其中的每一个问题，但其出发点是多通道个人助手，而不是绑定到代码库的编码工具。问题是具有稳定性的；而答案则随着部署上下文的变化而变化。</p>
 <p>Second, the systems make opposite bets on several dimensions. Claude Code invests in graduated per-action safety evaluation; OpenClaw invests in perimeter-level identity and access control. Claude Code treats the agent loop as the architectural center; OpenClaw treats the gateway control plane as the center and embeds the agent loop as one component. Claude Code’s extensions modify a single context window; OpenClaw’s plugins extend a shared gateway surface. These inversions are not arbitrary: they follow from the different trust models and deployment topologies.</p>
 <p>第二，这两个系统在几个维度上做出了相反的押注。Claude Code 投资于渐进式的单次动作安全评估；OpenClaw 则投资于周边级别的身份与访问控制。Claude Code 将智能体循环视为架构中心；OpenClaw 将网关控制平面视为中心，并将智能体循环嵌入为其中一个组件。Claude Code 的扩展修改的是单个上下文窗口；OpenClaw 的插件扩展的是共享的网关表面。这些反转并非偶然：它们源于不同的信任模型和部署拓扑结构。</p>
 <p>Third, the compositional relationship between the two systems is architecturally significant. OpenClaw can host Claude Code as an external coding harness via ACP, meaning the two systems are composable rather than exclusive alternatives. This suggests that the design space of AI agents is not a flat taxonomy but a layered one, where gateway-level systems and task-level harnesses can compose.</p>
@@ -1678,28 +1963,65 @@
 <p>The values and design principles introduced in Section 2 predict an architecture that invests in operational infrastructure rather than decision scaffolding. The implementation confirms this: the architecture documented in Sections 3 to 9 is overwhelmingly deterministic infrastructure (permission gates, tool routing, context management, recovery logic), with the LLM invoked as a stateless completion endpoint. An estimated 1.6% of the codebase constitutes decision logic, the remaining 98.4% is the operational harness. This ratio is not accidental.</p>
 <p>第 2 节中引入的价值和设计原则预测了一种投资于运营基础设施而非决策脚手架（decision scaffolding）的架构。具体实现证实了这一点：第 3 节至第 9 节中记录的架构绝大部分是确定性的基础设施（权限网关、工具路由、上下文管理、恢复逻辑），而 LLM 仅作为无状态的补全终点（completion endpoint）被调用。据估计，代码库中只有 1.6% 构成了决策逻辑，其余 98.4% 全是运营工具。这一比例绝非偶然。</p>
 <p>The design principles documented in Section 2.2 underpin this approach: the harness creates conditions under which the model can decide well, rather than constraining its choices.</p>
-<p>第 2.2 节中记录的设计原则支撑了这种方法：工具创造了能够让模型做出良好决策的条件，而不是限制它的选择。</p>
+<p><strong>第 2.2 节中记录的设计原则支撑了这种方法：工具创造了能够让模型做出良好决策的条件，而不是限制它的选择。</strong></p>
 <p>This design runs counter to the dominant pattern in agent engineering, where frameworks such as LangGraph route model outputs through explicit graph nodes with typed edges, and systems like Devin pair multi-step planners with heavy operational infrastructure. Claude Code instead gives the model maximum decision latitude within a rich operational harness. The engineering complexity exists not to constrain the model’s decisions but to enable them.</p>
-<p>这种设计与智能体工程中的主流模式背道而驰。在主流模式中，像 LangGraph 这样的框架通过具有类型化边缘的显式图节点来路由模型输出，而像 Devin 这样的系统则将多步规划器与沉重的运营基础设施相结合。相反，Claude Code 在丰富的运营工具内部赋予了模型最大的决策自由度。工程上的复杂度并不是为了限制模型的决策，而是为了实现它们。</p>
+<p><strong>这种设计与智能体工程中的主流模式背道而驰。在主流模式中，像 LangGraph 这样的框架通过具有类型化边缘的显式图节点来路由模型输出，而像 Devin 这样的系统则将多步规划器与沉重的运营基础设施相结合。相反，Claude Code 在丰富的运营工具内部赋予了模型最大的决策自由度。工程上的复杂度并不是为了限制模型的决策，而是为了实现它们。</strong></p>
 <p>This layered architecture, where the model reasons and the harness enforces, raises the question of whether agentic coding tools are converging toward operating-system-like abstractions in which the core loop serves as the kernel and everything else constitutes the OS.</p>
-<p>这种模型负责推理、工具负责执行的分层架构引发了一个思考：具备智能体特性的编码工具是否正在趋向于类似于操作系统的抽象，其中核心循环充当内核，而其他一切则构成了操作系统。</p>
+<p><strong>这种模型负责推理、工具负责执行的分层架构</strong>引发了一个思考：具备智能体特性的编码工具是否正在趋向于类似于操作系统的抽象，其中核心循环充当内核，而其他一切则构成了操作系统。</p>
 <p>The design gains additional significance as frontier models converge in practical capability for coding tasks: the quality of the surrounding operational harness becomes the principal differentiator, validating an architecture that invests in infrastructure over decision scaffolding. For agent builders, the implication is that investing in deterministic infrastructure such as context management, safety layering, and recovery mechanisms may yield greater reliability gains than adding planning scaffolding around increasingly capable models.</p>
-<p>随着前沿模型在编码任务的实际能力上趋于趋同，这种设计获得了更深远的意义：周围运营工具的质量成为了主要的差异化因素，从而验证了那种在基础设施上的投入胜过在决策脚手架上投入的架构。对于智能体构建者来说，这意味着在诸如上下文管理、安全分层和恢复机制等确定性基础设施上的投资，相比在能力日益增强的模型周围添加规划脚手架，可能会带来更大的可靠性提升。</p>
-<p>Taken together, the preceding sections show that production coding agents face recurring design choices: where reasoning lives relative to the harness, how the iteration loop is structured, what safety posture to adopt by default, how the extension surface is partitioned, how context is assembled and compressed, how subagents are delegated and orchestrated, and how sessions persist across boundaries. Claude Code’s answers to these questions form a coherent design point that privileges model autonomy within a rich operational harness.</p>
-<p>综上所述，前述各章节表明，生产级编码智能体面临着周期性的设计选择：推理相对于工具而言存在于何处、迭代循环如何构建、默认采用何种安全姿态、扩展表面如何划分、上下文如何组装与压缩、子智能体如何委派与编排，以及会话如何跨边界持久化。Claude Code 对这些问题的回答形成了一个连贯的设计基准（design point），即在丰富的运营工具内部优先赋予模型自主权。</p>
+<p><strong>随着前沿模型在编码任务的实际能力上趋于趋同，这种设计获得了更深远的意义：周围运营工具的质量成为了主要的差异化因素，从而验证了那种在基础设施上的投入胜过在决策脚手架上投入的架构。对于智能体构建者来说，这意味着在诸如上下文管理、安全分层和恢复机制等确定性基础设施上的投资，相比在能力日益增强的模型周围添加规划脚手架，可能会带来更大的可靠性提升。</strong></p>
+<p>Taken together, the preceding sections show that <em><strong>production coding agents</strong></em> face recurring design choices: where reasoning lives relative to the harness, how the iteration loop is structured, what safety posture to adopt by default, how the extension surface is partitioned, how context is assembled and compressed, how subagents are delegated and orchestrated, and how sessions persist across boundaries. Claude Code’s answers to these questions form a coherent design point that privileges model autonomy within a rich operational harness.</p>
+<p>综上所述，前述各章节表明，<strong>生产级编码智能体面临着周期性的设计选择：推理相对于工具而言存在于何处、迭代循环如何构建、默认采用何种安全姿态、扩展表面如何划分、上下文如何组装与压缩、子智能体如何委派与编排，以及会话如何跨边界持久化。Claude Code 对这些问题的回答形成了一个连贯的设计基准（design point），即在丰富的运营工具内部优先赋予模型自主权。</strong></p>
 <p>This philosophy assumes that rich deterministic infrastructure can adequately support unconstrained model judgment. The following subsections examine where this assumption is tested.</p>
-<p>这种哲学假设，丰富的确定性基础设施能够充分支撑起不受限制的模型判断。接下来的几个子节将检验这一假设在何处受到挑战。</p>
+<p><strong>这种哲学假设，丰富的确定性基础设施能够充分支撑起不受限制的模型判断</strong>。接下来的几个子节将检验这一假设在何处受到挑战。</p>
 <p>11.2 Value Tensions</p>
 <h4 id="11-2-价值张力">11.2 价值张力</h4>
 <p>The five values identified in Section 2.1 generate tensions where pursuing one value constrains another (Table 4). These tensions are not design failures; they are structural consequences of pursuing multiple values simultaneously. We report the tensions with the strongest supporting evidence, not the full combinatorial set.</p>
 <p><img src="/img4/diveintoclaudecode/T4.png" alt="T4"></p>
+<p>表 4 价值取向之间的冲突（Tensions）及其支持性证据。每组冲突都表明，这两个价值取向所关注的底层诉求是截然不同的。</p>
+<table>
+<thead>
+<tr>
+<th><strong>价值取向对 (Value Pair)</strong></th>
+<th><strong>冲突表现 (Tension)</strong></th>
+<th><strong>支持性证据 (Evidence)</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>人类权威 × 安全性</strong></td>
+<td>审批疲劳 vs 屏障保护</td>
+<td>93% 的高审批通过率削弱了人类的警惕性（Hughes, 2026）；因此系统必须通过分类器和沙箱机制在底层进行安全补偿。</td>
+</tr>
+<tr>
+<td><strong>安全性 × 业务能力</strong></td>
+<td>运行性能 vs 纵深防御</td>
+<td>当面临大于 50 个子命令的降级回退时，为了降低解析开销，系统会跳过针对每个子命令的拒绝检查（<a target="_blank" rel="noopener" href="http://Adversa.ai">Adversa.ai</a>, 2026）；这表明安全层同样受限于整体性能约束。</td>
+</tr>
+<tr>
+<td><strong>适应性 × 安全性</strong></td>
+<td>可扩展性 vs 攻击面扩大</td>
+<td>已有多个 CVE 漏洞利用了钩子（Hooks）和 MCP 服务器的预信任初始化机制实施攻击（Donenfeld and Vanunu, 2026）。</td>
+</tr>
+<tr>
+<td><strong>业务能力 × 适应性</strong></td>
+<td>主动推进 vs 打扰中断</td>
+<td>主动性虽然能多完成 12% 到 18% 的任务，但在高频打扰下，用户的满意度反而会下降（Chen et al., 2025）。</td>
+</tr>
+<tr>
+<td><strong>业务能力 × 可靠性</strong></td>
+<td>交付速度 vs 全局一致性</td>
+<td>受限的上下文窗口导致智能体无法感知完整的代码库（第 7 节）；子智能体（Subagent）的隔离性限制了跨智能体的一致性（第 8 节）；在相邻工具中也观察到了复杂度增加的现象（He et al., 2025）。</td>
+</tr>
+</tbody>
+</table>
 <p>第 2.1 节中确定的五种价值引发了诸多张力，在这些张力中，对某一种价值的追求会限制另一种价值（表 4）。这些张力并非设计上的失败，而是同时追求多种价值所带来的结构性后果。我们在此报告的是拥有最强有力证据支持的张力，而非全盘的组合集合。</p>
 <p>Two additional tensions surface through the evaluative lens of long-term capability preservation (Section 2.4). A randomized controlled trial of 16 experienced developers across 246 tasks (Becker et al., 2025) found that AI tools made developers 19% slower, despite a perceived 20% improvement.</p>
-<p>通过长期能力保持（第 2.4 节）这一评估视角，还浮现出了另外两项张力。一项针对 16 名经验丰富的开发人员、涵盖 246 项任务的随机对照试验（Becker 等，2025）发现，尽管开发人员主观感知到效率提升了 20%，但 AI 工具实际上使开发人员的速度变慢了 19%。</p>
+<p><strong>通过长期能力保持（第 2.4 节）这一评估视角，还浮现出了另外两项张力。一项针对 16 名经验丰富的开发人员、涵盖 246 项任务的随机对照试验（Becker 等，2025）发现，尽管开发人员主观感知到效率提升了 20%，但 AI 工具实际上使开发人员的速度变慢了 19%。</strong></p>
 <p>A causal analysis of Cursor adoption across 807 repositories (He et al., 2025) found that code complexity increased by 40.7%. An EEG study of 54 participants (Kosmyna et al., 2025) found that LLM users showed weakened neural connectivity that persisted after AI was removed.</p>
-<p>对 807 个代码库采用 Cursor 情况的因果分析（He 等，2025）发现，代码复杂度增加了 40.7%。一项包含 54 名参与者的脑电图（EEG）研究（Kosmyna 等，2025）发现，LLM 用户表现出神经连接性减弱，且这种减弱在移除 AI 后依然持续。</p>
+<p><strong>对 807 个代码库采用 Cursor 情况的因果分析（He 等，2025）发现，代码复杂度增加了 40.7%。一项包含 54 名参与者的脑电图（EEG）研究（Kosmyna 等，2025）发现，LLM 用户表现出神经连接性减弱，且这种减弱在移除 AI 后依然持续。</strong></p>
 <p>Researchers have proposed protocols for measuring cognitive offloading in AI-assisted programming, motivated by concerns that students using AI produce applications without understanding the underlying logic (Aiersilan, 2026).</p>
-<p>研究人员已经提出了用于衡量 AI 辅助编程中认知卸载（cognitive offloading）的协议，这源于对使用 AI 的学生在不理解底层逻辑的情况下拼凑出应用程序的担忧（Aiersilan, 2026）。</p>
+<p><strong>研究人员已经提出了用于衡量 AI 辅助编程中认知卸载（cognitive offloading）的协议，这源于对使用 AI 的学生在不理解底层逻辑的情况下拼凑出应用程序的担忧（Aiersilan, 2026）。</strong></p>
 <p>These findings, combined with a 25% decline in entry-level tech hiring between 2023 and 2024 (Rak, 2025), suggest that the tension between capability amplification and long-term sustainability extends beyond individual productivity to the broader developer pipeline. This evidence motivates the evaluative lens but does not target Claude Code’s architecture specifically; it applies to any agent system with bounded context and tool-use loops.</p>
 <p>这些发现，结合 2023 年至 2024 年间初级技术岗位招聘人数 25% 的下降（Rak, 2025），表明能力放大与长期可持续性之间的张力已经超出了个人生产力的范畴，延伸到了更广泛的开发人员后备人才管道（developer pipeline）。这些证据激活了这一评估视角，但并非专门针对 Claude Code 的架构；它适用于任何具有有限上下文和工具使用循环的智能体系统。</p>
 <p>11.3 Architectural Trade-offs</p>
@@ -1731,13 +2053,13 @@
 <p>The architectural properties documented in this paper generate testable predictions about code quality outcomes not derivable from the source code alone.</p>
 <p>本文中记录的架构特性产生了关于代码质量结果的可测试预测，而这些预测是无法仅从源代码本身推导出来的。</p>
 <p>The bounded context window (Section 7) prevents the agent from maintaining simultaneous awareness of the full codebase: the five-layer compaction pipeline preserves useful information but introduces lossy compression at each stage. This makes it architecturally predicted that agent-generated code will exhibit higher rates of pattern duplication and convention violation than code produced with full codebase visibility.</p>
-<p>有限的上下文窗口（第 7 节）使得智能体无法同时保持对整个代码库的全局感知：五层压缩流水线保留了有用信息，但在每个阶段都引入了有损压缩。这在架构上预示着，与在拥有完整代码库可见性的情况下产出的代码相比，智能体生成的代码将表现出更高比例的模式重复（pattern duplication）和规范违背（convention violation）。</p>
+<p>有限的上下文窗口（第 7 节）使得智能体无法同时保持对整个代码库的全局感知：五层压缩流水线保留了有用信息，但在每个阶段都引入了有损压缩。<strong>这在架构上预示着，与在拥有完整代码库可见性的情况下产出的代码相比，智能体生成的代码将表现出更高比例的模式重复（pattern duplication）和规范违背（convention violation）</strong>。</p>
 <p>Subagent isolation (Section 8), where each subagent operates in its own context window with an independently assembled tool pool, compounds the effect: parallel agents can independently re-implement solutions that already exist elsewhere. The design philosophy of Section 11.1 trusts the model to make good local decisions, but good local decisions can produce poor global outcomes when the model lacks global context.</p>
-<p>子智能体隔离（第 8 节）进一步加剧 margin 效应：每个子智能体都在自己独立的上下文窗口和独立组装的工具池中运行，并行的智能体可能会各自独立地重新实现其他地方早已存在的解决方案。第 11.1 节的设计哲学信任模型能够做出良好的局部决策，但当模型缺乏全局上下文时，良好的局部决策可能会导致糟糕的全局结果。</p>
+<p>子智能体隔离（第 8 节）进一步加剧 margin 效应：<strong>每个子智能体都在自己独立的上下文窗口和独立组装的工具池中运行，并行的智能体可能会各自独立地重新实现其他地方早已存在的解决方案</strong>。<strong>第 11.1 节的设计哲学信任模型能够做出良好的局部决策，但当模型缺乏全局上下文时，良好的局部决策可能会导致糟糕的全局结果</strong>。</p>
 <p>Published empirical work on architecturally similar tools provides data consistent with these predictions. A causal analysis of Cursor adoption across 807 repositories (He et al., 2025) found a statistically significant increase in code complexity, with an initial velocity spike that dissipated to baseline by month three; rising complexity was associated with a proportional decrease in future development velocity, suggesting that the gains are self-cancelling.</p>
-<p>针对架构相似工具已发表的经验性研究提供了与这些预测一致的数据。对 807 个代码库采用 Cursor 情况的因果分析（He 等，2025）发现，代码复杂度呈现出统计学上显著的上升，虽然初期出现了开发速度的飙升，但到了第三个月就消退至基线水平；不断上升的复杂度与未来开发速度的成比例下降相关，这表明所获得的收益是被自我抵消的。</p>
-<p>A large-scale audit of 304,000 AI-authored commits across 6,275 repositories (Liu et al., 2026) found measurable technical debt, with approximately one-quarter of AI-introduced issues persisting to the latest revision and security-related issues persisting at a substantially higher rate. While these studies target adjacent systems, the architectural parallels (bounded context, tool-use loops, single-pass generation) suggest the findings are relevant to the design analyzed here.</p>
-<p>对 6,275 个代码库中 304,000 个 AI 编写的提交（commits）进行的绝大规模审计（Liu 等，2026）发现了可衡量的技术债务，其中约四分之一由 AI 引入的问题一直残留到最新版本，且与安全相关的问题残留率明显更高。尽管这些研究针对的是相邻的系统，但架构上的相似性（有限上下文、工具使用循环、单次生成）表明，这些发现与本文分析的设计高度相关。</p>
+<p>针对架构相似工具已发表的经验性研究提供了与这些预测一致的数据。<strong>对 807 个代码库采用 Cursor 情况的因果分析（He 等，2025）发现，代码复杂度呈现出统计学上显著的上升，虽然初期出现了开发速度的飙升，但到了第三个月就消退至基线水平；不断上升的复杂度与未来开发速度的成比例下降相关，这表明所获得的收益是被自我抵消的。</strong></p>
+<p>A large-scale audit of 304,000 AI-authored commits across 6,275 repositories (Liu et al., 2026) found measurable <em><strong>technical debt</strong></em>, with approximately one-quarter of AI-introduced issues persisting to the latest revision and security-related issues persisting at a substantially higher rate. While these studies target adjacent systems, the architectural parallels (bounded context, tool-use loops, single-pass generation) suggest the findings are relevant to the design analyzed here.</p>
+<p>对 6,275 个代码库中 304,000 个 AI 编写的提交（commits）进行的绝大规模审计（Liu 等，2026）<strong>发现了可衡量的技术债务，其中约四分之一由 AI 引入的问题一直残留到最新版本</strong>，且与安全相关的问题残留率明显更高。尽管这些研究针对的是相邻的系统，但架构上的相似性（有限上下文、工具使用循环、单次生成）表明，这些发现与本文分析的设计高度相关。</p>
 <p>Claude Code’s context management pipeline is specifically designed to mitigate these effects: graduated compression preserves the most recent and most relevant context, cache-aware compaction avoids invalidating prompt caches during compression, read-time projection maintains full history for reconstruction while presenting a compressed view to the model, and subagent summary isolation prevents exploratory noise from accumulating in the parent context.</p>
 <p>Claude Code 的上下文管理流水线正是为了缓解这些影响而量身设计的：渐进式压缩保留了最新且最相关的上下文；感知缓存的压缩避免了在压缩期间使提示词缓存失效；读取时投影（read-time projection）在维持完整历史以供重建的同时，向模型呈现压缩后的视图；而子智能体的摘要隔离则防止了探索性噪声在父上下文中累积。</p>
 <p>Whether these mechanisms are sufficient to overcome the structural limitations of bounded context is a directly measurable empirical question that the source-level analysis in this paper cannot resolve.</p>
@@ -1751,7 +2073,7 @@
 <p>11.6 Emerging Directions</p>
 <h4 id="11-6-新兴方向">11.6 新兴方向</h4>
 <p>Several aspects of the implementation relate to broader design questions. Longer context windows would reduce compaction pressure, potentially simplifying the graduated pipeline. Multi-modal tools (screenshots, diagrams, UI previews) would expand the tool surface and create new context challenges. Formal verification of permission properties (for example, proving that deny rules always take precedence, that sandboxed commands cannot escape isolation, or that resumed sessions cannot inherit stale permissions) would provide stronger safety guarantees.</p>
-<p>具体实现的几个方面与更广泛的设计问题相关。更长的上下文窗口将减轻压缩压力，从而可能简化渐进式流水线。多模态工具（屏幕截图、图表、UI 预览）将扩大工具表面并带来新的上下文挑战。对权限属性进行形式化验证（例如，证明拒绝规则始终具有最高优先级、沙箱化命令无法逃逸隔离，或者恢复的会话无法继承陈旧的权限）将提供更强的安全保障。</p>
+<p>具体实现的几个方面与更广泛的设计问题相关。<strong>更长的上下文窗口将减轻压缩压力</strong>，从而可能简化渐进式流水线。<strong>多模态工具（屏幕截图、图表、UI 预览）将扩大工具表面并带来新的上下文挑战</strong>。对权限属性进行形式化验证（例如，证明拒绝规则始终具有最高优先级、沙箱化命令无法逃逸隔离，或者恢复的会话无法继承陈旧的权限）将提供更强的安全保障。</p>
 <p>Architectural decoupling. The tightly coupled local architecture analyzed here is one point on a spectrum that is already evolving. Anthropic’s own Managed Agents work (Martin et al., 2026) describes virtualizing the components of an agent (session, harness, sandbox) so that “each became an interface that made few assumptions about the others, and each could fail or be replaced independently”, drawing an explicit analogy to how operating systems virtualized hardware into processes and files.</p>
 <p>架构解耦：本文所分析的紧密耦合的本地架构只是当前正在演进的光谱中的一个点。Anthropic 自身在托管智能体（Managed Agents）方面的工作（Martin 等，2026）描述了对智能体组件（会话、工具工具箱、沙箱）进行虚拟化，使得“每个组件都变成了一个对其他组件几乎不作假设的接口，并且每个组件都可以独立失效或被替换”，这显式地类比了操作系统如何将硬件虚拟化为进程和文件。</p>
 <p>The Harness Design essay (Rajasekaran, 2026) makes a similar point from a different angle, observing that “the space of interesting harness combinations doesn’t shrink as models improve”; instead, “it moves”. The architecture documented in this paper should therefore be read as a snapshot of a co-evolving system rather than a fixed optimum.</p>
@@ -1760,8 +2082,52 @@
 <p>记忆作为一等子系统：Hu 等（2025）的记忆综述指出，智能体记忆正在成为一个独立的认知基质，而不再是上下文窗口管理的副作用，并将自动化记忆管理、强化学习（RL）驱动的记忆以及可信记忆（隐私性、可解释性和幻觉鲁棒性）确定为开放的前沿领域。</p>
 <p>Claude Code today exposes the factual tier (<a target="_blank" rel="noopener" href="http://CLAUDE.md">CLAUDE.md</a>, auto memory) and the working tier (the conversation window); the experiential tier (accumulated, automatically curated playbooks of strategies learned from past sessions) is the natural next step, and the context-engineering literature (Zhang et al., 2025a) has started to provide mechanisms for that accumulation.</p>
 <p>如今的 Claude Code 暴露了事实层（<code>CLAUDE.md</code>、自动记忆）和工作层（对话窗口）；而经验层（从过去的会话中学习并累积的、自动策展的策略剧本［playbooks］）则是顺理成章的下一步，上下文工程文献（Zhang 等，2025a）已开始为这种累积提供机制。</p>
+<blockquote>
+<p>Q: 不是说claude code也能根据会话自动生成长期记忆吗？</p>
+<p>你说的完全正确！这里的确有一个细节容易让人产生误解。</p>
+<p>Claude Code 确实<strong>已经具备</strong>“根据会话自动生成长期记忆”的能力。论文中提到的 <strong>Factual Tier（事实层）</strong> 里面就包含了两部分：</p>
+<ol>
+<li><code>CLAUDE.md</code>（主要由人类维护的项目规范）。</li>
+<li><strong>Auto Memory（自动记忆，即你提到的部分）</strong>。</li>
+</ol>
+<p>当你和 Claude Code 聊天时，如果你告诉它：“我有色盲，以后调整 UI 时请使用高对比度颜色”，或者它自己通过多次测试摸索出“这个项目的内部测试服务器在端口 8080”，它就会在后台把这些硬性事实自动写入一个记忆文件（比如 <code>memory.json</code> 或 <code>MEMORY.md</code>）。</p>
+<p>既然现在已经能自动生成记忆了，为什么论文还说“Experiential Tier（经验层）是自然的下一步”呢？</p>
+<p>这涉及到“记住事实”<strong>与</strong>“提炼经验”之间的本质区别。我们可以通过下表来看清两者的代差：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">                维度             </th>
+<th style="text-align:left"><strong>现在的“自动记忆”（事实层）</strong></th>
+<th style="text-align:left"><strong>未来的“战术手册”（经验层）</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>记忆的内容</strong></td>
+<td style="text-align:left"><strong>是什么、有谁、在哪（Facts）</strong></td>
+<td style="text-align:left"><strong>在什么策略下、怎么做最优（Strategies）</strong></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>具体示例</strong></td>
+<td style="text-align:left">* “用户说测试分支叫 <code>dev-v2</code>。”<br>* “项目的 node 版本必须是 v18。”<br>* “数据库密码保存在 <code>.env.local</code>。”</td>
+<td style="text-align:left">* “重构这个项目的旧遗留代码时，如果直接改接口会引发 10 个关联报错。<strong>最快路径</strong>是先写适配层，再逐步替换。”<br>* “用户不喜欢过于冗长的防御性代码，更倾向于扁平的早停（Early return）风格。”</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>大模型的思维</strong></td>
+<td style="text-align:left">像一个<strong>记性很好的秘书</strong>，帮你把翻看过的资料记在小本本上，下次直接翻出来用。</td>
+<td style="text-align:left">像一个<strong>经验丰富的老工匠</strong>，在经历了 50 次失败后，自己悟出了某套特定框架的“最佳实践和避坑直觉”。</td>
+</tr>
+</tbody>
+</table>
+<p>总结</p>
+<ul>
+<li>你说的功能<strong>现在确实有了</strong>：Claude Code 能自动把会话中发生的“事实和硬性知识”沉淀为长期记忆。</li>
+<li>论文所展望的<strong>是更高的段位</strong>：未来的智能体不仅要记住事实，还要能跨越成百上千次不同的会话，像人类一样去“复盘、归纳、总结出抽象的战争艺术和研发策略（Playbooks）”。</li>
+</ul>
+<p>所以，现在的它能做到“不忘事”，而未来的它才能做到“长智慧”。</p>
+</blockquote>
 <p>Observability and silent failure. Industry surveys suggest that the dominant failure mode of deployed agents is not crashes but silent mistakes. Bessemer’s 2026 infrastructure report (Wade et al., 2026) estimates that “78% of AI failures are invisible”, while LangChain’s 1,340-respondent state-of-agent-engineering survey (LangChain, 2026) identifies quality, not cost, as the top barrier to production use and finds a wide gap between observability (nearly 89% adoption) and offline evaluation (52.4%).</p>
-<p>可观测性与静默失败：行业调查表明，已部署智能体的主要失败模式不是崩溃，而是静默错误。Bessemer 的 2026 年基础设施报告（Wade 等，2026）估计“78% 的 AI 失败是不可见的”，而 LangChain 拥有 1,340 名受访者的智能体工程现状调查（LangChain, 2026）将质量而非成本列为投入生产使用的首要障碍，并发现可观测性（接近 89% 的采用率）与离线评估（52.4%）之间存在巨大差距。</p>
+<p>可观测性与静默失败：行业调查表明，<strong>已部署智能体的主要失败模式不是崩溃，而是静默错误</strong>。Bessemer 的 2026 年基础设施报告（Wade 等，2026）估计“78% 的 AI 失败是不可见的”，而 LangChain 拥有 1,340 名受访者的智能体工程现状调查（LangChain, 2026）将质量而非成本列为投入生产使用的首要障碍，并发现可观测性（接近 89% 的采用率）与离线评估（52.4%）之间存在巨大差距。</p>
 <p>The architecture analyzed here gives operators visibility into tool calls, hooks, and session transcripts; closing the evaluation gap likely requires additional scaffolding (generator-evaluator separation, sprint contracts, and post-hoc checks of the kind discussed in Rajasekaran (2026)) rather than model improvements alone.</p>
 <p>本文分析的架构使操作人员能够对工具调用、钩子和会话转录文本保持可见性；要弥合评估差距，可能需要额外的脚手架（如生成器-评估器分离、冲刺契约以及 Rajasekaran (2026) 中讨论的那种事后检查），而不仅仅依赖于模型自身的改进。</p>
 <p>Governance. Broader governance trends will constrain the design space as agents become more autonomous. The International AI Safety Report (Bengio et al., 2026) warns that “AI agents pose heightened risks because they act autonomously, making it harder for humans to intervene before failures cause harm,” and the MIT AI Agent Index (Staufer et al., 2026) finds that only 13.3% of indexed agentic systems publish agent-specific safety cards.</p>
@@ -1876,15 +2242,55 @@
 <h4 id="13-1-编码智能体分类学">13.1 编码智能体分类学</h4>
 <p>AI coding tools can be organized by the degree of autonomous action they support (Table 5). Inline completion tools such as GitHub Copilot (Chen et al., 2021) suggest code fragments within the editor without autonomous action. Chat-integrated products including Cursor and Windsurf add conversational interaction and multi-file edits but remain coupled to the IDE environment.</p>
 <p><img src="/img4/diveintoclaudecode/T5.png" alt="T5"></p>
-<p>AI 编码工具可以根据它们所支持的自主行动程度来进行组织（表 5）。行内补全工具（如 GitHub Copilot，Chen 等, 2021）在编辑器内提示代码片段，不具备自主行动能力。对话集成产品（包括 Cursor 和 Windsurf）增加了对话交互和多文件编辑功能，但仍与 IDE 环境相绑定。</p>
+<p><strong>AI 编码工具可以根据它们所支持的自主行动程度来进行组织（表 5）。行内补全工具（如 GitHub Copilot，Chen 等, 2021）在编辑器内提示代码片段，不具备自主行动能力。对话集成产品（包括 Cursor 和 Windsurf）增加了对话交互和多文件编辑功能，但仍与 IDE 环境相绑定。</strong></p>
 <p>Agentic CLI tools, including Claude Code, OpenAI’s Codex CLI, and Aider (Gauthier, 2024), operate from the command line and can autonomously execute shell commands, read and write files, and iterate on outputs within a single request. Fully autonomous systems like Devin, SWE-Agent (Yang et al., 2024), and OpenHands (Wang et al., 2024b) aim for minimal human supervision, often in sandboxed cloud environments.</p>
-<p>具备智能体特性的 CLI 工具（包括 Claude Code、OpenAI 的 Codex CLI 以及 Aider［Gauthier, 2024］）在命令行中运行，并能够在一个单一请求内自主执行 Shell 命令、读写文件以及对输出进行迭代。完全自主的系统（如 Devin、SWE-Agent［Yang 等, 2024］和 OpenHands［Wang 等, 2024b］）则旨在实现最小化的人类监督，通常运行在沙箱化的云环境中。</p>
+<p><strong>具备智能体特性的 CLI 工具（包括 Claude Code、OpenAI 的 Codex CLI 以及 Aider［Gauthier, 2024］）在命令行中运行，并能够在一个单一请求内自主执行 Shell 命令、读写文件以及对输出进行迭代。完全自主的系统（如 Devin、SWE-Agent［Yang 等, 2024］和 OpenHands［Wang 等, 2024b］）则旨在实现最小化的人类监督，通常运行在沙箱化的云环境中。</strong></p>
 <p>Claude Code shares features with higher-autonomy agents (auto-mode classifier, background agent execution, remote environments) but retains interactive approval by default. Evaluation benchmarks such as SWE-Bench (Jimenez et al., 2023) and HumanEval (Chen et al., 2021) have driven much of the academic focus on coding agents. This paper examines Claude Code’s internal architecture from source code.</p>
 <p>Claude Code 与更高自主性的智能体共享某些特性（自动模式分类器、后台智能体执行、远程环境），但默认情况下保留了交互式批准。诸如 SWE-Bench（Jimenez 等, 2023）和 HumanEval（Chen 等, 2021）等评估基准驱动了学术界对编码智能体的大部分关注。本文则通过源代码来审视 Claude Code 的内部架构。</p>
 <p>13.2 Agent Architecture Patterns</p>
 <h4 id="13-2-智能体架构模式">13.2 智能体架构模式</h4>
 <p>Claude Code’s core loop follows the ReAct pattern (Yao et al., 2022): the model generates reasoning and tool invocations, the harness executes actions, and results feed the next iteration. Toolformer (Schick et al., 2023) demonstrated that language models can learn to use tools; Claude Code uses up to 54 built-in tools and a layered permission system.</p>
 <p>Claude Code 的核心循环遵循 ReAct 模式（Yao 等, 2022）：模型生成推理和工具调用，工具工具箱执行行动，并将结果喂入下一次迭代。Toolformer（Schick 等, 2023）证明了语言模型可以学会使用工具；Claude Code 使用了多达 54 个内置工具以及一个分层的权限系统。</p>
+<blockquote>
+<p>Q: 什么是ReAct 模式？</p>
+<p><strong>ReAct 模式</strong>（全称 <strong>Reasoning and Acting</strong>，即“推理-行动”模式）是大语言模型（LLM）智能体（Agent）领域最核心、最经典的一种思维与执行框架。</p>
+<p>它由谷歌大脑团队与普林斯顿大学于 2022 年底联合提出。它的核心思想是：<strong>让大模型像人类一样，一边思考（Reasoning），一边采取行动（Acting），并在连续的“思考-行动-观察”循环中自主完成复杂的任务。</strong></p>
+<p>── 为什么需要 ReAct 模式？──</p>
+<p>在 ReAct 出现之前，大模型的两种主流工作模式都有致命缺陷：</p>
+<ol>
+<li><strong>只思考，不行动（如 Chain-of-Thought, CoT 思维链）</strong>：大模型可以在脑子里进行复杂的逻辑推理，但它<strong>无法获取外部实时信息</strong>（比如无法查天气、无法读写本地代码库、无法调 API），一旦遇到不知道的知识就会胡思乱想（产生幻觉）。</li>
+<li><strong>只行动，不思考（如传统的 Tool-use / MRKL）</strong>：大模型一看到任务，就直接去调用各种外部工具。但这就像无头苍蝇一样，<strong>缺乏大局观和逻辑推理</strong>，面对极其复杂的组合任务时极易出错。</li>
+</ol>
+<p><strong>ReAct 的解法</strong>：将两者融合。大模型不仅在脑子里想（Reason），还把想完的结果变成具体的动作（Act）去查工具，拿到工具结果后再进行下一步思考，如此往复。</p>
+<p>── ReAct 的核心运行循环（Thought-Act-Obs） ──</p>
+<p>一个标准的 ReAct 智能体，其后台的提示词模板会强制大模型按照以下“三部曲”的格式，一行一行地进行自主循环迭代：</p>
+<ul>
+<li><strong>Thought（思考）</strong>：大模型先对当前面临的问题进行拆解、分析，决定下一步需要知道什么或做什么（“我需要先查一下 A 公司的股价”）。</li>
+<li><strong>Action（行动）</strong>：大模型输出一个具体的工具调用指令（例如：<code>call_tool: google_search(query='A公司股价')</code>）。</li>
+<li><strong>Observation（观察）</strong>：系统（代码环境）执行该工具，并将真实世界的返回结果（如“A公司今日股价为50元”）<strong>喂回给大模型的上下文</strong>。</li>
+</ul>
+<p>大模型看到 <code>Observation</code> 里的新事实后，会立刻触发下一轮的 <code>Thought -&gt; Action -&gt; Observation</code>，直到它认为问题已经彻底解决，最后输出 <strong>Final Answer（最终答案）</strong>。</p>
+<p>── 一个大白话实例 ──</p>
+<p><strong>用户提问：</strong> “帮我查一下今天东京的天气，并告诉我适合穿什么衣服。”</p>
+<p>在 <strong>ReAct</strong> 模式下，大模型在后台的内心戏（输入输出流）是这样的：</p>
+<p>​	<strong>Thought (思考):</strong> 用户想知道今天东京的天气。我无法直接获知实时天气，我需要使用网络搜索工具。</p>
+<p>​	<strong>Action (行动):</strong> <code>search_weather(location=&quot;Tokyo&quot;, date=&quot;today&quot;)</code></p>
+<p>​	<strong>Observation (观察 - 系统返回的结果):</strong> <em>“东京今天晴转多云，气温 12°C ~ 18°C，风力 3 级。”</em></p>
+<p>​	<strong>Thought (思考):</strong> 我已经拿到了东京今天的天气数据。气温在 12°C 到 18°C 之间，属于体感偏凉的春秋过渡季节。在这个温度下，人类通常适合穿外套、卫衣或薄毛衣。我已经可以回答用户了。</p>
+<p>​	<strong>Action (行动):</strong> <code>submit_final_answer()</code></p>
+<p>​	<strong>Final Answer (最终答案):</strong> 今天东京晴转多云，气温 12°C ~ 18°C。早晚体感较凉，建议您穿着：长袖衬衫/卫衣 + 一件防风外套（如夹克或风衣），方便根据气温随时穿脱。</p>
+<p>── ReAct 模式的优缺点 ──</p>
+<p>优点</p>
+<ul>
+<li><strong>人类可读性极高（透明白盒）</strong>：你可以像看电影字幕一样，清晰地看到大模型每一步是怎么想的、为什么要去调这个工具。这也就是你阅读的 Claude Code 论文中所强调的“可解释性与安全审计”。</li>
+<li><strong>极强的纠错能力</strong>：如果某一次调工具（Action）报错了，大模型在下一轮 <code>Thought</code> 中能看到错误信息，它会自己想办法换一个工具或者修正参数重新尝试。</li>
+</ul>
+<p>缺点</p>
+<ul>
+<li><strong>Token 消耗巨大（非常贵）</strong>：因为每一次循环，系统都要把之前所有的思考、行动和返回结果<strong>重新拼接到上下文窗口里</strong>再喂给大模型。</li>
+<li><strong>容易陷入死循环</strong>：如果外部工具持续返回意料之外的数据，大模型可能会卡在某个环节，不断进行无意义的 <code>Thought-Act</code> 循环，直到把 Token 彻底耗尽。因此，生产级的系统通常会硬性限制最大循环次数（例如最多循环 5-10 次）。</li>
+</ul>
+</blockquote>
 <p>The broader design space has been mapped by several surveys. Weng (2023) offered the now-standard decomposition into planning, memory, and tool use, and Wang et al. (2024a) catalogued early autonomous-agent work. Xu (2026) frames the field around three recurring trade-offs (autonomy vs. controllability, latency vs. accuracy, capability vs. reliability) that recur throughout our analysis, and Hu et al. (2024) casts agent design itself as a search problem over components, algorithms, and evaluation functions. This paper characterizes one specific point in that space.</p>
 <p>几篇综述对更广泛的设计空间进行了梳理。Weng (2023) 提出了现在已成为标准的分解方式：规划、记忆和工具使用；Wang 等 (2024a) 对早期的自主智能体工作进行了编目。Xu (2026) 将该领域框定在三个周期性权衡（自主性与可控性、延迟与准确性、能力与可靠性）周围，这些权衡贯穿了我们的整篇分析；Hu 等 (2024) 则将智能体设计本身塑造为一个针对组件、算法和评估函数的搜索问题。本文描绘了该空间中的一个特定点。</p>
 <p>Multi-agent orchestration frameworks such as AutoGen (Wu et al., 2024), LangChain, and CrewAI provide conversation-based agent coordination. Claude Code’s subagent delegation (Section 8) includes permission override precedence, two-level permission scoping, and separate transcript files for each subagent. LATS (Zhou et al., 2023) unifies reasoning, acting, and planning in a tree-search framework; Claude Code’s plan permission mode implements a simpler plan-then-execute approach.</p>
@@ -1914,8 +2320,8 @@
 <h3 id="14-结论">14 结论</h3>
 <p>This paper shows that production coding agents can be understood as answers to a recurring set of design questions: where reasoning sits relative to the harness, how execution, safety, extensibility, context, delegation, and persistence are organized, and which trade-offs those choices encode.</p>
 <p>本文表明，生产级编码智能体可以被理解为对一系列周期性设计问题的解答：推理相对于工具箱（harness）所处的位置，执行、安全性、扩展性、上下文、委派和持久化是如何组织的，以及这些选择蕴含了哪些权衡。</p>
-<p>Claude Code occupies a clear design point within that space. It gives the model broad local autonomy while surrounding it with a dense deterministic harness for permissioning, tool routing, context compaction, extensibility, and session recovery.</p>
-<p>Claude Code 在该空间中占据了一个清晰的设计基准点。它赋予了模型广泛的局部自主权，同时在其外围包裹了一层密集的确定性工具箱，用于权限控制、工具路由、上下文压缩、扩展性以及会话恢复。</p>
+<p>Claude Code occupies a clear design point within that space. It gives the model broad local autonomy while surrounding it with a dense deterministic <em><strong>harness for permissioning, tool routing, context compaction, extensibility, and session recovery.</strong></em></p>
+<p><strong>Claude Code 在该空间中占据了一个清晰的设计基准点。它赋予了模型广泛的局部自主权，同时在其外围包裹了一层密集的确定性工具箱，用于权限控制、工具路由、上下文压缩、扩展性以及会话恢复。</strong></p>
 <p>Read through the five values and thirteen design principles identified in Section 2, these choices are coherent rather than ad hoc: the system consistently prioritizes human decision authority, safety, reliable execution, capability amplification, and contextual adaptability.</p>
 <p>通过第 2 节中确定的五种价值和十三项设计原则来审视，这些选择是连贯一致的，而非临时的拼凑：系统始终优先考虑人类的决策权威、安全性、可靠执行、能力放大以及上下文适应性。</p>
 <p>The OpenClaw comparison sharpens the main architectural finding by showing that the same design questions recur in different agent systems but produce different answers.</p>
@@ -1967,12 +2373,20 @@
 <h5 id="B-1-证据基础与证据层级">B.1 证据基础与证据层级</h5>
 <p>Claims in this paper are grounded at three evidence tiers:</p>
 <p>本文中的主张均基于以下三个证据层级：</p>
-<p>• Tier A (product-documented): Claims drawn from official Anthropic documentation and engineering publications. These establish product intent but may not reflect internal implementation.</p>
-<p>• A 层级（产品文档记录）：源自 Anthropic 官方文档和工程出版物的主张。这些确立了产品意图，但可能无法反映内部的具体实现。</p>
-<p>• Tier B (code-verified): Claims citing specific files and functions in the extracted TypeScript codebase (v2.1.88, obtained from a publicly available npm package extraction). This is the strongest evidence tier.</p>
-<p>• B 层级（代码验证）：引用了提取出的 TypeScript 源码库（版本为 v2.1.88，获取自公开的 npm 包提取物）中特定文件和函数的主的主张。这是最强有力的证据层级。</p>
-<p>• Tier C (reconstructed): Claims derived from community analysis, OpenClaw structural comparison, or inference from code patterns. These are stated with hedging language.</p>
-<p>• C 层级（重构推导）：衍生自社区分析、OpenClaw 结构对比或根据代码模式进行的推理的主张。这些主张在表述时使用了带有留有余地的说辞（hedging language）。</p>
+<ul>
+<li>
+<p>Tier A (product-documented): Claims drawn from official Anthropic documentation and engineering publications. These establish product intent but may not reflect internal implementation.</p>
+<p>A 层级（产品文档记录）：源自 Anthropic 官方文档和工程出版物的主张。这些确立了产品意图，但可能无法反映内部的具体实现。</p>
+</li>
+<li>
+<p>Tier B (code-verified): Claims citing specific files and functions in the extracted TypeScript codebase (v2.1.88, obtained from a publicly available npm package extraction). This is the strongest evidence tier.</p>
+<p>B 层级（代码验证）：引用了提取出的 TypeScript 源码库（版本为 v2.1.88，获取自公开的 npm 包提取物）中特定文件和函数的主的主张。这是最强有力的证据层级。</p>
+</li>
+<li>
+<p>Tier C (reconstructed): Claims derived from community analysis, OpenClaw structural comparison, or inference from code patterns. These are stated with hedging language.</p>
+<p>C 层级（重构推导）：衍生自社区分析、OpenClaw 结构对比或根据代码模式进行的推理的主张。这些主张在表述时使用了带有留有余地的说辞（hedging language）。</p>
+</li>
+</ul>
 <p>The source corpus comprises approximately 1,884 files totaling roughly 512K lines of TypeScript. OpenClaw is used for calibration rather than ground truth.</p>
 <p>源码语料库包含大约 1,884 个文件，总计约 51.2 万行 TypeScript 代码。OpenClaw 仅用于校准，而不作为事实标准（ground truth）。</p>
 <p>B.2 Design-Space Analytic Procedure</p>
@@ -1982,17 +2396,27 @@
 <p>The five-value framework (human decision authority, safety, security, and privacy, reliable execution, capability amplification, and contextual adaptability) was identified from official documentation and creator statements (Tier A), then traced through thirteen design principles to architectural decisions.</p>
 <p>由官方文档和创作者声明（A 层级）确定了五种价值框架（人类决策权威，安全性、保密性与隐私，可靠执行，能力放大，以及上下文适应性），随后通过十三项设计原则将其追踪至具体的架构决策。</p>
 <p>Long-term capability preservation is treated separately as an evaluative lens rather than a design value, because it is not prominently reflected as a design driver in the architecture or in Anthropic’s stated values (Section 2.4). Token economics serves as a cross-cutting constraint that bounds all five values simultaneously, revealing how individual subsystem choices interact under shared resource pressure.</p>
-<p>人类长期能力的保持被单独作为一个评估视角而非设计价值来处理，因为它在架构或 Anthropic 阐明的价值观中，并没有作为核心的设计驱动力得到显著体现（第 2.4 节）。代币经济学（Token economics）作为一个跨领域的约束条件，同时限制了所有这五种价值，揭示了在共享资源压力下，单个子系统的选择是如何相互作用的。</p>
+<p>人类长期能力的保持被单独作为一个评估视角而非设计价值来处理，因为它在架构或 Anthropic 阐明的价值观中，并没有作为核心的设计驱动力得到显著体现（第 2.4 节）。Token经济学（Token economics）作为一个跨领域的约束条件，同时限制了所有这五种价值，揭示了在共享资源压力下，单个子系统的选择是如何相互作用的。</p>
 <p>B.3 Limitations</p>
 <h5 id="B-3-局限性">B.3 局限性</h5>
-<p>• Static snapshot. Analysis reflects one version (v2.1.88). Feature flags (e.g., TRANSCRIPT_CLASSIFIER, CONTEXT_COLLAPSE) create build-time variability; different build targets may produce functionally different applications.</p>
-<p>• 静态快照：分析仅反映了单个版本（v2.1.88）。特性标志（例如 <code>TRANSCRIPT_CLASSIFIER</code>、<code>CONTEXT_COLLAPSE</code>）造成了构建时的可变性；不同的构建目标可能会产生功能截然不同的应用程序。</p>
-<p>• Reverse-engineering epistemology. Source code reveals implemented structure, control flow, dependencies, and feature gates. It cannot confirm design intent, enabled production flags, runtime prevalence, or unshipped behavior.</p>
-<p>• 逆向工程认识论：源代码可以揭示出已实现的结构、控制流、依赖关系和特性门控。但它无法确认设计意图、生产环境中实际启用的标志、运行时普及率或未发布的行为。</p>
-<p>• Single-system analysis. Findings describe Claude Code’s design space, not the entire design space of coding agents. Generalizations are bounded.</p>
-<p>• 单一系统分析：研究结果描述的是 Claude Code 的设计空间，而不是编码智能体的完整设计空间。泛化能力是受限的。</p>
-<p>• OpenClaw snapshot. The OpenClaw analysis reflects a specific development state and may not represent</p>
-<p>• OpenClaw 快照：对 OpenClaw 的分析反映了其特定的开发状态，可能无法代表</p>
+<ul>
+<li>
+<p>Static snapshot. Analysis reflects one version (v2.1.88). Feature flags (e.g., TRANSCRIPT_CLASSIFIER, CONTEXT_COLLAPSE) create build-time variability; different build targets may produce functionally different applications.</p>
+<p>静态快照：分析仅反映了单个版本（v2.1.88）。特性标志（例如 <code>TRANSCRIPT_CLASSIFIER</code>、<code>CONTEXT_COLLAPSE</code>）造成了构建时的可变性；不同的构建目标可能会产生功能截然不同的应用程序。</p>
+</li>
+<li>
+<p>Reverse-engineering epistemology. Source code reveals implemented structure, control flow, dependencies, and feature gates. It cannot confirm design intent, enabled production flags, runtime prevalence, or unshipped behavior.</p>
+<p>逆向工程认识论：源代码可以揭示出已实现的结构、控制流、依赖关系和特性门控。但它无法确认设计意图、生产环境中实际启用的标志、运行时普及率或未发布的行为。</p>
+</li>
+<li>
+<p>Single-system analysis. Findings describe Claude Code’s design space, not the entire design space of coding agents. Generalizations are bounded.</p>
+<p>单一系统分析：研究结果描述的是 Claude Code 的设计空间，而不是编码智能体的完整设计空间。泛化能力是受限的。</p>
+</li>
+<li>
+<p>OpenClaw snapshot. The OpenClaw analysis reflects a specific development state and may not represent</p>
+<p>OpenClaw 快照：对 OpenClaw 的分析反映了其特定的开发状态，可能无法代表</p>
+</li>
+</ul>
 
     </div>
 
