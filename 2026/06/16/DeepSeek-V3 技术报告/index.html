@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false,"path":"/search.json"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="DeepSeek-V3 技术报告 DeepSeek-V3 Technical Report 摘要 我们推出了 DeepSeek-V3，这是一个强大的混合专家（Mixture-of-Experts MoE）语言模型，其总参数量为 671B，每个 Token 激活的参数量为 37B。为了实现高效的推理和具有成本效益的训练，DeepSeek-V3 采用了在 DeepSeek-V2 中得到充分验证的多头潜">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《DeepSeek-V3 Technical Report》">
+<meta property="og:url" content="http://hongyitong.github.io/2026/06/16/DeepSeek-V3%20%E6%8A%80%E6%9C%AF%E6%8A%A5%E5%91%8A/index.html">
+<meta property="og:site_name" content="墨语浮生">
+<meta property="og:description" content="DeepSeek-V3 技术报告 DeepSeek-V3 Technical Report 摘要 我们推出了 DeepSeek-V3，这是一个强大的混合专家（Mixture-of-Experts MoE）语言模型，其总参数量为 671B，每个 Token 激活的参数量为 37B。为了实现高效的推理和具有成本效益的训练，DeepSeek-V3 采用了在 DeepSeek-V2 中得到充分验证的多头潜">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/img4/DeepSeekV3/F1.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/DeepSeekV3/T1.png">
+<meta property="article:published_time" content="2026-06-15T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-06-16T03:13:41.648Z">
+<meta property="article:author" content="Rayman.hung">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hongyitong.github.io/img4/DeepSeekV3/F1.png">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2026/06/16/DeepSeek-V3%20%E6%8A%80%E6%9C%AF%E6%8A%A5%E5%91%8A/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2026/06/16/DeepSeek-V3%20%E6%8A%80%E6%9C%AF%E6%8A%A5%E5%91%8A/","path":"2026/06/16/DeepSeek-V3 技术报告/","title":"《DeepSeek-V3 Technical Report》"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>《DeepSeek-V3 Technical Report》 | 墨语浮生</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="fc62aedd-644a-478d-b3c2-d8ba9964421c" src="https://cloud.umami.is/script.js" data-host-url="https://cloud.umami.is"></script>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js" defer></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">墨语浮生</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81"><span class="nav-text">摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81%E5%BC%95%E8%A8%80"><span class="nav-text">1、引言</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、心情记录</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives">
+          <span class="site-state-item-count">276</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/06/16/DeepSeek-V3%20%E6%8A%80%E6%9C%AF%E6%8A%A5%E5%91%8A/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="《DeepSeek-V3 Technical Report》 | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《DeepSeek-V3 Technical Report》
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-06-16 00:00:00" itemprop="dateCreated datePublished" datetime="2026-06-16T00:00:00+08:00">2026-06-16</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>DeepSeek-V3 技术报告</p>
+<p>DeepSeek-V3 Technical Report</p>
+<h3 id="摘要">摘要</h3>
+<p>我们推出了 DeepSeek-V3，这是一个强大的混合专家（Mixture-of-Experts MoE）语言模型，其总参数量为 671B，每个 Token 激活的参数量为 37B。为了实现高效的推理和具有成本效益的训练，DeepSeek-V3 采用了在 DeepSeek-V2 中得到充分验证的多头潜在注意力（Multi-head Latent Attention MLA）和 DeepSeekMoE 架构。此外，DeepSeek-V3 开创了用于负载均衡的无辅助损失策略，并设置了多 Token 预测训练目标以获得更强的性能。我们在 14.8 万亿个多样化且高质量的 Token 上对 DeepSeek-V3 进行了预训练，随后进行了监督微调和强化学习阶段，以充分释放其能力。综合评估表明，DeepSeek-V3 的表现优于其他开源模型，并实现了与领先的闭源模型相当的性能。尽管性能优异，但 DeepSeek-V3 的完整训练仅需要 2.788M H800 GPU 小时。此外，其训练过程非常稳定。在整个训练过程中，我们没有遇到任何不可恢复的损失突增（loss spike），也没有进行任何回滚。模型权重可在 <a target="_blank" rel="noopener" href="https://github.com/deepseek-ai/DeepSeek-V3">https://github.com/deepseek-ai/DeepSeek-V3</a> 获取。</p>
+<span id="more"></span>  
+<p><img src="/img4/DeepSeekV3/F1.png" alt="F1"></p>
+<h3 id="1、引言">1、引言</h3>
+<p>近年来，大语言模型（LLM）经历了快速的迭代与演进（Anthropic, 2024; Google, 2024; OpenAI, 2024a），逐步缩小了与通用人工智能（Artificial General Intelligence AGI）之间的差距。除了闭源模型外，开源模型同样取得了长足的进步，包括 DeepSeek 系列（DeepSeek-AI, 2024a,b,c; Guo et al., 2024）、LLaMA 系列（AI@Meta, 2024a,b; Touvron et al., 2023a,b）、通义千问（Qwen）系列（Qwen, 2023, 2024a,b）以及 Mistral 系列（Jiang et al., 2023; Mistral, 2024），它们正努力缩小与闭源同类模型的差距。为了进一步拓宽开源模型的能力边界，我们扩大了模型规模，并推出了 DeepSeek-V3。这是一个大型混合专家（MoE）模型，拥有 6710 亿（671B）总参数，其中每个 Token 激活的参数量为 370 亿（37B）。</p>
+<blockquote>
+<p>Q: 怎么理解“每个 Token 激活的参数量为 370 亿（37B）”？</p>
+<p>要理解“每个 Token 激活的参数量为 370 亿（37B）”，我们需要先引入 DeepSeek-V3 的核心架构——<strong>MoE（Mixture of Experts，混合专家模型）</strong>。</p>
+<p>传统的模型（如 GPT-4 之前的标准 Transformer 或 LLaMA 基座模型）是“稠密模型（Dense Model）”。对于稠密模型来说，模型有多少参数，每次处理一个 Token（字/词）时，所有参数就必须全部参与一次数学计算。</p>
+<p>而 DeepSeek-V3 采用的是“稀疏模型（Sparse MoE Model）”，它把模型的大脑拆分成了很多个普通的<strong>小专家（Experts）**和**共享专家（Shared Experts）</strong>。</p>
+<p>具体可以这样理解：</p>
+<ol>
+<li>总参数量 6710 亿 (671B) ── 公司的“智囊团总人数”</li>
+</ol>
+<p>这代表 DeepSeek-V3 的物理总大小。它的硬盘文件里存了 6710 亿个参数。你可以把它想象成一家拥有 <strong>6710 名各领域专家</strong> 的顶级咨询公司。这些专家涵盖了数学、物理、历史、代码、法律等所有方向。</p>
+<ol start="2">
+<li>激活参数量 370 亿 (37B) ── 每次任务“实际打卡上班的人数”</li>
+</ol>
+<p>当用户向 DeepSeek 输入一个具体的 Token（比如输入了一个关于“写 Python 代码”的词）时，模型并不会让 6710 亿个参数全部动起来，因为那样太慢、太烧显存了。</p>
+<p>相反，模型内部有一个<strong>路由网络（Router）</strong>，它会进行闪电般的判断：</p>
+<ul>
+<li>“这是一个代码任务，我只需要叫醒那几个精通 Python 的专家，以及几个通用的共享专家。”</li>
+<li>于是，路由只会挑出占总参数量大约 $5.5%$ 的参数（即 <strong>370 亿参数</strong>）来为这个 Token 服务。</li>
+<li>剩下的 6340 亿参数（其他专家）在这一瞬间是“在办公室睡觉”的，不参与任何计算，也不消耗算力。</li>
+</ul>
+<p>这样设计有什么绝妙之处？</p>
+<p>用这种“按需激活”的 MoE 架构，DeepSeek 实现了工程上的“既要又要”：</p>
+<ul>
+<li><strong>能力上限极高</strong>：因为总参数量有 6710 亿，所以它能塞进海量的知识，智商媲美最顶级的闭源模型。</li>
+<li><strong>速度极快、成本极低</strong>：因为每次计算一个 Token 实际只需让 370 亿参数干活，所以在推理和运行速度上，它表现得像一个 30B~40B 规模的中小型模型一样轻快省钱。</li>
+</ul>
+</blockquote>
+<blockquote>
+<p>Q: 以上就是所谓的MoE模型吗？</p>
+<p><strong>没错,这就是标准且极致的 MoE（Mixture of Experts，混合专家模型）架构。</strong></p>
+<p>你刚才理解的“总参数量巨大（建立知识库），但每次只激活一小部分（降低计算成本）”，正是 MoE 架构的核心精髓。</p>
+<p>不过，DeepSeek 能够把成本压得这么低，是因为它在传统的 MoE 架构上做了一次非常激进的<strong>升级和改良</strong>（也就是论文中提到的 <strong>DeepSeekMoE</strong> 架构）。它与传统的 MoE（比如 GPT-4、Mistral）相比，有以下两点本质的区别：</p>
+<ol>
+<li>引入了“不放假的”共享专家（Shared Experts）</li>
+</ol>
+<ul>
+<li><strong>传统 MoE 的问题</strong>：如果用户连续输入“请”、“谢谢”、“的”，路由网络依然会手忙脚乱地把这些通用词分配给不同的专家。这会导致专家们频繁切换，效率低下，且容易遗忘最基础的通用知识。</li>
+<li><strong>DeepSeek 的解法</strong>：它专门剥离出了一部分参数作为“共享专家”<strong>。无论你输入什么 Token，这部分参数</strong>必定被激活，百分之百打卡上班，用来处理语法、标点、基础逻辑等通用知识。而剩下的小专家才根据专业去动态路由。</li>
+</ul>
+<ol start="2">
+<li>把专家切得更碎：细粒度专家（Fine-grained Experts）</li>
+</ol>
+<ul>
+<li><strong>传统 MoE</strong>：把大脑切成 8 个大专家，每次选 2 个（Top-2）。</li>
+<li><strong>DeepSeekMoE</strong>：把大脑切成 <strong>上百个极其微小的小专家</strong>。这就好比传统的咨询公司只有“计算机专家”和“数学专家”，而 DeepSeek 的公司里有“精通 Python 异步编程的专家”、“精通线性代数矩阵乘法的专家”。</li>
+</ul>
+<p>因为切得足够碎，路由网络就能实现更精准的“按需点将”，把每一份算力都压榨到极致。</p>
+<p>形象的总结</p>
+<ul>
+<li><strong>稠密模型（Dense）</strong>：每次遇到问题，全公司 6710 亿人一起扯皮，效率极低，算力燃尽。</li>
+<li><strong>传统 MoE 架构</strong>：每次遇到问题，路由在 8 个大主管里挑 2 个出来干活。</li>
+<li><strong>DeepSeekMoE 架构</strong>：核心的管理层（共享专家）永久在线，遇到具体专业问题，精准指派 144 个微型螺丝钉专家（细粒度专家）里的某几个人跨界组队。最终凑满了 370 亿参数，用极低的成本把活给干完了。</li>
+</ul>
+</blockquote>
+<p>本着前瞻性的视角，我们一如既往地追求强大的模型性能与经济的成本。因此，在架构方面，DeepSeek-V3 仍采用多头潜在注意力（MLA）（DeepSeek-AI, 2024c）以实现高效推理，并采用 DeepSeekMoE（Dai et al., 2024）以实现高性价比的训练。这两种架构已在 DeepSeek-V2（DeepSeek-AI, 2024c）中得到了验证，表明它们能够在保持强劲模型性能的同时，实现高效的训练与推理。在基础架构之外，我们还实施了两种额外策略来进一步提升模型能力。首先，DeepSeek-V3 开创了用于<strong>负载均衡的无辅助损失策略</strong>（Wang et al., 2024a），旨在最大限度地减少因强制负载均衡而对模型性能带来的负面影响。其次，DeepSeek-V3 采用了多 Token预测（MTP）训练目标，我们观察到该目标能够提升模型在评估基准上的整体性能。</p>
+<blockquote>
+<p>Q: 怎么理解“DeepSeek-V3 采用了多 Token预测（MTP）训练目标”？<br>
+要理解<strong>多 Token 预测（Multi-Token Prediction，简称 MTP）</strong>，我们需要先看看传统大模型是怎么训练的。</p>
+<ol>
+<li>传统模型的训练方式：单 Token 预测（下一个词是什么）</li>
+</ol>
+<p>传统的 GPT 系列或 LLaMA 模型，在训练时采用的是 <strong>“蹦字”</strong> 模式（Next-Token Prediction）。</p>
+<ul>
+<li>比如给模型一句话：<code>“床前明月__”</code></li>
+<li>模型的训练目标是：猜下一个字是 <code>“光”</code>。</li>
+<li>猜完 <code>“光”</code> 之后，把 <code>“光”</code> 塞进输入，变成 <code>“床前明月光，疑是地上__”</code>，再让它猜下一个字是 <code>“霜”</code>。</li>
+</ul>
+<p>这种方式的缺点是：<strong>模型是个“近视眼”，它每次只看眼前的一步，缺乏长远的规划能力。</strong> 这导致它在写复杂的数学推导或长代码时，容易“走一步看一步”，最后逻辑崩塌。</p>
+<ol start="2">
+<li>DeepSeek-V3 的创新：多 Token 预测（一口气看好几步）</li>
+</ol>
+<p>DeepSeek-V3 改变了这种游戏规则。它在训练时，不仅要求模型猜出下一个词，还要求它<strong>同时把后面的两步、甚至三步也一起预测出来</strong>。</p>
+<ul>
+<li>同样是给模型：<code>“床前明月__”</code></li>
+<li>模型的训练目标变成了：不仅要猜出第 1 个字是 <code>“光”</code>，还要同时猜出第 2 个字是 <code>“疑”</code>，第 3 个字是 <code>“是”</code>。</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">输入: [床] -&gt; [前] -&gt; [明] -&gt; [月]</span><br><span class="line">                             │</span><br><span class="line">                             ├──► 传统模型：预测 [光] (只看1步)</span><br><span class="line">                             └──► MTP 目标：同时预测 [光]、[疑]、[是] (看多步)</span><br></pre></td></tr></table></figure>
+<p>为什么这个目标能提升模型的“整体性能”？</p>
+<p>论文中提到这个目标能提升性能，主要带来了两个核心好处：</p>
+<ol>
+<li>
+<p><strong>逼迫模型学会“高瞻远瞩”（规划能力大增）</strong>：</p>
+<p>为了能同时猜对后面的好几个字，模型在训练时被迫建立更强的全局大局观。在写代码和做数学题时，它必须在脑子里提前构思好后面几行代码的结构，才能保证当前的输出正确。这种“远见”直接提升了模型的逻辑和推理上限。</p>
+</li>
+<li>
+<p><strong>解锁了“推测性解码”（推理速度翻倍）</strong>：</p>
+<p>在实际使用（推理）时，因为模型训练过“一次预测多个词”的能力，它就可以利用额外的独立预测头（MTP Modules）在后台做“预判”。如果预判对了，原本需要蹦 3 次字的时间，现在 1 次就能全部吐出来，从而大幅提升了用户的流式生成速度。</p>
+</li>
+</ol>
+<p>通俗的比喻</p>
+<p>传统训练就像<strong>普通棋手</strong>，下棋时只能看一步走一步（单 Token 预测）；而采用了 MTP 训练的 DeepSeek-V3 就像<strong>职业棋手</strong>，在走当前这一步棋的时候，脑子里已经把后面两三步的走法和变化都算好了。</p>
+</blockquote>
+<p>为了实现高效训练，我们<strong>支持 FP8 混合精度训练</strong>，并对训练框架进行了全面的优化。低精度训练已成为高效训练中一种极具前景的解决方案（Dettmers et al., 2022; Kalamkar et al., 2019; Narang et al., 2017; Peng et al., 2023b），其演进与硬件能力的提升紧密相关（Luo et al., 2024; Micikevicius et al., 2022; Rouhani et al., 2023a）。在这项工作中，我们引入了 FP8 混合精度训练框架，并首次在超大规模模型上验证了其有效性。通过对 FP8 计算和存储的支持，我们不仅加速了训练，还减少了 GPU 显存的使用。在训练框架方面，我们设计了用于高效流水线并行的 DualPipe 算法，该算法具有更少的流水线气泡（bubbles），并通过计算与通信的重叠，在训练过程中隐藏了绝大部分通信开销。这种重叠确保了随着模型规模的进一步扩大，只要我们保持计算与通信的比例不变，即使跨节点部署细粒度专家，也依然能实现近乎零的 All-to-All 通信开销。此外，我们还开发了<strong>高效的跨节点 All-to-All 通信内核</strong>，以充分利用 InfiniBand（IB）和 NVLink 的带宽。更进一步地，我们<strong>精细优化了显存占用</strong>，使得在不使用昂贵的张量并行（Tensor Parallelism）的情况下训练 DeepSeek-V3 成为可能。结合这些努力，我们<strong>实现了极高的训练效率</strong>。</p>
+<p>在预训练期间，我们在 14.8 万亿（14.8T）高质量且多样化的 Token 上对 DeepSeek-V3 进行了训练。预训练过程非常稳定。在整个训练过程中，我们没有遇到任何不可恢复的损失突增（loss spike），也没有进行任何回滚。接着，我们对 DeepSeek-V3 进行了两个阶段的上下文长度扩展。在第一阶段，最大上下文长度被扩展到 32K；在第二阶段，被进一步扩展到 128K。在此之后，我们对 DeepSeek-V3 的基座模型进行了后训练（Post-training），包括监督微调（SFT）和强化学习（RL），以使其与人类偏好对齐并进一步释放其潜力。在后训练阶段，我们从 DeepSeek-R1 系列模型中蒸馏了推理能力，同时谨慎地保持了模型准确率与生成长度之间的平衡。</p>
+<blockquote>
+<p>Q:  DeepSeek-R1 和 DeepSeek-V3 模型的区别？</p>
+<p><strong>DeepSeek-V3</strong> 和 <strong>DeepSeek-R1</strong> 是 DeepSeek 公司在不同阶段推出的两款旗舰模型。它们之间并不是简单的“升级替代”关系，而是<strong>技术范式和应用定位上的根本不同</strong>。</p>
+<p>如果用一句话概括它们的区别：<strong>DeepSeek-V3 是一个追求“快、准、省”的通用全能型大模型；而 DeepSeek-R1 则是一个牺牲速度、追求极致逻辑推理的“慢思考”模型。</strong></p>
+<p>两者的核心区别可以从以下四个维度进行深度拆解：</p>
+<ol>
+<li>定位与输出方式的区别：直接回答 vs 慢思考（CoT）</li>
+</ol>
+<ul>
+<li><strong>DeepSeek-V3（通用快思考）</strong>：
+<ul>
+<li><strong>工作模式</strong>：传统的“蹦字”模式。你输入问题，它立刻从第一个 Token 开始直接输出最终答案。</li>
+<li><strong>类似产品</strong>：类似于 GPT-4o、Claude 3.5 Sonnet 或普通的 ChatGPT。</li>
+<li><strong>输出表现</strong>：干净利落，没有废话。</li>
+</ul>
+</li>
+<li><strong>DeepSeek-R1（推理慢思考）</strong>：
+<ul>
+<li><strong>工作模式</strong>：长思维链（Chain-of-Thought, CoT）模式。在给出最终答案之前，它会先在 <code>&lt;think&gt;...&lt;/think&gt;</code> 标签内部进行长达几百甚至上千字的“内心独白”，进行自我规划、推导、反思和纠错，最后才吐出答案。</li>
+<li><strong>类似产品</strong>：类似于 OpenAI 的 o1 或 o3 系列。</li>
+<li><strong>输出表现</strong>：你会看到它在中间不断挣扎、推翻自己、重新计算的思考痕迹。</li>
+</ul>
+</li>
+</ul>
+<ol start="2">
+<li>底层架构与“血缘”关系</li>
+</ol>
+<p>在物理身体上，它们其实是<strong>同一个人</strong>，但在灵魂（训练方法）上发生了蜕变：</p>
+<ul>
+<li><strong>物理架构完全一致</strong>：DeepSeek-R1 <strong>正是基于 DeepSeek-V3-Base（基座模型）训练出来的</strong>。因此，R1 的底层依然是 V3 的身体——拥有 6710 亿（671B）总参数，每次计算激活 370 亿（37B）参数的 DeepSeekMoE 架构。</li>
+<li><strong>训练范式的颠覆</strong>：
+<ul>
+<li><strong>V3 的训练</strong>：采用传统的大规模<strong>预训练（14.8T Tokens）+ 监督微调（SFT）</strong>，教模型积累各领域知识，学会像人类一样得体地聊天。</li>
+<li><strong>R1 的训练</strong>：直接在 V3 基座上引入了大规模的<strong>强化学习（RL，特别是 GRPO 算法）</strong>。通过冷酷的数学和代码规则（对就是对，错就是错）来“悬赏”模型，不教它怎么思考，而是让它在无数次试错中<strong>自主涌现</strong>出顿悟、反思、检查等高阶思维能力。</li>
+</ul>
+</li>
+</ul>
+<ol start="3">
+<li>擅长场景与性能权衡（Trade-off）</li>
+</ol>
+<ul>
+<li><strong>DeepSeek-V3 赢在“广度、速度与性价比”</strong>：
+<ul>
+<li><strong>擅长</strong>：日常对话、文本摘要、多语言翻译、撰写邮件、快速生成标准代码脚手架（Scaffold）、Tool-calling（工具调用）。</li>
+<li><strong>优势</strong>：生成速度极快，API 价格低廉（每百万 Token 仅需几毛钱到 1 块钱人民币），非常适合作为高并发的后台 Agent 系统底座。</li>
+</ul>
+</li>
+<li><strong>DeepSeek-R1 赢在“深度与准确率”</strong>：
+<ul>
+<li><strong>擅长</strong>：顶尖的奥数难题、复杂的算法证明、多步骤的系统级 Debug、存在竞争条件的死锁分析。</li>
+<li><strong>优势</strong>：在数理逻辑上拥有恐怖的准确率。例如在数学竞赛基准（MATH-500）上，R1 的准确率高达 $97.3%$，而 V3 是 $90.2%$。</li>
+<li><strong>代价</strong>：<strong>速度慢</strong>（需要花额外的时间和 Token 成本去生成大量的“思考过程”），因此不适合对实时性要求极高的客服或纯文本润色场景。</li>
+</ul>
+</li>
+</ul>
+<ol start="4">
+<li>“蒸馏（Distillation）”生态的区别</li>
+</ol>
+<p>由于 R1 的思考能力太强了，DeepSeek 官方还做了一件极其良心的事，这也导致了它们在开源社区生态上的巨大区别：</p>
+<ul>
+<li><strong>DeepSeek-V3</strong>：由于是庞大的 MoE 架构（671B），普通人的电脑或单张显卡几乎无法完整本地运行。</li>
+<li><strong>DeepSeek-R1</strong>：除了开源了 671B 的原版模型，官方还用 R1 产生的“思考数据”，<strong>蒸馏（Distill）</strong> 到了其他小模型里（如 Llama-8B, Qwen-32B/70B）。这意味着，你可以在家里用一张消费级显卡（甚至在 Mac 上），运行一个 <strong>DeepSeek-R1-Distill-Qwen-7B</strong> 模型，就能让这个 70 亿参数的小模型拥有非常惊人的“慢思考逻辑能力”。</li>
+</ul>
+<p>总结：企业如何选择？</p>
+<ul>
+<li>如果你的项目需要快速响应、批量处理文本、写前端网页、调 API 工具，选 <strong>DeepSeek-V3</strong>。</li>
+<li>如果你的项目涉及严密的逻辑、复杂的后端算法 Debug、金融风控建模、高难度数学计算，选 <strong>DeepSeek-R1</strong>。</li>
+</ul>
+</blockquote>
+<p>我们在广泛的基准测试上对 DeepSeek-V3 进行了评估。尽管训练成本十分经济，综合评估表明，DeepSeek-V3-Base（基座模型）已成为目前最强大的开源基座模型，尤其是在代码和数学方面。在一系列标准和开放式基准测试中，其 Chat（对话）版本同样优于其他开源模型，并实现了与包括 GPT-4o 和 Claude-3.5-Sonnet 在内的领先闭源模型相当的性能。</p>
+<p><img src="/img4/DeepSeekV3/T1.png" alt="T1"></p>
+<p>最后，我们再次强调 DeepSeek-V3 经济的训练成本（总结于表 1），这是通过我们对算法、框架和硬件进行优化协同设计来实现的。在预训练阶段，每训练一万亿（1T）Token 仅需要 18 万（180K）H800 GPU 小时，即在我们拥有 2048 张 H800 GPU 的集群上运行 3.7 天。因此，我们的预训练阶段在不到两个月的时间内完成，消耗了 2664K GPU 小时。结合用于上下文长度扩展的 119K GPU 小时和用于后训练的 5K GPU 小时，DeepSeek-V3 的完整训练仅消耗了 278.8 万（2.788M）GPU 小时。假设 H800 GPU 的租赁价格为每 GPU 小时 2 美元，我们的总训练成本仅为 557.6 万美元。请注意，上述成本仅包含 DeepSeek-V3 的官方正式训练，不包括早期在架构、算法或数据方面进行的前期研究和消融实验的成本。</p>
+<p>我们的主要贡献包括：</p>
+<p><strong>架构：创新的负载均衡策略与训练目标</strong></p>
+<ul>
+<li>
+<p>在 DeepSeek-V2 高效架构的基础上，我们开创了用于负载均衡的无辅助损失策略，从而将因强制负载均衡而导致的性能退化降至最低。</p>
+</li>
+<li>
+<p>我们研究了多 Token 预测（MTP）目标，并证明其对模型性能有益。它还可以用于推测性解码（Speculative Decoding）以加速推理。</p>
+</li>
+</ul>
+<p><strong>预训练：迈向极致的训练效率</strong></p>
+<ul>
+<li>
+<p>我们设计了 FP8 混合精度训练框架，并首次在超大规模模型上验证了 FP8 训练的可行性和有效性。</p>
+</li>
+<li>
+<p>通过算法、框架和硬件的协同设计，我们克服了跨节点 MoE 训练中的通信瓶颈，实现了近乎完全的计算与通信重叠。这显著提升了我们的训练效率并降低了训练成本，使我们能够在不增加额外开销的情况下进一步扩大模型规模。</p>
+</li>
+<li>
+<p>以仅 2664K H800 GPU 小时的经济成本，我们完成了 DeepSeek-V3 在 14.8T Token 上的预训练，打造了目前最强大的开源基座模型。预训练之后的后续训练阶段仅需要 0.1M GPU 小时。</p>
+</li>
+</ul>
+<p><strong>后训练：来自 DeepSeek-R1 的知识蒸馏</strong></p>
+<ul>
+<li>We 引入了一种创新的方法，将推理能力从长思维链（Chain-of-Thought CoT）模型（具体为 DeepSeek R1 系列模型之一）蒸馏到标准的 LLM（特别是 DeepSeek-V3）中。我们的流水线将 R1 的验证与反思模式优雅地融入到 DeepSeek-V3 中，并显著提升了其推理性能。与此同时，我们也保持了对 DeepSeek-V3 输出风格和长度的控制。</li>
+</ul>
+<p><strong>核心评估结果摘要</strong></p>
+<ul>
+<li>
+<p><strong>知识</strong>：</p>
+<ul>
+<li>(1) 在 MMLU、MMLU-Pro 和 GPQA 等教育类基准测试中，DeepSeek-V3 的表现优于所有其他开源模型，在 MMLU 上达到 88.5，在 MMLU-Pro 上达到 75.9，在 GPQA 上达到 59.1。其性能与 GPT-4o、Claude-Sonnet-3.5 等领先闭源模型相当，缩小了该领域开源与闭源模型之间的差距。</li>
+<li>(2) 在事实性基准测试中，DeepSeek-V3 在 SimpleQA 和 中文 SimpleQA 上均表现出开源模型中的顶尖性能。虽然它在英文事实性知识（SimpleQA）上落后于 GPT-4o 和 Claude-Sonnet-3.5，但在中文事实性知识（中文 SimpleQA）上超越了这些模型，凸显 venture 了其在中文事实性知识方面的优势。</li>
+</ul>
+</li>
+<li>
+<p><strong>代码、数学与推理</strong>：</p>
+<ul>
+<li>(1) 在所有非长思维链（non-long-CoT）的开源和闭源模型中，DeepSeek-V3 在数学相关基准上实现了最先进的（SOTA）性能。值得注意的是，它在特定基准（如 MATH-500）上甚至超越了 o1-preview，展示了其强大的数学推理能力。</li>
+<li>(2) 在编程相关任务中，DeepSeek-V3 成为<strong>编程竞赛基准</strong>（如 LiveCodeBench）中表现最好的模型，巩固了其在该领域的领先地位。对于<strong>工程相关任务</strong>，虽然 DeepSeek-V3 的表现略低于 Claude-Sonnet-3.5，但它仍以明显优势领先于所有其他模型，展示了其在多样化技术基准上的竞争力。</li>
+</ul>
+</li>
+</ul>
+<p>在本文的其余部分，我们首先对 DeepSeek-V3 模型架构进行了详细阐述（第 2 节）。随后，我们介绍了我们的基础设施，包括我们的计算集群、训练框架、对 FP8 训练的支持、推理部署策略，以及我们对未来硬件设计的建议（第 3 节）。接下来，我们描述了我们的预训练过程，包括训练数据的构建、超参数设置、长上下文扩展技术、相关的评估以及一些讨论（第 4 节）。此后，我们讨论了我们在后训练方面的努力，包括监督微调（SFT）、强化学习（RL）、相应的评估和讨论（第 5 节）。最后，我们总结了这项工作，讨论了 DeepSeek-V3 现有的局限性，并提出了未来研究的潜在方向（第 6 节）。</p>
+<blockquote>
+<p>Q: 那deepseek 的MoE和多Token预测（ MTP），其它的模型也采用了吗？</p>
+<p>这两个技术在行业中的待遇完全不同：<strong>MoE 已经是如今顶尖大模型的标配，而 MTP（多 Token 预测）则是 DeepSeek 引领的最新技术潮流，目前其他模型正在疯狂跟进。</strong></p>
+<p>我们可以把这两个技术在其他模型中的应用现状拆开来看：</p>
+<p>一、 MoE（混合专家模型）：已经成为行业统治级架构</p>
+<p>在 2024 年之前，行业主流还是像 LLaMA 那种所有参数都一起计算的“稠密模型”。但到了 2025、2026 年，<strong>几乎所有一线的顶级大模型都转向了 MoE 架构</strong>。</p>
+<p>虽然它们都叫 MoE，但各自的流派和设计空间有所不同：</p>
+<ul>
+<li><strong>OpenAI (GPT-4 / GPT-4o / o1 / o3)</strong>：GPT-4 是工业界最早尝到 MoE 甜头的旗舰模型。据业界公开拆解，GPT-4 采用了 16 个专家，每次激活 2 个。不过，OpenAI 采用的是传统的粗粒度 MoE，没有像 DeepSeek 那样把专家切得极碎，也没有设计固定的“共享专家”。</li>
+<li><strong>Meta (Llama 3.1 / 4 系列)</strong>：Meta 在较早的版本中坚持稠密架构，但在后来推出的超大规模旗舰版本（以及目前最新的 Llama 4 预览版）中，也全面转向了 MoE 架构，以此来平衡庞大参数量与高并发推理成本之间的矛盾。</li>
+<li><strong>谷歌 (Gemini 1.5 Pro / 2.0)</strong>：谷歌的 Gemini 架构非常特殊，它利用 MoE 实现了两项世界纪录：一是极低的计算延迟，二是恐怖的 <strong>200 万（2M）及以上超长上下文</strong> 处理能力。</li>
+<li><strong>国内主流（通义千问 Qwen / 阶跃星辰 Step）</strong>：阿里开源的 <strong>Qwen-2.5-MoE</strong> 以及最新的开源系列，其底层设计在很大程度上吸取了 DeepSeekMoE 的灵感（比如采用共享专家来保留通用知识），在开源社区的轻量级商业化部署中表现极佳。</li>
+</ul>
+<p>二、 多 Token Prediction（MTP）：DeepSeek 掀起的创新风暴</p>
+<p>相比于满大街都是的 MoE，<strong>多 Token 预测（MTP）则是 DeepSeek-V3 真正惊艳全行业的“神来之笔”</strong>。</p>
+<p>在 DeepSeek-V3 发布之前，大模型行业对 MTP 的态度更偏向于学术研究。虽然 Meta 在 2024 年发表过一篇探讨 MTP 概念的论文（<em>Multi-Token Prediction Generates Better Large Language Models</em>），但当时业内普遍认为这种架构在超大规模模型上<strong>太难训练、极易导致不收敛（Loss 爆炸）</strong>，因此包括 OpenAI 在内的巨头都没有在核心旗舰模型中大规模实装。</p>
+<p>现在的行业现状：</p>
+<ol>
+<li><strong>DeepSeek 率先跑通了工程闭环</strong>：DeepSeek-V3 第一次在 <strong>6710亿参数</strong> 的超大体量上，彻底证明了 MTP 不仅能让模型具备“高瞻远瞩”的逻辑规划能力，还能直接用于推理加速。</li>
+<li><strong>开源社区全面复现与跟进</strong>：在 DeepSeek-V3 和 V4 开源后，整个开源界（如 Hugging Face、vLLM 推理框架、以及各种主流训练库）在 2025 年和 2026 年掀起了轰轰烈烈的“MTP 适配运动”。现在，其他团队在训练自己的新模型（比如一些垂直领域的代码大模型）时，<strong>已经开始默认把 MTP 作为核心的训练目标之一</strong>。</li>
+<li><strong>闭源巨头的防御型跟进</strong>：据行业技术追踪，硅谷的巨头们在后来的模型迭代中，为了对抗 DeepSeek 极低的 API 价格，也在其推理后端和新一代模型的预训练阶段融入了类似的多 Token 推测机制，用来压榨单卡的 Token 输出吞吐量。</li>
+</ol>
+<p>总结</p>
+<ul>
+<li><strong>MoE</strong>：别人早就在用，但 DeepSeek 把它的工程成本和细粒度划分做到了行业极致（DeepSeekMoE）。</li>
+<li><strong>MTP</strong>：别人纸上谈兵或只在小模型上试过，<strong>DeepSeek 是第一个把它做成核武器、并塞进商业化超大模型里证明其威力的行业拓荒者</strong>。</li>
+</ul>
+</blockquote>
+<p><strong>后面比较学术，省略没有翻译。</strong></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/06/12/Dive%20into%20Claude%20Code%20The%20Design%20Space%20of%20Today%E2%80%99s%20and%20Future%20AI%20Agent%20Systems/" rel="prev" title="《Dive into Claude Code》">
+                  <i class="fa fa-angle-left"></i> 《Dive into Claude Code》
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+    <div id="search-container" style="margin: 20px auto; max-width: 600px;">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js"></script>
+      <div id="search"></div>
+      <script>
+        window.addEventListener('DOMContentLoaded', (event) => {
+            new PagefindUI({ 
+                element: "#search", 
+                showImages: false,
+                translations: {
+                    placeholder: "搜搜看...",
+                    clear_search: "清除",
+                    load_more: "加载更多",
+                    search_label: "搜索",
+                    filters_label: "筛选",
+                    zero_results: "未找到关于 [SEARCH_TERM] 的结果",
+                    many_results: "找到 [COUNT] 条关于 [SEARCH_TERM] 的结果",
+                    one_result: "找到 1 条关于 [SEARCH_TERM] 的结果",
+                    searching: "正在搜索..."
+                }
+            });
+        });
+      </script>
+    </div>
+  
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>
