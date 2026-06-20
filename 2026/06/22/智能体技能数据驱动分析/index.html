@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false,"path":"/search.json"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="智能体技能（Agent Skills）：关于扩展大语言模型功能的 Claude 技能的数据驱动分析 Agent Skills: A Data-Driven Analysis of Claude Skills for Extending Large Language Model Functionality 摘要 Abstract 智能体技能（Agent skills）通过可复用的、类似于程序的模块来">
+<meta property="og:type" content="article">
+<meta property="og:title" content="智能体技能数据驱动分析">
+<meta property="og:url" content="http://hongyitong.github.io/2026/06/22/%E6%99%BA%E8%83%BD%E4%BD%93%E6%8A%80%E8%83%BD%E6%95%B0%E6%8D%AE%E9%A9%B1%E5%8A%A8%E5%88%86%E6%9E%90/index.html">
+<meta property="og:site_name" content="墨语浮生">
+<meta property="og:description" content="智能体技能（Agent Skills）：关于扩展大语言模型功能的 Claude 技能的数据驱动分析 Agent Skills: A Data-Driven Analysis of Claude Skills for Extending Large Language Model Functionality 摘要 Abstract 智能体技能（Agent skills）通过可复用的、类似于程序的模块来">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AgentSkill%E5%88%86%E6%9E%90/F1.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AgentSkill%E5%88%86%E6%9E%90/F2.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AgentSkill%E5%88%86%E6%9E%90/F3.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AgentSkill%E5%88%86%E6%9E%90/F4.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AgentSkill%E5%88%86%E6%9E%90/T1.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AgentSkill%E5%88%86%E6%9E%90/F5.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AgentSkill%E5%88%86%E6%9E%90/F6.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AgentSkill%E5%88%86%E6%9E%90/F7.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AgentSkill%E5%88%86%E6%9E%90/F8.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AgentSkill%E5%88%86%E6%9E%90/F9.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AgentSkill%E5%88%86%E6%9E%90/F10.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AgentSkill%E5%88%86%E6%9E%90/F11.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AgentSkill%E5%88%86%E6%9E%90/F12.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AgentSkill%E5%88%86%E6%9E%90/F13.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AgentSkill%E5%88%86%E6%9E%90/F14.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AgentSkill%E5%88%86%E6%9E%90/F15.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AgentSkill%E5%88%86%E6%9E%90/T2-1.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AgentSkill%E5%88%86%E6%9E%90/T2-2.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AgentSkill%E5%88%86%E6%9E%90/T2-3.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AgentSkill%E5%88%86%E6%9E%90/T2-4.png">
+<meta property="article:published_time" content="2026-06-21T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-06-20T08:25:01.873Z">
+<meta property="article:author" content="Rayman.hung">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hongyitong.github.io/img4/AgentSkill%E5%88%86%E6%9E%90/F1.png">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2026/06/22/%E6%99%BA%E8%83%BD%E4%BD%93%E6%8A%80%E8%83%BD%E6%95%B0%E6%8D%AE%E9%A9%B1%E5%8A%A8%E5%88%86%E6%9E%90/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2026/06/22/%E6%99%BA%E8%83%BD%E4%BD%93%E6%8A%80%E8%83%BD%E6%95%B0%E6%8D%AE%E9%A9%B1%E5%8A%A8%E5%88%86%E6%9E%90/","path":"2026/06/22/智能体技能数据驱动分析/","title":"智能体技能数据驱动分析"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>智能体技能数据驱动分析 | 墨语浮生</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="fc62aedd-644a-478d-b3c2-d8ba9964421c" src="https://cloud.umami.is/script.js" data-host-url="https://cloud.umami.is"></script>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js" defer></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">墨语浮生</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%95%E8%A8%80"><span class="nav-text">1 引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%8A%80%E8%83%BD%E6%95%B0%E6%8D%AE%E4%B8%8E%E5%A2%9E%E9%95%BF%E8%B6%8B%E5%8A%BF"><span class="nav-text">2 技能数据与增长趋势</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-%E6%95%B0%E6%8D%AE%E6%94%B6%E9%9B%86"><span class="nav-text">2.1 数据收集</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-%E6%8A%80%E8%83%BD%E5%A2%9E%E9%95%BF%E8%B6%8B%E5%8A%BF"><span class="nav-text">2.2 技能增长趋势</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%8A%80%E8%83%BD%E9%95%BF%E5%BA%A6%E4%B8%8E-%E5%86%97%E4%BD%99%E6%80%A7"><span class="nav-text">3 技能长度与 冗余性</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-%E6%8A%80%E8%83%BD%E9%95%BF%E5%BA%A6%E7%89%B9%E5%BE%81"><span class="nav-text">3.1 技能长度特征</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-%E6%84%8F%E5%9B%BE%E7%BA%A7%E5%86%97%E4%BD%99%E6%80%A7%E5%88%86%E6%9E%90"><span class="nav-text">3.2 意图级冗余性分析</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E6%8A%80%E8%83%BD%E4%BD%BF%E7%94%A8%E6%A8%A1%E5%BC%8F"><span class="nav-text">4 技能使用模式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-%E5%88%86%E7%B1%BB%E4%BD%93%E7%B3%BB%E4%B8%8E%E6%A0%87%E7%AD%BE%E5%88%92%E5%88%86"><span class="nav-text">4.1 分类体系与标签划分</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-%E4%BE%9B%E9%9C%80%E5%88%86%E5%B8%83"><span class="nav-text">4.2 供需分布</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-3-%E4%BE%9B%E9%9C%80%E5%8A%A8%E6%80%81"><span class="nav-text">4.3 供需动态</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E9%A3%8E%E9%99%A9%E4%B8%8E%E5%AE%89%E5%85%A8%E8%AF%84%E4%BC%B0"><span class="nav-text">5 风险与安全评估</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E6%BD%9C%E5%9C%A8%E6%96%B9%E5%90%91"><span class="nav-text">6 潜在方向</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-%E7%BB%93%E8%AE%BA"><span class="nav-text">7 结论</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%99%84%E5%BD%95-A-%E6%8A%80%E8%83%BD%E7%BB%93%E6%9E%84%E5%8F%8A%E5%85%B6%E5%9C%A8%E6%99%BA%E8%83%BD%E4%BD%93%E4%B8%AD%E7%9A%84%E9%9B%86%E6%88%90"><span class="nav-text">附录 A 技能结构及其在智能体中的集成</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#A-1-%E6%8A%80%E8%83%BD%E7%BB%93%E6%9E%84"><span class="nav-text">A.1 技能结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#A-2-%E6%8A%80%E8%83%BD%E5%9C%A8%E6%99%BA%E8%83%BD%E4%BD%93%E4%B8%AD%E7%9A%84%E9%9B%86%E6%88%90"><span class="nav-text">A.2 技能在智能体中的集成</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%99%84%E5%BD%95-B-%E5%86%97%E4%BD%99%E6%80%A7%E7%9A%84%E8%A1%A5%E5%85%85%E5%88%86%E6%9E%90"><span class="nav-text">附录 B 冗余性的补充分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%99%84%E5%BD%95-C-%E9%A3%8E%E9%99%A9%E4%B8%8E%E5%AE%89%E5%85%A8%E8%AF%84%E4%BC%B0%E7%9A%84%E8%A1%A5%E5%85%85%E5%88%86%E6%9E%90"><span class="nav-text">附录 C 风险与安全评估的补充分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%99%84%E5%BD%95-D-%E6%8A%80%E8%83%BD%E5%88%86%E7%B1%BB%E6%8F%90%E7%A4%BA%E8%AF%8D"><span class="nav-text">附录 D 技能分类提示词</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%99%84%E5%BD%95-E-%E6%8A%80%E8%83%BD%E5%AE%89%E5%85%A8%E5%AE%A1%E8%AE%A1%E6%8F%90%E7%A4%BA%E8%AF%8D"><span class="nav-text">附录 E 技能安全审计提示词</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%99%84%E5%BD%95-F-%E9%AB%98%E9%A3%8E%E9%99%A9%EF%BC%88L3%EF%BC%89%E6%8A%80%E8%83%BD%E7%A4%BA%E4%BE%8B"><span class="nav-text">附录 F 高风险（L3）技能示例</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、心情记录</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives">
+          <span class="site-state-item-count">281</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories">
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/06/22/%E6%99%BA%E8%83%BD%E4%BD%93%E6%8A%80%E8%83%BD%E6%95%B0%E6%8D%AE%E9%A9%B1%E5%8A%A8%E5%88%86%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="智能体技能数据驱动分析 | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          智能体技能数据驱动分析
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-06-22 00:00:00" itemprop="dateCreated datePublished" datetime="2026-06-22T00:00:00+08:00">2026-06-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>智能体技能（Agent Skills）：关于扩展大语言模型功能的 Claude 技能的数据驱动分析</p>
+<p>Agent Skills: A Data-Driven Analysis of Claude Skills for Extending Large Language Model Functionality</p>
+<p><strong>摘要</strong></p>
+<p>Abstract</p>
+<p>智能体技能（Agent skills）通过可复用的、类似于程序的模块来扩展大语言模型（LLM）智能体，这些模块定义了触发条件、过程逻辑和工具交互。随着这些技能在公开市场上的激增，目前尚不清楚有哪些可用的技能类型、用户如何采纳它们以及它们会带来哪些风险。为了回答这些问题，我们对来自一个主要市场的 40,285 个公开上市的技能进行了大规模的数据驱动分析。</p>
+<p>我们的研究结果表明，技能的发布往往在短期内爆发式涌现，并与社区关注度的转移相吻合。我们还发现，技能内容高度集中在软件工程工作流中，而信息检索和内容创作在用户采纳中占了很大份额。除了内容趋势外，我们还揭示了各类别之间显著的供需失衡，并且表明尽管长度呈现重尾分布，但大多数技能仍保持在典型的提示词预算（Prompt budgets）之内。最后，我们观察到强大的生态系统同质化，存在广泛的意图级冗余，并识别出了不容忽视的安全风险，包括允许改变状态或系统级操作的技能。</p>
+<p>总的来说，我们的研究结果为智能体技能作为一种新兴的智能体基础设施层提供了量化快照，并为未来在技能复用、标准化和安全感知设计方面的研究提供了信息。</p>
+<span id="more"></span>  
+<h3 id="1-引言">1 引言</h3>
+<p>Introduction</p>
+<p>大语言模型（LLM）智能体已成为解决复杂、多步骤任务的一种强大范式，这些任务需要推理、工具使用以及与外部环境的交互（Yao et al., 2022; Wang et al., 2024）。智能体不再依赖单一的“提示词-响应”交互，而是在更长的时间跨度上运行：它们理解用户目标，将其分解为子任务，并在多样化的工具、数据源和中间状态之间协调行动（Shinn et al., 2023; Wang et al., 2023; Sapkota et al., 2025）。这种智能体执行模型赋能了日益广泛的应用，从软件开发和数据分析到个人助理和工作流自动化（Wang et al., 2024）。</p>
+<p>随着基于智能体的系统在复杂性和部署规模上的扩大，围绕可靠性、复用性和可维护性带来了新的挑战（Liu et al., 2026a; Cemri et al., 2025; Raheem and Hossain, 2025）。许多智能体行为在不同的任务和用户之间重复出现，但往往通过提示词或手工构建的控制逻辑进行重复指定（Jin et al., 2026; Liu et al., 2025）。这催生了智能体技能的出现（openclaw Community, 2026; Anthropic, 2025）。近几个月来，围绕这些技能的生态系统迅速扩大，如图 1 所示。这种增长促使我们需要更仔细地研究存在哪些技能、它们如何被采纳以及它们可能引入哪些风险。</p>
+<p><img src="/img4/AgentSkill%E5%88%86%E6%9E%90/F1.png" alt="F1"></p>
+<blockquote>
+<p><strong>图 1：智能体技能的增长趋势。</strong></p>
+<p>根据著名的智能体技能平台 <a target="_blank" rel="noopener" href="http://skills.sh">skills.sh</a> 的数据，记录的技能数量在 2026 年 1 月中旬至 2 月上旬经历了快速增长，到 2 月上旬已突破 40,000 个。在同一时期，热门的开源技能应用 OpenClaw（openclaw Community, 2026）的 GitHub Star 量大幅飙升，在 1 月底创下单日增加超过 25,000 颗星的记录，随后逐渐回落，总 Star 量超过 170k。</p>
+</blockquote>
+<p><strong>什么是智能体技能？</strong> 智能体技能最近作为一种抽象概念出现，用于构建可复用且可扩展的智能体行为（Anthropic, 2025; Wu and Zhang, 2026; Lee, 2025）。在 Anthropic 的 Claude 智能体框架（Anthropic, 2025）背景下，该概念已被系统化并普及，其中技能有时被称为 Claude 技能（Claude Skills）或 Claude 智能体技能。一个智能体技能可以被定义为一个可复用的、即插即用的模块，它指定了何时应该调用该技能以及如何执行相应的子任务，通常以一种可共享、可版本化和可组合的形式存在。在实际落地中，一项技能通常将支持发现和选择的轻量级元数据，与可执行指令及支持资源（如文件、脚本和工具配置）结合在一起（Anthropic, 2025）。附录 A 提供了一个技能结构的具体示例。</p>
+<p><strong>为什么智能体需要技能？</strong> 基于智能体的系统经常会重新访问相似的子任务，例如数据检索、信息提取、代码修改等。如果没有显式的抽象，这些重复出现的行为必须通过提示词或临时的控制逻辑重复指定。这种重复增加了提示词的开销，使行为在微小的上下文变化下变得脆弱，并增加了共享流程维护的复杂性（Jin et al., 2026）。智能体技能通过将可复用的行为打包到模块化单元中来解决这些问题，这些单元捕获了任务知识、过程逻辑和工具使用模式。因为技能可以被复用和组合，所以它们提高了行为的一致性并降低了提示词的复杂度，使智能体的能力更容易扩展和控制。共享技能库还支持跨应用的标准化和持续优化。</p>
+<p><strong>智能体技能在实践中是如何使用的？</strong> 在真实系统中，技能通常被组织为独立的模块，智能体可以在解决任务期间选择并执行。一种常见的模式是将符合条件的技能作为包含名称和描述的紧凑元数据列表加载到系统提示词（System Prompt）中；然后，智能体根据用户请求选择一项技能，并遵循该技能定义的指令，根据需要发起工具调用。附录 A 提供了一个具体示例（图 11），展示了智能体如何使用不同的技能来解决用户的问题。</p>
+<p>总而言之，这些观察表明智能体技能正在快速增长，但其功能和潜在影响差异很大。这使得刻画存在哪些技能、它们如何被使用以及它们可能引入哪些风险变得至关重要。在本文中，我们对新兴的智能体技能生态系统进行了大规模的数据驱动测量。利用从公开技能平台收集的语料库，我们分析了以下几个方面：</p>
+<ul>
+<li><strong>第 2 节中的增长趋势</strong>：我们量化了随时间推移的发布情况，并展示了快速、爆发式的增长。</li>
+<li><strong>第 3 节中的技能长度和冗余性</strong>：我们测量了提示词长度并展示了重尾分布，同时大多数技能保持在典型的提示词预算之内。我们还发现近乎重复的列表中非常常见。</li>
+<li><strong>第 4 节中的技能使用模式</strong>：我们将技能分类到包含 6 个大类和 20 个子类的分类体系中，并展示了在软件工程工作流中的高度集中。我们进一步指出了已发布内容与用户实际安装内容之间的明显差距。</li>
+<li><strong>第 5 节中的安全风险</strong>：我们对技能进行了审计，发现大多数技能是低风险的，而有相当一部分技能允许执行改变状态的行动。</li>
+</ul>
+<p>我们的研究结果指出了几个亟待解决的问题。首先，供需差距和高冗余性需要更好的技能发现机制、去重技术和质量信号。其次，允许执行行动的技能的存在，激发了安全感知设计的动力，包括更清晰的权限模型、更强大的沙箱机制以及更透明的风险标签。</p>
+<h3 id="2-技能数据与增长趋势">2 技能数据与增长趋势</h3>
+<p>Skill Data and Growth Trends</p>
+<p>在本节中，我们介绍我们的技能数据集，并总结智能体技能生态系统随时间推移的增长情况。我们首先描述如何收集技能及其元数据，然后报告捕获发布和采纳模式的统计数据。</p>
+<h4 id="2-1-数据收集">2.1 数据收集</h4>
+<p>Data Collection</p>
+<p>我们通过爬取公开市场 <a target="_blank" rel="noopener" href="http://skills.sh">skills.sh</a> 上列出的智能体技能来构建我们的数据集。对于每项技能，我们提取了一组轻量级的元数据，描述了技能本身、其托管位置、首次出现在市场上的日期以及被安装的广泛程度。具体而言，每条记录包括技能名称（<code>name</code>）、指向托管技能文件的仓库字段（<code>repository</code>）、记录技能首次上传到 <a target="_blank" rel="noopener" href="http://skills.sh">skills.sh</a> 日期的 <code>first_seen</code>，以及报告支持平台中每个平台安装数量的 <code>installed_on</code>。</p>
+<p>我们将每项技能存储为一个 <code>SKILL.md</code> 和一个具有以下结构的类似 JSON 的对象：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;[SKILL NAME]&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;repository&quot;</span><span class="punctuation">:</span> <span class="string">&quot;[REPOSITORY LINK]&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;first_seen&quot;</span><span class="punctuation">:</span> <span class="string">&quot;[DD/MM/YY]&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;installed_on&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span><span class="attr">&quot;platform&quot;</span><span class="punctuation">:</span> <span class="string">&quot;claude-code&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;installs&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span>NUMBER OF INSTALL<span class="punctuation">]</span><span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="punctuation">&#123;</span><span class="attr">&quot;platform&quot;</span><span class="punctuation">:</span> <span class="string">&quot;codex&quot;</span><span class="punctuation">,</span> <span class="attr">&quot;installs&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span>NUMBER OF INSTALL<span class="punctuation">]</span><span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">    ...</span><br><span class="line">  <span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>我们在 2026 年 2 月 5 日完成了数据收集，共获得了 40,285 条技能元数据记录。除非另有说明，此快照是第 2.2 至第 5 节中所有分析的基础。所有测量均完全基于公开可访问的内容；我们避免了针对个人创建者的敏感属性归属，并仅报告聚合结果。</p>
+<h4 id="2-2-技能增长趋势">2.2 技能增长趋势</h4>
+<p>Skill Growth Trend</p>
+<p>我们利用 2.1 节中的 <code>first_seen</code> 字段来研究技能的增长趋势，该字段记录了技能首次出现在 <a target="_blank" rel="noopener" href="http://skills.sh">skills.sh</a> 上的时间。为了捕获社区关注度的平行信号，我们还通过 GitHub GraphQL API（<code>[api.github.com/graphql](https://api.github.com/graphql)</code>）查询了 OpenClaw（openclaw Community, 2026）的 GitHub Star 历史来追踪其受欢迎程度。图 1 绘制了已上市技能的累计数量和 OpenClaw Star 的累计数量。</p>
+<p>增长是快速且爆发式的。该市场的技能数量从 2026 年 1 月 16 日的 2,179 个增长到 2026 年 2 月 5 日的 40,285 个，在 20 天内净增了 38,106 个技能。这相当于增长了 18.5 倍，平均每日复合增长率约为 15.7%。尽管平均每天有 1,918 个技能涌入，但新增数量主要集中在短期的激增中。最大的爆发发生在 2026 年 1 月 25 日，单日增加了 8,857 个技能。这占了该窗口期内所有新技能的 23.2%。在周级别上，以 1 月 25 日为中心的那一周贡献了 19,259 个技能，占完整快照数据的 47.8%。</p>
+<p>这种增长与应用层的受欢迎程度信号相吻合。OpenClaw 在同一时期也经历了爆发式的流行冲击。每日新获得的 Star 量从 1 月中旬的几百颗飙升至 1 月 25 日的 10,543 颗，随后在 1 月 26 日达到 25,432 颗的峰值，是前一天的 2.4 倍。达到峰值后，每日增长量在 2 月上旬有所下降。例如，OpenClaw 在 2 月 5 日获得了 1,718 颗新星，这与新上市技能增速放缓的时间相吻合。总的来看，这种同步的激增表明背后存在共同的驱动因素。一波大众关注可能同时促进了技能的发布以及对基于技能的工具的探索。虽然 GitHub Star 量不是真实使用情况的完美替代指标，但它们与市场上市数据的同步动态提供了证据，表明供应的快速增长与强大的社区兴趣是高度一致的。</p>
+<p><img src="/img4/AgentSkill%E5%88%86%E6%9E%90/F2.png" alt="F2"></p>
+<p><strong>图 2：智能体技能的 Token 数量分布。</strong></p>
+<p>该分布呈现出显著的重尾特征（Heavy-tailed）：技能长度的中位数（Median）为 1,414 个 Token（平均值 Mean 为 1,895）。90% 的技能长度不超过 3,935 个 Token，99% 的技能长度不超过 9,253 个 Token。极少一部分技能异常冗长，其最大值达到了 116,239 个 Token。</p>
+<h3 id="3-技能长度与-冗余性">3 技能长度与 冗余性</h3>
+<p>Skill Length and Redundancy</p>
+<p>本节总结了大规模条件下的技能内容和使用情况。我们首先分析技能长度，然后报告意图级别的冗余性。</p>
+<h4 id="3-1-技能长度特征">3.1 技能长度特征</h4>
+<p>Skill Length Characteristics</p>
+<p>我们通过对每个 <code>SKILL.md</code> 进行分词并计算 Token 数量来测量技能长度。对于 2.1 节中的每个技能记录，我们一致使用基于 <code>o200k_base</code> 编码的 tiktoken（OpenAI, 2026）。这种方法使得 Token 计数可以作为提示词预算（Prompt budget）和推理成本的直接替代指标。</p>
+<p>典型的技能通常很短。图 2 显示出了显著的重尾分布（Heavy-tailed distribution），但大多数技能依然很紧凑。长度的中位数是 1,414 个 Token，平均值是 1,895 个 Token，这表明一个典型的技能可以非常舒服地与规划上下文（Planning context）和工具 Schema 放置在一起。在各个分位数中，长度很少成为限制性约束：80% 和 95% 的技能分别在 2,955 和 5,077 个 Token 以内，而 90% 和 99% 的技能则保持在 3,935 和 9,253 个 Token 以下。同时，2,025 个 Token 的标准差突显了极大的离散度，尽管核心主体部分很短。</p>
+<p><img src="/img4/AgentSkill%E5%88%86%E6%9E%90/F3.png" alt="F3"></p>
+<p><strong>图 3：基于名称的冗余度分布。</strong></p>
+<p>在移除特殊字符并使用不区分大小写的匹配后，技能按规范化名称（Normalized names）进行归类。我们报告了出现 $n$ 次的技能比例，记作 $n\times$。仅出现过一次的技能占 53.7%，而出现过一次以上的技能占 46.3%。在该指标下冗余度最高的前 30 个技能名称已在附录图 4 中列出。</p>
+<p>少数技能由于包含了多个组件而较长。这种离散度是由一小部分极端的异常值驱动的。前 1% 的技能超过了 9,253 个 Token，最大值达到了 116,239 个 Token，当全量加载时，这可能会耗尽提示词预算，并阻碍可靠的选择与审计。人工检查表明，许多此类长技能将多个组件合并到了单个文件中，包括扩展文档、大型代码块以及复用模板集合。这种模式表明，虽然大多数技能支持直接在上下文中（In-context）使用，但少数技能的表现更像库（Libraries），可能需要通过模块化或基于检索的加载（Retrieval-based loading）来受益，从而做到仅将相关部分引入上下文。</p>
+<h4 id="3-2-意图级冗余性分析">3.2 意图级冗余性分析</h4>
+<p>Intent-level Redundancy Analysis</p>
+<p>随着智能体技能生态系统的增长，相同的用户意图经常被多次发布，这可能是由独立的开发者驱动的，也可能是通过模板驱动自动生成的。如果重复能带来富有成效的改进变体（例如更强的安全检查、更广泛的工具覆盖或更清晰的文档），那么适度的重复是有益的。然而，如果大多数副本仅仅是措辞不同，市场的容量就会上升，而能力的多样性却不会相应增加。因此，我们将冗余性量化为相同意图在语料库中被重复列出的频率。</p>
+<p><img src="/img4/AgentSkill%E5%88%86%E6%9E%90/F4.png" alt="F4"></p>
+<p><strong>图 4：基于名称匹配的排名前 30 的冗余技能。</strong></p>
+<p>我们使用第 3.2 节中的精确匹配流程，根据共享相同规范化名称的上市数量对技能进行排名。本图列出了重复频率最高的前 30 个技能名称及其重复次数。</p>
+<p><strong>冗余性测量</strong>：我们通过两种信号来评估冗余性。首先，我们应用基于名称的精确匹配。我们将技能名称转换为小写，移除特殊字符，并将具有相同规范化名称（Normalized name）的技能归为一组。其次，我们应用语义匹配。我们使用 BAAI/bge-m3（Chen et al., 2024）对 <code>Name:[NAME] + Description:[DESCRIPTION]</code> 进行编码，并结合 t-SNE 可视化分析近邻相似度。在这个市场中，描述往往很短、充满噪点且源自模板，因此语义相似的嵌入（Embeddings）无法可靠地将真正的复制品与弱相关的技能区分开来。出于这个原因，我们使用严格的名称匹配来作为主要结果，并在附录 B 中报告嵌入分析。</p>
+<p><strong>接近一半的上市技能是重复的</strong>：图 3 显示，唯一条目的数量仅略微超过重复条目。在严格的精确匹配下，53.7% 的技能仅出现过一次，而 46.3% 的技能与至少一个其他上市技能共享一个规范化名称。重复也高度集中。成对出现的现象很常见，2 次重复的组贡献了语料库的 18.7%。更高频率的重复仍占据了不容忽视的份额：5 到 9 次重复的组贡献了 14.3%，10 到 49 次重复的组贡献了 8.8%。少数名称出现了 100 次以上，这与重复多次发布或通过共享模板自动发布的现象是一致的。为了更加具体，我们在图 4 中列出了 30 个最冗余的技能名称。</p>
+<p><strong>对发现和维护的启示</strong>：高冗余性增加了用户的搜索成本，并将反馈和采纳信号分散在近乎相同的上市技能中，这使得高质量的实现很难脱颖而出并成为清晰的默认选择。这也表明，开发者的精力经常花费在重新打包常见的工作流上，而不是将覆盖范围扩展到缺乏服务的任务中。这促使平台需要引入鼓励复用和差异化的机制，包括提供更清晰的权威技能（Canonical skills）、更明确的版本控制以及可以减少表面复制发布动机的模块化模板。</p>
+<p><img src="/img4/AgentSkill%E5%88%86%E6%9E%90/T1.png" alt="T1"></p>
+<p><strong>表 1：智能体技能的功能分类体系与类别级统计数据。</strong></p>
+<p>技能被组织为 6 个大类和 20 个子类。对于每个子类，我们报告了其规模（技能数量以及占语料库的百分比 %）、以 Token 计的平均技能长度，以及平均下载量/安装量。</p>
+<h3 id="4-技能使用模式">4 技能使用模式</h3>
+<p>Skill Usage Patterns</p>
+<p>在本节中，我们研究技能的具体功能以及用户的实际安装情况。我们通过一个分类体系（Taxonomy）来总结技能的功能，从而在全语料库层面上对技能的发布（供应）与采纳（需求）进行对比。</p>
+<h4 id="4-1-分类体系与标签划分">4.1 分类体系与标签划分</h4>
+<p>Taxonomy and Classification</p>
+<p>我们定义了一个包含 6 个大类和 20 个子类的双层分类体系（表 1）。该分类体系覆盖了端到端的智能体工作流，并将实践中存在差异的常见意图进行了区分，例如“代码生成（Code Generation）”与“调试与分析（Debug &amp; Analysis）”。对于每个子类，我们报告了其技能数量、平均 Token 长度以及平均下载或安装量。</p>
+<p>图 5 通过显示各主要类别的词云，提供了定性信号，这些词云源自完整技能 Markdown 文档中的高频词。只有当某个词在目标类别中的出现频率超过其余五个类别平均水平的 1.5 倍时，该词才会被保留。由于市场自带的标签稀疏且不一致，我们使用 Qwen2.5-32B-Instruct 模型对技能进行标签划分。输入技能的名称和描述后，模型会选择一个子类并返回严格的 JSON 记录。附录 D 列出了分类体系的定义和提示词模板。</p>
+<p><img src="/img4/AgentSkill%E5%88%86%E6%9E%90/F5.png" alt="F5"></p>
+<blockquote>
+<p><strong>图 5：主要类别的技能名称词云。</strong></p>
+<p>对于 4.2 节中的每个大类，我们展示了源自技能文档的高频术语。只有当一个词在目标类别中的频率超过其他五个类别平均值的 1.5 倍时，该词才会被保留。字体大小与类别内频率成正比，突出了常见主题和反复出现的工作流模式。</p>
+</blockquote>
+<p><img src="/img4/AgentSkill%E5%88%86%E6%9E%90/F6.png" alt="F6"></p>
+<p><strong>图 6：主要类别的供需动态。</strong></p>
+<p>“供应（Supply）”表示经过冗余过滤后的去重技能数量（第 3.2 节）。“需求（Demand）”表示每个技能的平均安装量，用作采纳情况的粗略替代指标。大多数类别接近平衡，而内容创作呈现“需求过热（高需求）”，软件工程呈现“供应过剩（高供应）”，信息检索尽管供应有限，但也呈现出“需求过热（高需求）”的状态。</p>
+<h4 id="4-2-供需分布">4.2 供需分布</h4>
+<p>Distribution of Supply and Demand</p>
+<p><strong>以数据为中心的技能更长</strong>：Token 长度因功能而异。“数据可视化（Data Visualization）”和“数据处理（Data Processing）”是平均长度最长的子类，分别为 2,322 和 2,134 个 Token。这些技能通常包含多步骤的流水线、配置块和可复用的模板。相比之下，“版本控制（Version Control）”和“本地文件控制（Local File Control）”较短，分别为 1,403 和 1,420 个 Token，且通常更具过程性。这些差异对于提示词预算和审计至关重要，因为即使是一个规模较小的类别，如果其技能很长，仍会带来巨大的审核负担。</p>
+<p><strong>软件工程主导了上市列表</strong>：在表 1 中，横跨“代码生成”、“调试与分析”等子类的“软件工程”大类占了整个语料库的 54.7%。“基础设施（Infrastructure）”是最大的子类，拥有 9,664 个技能，占所有上市技能的 24.0%。这表明开发者经常发布用于环境配置、DevOps 自动化、工具配置和部署的技能。</p>
+<p><strong>采纳集中在少数通用技能上</strong>：采纳（安装）呈现出与发布截然不同的模式。“网页搜索（Web Search）”的平均下载量最高，达到 1,268 次，但它仅占上市技能的 1.4%。这表明少数检索连接器（Retrieval connectors）被广泛复用。“内容创作（Content creation）”也显示出很高的平均安装量，其中“音频与视频（Audio &amp; Video）”为 266 次，“图像生成（Image Generation）”为 214 次。“代码生成”仍是安装量最高的类别之一，平均为 235 次。相反，以实用工具为核心的技能平均安装量较低，包括“本地文件控制”（42 次）和“记忆与认知（Memory &amp; Cognition）”（54 次）。这可能反映了更窄的应用场景、更高的潜在风险，或者与智能体内置能力的重叠。我们在第 4 节中进一步分析了这种“发布-采纳”之间的差距。</p>
+<p>总体而言，该分类体系提供了生态系统的紧凑地图。它区分了开发者构建的内容与用户复用的内容，并澄清了内容复杂度在不同功能之间的差异。</p>
+<blockquote>
+<p><strong>图 6：主要类别的供需动态。</strong></p>
+<p>“供应（Supply）”表示经过冗余过滤后的去重技能数量（3.2 节）。“需求（Demand）”表示每个技能的平均安装量，用作采纳情况的粗略替代指标。大多数类别接近平衡，而内容创作呈现“需求过热”，软件工程呈现“供应过剩”，信息检索尽管供应有限，但也呈现出“需求过热”的状态。</p>
+</blockquote>
+<h4 id="4-3-供需动态">4.3 供需动态</h4>
+<p>Supply–Demand Dynamics</p>
+<p>单靠生态系统的增长，无法表明开发者发布的技能是否恰好是用户采纳最多的能力。因此，我们对比了不同功能类别之间的供应与需求。遵循 3.2 节的方法，我们对技能进行了去重，以减少近乎相同的重复发布和模板变体带来的影响。我们将“供应”定义为一个类别中去重后的技能数量，将“需求”定义为每个技能的平均安装量，并将其作为采纳情况的粗略替代指标。</p>
+<p><strong>大体一致但存在系统性偏差</strong>：图 6 总结了结果。在大多数类别中，供应和需求同向移动，表明发布活动大致契合了用户的兴趣。然而，我们观察到三个持续存在的差距：</p>
+<ol>
+<li><strong>内容创作属于“需求导向型（需求过热）”</strong>：尽管上市的技能数量有限，用户仍会反复复用写作和媒体工作流。</li>
+<li><strong>软件工程属于“供应导向型（供应过剩）”</strong>：封装了编码、测试和仓库常规操作的技能非常易于制作和分享，这增加了内容重叠，并将安装量分散在紧密可替代的同类技能中。</li>
+<li><strong>信息检索属于“需求导向型（需求过热）”</strong>：尽管供应有限，但信息检索（Zheng et al., 2025; Wu et al., 2025）表现出极高的需求。少数高效可靠的检索技能就能吸引大量安装，因为网络和数据库访问对日常任务非常有用。然而，发布这些技能的成本很高，因为随着外部接口和速率限制（Rate limits）的改变，它们需要稳定的连接器、精细的查询设计以及持续的维护。</li>
+</ol>
+<p><img src="/img4/AgentSkill%E5%88%86%E6%9E%90/F7.png" alt="F7"></p>
+<blockquote>
+<p><strong>图 7：子类别的供需动态。</strong></p>
+<p>“供应”表示 20 个子类别中每个子类去重后的技能数量，“需求”表示每个技能的平均安装量。该图以比图 6 更细的粒度突出了发布量与采纳量发生分歧的地方。</p>
+</blockquote>
+<p>图 7 进一步针对所有 20 个子类别提供了相同的对比。总的来说，这些结果突出了在哪些地方引入权威实现（Canonical implementations）、更强的工具集成以及维护激励机制，可以有效减少供需错配的问题。</p>
+<h3 id="5-风险与安全评估">5 风险与安全评估</h3>
+<p>Risk and Safety Assessment</p>
+<p>技能是可执行的流程，能够与外部服务、本地环境和用户上下文进行交互。相较于仅包含提示词的交互（Prompt-only interactions），它们扩大了危害暴露面（Harm surface），因为技能可能会访问敏感数据或触发真实世界的副作用（Wu and Zhang, 2026; Schmotz et al., 2025; Liu et al., 2026b）。因此，我们对已发布技能启用隐私敏感型读取、状态改变操作或诸如任意命令执行等关键能力的频率进行了量化。</p>
+<p><strong>基于大模型的审计方案</strong>：我们使用 Qwen2.5-32B-Instruct 模型，并根据附录 E 中的评分标准对每项技能进行了审计。该模型接收技能名称、描述以及完整的 <code>SKILL.md</code> 内容，并在最坏情况的解释下（Worst-case interpretation），严格从 L0 到 L3 中分配一个风险等级，其中 L0 为安全、L1 为隐私风险、L2 为中度风险、L3 为严重风险。为了支持自动聚合，我们要求其返回严格的 JSON 记录：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;skill_name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;&#123;&#123;SKILL_NAME&#125;&#125;&quot;</span><span class="punctuation">,</span> </span><br><span class="line">  <span class="attr">&quot;risk_level&quot;</span><span class="punctuation">:</span> <span class="string">&quot;L0&quot;</span> | <span class="string">&quot;L1&quot;</span> | <span class="string">&quot;L2&quot;</span> | <span class="string">&quot;L3&quot;</span><span class="punctuation">,</span> </span><br><span class="line">  <span class="attr">&quot;reasoning&quot;</span><span class="punctuation">:</span> <span class="string">&quot;一个简短的句子，解释具体的风险因素。&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>我们按照第 4.2 节中的六大类别报告了结果。有关所有 20 个子类别的更精细划分，请参见附录图 13。</p>
+<p><img src="/img4/AgentSkill%E5%88%86%E6%9E%90/F8.png" alt="F8"></p>
+<blockquote>
+<p><strong>图 8：整体及主要类别的风险等级分布。</strong></p>
+<p>其中 L0 风险最低，L3 风险最高。审计使用 Qwen2.5-32B-Instruct 并参照附录 E 进行。</p>
+</blockquote>
+<p><strong>整体分布</strong>：图 8 显示，虽然低风险技能占主导地位，但允许执行行动的技能也广泛存在。整体而言，54% 的技能为 L0，5% 为 L1，30% 为 L2，9% 为 L3。也就是说，整个市场中有接近五分之二的技能能够访问敏感上下文或执行写入与操作，并且有相当一部分技能暴露了关键能力。</p>
+<p><strong>类别级模式</strong>：风险集中在将模型与外部系统相连接的类别中。内容创作（Content Creation）是最安全的类别，拥有 75% 的 L0 且仅有极小份额的 L3，这与输出主要为草稿或媒体资产的工作流相契合。信息检索（Information Retrieval）主要以读取为导向，拥有 68% 的 L0 以及最高的 L1 份额（11%），这通常是因为连接器依赖于特定用户的 Token 或私有数据源。生产力工具（Productivity Tools）由 L2 主导，占比 46%，反映了创建、编辑和发送电子邮件、消息、日历条目及文档等常见操作。软件工程（Software Engineering）具有最高的 L3 比例，达到 14%，这与管理环境、运行命令或操作代码仓库的技能一致。实用工具与其他（Utilities &amp; Other）也显示出较高的风险，L1 为 10%，L3 为 11%，这由本地文件操作和命令执行工具所驱动。数据与分析（Data &amp; Analytics）介于这些极端之间，拥有 59% 的 L0 和 23% 的 L2，这与可能写入中间输出的 ETL 样式流水线相吻合。</p>
+<p><img src="/img4/AgentSkill%E5%88%86%E6%9E%90/F9.png" alt="F9"></p>
+<blockquote>
+<p><strong>图 9：风险等级词云图。</strong></p>
+<p>L1 聚焦于包含“meeting（会议）”和“history（历史）”等术语的私有数据。L2 展示了诸如“git”和“merge（合并）”等行动词汇。L3 突出了关键系统和安全术语，例如“sudo”、“admin（管理员）”和“password（密码）”。</p>
+</blockquote>
+<p>图 9 进一步展示了横跨 L0 到 L3 不同风险等级的详细词云分析。只有当一个词在目标等级中的频率超过其余三个等级平均水平的 1.5 倍时，该词才会被保留。总的来说，最严重的案例往往与内容生成无关，更多地在于启用了外部副作用。这些结果促使我们需要采用最小权限的工具设计，并为高风险操作建立额外的安全防护。</p>
+<h3 id="6-潜在方向">6 潜在方向</h3>
+<p>Potential Directions</p>
+<p>在本文中，我们的测量表明智能体技能生态系统正处于一个拐点。目前的进展取决于如何在大规模环境下提高质量、减少开销以及管理风险。</p>
+<p><strong>首先，智能体技能的快速增长依赖于社区贡献，但长期价值取决于高质量、非冗余的技能</strong>。鉴于普遍存在的意图级重复，未来的研究应当将语义去重与质量信号（包括文档完整性、执行可靠性、维护状态和使用率）相结合。一个切实的目标是使每个意图收敛到一小组权威技能（Canonical skills）中，以便开发者去扩展新的能力，而不是重新打包相同的工作流。</p>
+<p><strong>其次，技能 Token 长度的重尾分布意味着极少部分的技能可能会霸占提示词预算</strong>。未来的系统应当支持选择性加载和模块化，仅检索当前子目标所需的步骤、参数和工具 Schema。文本摘要、裁剪未使用的分支以及指令压缩可以进一步减少开销，同时保持忠实的执行。</p>
+<p><strong>第三，我们观察到的智能体技能供需差距表明，发布精力并不总是能契合用户的采纳情况</strong>。特别是信息检索吸引了极高的使用量，但构建和维护成本高昂，而许多软件工程技能则作为紧密替代品在激烈竞争。未来的技能平台可以使用需求信号来引导编写工具、激励机制和审核精力，并支持需求驱动的合成，从而使现有的技能适应新的连接器、领域和用户约束。</p>
+<p><strong>最后，高风险技能的存在要求建立主动的安全协议</strong>。当前的框架缺乏对改变状态的操作进行细粒度控制的能力。未来的研究应当实现标准化的沙箱环境（Sandboxing environments）以强制执行最小权限原则。此类协议将允许智能体执行复杂任务，同时保护宿主系统免受未经授权或恶意的操作。</p>
+<h3 id="7-结论">7 结论</h3>
+<p>Conclusion</p>
+<p>在本文中，我们对智能体技能生态系统进行了一次大规模的数据驱动测量，分析了超过 40,000 个公开上市的技能。横跨生产、采纳、冗余性和安全审计，我们的结果提供了一个量化快照，将技能展现为一种用于扩展大语言模型智能体的新兴抽象。总体而言，该生态系统正在快速但非均衡地扩张：供应由软件工程技能主导，意图级冗余普遍存在，而采纳则集中在较小的一组高需求能力上，尤其是信息检索和内容创作。从安全角度来看，尽管大多数技能表现为低风险，但一个不容忽视的子集启用了改变状态或系统级的行动，这强调了对技能进行安全感知设计与审查的必要性。总的来看，这些发现将智能体技能定位为智能体系统一个可测量的基础设施层，并为未来在标准化、复用和治理方面的研究提供了动力。</p>
+<p>局限性（Limitation）</p>
+<p>我们的研究有两个主要局限性。首先，我们的测量结果源自 2026 年 2 月上旬左右收集的单个公开市场的单一快照。随着平台政策、排名算法和社区构成的演变，技能的供应和需求都可能会发生变化，我们报告的爆发式增长模式可能不会持久。其次，我们使用公开可见的信号而非已部署智能体内部的验证执行来使“采纳（Adoption）”具象化。这些信号可能会受到界面更改、缓存以及诸如协同推广等社交动态的影响，并且它们可能会低估通过企业部署或定制智能体技术栈发生的私有使用情况。</p>
+<p><img src="/img4/AgentSkill%E5%88%86%E6%9E%90/F10.png" alt="F10"></p>
+<p>图 10：典型智能体技能的内部结构，以 <code>find-best-product</code>（寻找最佳商品）技能为例进行说明。<code>SKILL.md</code> 文件以 YAML 元数据（Frontmatter）开头，其中指定了技能的名称和描述，用于技能的发现与选择。随后的 Markdown 章节定义了过程工作流和详细的执行指令，包括对产品搜索 API 等外部工具的引用。这种设计在发现阶段实现了轻量级的语义匹配，同时在调用技能时能够支持复杂的、集成工具的执行。</p>
+<h3 id="附录-A-技能结构及其在智能体中的集成">附录 A 技能结构及其在智能体中的集成</h3>
+<p>Skill Structure and Integration in Agents</p>
+<p>技能提供了一种模块化且极具表现力的机制来扩展智能体的能力。通过封装触发条件、过程逻辑和工具交互，技能使智能体能够在运行时动态组合复杂的行为，同时保持核心智能体架构的轻量化与一成不变。</p>
+<h4 id="A-1-技能结构">A.1 技能结构</h4>
+<p>Skill Structure</p>
+<p>在智能体系统中，技能充当了一等公民（First-class）的能力抽象，允许智能体通过结构化且可复用的流程来解决复杂任务。与临时的提示词或孤立的工具调用不同，每项技能都被定义为一个具有明确执行语义的、类似于程序的轻量级单元。从形式上来看，一项技能可以表示为：</p>
+<p>$$\text{Skill} = {\text{Metadata}, \text{Instructions}, \text{Resources}}$$</p>
+<p>其中，元数据（Metadata）指定了该技能的适用条件，指令（Instructions）定义了要执行的过程步骤，而资源（Resources）则将技能连接到外部工具、脚本、API 或辅助构件。</p>
+<p>在实际落地中，每项技能都组织在一个专用的目录内，其中包含一个具体实现该抽象的 <code>SKILL.md</code> 文件。如图 10 所示，<code>SKILL.md</code> 以 YAML 前言（Frontmatter）开头，指定了技能名称和简短描述。该元数据可作为技能发现和选择的紧凑语义信号。文件的其余部分由 Markdown 编写，用于对技能的过程逻辑进行编码，包括高级处理阶段、决策标准以及工具调用的具体指令。这种设计将轻量级的技能发现与完整的流程执行分离开来。在智能体初始化期间，只有元数据会暴露给模型，从而最大程度地减少了提示词开销。只有当某项技能被选中时，才会加载详细的指令和相关资源，从而在不膨胀智能体基础上下文的前提下，实现丰富的、增强型的工具整合行为。</p>
+<p><img src="/img4/AgentSkill%E5%88%86%E6%9E%90/F11.png" alt="F11"></p>
+<p>图 11：智能体执行期间技能的动态集成。给定用户请求后，智能体对注入的技能索引进行推理，并基于语义匹配选择最相关的技能。随后加载完整的技能规范，智能体遵循该技能的指令，视情况调用外部工具并产生中间输出。不同的用户意图会触发不同的技能，通过条件式技能选择和状态驱动的转换，实现模块化、可复用且感知上下文的智能体行为。</p>
+<h4 id="A-2-技能在智能体中的集成">A.2 技能在智能体中的集成</h4>
+<p>Skill Integration in Agents</p>
+<p>除了单个技能的定义之外，智能体的智能程度关键取决于在任务执行期间如何动态协调多项技能。在会话开始时，系统会为智能体提供一份可用技能的简要索引，由它们的名称和描述组成。给定用户请求后，智能体进行高级推理以推断底层目标，并将其分解为若干子目标。智能体不会遵循固定的执行流水线，而是根据当前的子目标和不断演变的内部状态来条件式地选择技能。</p>
+<p>一旦某项技能被调用，智能体就会遵循该技能的过程指令，视情况与外部工具交互并产生结构化的中间输出。这些输出会被合并到智能体的内部状态中，并直接影响随后的决策。例如，某项分析技能的执行可能会引入新的约束条件或观测结果，而这些反过来又决定了智能体是调用一项优化技能、探索替代策略，还是推进到综合步骤。因此，技能的执行引发了一种非线性的控制流，其中技能之间的转换是由中间状态的更新决定的，而不是由预先定义的任务图决定的。通过“推理-技能选择-执行”的迭代循环，多项技能协同助力复杂任务的完成。</p>
+<p>图 11 阐述了这一执行范式。智能体在“对当前状态进行推理”、“从可用索引中选择合适技能”以及“执行选定技能以更新其状态”之间交替轮转。至关重要的是，这种协调源自模型对技能抽象做出的驱动型决策，而不依赖于硬编码的编排规则或人工设计的工作流。</p>
+<h3 id="附录-B-冗余性的补充分析">附录 B 冗余性的补充分析</h3>
+<p>Additional Analysis of Redundancy</p>
+<p>本节提供了两种互补的冗余性视角，以支持第 3.2 节的核心分析。首先，我们报告了在基于名称的精确匹配下的冗余情况，这是一种易于理解的保守信号。图 4 显示，一小组通用名称被反复发布。这种模式与模板复用和常见工作流的重新打包高度契合。由于名称匹配无法捕获同义改写，真正的冗余量可能更大，这也促成了我们在正文中开展的近乎重复（Near-duplicate）的补充分析。其次，我们将技能可视化在低维空间中，以展示它们如何按功能紧密聚类，如图 12 所示。它提供了一个基于语义相似度的互补视角。技能在子类别内部和跨子类别之间形成了明显的簇，这表明许多上市技能即使名称不同，也共享着重叠的意图。</p>
+<h3 id="附录-C-风险与安全评估的补充分析">附录 C 风险与安全评估的补充分析</h3>
+<p>Additional Analysis of Risk and Safety Assessment</p>
+<p>本节通过报告子类别层面的风险，对第 5 节的主要结果进行补充。我们使用了相同的审计方案和相同的四级评分标准，并将预测出的 L0–L3 标签聚合在图 13 所示的 20 个子类别中的每一个里面。该视角有助于识别风险集中在何处，以及哪些类型的技能最常启用改变状态的行动或影响更大的操作。</p>
+<h3 id="附录-D-技能分类提示词">附录 D 技能分类提示词</h3>
+<p>Skill Classification Prompt</p>
+<p>为了大规模标记技能内容，我们使用经过指令微调的大语言模型，将每项技能准确分配到我们分类体系中的一个子类中。提示词提供了所有 6 个大类和 20 个子类的定义，并输入技能的名称和描述。我们要求模型返回严格的 JSON 格式，同时包含所选标签和简短的理由，以便产出结果能够被可靠地解析和审计。图 14 展示了完整的提示词。</p>
+<h3 id="附录-E-技能安全审计提示词">附录 E 技能安全审计提示词</h3>
+<p>Skill Security Audit Prompt</p>
+<p>为了评估内容之外的潜在危害，我们使用大语言模型来标记每项技能的安全风险。图 15 展示了大模型所使用的完整提示词。该提示词要求大模型考虑技能如何与数据及工具交互，并在最坏情况的解释下分配最高适用等级。我们定义了四个等级，从用于只读公共操作的 L0 到用于高影响行动（如破坏性写入或任意命令执行）的 L3。模型必须输出严格的 JSON，以便能够进行大规模解析和审查。</p>
+<h3 id="附录-F-高风险（L3）技能示例">附录 F 高风险（L3）技能示例</h3>
+<p>The Examples of High-Risk (L3) Skills</p>
+<p>高风险（L3）技能是指那些一旦被滥用、遭受提示词注入或配置错误，可能会启用不可逆或高影响行动的技能。典型案例包括任意命令执行、凭证及其他机密的处理、提升至特权访问权限，以及直接转移或管理金融资产的操作。为了使这些风险具体化，表 2 总结了横跨多个大类的代表性示例，并根据对技能指令和工具接口的最坏情况解读，提供了简明扼要的原理说明（详见第 5 节）。为了保护技能贡献者的隐私，我们省略了技能名称，并将可识别的关键字涂黑为 <code>xxx</code>。此外，我们还将与风险相关的关键字用淡黄色高亮显示，以帮助读者快速定位对应技能中风险的主要来源。</p>
+<p><img src="/img4/AgentSkill%E5%88%86%E6%9E%90/F12.png" alt="F12"></p>
+<p>图 12：按子类别划分的技能嵌入 t-SNE 视图。每个点代表一项技能，由其名称和描述的嵌入（Embedding）向量表示。点的颜色由预测的子类别决定。紧密的聚类表明许多技能具有重叠的意图。</p>
+<p><img src="/img4/AgentSkill%E5%88%86%E6%9E%90/F13.png" alt="F13"></p>
+<p>图 13：按子类别划分的风险分布。利用与图 8 相同的审计协议，展示了我们分类体系中 20 个子类别的风险等级分布。该图展示了 L0–L3 风险在不同子类别之间的变化情况，并识别出贡献了最大份额 L2 和 L3 技能的子类别，有助于优先考虑安全防护和审查。</p>
+<p><img src="/img4/AgentSkill%E5%88%86%E6%9E%90/F14.png" alt="F14"></p>
+<p>图 14：技能分类提示词（Qwen2.5-32B-Instruct）。</p>
+<p><img src="/img4/AgentSkill%E5%88%86%E6%9E%90/F15.png" alt="F15"></p>
+<p>图 15：技能安全审计提示词（Qwen2.5-32B-Instruct）。</p>
+<p>表 2：涉及敏感信息处理的高风险（L3）智能体技能示例。为了保护技能贡献者的隐私，我们不显示技能名称，并将可识别的关键字用黑色 <code>xxx</code> 遮蔽。此外，我们用淡黄色高亮显示了特定的风险相关关键字。</p>
+<p><img src="/img4/AgentSkill%E5%88%86%E6%9E%90/T2-1.png" alt="T2-1"></p>
+<p><img src="/img4/AgentSkill%E5%88%86%E6%9E%90/T2-2.png" alt="T2-2"></p>
+<p><img src="/img4/AgentSkill%E5%88%86%E6%9E%90/T2-3.png" alt="T2-3"></p>
+<p><img src="/img4/AgentSkill%E5%88%86%E6%9E%90/T2-4.png" alt="T2-4"></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/06/21/Vibe%20Coding%20Agent%20Security%20and%20Evaluation/" rel="prev" title="Vibe Coding Agent Security and Evaluation（Day 4）">
+                  <i class="fa fa-angle-left"></i> Vibe Coding Agent Security and Evaluation（Day 4）
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+    <div id="search-container" style="margin: 20px auto; max-width: 600px;">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js"></script>
+      <div id="search"></div>
+      <script>
+        window.addEventListener('DOMContentLoaded', (event) => {
+            new PagefindUI({ 
+                element: "#search", 
+                showImages: false,
+                translations: {
+                    placeholder: "搜搜看...",
+                    clear_search: "清除",
+                    load_more: "加载更多",
+                    search_label: "搜索",
+                    filters_label: "筛选",
+                    zero_results: "未找到关于 [SEARCH_TERM] 的结果",
+                    many_results: "找到 [COUNT] 条关于 [SEARCH_TERM] 的结果",
+                    one_result: "找到 1 条关于 [SEARCH_TERM] 的结果",
+                    searching: "正在搜索..."
+                }
+            });
+        });
+      </script>
+    </div>
+  
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>

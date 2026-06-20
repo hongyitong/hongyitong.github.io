@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false,"path":"/search.json"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="https:&#x2F;&#x2F;www.kaggle.com&#x2F;competitions&#x2F;5-day-ai-agents-intensive-vibecoding-course-with-google&#x2F;discussion?sort&#x3D;hotness Kaggle 《5-Day AI Agents: Intensive Vibe Coding Course With Google》 Day 4  白皮书 Vibe C">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vibe Coding Agent Security and Evaluation（Day 4）">
+<meta property="og:url" content="http://hongyitong.github.io/2026/06/21/Vibe%20Coding%20Agent%20Security%20and%20Evaluation/index.html">
+<meta property="og:site_name" content="墨语浮生">
+<meta property="og:description" content="https:&#x2F;&#x2F;www.kaggle.com&#x2F;competitions&#x2F;5-day-ai-agents-intensive-vibecoding-course-with-google&#x2F;discussion?sort&#x3D;hotness Kaggle 《5-Day AI Agents: Intensive Vibe Coding Course With Google》 Day 4  白皮书 Vibe C">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/img4/GoogleVibeCoding4/F1.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/GoogleVibeCoding4/F2.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/GoogleVibeCoding4/F3.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/GoogleVibeCoding4/F4.png">
+<meta property="article:published_time" content="2026-06-20T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-06-20T08:21:06.782Z">
+<meta property="article:author" content="Rayman.hung">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hongyitong.github.io/img4/GoogleVibeCoding4/F1.png">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2026/06/21/Vibe%20Coding%20Agent%20Security%20and%20Evaluation/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2026/06/21/Vibe%20Coding%20Agent%20Security%20and%20Evaluation/","path":"2026/06/21/Vibe Coding Agent Security and Evaluation/","title":"Vibe Coding Agent Security and Evaluation（Day 4）"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Vibe Coding Agent Security and Evaluation（Day 4） | 墨语浮生</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="fc62aedd-644a-478d-b3c2-d8ba9964421c" src="https://cloud.umami.is/script.js" data-host-url="https://cloud.umami.is"></script>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js" defer></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">墨语浮生</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%95%E8%A8%80"><span class="nav-text">引言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E5%85%A8%EF%BC%9A%E5%AE%89%E5%85%A8%E6%99%BA%E8%83%BD%E4%BD%93%E5%BC%80%E5%8F%91%E7%9A%84%E6%BC%94%E8%BF%9B"><span class="nav-text">安全：安全智能体开发的演进</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9F%BA%E7%BA%BF%EF%BC%9A7-%E5%A4%A7%E6%94%AF%E6%9F%B1%E6%99%BA%E8%83%BD%E4%BD%93%E5%AE%89%E5%85%A8%E6%9E%B6%E6%9E%84"><span class="nav-text">基线：7 大支柱智能体安全架构</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B2%99%E7%AE%B1%E4%B8%8E%E4%BE%9B%E5%BA%94%E9%93%BE%E9%98%B2%E5%BE%A1%EF%BC%88%E6%94%AF%E6%9F%B1-1-%E4%B8%8E-%E6%94%AF%E6%9F%B1-4%EF%BC%89"><span class="nav-text">沙箱与供应链防御（支柱 1 与 支柱 4）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%B4%E6%97%B6%E6%B2%99%E7%AE%B1%E5%8C%96%E4%B8%8E%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86"><span class="nav-text">临时沙箱化与状态管理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BC%93%E8%A7%A3%E5%B9%BB%E8%A7%89%E7%BB%84%E4%BB%B6%E5%8C%85%E9%A3%8E%E9%99%A9"><span class="nav-text">缓解幻觉组件包风险</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%87%BA%E7%AB%99%E6%B5%81%E9%87%8F%E6%B2%BB%E7%90%86%E4%B8%8E%E9%9D%9E%E4%BA%A4%E4%BA%92%E5%BC%8F%E8%AE%BF%E9%97%AE"><span class="nav-text">出站流量治理与非交互式访问</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B0%9B%E5%9B%B4%E7%BC%96%E7%A0%81%E7%89%B9%E5%8C%96%EF%BC%9A%E4%BF%9D%E9%9A%9C%E5%BA%94%E7%94%A8%E9%80%BB%E8%BE%91%E5%AE%89%E5%85%A8%EF%BC%88%E6%94%AF%E6%9F%B1-4%EF%BC%89"><span class="nav-text">氛围编码特化：保障应用逻辑安全（支柱 4）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E6%BC%8F%E6%B4%9E"><span class="nav-text">应用程序漏洞</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B0%83%E5%92%8C-IDE-%E6%91%A9%E6%93%A6%E4%B8%8E-CI-CD-%E5%BC%BA%E5%88%B6%E6%89%A7%E8%A1%8C"><span class="nav-text">调和 IDE 摩擦与 CI&#x2F;CD 强制执行</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#MCP-%E6%AC%BA%E9%AA%97%E4%B8%8E%E4%B8%8A%E4%B8%8B%E6%96%87%E6%8E%88%E6%9D%83"><span class="nav-text">MCP 欺骗与上下文授权</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BA%AB%E4%BB%BD%E3%80%81%E4%BF%A1%E4%BB%BB%E4%B8%8E%E9%AB%98%E9%A3%8E%E9%99%A9%E8%A1%8C%E5%8A%A8%EF%BC%88%E6%94%AF%E6%9F%B1-5%EF%BC%89"><span class="nav-text">身份、信任与高风险行动（支柱 5）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B7%B7%E6%B7%86%E4%BB%A3%E7%90%86%E4%B8%8E%E2%80%9C%E5%A7%94%E6%B4%BE%E8%BA%AB%E4%BB%BD%E2%80%9D%E5%AF%B9%E5%86%B3%E2%80%9C%E6%99%BA%E8%83%BD%E4%BD%93%E8%BA%AB%E4%BB%BD%E2%80%9D"><span class="nav-text">混淆代理与“委派身份”对决“智能体身份”</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%9B%B6%E6%B3%9B%E5%8C%96%E6%9D%83%E9%99%90%E4%B8%8E%E5%8D%B3%E6%97%B6%E6%9D%83%E9%99%90%E9%99%8D%E7%BA%A7"><span class="nav-text">零泛化权限与即时权限降级</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%84%8F%E5%9B%BE%E5%BC%95%E5%AF%BC%E3%80%81MFA-%E6%8C%91%E6%88%98%E4%B8%8E%E2%80%9C%E6%B0%9B%E5%9B%B4%E5%B7%AE%E5%BC%82%E5%AF%B9%E6%AF%94%E2%80%9D"><span class="nav-text">意图引导、MFA 挑战与“氛围差异对比”</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BA%A2%E3%80%81%E8%93%9D%E3%80%81%E7%BB%BF%E4%B8%89%E8%89%B2%E5%AE%89%E5%85%A8%E5%9B%A2%E9%98%9F%EF%BC%88%E6%94%AF%E6%9F%B1-6%EF%BC%89"><span class="nav-text">红、蓝、绿三色安全团队（支柱 6）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%9A%90%E5%BD%A2%E8%B4%9F%E8%BD%BD%E4%B8%8E%E4%BB%93%E5%BA%93%E6%AF%92%E5%8C%96"><span class="nav-text">隐形负载与仓库毒化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BA%A2%E9%98%9F%EF%BC%88%E6%99%BA%E8%83%BD%E4%BD%93%E6%94%BB%E5%87%BB%E8%80%85%EF%BC%89%EF%BC%9A%E6%B3%A8%E5%85%A5%E5%AF%B9%E6%8A%97%E6%80%A7%E6%B0%9B%E5%9B%B4"><span class="nav-text">红队（智能体攻击者）：注入对抗性氛围</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%93%9D%E9%98%9F%EF%BC%88%E6%99%BA%E8%83%BD%E4%BD%93%E9%98%B2%E5%BE%A1%E8%80%85%EF%BC%89%EF%BC%9A%E8%A1%8C%E4%B8%BA%E5%88%86%E6%9E%90"><span class="nav-text">蓝队（智能体防御者）：行为分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BB%BF%E9%98%9F%EF%BC%88%E6%99%BA%E8%83%BD%E4%BD%93%E4%BF%AE%E5%A4%8D%E8%80%85%EF%BC%89%EF%BC%9A%E9%9A%94%E7%A6%BB%E4%B8%8E%E8%87%AA%E5%8A%A8%E9%87%8D%E6%9E%84"><span class="nav-text">绿队（智能体修复者）：隔离与自动重构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%95%B4%E5%90%88%E4%B8%89%E9%A9%BE%E9%A9%AC%E8%BD%A6%E4%B8%8E%E5%BC%BA%E5%88%B6%E5%B0%8F%E6%89%B9%E9%87%8F%E7%94%9F%E4%BA%A7"><span class="nav-text">整合三驾马车与强制小批量生产</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%AF%E8%A7%82%E6%B5%8B%E6%80%A7%EF%BC%9A%E5%AE%A1%E8%AE%A1%E6%99%BA%E8%83%BD%E4%BD%93%E7%9A%84%E5%BF%83%E6%99%BA%EF%BC%88%E6%94%AF%E6%9F%B1-6-%E4%B8%8E-%E6%94%AF%E6%9F%B1-7%EF%BC%89"><span class="nav-text">可观测性：审计智能体的心智（支柱 6 与 支柱 7）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BF%BD%E8%B8%AA%E2%80%9C%E6%B0%9B%E5%9B%B4%E8%BD%A8%E8%BF%B9%E2%80%9D%E4%B8%8E%E5%86%85%E5%AE%B9%E6%89%AB%E6%8F%8F"><span class="nav-text">追踪“氛围轨迹”与内容扫描</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A1%A1%E9%87%8F%E6%84%8F%E5%9B%BE%E6%BC%82%E7%A7%BB%E4%B8%8E%E4%BF%A1%E4%BB%BB%E8%A1%B0%E5%87%8F"><span class="nav-text">衡量意图漂移与信任衰减</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A3%80%E6%9F%A5%E7%82%B9%E4%B8%8E%E6%9C%89%E7%8A%B6%E6%80%81%E6%96%AD%E8%B7%AF%E5%99%A8"><span class="nav-text">检查点与有状态断路器</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E5%85%A8%E8%A6%81%E7%82%B9%E5%9B%9E%E9%A1%BE"><span class="nav-text">安全要点回顾</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%84%E4%BC%B0%EF%BC%9A%E5%9C%A8%E6%84%8F%E5%9B%BE%E9%A9%B1%E5%8A%A8%E7%9A%84%E6%99%BA%E8%83%BD%E4%BD%93%E7%B3%BB%E7%BB%9F%E4%B8%AD%E7%BC%96%E6%8E%92%E8%B4%A8%E9%87%8F"><span class="nav-text">评估：在意图驱动的智能体系统中编排质量</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%AF%84%E4%BC%B0%E6%B0%9B%E5%9B%B4%E7%BC%96%E7%A0%81%E6%99%BA%E8%83%BD%E4%BD%93%E5%A6%82%E6%AD%A4%E7%8B%AC%E7%89%B9%EF%BC%9F"><span class="nav-text">为什么评估氛围编码智能体如此独特？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%84%E4%BC%B0%E4%BB%80%E4%B9%88%EF%BC%9A%E6%B0%9B%E5%9B%B4%E7%BC%96%E7%A0%81%E6%99%BA%E8%83%BD%E4%BD%93%E7%9A%84%E4%B8%83%E5%A4%A7%E7%BB%B4%E5%BA%A6"><span class="nav-text">评估什么：氛围编码智能体的七大维度</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-%E6%84%8F%E5%9B%BE%E6%BB%A1%E8%B6%B3%E5%BA%A6-Intent-Satisfaction"><span class="nav-text">1. 意图满足度 (Intent Satisfaction)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-%E5%8A%9F%E8%83%BD%E6%AD%A3%E7%A1%AE%E6%80%A7-Functional-Correctness"><span class="nav-text">2. 功能正确性 (Functional Correctness)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-%E8%A7%86%E8%A7%89%E4%B8%8E%E8%A1%8C%E4%B8%BA%E6%AD%A3%E7%A1%AE%E6%80%A7-Visual-and-Behavioural-Correctness"><span class="nav-text">3. 视觉与行为正确性 (Visual and Behavioural Correctness)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#4-%E6%88%90%E6%9C%AC%E4%B8%8E%E6%95%88%E7%8E%87-Cost-and-Efficiency"><span class="nav-text">4. 成本与效率 (Cost and Efficiency)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#5-%E4%BB%A3%E7%A0%81%E8%B4%A8%E9%87%8F%E4%B8%8E%E8%A7%84%E8%8C%83%E5%A5%91%E5%90%88%E5%BA%A6-Code-Quality-and-Convention-Matching"><span class="nav-text">5. 代码质量与规范契合度 (Code Quality and Convention Matching)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#6-%E6%89%A7%E8%A1%8C%E8%BD%A8%E8%BF%B9%E8%B4%A8%E9%87%8F-Trajectory-Quality"><span class="nav-text">6. 执行轨迹质量 (Trajectory Quality)</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#7-%E8%87%AA%E6%88%91%E4%BF%AE%E5%A4%8D%E8%A1%8C%E4%B8%BA-Self-Repair-Behaviour"><span class="nav-text">7. 自我修复行为 (Self-Repair Behaviour)</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E8%BF%9B%E8%A1%8C%E8%AF%84%E4%BC%B0"><span class="nav-text">如何进行评估</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%87%AA%E5%8A%A8%E5%8C%96%E5%8A%9F%E8%83%BD%E6%B5%8B%E8%AF%95%EF%BC%88Automated-functional-testing%EF%BC%89"><span class="nav-text">自动化功能测试（Automated functional testing）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AE%89%E5%85%A8%E4%B8%8E%E5%90%88%E8%A7%84%E8%AF%84%E4%BC%B0%EF%BC%88Security-and-safety-evaluation%EF%BC%89"><span class="nav-text">安全与合规评估（Security and safety evaluation）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#LLM-%E8%A3%81%E5%88%A4%E4%B8%8E%E6%99%BA%E8%83%BD%E4%BD%93%E8%A3%81%E5%88%A4%EF%BC%88LLM-as-judge-and-Agent-as-judge%EF%BC%89"><span class="nav-text">LLM 裁判与智能体裁判（LLM-as-judge and Agent-as-judge）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84%E6%B5%8B%E8%AF%95%EF%BC%88Browser-based-testing%EF%BC%89"><span class="nav-text">基于浏览器的测试（Browser-based testing）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%89%A7%E8%A1%8C%E8%BD%A8%E8%BF%B9%E6%A3%80%E6%9F%A5%EF%BC%88Trajectory-inspection%EF%BC%89"><span class="nav-text">执行轨迹检查（Trajectory inspection）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BA%BA%E5%B7%A5%E5%AE%A1%E6%9F%A5%EF%BC%88Human-review%EF%BC%89"><span class="nav-text">人工审查（Human review）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%BA%BF%E4%B8%8A%E8%AF%84%E4%BC%B0%EF%BC%88Online-evaluation%EF%BC%89"><span class="nav-text">线上评估（Online evaluation）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%A0%87%E5%87%86%E5%8C%96%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95%E4%B8%8E-Kaggle-%E6%99%BA%E8%83%BD%E4%BD%93%E8%80%83%E8%AF%95"><span class="nav-text">标准化基准测试与 Kaggle 智能体考试</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%AF%E8%A7%82%E6%B5%8B%E6%80%A7%EF%BC%9A%E8%AF%84%E4%BC%B0%E7%9A%84%E5%85%88%E5%86%B3%E6%9D%A1%E4%BB%B6"><span class="nav-text">可观测性：评估的先决条件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B0%9B%E5%9B%B4%E7%BC%96%E7%A0%81%E6%99%BA%E8%83%BD%E4%BD%93%E8%AF%84%E4%BC%B0%E7%9A%84%E5%AE%9E%E7%94%A8%E6%8A%80%E5%B7%A7"><span class="nav-text">氛围编码智能体评估的实用技巧</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E5%B0%86%E4%BC%9A%E8%AF%9D%E5%89%8D%E7%BC%80%E4%BD%9C%E4%B8%BA%E6%84%8F%E5%9B%BE%E8%AF%84%E5%AE%A1%E6%A0%87%E5%87%86"><span class="nav-text">1. 将会话前缀作为意图评审标准</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E8%AF%84%E5%88%A4%E6%B8%B2%E6%9F%93%E5%90%8E%E7%9A%84%E6%9C%80%E7%BB%88%E4%BA%A7%E7%89%A9%EF%BC%8C%E8%80%8C%E9%9D%9E%E5%BA%95%E5%B1%82%E4%BB%A3%E7%A0%81"><span class="nav-text">2. 评判渲染后的最终产物，而非底层代码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-%E8%AF%84%E4%BC%B0%E4%BC%9A%E8%AF%9D%E7%9A%84%E6%95%B4%E4%BD%93%E6%94%B6%E6%95%9B%E5%BA%A6%EF%BC%8C%E8%80%8C%E9%9D%9E%E5%8D%95%E8%BD%AE%E5%87%86%E7%A1%AE%E7%8E%87"><span class="nav-text">3. 评估会话的整体收敛度，而非单轮准确率</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-%E6%8C%96%E6%8E%98%E7%94%A8%E6%88%B7%E4%BF%AE%E6%AD%A3%E8%A1%8C%E4%B8%BA%E4%BD%9C%E4%B8%BA%E5%B8%A6%E6%A0%87%E7%AD%BE%E7%9A%84%E5%A4%B1%E8%B4%A5%E6%95%B0%E6%8D%AE"><span class="nav-text">4. 挖掘用户修正行为作为带标签的失败数据</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%93%E8%AF%AD"><span class="nav-text">结语</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、心情记录</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives">
+          <span class="site-state-item-count">281</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories">
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/06/21/Vibe%20Coding%20Agent%20Security%20and%20Evaluation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Vibe Coding Agent Security and Evaluation（Day 4） | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Vibe Coding Agent Security and Evaluation（Day 4）
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-06-21 00:00:00" itemprop="dateCreated datePublished" datetime="2026-06-21T00:00:00+08:00">2026-06-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p><a target="_blank" rel="noopener" href="https://www.kaggle.com/competitions/5-day-ai-agents-intensive-vibecoding-course-with-google/discussion?sort=hotness">https://www.kaggle.com/competitions/5-day-ai-agents-intensive-vibecoding-course-with-google/discussion?sort=hotness</a></p>
+<p>Kaggle 《5-Day AI Agents: Intensive Vibe Coding Course With Google》 Day 4  白皮书</p>
+<p>Vibe Coding Agent Security and Evaluation</p>
+<p><strong>氛围编码智能体（Vibe Coding Agent）的安全与评估</strong></p>
+<p>将 AI 模型转化为安全、高度对齐的企业级智能体，通过持续信任与严苛评估实现这一目标，在当下比以往任何时候都更加重要。</p>
+<span id="more"></span>  
+<h3 id="引言">引言</h3>
+<p>Introduction</p>
+<p>软件工程正经历自高级编程语言问世以来最重大的变革。其中最深刻的转变在于，开发范式已从“编写代码”转变为“表达意图”，并信任智能系统将这些意图转化为可运行的软件。这一新范式横跨了一个光谱：一端是随性的“氛围编码（Vibe coding）”——开发者用自然语言描述自身需求，并全盘接受 AI 生成的所有内容；另一端则是严谨的“智能体工程（Agentic engineering）”——AI 在精心设计的约束条件下充当执行引擎。</p>
+<p>虽然这种高速度、意图驱动的开发极大地加速了创新，但它也彻底打破了传统的信任范式。在确定性软件中，信任是二元的：代码成功编译、测试通过，且静态凭证有效。但在智能体系统中，一支自动化的“劳动力”拥有执行生成代码、访问敏感内部 API 以及动态修改生产环境的广泛自主权（Ambient agency）。</p>
+<p>为了在企业中使氛围编码落地，我们必须在两个不同的维度上重新定义信任：<strong>安全（Security）**与**评估（Evaluation）</strong>。</p>
+<ul>
+<li><strong>安全</strong>告诉你智能体是否保持在边界之内，确保其运行安全且不带恶意企图。</li>
+<li><strong>评估</strong>则告诉你在这个边界内发生的事情是否真正值得发布。</li>
+</ul>
+<p>一个通过氛围编码产出的智能体可以通关每一项安全检查，但仍可能从根本上误读开发者的意图、忽略项目规范，或在无形中降低用户体验。本白皮书提供了权威的 2026 年双重框架：既建立起保障非确定性智能体安全所需的严格“安全护栏（Safety harness）”，又打开“玻璃箱（Glass box）”以严苛衡量其内部推理的质量、效率与对齐度。</p>
+<h3 id="安全：安全智能体开发的演进">安全：安全智能体开发的演进</h3>
+<p>Security: The Evolution to Secure</p>
+<p>Agentic Development</p>
+<p>正如 Mandiant 为谷歌云撰写的专题报告中所指出的，“对手已经不仅仅是简单地利用大语言模型来起草钓鱼内容，他们现在正在部署能够重写代码的自适应工具。” 广泛的威胁情报趋势表明，攻击者正不断调整其初始访问向量，以利用这一新范式。</p>
+<p>意图驱动的开发（Intent-driven development）极大地加速了创新，但同时也引入了前所未有的安全漏洞。我们不再仅仅是保护 Web 应用程序免受传统漏洞的侵害；我们的任务转变为保护一支非人类的“劳动力”，它们拥有执行生成代码、访问敏感内部 API 以及动态修改生产环境的广泛自主权（Ambient agency）。</p>
+<p>传统的软件测试和安全模型依赖于确定性逻辑，即一组固定的输入会产生可预测的输出。然而，在智能体系统中，一个智能体可能拥有合法的访问令牌（Token），却在对齐意图出错（Misaligned intent）的情况下自主运行。</p>
+<p>一个关键的认知是：<strong>原始的 AI 模型并不是智能体</strong>。只有当它被包裹在一个“外壳（Harness）”中时——即赋予其状态、工具执行、反馈循环和强制约束的脚手架——它才会成为智能体。保护这一新范式需要我们将关注的焦点从<strong>保护代码语法</strong>转向<strong>保护这个外壳</strong>。</p>
+<p>在这种流动的、非确定性的环境中，静态身份（Static identity）已很难再充当有效的边界。信任不再是智能体在部署期间通过一次就可以搞定的“关卡”；它必须基于运行时上下文，<strong>持续地赢取、验证并动态强制执行</strong>。我们将这种持续的保障定义为<strong>有效信任（Effective Trust）</strong>——这一个贯穿智能体供应链、身份、运行时行为以及上下文关联进行评估的持续性指标。</p>
+<p>为了实现这种持续的有效信任并驯服氛围编码（Vibe coding）带来的混沌现实，我们开发了一种分层的纵深防御架构。如下图所示，该框架建立在严格的 <strong>7 大支柱基础基线</strong>之上，延伸到高速度的执行控制，并由主动的智能体防御机制封顶。</p>
+<p><img src="/img4/GoogleVibeCoding4/F1.png" alt="F1"></p>
+<blockquote>
+<p><strong>图 1：安全氛围编码智能体框架（Secure Vibe Coding Agent Framework）。</strong></p>
+<p>这一分层架构将安全托管自主智能体所需的基础安全控制（7 大支柱）与保护其动态代码执行和运行时行为所需的高速度、意图驱动的防御区分开来。</p>
+</blockquote>
+<p>接下来的章节将逐层拆解这一架构，首先从基线安全外壳（Baseline security harness）开始。</p>
+<h4 id="基线：7-大支柱智能体安全架构">基线：7 大支柱智能体安全架构</h4>
+<p>The Foundation: The 7-Pillar Agent Security Architecture</p>
+<p>在传统的企业环境中，安全是确定性的。应用程序依赖于可预测的代码语法，而访问控制则由静态的“身份即边界（Identity-as-a-Perimeter）”模型（如基于角色的访问控制 RBAC）来管理。如果一个用户或服务账户拥有正确的授权令牌，系统就会隐式信任该执行路径。</p>
+<p>智能体环境从根本上颠覆了这一模型。由于日常的智能体故障通常可以追溯到一个缺失的工具、一条模糊的规则或一个不存在的护栏，企业必须转向“上下文即边界（Context-as-a-Perimeter）”模型。因为我们必须假设底层的模型可能会失败或被攻破，所以安全不能仅仅存在于 AI 本身内部。相反，我们必须强制执行一个横跨多个学科的、严密的外部“安全封装（Safety envelope）”。</p>
+<p>我们将这一基线架构划分为七个不同的支柱，构成了任何自主系统安全外壳所必需的基础：</p>
+<ul>
+<li><strong>支柱 1 - 基础设施与网络（Infrastructure &amp; Networking）</strong>：云基础设施工程师必须保护基础环境，防止上游毒化（Upstream poisoning）和容器逃逸。因为外壳必须规定智能体的代码实际在哪里运行以及它不能触及什么，我们将运行时执行隔离在临时的内核级沙箱（如 gVisor）中。此外，严格的网络出站（Egress）治理确保智能体生成的数据只能通过授权的离线缓存或明确的内部代理进行传输，从而防止不经意的公网数据外泄。</li>
+<li><strong>支柱 2 - 数据（Data）</strong>：数据架构师面临的威胁是智能体从其上下文窗口中泄漏敏感信息，或者摄入了被毒化的 RAG（检索增强生成）数据。“上下文工程（Context engineering）”的实践为智能体提供了关于代码库和意图的丰富、结构化信息。为了保护这些敏感上下文，静态数据使用<strong>客户管理加密密钥（CMEK）**进行加密，而传输中的数据则通过**双向 TLS（mTLS）**进行保护。至关重要的是，数据访问必须被严格限定范围，以强制执行最小权限原则。此外，长期记忆存储（特别是向量数据库）必须执行**严格的租户隔离（Tenant partitioning）</strong>，以防止<strong>跨租户向量毒化（Cross-Tenant Vector Poisoning）</strong>，确保一个租户摄入的恶意负载不会在另一个租户的相似度搜索中被检索出来。</li>
+<li><strong>支柱 3 - 模型（Model）</strong>：AI 工程师必须保护核心应用逻辑，对抗颠覆模型指令的语义攻击。在智能体工作流中，提示词以及定义了智能体禁止做什么的“指令与规则文件”成为了新的源代码。保护这一支柱需要将模型的系统指令和提示词模板视为<strong>高度敏感的、经过密码学认证的构件（Artifacts）</strong>。</li>
+<li><strong>支柱 4 - 应用与运行时（Application &amp; Runtime）</strong>：智能体开发者必须在智能体执行逻辑和使用工具时保护其自主权。由于智能体是以交互方式运行的，传统的基于规则的防火墙已不足够。我们部署了 <strong>LLM 防火墙</strong>用于动态提示词和响应过滤，同时辅以在特定生命周期点（例如工具调用前或文件编辑后）运行的确定性“钩子（Hooks）”。中央智能体网关（Centralised Agent Gateways）充当该生态系统的“门卫”，治理智能体对智能体（Agent-to-Agent, A2A）的编排，以防止未经授权的横向移动。</li>
+<li><strong>支柱 5 - 身份与访问管理（IAM）</strong>：身份管理员的任务是通过密码学手段精确验证究竟是谁在与系统交互。主要的风险是“混淆代理（Confused Deputy）”<strong>问题，即一个权限过大的智能体被诱骗执行了未经授权的命令。我们通过为每个智能体分配唯一的、密码学身份（如 SPIFFE ID）来解决这个问题。访问控制依赖于</strong>基于属性的访问控制（ABAC）<strong>和</strong>即时（Just-In-Time, JIT）令牌权限降级。这强制执行了一个“意图 × 用户 × 时间”的严格权限矩阵，确保智能体获得新鲜的、超受限的凭证，且这些凭证在任务结束时立即过期。</li>
+<li><strong>支柱 6 - 可观测性与安全运维（Observability &amp; Security Ops）</strong>：安全运维团队必须对抗“隐形失败（Invisible failures）”，即智能体悄无声息地陷入无限推理循环。如果没有可观测性（包括日志、链路追踪和计量），就无法判断智能体是在良好运行还是在悄然失控。我们通过部署自主的 SecOps 三驾马车来解决这个问题：<strong>蓝队</strong>利用 OpenTelemetry 和智能体行为分析（ABA）；<strong>红队</strong>主动模拟多跳攻击；而<strong>绿队</strong>在检测到异常时执行“有状态隔离（Stateful Quarantines）”。</li>
+<li><strong>支柱 7 - 治理（Governance）</strong>：治理与合规官员必须确保自主决策符合严苛的监管标准。除了传统的数据框架外，治理现在必须严格遵守《欧盟 AI 法案》，强制对高风险自主智能体进行<strong>算法影响评估（Algorithmic Impact Assessments）</strong>，以管理自动化决策的法律责任。为了满足这些要求，智能体治理需要持续的监督和风险优先级划分——精确了解哪些自主工作流在被攻破时会带来最高的业务影响，并首先保护这些工作流。通过利用可观测性和身份支柱，企业必须创建一条<strong>不可篡改的审计轨迹</strong>，将每一次真实世界的行动严格归因于特定的智能体以及部署或批准它的自然人。此外，如果生成的代码在编译时没有错误，开发者往往会假定它是安全的。我们通过将简单的“批准”按钮替换为强制性的“逻辑审查（Logic Reviews）”来解决这个问题，将复杂的语法翻译回通俗语言。我们利用风险分层认证（Risk-Stratified Attestation）将数字签名与智能体的输出绑定，为内部治理和第三方审计创建透明的账本。</li>
+</ul>
+<p>这一 7 大支柱架构提供了一个通用的基线，是将 AI 模型安全晋升为具备实用功能的企业级智能体所必需的。然而，理论框架必须在与现实的碰撞中幸存。在实践中，现代开发者在作为亲力亲有的“指挥家（Conductor）”和异步的“编排者（Orchestrator）”之间流动切换。当这种高速的工作流与复杂的企业遗留环境发生碰撞时，特定威胁向量就会浮出水面——从幻觉出的软件依赖项到不经意间被绕过的身份验证流。在接下来的章节中，我们将深入探讨如何实际应用这些通用的安全原则，以驯服氛围编码带来的混沌且高速的现实。</p>
+<h3 id="沙箱与供应链防御（支柱-1-与-支柱-4）">沙箱与供应链防御（支柱 1 与 支柱 4）</h3>
+<p>Sandboxes and Supply Chain Defence (Pillars 1 &amp; 4)</p>
+<p>氛围编码（Vibe coding）的核心机制依赖于将人类意图动态、即时地转化为可执行的逻辑。然而，通过氛围编码产出的智能体很少能在第一次尝试时就写出完美的代码。意图驱动开发的现实是一个高速、迭代的循环：智能体编写脚本、执行脚本、读取生成的错误日志，然后自主重写逻辑，直到其与用户的“感觉（Vibe）”相对齐。由于这种生成过程引入了极高的变数，其生成的代码无法被隐式信任。直接在根智能体（Root agent）旁或标准的宿主机基础设施上运行这些动态生成的脚本，会引入不可接受的风险隐式。</p>
+<h4 id="临时沙箱化与状态管理">临时沙箱化与状态管理</h4>
+<p>Ephemeral Sandboxing and State Management</p>
+<p>为了安全地驾驭这种高速的“氛围循环（Vibe loop）”，任何由技能生成的代码都必须首先在<strong>临时的、网络隔离的沙箱</strong>中执行。旨在执行未信任代码或调用工具的子智能体（Sub-agents）必须在加固的环境中运行，例如专用的容器、虚拟机，或像 gVisor 这样的内核级环境。</p>
+<p>至关重要的是，这些沙箱不仅仅是关押恶意负载的“监狱”；它们必须主动阻断对宿主机的原始访问，并在每次运行之间<strong>完全重置其状态</strong>。这确保了即使某个氛围编码的脚本包含严重的漏洞，或者被操纵试图进行容器逃逸，被攻破的逻辑也无法持续存在或影响底层的宿主机节点，从而让智能体能够安全地对其解决方案进行迭代。</p>
+<h4 id="缓解幻觉组件包风险">缓解幻觉组件包风险</h4>
+<p>Mitigating Hallucinated Packages</p>
+<p>智能体代码生成引入了一种高度特化且危险的供应链漏洞：大语言模型经常会<strong>幻觉出并不存在的软件组件包</strong>。恶意行为者会积极监控开发者论坛和 AI 的输出以捕获这些幻觉，并预先使用这些完全虚假的名称发布恶意软件。由于自主智能体可以在没有人类确认的情况下修改依赖关系图，单次幻觉就可能将恶意软件直接拉入构建环境中。</p>
+<p>根据 Wiz 对氛围编码的研究，攻击者正积极利用语言模型幻觉依赖项名称的倾向：他们使用这些虚构的名称上传恶意组件包，从而使自动化智能体在不经意间下载它们，Wiz 将这种技术称为“渣网域名抢注（Slopsquatting）”<strong>。为了应对这一威胁，智能体必须强制且排他地从经过审核的供应商或企业内部注册表源获取依赖项，同时执行严格的</strong>密码学版本锁定（Version pinning）<strong>。作为最终的防御支柱，CI/CD 流水线必须在任何构件晋升到生产环境之前，自动验证</strong>软件物料清单（SBOM）<strong>条目和数字签名，通过</strong>二进制授权（Binary Authorisation）发挥决定性的关卡作用。</p>
+<h4 id="出站流量治理与非交互式访问">出站流量治理与非交互式访问</h4>
+<p>Egress Governance and Non-Interactive Access</p>
+<p>虽然内核级隔离保护了宿主机基础设施，但企业还必须保障网络边界的安全。在传统软件中，出站网络流量是高度可预测的。但在氛围编码系统中，由于出站流量是由动态生成的新工具的使用所驱动的，因此它是非确定性的。</p>
+<p>氛围编码中一个常见的失败模式是，智能体在不经意间尝试将未经验证的代码推送到生产环境，或者外泄敏感数据。然而，仅仅依赖一份已批准域名的简单白名单是远远不够的。白名单无法保护智能体免受隐藏在第三方网页中的间接提示词注入（Indirect prompt injections）的攻击。</p>
+<p>为了缓解这一风险，必须将智能体限制在<strong>非交互式互联网访问</strong>中。管理员应当强制智能体排他地通过<strong>离线缓存</strong>或<strong>经过预先净化的专用网页爬取服务</strong>来获取外部信息。通过强制所有数据严格通过受治理的路径传输，企业可以防止智能体在履行用户意图时与恶意负载直接交互，或不经意间下载到拼写造假的组件包。</p>
+<blockquote>
+<p>虽然保护执行环境和供应链能够确保智能体在安全受控的边界内运行，但一个完美的沙箱并不能阻止智能体编写出存在根本性缺陷的代码，或连接到恶意的内部工具。为了真正保障这种高速工作流产出物的安全，我们必须将关注的焦点从基础设施支柱提升到应用支柱本身。</p>
+</blockquote>
+<h3 id="氛围编码特化：保障应用逻辑安全（支柱-4）">氛围编码特化：保障应用逻辑安全（支柱 4）</h3>
+<p>Vibe-Coding Specifics: Securing Application Logic (Pillar 4)</p>
+<p>由于氛围编码（Vibe coding）在本质上优先考虑“即时功能”而非“安全设计”，其生成和衍生出的应用程序频繁包含严重的结构性缺陷。用户往往仅仅因为生成的代码能够编译且运行无误，就盲目地对其产生隐式信任，这导致他们忽视了一个事实：该应用程序可能已经完全绕过了标准的后端安全控制。</p>
+<h4 id="应用程序漏洞">应用程序漏洞</h4>
+<p>Application Vulnerabilities</p>
+<p>当开发者利用 AI 快速构建应用程序时，生成的代码往往会在两个可预测的方面表现出失败：<strong>过度信任浏览器，以及对后端不设防</strong>。</p>
+<ul>
+<li><strong>首先，AI 生成通常会选择阻力最小的路径，即在前端处理敏感操作</strong>。生成的代码往往不会通过安全的服务器来路由请求，而是直接将 API 密钥、密码验证逻辑以及用户会话标志（Session flags）直接塞进客户端。这意味着，任何打开浏览器开发者工具的人都可以轻松读取这些凭证，或者在根本不需要真实密码的情况下篡改自己的访问权限级别。</li>
+<li><strong>其次，构建这些应用的速度往往远超不可见安全层的配置速度</strong>。AI 工具非常擅长连接数据库或快速搭建管理面板（Admin dashboard），但它们很少会自动启用真正保护这些系统所需的、严格的“默认拒绝（Default-deny）”访问控制。结果，诸如行级数据库安全（Row-level security）等基础防护直接被忽略，导致私有用户数据和内部测试环境（Staging environments）完全暴露在公共互联网上。</li>
+</ul>
+<h4 id="调和-IDE-摩擦与-CI-CD-强制执行">调和 IDE 摩擦与 CI/CD 强制执行</h4>
+<p>Reconciling IDE Friction with CI/CD Enforcement</p>
+<p>为了捕捉这些结构性缺陷，我们必须在开发者的研发效能与严格的安全执行之间找到平衡。如果试图在开发者的 IDE 内部直接强行拦截或硬阻断不安全的提示词（Prompts），不仅极易被绕过，而且还会对试图在复杂逻辑上进行迭代的良性开发者造成过大的摩擦。</p>
+<p>相反，“左移（Shifting left）”应当通过 <strong>IDE 中的开发者顾问型代码检查工具（Developer Advisory Linters）**来实现，以提供实时引导；而将不可动摇的安全强制执行推向 **CI/CD 流水线中的确定性检查**。通过在流水线中集成**静态应用安全测试（SAST）**和**软件成分分析（SCA）</strong>，可以确保所有生成的应用逻辑在代码触及生产环境之前，都经过了针对脆弱依赖项和结构性缺陷的确定性扫描。</p>
+<h4 id="MCP-欺骗与上下文授权">MCP 欺骗与上下文授权</h4>
+<p>MCP Spoofing and Contextual Authorisation</p>
+<p>一旦氛围编码的应用逻辑部署完毕，安全控制就必须治理智能体与外部系统的交互方式。智能体越来越多地依赖于工具协调框架，例如<strong>模型上下文协议（Model Context Protocol, MCP）</strong>，这允许它们在运行时发现并连接到外部或企业内部的服务器。</p>
+<p>这引入了一个关键的威胁向量：<strong>一个伪造或被攻破的服务器可以冒充合法的 MCP 工具，从而注入恶意负载或索要过高权限</strong>。由于智能体是自主运行的，它们可能会在任何人类介入之前，就执行了这些欺骗性服务器提供的恶意命令。</p>
+<p>为了保障“智能体对工具（Agent-to-Tool）”以及“智能体对智能体（Agent-to-Agent, A2A）”编排的安全，企业必须在活跃的智能体前部部署一个<strong>运行时 LLM 防火墙</strong>，以动态拦截机会主义的提示词注入。此外，<strong>中央智能体网关（Centralised Agent Gateway）**必须评估**上下文授权（Contextual Authorisation）</strong>——充当“关联（Association）”信任因子的执行者，通过动态验证智能体调用工具的请求是否与开发者的原始意图完全对齐。通过将所有调用路由到这个受治理的进出关口，该架构可以有效防止智能体企图连接内部工具时发生的未经授权的横向移动。</p>
+<blockquote>
+<p>通过将所有工具调用路由至中央智能体网关，我们在运行时支柱上成功限制了智能体执行未经授权操作的能力。然而，这些决策的完整性最终取决于我们如何验证智能体背后的行为主体、如何在压力下管理凭证，以及如何针对高风险行动建立人类控制。这使得安全边界从应用编排，转移到了身份的密码学验证以及人类授权的机制上。</p>
+</blockquote>
+<h3 id="身份、信任与高风险行动（支柱-5）">身份、信任与高风险行动（支柱 5）</h3>
+<p>Identity, Trust &amp; High-Stakes Actions (Pillar 5)</p>
+<p>由于开发者通常使用模糊或高度抽象的自然语言来生成代码（例如“修复后端路由”），由此产生的智能体工作流在本质上具有极大的泛化性。如果赋予这些自主智能体共享的、长寿命的服务身份（Service identities），将会制造出一个无法管理的内部威胁向量。为了保障这一支柱的安全，企业必须为每一个独立的智能体分配唯一的、<strong>密码学身份（如 SPIFFE ID）</strong>。</p>
+<h4 id="混淆代理与“委派身份”对决“智能体身份”">混淆代理与“委派身份”对决“智能体身份”</h4>
+<p>The Confused Deputy and Delegated vs. Agentic Identity</p>
+<p>即便拥有唯一的身份，通过氛围编码（Vibe coding）产出的智能体依然极易受到混淆代理（Confused Deputy）问题的攻击。当智能体遭遇提示词注入时——例如隐藏在开源仓库中的恶意指令，而被开发者无意中粘贴到了其 IDE 的上下文窗口中——就会诱骗一个权限过大的智能体代表攻击者去执行未经授权的命令。</p>
+<p>为了解决这个问题，智能体绝不能成为访问控制的最终仲裁者。智能体不能在人类用户的委派凭证（Delegated credentials）下运行（这会赋予智能体危险的泛化自主权限），而是必须使用专门标记为“智能体特有”的独立身份进行认证。一个清晰、可观测的智能体身份，能确保其权限受到严格限制，并随时接受细粒度的审计日志监控。</p>
+<h4 id="零泛化权限与即时权限降级">零泛化权限与即时权限降级</h4>
+<p>Zero Ambient Authority and JIT Downscoping</p>
+<p>基于此，该架构必须强制执行<strong>零泛化权限（Zero Ambient Authority）</strong>。执行某个“氛围（Vibe）”指令的智能体绝不能继承开发者完整的、泛化的管理员权限。相反，系统依赖于<strong>即时（Just-In-Time, JIT）令牌权限降级</strong>。</p>
+<p>当智能体动态编写一个新脚本或技能来解决任务时，执行沙箱接收到的，是针对该特定脚本所需的精确数据源显式限定的、新鲜且超受限的凭证，而不是继承其父智能体宽泛的权限。此外，管理员必须强制执行<strong>文件树白名单（File-tree allowlists）</strong>，将读写操作限制在特定的项目目录中，并利用“默认拒绝”规则来阻断对凭证密钥、构建脚本和生产环境配置清单（Manifests）的访问。这些降级后的令牌具有极高的临时性，在任务结束的瞬间就会立即过期。</p>
+<h4 id="意图引导、MFA-挑战与“氛围差异对比”">意图引导、MFA 挑战与“氛围差异对比”</h4>
+<p>Elicitation, MFA Challenges, and the “Vibe Diff”</p>
+<p>虽然自动化的身份约束可以处理大部分常规任务，但高风险行动——例如修改生产环境数据库、执行资金转账或更改 IAM 配置——需要显式的验证，而不能仅仅依赖简单的“批准/拒绝”按钮。由于氛围编码者经常依赖 AI 来编写他们自己可能无法完全理解的复杂语法（即“能跑就行，上线！”的谬误），简单的批准关卡很快就会导致确认疲劳（Confirmation fatigue），导致开发者盲目地为他们并不理解的代码进行授权。</p>
+<p>为了对抗这一现象，系统必须实现结构化的、感知上下文的<strong>意图引导（Elicitation）</strong>。系统会强迫智能体根据高风险行动的具体上下文主动请求确认，并且必须伴随两个清晰的安全边界：</p>
+<ul>
+<li><strong>密码学硬件 MFA</strong>：系统应当强制触发物理多因素认证挑战，例如要求开发者触摸硬件 USB 安全密钥（如 YubiKey），以密码学方式批准该执行。</li>
+<li><strong>氛围差异对比（The Vibe Diff）</strong>：在关键工具运行之前，一个评估者法定人数机制（Evaluator Quorum）会拦截该请求，并<strong>将生成的复杂代码翻译回通俗易懂的自然语言摘要</strong>。这种“氛围差异对比”向人类开发者精确展示了他们最初模糊的意图是如何映射到提议的执行步骤上的，确保人类操作员在提供明确的密码学同意之前，真正理解了他们正在授权的内容。</li>
+</ul>
+<blockquote>
+<p>即便拥有完美的身份验证和细粒度的人类授权，恶意指令仍有可能溜过最初的防御。当开发者盲目信任开源仓库或引入大量未结构化的上下文时，他们就向能够绕过标准 IAM 控制的复杂语义攻击敞开了大门。为了在代码生成的同时主动检测并化解这些隐藏的威胁，安全运维（Security Operations）必须演进到与智能体工作流完全同步的速度。</p>
+</blockquote>
+<h3 id="红、蓝、绿三色安全团队（支柱-6）">红、蓝、绿三色安全团队（支柱 6）</h3>
+<p>Red, Blue, and Green Security Teaming (Pillar 6)</p>
+<p>在氛围编码（Vibe coding）环境中，应用程序逻辑正以史无前例的速度被生成、执行和丢弃。由于攻击面是非确定性的且由自然语言驱动，传统的、手动的人工安全运维根本无法扩展以跟上这一节奏。为了保障自主系统的安全，安全运维本身必须走向<strong>智能体化（Agentic）</strong>——需要部署一个持续的、由 AI 驱动的红、蓝、绿三色团队三驾马车，与开发者的工作流并行运转。</p>
+<h4 id="隐形负载与仓库毒化">隐形负载与仓库毒化</h4>
+<p>Invisible Payloads and Repository Poisoning</p>
+<p>在部署防御性操作之前，我们必须理解智能体威胁的隐蔽本质。代码仓库本身已经成为一种高度有效的攻击向量。威胁行为者可以通过直接在代码库中插入零宽 Unicode 字符（Zero-width Unicode characters）<strong>或</strong>同形文字（Homoglyphs）来污染仓库。Knostic 警告称，这些“隐形负载隐藏在光天化日之下，能够完美绕过人类审查”。由于智能体操纵和复制代码的速度远快于人类开发者，单个隐藏的负载可以在没人注意到的情况下，“<strong>在几分钟内蔓延到数百个文件中</strong>”。</p>
+<h4 id="红队（智能体攻击者）：注入对抗性氛围">红队（智能体攻击者）：注入对抗性氛围</h4>
+<p>The Red Team (Agent Attacker): Injecting Adversarial Vibes</p>
+<p>被动监控在本质上是滞后的。为了在外部对手之前发现语义漏洞和隐形负载，企业必须部署<strong>虚拟红队智能体（Virtual Red-Teaming Agents）</strong>。智能体攻击者不再运行静态的渗透测试，而是主动注入“对抗性氛围（Adversarial Vibes）”。</p>
+<p>这包括动态构建复杂的角色扮演提示词越狱（Jailbreaks），并将隐藏的恶意指令埋入海量的 RAG（检索增强生成）上下文或假论坛帖子中（这些往往是开发者频繁复制粘贴到 IDE 上下文窗口中的内容）。红队会积极测试目标企业智能体是否会被这些中毒的上下文带偏，进而幻觉出一个不安全的解决方案。</p>
+<h4 id="蓝队（智能体防御者）：行为分析">蓝队（智能体防御者）：行为分析</h4>
+<p>The Blue Team (Agent Defender): Behavioural Analytics</p>
+<p>作为主动监控支柱的核心，自动化的蓝队取代了传统的用户与实体行为分析（UEBA）——因为后者对非确定性的 AI 毫无效果。相反，智能体防御者依赖于智能体行为分析（Agent Behavioural Analytics, ABA）来为预期的执行路径建立基线，并检测 AI 特有的异常。</p>
+<p>它持续监控智能体的<strong>运行时智能体物料清单（Runtime Agent Bill of Materials, AgBOM）</strong>——这是一个动态清单，记录了智能体在任意给定毫秒内正在积极使用的工具、模型和数据源。如果一个智能体的逻辑开始发生漂移——例如，一个氛围编码的脚本突然开始查询异常数量的外部工具，或者进入了一个无界的资源死循环——ABA 引擎会立即标记这一偏离。</p>
+<h4 id="绿队（智能体修复者）：隔离与自动重构">绿队（智能体修复者）：隔离与自动重构</h4>
+<p>The Green Team (Agent Fixer): Quarantine and Auto-Refactoring</p>
+<p>当蓝队检测到被攻破的智能体时，传统的事件响应方法（例如强行杀死宿主机容器）会带来极高的业务中断风险和危险。在智能体“思考中途”终止其运行，可能会使相连的 API 处于损坏的状态。因此，自动化的绿队会通过 SOAR（安全编排、自动化与响应）剧本来执行“有状态隔离（Stateful Quarantine）”<strong>。这会优雅地撤销该智能体的特定工具访问权限，冻结其对外部世界施加影响的能力，同时</strong>完整保留其短期记忆（Short-term memory）以供取证分析。</p>
+<p>此外，绿队还更进一步，执行<strong>自动重构（Auto-Refactoring）</strong>。利用系统固有的自修复能力，智能体修复者会自主重写那些不安全的、氛围编码的脚本以修补漏洞。随后，它将安全的替代代码直接呈现在开发者的 IDE 中，无需任何人工手动干预来制定修复方案。</p>
+<h4 id="整合三驾马车与强制小批量生产">整合三驾马车与强制小批量生产</h4>
+<p>Integrating the Triad and Enforcing Small Batch Sizes</p>
+<p>为了防止智能体在此过程中生成海量的、无法审查的代码修改，开发者必须将智能体的输出限制在小批量（Small batch sizes）<strong>内。这通常可以通过</strong>测试驱动的循环（Test-driven loop）来实现，在此循环中，系统会阻止智能体同时修改测试用例和实现代码，从而确保测试始终是一个客观的基线。</p>
+<p>在这些约束就位后，红、蓝、绿三色三驾马车会在运行时，横跨三个不同阶段动态调整主智能体的行为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">[意图阶段]</span><br><span class="line">   │</span><br><span class="line">   ▼</span><br><span class="line">┌────────────────────────────────────────────────────────┐</span><br><span class="line">│ 1. 计划者阶段 (Planner Phase)                           │</span><br><span class="line">│    • 评估工作流设计    • 识别逻辑缺陷与策略违规            │</span><br><span class="line">└────────────────────────────────────────────────────────┘</span><br><span class="line">   │</span><br><span class="line">   ▼</span><br><span class="line">┌────────────────────────────────────────────────────────┐</span><br><span class="line">│ 2. 评估者阶段 (Evaluator Phase)                         │</span><br><span class="line">│    • 评审提议的执行轨迹 • 蓝队验证 AgBOM 并监控意图漂移       │</span><br><span class="line">└────────────────────────────────────────────────────────┘</span><br><span class="line">   │</span><br><span class="line">   ▼</span><br><span class="line">┌────────────────────────────────────────────────────────┐</span><br><span class="line">│ 3. 执行者阶段 (Executor Phase)                          │</span><br><span class="line">│    • 执行受限操作      • 绿队实时监控工具执行/触发有状态隔离  │</span><br><span class="line">└────────────────────────────────────────────────────────┘</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>计划者阶段（The Planner Phase）</strong>：当主智能体设计一个工作流时，一个特化的威胁建模技能会帮助它评估该计划，在智能体开始实际执行之前识别出逻辑缺陷和策略违规。</li>
+<li><strong>评估者阶段（The Evaluator Phase）</strong>：评估者法定人数机制评审提议的执行轨迹，同时智能体防御者（蓝队）验证 AgBOM 并监控语义上下文是否存在意图漂移。</li>
+<li><strong>执行者阶段（The Executor Phase）</strong>：当执行者执行降级后的操作时，智能体修复者（绿队）监控真实世界的工具执行情况，一旦智能体遇到错误或触发安全约束，随时准备立即编排有状态隔离或触发自动重构循环。</li>
+</ul>
+<blockquote>
+<p>为了确保这些自动化防御机制能够成功介入，安全三驾马车需要对智能体的内部推理过程拥有畅通无阻、细粒度的视野。如果安全运维仅仅盯着最终的代码输出，那么它对智能体化威胁将完全陷入盲区。我们必须将焦点从观察宿主机基础设施，彻底转向观察智能体的“心智”，从而创建一条精确映射出模糊意图如何转化为现实行动的不可篡改的审计轨迹。</p>
+</blockquote>
+<h3 id="可观测性：审计智能体的心智（支柱-6-与-支柱-7）">可观测性：审计智能体的心智（支柱 6 与 支柱 7）</h3>
+<p>Observability: Auditing the Agent’s Mind (Pillar 6 &amp; 7)</p>
+<p>为了有效地保护和评估一个通过氛围编码（Vibe coding）产出的智能体，我们必须承认一条根本性的原则：<strong>你无法保护你看不见的东西</strong>。在传统的微服务架构中，HTTP 200 OK 状态码表示操作成功。但在智能体系统中，一个“成功”的状态码可能仅仅掩盖了这样一种情景——智能体的内部逻辑已经悄然陷入了幻觉死循环。这引入了<strong>钱包拒绝服务（Denial of Wallet, DoW）攻击</strong>的关键风险，即攻击者故意触发无限的、计算昂贵的 API 循环，从而故意耗尽企业的云账户和大模型账单账户的资金。</p>
+<p>可观测性不再仅仅是关系到正常运行时间和延迟的运维问题；它已成为照亮非确定性逻辑“玻璃箱”的<strong>硬性安全要求</strong>。</p>
+<h4 id="追踪“氛围轨迹”与内容扫描">追踪“氛围轨迹”与内容扫描</h4>
+<p>Tracing the “Vibe Trajectory” and Content Scanning</p>
+<p>为了回答“智能体为什么要这样做？”这一关键问题，安全团队必须构建一个统一的、按时间顺序排列的视角来审视智能体的认知步骤。通过利用 OpenTelemetry 等标准遥测框架，企业可以将各种信号（API 调用、工具输入/输出、RAG 检索和 Token 延迟）聚合为一条完整的<strong>氛围轨迹（Vibe Trajectory）</strong>。</p>
+<p>追踪这条轨迹需要记录从用户的初始提示词到编译后的抽象语法树（AST）<strong>之间的巨大认知跨度。为了强化这一链路追踪，企业必须将传统日志与</strong>中央内容扫描（Centralised Content Scanning）相结合，该扫描专门设计用于在运行时检查智能体获取的所有动态代码片段或脚本。这种追踪将智能体的内部推理循环与其物理行动安全地绑定在一起，从而支持严格的第三方安全审计。</p>
+<h4 id="衡量意图漂移与信任衰减">衡量意图漂移与信任衰减</h4>
+<p>Measuring Intent Drift and Trust Decay</p>
+<p>随着一个氛围编码的智能体动态生成逻辑并引入新的工具，其安全边界会不断波动，这导致静态的资产清单（SBOM）瞬间过时。相反，可观测性平台必须监控<strong>运行时智能体物料清单（Runtime Agent Bill of Materials, AgBOM）</strong>——这是一份动态文件，映射了智能体在任意给定毫秒内的活动爆炸半径（Blast radius）。</p>
+<p>由于对自主系统的信任是一种易降解的资产，因此该架构会持续监控<strong>意图漂移（Intent Drift）</strong>。信任衰减（Trust Decay）原则指出，当智能体的内部思维链（Chain of Thought）追求偏离人类原始“氛围”的子目标时，信任就会丧失。例如，一个简单的“优化数据库查询”的提示词，可能会恶意漂移为智能体尝试下载一个全新的、未经授权的索引库。</p>
+<h4 id="检查点与有状态断路器">检查点与有状态断路器</h4>
+<p>Checkpoints and Stateful Circuit Breakers</p>
+<p>为了在发生此类漂移时阻止破坏性行动，可观测性支柱必须主动管理状态。在智能体对代码库执行任何修改之前，系统必须生成一个<strong>版本控制检查点（Version control checkpoint）</strong>。</p>
+<p>当智能体行为分析（ABA）对照 AgBOM 评估氛围轨迹时，任何检测到的不稳定性都会立即扣减动态的<strong>智能体信任评分（Agent Trust Score）</strong>。如果该评分跌破预设阈值，就会触发自动“断路器（Circuit breaker）”。运行环境利用版本控制检查点立即回滚更改，优雅地撤销工具访问权限并冻结智能体的自主执行，同时不会损坏相连的 API，从而为取证分析完整保留环境状态。</p>
+<h3 id="安全要点回顾">安全要点回顾</h3>
+<p>Security Re</p>
+<p>对于将这些概念付诸实践的开发者来说，保护氛围编码架构依赖于<strong>放弃隐式信任</strong>，并落实以下实用的基线要求：</p>
+<ul>
+<li><strong>沙箱化氛围循环</strong>：务必在内核级、网络隔离的沙箱中执行动态生成的脚本，以遏制爆炸半径。嵌入最新的软件成分分析（SCA），在代码触及生产环境之前，主动扫描幻觉出的或脆弱的依赖项。</li>
+<li><strong>边界左移</strong>：强制使用可信源和经过验证的内部注册表。虽然在 IDE 层面阻断不安全的生成提供了顾问性的第一步，但仍需依赖 CI/CD 流水线中多层级的严格确定性检查，在部署前拦截脆弱或恶意的智能体逻辑。</li>
+<li><strong>强制执行零泛化权限</strong>：绝不赋予智能体“全局密钥”。通过强制实施委派的用户身份和即时（JIT）超受限令牌来限制访问，这些令牌在任务结束的瞬间立即过期。对于高风险行动，将盲目批准按钮替换为强制性的“氛围差异对比（Vibe Diff）”，以确保开发者理解生成的逻辑。</li>
+<li><strong>部署智能体化安全运维</strong>：通过部署虚拟红队智能体来注入“对抗性氛围”，持续对你的架构进行压力测试。利用智能体行为分析来监控动态的运行时 AgBOM，同时赋予绿队即时自动重构漏洞的能力。</li>
+<li><strong>追踪执行轨迹</strong>：记录智能体的 API 调用、工具输入和推理步骤。安全团队必须持续监控这些执行日志以检测异常行为，并利用版本控制检查点在智能体偏离预期任务时撤销访问并回滚。</li>
+</ul>
+<p>落实这些安全控制有助于我们的氛围编码智能体在安全、受良好治理的边界内安全运行。然而，一个安全的智能体在本质上并不等同于一个高效的智能体。安全只能确保智能体不会做出任何恶意或未经授权的行为，但我们如何确凿地证明它实际上实现了用户微妙的真实意图呢？</p>
+<p>为了真正让这些智能体投入业务实用，我们必须超越对边界的保护，打开“玻璃箱”来衡量其内部推理的质量、效率和对齐度。这便将我们带入了流水线中至关紧要的下一个阶段：<strong>智能体评估（Agent Evaluation）</strong>。</p>
+<h3 id="评估：在意图驱动的智能体系统中编排质量">评估：在意图驱动的智能体系统中编排质量</h3>
+<p>Evaluation: Orchestrating Quality in</p>
+<p>Intent-Driven Agentic Systems</p>
+<p>前文探讨了限制氛围编码（Vibe-coded）智能体行为的安全控制措施。然而，这些控制措施并不能回答开发者真正关心的问题：<strong>智能体是否构建了我想要的东西？它真的好用吗？</strong></p>
+<p>一个氛围编码智能体可以通过每一项安全检查，但仍然可能误解开发者的意图、忽略项目的编码规范，甚至破坏不相关的现有功能。<strong>安全控制只能告诉你智能体没有越界；而评估则能告诉你边界内发生的事情是否值得交付上线。</strong></p>
+<p>以下章节将围绕三个核心问题展开：为什么氛围编码智能体的评估有别于传统软件、评估什么，以及如何进行评估。</p>
+<p><img src="/img4/GoogleVibeCoding4/F2.png" alt="F2"></p>
+<p>两个领域被特意排除在本框架的讨论范围之外，它们均需要专门的探讨：一是对非可验证输出的主观评估（此时质量由用户或企业偏好决定，而非基于客观事实）；二是用户修正反馈至模型、脚手架或评估集以推动其持续改进的闭环机制。</p>
+<h4 id="为什么评估氛围编码智能体如此独特？">为什么评估氛围编码智能体如此独特？</h4>
+<p>Why evaluating vibe coding agents is different</p>
+<p>评估氛围编码智能体既不同于测试确定性的传统软件，也不同于评估客服智能体或研究智能体。它的独特性主要体现在以下三个方面：</p>
+<ul>
+<li><strong>不确定性缺口（没有现成的规格说明书/Spec）</strong>：传统软件测试的核心假设是，在评估任何一行代码之前，都已经存在一份完整、严密的规格说明。氛围编码则完全相反：用户的自然语言提示词本质上是模糊且未充分指定的。“让仪表盘加载得更快一点”并不是一个测试用例。提示词完全依赖于基座模型的潜在知识、审美判断和领域经验来填补操作上的空白。评估的首要任务，就是确定智能体是否成功弥合了这一缺口，并重构出了正确的、未显式表达的 Spec。</li>
+<li><strong>用户通常无法验证输出</strong>：非技术用户无法逐行审查 600 行代码，即便是有经验的工程师也无法在开发过程中实时做到这一点。在“智能体自认为成功”与“代码实际正确”之间存在着巨大的鸿沟，弥合这一鸿沟是评估工作的核心。</li>
+<li><strong>交互是迭代的，且代码库是有状态的</strong>：智能体的每一次交互都会修改真实的文件。早期糟糕的决定会产生滚雪球式的复合效应。因此，评估不仅要覆盖单轮对话中的决策，还要覆盖在具备自身规范、依赖项和历史变迁的动态代码库上，进行多轮对话的完整演进周期。</li>
+</ul>
+<p>这三大约束塑造了后续所有的评估维度、方法与技巧。</p>
+<h4 id="评估什么：氛围编码智能体的七大维度">评估什么：氛围编码智能体的七大维度</h4>
+<p>What to Evaluate</p>
+<p>氛围编码智能体的评估主要分为七个维度，归纳为两大板块：<strong>用户侧维度</strong>（开发者能直接体验到的）与<strong>内部维度</strong>（智能体在幕后隐式执行的）。此外，<strong>安全与负责任的 AI</strong> 是一个横向贯穿的议题，它与多个维度相互交织（如代码漏洞、拒绝行为、内容安全、知识产权暴露等），必须与各个维度一同进行评估。</p>
+<p><img src="/img4/GoogleVibeCoding4/F3.png" alt="F3"></p>
+<h5 id="1-意图满足度-Intent-Satisfaction">1. 意图满足度 (Intent Satisfaction)</h5>
+<p>智能体是否构建了用户<strong>真正想要</strong>的东西，而不仅仅是他们口头上表达的东西？这是最难评估的维度，因为真实的意图往往未被明确表达、充满歧义，并且经常在对话中途发生改变。意图满足度是用户最终评价智能体好坏的决定性标准。</p>
+<h5 id="2-功能正确性-Functional-Correctness">2. 功能正确性 (Functional Correctness)</h5>
+<p>代码是否能够成功构建、运行并通过测试？这只是质量的底线，而不是上限。该维度很容易测量，但也极易被“刷榜”：智能体可能会直接删除失败的测试用例，或者使用 Mock（模拟数据）来强行把错误提示变绿，而没有真正修复任何问题。</p>
+<h5 id="3-视觉与行为正确性-Visual-and-Behavioural-Correctness">3. 视觉与行为正确性 (Visual and Behavioural Correctness)</h5>
+<p>对于生成 Web 应用或 UI 的智能体来说，最终交付的产物是渲染后的界面，而不是底层的代码。仅仅依靠代码层面的指标会完全失焦。页面要么看起来和操作起来都正确，要么就是不正确。</p>
+<h5 id="4-成本与效率-Cost-and-Efficiency">4. 成本与效率 (Cost and Efficiency)</h5>
+<p>这包括 Token 消耗、墙钟延迟（实际墙上时钟走过的时间）、工具调用次数以及迭代轮数。即用户在智能体收敛到正确结果之前，进行了多少次修正？一个能在 1 轮交互内提交正确 Diff（代码差异）的智能体，与一个需要 8 次修正才能搞定的智能体，在产品体验上完全是两个不同的档次。</p>
+<h5 id="5-代码质量与规范契合度-Code-Quality-and-Convention-Matching">5. 代码质量与规范契合度 (Code Quality and Convention Matching)</h5>
+<p>生成的代码是否符合当前项目的特有成语（Idioms）、模式和规范？一个虽然通过了本地测试，但违反了现有代码库整体风格的 Diff，即使局部逻辑正确，在氛围编码的视角下依然是一个失败的交付。</p>
+<h5 id="6-执行轨迹质量-Trajectory-Quality">6. 执行轨迹质量 (Trajectory Quality)</h5>
+<p>智能体是否采取了一条合理的解决路径？例如：它是否先读取了相关的上下文文件？修改的先后顺序是否合乎逻辑？在每一步中是否选择了正确的工具或技能？由糟糕的推理推导出的正确输出，只是一种脆弱的偶然成功。</p>
+<h5 id="7-自我修复行为-Self-Repair-Behaviour">7. 自我修复行为 (Self-Repair Behaviour)</h5>
+<p>当构建失败、测试断裂或用户说“不，不应该这样”时，智能体是能够顺藤摸瓜完成修复，还是会让错误进一步升级、复合？自我修复的质量在多轮交互中会产生巨大的复合影响。</p>
+<blockquote>
+<p><strong>核心启示：</strong> 这些维度并非孤立存在。例如，更强的执行轨迹质量（维度 6）往往会带来更高的功能正确性（维度 2），而功能正确性正是最终实现意图满足度（维度 1）的先决条件。</p>
+</blockquote>
+<h4 id="如何进行评估">如何进行评估</h4>
+<p>How to evaluate</p>
+<p>这七个维度并非都能以同样的方式进行测量。没有任何单一的方法可以覆盖全部维度，因此生产流水线通常会结合使用多种方法。下图总结了各种评估方法及其推荐适用的维度；本节的其余部分将对每种方法进行详细阐述。</p>
+<p><img src="/img4/GoogleVibeCoding4/F4.png" alt="F4"></p>
+<blockquote>
+<p><strong>图 4：评估方法与推荐适用的维度。</strong></p>
+</blockquote>
+<h5 id="自动化功能测试（Automated-functional-testing）">自动化功能测试（Automated functional testing）</h5>
+<p>对智能体的输出运行构建、测试套件和代码检查工具（Linters）。这里的大部分工作由标准工具完成，如 <code>pytest</code>、<code>jest</code>、<code>eslint</code>、<code>mypy</code>，并集成到项目的 CI（持续集成）流水线中。这是目前成本最低的可用信号，推荐用于评估功能正确性（维度 2）以及代码质量中可通过规则检查的部分（维度 5）。</p>
+<h5 id="安全与合规评估（Security-and-safety-evaluation）">安全与合规评估（Security and safety evaluation）</h5>
+<p>将针对生成代码的静态安全分析与针对拒绝行为的对抗性探测相结合。这是一个横向贯穿的环节，它将安全与负责任的 AI 与其他维度一同评分，而不是作为一个单独的过滤关卡。工具主要分为两类：诸如 <code>Snyk</code> 和 <code>Semgrep</code> 的静态扫描工具用于发现漏洞，<code>git-secrets</code> 用于捕捉凭证泄漏，而编写脚本的红队套件则用于测试智能体是否能拒绝明显有害的请求。</p>
+<h5 id="LLM-裁判与智能体裁判（LLM-as-judge-and-Agent-as-judge）">LLM 裁判与智能体裁判（LLM-as-judge and Agent-as-judge）</h5>
+<p>使用大模型根据特定的评分标准（Rubrics）对输出进行打分。推荐用于规则无法完全捕获正确答案的维度，包括<strong>意图满足度（维度 1）</strong>、<strong>代码质量与风格（维度 5）**以及**执行轨迹质量（维度 6）</strong>。在实践中，这意味着利用 Gemini 对照用户原始提示词为输出打分，或者由一个智能体裁判来检查链路追踪（Trace）以评估计划的连贯性。</p>
+<h5 id="基于浏览器的测试（Browser-based-testing）">基于浏览器的测试（Browser-based testing）</h5>
+<p>针对已部署的应用程序运行多步骤的工作流并观察其表现。推荐用于评估产出 UI 的智能体在<strong>视觉与行为上的正确性（维度 3）</strong>。这些技术在软件测试领域已经非常成熟：利用 <code>Playwright</code> 脚本与渲染后的 UI 进行交互，并与基准参考图进行截图对比（Visual regression testing）。</p>
+<h5 id="执行轨迹检查（Trajectory-inspection）">执行轨迹检查（Trajectory inspection）</h5>
+<p>分析智能体的推理过程、工具调用、技能唤醒以及检索行为。推荐用于评估其内部维度，即<strong>执行轨迹质量（维度 6）**和**自我修复行为（维度 7）</strong>。其底层基础是包含跨度级（Span-level）工具调用数据的 <code>OpenTelemetry</code> 链路追踪，通过“轨迹回放工具”将模型的每一次调用与随后的行动安全地绑定在一起。</p>
+<h5 id="人工审查（Human-review）">人工审查（Human review）</h5>
+<p>抽取会话样本由合格的评审人员进行直接审查。推荐用于评估<strong>意图满足度（维度 1，人类是此处唯一的客观事实来源）</strong>、<strong>代码质量（维度 5，代码审查的传统领域）</strong>，以及需要微妙裁决的安全与负责任 AI 判定。该方法无法轻易规模化扩展，主要用于校准其他自动化方法。在实践中，这意味着由高级工程师在通过线上采样生成的评审队列中进行结构化的标注。</p>
+<h5 id="线上评估（Online-evaluation）">线上评估（Online evaluation）</h5>
+<p>对真实的生产流量进行抽样，并使用与离线评估相同的评分标准进行打分。在抽样率覆盖范围内可以横跨所有维度。这里的诀窍在于做好精细化抽样：扁平的 1% 抽样会漏掉长尾情况，因此抽样权重应当向高成本会话、包含大量修正的会话以及用户中途放弃的会话倾斜。</p>
+<h5 id="标准化基准测试与-Kaggle-智能体考试">标准化基准测试与 Kaggle 智能体考试</h5>
+<p>虽然定制化的评估框架可以应对氛围编码的开放性本质，但标准化测试能够将特定的认知能力从复杂的企业定制环境中抽离出来。它们提供了信任非确定性系统所需的实证基线。</p>
+<ul>
+<li><strong>标准化测试的角色</strong>：基准测试可以在共享的任务集上将你的智能体与行业水平进行横向对比。<code>Vibe Code Bench</code> 用于评估从零到一的 Web 应用生成能力，<code>SWE-bench Verified</code> 用于评估真实 GitHub 仓库上的代码变更，而 <code>LiveCodeBench</code> 则能为代码生成提供一个具备抗污染能力（Contamination-resistant）的实时信号。</li>
+<li><strong>Kaggle 智能体考试 (SAE) 与零配置评估</strong>：针对过去运行这些基准测试时所面临的沉重基础设施负担，Kaggle 标准化智能体考试（Standardised Agent Exams, SAE）代表了向“零配置（Zero-setup）”自主评估的一次重大转变。SAE 通过一个 <code>SKILL.md</code> 文件作为轻量级的 API 进行集成，允许智能体自主在 Kaggle 注册、拉取考试题目、在自身的沙箱环境中执行多步逻辑，并立即将分数发布到实时的公共排行榜上。在压力环境下，它能够对智能体的多跳推理（Multi-hop reasoning）和对抗性安全进行严苛且毫无摩擦的测试。</li>
+<li><strong>权衡：过拟合 vs 现实意图</strong>：尽管标准化基准测试用处巨大，但过度依赖它们会带来一个严重的权衡问题——基准测试过拟合（Benchmark overfitting）。智能体可以被高度优化，从而在静态的 Kaggle 数据集上拿到顶级分数，但在面对生产环境中人类意图那些混乱、矛盾的现实时，却可能会一败涂地。虽然在 <code>SWE-bench</code> 上拿到高分证明了智能体可以驾驭结构高度严密的 Python 仓库，但这无法保证它拥有“氛围编码”一个面向消费者的应用程序时所必需的审美判断力。因此，<strong>标准化考试应当严格用于认知能力的校准，而绝不能取代对定制化意图的评估</strong>。</li>
+</ul>
+<h3 id="可观测性：评估的先决条件">可观测性：评估的先决条件</h3>
+<p>Observability: The Prerequisite for Evaluation</p>
+<p>为了评估智能体的内部推理过程，开发者必须拥有清晰审视它的能力。<strong>可观测性是“玻璃箱（Glass Box）”评估的绝对先决条件</strong>；缺乏可观测性，智能体的失败就会表现为无法解释的、铁板一块的黑盒事件。</p>
+<ul>
+<li><strong>追踪思维路径（Tracing the Thought）</strong>：现代智能体的可观测性依赖于 OpenTelemetry 来捕获非确定性的工作流。<code>agent.session</code> 跨度（Spans）捕获整个任务的持续时间，<code>agent.think</code> 跨度记录行动前的内部推理和提示词循环，而 <code>agent.tool</code> 跨度则记录环境交互的具体参数和延迟。</li>
+<li><strong>追踪成本（Tracking Costs）</strong>：可观测性提供了计算真实运营成本的细粒度数据。通过聚合跨度属性（Span attributes），团队可以精确测量 Token 消耗、推理延迟以及自我修复循环带来的经济成本。</li>
+<li><strong>动态基于尾部的抽样（Dynamic Tail-Based Sampling）</strong>：在生产环境中捕获 100% 的链路追踪会迅速压垮存储预算。基于尾部的动态抽样（Tail-based dynamic sampling）允许收集器在任务完成后评估完整的追踪链路，直接丢弃常规的成功案例，而仅保留包含错误或包含过多自我修复循环的追踪链路。</li>
+</ul>
+<h3 id="氛围编码智能体评估的实用技巧">氛围编码智能体评估的实用技巧</h3>
+<p>Applied tips for vibe-coding agent evaluation</p>
+<h4 id="1-将会话前缀作为意图评审标准">1. 将会话前缀作为意图评审标准</h4>
+<p>氛围编码没有可供测试的现成规格说明，用户的意图既不明确，又在多轮交互中不断演进。最接近规格说明的就是前一到两条用户消息。<strong>我们可以将它们作为评审标准</strong>：从会话前缀中自动衍生出评估标准，然后对照这些标准为随后的每一轮智能体交互打分。这是在大规模场景下评估“维度 1（意图满足度）”唯一可行的方法。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> google <span class="keyword">import</span> genai</span><br><span class="line"></span><br><span class="line">client = genai.Client(vertexai=<span class="literal">True</span>, project=<span class="string">&quot;...&quot;</span>, location=<span class="string">&quot;us-central1&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 从用户的开场前两轮对话中衍生出评估标准</span></span><br><span class="line">opening = <span class="string">&quot; &quot;</span>.join(session.user_messages[:<span class="number">2</span>])</span><br><span class="line">criteria = client.models.generate_content(</span><br><span class="line">    model=<span class="string">&quot;gemini-3-pro&quot;</span>,</span><br><span class="line">    contents=<span class="string">f&quot;Produce 3-5 acceptance criteria for: <span class="subst">&#123;opening&#125;</span>. Return JSON.&quot;</span>,</span><br><span class="line">).parsed[<span class="string">&quot;criteria&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 对照衍生出的标准为智能体的每一轮表现打分</span></span><br><span class="line">score = client.models.generate_content(</span><br><span class="line">    model=<span class="string">&quot;gemini-3-pro&quot;</span>,</span><br><span class="line">    contents=<span class="string">f&quot;Does this output satisfy <span class="subst">&#123;criteria&#125;</span>? Score 1-5 with rationale.&quot;</span></span><br><span class="line">             <span class="string">f&quot;Output: <span class="subst">&#123;agent_response&#125;</span>&quot;</span>,</span><br><span class="line">).parsed</span><br></pre></td></tr></table></figure>
+<p><em>代码片段 1：将会话前缀作为上下文，衍生出意图满足度的验收标准。</em></p>
+<h4 id="2-评判渲染后的最终产物，而非底层代码">2. 评判渲染后的最终产物，而非底层代码</h4>
+<p>在氛围编码中，用户评判的是最终的输出效果，而不是代码的 Diff（差异）。一个多模态模型（Multimodal model）通过直接观察渲染后的页面，能够捕捉到代码级评估会完全漏掉的问题：例如手机端布局破碎、无障碍对比度过低、按钮状态错误等。将此方法与前文基于 Playwright 的断言相结合——大模型裁判捕捉视觉和设计缺陷，代码断言捕捉受损的交互功能。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> google <span class="keyword">import</span> genai</span><br><span class="line"><span class="keyword">from</span> google.genai <span class="keyword">import</span> types</span><br><span class="line"></span><br><span class="line">client = genai.Client(vertexai=<span class="literal">True</span>, project=<span class="string">&quot;...&quot;</span>, location=<span class="string">&quot;...&quot;</span>)</span><br><span class="line">result = client.models.generate_content(</span><br><span class="line">    model=<span class="string">&quot;gemini-3-pro&quot;</span>,</span><br><span class="line">    contents=[</span><br><span class="line">        <span class="string">&quot;Score this rendered web app against the spec on layout_match, styling, &quot;</span></span><br><span class="line">        <span class="string">&quot;and interactive_correctness (1-5 each). Return JSON.&quot;</span>,</span><br><span class="line">        user_spec,</span><br><span class="line">        types.Part.from_bytes(data=screenshot_bytes, mime_type=<span class="string">&quot;image/png&quot;</span>),</span><br><span class="line">    ],</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><em>代码片段 2：对渲染后的 Web 应用程序进行布局与交互正确性的多模态评估。</em></p>
+<h4 id="3-评估会话的整体收敛度，而非单轮准确率">3. 评估会话的整体收敛度，而非单轮准确率</h4>
+<p>氛围编码会话在结构上就是多轮交互的。真正重要的问题不是“第 4 轮是否正确？”，而是“用户最终是否收敛（Converge）到了他们想要的东西上？”在极少轮次内收敛的会话属于成功案例；而在中途被用户放弃的会话则是最具参考价值的失败案例，其内含的信息量远超单轮错误。通过 ADK 和智能体引擎进行埋点，Google Cloud Trace 可以将一整个氛围编码会话暴露为一棵单一的追踪树。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> google.cloud <span class="keyword">import</span> trace_v2</span><br><span class="line"></span><br><span class="line">trace = trace_v2.TraceServiceClient().get_trace(</span><br><span class="line">    name=<span class="string">f&quot;projects/<span class="subst">&#123;project&#125;</span>/traces/<span class="subst">&#123;session_id&#125;</span>&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">session_outcome</span>(<span class="params">trace</span>):</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">        <span class="string">&quot;converged&quot;</span>: trace.last_turn.user_signal == <span class="string">&quot;satisfied&quot;</span>,</span><br><span class="line">        <span class="string">&quot;turns_to_converge&quot;</span>: trace.user_correction_count,</span><br><span class="line">        <span class="string">&quot;abandoned&quot;</span>: trace.last_user_action == <span class="string">&quot;close&quot;</span>,</span><br><span class="line">        <span class="string">&quot;cost_to_converge&quot;</span>: trace.total_token_cost_usd,</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p><em>代码片段 3：利用 Google Cloud Trace 追踪多轮会话收敛情况并计算总 Token 成本。</em></p>
+<h4 id="4-挖掘用户修正行为作为带标签的失败数据">4. 挖掘用户修正行为作为带标签的失败数据</h4>
+<p>用户口中说出的每一个“不，不是那样的”，都是一个天然带标签的失败样本，而氛围编码会大批量产生这些数据。通过对这些修正文本进行聚类，智能体系统性存在的缺陷就会一目了然，这比手动构建一个合成的失败基准测试要快得多。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> google <span class="keyword">import</span> genai</span><br><span class="line"><span class="keyword">from</span> sklearn.cluster <span class="keyword">import</span> KMeans</span><br><span class="line"></span><br><span class="line">client = genai.Client(vertexai=<span class="literal">True</span>, project=<span class="string">&quot;...&quot;</span>, location=<span class="string">&quot;...&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 提取所有被标记为修正行为的用户消息</span></span><br><span class="line">corrections = [t.user_message <span class="keyword">for</span> trace <span class="keyword">in</span> traces <span class="keyword">for</span> t <span class="keyword">in</span> trace.turns <span class="keyword">if</span> t.is_correction]</span><br><span class="line"></span><br><span class="line">emb = client.models.embed_content(</span><br><span class="line">    model=<span class="string">&quot;text-embedding-005&quot;</span>,</span><br><span class="line">    contents=corrections,</span><br><span class="line">)</span><br><span class="line">vectors = [e.values <span class="keyword">for</span> e <span class="keyword">in</span> emb.embeddings]</span><br><span class="line">clusters = KMeans(n_clusters=<span class="number">8</span>).fit(vectors)</span><br><span class="line"></span><br><span class="line"><span class="comment"># clusters.labels_ 即为下一次迭代中需要优先解决的失败模式（Failure modes）列表</span></span><br></pre></td></tr></table></figure>
+<p><em>代码片段 4：将用户修正行为聚类为高优先级的故障模式类别。</em></p>
+<h3 id="结语">结语</h3>
+<p>Conclusion</p>
+<p>从“编写语法”到“表达意图”的过渡并不是一句对未来的预言，而是软件开发当下正发生的现实。站在 2026 年的节点上，软件创作的瓶颈已经发生了根本性的转移：<strong>我们不再需要等待人类用双手去敲击模板代码（Boilerplate）；我们等待的是人类心智去定义边界、评估输出并确保执行环境的安全。</strong></p>
+<p>从随性的氛围编码走向严谨的智能体工程，需要企业彻底放弃隐式信任。原始的 AI 模型仅仅是一个引擎；只有当它被包裹在一个强大的安全外壳（Harness）中时，它才会成为企业级的智能体。通过实施 <strong>7 大支柱安全架构</strong>——强制推行严格的沙箱隔离、基于上下文的 ABAC 以及智能体化的红/蓝/绿三色协同防御，企业可以安全地遏制自主行动的爆炸半径。</p>
+<p>然而，单靠安全只能证明智能体“没有作恶”。通过将这些安全控制与严苛的<strong>评估框架</strong>相结合——全面衡量从意图满足度、执行轨迹质量到视觉正确性的每一个指标，技术领袖们才能信心十足地证明，智能体真正为业务交付了应有的价值。</p>
+<p><strong>在当下，内容生成已在很大程度上被解决。验证能力、安全合规以及架构判断力，成为了软件开发的新手艺。</strong> 在这个新时代里能够蓬勃发展的团队，必然是那些一方面将 AI 视为高速度的执行引擎，同时又保持严谨纪律以产出全人类真正能够信赖的软件的团队。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/06/20/Agent%20Skills/" rel="prev" title="Agent Skills（Day 3）">
+                  <i class="fa fa-angle-left"></i> Agent Skills（Day 3）
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/06/22/%E6%99%BA%E8%83%BD%E4%BD%93%E6%8A%80%E8%83%BD%E6%95%B0%E6%8D%AE%E9%A9%B1%E5%8A%A8%E5%88%86%E6%9E%90/" rel="next" title="智能体技能数据驱动分析">
+                  智能体技能数据驱动分析 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+    <div id="search-container" style="margin: 20px auto; max-width: 600px;">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js"></script>
+      <div id="search"></div>
+      <script>
+        window.addEventListener('DOMContentLoaded', (event) => {
+            new PagefindUI({ 
+                element: "#search", 
+                showImages: false,
+                translations: {
+                    placeholder: "搜搜看...",
+                    clear_search: "清除",
+                    load_more: "加载更多",
+                    search_label: "搜索",
+                    filters_label: "筛选",
+                    zero_results: "未找到关于 [SEARCH_TERM] 的结果",
+                    many_results: "找到 [COUNT] 条关于 [SEARCH_TERM] 的结果",
+                    one_result: "找到 1 条关于 [SEARCH_TERM] 的结果",
+                    searching: "正在搜索..."
+                }
+            });
+        });
+      </script>
+    </div>
+  
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>
