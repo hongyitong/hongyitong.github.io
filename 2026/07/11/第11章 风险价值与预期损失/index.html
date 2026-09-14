@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false,"path":"/search.json"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="第11章 风险价值与预期损失 Value at Risk and Expected Shortfall 风险价值（VaR）和预期损失（ES）旨在提供一个能够总结投资组合整体风险的单一数值。VaR 由摩根大通首创（见业务快照11.1），现已被公司财务主管、基金经理以及金融机构广泛采用。正如我们将在后续章节中看到的，监管机构在制定资本要求相关的诸多计算中，传统上一直使用这一指标。然而，正如第27章所解">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《风险管理与金融机构》第11章  风险价值与预期损失">
+<meta property="og:url" content="http://hongyitong.github.io/2026/07/11/%E7%AC%AC11%E7%AB%A0%20%E9%A3%8E%E9%99%A9%E4%BB%B7%E5%80%BC%E4%B8%8E%E9%A2%84%E6%9C%9F%E6%8D%9F%E5%A4%B1/index.html">
+<meta property="og:site_name" content="墨语浮生">
+<meta property="og:description" content="第11章 风险价值与预期损失 Value at Risk and Expected Shortfall 风险价值（VaR）和预期损失（ES）旨在提供一个能够总结投资组合整体风险的单一数值。VaR 由摩根大通首创（见业务快照11.1），现已被公司财务主管、基金经理以及金融机构广泛采用。正如我们将在后续章节中看到的，监管机构在制定资本要求相关的诸多计算中，传统上一直使用这一指标。然而，正如第27章所解">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/img4/%E3%80%8A%E9%A3%8E%E9%99%A9%E7%AE%A1%E7%90%86%E4%B8%8E%E9%87%91%E8%9E%8D%E6%9C%BA%E6%9E%84%E3%80%8B/F11.1.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/%E3%80%8A%E9%A3%8E%E9%99%A9%E7%AE%A1%E7%90%86%E4%B8%8E%E9%87%91%E8%9E%8D%E6%9C%BA%E6%9E%84%E3%80%8B/F11.2.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/%E3%80%8A%E9%A3%8E%E9%99%A9%E7%AE%A1%E7%90%86%E4%B8%8E%E9%87%91%E8%9E%8D%E6%9C%BA%E6%9E%84%E3%80%8B/F11.3.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/%E3%80%8A%E9%A3%8E%E9%99%A9%E7%AE%A1%E7%90%86%E4%B8%8E%E9%87%91%E8%9E%8D%E6%9C%BA%E6%9E%84%E3%80%8B/F11.4.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/%E3%80%8A%E9%A3%8E%E9%99%A9%E7%AE%A1%E7%90%86%E4%B8%8E%E9%87%91%E8%9E%8D%E6%9C%BA%E6%9E%84%E3%80%8B/F11.1.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/%E3%80%8A%E9%A3%8E%E9%99%A9%E7%AE%A1%E7%90%86%E4%B8%8E%E9%87%91%E8%9E%8D%E6%9C%BA%E6%9E%84%E3%80%8B/E11.6.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/%E3%80%8A%E9%A3%8E%E9%99%A9%E7%AE%A1%E7%90%86%E4%B8%8E%E9%87%91%E8%9E%8D%E6%9C%BA%E6%9E%84%E3%80%8B/F11.5.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/%E3%80%8A%E9%A3%8E%E9%99%A9%E7%AE%A1%E7%90%86%E4%B8%8E%E9%87%91%E8%9E%8D%E6%9C%BA%E6%9E%84%E3%80%8B/T11.1.png">
+<meta property="article:published_time" content="2026-07-10T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-09-14T04:08:33.348Z">
+<meta property="article:author" content="Rayman.hung">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hongyitong.github.io/img4/%E3%80%8A%E9%A3%8E%E9%99%A9%E7%AE%A1%E7%90%86%E4%B8%8E%E9%87%91%E8%9E%8D%E6%9C%BA%E6%9E%84%E3%80%8B/F11.1.png">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2026/07/11/%E7%AC%AC11%E7%AB%A0%20%E9%A3%8E%E9%99%A9%E4%BB%B7%E5%80%BC%E4%B8%8E%E9%A2%84%E6%9C%9F%E6%8D%9F%E5%A4%B1/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2026/07/11/%E7%AC%AC11%E7%AB%A0%20%E9%A3%8E%E9%99%A9%E4%BB%B7%E5%80%BC%E4%B8%8E%E9%A2%84%E6%9C%9F%E6%8D%9F%E5%A4%B1/","path":"2026/07/11/第11章 风险价值与预期损失/","title":"《风险管理与金融机构》第11章  风险价值与预期损失"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>《风险管理与金融机构》第11章  风险价值与预期损失 | 墨语浮生</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="fc62aedd-644a-478d-b3c2-d8ba9964421c" src="https://cloud.umami.is/script.js" data-host-url="https://cloud.umami.is"></script>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js" defer></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">墨语浮生</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC11%E7%AB%A0-%E9%A3%8E%E9%99%A9%E4%BB%B7%E5%80%BC%E4%B8%8E%E9%A2%84%E6%9C%9F%E6%8D%9F%E5%A4%B1"><span class="nav-text">第11章 风险价值与预期损失</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%9A%E5%8A%A1%E5%BF%AB%E7%85%A7-11.1"><span class="nav-text">业务快照 11.1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#var-%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="nav-text">11.1 VaR 的定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#var-%E8%AE%A1%E7%AE%97%E7%A4%BA%E4%BE%8B"><span class="nav-text">11.2 VaR 计算示例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#var-%E7%9A%84%E4%B8%80%E4%B8%AA%E7%BC%BA%E9%99%B7"><span class="nav-text">11.3 VaR 的一个缺陷</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A2%84%E6%9C%9F%E6%8D%9F%E5%A4%B1"><span class="nav-text">11.4 预期损失</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E8%87%B4%E6%80%A7%E9%A3%8E%E9%99%A9%E5%BA%A6%E9%87%8F"><span class="nav-text">11.5 一致性风险度量</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B0%B1%E9%A3%8E%E9%99%A9%E5%BA%A6%E9%87%8F"><span class="nav-text">11.5.1 谱风险度量</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#var%E4%B8%8Ees%E7%9A%84%E5%8F%82%E6%95%B0%E9%80%89%E6%8B%A9"><span class="nav-text">11.6 VaR与ES的参数选择</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%97%B6%E9%97%B4%E8%8C%83%E5%9B%B4"><span class="nav-text">11.6.1 时间范围</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%87%AA%E7%9B%B8%E5%85%B3%E7%9A%84%E5%BD%B1%E5%93%8D"><span class="nav-text">11.6.2 自相关的影响</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BD%AE%E4%BF%A1%E6%B0%B4%E5%B9%B3"><span class="nav-text">11.6.3 置信水平</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BE%B9%E9%99%85%E5%A2%9E%E9%87%8F%E4%B8%8E%E7%BB%84%E6%88%90%E9%83%A8%E5%88%86%E9%A3%8E%E9%99%A9%E5%BA%A6%E9%87%8F"><span class="nav-text">11.7
+边际、增量与组成部分风险度量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AC%A7%E6%8B%89%E5%AE%9A%E7%90%86"><span class="nav-text">11.8 欧拉定理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#var%E4%B8%8Ees%E7%9A%84%E8%81%9A%E5%90%88"><span class="nav-text">11.9 VaR与ES的聚合</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%9E%E6%BA%AF%E6%B5%8B%E8%AF%95"><span class="nav-text">11.10 回溯测试</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%81%9A%E9%9B%86%E6%80%A7"><span class="nav-text">11.10.1 聚集性</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%83%E4%B9%A0%E9%A2%98%E4%B8%8E%E9%97%AE%E9%A2%98"><span class="nav-text">练习题与问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%9B%E4%B8%80%E6%AD%A5%E7%BB%83%E4%B9%A0%E9%A2%98"><span class="nav-text">进一步练习题</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、心情记录</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives">
+          <span class="site-state-item-count">333</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/07/11/%E7%AC%AC11%E7%AB%A0%20%E9%A3%8E%E9%99%A9%E4%BB%B7%E5%80%BC%E4%B8%8E%E9%A2%84%E6%9C%9F%E6%8D%9F%E5%A4%B1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="《风险管理与金融机构》第11章  风险价值与预期损失 | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《风险管理与金融机构》第11章  风险价值与预期损失
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-07-11 00:00:00" itemprop="dateCreated datePublished" datetime="2026-07-11T00:00:00+08:00">2026-07-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="第11章-风险价值与预期损失">第11章 风险价值与预期损失</h2>
+<p>Value at Risk and Expected Shortfall</p>
+<p>风险价值（VaR）和预期损失（ES）旨在提供一个能够总结投资组合整体风险的单一数值。VaR
+由摩根大通首创（见业务快照11.1），现已被公司财务主管、基金经理以及金融机构广泛采用。正如我们将在后续章节中看到的，监管机构在制定资本要求相关的诸多计算中，传统上一直使用这一指标。然而，正如第27章所解释的，在某些市场风险资本的计算中，监管机构现在已经转向使用ES。</p>
+<p>本章将介绍VaR和ES这两种度量方法，并讨论它们的优缺点。第12章和第13章将探讨如何计算市场风险的VaR和ES，第19章则考虑信用风险的VaR计算方法。</p>
+<span id="more"></span>
+<h3 id="业务快照-11.1"><strong>业务快照 11.1</strong></h3>
+<p><strong>VaR 的历史视角</strong></p>
+<p>摩根大通被认为在推动 VaR
+成为广泛使用的风险度量方法方面起到了关键作用。该行董事长丹尼斯·韦瑟斯通（Dennis
+Weatherstone）对每天收到的冗长风险报告感到不满。这些报告包含了大量关于银行各类风险敞口的详细信息，但对于高层管理人员来说，真正有用的内容却很少。他提出希望看到一份更为简洁的报告，能够专注于衡量银行在整个交易投资组合中未来24小时内的总体风险敞口。</p>
+<p>起初，他的下属们认为这是不可能完成的任务，但最终他们借助<strong>马科维茨投资组合理论</strong>（
+Markowitz portfolio
+theory）（见第1.1节），开发出了一份VaR报告。这份报告后来被称为“4:15报告”，因为它会在每天交易结束后，于下午4点15分准时放在董事长的办公桌上。</p>
+<p>制作这份报告需要大量工作，包括每天收集全球各地银行持仓数据、处理不同时区问题、估算相关性和波动率，以及开发计算机系统。整个系统约于1990年完成。该系统带来的主要益处是，高层管理人员能够更清晰地理解银行所承担的风险，并能够更有效地在银行内部配置资本。</p>
+<p>Producing the report entailed an enormous amount of work involving
+the collection of data daily on the positions held by the bank around
+the world, the handling of different time zones, the estimation of
+correlations and volatilities, and the development of computer
+systems.</p>
+<p>当时，其他银行也在研发类似的风险聚合方法，到1993年，VaR
+已被确立为一项重要的风险度量标准。</p>
+<p>银行通常对其内部开发的模型细节保密。然而，1994年，摩根大通在互联网上公开了其内部系统的简化版本，并命名为
+RiskMetrics。<strong>RiskMetrics
+包含了大量市场变量的方差和协方差数据。</strong>这引起了广泛关注，并引发了关于不同
+VaR 模型优劣的讨论。随后，一些软件公司开始推出自己的 VaR
+模型，其中部分模型使用了 RiskMetrics 的数据库。</p>
+<p>此后，VaR
+很快被金融机构以及部分非金融公司广泛采纳，并成为行业标准。以 VaR
+为基础的《巴塞尔修正案》（见第25.6节）于1996年发布，并于1998年正式实施。随后，摩根大通将其
+RiskMetrics 部门分拆为独立公司。该公司于1997年推出用于处理信用风险的
+CreditMetrics，并于1999年推出用于处理非金融公司风险的
+CorporateMetrics。</p>
+<h3 id="var-的定义">11.1 VaR 的定义</h3>
+<p>Definition of VaR</p>
+<p>在使用风险价值（VaR）这一度量方法时，我们希望能够表达如下形式的陈述：<br />
+<strong>“我们有 X% 的把握，在时间 T 内损失不会超过 V
+美元。”</strong></p>
+<p>“We are X percent certain that we will not lose more than V dollars
+in time T.”</p>
+<p>变量 V 是该投资组合的 VaR。它取决于两个参数：时间跨度 T 和置信水平
+X%。它表示在时长为 T 的时间段内，我们有 X%
+的置信度认为损失不会超过该数值。</p>
+<p>VaR 可以从 T
+时间段内收益的概率分布或损失的概率分布中计算得出。（在前一种情况下，损失被视为负收益；在后一种情况下，收益被视为负损失。）例如，当
+T 为五天，且 X = 97 时，VaR 是未来五天收益分布中第 3
+个百分位所对应的损失。换句话说，它是未来五天损失分布中第 97
+个百分位的损失值。</p>
+<p>更一般地说，当使用收益分布时，VaR 等于该分布中第 (100−X)
+个百分位上的负收益，如图 11.1 所示；当使用损失分布时，VaR 等于该分布中第
+X 个百分位上的损失，如图 11.2 所示。</p>
+<p><img src="/img4/《风险管理与金融机构》/F11.1.png" alt="F11.1" style="zoom:50%;" /></p>
+<p><img src="/img4/《风险管理与金融机构》/F11.2.png" alt="F11.2" style="zoom:50%;" /></p>
+<h3 id="var-计算示例">11.2 VaR 计算示例</h3>
+<p>Examples of the Calculation of VaR</p>
+<p>本节将通过四个简单示例来说明 VaR
+的计算方法。前两个示例中，收益（或损失）的概率分布为连续分布；而后两个示例中，则为离散分布。</p>
+<p><strong>示例 11.1</strong></p>
+<p>假设一个投资组合在六个月内的收益服从正态分布，均值为 200
+万美元，标准差为 1,000 万美元。根据正态分布的性质，该分布的第 1
+个百分位点为：</p>
+<p>2 − 2.326 × 10 = −2,130 万美元。</p>
+<p>因此，该投资组合在时间跨度为六个月、置信水平为 99% 的情况下，其 VaR
+为 2,130 万美元。</p>
+<p><strong>示例 11.2</strong></p>
+<p>假设一个为期一年的项目，其所有结果——从亏损 5,000 万美元到盈利 5,000
+万美元——被认为具有相同的可能性。在这种情况下，该项目的损失服从一个从
+−5,000 万美元到 +5,000 万美元的均匀分布。</p>
+<p>在该分布中，有 1% 的概率损失将超过 4,900
+万美元。因此，在时间跨度为一年、置信水平为 99% 的情况下，该项目的 VaR 为
+4,900 万美元。</p>
+<p><strong>示例 11.3</strong></p>
+<p>一个为期一年的项目有 98% 的概率带来 200 万美元的收益，1.5% 的概率带来
+400 万美元的损失，以及 0.5% 的概率带来 1,000
+万美元的损失。该项目的累计损失分布如图 11.3 所示。</p>
+<p>在该累计分布中，对应 99% 累计概率的点是 400
+万美元。因此，在置信水平为 99%、时间跨度为一年情况下，该项目的 VaR 为
+400 万美元。</p>
+<p><strong>示例 11.4</strong></p>
+<p>我们再次考虑示例 11.3 中的情形。现在假设我们希望以 99.5%
+的置信水平来计算 VaR。此时，如图 11.3 所示，所有在 400 万美元至 1,000
+万美元之间的损失，其被超过的概率为
+0.5%。换句话说，任何处于该区间内的特定损失水平都有 0.5%
+的概率会被超过。</p>
+<p>因此，在这种情况下，VaR
+并不是唯一确定的。一个常见且合理的处理方式是，将 VaR
+设为该范围内可能取值的中点。也就是说，此处的 VaR 为 700 万美元。</p>
+<p><img src="/img4/《风险管理与金融机构》/F11.3.png" alt="F11.3" style="zoom:50%;" /></p>
+<blockquote>
+<p>个人注：注意上图的正轴是Loss，和我们一般的理解反过来了。</p>
+</blockquote>
+<h3 id="var-的一个缺陷"><strong>11.3 VaR 的一个缺陷</strong></h3>
+<p>A Drawback of VaR</p>
+<p>VaR
+是一种具有吸引力的度量方法，因为它易于理解。本质上，它回答了一个简单的问题：“最坏的情况会有多糟？”这正是所有高层管理人员希望得到答案的问题。他们非常乐于接受将投资组合中所有市场变量相关的风险压缩为一个单一数值的想法。</p>
+<p>然而，当 VaR
+被用作限制交易员所承担风险的工具时，可能会导致不良后果。假设某银行告知一名交易员，其投资组合的一日
+99% VaR 必须限制在 1,000
+万美元以内。此时，交易员可以构建一个投资组合，在其中每日损失小于 1,000
+万美元的概率为 99.1%，而损失为 5 亿美元的概率为
+0.9%。表面上看，交易员满足了银行设定的风险限制，但实际上却承担了不可接受的风险。交易员可能追求的这类收益概率分布如图
+11.4 所示。图 11.4 中的 VaR 可能与图 11.1 中的 VaR 相同，但由于图 11.4
+中出现巨大损失的概率更高，因此这个投资组合显然比图 11.1
+中的组合风险更大。</p>
+<p><img src="/img4/《风险管理与金融机构》/F11.4.png" alt="F11.4" style="zoom:50%;" /></p>
+<p><img src="/img4/《风险管理与金融机构》/F11.1.png" alt="F11.1" style="zoom:50%;" /></p>
+<p>人们可能会认为图 11.4
+所示的那种概率分布在实际中几乎不会出现，但事实上这种情况并不罕见。<strong>许多交易策略往往具有高概率的小收益和低概率的大亏损。</strong>例如，卖出虚值期权就是一种策略，在大多数情况下，交易员可以收取期权权利金而无需向期权买方支付任何金额，但偶尔期权会在特定情况下被执行，导致交易员遭受重大损失。</p>
+<p><strong>许多交易员喜欢承担高风险，希望由此获得高回报。如果他们能找到在不违反风险限制的前提下承担高风险的方法，他们通常会这样做。正如作者与一位交易员的对话中所听到的那样：“我还从未见过一个我绕不过去的风险控制系统。”</strong></p>
+<h3 id="预期损失"><strong>11.4 预期损失</strong></h3>
+<p>Expected Shortfall</p>
+<p>相比 VaR，<strong>预期损失（ES，Expected
+Shortfall）</strong>是一种能为交易员带来更好激励机制的度量方法。它有时也被称为条件风险价值（Conditional
+Value at Risk）、条件尾部期望（Conditional Tail
+Expectation）或预期尾部损失（Expected Tail Loss）。</p>
+<p><strong>VaR 问的问题是：“最坏的情况会有多糟？”而 ES
+问的是：“如果最坏的情况真的发生了，预期损失是多少？”</strong></p>
+<p>Whereas VaR asks the question: “How bad can things get?” ES asks: “If
+things do get bad, what is the expected loss?”</p>
+<p>ES 和 VaR 一样，是两个参数的函数：T（时间跨度）和
+X（置信水平）。事实上，在计算 ES 之前，必须先计算 VaR。ES 指的是在时间 T
+内、损失大于 VaR 的前提下的预期损失。</p>
+<p>例如，假设 X = 99，T = 10 天，VaR 为 6,400 万美元。那么 ES
+就是<strong>在未来 10 天内损失超过 6,400
+万美元时的平均损失金额</strong>。</p>
+<p>相比为交易员设定 VaR 限制，设定 ES 限制能更有效地防止他们采取类似图
+11.4 所示的极端风险头寸。此外，正如下一节所展示的那样，ES 相较 VaR
+具有更优的性质，例如它始终能够体现分散化带来的风险降低效应。</p>
+<p>ES 的缺点之一是它不如 VaR
+简单直观，因此更难理解；另一个缺点是，相较于 VaR，<strong>对 ES
+计算方法进行回测（back-testing）更为困难</strong>。
+（回测的概念将在后文中解释，它是一种利用历史数据来检验某种风险度量方法可靠性的手段。）</p>
+<h3 id="一致性风险度量"><strong>11.5 一致性风险度量</strong></h3>
+<p>Coherent Risk Measures</p>
+<p>假设一个投资组合在 99.9% 的置信水平下、一年时间跨度内的 VaR 是 5,000
+万美元。这意味着在极端情况下（理论上是每一千年发生一次），该金融机构在一年中可能会损失超过
+5,000 万美元。这也意味着，如果该机构保留 5,000
+万美元的资本，那么其在一年内不出现资本枯竭的概率为 99.9%。</p>
+<p>现在，假设我们试图设计一种风险度量方法，使其等于金融机构所需持有的资本。那么，VaR（在适当的时间跨度和置信水平下）是否就是最好的度量方式？Artzner
+等人曾研究过这一问题。他们首先提出了一些这种风险度量应当具备的性质：</p>
+<ol type="1">
+<li><strong>单调性（Monotonicity）</strong>：如果一个投资组合在所有情形下的表现都比另一个更差，那么它的风险度量应当更高。<br />
+</li>
+<li><strong>平移不变性（Translation
+Invariance）</strong>：如果向一个投资组合中加入现金
+K，其风险度量应当减少 K。<br />
+</li>
+<li><strong>齐次性（Homogeneity）</strong>：在保持投资组合中各项资产比例不变的前提下，将其规模按因子
+λ 放大，风险度量也应乘以 λ。<br />
+</li>
+<li><strong>次可加性（Subadditivity）</strong>：两个投资组合合并后的总体风险度量，不应高于它们合并前各自风险度量之和。</li>
+</ol>
+<p>前三个条件相对直观：</p>
+<ul>
+<li>若一个投资组合在所有情况下表现都更差，它显然更具风险，应当要求更多资本；</li>
+<li>若向组合中加入现金 K，这部分现金可缓冲损失，应当降低资本要求；</li>
+<li>若我们将投资组合规模扩大一倍，资本要求也理应翻倍。</li>
+</ul>
+<p>第四个条件强调的是<strong>多元化带来的风险降低效应</strong>：当我们合并两个投资组合时，总体的风险度量应减少或保持不变。</p>
+<p>VaR
+满足前<strong>三个条件</strong>，但<strong>并不总是满足第四个条件（次可加性）</strong>，以下两个例子将说明这一点。</p>
+<p><strong>示例 11.5</strong></p>
+<p>假设两个互相独立的项目，在一年内各自有以下损失概率分布：</p>
+<ul>
+<li>2% 的概率会损失 1,000 万美元；</li>
+<li>98% 的概率会损失 100 万美元。</li>
+</ul>
+<p>在这种情况下，每个项目的一年期 97.5% VaR 是 <strong>100
+万美元</strong>。</p>
+<p>现在将这两个项目合并到同一个投资组合中。合并后可能的损失情况如下：</p>
+<ul>
+<li>两个项目都发生大损失（概率 0.02 × 0.02 = 0.0004），总损失为
+<strong>2,000 万美元</strong>；</li>
+<li>一个项目大损失，另一个小损失（概率 2 × 0.02 × 0.98 =
+0.0392），总损失为 <strong>1,100 万美元</strong>；</li>
+<li>两个项目都为小损失（概率 0.98 × 0.98 = 0.9604），总损失为
+<strong>200 万美元</strong>。</li>
+</ul>
+<p>在该投资组合中，一年期 97.5% VaR 为 <strong>1,100
+万美元</strong>。</p>
+<p>而如果分别计算两个项目的 VaR，再相加，总 VaR 为：</p>
+<p><strong>100 万美元 + 100 万美元 = 200 万美元</strong>。</p>
+<p>因此，组合后的 VaR（1,100 万美元）<strong>大于</strong>项目分别计算的
+VaR 之和（200 万美元），超出 <strong>900 万美元</strong>。</p>
+<p>这 <strong>违反了“次可加性”条件</strong>，说明 VaR
+不是一个一致性的风险度量方法。</p>
+<p><strong>示例 11.6</strong></p>
+<p>某银行有两笔各为 1000
+万美元的一年期贷款。每种违约情况的概率如下表所示：</p>
+<p><img src="/img4/《风险管理与金融机构》/E11.6.png" alt="E11.6" style="zoom:50%;" /></p>
+<p>如果发生违约，则本金损失的比例在 0% 到 100%
+之间是等可能的。如果贷款未违约，则可获得 20 万美元的利润。</p>
+<p>首先考虑贷款 1。该贷款有 1.25% 的概率会违约。发生违约时，损失在 0 至
+1000 万美元之间均匀分布。这意味着有 1.25% 的概率会发生大于零的损失；有
+0.625% 的概率会发生超过 500 万美元的损失；损失超过 1000
+万美元的情况不会发生。具有 1% 超越概率的损失水平是 200
+万美元。（在发生损失的条件下，损失大于 200 万美元的概率为 80% 或
+0.8。由于发生损失的概率为 1.25% 或 0.0125，未加条件的损失大于 200
+万美元的概率为 0.8×0.0125 = 0.01，即 1%。）因此，该贷款的一年期 99% VaR
+为 200 万美元。贷款 2 的情况亦相同。</p>
+<p>接下来考虑这两笔贷款组成的投资组合。发生任一笔贷款违约的概率为
+2.5%。与前面一样，违约贷款的损失在 0 至 1000
+万美元之间均匀分布。在这种情况下，VaR 为 580 万美元。这是因为有
+2.5%（0.025）的概率会发生某一笔贷款违约，并且在该事件的条件下，有
+40%（0.4）的概率该笔违约贷款的损失会超过 600
+万美元。因此，违约造成的损失超过 600 万美元的无条件概率为 0.4×0.025 =
+0.01，即 1%。如果其中一笔贷款违约，另一笔贷款将获得 20
+万美元的利润，因此一年期 99% VaR 为 580 万美元。</p>
+<p>将两笔贷款分别考虑时的总 VaR 是 2 + 2 = 400
+万美元。而将它们合并为投资组合后，总 VaR 增加了 180 万美元，达到 580
+万美元。这表明违反了次可加性（subadditivity）条件。（尽管将两笔贷款合并为一个投资组合显然具有很大的分散化收益——尤其是因为它们不可能同时违约。）</p>
+<p><strong>满足上述四个条件的风险度量被称为一致的。例子11.5和11.6说明了VaR不是一致的。可以证明，ES度量始终是一致的。以下例子对此进行了说明。</strong></p>
+<p><strong>例子11.7</strong><br />
+再次考虑例子11.5中的情形。单独来看，其中一个项目的VaR为100万美元。为了计算97.5%置信水平下的ES，我们注意到，在损失分布的2.5%尾部中，2%对应的是1000万美元的损失，0.5%对应的是100万美元的损失。（注意，分布的其余97.5%也对应100万美元的损失。）在已知我们处于损失分布的2.5%尾部的条件下，发生1000万美元损失的概率为80%，发生100万美元损失的概率为20%。期望损失为0.8×10
++ 0.2×1，即820万美元。</p>
+<p>当两个项目合并时，在损失分布的2.5%尾部中，0.04%对应2000万美元的损失，2.46%对应1100万美元的损失。在已知我们处于损失分布的2.5%尾部的条件下，期望损失为(0.04∕2.5)×20
++ (2.46∕2.5)×11，即1114.4万美元。这就是ES。</p>
+<p>因为8.2 + 8.2 &gt; 11.144，ES度量在这个例子中满足次可加性条件。</p>
+<p><strong>例子11.8</strong><br />
+再次考虑例子11.6中的情形。我们已经指出，单笔贷款的VaR为200万美元。当时间范围为一年，置信水平为99%时，单笔贷款的ES即为在损失超过200万美元的条件下的期望损失。由于损失在0到1000万美元之间均匀分布，在损失超过200万美元的条件下的期望损失是200万美元与1000万美元之间的中点，即600万美元。</p>
+<p>例子11.6中计算得出，两笔贷款组成的投资组合的VaR为580万美元。因此，该投资组合的ES为在损失超过580万美元的条件下的期望损失。根据假设，当一笔贷款违约时，另一笔不会违约，结果在盈利20万美元和损失980万美元之间均匀分布。在分布中处于580万美元到980万美元区间内的条件下，期望损失为780万美元。因此，这就是该投资组合的ES。</p>
+<p>由于780万美元小于2×600万美元，ES度量满足次可加性条件。</p>
+<p><strong>次可加性条件并非纯粹具有理论意义。金融机构有时会发现，当它将两个投资组合（例如股票投资组合和固定收益投资组合）合并时，总VaR反而上升。</strong></p>
+<h4 id="谱风险度量">11.5.1 谱风险度量</h4>
+<p>Spectral Risk Measures</p>
+<p>风险度量可以通过其对损失分布百分位所赋予的权重来表征。VaR对第X个百分位赋予100%的权重，而对其他百分位赋予零权重。ES对所有高于第X个百分位的百分位赋予相等的权重，而对低于第X个百分位的百分位赋予零权重。我们可以通过对百分位赋权的其他假设来定义其他风险度量。一个通用的结论是：如果对损失分布中第q个百分位赋予的权重是q的非递减函数，那么该风险度量就是一致的（即满足次可加性条件）。ES满足这个条件。然而，VaR不满足，因为其对高于第X个百分位的百分位所赋予的权重低于对第X个百分位所赋予的权重。</p>
+<p>一些研究者提出了其他度量方法，其对第q个百分位所赋予的权重随q上升得相对更快。其中一个想法是，使对第q个百分位所赋予的权重与<span
+class="math inline">\(e^{−(1−q)/γ}\)</span>成正比，其中<span
+class="math inline">\(γ\)</span>为常数。这被称为指数谱风险度量(exponential
+spectral risk measure)。<strong>图11.5</strong>展示了当<span
+class="math inline">\(γ\)</span>取两个不同值时，ES与指数谱风险度量对损失百分位所赋予的权重。</p>
+<p><img src="/img4/《风险管理与金融机构》/F11.5.png" alt="F11.5" style="zoom:67%;" /></p>
+<h3 id="var与es的参数选择">11.6 VaR与ES的参数选择</h3>
+<p>Choice of Parameters for VaR and ES</p>
+<p>对于VaR和ES，使用者必须选择<strong>两个参数：时间范围和置信水平</strong>(<strong>个人注：分布假设也很重要吧！</strong>)。一个简单的假设是，在所选时间范围内，投资组合价值的变动服从正态分布。如第8.3节所述，这并不总是一个合理的假设。然而，在此阶段，考虑该假设的后果是有益的。</p>
+<p>当投资组合价值的损失具有均值<span
+class="math inline">\(μ\)</span>、标准差<span
+class="math inline">\(σ\)</span>时，<br />
+<span class="math display">\[
+VaR = μ + σN^{-1}(X)  \tag{11.1}
+\]</span> 其中<span class="math inline">\(X\)</span>为置信水平，<span
+class="math inline">\(N^{-1}(.)\)</span>表示标准正态分布的逆累积分布函数（可以使用Excel中的NORMSINV函数进行计算）。对于相对较短的时间范围，<span
+class="math inline">\(μ\)</span>通常被假设为零。在这种情况下，给定置信水平的<span
+class="math inline">\(VaR\)</span>与<span
+class="math inline">\(σ\)</span>成正比。</p>
+<p><strong>例子11.9</strong><br />
+假设某投资组合在10天时间范围内的损失服从均值为零、标准差为2000万美元的正态分布。该投资组合的10天99%
+VaR为20 × N⁻¹(0.99) = 46.5 ,即4650万美元。</p>
+<p>当损失被假设为服从均值为μ、标准差为σ的正态分布时，置信水平为X的ES为：</p>
+<p><span class="math display">\[
+\text{ES} = \mu + \sigma \cdot \frac{e^{-Y^2 / 2}}{\sqrt{2\pi}(1 - X)}
+\tag{11.2}
+\]</span></p>
+<p>其中，Y是标准正态分布的第X个百分位点（即在均值为零、标准差为一的正态分布中，有1−X的概率超过该点）。这表明，当μ被假设为零时，ES与VaR一样，也与σ成正比。</p>
+<p><strong>例子11.10</strong><br />
+再次考虑例子11.9中的情形，即某投资组合在10天时间范围内的损失服从均值为零、标准差为2000万美元的正态分布。由于2.326是标准正态分布中有1%概率被超过的点，10天99%置信水平下的ES为：
+<span class="math display">\[
+20 \cdot \frac{e^{-2.326^2 / 2}}{\sqrt{2\pi} \times 0.01} = 53.3
+\]</span></p>
+<p>即为5330万美元。</p>
+<h4 id="时间范围">11.6.1 时间范围</h4>
+<p>The Time Horizon</p>
+<p>在计算VaR或ES时，时间范围的选择应根据具体应用来决定。当头寸非常流动并且交易活跃时，使用较短的时间范围（也许只有几天）是有意义的。如果计算出的风险度量不可接受，投资组合可以相当迅速地进行调整。此外，由于投资组合成分可能发生变化，较长的时间范围可能并无实际意义。</p>
+<p>当养老金基金的管理者计算VaR或ES时，通常会使用较长的时间范围。这是因为该类投资组合交易不那么频繁，并且其中一些工具的流动性较差。<strong>当投资组合中各项资产的流动性差异较大时，VaR或ES的定义可以调整，使得所考虑的变动因市场变量不同而有所差异。</strong>例如，考虑一个投资组合，由IBM的股票和每年交易次数少于10次的公司债券组成。对于这种组合，有理由基于IBM股票在10天内99%置信下不被超过的价格变动，以及公司债在60天内99%置信下不被超过的价格变动来计算风险度量。这正是监管机构在《交易账簿基本审查》（第27章讨论）中采用的方法。</p>
+<p>无论具体应用为何，当考虑市场风险时，分析师通常从计算一天时间范围的VaR或ES开始。通常假设如下公式成立：</p>
+<p><span class="math display">\[
+\text{T-day VaR} = \text{1-day VaR} \times \sqrt{T} \tag{11.3}
+\]</span> <span class="math display">\[
+\text{T-day ES} = \text{1-day ES} \times \sqrt{T} \tag{11.4}
+\]</span></p>
+<p>当投资组合在连续几天的价值变动<strong>服从独立同分布、均值为零的正态分布时，这些公式是严格成立的。在其他情况下，它们只是近似。</strong>上述公式来源于公式(11.1)与(11.2)，并依赖于以下两个结论：</p>
+<ol type="1">
+<li>T个独立同分布变量之和的标准差是每个变量标准差的<span
+class="math inline">\(\sqrt T\)</span>倍。<br />
+</li>
+<li>若干独立正态分布变量之和仍服从正态分布。</li>
+</ol>
+<h4 id="自相关的影响">11.6.2 自相关的影响</h4>
+<p>Impact of Autocorrelation</p>
+<p>在实际中，投资组合每日价值的变动并不总是完全独立的。设<span
+class="math inline">\(ΔPᵢ\)</span>为投资组合在第<span
+class="math inline">\(i\)</span>天的价值变动。一种简单的假设是<strong>一阶自相关</strong>，即对所有<span
+class="math inline">\(i\)</span>，<span
+class="math inline">\(ΔP\)</span>ᵢ与<span
+class="math inline">\(ΔPᵢ₋₁\)</span>之间的相关系数为<span
+class="math inline">\(ρ\)</span>。假设所有<span
+class="math inline">\(ΔPᵢ\)</span>的方差均为<span
+class="math inline">\(σ²\)</span>。根据两个变量之和的方差的通用公式，<span
+class="math inline">\(ΔPᵢ₋₁ + ΔPᵢ\)</span>的方差为：</p>
+<p><span class="math display">\[
+σ^2 + σ^2 + 2ρσ^2 = 2(1 + ρ)σ^2
+\]</span></p>
+<p><span class="math inline">\(ΔPᵢ₋ⱼ\)</span>与<span
+class="math inline">\(ΔP\)</span>ᵢ之间的相关系数为<span
+class="math inline">\(ρ^j\)</span>。将该分析扩展，可以得到以下关于<span
+class="math inline">\(\sum _{i=1}^{T}
+ΔPᵢ\)</span>标准差的公式（见习题11.11）：</p>
+<p><span class="math display">\[
+σ \sqrt{T + 2(T - 1)ρ + 2(T - 2)ρ^2 + 2(T - 3)ρ^3 + \dots + 2ρ^{T - 1}}
+\tag{11.5}
+\]</span></p>
+<blockquote>
+<p>个人注：多维二次型的展开？ <span
+class="math inline">\(w^TAw\)</span></p>
+</blockquote>
+<p><img src="/img4/《风险管理与金融机构》/T11.1.png" alt="T11.1" style="zoom:50%;" /></p>
+<p>表11.1展示了自相关对T日VaR（或ES）与1日VaR（或ES）之比的影响。假设每日投资组合价值变动服从相同的正态分布，且均值为零。需要注意的是，T日VaR（或ES）与1日VaR（或ES）之比与每日标准差σ及置信水平无关。这一结论来源于公式（11.1）与（11.2），以及公式（11.5）中T日标准差与1日标准差成正比的性质。</p>
+<p>对比表11.1中ρ =
+0的行与其他行可以发现，自相关的存在会导致根据公式（11.3）和（11.4）所计算出的VaR和ES被低估。</p>
+<p><strong>例子11.11</strong><br />
+假设一个投资组合每日价值的变动服从均值为零、标准差为300万美元的正态分布。该日度变动的一阶自相关为0.1。根据公式（11.5），该投资组合在五天内的价值变动的标准差为：
+<span class="math display">\[
+3 \sqrt{5 + 2 \times 4 \times 0.1 + 2 \times 3 \times 0.1^2 + 2 \times 2
+\times 0.1^3 + 2 \times 1 \times 0.1^4} = 7.265
+\]</span></p>
+<p>因此，五天95%的VaR为：</p>
+<p><span class="math display">\[
+7.265 \times N^{-1}(0.95) = 11.95
+\]</span></p>
+<p>即1195万美元。</p>
+<p>五天的ES为：</p>
+<p><span class="math display">\[
+7.265 \times \frac{e^{-1.645^2 / 2}}{\sqrt{2\pi} \times 0.05} = 14.98
+\]</span></p>
+<p>即1498万美元。</p>
+<p>需要注意的是，该投资组合五天变动标准差与单日标准差之比为：7.265 ÷ 3 =
+2.42。这正是表11.1中在ρ = 0.1、T = 5时所对应的数值。</p>
+<h4 id="置信水平">11.6.3 置信水平</h4>
+<p>Confidence Level</p>
+<p>VaR或ES所选的置信水平通常取决于多个因素。假设某银行希望维持AA的信用评级，并且从评级机构提供的统计数据中得知，具有该信用评级的公司在一年期间内有0.02%的违约概率。那么，该银行在进行内部风险管理时，可能会选择99.98%的置信水平和一年时间范围来计算VaR。</p>
+<p>例如，假设银行在所有风险敞口下的一年期99.98%
+VaR为50亿美元。这意味着，若银行持有50亿美元的资本，则其在一年内资不抵债（即股本耗尽）的概率为0.02%。这种类型的分析可能会被银行用于向评级机构展示其风险承受能力，以证明其应当获得AA评级。</p>
+<p>首次计算VaR或ES时所采用的置信水平，有时远低于实际所需的置信水平。这是因为在置信水平非常高的情况下直接估算VaR非常困难。提高置信水平的一种通用方法是<strong>极值理论</strong>(extreme
+value theory)，将在下一章中讨论。</p>
+<p>如果假设每日投资组合变动服从均值为零的正态分布，我们可以利用公式（11.1）和（11.2）将一个置信水平下计算的VaR或ES转换为另一个置信水平下的值。</p>
+<p>例如，设σ为在某一时间范围内投资组合价值变动的标准差，且期望变动为零。记置信水平为<span
+class="math inline">\(X\)</span>时的VaR和ES分别为VaR(X)和ES(X)。根据公式（11.1）：</p>
+<p><span class="math display">\[
+\text{VaR}(X) = \sigma N^{-1}(X)
+\]</span></p>
+<p>对于任意置信水平<span
+class="math inline">\(X\)</span>均成立。因此，可以用较低置信水平<span
+class="math inline">\(X\)</span>下的VaR来计算较高置信水平<span
+class="math inline">\(X^*\)</span>下的VaR：</p>
+<p><span class="math display">\[
+\text{VaR}(X^*) = \text{VaR}(X) \cdot \frac{N^{-1}(X^*)}{N^{-1}(X)}
+\tag{11.6}
+\]</span></p>
+<p>类似地，根据公式（11.2）：</p>
+<p><span class="math display">\[
+\text{ES}(X^*) = \text{ES}(X) \cdot \frac{(1 - X) \cdot e^{-(Y^* -
+Y)(Y^* + Y)/2}}{1 - X^*} \tag{11.7}
+\]</span></p>
+<p>其中，<span class="math inline">\(Y\)</span> 和 <span
+class="math inline">\(Y^*\)</span> 分别是标准正态分布中超过概率为 <span
+class="math inline">\(1 − X\)</span> 和 <span class="math inline">\(1 −
+X^*\)</span> 的分位点。</p>
+<p>公式（11.6）与（11.7）假设两个VaR/ES度量具有相同的时间范围。如果我们既要改变时间范围，又要改变置信水平，可以将这些公式与公式（11.3）或（11.4）结合使用。</p>
+<p><strong>例子11.12</strong><br />
+假设在95%置信水平下，一天的VaR为150万美元，预期损失（ES）为200万美元。假设投资组合价值变动服从均值为零的正态分布，根据公式（11.6），一天99%置信水平下的VaR为：
+<span class="math display">\[
+1.5 \times \frac{2.326}{1.645} = 2.12
+\]</span></p>
+<p>即212万美元。</p>
+<p>根据公式（11.7），一天99%置信水平下的ES为：</p>
+<p><span class="math display">\[
+\frac{0.05}{0.01} \times 2 \times e^{-(2.326 - 1.645)(2.326 + 1.645)/2}
+= 2.58
+\]</span></p>
+<p>即258万美元。</p>
+<h3 id="边际增量与组成部分风险度量">11.7
+边际、增量与组成部分风险度量</h3>
+<p>Marginal, Incremental, and Component Measures</p>
+<p>考虑一个由若干子投资组合构成的投资组合。这些子投资组合可以对应于资产类别（例如本国股票、外国股票、固定收益和衍生品），也可以对应于不同的业务单元（例如零售银行、投资银行、自营交易），甚至可以对应于单笔交易。分析师有时会计算每个子投资组合对VaR或ES的贡献度量。</p>
+<p>设第<span
+class="math inline">\(i\)</span>个子投资组合的投资金额为<span
+class="math inline">\(xᵢ\)</span>。该子投资组合的<strong>边际风险价值</strong>（marginal
+value at risk）是VaR对<span
+class="math inline">\(xᵢ\)</span>的敏感度，记为：</p>
+<p><span class="math display">\[
+\frac{∂\text{VaR}}{∂xᵢ}
+\]</span></p>
+<p>为了估计边际VaR，我们可以将<span
+class="math inline">\(xᵢ\)</span>增加一个小量Δ<span
+class="math inline">\(xᵢ\)</span>，得到<span class="math inline">\(xᵢ +
+Δxᵢ\)</span>，并重新计算VaR。如果VaR的增加量为ΔVaR，则边际VaR的估计值为：</p>
+<p><span class="math display">\[
+\frac{Δ\text{VaR}}{Δxᵢ}
+\]</span></p>
+<p>对于一个良好分散的投资组合，边际VaR与资本资产定价模型（CAPM）中的β密切相关（见第1.3节）。如果某资产的β较高，其边际VaR通常也较高；反之亦然。在某些情况下，边际VaR可能为负，表明增加该子投资组合的权重会降低整体投资组合的风险。</p>
+<p><strong>增量风险价值</strong>（incremental value at risk）是第<span
+class="math inline">\(i\)</span>个子投资组合对VaR的增量影响，即包含该子投资组合的VaR与不包含该子投资组合的VaR之差。交易员常常关心新增交易的增量VaR。</p>
+<p>第<span
+class="math inline">\(i\)</span>个子投资组合的<strong>组成部分VaR</strong>（component
+value at risk）定义为：</p>
+<p><span class="math display">\[
+Cᵢ = xᵢ \cdot \frac{∂\text{VaR}}{∂xᵢ} \tag{11.8}
+\]</span></p>
+<p>这可以近似为：</p>
+<p><span class="math display">\[
+\frac{Δ\text{VaR}}{\gamma_i} \quad \text{其中} \quad {\gamma_i} =
+\frac{Δxᵢ}{xᵢ}
+\]</span></p>
+<p>即，对第<span
+class="math inline">\(i\)</span>个子投资组合的投资金额进行一个小比例变化<span
+class="math inline">\(\gamma_i = Δxᵢ /
+xᵢ\)</span>，重新计算VaR，若VaR的变化为ΔVaR，则组成部分VaR的估计为<span
+class="math inline">\(ΔVaR / {\gamma_i}\)</span>。</p>
+<p><strong>在许多情形中，组成部分VaR是增量VaR的合理近似</strong>。这是因为，如果某个子投资组合相对于整个投资组合的规模较小，则可以假设其边际VaR在<span
+class="math inline">\(xᵢ\)</span>从当前值减小到0的过程中保持不变。在此假设下，将<span
+class="math inline">\(xᵢ\)</span>减为0所造成的影响即为<span
+class="math inline">\(xᵢ\)</span>乘以边际VaR——这正是组成部分VaR。</p>
+<p>边际ES、增量ES和组成部分ES也可以类似地定义，分别对应于边际VaR、增量VaR和组成部分VaR。</p>
+<h3 id="欧拉定理">11.8 欧拉定理</h3>
+<p>Euler’s Theorem</p>
+<p>许多年前，由伟大的数学家莱昂哈德·欧拉提出的一个结果，在将一个组合的风险度量分配到子组合时，显示出非常重要的意义。假设
+$ V $ 是一个投资组合的风险度量，$ x_i $ 是第 $ i $
+个子组合的规模度量（<span class="math inline">\(1 \leq i \leq
+M\)</span>）。假设当所有的 $ x_i $ 被替换为 $ x_i $
+时（即整个组合的规模被乘以 $ <span class="math inline">\(），\)</span> V
+$ 变为 $ V
+$。这对应于第11.5节中的第三个条件，被称为线性齐次性。对于大多数风险度量来说，这一性质成立。</p>
+<p>欧拉定理表明，在这种情况下，有：</p>
+<p><span class="math display">\[
+V = \sum_{i=1}^{M} \frac{\partial V}{\partial x_i} x_i \tag{11.9}
+\]</span></p>
+<p>这个结果提供了一种将 $ V $ 分配到各个子组合的方法。</p>
+<p>当风险度量是VaR时，欧拉定理得出：</p>
+<p><span class="math display">\[
+\text{VaR} = \sum_{i=1}^{M} C_i
+\]</span></p>
+<p>其中 $ C_i $ 如公式（11.8）中所示，是第 $ i $
+个子组合的组成VaR。<strong>这表明，一个投资组合的总VaR是各个子组合组成VaR的总和</strong>。因此，组成VaR是将总VaR分配给子组合的一种方便方式。<strong>如前一节所述，组成VaR还有一个吸引人的特性，即对于一个大型组合，第
+$ i $ 个组成VaR近似等于该组件的增量VaR。</strong></p>
+<p>当风险度量为预期损失（ES）时，欧拉定理同样表明，总ES是组成ES的总和：</p>
+<p><span class="math display">\[
+\text{ES} = \sum_{i=1}^{M} x_i \frac{\partial \text{ES}}{\partial x_i}
+\]</span></p>
+<p>因此，ES可以像VaR一样被分配到业务的各个组成部分。在第28章中，我们将展示如何利用欧拉定理将银行的经济资本分配到其各个业务单元。</p>
+<p><strong>欧拉定理允许将风险分解为各个组成部分。这是确定所谓“风险预算”中风险的有用工具。风险预算涉及应将多少风险分配给投资组合的不同组成部分。如果欧拉分解显示某个特定组成部分占据了不可接受比例的风险，那么就可以对投资组合进行再平衡。</strong></p>
+<h3 id="var与es的聚合">11.9 VaR与ES的聚合</h3>
+<p>Aggregating VaRs and ESs</p>
+<p>有时，一个企业已经为其运营中的若干不同部分计算了VaR（具有相同的置信水平和时间范围），并希望将它们聚合起来，以计算总VaR。一个用于此目的的公式是：</p>
+<p><span class="math display">\[
+\text{VaR}_{\text{total}} = \sqrt{ \sum_i \sum_j \rho_{ij} \,
+\text{VaR}_i \, \text{VaR}_j }
+\]</span></p>
+<p>其中，<span class="math inline">\(\text{VaR}_i\)</span> 是第 <span
+class="math inline">\(i\)</span> 个部分的VaR，<span
+class="math inline">\(\text{VaR}_{\text{total}}\)</span> 是总VaR，<span
+class="math inline">\(\rho_{ij}\)</span> 是第 <span
+class="math inline">\(i\)</span> 部分与第 <span
+class="math inline">\(j\)</span>
+部分之间损失的相关系数。<strong>当损失（或收益）服从均值为零的正态分布时，这个公式是完全成立的</strong>，并且在许多其他情形下也能提供良好的近似。当将VaR替换为ES时，公式（11.10）同样成立。</p>
+<p><strong>例11.13</strong><br />
+假设为某企业的两个部门计算得出的ES分别为6000万美元和1亿美元。这两个部门之间的损失相关系数估计为0.4。则总ES的估计值为：
+<span class="math display">\[
+\sqrt{60^2 + 100^2 + 2 \times 60 \times 100 \times 0.4} = 135.6
+\]</span></p>
+<p>单位为百万美元。</p>
+<h3 id="回溯测试">11.10 回溯测试</h3>
+<p>Back-Testing</p>
+<p>回溯测试是对风险度量进行现实检验的重要方式。它用于测试当前用于计算该风险度量的方法在过去是否有效。与ES相比，VaR更容易进行回溯测试。这无疑是监管机构过去在市场风险评估中不愿意从VaR转向ES的原因之一。正如我们将在第27章中解释的，<strong>目前监管机构使用ES来确定监管资本，但仍使用VaR估计进行回溯测试。</strong></p>
+<p>假设我们已经开发出一种用于计算单日99%
+VaR的方法。回溯测试的做法是观察过去的交易日中，有多少天的实际损失超过了根据当前方法计算的单日99%
+VaR。当天实际损失超过VaR的情况被称为“例外”。如果“例外”出现在大约1%的交易日中，我们可以对当前的VaR计算方法感到相当满意。如果“例外”发生在例如7%的交易日中，那么该方法值得怀疑，很可能低估了VaR。从监管角度看，用当前VaR估计方法计算出的资本水平就会过低。另一方面，如果“例外”仅发生在例如0.3%的交易日中，则可能说明当前方法高估了VaR，从而导致资本计算过高。</p>
+<p>在对单日VaR进行回溯测试时，一个问题是是否应该考虑投资组合在一天内所做的调整。有两种可能的做法。第一种是将VaR与基于假设投资组合在当天保持不变所计算出的投资组合价值变化进行比较；第二种是将VaR与当天投资组合价值的实际变化进行比较。VaR的计算假设投资组合在一天内保持不变，因此第一种基于假设变化的比较在理论上更为正确。然而，我们最终感兴趣的是真实的投资组合价值变动。在实践中，风险管理人员通常会将VaR与假设的投资组合变动和实际的投资组合变动都进行比较（而监管机构通常要求同时提供这两种回溯测试的结果）。对于实际的投资组合变动，需要对与市场风险无关的项目进行调整，例如手续费收入和在非中间价格进行交易所带来的利润。</p>
+<p>假设某一日VaR的置信水平为 $ X%
+$。如果所使用的VaR模型是准确的，那么VaR在某一特定交易日被超出的概率应为
+$ p = 1 - X/100 $。现在假设我们观察了总共 $ n $ 个交易日，其中有 $ m $
+天VaR被超出，且 $ m/n &gt; p
+$。这是否意味着我们应该拒绝当前模型，认为它给出的VaR值过低？</p>
+<p>用形式化的方式表达，我们可以考虑以下两个备择假设（alternative
+hypotheses:）：</p>
+<ol type="1">
+<li>每一天出现“例外”的概率为 $ p $。<br />
+</li>
+<li>每一天出现“例外”的概率大于 $ p $。</li>
+</ol>
+<p>根据二项分布的性质，在 $ m $ 天或更多天中出现VaR被超出的概率为：</p>
+<p><span class="math display">\[
+\sum_{k=m}^{n} \frac{n!}{k!(n-k)!} p^k (1 - p)^{n - k}
+\]</span></p>
+<p>这个概率可以通过 Excel 中的 <code>BINOMDIST</code> 函数计算得到。</p>
+<p>在统计检验中，一个常用的<strong>显著性水平(significance
+level)</strong>是 5%。如果 VaR 被超出的天数为 $ m $ 或更多的概率小于
+5%，我们就拒绝第一个假设(即认为“例外”的概率为 $ p
+$)；也就是说，我们怀疑该模型低估了VaR。如果该概率大于
+5%，则不拒绝该假设。</p>
+<p><strong>例11.14</strong><br />
+假设我们使用600天的数据对一个VaR模型进行回溯测试。VaR的置信水平为99%，我们观察到9次“例外”。预期的“例外”次数为6次。我们是否应该拒绝该模型？</p>
+<p>在Excel中，出现9次或更多“例外”的概率可以通过以下公式计算：</p>
+<p><span class="math display">\[
+1 - \text{BINOMDIST}(8, 600, 0.01, \text{TRUE}) = 0.152
+\]</span></p>
+<p>因此，在5%的显著性水平下，我们不应拒绝该模型。</p>
+<blockquote>
+<p>个人注：不能直接用9/600，因为这个分布不是平均的分布；具体的次数应该是和分布相关的。这个例子是二项分布，所以次数需要用二项分布的对应公式来计算。</p>
+</blockquote>
+<p>但如果“例外”次数为12，我们计算12次或更多“例外”的概率为0.019，那么就应当拒绝该模型。当“例外”次数达到11次或以上时，模型就会被拒绝。（出现10次或更多“例外”的概率大于5%，但出现11次或更多“例外”的概率小于5%。）</p>
+<p>当“例外”次数 $ m $
+低于预期的“例外”次数时，我们也可以类似地检验实际的“例外”概率是否为1%。（在这种情况下，我们的备择假设是：实际的“例外”概率小于1%。）</p>
+<p>在这种情形下，出现 $ m $ 次或更少“例外”的概率为：</p>
+<p><span class="math display">\[
+\sum_{k=0}^{m} \frac{n!}{k!(n-k)!} p^k (1 - p)^{n - k}
+\]</span></p>
+<p>然后将该概率与5%的阈值进行比较。</p>
+<p><strong>例11.15</strong><br />
+假设我们再次使用600天的数据对一个VaR模型进行回溯测试，VaR的置信水平为99%，但我们仅观察到1次“例外”，远低于预期的6次。我们是否应当拒绝该模型？</p>
+<p>在Excel中，出现1次或0次“例外”的概率可以通过以下公式计算：</p>
+<p><span class="math display">\[
+\text{BINOMDIST}(1, 600, 0.01, \text{TRUE}) = 0.017
+\]</span></p>
+<p>因此，在5%的显著性水平下，我们应当拒绝该模型。</p>
+<p>但如果“例外”次数为2次或更多，我们将不会拒绝该模型。</p>
+<p>我们前面讨论的检验都是<strong>单尾检验</strong>（one-tailed
+tests）。在例11.14中，我们假设“例外”的实际概率为1%或高于1%；而在例11.15中，我们假设它为1%或低于1%。Kupiec（1995）提出了一种相对更有力的<strong>双尾检验</strong>（two-tailed
+test）方法。</p>
+<p>如果VaR模型下“例外”的概率为 $ p $，在 $ n $ 次试验中观察到 $ m $
+次“例外”，那么下面这个表达式：</p>
+<p><span class="math display">\[
+-2 ln[(1 - p)^{n - m} p^m] + 2 ln[(1 - {m}/{n})^{n - m} ({m}/{n})^m]
+\tag{11.11}
+\]</span></p>
+<p>应当服从一个<strong>自由度为1的卡方分布</strong>（a chi-square
+distribution with one degree of freedom）。</p>
+<p>当“例外”次数非常少或非常多时，该统计量的值都会很高。对于自由度为1的卡方分布，有5%的概率会出现大于
+<strong>3.84</strong>
+的值。因此，当式（11.11）的计算结果大于3.84时，我们应当<strong>拒绝该VaR模型</strong>。</p>
+<p><strong>例11.16</strong><br />
+假设如前两个例子所示，我们使用600天的数据对一个VaR模型进行回溯测试，VaR的置信水平为99%。根据公式（11.11）计算出的统计量值，当“例外”次数
+$ m $ 小于或等于1，或大于或等于12时，其值大于3.84。</p>
+<p>因此，<strong>当 $ 2 m $ 时，我们接受该VaR模型</strong>；<br />
+<strong>否则（即当 $ m $ 或 $ m $ 时），我们拒绝该模型</strong>。</p>
+<p><u>一般而言，随着VaR置信水平的提高，VaR模型的回溯测试难度也随之增加。这是支持在回溯测试中使用<strong>相对较低置信水平</strong>的一个理由，然后再通过<strong>极值理论</strong>（见第12章）来获得所需的高置信水平。</u></p>
+<h4 id="聚集性">11.10.1 聚集性</h4>
+<p>Bunching</p>
+<p>与“例外”次数不同的另一个问题是<strong>聚集性</strong>。如果每日的投资组合变动是相互独立的，那么“例外”应该在整个回溯测试期间<strong>均匀分布</strong>。但在实际中，“例外”常常会<strong>聚集出现</strong>，这表明连续几天的损失并不是相互独立的。</p>
+<p>Christoffersen（1998）提出了一种用于检测聚集性的统计方法。该统计量如下所示：</p>
+<p><span class="math display">\[
+-2 \ln\left[(1 - \pi)^{u_{00} + u_{10}} \pi^{u_{01} + u_{11}}\right] + 2
+\ln\left[(1 - \pi_{01})^{u_{00}} \pi_{01}^{u_{01}} (1 -
+\pi_{11})^{u_{10}} \pi_{11}^{u_{11}} \right]
+\]</span></p>
+<p>其中，$ u_{ij} $ 表示从状态 $ i $ 到状态 $ j $
+的观察次数。这个统计量在<strong>没有聚集性</strong>的情况下应服从<strong>自由度为1的卡方分布</strong>。</p>
+<p>状态定义如下：</p>
+<ul>
+<li>状态0：没有“例外”的一天<br />
+</li>
+<li>状态1：有“例外”的一天</li>
+</ul>
+<p>参数定义如下：</p>
+<p><span class="math display">\[
+\pi = \frac{u_{01} + u_{11}}{u_{00} + u_{01} + u_{10} + u_{11}}
+\]</span></p>
+<p><span class="math display">\[
+\pi_{01} = \frac{u_{01}}{u_{00} + u_{01}}
+\]</span></p>
+<p><span class="math display">\[
+\pi_{11} = \frac{u_{11}}{u_{10} + u_{11}}
+\]</span></p>
+<p>这个检验可以用来判断“例外”是否存在显著的<strong>自相关性或聚集性</strong>，从而进一步评价VaR模型对风险的描述是否准确。</p>
+<h3 id="总结">总结</h3>
+<p>VaR（value at risk）计算旨在表达如下形式的陈述：“我们有 X%
+的把握，在时间 T 内损失不会超过 V 美元。”其中变量 V 是 VaR，X%
+是置信水平，T 是时间范围。VaR
+已成为非常流行的风险度量方法。另一种替代度量方式是预期损失（ES），它为交易员提供了更好的激励机制，并具有更好的理论性质。ES
+表示在损失超过 VaR
+水平的条件下的预期损失。正如第27章所解释的，监管机构已在某些市场风险资本计算中从
+VaR 转向 ES。</p>
+<p>当投资组合的价值变动服从正态分布时，可以根据该变动在时间 T
+内的均值和标准差容易地计算 VaR 和
+ES。如果每日价值变动服从均值为零的独立正态分布，则 T 日 VaR（或
+ES）等于一日 VaR（或 ES）乘以 $
+$。当不再假设独立性时，可使用其他稍微复杂一些的公式将一日 VaR 转换为 N
+日
+VaR。在实际中，损失往往具有比正态分布更厚的尾部。幂律是一种根据经验数据对分布尾部建模的方法，其理论基础为极值理论，我们将在下一章讨论这一理论。</p>
+<p>考虑一个包含若干子组合的投资组合。VaR 或 ES 对第 $ i $
+个子组合的<strong>边际值</strong>是该风险度量对该子组合规模的偏导数。<strong>增量
+VaR（或 ES）</strong>是该子组合对整个 VaR（或
+ES）的边际影响。可以使用一个公式将 VaR（或
+ES）划分为对应子组合中各持仓的组成部分。组成 VaR（或 ES）之和等于总
+VaR（或
+ES），并且在一个由相对小规模持仓构成的大型投资组合中，每个组成部分近似等于相应的增量
+VaR（或 ES）。</p>
+<p><strong>回溯测试</strong>是一项重要的工作，它检验用于计算风险度量的某一模型在历史上的表现效果。对于
+VaR 来说，回溯测试相对容易进行。如果“例外”的比例（即实际损失超过 VaR
+的次数）远大于或远小于预期值，则回溯测试可能指出 VaR
+模型的缺陷。可以使用统计检验方法判断是否应当因“例外”比例而拒绝一个 VaR
+模型。正如我们在后续章节中将看到的，如果监管机构认为对250天回溯测试结果不满意，他们会规定增加市场风险资本。</p>
+<h3 id="练习题与问题">练习题与问题</h3>
+<p>（答案见书末）</p>
+<p><strong>11.1</strong> 预期损失（Expected
+Shortfall）与VaR有何区别？预期损失相较于VaR在理论上的优势是什么？</p>
+<p><strong>11.2</strong>
+在风险度量中，为满足第11.5节中的次可加性（subadditivity）条件，赋予百分位数的权重需要满足哪些条件？</p>
+<p><strong>11.3</strong> 某基金经理宣布，该基金的<strong>一个月95%
+VaR</strong>为所管理投资组合规模的6%。你在该基金中投资了$100,000。你如何理解该基金经理的这一声明？</p>
+<p><strong>11.4</strong>
+某基金经理宣布，该基金的<strong>一个月95%预期损失（ES）</strong>为所管理投资组合规模的6%。你在该基金中投资了$100,000。你如何理解该基金经理的这一声明？</p>
+<p><strong>11.5</strong>
+假设两个投资项目中，每个都有0.9%的概率会损失$1000万，有99.1%的概率损失$100万。两个投资是相互独立的。</p>
+<ol type="a">
+<li>当置信水平为99%时，单个投资的VaR是多少？<br />
+</li>
+<li>当置信水平为99%时，单个投资的预期损失（ES）是多少？<br />
+</li>
+<li>当置信水平为99%时，由这两个投资组成的投资组合的VaR是多少？<br />
+</li>
+<li>当置信水平为99%时，由这两个投资组成的投资组合的预期损失（ES）是多少？<br />
+</li>
+<li>说明在本例中，VaR不满足次可加性条件，而预期损失满足。</li>
+</ol>
+<p><strong>11.6</strong>
+假设一个投资组合在一天内的价值变动服从均值为0、标准差为$200万的正态分布；那么：（a）一天97.5%置信水平下的VaR是多少？（b）五天97.5%置信水平下的VaR是多少？（c）五天99%置信水平下的VaR是多少？</p>
+<p><strong>11.7</strong>
+如果在第11.6题的基础上，假设每日的价值变动存在一阶自相关，且相关系数为0.16，这对你的答案会产生什么影响？</p>
+<p><strong>11.8</strong>
+请详细解释在一个由多个资产组成的投资组合中，边际VaR（Marginal
+VaR）、增量VaR（Incremental VaR）和组成VaR（Component
+VaR）之间的区别。</p>
+<p><strong>11.9</strong>
+假设我们使用1000天的数据对一个VaR模型进行回溯测试。VaR的置信水平为99%，我们观察到17次“例外”。在5%的显著性水平下，是否应当拒绝该模型？请使用<strong>单尾检验</strong>。</p>
+<p><strong>11.10</strong> 解释“聚集性（bunching）”是什么意思。</p>
+<p><strong>11.11</strong> 证明公式（11.5）。</p>
+<p><strong>11.12</strong>
+假设一个投资组合在一个月内的价值变动服从正态分布，均值为零，标准差为200万美元。请在<strong>98%置信水平</strong>和<strong>三个月时间范围</strong>下，计算该组合的VaR和ES。</p>
+<h3 id="进一步练习题"><strong>进一步练习题</strong></h3>
+<p><strong>11.13</strong>
+假设两个投资项目中，每个都有以下分布：损失1000万美元的概率为4%，损失100万美元的概率为2%，获利100万美元的概率为94%。两个投资是相互独立的。<br />
+(a) 当置信水平为95%时，单个投资的VaR是多少？<br />
+(b) 当置信水平为95%时，单个投资的预期损失（Expected
+Shortfall）是多少？<br />
+(c) 当置信水平为95%时，由这两个投资组成的组合的VaR是多少？<br />
+(d) 当置信水平为95%时，由这两个投资组成的组合的预期损失是多少？<br />
+(e) 说明在本例中，VaR不满足次可加性，而预期损失满足。</p>
+<p><strong>11.14</strong>
+假设某投资组合每日价值变动的一阶自相关系数为0.12。若10日VaR通过将一日VaR乘以
+$ $
+得到，结果为200万美元。那么，考虑自相关因素后，更合理的VaR估计值是多少？</p>
+<p><strong>11.15</strong>
+假设我们使用1000天的数据对某VaR模型进行回溯测试，VaR的置信水平为99%，并观察到15次“例外”。在5%的显著性水平下，是否应使用Kupiec的<strong>双尾检验</strong>拒绝该模型？</p>
+<p><strong>11.16</strong>
+某投资组合在三个月内的价值变动服从正态分布，均值为50万美元，标准差为300万美元。请在<strong>99.5%置信水平</strong>与<strong>三个月时间范围</strong>下，计算VaR和预期损失（ES）。</p>
+<p><strong>11.17</strong>
+某投资组合在一个月内损失超过1000万美元的概率估计为5%。<br />
+(a)
+如果该组合的价值变动服从<strong>均值为零的正态分布</strong>，一个月99%的VaR是多少？<br />
+(b) 如果<strong>幂律模型适用</strong>，且参数 $ = 3
+$，那么一个月99%的VaR是多少？</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/07/10/%E7%AC%AC10%E7%AB%A0%20%E4%BC%B0%E5%80%BC%E4%B8%8E%E6%83%85%E6%99%AF%E5%88%86%E6%9E%90/" rel="prev" title="《风险管理与金融机构》第10章  估值与情景分析">
+                  <i class="fa fa-angle-left"></i> 《风险管理与金融机构》第10章  估值与情景分析
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/07/12/%E7%AC%AC12%E7%AB%A0%20%E5%8E%86%E5%8F%B2%E6%A8%A1%E6%8B%9F%E4%B8%8E%E6%9E%81%E5%80%BC%E7%90%86%E8%AE%BA/" rel="next" title="《风险管理与金融机构》第12章  历史模拟与极值理论">
+                  《风险管理与金融机构》第12章  历史模拟与极值理论 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+    <div id="search-container" style="margin: 20px auto; max-width: 600px;">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js"></script>
+      <div id="search"></div>
+      <script>
+        window.addEventListener('DOMContentLoaded', (event) => {
+            new PagefindUI({ 
+                element: "#search", 
+                showImages: false,
+                translations: {
+                    placeholder: "搜搜看...",
+                    clear_search: "清除",
+                    load_more: "加载更多",
+                    search_label: "搜索",
+                    filters_label: "筛选",
+                    zero_results: "未找到关于 [SEARCH_TERM] 的结果",
+                    many_results: "找到 [COUNT] 条关于 [SEARCH_TERM] 的结果",
+                    one_result: "找到 1 条关于 [SEARCH_TERM] 的结果",
+                    searching: "正在搜索..."
+                }
+            });
+        });
+      </script>
+    </div>
+  
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>

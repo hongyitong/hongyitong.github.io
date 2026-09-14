@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false,"path":"/search.json"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="第16章 情景分析与压力测试 Scenario Analysis and Stress Testing 如果有一个从2007年夏季开始的市场动荡带来的教训值得汲取，那就是应该更加重视压力测试，而较少依赖于机械地应用VaR（风险价值）&#x2F;ES（预期损失）模型。VaR&#x2F;ES模型很有用，但它们不可避免地是回顾性(backward looking)的。风险管理关注的是未来可能发生的情况。 压力测试涉及评估极">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《风险管理与金融机构》第16章  情景分析与压力测试">
+<meta property="og:url" content="http://hongyitong.github.io/2026/07/16/%E7%AC%AC16%E7%AB%A0%20%E6%83%85%E6%99%AF%E5%88%86%E6%9E%90%E4%B8%8E%E5%8E%8B%E5%8A%9B%E6%B5%8B%E8%AF%95/index.html">
+<meta property="og:site_name" content="墨语浮生">
+<meta property="og:description" content="第16章 情景分析与压力测试 Scenario Analysis and Stress Testing 如果有一个从2007年夏季开始的市场动荡带来的教训值得汲取，那就是应该更加重视压力测试，而较少依赖于机械地应用VaR（风险价值）&#x2F;ES（预期损失）模型。VaR&#x2F;ES模型很有用，但它们不可避免地是回顾性(backward looking)的。风险管理关注的是未来可能发生的情况。 压力测试涉及评估极">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/img4/%E3%80%8A%E9%A3%8E%E9%99%A9%E7%AE%A1%E7%90%86%E4%B8%8E%E9%87%91%E8%9E%8D%E6%9C%BA%E6%9E%84%E3%80%8B/E16.1.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/%E3%80%8A%E9%A3%8E%E9%99%A9%E7%AE%A1%E7%90%86%E4%B8%8E%E9%87%91%E8%9E%8D%E6%9C%BA%E6%9E%84%E3%80%8B/T16.1.png">
+<meta property="article:published_time" content="2026-07-15T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-09-14T04:08:52.045Z">
+<meta property="article:author" content="Rayman.hung">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hongyitong.github.io/img4/%E3%80%8A%E9%A3%8E%E9%99%A9%E7%AE%A1%E7%90%86%E4%B8%8E%E9%87%91%E8%9E%8D%E6%9C%BA%E6%9E%84%E3%80%8B/E16.1.png">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2026/07/16/%E7%AC%AC16%E7%AB%A0%20%E6%83%85%E6%99%AF%E5%88%86%E6%9E%90%E4%B8%8E%E5%8E%8B%E5%8A%9B%E6%B5%8B%E8%AF%95/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2026/07/16/%E7%AC%AC16%E7%AB%A0%20%E6%83%85%E6%99%AF%E5%88%86%E6%9E%90%E4%B8%8E%E5%8E%8B%E5%8A%9B%E6%B5%8B%E8%AF%95/","path":"2026/07/16/第16章 情景分析与压力测试/","title":"《风险管理与金融机构》第16章  情景分析与压力测试"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>《风险管理与金融机构》第16章  情景分析与压力测试 | 墨语浮生</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="fc62aedd-644a-478d-b3c2-d8ba9964421c" src="https://cloud.umami.is/script.js" data-host-url="https://cloud.umami.is"></script>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js" defer></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">墨语浮生</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC16%E7%AB%A0-%E6%83%85%E6%99%AF%E5%88%86%E6%9E%90%E4%B8%8E%E5%8E%8B%E5%8A%9B%E6%B5%8B%E8%AF%95"><span class="nav-text">第16章 情景分析与压力测试</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E6%83%85%E6%99%AF"><span class="nav-text">16.1 生成情景</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AF%B9%E5%8D%95%E4%B8%AA%E5%8F%98%E9%87%8F%E6%96%BD%E5%8A%A0%E5%8E%8B%E5%8A%9B"><span class="nav-text">16.1.1 对单个变量施加压力</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B6%89%E5%8F%8A%E5%A4%9A%E4%B8%AA%E5%8F%98%E9%87%8F%E7%9A%84%E6%83%85%E6%99%AF"><span class="nav-text">16.1.2 涉及多个变量的情景</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%94%B1%E7%AE%A1%E7%90%86%E5%B1%82%E7%94%9F%E6%88%90%E7%9A%84%E6%83%85%E6%99%AF"><span class="nav-text">16.1.3 由管理层生成的情景</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83%E5%8F%98%E9%87%8F%E4%B8%8E%E8%BE%B9%E7%BC%98%E5%8F%98%E9%87%8F"><span class="nav-text">16.1.4 核心变量与边缘变量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BD%BF%E6%83%85%E6%99%AF%E5%AE%8C%E6%95%B4"><span class="nav-text">16.1.5 使情景完整</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%95%86%E4%B8%9A%E5%BF%AB%E7%85%A7-16.1-%E9%95%BF%E6%9C%9F%E8%B5%84%E6%9C%AC%E7%AE%A1%E7%90%86%E5%85%AC%E5%8F%B8%E7%9A%84%E5%B7%A8%E9%A2%9D%E4%BA%8F%E6%8D%9F"><span class="nav-text">商业快照
+16.1 长期资本管理公司的巨额亏损</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%8D%E5%90%91%E5%8E%8B%E5%8A%9B%E6%B5%8B%E8%AF%95"><span class="nav-text">16.1.6 反向压力测试</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%91%E7%AE%A1"><span class="nav-text">16.2 监管</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%94%B1%E7%9B%91%E7%AE%A1%E6%9C%BA%E6%9E%84%E9%80%89%E6%8B%A9%E7%9A%84%E6%83%85%E6%99%AF"><span class="nav-text">16.2.1 由监管机构选择的情景</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%95%86%E4%B8%9A%E5%BF%AB%E7%85%A7-16.2-%E4%BA%A4%E9%80%9A%E7%81%AF%E6%9C%9F%E6%9D%83"><span class="nav-text">商业快照 16.2
+交通灯期权</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8%E5%8E%8B%E5%8A%9B%E6%B5%8B%E8%AF%95%E7%BB%93%E6%9E%9C"><span class="nav-text">16.3 如何使用压力测试结果</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B0%86%E5%8E%8B%E5%8A%9B%E6%B5%8B%E8%AF%95%E4%B8%8Evar%E8%AE%A1%E7%AE%97%E7%9B%B8%E7%BB%93%E5%90%88"><span class="nav-text">16.3.1 将压力测试与VaR计算相结合</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%BB%E8%A7%82%E6%A6%82%E7%8E%87%E4%B8%8E%E5%AE%A2%E8%A7%82%E6%A6%82%E7%8E%87"><span class="nav-text">16.3.2 主观概率与客观概率</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%83%E4%B9%A0%E9%A2%98%E4%B8%8E%E9%97%AE%E9%A2%98"><span class="nav-text">练习题与问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%B1%E5%BA%A6%E9%97%AE%E9%A2%98"><span class="nav-text">深度问题</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、心情记录</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives">
+          <span class="site-state-item-count">333</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/07/16/%E7%AC%AC16%E7%AB%A0%20%E6%83%85%E6%99%AF%E5%88%86%E6%9E%90%E4%B8%8E%E5%8E%8B%E5%8A%9B%E6%B5%8B%E8%AF%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="《风险管理与金融机构》第16章  情景分析与压力测试 | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《风险管理与金融机构》第16章  情景分析与压力测试
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-07-16 00:00:00" itemprop="dateCreated datePublished" datetime="2026-07-16T00:00:00+08:00">2026-07-16</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="第16章-情景分析与压力测试">第16章 情景分析与压力测试</h2>
+<p>Scenario Analysis and Stress Testing</p>
+<p>如果有一个从2007年夏季开始的市场动荡带来的教训值得汲取，那就是应该更加重视压力测试，而较少依赖于机械地应用VaR（风险价值）/ES（预期损失）模型。<strong>VaR/ES模型很有用，但它们不可避免地是回顾性(backward
+looking)的。风险管理关注的是未来可能发生的情况</strong>。</p>
+<p>压力测试涉及评估极端但合理的情景所带来的影响，这些情景在VaR或ES模型中未被考虑。</p>
+<p>本章将探讨用于生成压力测试情景的不同方法，以及应如何使用这些结果。它解释了2007–2008年全球金融危机促使监管机构要求银行进行更多的压力测试，并指出监管机构正越来越多地自行定义压力测试，以确保银行拥有足够的资本来应对不利情景。</p>
+<span id="more"></span>
+<h3 id="生成情景">16.1 生成情景</h3>
+<p>Generating the Scenarios</p>
+<p>用于计算市场风险VaR或ES的最常见方法是第12章中介绍的历史模拟法。该方法假设过去的数据可以很好地预测未来1至10天内的情况。但如果某一事件在数据所涵盖的期间未曾发生，那么在使用通常的历史模拟方法时，它不会影响结果。</p>
+<blockquote>
+<p>个人注：白天鹅事件。</p>
+</blockquote>
+<p>我们已经讨论了多种修改VaR/ES计算的方法，以使其反映的不仅仅是“未来市场变量的变动是来自近期历史的一个随机样本”这一简单假设。具体而言：</p>
+<ol type="1">
+<li>波动率缩放（见第12.3节）可以在市场高度波动时导致更极端的结果被考虑；</li>
+<li>极值理论（见第12.5节）提供了一种基于历史数据扩展损失分布尾部的方法；</li>
+<li>计算压力VaR或压力ES（见第12.1节）考虑了历史上发生过的一个特别困难的250天期间的影响。</li>
+</ol>
+<p><strong>但VaR/ES计算的本质是回顾性的</strong>。那些可能发生但与数据所涵盖期间发生的事件有很大不同的事件不会被纳入考虑。压力测试试图克服VaR/ES度量的这一弱点。</p>
+<p>压力测试涉及估计金融机构的投资组合在极端（但合理 (but
+plausible)）市场变动情景下的表现。第8.1表中的汇率示例说明了极端市场变动的发生情况。它显示五个标准差（five-standard-deviation）的变动平均每五年发生一次，而如果分布是正态的，则这类变动几乎不会发生（大约每7000年一次）。</p>
+<p>压力测试中的一个关键问题是情景的选择方式。我们接下来将探讨替代的情景生成程序。</p>
+<h4 id="对单个变量施加压力">16.1.1 对单个变量施加压力</h4>
+<p>Stressing Individual Variables</p>
+<p>一种方法是使用在某一变量上发生大幅变动、而其他变量保持不变的情景。这类情景的示例包括：</p>
+<ol type="1">
+<li>收益率曲线的100个基点（向上或向下）平移；</li>
+<li>将某项资产的所有隐含波动率增加或减少为当前值的50%；</li>
+<li>将某股票指数上调或下调10%；</li>
+<li>将主要货币的汇率上调或下调6%；</li>
+<li>将次要货币的汇率上调或下调20%。</li>
+</ol>
+<p>变量小幅变动的影响可以通过其delta来衡量。较大变动的影响可以通过delta与gamma的组合来衡量。而在此我们考虑的变动幅度非常大，因此使用希腊字母来估算投资组合价值的变化很可能是不可靠的。</p>
+<p>The impact of <strong>small changes</strong> in a variable is
+measured by its delta. The impact of <strong>larger changes</strong> can
+be measured by a combination of delta and gamma. Here we are considering
+changes that are <strong>so large</strong> that it is likely to be
+unreliable to estimate the change in the value of a portfolio using
+Greek letters.</p>
+<h4 id="涉及多个变量的情景">16.1.2 涉及多个变量的情景</h4>
+<p>Scenarios Involving Several Variables</p>
+<p>通常，当一个市场变量发生大幅变动时，其他变量也会随之变动。这促使金融机构开发出多个变量同时变化的情景。一种常见做法是使用过去曾发生过的市场变量的极端变动。例如，为测试美国股价极端变动的影响，公司可能会将所有市场变量的百分比变动设为1987年10月19日的变动值（当天标普500指数变动了22.3个标准差）。如果这一变动被认为过于极端，公司也可能选择1988年1月8日（当天标普500指数变动了6.8个标准差）。其他股价大幅波动的日期包括：2001年9月11日（纽约世贸中心遭受恐怖袭击），以及2008年9月15日（雷曼兄弟申请破产）。2020年3月，由于新冠疫情相关不确定性，股价也大幅下跌，道琼斯工业平均指数在3月9日、3月12日和3月16日分别下跌了7.79%、9.99%和12.93%。</p>
+<p>另一种方法是放大过去发生的情况，以生成极端情景。例如，可以选取某一时期市场出现适度不利变动的情况，并构建一个所有变量的变动为当时3倍或5倍的情景。但这种方法的问题在于，<strong>在市场承压的情况下，相关性会上升</strong>，而将所有市场变量的变动统一放大，并不会相应地提高相关性。</p>
+<p>一些历史情景是对市场变量的一日冲击，另一些则涉及持续数日、数周，甚至数月的冲击。在考虑的市场变量中纳入波动率是很重要的。通常，利率和汇率等市场变量的极端变动伴随着这些变量的波动率大幅上升，以及其他广泛变量波动率的上升。</p>
+<p>某些情景可能涉及大宗商品价格的大幅波动，例如2014年下半年油价暴跌。其他情景则可能包括避险行为与流动性短缺和信用价差上升并存的情况。这正是1998年8月俄罗斯债务违约时，以及2007年7月和8月投资者对次级抵押贷款证券化产品失去信心时所发生的情况（见第7章）。</p>
+<h4 id="由管理层生成的情景">16.1.3 由管理层生成的情景</h4>
+<p>Scenarios Generated by Management</p>
+<p>历史从不会完全重复。这部分原因可能是交易员对过去的金融危机有所了解，并试图避免重蹈前人覆辙。美国抵押贷款市场引发了始于2007年的全球金融危机。未来的信用危机不太可能由放宽抵押贷款标准引起——但未来发生信用危机的可能性依然存在。</p>
+<p>在许多方面，压力测试中最有用的情景是由高级管理层或金融机构内部的经济研究团队生成的。高级管理层和经济研究团队能够运用他们对市场、世界政治、经济环境以及当前全球不确定性的理解，开发出可能导致巨大损失的合理情景。有时，所制定的情景基于过去曾发生的事件，但会调整以纳入当前金融和经济环境的关键特征。</p>
+<p>一种制定情景的方法是，由高级管理层组成的委员会定期召开会议，集思广益地回答一个简单的问题：“会出什么问题？”Clemens
+和
+Winkler（1999）曾就这类委员会的最佳组成进行了研究。他们的结论是：（a）委员会应由三至五人组成；（b）委员会成员应具有不同的背景；（c）委员会成员之间应有充分的交流。委员会成员必须能够跳出日常职责，考虑整体局势。</p>
+<p>高级管理层在构建相关情景时，其思维不一定非得高度创新。2005年和2006年，许多评论人士就已经意识到美国房地产市场存在泡沫（bubble），并认为这一泡沫迟早会破裂。事后诸葛亮当然容易，但在那个时期，压力测试委员会提出一个全国范围内房价下降20%或30%的情景，是完全合理的。</p>
+<p>高级管理层和董事会理解并认识到压力测试的重要性至关重要。他们有责任根据压力测试结果作出战略决策。在压力测试情景的制定过程中纳入高级管理层的参与，有一个显著优势，那就是能够自然而然地促使他们“认同”压力测试的重要性。如果压力测试所用的情景是由中层管理人员制定的，那么其结果很可能不会被严肃对待。</p>
+<p>It is important that <strong>senior management</strong> and
+<strong>the board of directors</strong> understand and recognize the
+importance of stress testing. They have the responsibility for taking
+strategic decisions based on the stress-testing results. One advantage
+of involving senior management in the development of the scenarios to be
+used in stress testing is that it should naturally lead to a “buy in” by
+them to the idea that stress testing is important. The results generated
+from scenarios that are created by individuals who have middle
+management positions are unlikely to be taken as seriously</p>
+<blockquote>
+<p>个人注：项目管理中的高层参与的重要性。</p>
+</blockquote>
+<h4 id="核心变量与边缘变量">16.1.4 核心变量与边缘变量</h4>
+<p>Core vs. Peripheral Variables</p>
+<p>当对单个变量施加压力或由管理层生成情景时，这些情景往往是不完整的，因为仅规定了少数几个（核心）市场变量的变动。一种方法是将所有其他（边缘）变量的变动设为零，但这种做法很可能不令人满意。另一种方法是将边缘变量对正在施加压力的核心变量进行回归，以获得在核心变量发生变动的条件下对边缘变量的预测。这些预测（可以是点预测，也可以是概率分布）可以被纳入压力测试中。</p>
+<p>这种方法被称为条件压力测试，由 Kupiec（1999）进行了探讨。Kim 和
+Finger（2000）进一步发展了这一思想，提出了他们所谓的“断箭”压力测试。在该方法中，<strong>核心变量与边缘变量之间的相关性是基于市场处于压力状态时的表现，而不是基于平均状态下的表现。</strong></p>
+<p>This is known as conditional stress testing and is discussed by
+Kupiec (1999).2 Kim and Finger (2000) carry this idea further by using
+what they call a “<strong>broken arrow</strong>” stress test. In this,
+the correlation between the core variables and the peripheral variables
+is based on what happens in stressed market conditions rather than what
+happens on average</p>
+<h4 id="使情景完整">16.1.5 使情景完整</h4>
+<p>Making Scenarios Complete</p>
+<p>应对情景进行认真审查，以确保所有不利后果都被考虑在内。情景不仅应包括市场变量冲击对金融机构投资组合的直接影响，还应包括由许多金融机构以相同方式受到冲击并做出类似反应而引发的任何“连锁”效应。许多人表示，他们认识到美国房地产泡沫将在2007年破裂，但没有预料到后果会如此严重。他们未曾预见到，许多金融机构会在同一时间遭受损失，导致资金流向高质量资产，出现严重的流动性问题，并且信用价差大幅上升。（
+severe liquidity problems and a huge increase in credit spreads.）</p>
+<blockquote>
+<p>个人注：<strong>信用价差（Credit Spread）</strong>
+购买信用保护的成本；也指可能违约的债券收益率与无风险债券收益率之间的差额。</p>
+</blockquote>
+<p>另一个连锁效应的例子是1998年长期资本管理公司（LTCM）的失败（见商业快照16.1）。LTCM通常持有流动性较差证券的多头头寸和流动性较强证券的空头头寸。其失败是由于俄罗斯债务违约后发生的避险行为（flight
+to
+quality）所致。许多投资者只愿意购买流动性强的证券，流动性强与流动性弱证券之间的利差扩大。LTCM虽然进行了压力测试，考虑了类似1998年前发生过的避险情形的影响，但它没有考虑到连锁反应（
+knock-on
+effect.）。许多对冲基金在1998年都采取了与LTCM类似的交易策略。当避险行为开始时，它们都被迫同时平仓。平仓意味着卖出流动性差的证券并买入流动性强的证券，这加剧了避险行为，使得此次避险行为比以往更为剧烈。</p>
+<p>理想情况下，情景应当具有动态性，即应考虑到进行压力测试的金融机构的响应以及其他金融机构的响应。例如，设想某金融机构出售了依赖某一基础资产的看涨期权，并维持delta中性。在资产价格大幅上涨的冲击下，该机构会在期权头寸上立即遭受损失。为了维持delta中性，需要在相对较高的价格买入大量资产。此后进行delta对冲的成本可能取决于资产价格的波动性。通常情况下，波动性会很高，在资产价格趋稳前出现大幅上涨和下跌。因此，后续的delta对冲将特别昂贵。</p>
+<h4 id="商业快照-16.1-长期资本管理公司的巨额亏损"><strong>商业快照
+16.1</strong> <strong>长期资本管理公司的巨额亏损</strong></h4>
+<p>Long-Term Capital Management’s Big Loss</p>
+<p>长期资本管理公司（LTCM）是一家成立于1990年代中期的对冲基金，它因其交易所需抵押品的提供方式而遭遇问题。该对冲基金的投资策略被称为收敛套利（convergence
+arbitrage.）。一个非常简单的例子如下：它会寻找由同一家公司发行的、承诺相同支付的两只债券X和Y，其中X的流动性较差（即交易不活跃），而Y的流动性较好。市场通常会对流动性赋予价值，因此，X的价格通常低于Y的价格。LTCM会买入X，做空Y，并等待两者价格在未来某个时间点收敛。</p>
+<p>当利率上升时，该公司预期两只债券的价格会以大致相同的幅度下跌，从而它在债券X上需支付的抵押品大致等于在债券Y上收到的抵押品。类似地，当利率下降时，LTCM预期两只债券的价格会以大致相同的幅度上涨，从而它在债券X上收到的抵押品大致等于在债券Y上支付的抵押品。因此，它预期在抵押安排下不会出现大量资金流出。</p>
+<p>1998年8月，俄罗斯发生债务违约，引发了资本市场中的所谓“避险行为”（“flight
+to quality”
+）。其中一个结果是，投资者对流动性工具的估值远高于平时，LTCM投资组合中流动性强与流动性差工具之间的价格利差大幅上升。LTCM买入的债券价格下跌，而其做空的债券价格上涨。公司被要求对这两类债券都缴纳抵押品。由于公司杠杆率极高，难以履行抵押安排下的支付义务，最终不得不平仓头寸，导致总计约40亿美元的损失。如果公司杠杆率较低，它很可能能够挺过此次避险行为，并等待流动性强与流动性差债券的价格趋于接近。</p>
+<h4 id="反向压力测试">16.1.6 反向压力测试</h4>
+<p>Reverse Stress Testing</p>
+<p>反向压力测试涉及使用计算程序来寻找会导致金融机构失败的情景。它已成为风险管理中的一个重要工具，许多银行监管机构现在要求银行建立反向压力测试机制。</p>
+<p><strong>示例 16.1</strong></p>
+<p>作为反向压力测试的一个简单示例，假设某金融机构持有某资产的四个欧式看涨期权头寸。该资产的价格为
+$50， 无风险利率为 3%，波动率为
+20%，且资产无收入。期权的头寸、执行价格和期限如下表所示。该头寸的当前价值为
+−25.90
+百万美元。可以使用数值方法来搜索在资产价格与波动率发生一天内变化的情况下将导致最大损失的情景。对所考虑的变化范围应加以限制。我们假设资产价格不会低于
+$40，也不会高于 $60，同时假设波动率不会低于 10% 或高于 30%。</p>
+<p><img src="/img4/《风险管理与金融机构》/E16.1.png" alt="E16.1" style="zoom:67%;" /></p>
+<p>利用欧式期权定价公式（见附录 E）结合 Excel
+的求解器（Solver），发现最大损失发生在波动率下降至 10%，且资产价格下跌至
+$45.99 时。此时的损失为 $289.38
+百万美元。因此，反向压力测试表明，该金融机构在资产价格下跌约 8%
+且波动率大幅下降的情形下风险敞口最大。</p>
+<p>这个情景可能看起来不太合理。当资产价格下跌 8%
+时，波动率大幅下降的可能性不大。可以再次运行求解器，将波动率的下限从 10%
+提高至 20%。此时发现最坏情况发生在波动率保持在 20%，而资产价格下跌至
+$42.86 时。此时的损失为 $87.19 百万美元。</p>
+<p>如示例16.1中所示，针对金融机构所面临的所有市场变量进行全面搜索，在实践中通常在计算上是不可行的。一种方法是识别出5到10个关键市场变量，并假设其他变量的变动依赖于这些关键变量的变动。</p>
+<p>简化搜索过程的另一种方式是对问题施加某种结构限制。可以对市场变量的变动进行主成分分析（见第14.3节），最好使用来自市场承压时期的数据，然后搜索主成分的变动方式，以确定哪些变动会带来重大损失。这可以降低搜索空间的维度，从而减少不合理情景的数量。</p>
+<p>Another way of simplifying the search process is to impose some
+structure on the problem. A principal components analysis (see Section
+14.3) can be carried out on the changes in market variables (ideally
+using data from stressed market conditions) and then a search can be
+conducted to determine the changes in the principal components that
+generate large losses. This reduces the dimension of the space over
+which the search is conducted and should lead to fewer implausible
+scenarios.</p>
+<p>另一种方法是由风险管理团队对情景施加结构约束。例如，可以指定若干个历史上发生过的不利情景。然后分析人员可以搜索，需要将这些情景下所有市场变量的变动幅度放大多少倍，才能达到特定的损失水平。例如，可能得出结论：某金融机构可以承受2008年全球金融危机期间市场变动的重现，但如果市场变动幅度增加50%，则会出现严重问题。</p>
+<p>反向压力测试还可以作为压力测试委员会头脑风暴的辅助工具。在压力测试委员会召开会议前，分析人员可以使用反向压力测试生成若干对金融机构而言具有灾难性的情景。这些情景与委员会自身生成的其他情景一起，被提交委员会审议。委员会再运用判断力剔除其中一些不合理的情景，并对其他情景进行调整，使其变得合理，并保留用于认真评估。</p>
+<h3 id="监管">16.2 监管</h3>
+<p>Regulation</p>
+<p>本书后面将讨论对银行的监管。在此阶段，需要注意的是，监管机构要求基于银行内部VaR模型的市场风险计算必须辅以“严格而全面”的压力测试。他们指出，压力测试在经历长期平稳环境之后尤其重要，因为这种环境往往会导致管理上的自满情绪。</p>
+<p>监管机构的建议强调高级管理层和董事会在压力测试中的重要作用。特别是，高管和董事会成员应参与制定压力测试目标、定义情景、讨论压力测试结果、评估可能采取的行动并参与决策。监管机构指出，那些在始于2007年中期的全球金融危机中表现良好的银行，其共同点是高级管理层整体上积极参与压力测试的开发与运作，并将其结果作为战略决策的输入。压力测试应涵盖银行的所有业务领域，不应由各个部门各自为政地进行压力测试。</p>
+<p>对银行的具体监管建议如下：</p>
+<ol type="1">
+<li><p>压力测试应成为银行整体治理与风险管理文化的有机组成部分。压力测试应具备可操作性，其分析结果应影响适当管理层级的决策，包括董事会和高层管理层的战略业务决策。董事会和高管层的参与对压力测试机制的有效运作至关重要。</p></li>
+<li><p>银行应实施压力测试机制，以促进风险识别与控制，提供对其他风险管理工具的补充视角，提升资本与流动性管理水平，并增强内部和外部沟通。</p></li>
+<li><p>压力测试机制应纳入全机构的观点，并覆盖多种视角与方法。</p></li>
+<li><p>银行应制定成文的政策和程序以规范压力测试机制，并对其运行过程进行适当文档化。</p></li>
+<li><p>银行应具备足够稳健的基础设施，具有灵活性，能够以适当的颗粒度容纳不同或可能变化的压力测试。</p></li>
+<li><p>银行应定期维护与更新其压力测试框架，定期、独立地评估压力测试机制的有效性及其关键组成部分的稳健性。</p></li>
+<li><p>压力测试应覆盖各类风险和业务领域，包括全行层面。银行应能够有效整合其所有压力测试活动，从而提供全行风险的完整图景。</p></li>
+<li><p>压力测试机制应涵盖多种情景，包括前瞻性情景，并力求考虑系统性互动与反馈效应。</p></li>
+<li><p>压力测试应包含多个严重程度的事件，包括那些因损失规模或声誉损失而可能带来最大破坏的事件。压力测试机制还应识别可能危及银行生存的情景（即反向压力测试），以揭示隐藏风险与风险间的相互作用。</p></li>
+<li><p>作为整体压力测试机制的一部分，银行应努力考虑资金与资产市场的同步压力，以及市场流动性下降对敞口估值的影响。</p></li>
+<li><p>应系统性地对风险缓释技术的有效性进行质疑与验证。</p></li>
+<li><p>压力测试机制应明确涵盖复杂及定制化产品，如证券化敞口。针对证券化资产的压力测试应考虑基础资产、其对系统性市场因素的敞口、相关合同安排与内嵌触发条款，以及杠杆影响，特别是与发行结构中的次级结构有关的杠杆影响。</p></li>
+<li><p>压力测试机制应涵盖管道和仓储风险。无论此类敞口最终是否被证券化，银行都应将其纳入压力测试范围。</p></li>
+<li><p>银行应改进其压力测试方法，以反映声誉风险的影响，并将来自表外载体及其他相关实体的风险纳入压力测试机制。</p></li>
+<li><p>银行在评估其对特定资产类别或市场变动的脆弱性，以及对与风险缓释技术相关的反向风险时，应改进针对高杠杆交易对手的压力测试方法。</p></li>
+</ol>
+<p>Specific recommendations for banks are:</p>
+<ol type="1">
+<li>Stress testing should form an integral part of the overall
+governance and risk management culture of the bank. Stress testing
+should be actionable, with the results from stress-testing analyses
+impacting decision making at the appropriate management level, including
+strategic business decisions of the board and senior management. Board
+and senior management involvement in the stress-testing program is
+essential for its effective operation.</li>
+<li>A bank should operate a stress-testing program that promotes risk
+identification and control, provides a complementary risk perspective to
+other risk management tools, improves capital and liquidity management,
+and enhances internal and external communication.</li>
+<li>Stress-testing programs should take account of views from across the
+organization and should cover a range of perspectives and
+techniques.</li>
+<li>A bank should have written policies and procedures governing the
+stress-testing program. The operation of the program should be
+appropriately documented.</li>
+<li>A bank should have a suitably robust infrastructure in place, which
+is sufficiently flexible to accommodate different and possibly changing
+stress tests at an appropriate level of granularity</li>
+<li>A bank should regularly maintain and update its stress-testing
+framework. The effectiveness of the stress-testing program, as well as
+the robustness of major individual components, should be assessed
+regularly and independently.</li>
+<li>Stress tests should cover a range of risks and business areas,
+including at the firmwide level. A bank should be able to integrate
+effectively across the range of its stress-testing activities to deliver
+a complete picture of firmwide risk.</li>
+<li>Stress-testing programs should cover a range of scenarios, including
+forward-looking scenarios, and aim to take into account system-wide
+interactions and feedback effects.</li>
+<li>Stress tests should feature a range of severities, including events
+capable of generating most damage whether through size of loss or
+through loss of reputation. A stress-testing program should also
+determine what scenarios could challenge the viability of the bank
+(reverse stress tests) and thereby uncover hidden risks and interactions
+among risks.</li>
+<li>As part of an overall stress-testing program, a bank should aim to
+take account of simultaneous pressures in funding and asset markets, and
+the impact of a reduction in market liquidity on exposure
+valuation.</li>
+<li>The effectiveness of risk mitigation techniques should be
+systematically challenged.</li>
+<li>The stress-testing program should explicitly cover complex and
+bespoke products such as securitized exposures. Stress tests for
+securitized assets should consider the underlying assets, their exposure
+to systematic market factors, relevant contractual arrangements and
+embedded triggers, and the impact of leverage, particularly as it
+relates to the subordination level in the issue structure.</li>
+<li>The stress-testing program should cover pipeline and warehousing
+risks.4 A bank should include such exposures in its stress tests
+regardless of their probability of being securitized.</li>
+<li>A bank should enhance its stress-testing methodologies to capture
+the effect of reputational risk. The bank should integrate risks arising
+from off-balance-sheet vehicles and other related entities in its
+stress-testing program.</li>
+<li>A bank should enhance its stress-testing approaches for highly
+leveraged counterparties in considering its vulnerability to specific
+asset categories or market movements and in assessing potential
+wrong-way risk related to risk-mitigating techniques.</li>
+</ol>
+<p>对银行监管机构的建议如下：</p>
+<ol start="16" type="1">
+<li><p>监管机构应对银行的压力测试机制进行定期且全面的评估。</p></li>
+<li><p>若发现压力测试机制存在重大缺陷，或银行在决策过程中未能充分考虑压力测试结果，监管机构应要求管理层采取纠正措施。</p></li>
+<li><p>监管机构应评估并在必要时质疑全行层面情景的范围与严重性。监管机构可以要求银行针对特定投资组合或参数进行敏感性分析，使用特定情景，或评估那些可能危及银行生存的情景（即反向压力测试情景）。</p></li>
+<li><p>根据《巴塞尔协议Ⅱ》中第二支柱（监管审核程序）的规定，监管机构应将银行的压力测试结果作为对其内部资本评估与流动性风险管理审核的一部分。特别是，监管机构应将前瞻性压力测试结果用于评估资本与流动性充足性。</p></li>
+<li><p>监管机构应考虑基于统一情景开展压力测试演练。</p></li>
+<li><p>监管机构应与其他公共机构及业界进行建设性对话，以识别系统性脆弱性。同时，监管机构还应确保其具备评估银行压力测试机制的能力与专业技能。</p></li>
+</ol>
+<p>The recommendations for bank supervisors are:</p>
+<ol start="16" type="1">
+<li><p>Supervisors should make regular and comprehensive assessments of
+a bank’s stress-testing programs.</p></li>
+<li><p>Supervisors should require management to take corrective action
+if material deficiencies in the stress-testing program are identified or
+if the results of stress tests are not adequately taken into
+consideration in the decision-making process.</p></li>
+<li><p>Supervisors should assess and, if necessary, challenge the scope
+and severity of firm-wide scenarios. Supervisors may ask banks to
+perform sensitivity analysis with respect to specific portfolios or
+parameters, use specific scenarios, or evaluate scenarios under which
+their viability is threatened (reverse stress-testing
+scenarios).</p></li>
+<li><p>Under the Pillar 2 (supervisory review process) of the Basel II
+framework, supervisors should examine a bank’s stress-testing results as
+part of a supervisory review of both the bank’s internal capital
+assessment and its liquidity risk management. In particular, supervisors
+should consider the results of forward-looking stress testing for
+assessing the adequacy of capital and liquidity.</p></li>
+<li><p>Supervisors should consider implementing stress-test exercises
+based on common scenarios.</p></li>
+<li><p>Supervisors should engage in a constructive dialogue with other
+public authorities and the industry to identify systemic
+vulnerabilities. Supervisors should also ensure that they have the
+capacity and the skills to assess banks’ stress-testing
+programs.</p></li>
+</ol>
+<h4 id="由监管机构选择的情景">16.2.1 由监管机构选择的情景</h4>
+<p>Scenarios Chosen by Regulators</p>
+<p>银行监管机构要求银行考虑极端情景，并确保其拥有足够的资本以应对这些情景。但这其中存在一个明显的问题：银行希望将其监管资本维持在尽可能低的水平，因此它们没有动力去考虑可能导致监管机构要求其提高资本要求的极端情景。因此，银行自然倾向于选择“淡化处理”的、相对温和的情景。</p>
+<p>为克服这一问题的一种方法是由监管机构亲自提供情景（参见建议第18条和第20条）。许多司法辖区的监管机构（包括英国、欧盟和美国）现在定期开展自己的压力测试，以判断其监管下的银行是否拥有足够的资本以应对极端不利事件。如果银行未通过压力测试，则被要求补充资本，且可能面临分红限制。</p>
+<p>在美国，自2009年以来，美联储每年对所有合并资产超过500亿美元的银行（即全球系统重要性银行
+G-SIBs 和国内系统重要性银行
+D-SIBs）进行一次年度压力测试。自2011年起，该测试被称为全面资本分析与审查（Comprehensive
+Capital Analysis and Review,
+CCAR）。银行必须提交一份资本计划（包括计划中的股息）。美联储制定的情景为类似于1973–1975年、1981–1982年和2007–2009年经济衰退的情景。这些情景包括约25个变量的预测值，包括宏观经济变量，如国内生产总值（GDP）增长率、失业率、股市指数和房价指数等（including
+macroeconomic variables such as gross domestic product (GDP) growth,
+unemployment rate, stock market indices, and house price
+indices.）。</p>
+<p>在美国，合并资产超过100亿美元的银行需接受《多德–弗兰克法案压力测试》（Dodd–Frank
+Act Stress Test,
+DFAST）。DFAST中所考虑的情景与CCAR类似，但银行无需提交资本计划，因为资本管理被假定为基于一套标准假设。CCAR与DFAST都需要银行投入大量工作，仅对所用模型的论证材料就可能多达数千页。</p>
+<p>当监管机构自行选择情景时，便能够将银行的注意力集中到他们所关注的衰退情景上。如果监管机构发现许多银行在承担相似风险的头寸，他们可以要求所有银行考虑某一组特定的情景，而这些情景会对这些头寸产生不利影响。</p>
+<p>然而，监管机构自行生成情景也存在弊端。监管机构之所以加强对压力测试的关注，部分原因在于希望促使金融机构投入更多精力去构思并担忧潜在的不利情景。如果情景由监管机构来制定，这一目的可能无法实现，银行将只关注监管方设定的情景。</p>
+<p>在理想的监管环境中，应当同时评估管理层生成的情景和监管方生成的情景。</p>
+<p>存在一种风险，即金融机构可能找到某些操作方式，以使其能够通过压力测试，但实际上并未提升其安全性。一个极端的例子见于商业快照16.2。当丹麦的监管机构为人寿保险公司和养老金基金定义了关键情景后，一些公司通过对这些特定情景进行对冲（且仅对这些情景对冲）来应对。这并非监管机构的本意。压力测试中使用的每个情景都应被视为可能发生的一系列情况的代表。金融机构应确保自身资本状况不仅能应对指定情景，也能应对其他类似或相关情景。</p>
+<p>监管机构现在已充分意识到此类问题，并制定了相关程序，以确保银行不会通过这种方式操纵制度。</p>
+<h4 id="商业快照-16.2-交通灯期权"><strong>商业快照 16.2</strong>
+<strong>交通灯期权</strong></h4>
+<p>Traffic Light Options</p>
+<p>2001年6月，丹麦金融监管局（DFSA）引入了一项“交通灯”偿付能力压力测试系统。该系统要求人寿保险公司和养老金基金每半年提交一次报告，说明若发生某些预设冲击情景，其财务状况将受到的影响。</p>
+<p>“红灯情景（red light
+scenario）”包括：利率下降70个基点、股价下跌12%、房地产价格下跌8%。如果在该情景下资本跌破规定的临界水平，该公司将被归类为“红灯状态”，并需接受更频繁的监管，需每月提交报告。</p>
+<p>“黄灯情景（yellow light
+scenario）”包括：利率下降100个基点、股价下跌30%、房地产价格下跌12%。如果在该情景下资本跌破临界水平，该公司将被归类为“黄灯状态”，需每季度提交报告。</p>
+<p>当公司在红灯和黄灯情景下的资本水平均保持在临界值以上时，公司将被认定为“绿灯状态（green
+light status）”，只需按正常要求每半年提交一次报告。</p>
+<p>为帮助人寿保险公司和养老金基金维持绿灯状态，衍生品交易商开发了相关产品，称为交通灯期权。这类期权在交通灯情景发生时触发支付，从而提升金融机构在这些情景下的表现。交通灯期权仅在市场变动接近监管机构设定的红灯或黄灯情景时才支付，因此价格相对不高。</p>
+<h3 id="如何使用压力测试结果">16.3 如何使用压力测试结果</h3>
+<p>What to Do with the Results</p>
+<p><strong>压力测试中最大的难题是如何有效地使用其结果。</strong>管理层往往忽视压力测试的结果。一种常见的回应是：“是的，总有一两个情景会让我们垮掉。我们无法防范所有可能发生的事情。”避免这种反应的一种方法是，如前所述，让高级管理层参与情景的制定。</p>
+<blockquote>
+<p>个人注：风险的考量是一种取舍，不可能都考虑最坏情形而裹足不前。所以很多时候是一种判断和取舍。所谓的谋事在人，成事在天。</p>
+</blockquote>
+<p>更理想的回应是：“这些情景所带来的风险是否可以接受？如果不能，我们来看一下可以进行哪些交易或采取哪些其他措施，使这类风险变得更可控。”</p>
+<p>对于高级管理层和风险管理团队而言，他们面临的一个问题是桌上摆着<strong>两份关于“可能出问题”的报告。一份来自VaR或ES模型，另一份来自内部压力测试。他们应该基于哪一份报告做出决策呢？</strong></p>
+<h4 id="将压力测试与var计算相结合">16.3.1 将压力测试与VaR计算相结合</h4>
+<p>Integrating Stress Testing and VaR Calculations</p>
+<p>Berkowitz（2000）建议，如果将压力测试的结果纳入VaR的计算中，压力测试将更容易被严肃对待。这可以通过为每一个所考虑的压力情景分配一个概率来实现。</p>
+<p>假设某金融机构考虑了 <span class="math inline">\(n_s\)</span>
+个压力情景，且这些情景的总概率为 <span
+class="math inline">\(p\)</span>。进一步假设，通过常规方式（如历史模拟）生成了
+<span class="math inline">\(n_v\)</span> 个VaR情景。分析师可以认为共有
+<span class="math inline">\(n_s + n_v\)</span> 个情景，其中 <span
+class="math inline">\(n_s\)</span> 个压力情景的合计概率为 <span
+class="math inline">\(p\)</span>，而 <span
+class="math inline">\(n_v\)</span> 个历史情景的合计概率为 <span
+class="math inline">\(1 - p\)</span>。</p>
+<p><strong>不幸的是，人类在对罕见事件发生的主观概率进行估计方面并不擅长。</strong>为了使这一任务对压力测试委员会而言更加可行，可以采用的一种方法是：要求压力测试委员会将每个情景分配到具有预设概率的类别中。这些类别可以设定为：</p>
+<ol type="1">
+<li>概率 = 0.05%。极不可能发生（Extremely unlikely），大约是 1/2000
+的概率；</li>
+<li>概率 = 0.2%。非常不可能发生（Very
+unlikely），但应给予与历史模拟中使用的500个情景相似的权重；</li>
+<li>概率 =
+0.5%。不太可能发生（Unlikely），但应给予比历史模拟中500个情景更高的权重。</li>
+</ol>
+<p><strong>示例 16.2</strong></p>
+<p>假设在第12.1节的示例中，考虑了五个压力情景，带来的损失（单位：千美元）分别为
+400、700、900、1,050 和 1,200。为这些情景分配的概率分别为
+0.5%、0.2%、0.2%、0.05% 和 0.05%。因此，压力情景的总概率为
+1%。这意味着由历史模拟生成的情景总概率为 99%。</p>
+<p>假设采用等权重分配，那么每一个历史模拟情景被赋予的概率为：</p>
+<p><span class="math display">\[
+\frac{0.99}{500} = 0.00198
+\]</span></p>
+<p><img src="/img4/《风险管理与金融机构》/T16.1.png" alt="T16.1" style="zoom:50%;" /></p>
+<p>因此，第12.4表将被第16.1表所取代。为每个情景分配的概率是从最差情景到最优情景按累计方式排列的。</p>
+<p>当置信水平为 99% 时，VaR的定义为累计概率刚刚超过 0.01
+的第一个损失值。在本示例中，该损失值为：653,542（单位：美元）。</p>
+<p>Rebonato（2010）提出了一种更为复杂的评估情景概率的方法，该方法基于统计学中著名的结果——贝叶斯定理（Bayes’
+Theorem）以及所谓的贝叶斯网络（Bayesian networks）的谨慎应用。</p>
+<p>一个包含两个事件的情景，其发生的概率等于第一个事件发生的概率乘以在第一个事件已经发生的条件下第二个事件发生的概率。</p>
+<p>类似地，一个包含三个事件的情景，其概率等于：</p>
+<p><span class="math display">\[
+P(A) \times P(B \mid A) \times P(C \mid A, B)
+\]</span></p>
+<p>即第一个事件发生的概率 × 在第一个事件发生的条件下第二个事件发生的概率
+× 在前两个事件已发生的条件下第三个事件发生的概率。</p>
+<p>Rebonato的方法提供了一种评估这些条件概率的途径。</p>
+<p>Rebonato (2010) suggests a more elaborate approach to assessing
+probabilities of scenarios involving a careful application of a
+well-known result in statistics, Bayes’ theorem, and what are known as
+Bayesian networks.</p>
+<p>The probability of a scenario consisting of two events is equal to
+the probability of the first event happening times the probability of
+the second event happening conditional on the first event having
+happened.</p>
+<p>Similarly the probability of a scenario consisting of three events is
+the probability of the first event happening times the probability of
+the second event happening conditional that the first event has happened
+times the probability of the third event happening conditional that the
+first two events have happened.</p>
+<p>Rebonato’s approach provides a way of evaluating the conditional
+probabilities.</p>
+<h4 id="主观概率与客观概率">16.3.2 主观概率与客观概率</h4>
+<p>Subjective vs. Objective Probabilities</p>
+<p>概率估计有两种类型：客观概率和主观概率。</p>
+<p><strong>客观概率</strong>
+是通过观察事件在重复试验中发生的频率来计算的。例如一个理想化的客观概率例子：假设一个罐子中装有红球和黑球，比例未知。我们想知道随机抽取一个球为红色的概率。我们可以随机抽取一个球，观察颜色，然后放回罐中，再抽取另一个球并观察颜色，如此反复，直到抽取了100个球。如果其中30个是红球，70个是黑球，那么我们对抽到红球概率的估计就是
+0.3。</p>
+<p>但在现实中，许多客观概率的计算远不如这个例子可靠，因为事件发生的概率在观测过程中可能并不恒定，且这些观测可能不是相互独立的。</p>
+<p><strong>主观概率</strong>
+是指一个人基于其个人判断对某个事件发生可能性的估计。这种概率并不基于历史数据，而是反映一种信念程度。不同的人对同一事件可能给出不同的主观概率。</p>
+<p>A subjective probability is a probability derived from an
+individual’s personal judgment about the chance of a particular event
+occurring. The probability is not based on historical data. It is
+<strong>a degree of belief</strong>. Different people are liable to have
+different subjective probabilities for the same event.</p>
+<p><strong>历史模拟中的概率是客观的，而压力测试中情景所分配的概率是主观的。</strong><u>许多分析人员对主观概率感到不安，因为它不基于数据。此外，不幸的是，政治因素（political
+considerations）也可能在金融机构决定聚焦于历史数据的过程中发挥作用：如果你使用历史数据而出现问题，可以将责任归咎于数据；而如果你使用一个小组提供的主观判断而出现问题，这些人就可能被追责。</u></p>
+<p><strong>然而，如果风险管理仅仅依赖于客观概率，它就不可避免地是回顾性的，而无法利用高级管理者的判断力与专业知识。引导金融机构规避灾难性风险的责任，正是这些高管应当承担的职责。</strong></p>
+<blockquote>
+<p>个人注：这就是经验的用处！</p>
+</blockquote>
+<h3 id="总结">总结</h3>
+<p>压力测试是风险管理过程中的重要组成部分。它促使金融机构考虑那些传统VaR或ES分析所忽略的极端情景，而这些情景实际上是时有发生的。一旦对合理的情景进行了评估，金融机构就可以采取措施以减轻那些特别不利情景带来的影响。全面的压力测试机制的一个优势在于，它能够帮助金融机构更好地理解其投资组合中的风险性质。</p>
+<p>情景可以通过多种方式生成。一种方法是仅对一个市场变量进行极端变动，同时保持其他变量不变。另一种方法是利用过去市场经历极端冲击时期所有市场变量的变动。最优的方法是邀请由高级管理人员和经济学家组成的委员会，运用他们的判断力和经验来构建合理的极端情景。有时，金融机构还会执行反向压力测试，即使用算法搜索可能导致巨大损失的情景。</p>
+<p>情景应尽可能完整，既包括市场变量初始冲击的影响，也包括由此引发的连锁反应。始于2007年夏季的市场动荡表明，在某些情况下，连锁反应可能非常显著，表现为避险行为加剧、信用价差扩大以及流动性短缺等。</p>
+<p>监管机构要求金融机构为压力情景预留足够的资本。美国、欧盟和英国的监管机构定期制定压力情景，供其监管下的所有大型金融机构评估。这可能会导致部分金融机构需要补充资本，并有助于发现系统性风险问题。</p>
+<p>如果为所考虑的极端情景分配主观概率，就可以将压力测试与VaR分析整合在一起。这是一个有趣的想法，但似乎尚未被金融机构或监管机构广泛采用。</p>
+<h3 id="练习题与问题">练习题与问题</h3>
+<p>（答案见书末）</p>
+<p><strong>16.1</strong>
+请解释三种用于生成压力测试情景的不同方法。<br />
+<strong>16.2</strong> 什么是反向压力测试？它是如何使用的？<br />
+<strong>16.3</strong>
+为什么监管环境可能导致金融机构低估其所考虑情景的严重性？<br />
+<strong>16.4</strong> 什么是交通灯期权？它们有哪些缺点？<br />
+<strong>16.5</strong> 为什么高级管理层参与压力测试非常重要？<br />
+<strong>16.6</strong>
+由银行监管机构选择部分压力测试情景有哪些优点与缺点？<br />
+<strong>16.7</strong> 请解释主观概率与客观概率之间的区别。<br />
+<strong>16.8</strong>
+假设在第12.1节的示例中，考虑了七个压力情景，带来的损失（单位：千美元）分别为
+400、600、700、1,000、1,100、1,300 和
+1,400。为这些情景分配的主观概率分别为
+0.5%、0.5%、0.2%、0.2%、0.05%、0.05% 和
+0.05%。使用第16.3节所述方法，计算新的单日 99% VaR。<br />
+<strong>16.9</strong> 假设示例16.1中的四个期权头寸被更改为
+200、−70、−120 和 −60。使用 Solver
+计算日内变动的最坏情景。考虑资产价格在 $40 至 $60 之间，波动率在 10% 至
+30% 之间的范围。</p>
+<h3 id="深度问题">深度问题</h3>
+<p><strong>16.10</strong>
+在示例16.1中，若（a）期权是美式而非欧式；（b）期权是障碍期权，且当资产价格达到
+$65 时触发敲出，那么最坏情景会有何不同？请使用 Solver，在资产价格区间
+$40 到 $60、波动率区间 18% 到 30% 的范围内进行搜索。</p>
+<p><strong>16.11</strong>
+如果使用第12.3.1节所述的指数加权移动平均模型为历史情景分配权重，那么示例16.2中计算出的VaR将会发生怎样的变化？</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/07/15/%E7%AC%AC15%E7%AB%A0%20%E8%A1%8D%E7%94%9F%E5%93%81%E9%A3%8E%E9%99%A9/" rel="prev" title="《风险管理与金融机构》第15章  衍生品风险">
+                  <i class="fa fa-angle-left"></i> 《风险管理与金融机构》第15章  衍生品风险
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/07/17/%E7%AC%AC17%E7%AB%A0%20%E8%BF%9D%E7%BA%A6%E6%A6%82%E7%8E%87%E4%BC%B0%E8%AE%A1/" rel="next" title="《风险管理与金融机构》第17章  违约概率估计">
+                  《风险管理与金融机构》第17章  违约概率估计 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+    <div id="search-container" style="margin: 20px auto; max-width: 600px;">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js"></script>
+      <div id="search"></div>
+      <script>
+        window.addEventListener('DOMContentLoaded', (event) => {
+            new PagefindUI({ 
+                element: "#search", 
+                showImages: false,
+                translations: {
+                    placeholder: "搜搜看...",
+                    clear_search: "清除",
+                    load_more: "加载更多",
+                    search_label: "搜索",
+                    filters_label: "筛选",
+                    zero_results: "未找到关于 [SEARCH_TERM] 的结果",
+                    many_results: "找到 [COUNT] 条关于 [SEARCH_TERM] 的结果",
+                    one_result: "找到 1 条关于 [SEARCH_TERM] 的结果",
+                    searching: "正在搜索..."
+                }
+            });
+        });
+      </script>
+    </div>
+  
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>

@@ -1,0 +1,1406 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false,"path":"/search.json"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="第17章 违约概率估计 Estimating Default Probabilities 在本章中，我们将讨论多种估计违约概率的方法，并解释风险中性估计与真实世界估计之间的关键区别。我们所涵盖的内容将在第18章中用于探讨衍生品交易中的对手方信用风险，在第19章中用于讨论信用风险价值的计算。 17.1 信用评级 Credit Ratings 如第1.7节所述，评级机构（如穆迪、标普和惠誉 （Mood">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《风险管理与金融机构》第17章  违约概率估计">
+<meta property="og:url" content="http://hongyitong.github.io/2026/07/17/%E7%AC%AC17%E7%AB%A0%20%E8%BF%9D%E7%BA%A6%E6%A6%82%E7%8E%87%E4%BC%B0%E8%AE%A1/index.html">
+<meta property="og:site_name" content="墨语浮生">
+<meta property="og:description" content="第17章 违约概率估计 Estimating Default Probabilities 在本章中，我们将讨论多种估计违约概率的方法，并解释风险中性估计与真实世界估计之间的关键区别。我们所涵盖的内容将在第18章中用于探讨衍生品交易中的对手方信用风险，在第19章中用于讨论信用风险价值的计算。 17.1 信用评级 Credit Ratings 如第1.7节所述，评级机构（如穆迪、标普和惠誉 （Mood">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/img4/%E3%80%8A%E9%A3%8E%E9%99%A9%E7%AE%A1%E7%90%86%E4%B8%8E%E9%87%91%E8%9E%8D%E6%9C%BA%E6%9E%84%E3%80%8B/T17.1.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/%E3%80%8A%E9%A3%8E%E9%99%A9%E7%AE%A1%E7%90%86%E4%B8%8E%E9%87%91%E8%9E%8D%E6%9C%BA%E6%9E%84%E3%80%8B/T17.2.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/%E3%80%8A%E9%A3%8E%E9%99%A9%E7%AE%A1%E7%90%86%E4%B8%8E%E9%87%91%E8%9E%8D%E6%9C%BA%E6%9E%84%E3%80%8B/F17.1.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/%E3%80%8A%E9%A3%8E%E9%99%A9%E7%AE%A1%E7%90%86%E4%B8%8E%E9%87%91%E8%9E%8D%E6%9C%BA%E6%9E%84%E3%80%8B/T17.3.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/%E3%80%8A%E9%A3%8E%E9%99%A9%E7%AE%A1%E7%90%86%E4%B8%8E%E9%87%91%E8%9E%8D%E6%9C%BA%E6%9E%84%E3%80%8B/T17.4.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/%E3%80%8A%E9%A3%8E%E9%99%A9%E7%AE%A1%E7%90%86%E4%B8%8E%E9%87%91%E8%9E%8D%E6%9C%BA%E6%9E%84%E3%80%8B/T17.5.png">
+<meta property="article:published_time" content="2026-07-16T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-09-14T04:08:58.949Z">
+<meta property="article:author" content="Rayman.hung">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hongyitong.github.io/img4/%E3%80%8A%E9%A3%8E%E9%99%A9%E7%AE%A1%E7%90%86%E4%B8%8E%E9%87%91%E8%9E%8D%E6%9C%BA%E6%9E%84%E3%80%8B/T17.1.png">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2026/07/17/%E7%AC%AC17%E7%AB%A0%20%E8%BF%9D%E7%BA%A6%E6%A6%82%E7%8E%87%E4%BC%B0%E8%AE%A1/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2026/07/17/%E7%AC%AC17%E7%AB%A0%20%E8%BF%9D%E7%BA%A6%E6%A6%82%E7%8E%87%E4%BC%B0%E8%AE%A1/","path":"2026/07/17/第17章 违约概率估计/","title":"《风险管理与金融机构》第17章  违约概率估计"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>《风险管理与金融机构》第17章  违约概率估计 | 墨语浮生</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="fc62aedd-644a-478d-b3c2-d8ba9964421c" src="https://cloud.umami.is/script.js" data-host-url="https://cloud.umami.is"></script>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js" defer></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">墨语浮生</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC17%E7%AB%A0-%E8%BF%9D%E7%BA%A6%E6%A6%82%E7%8E%87%E4%BC%B0%E8%AE%A1"><span class="nav-text">第17章 违约概率估计</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BF%A1%E7%94%A8%E8%AF%84%E7%BA%A7"><span class="nav-text">17.1 信用评级</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%86%85%E9%83%A8%E4%BF%A1%E7%94%A8%E8%AF%84%E7%BA%A7"><span class="nav-text">17.1.1 内部信用评级</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#altman-%E7%9A%84-z-%E5%88%86%E6%95%B0"><span class="nav-text">17.1.2 Altman 的 Z-分数</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%86%E5%8F%B2%E8%BF%9D%E7%BA%A6%E6%A6%82%E7%8E%87"><span class="nav-text">17.2 历史违约概率</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8D%B1%E9%99%A9%E7%8E%87"><span class="nav-text">17.2.1 危险率</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%9E%E6%94%B6%E7%8E%87"><span class="nav-text">17.3 回收率</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9B%9E%E6%94%B6%E7%8E%87%E5%AF%B9%E8%BF%9D%E7%BA%A6%E7%8E%87%E7%9A%84%E4%BE%9D%E8%B5%96%E5%85%B3%E7%B3%BB"><span class="nav-text">17.3.1 回收率对违约率的依赖关系</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BF%A1%E7%94%A8%E8%BF%9D%E7%BA%A6%E6%8E%89%E6%9C%9F"><span class="nav-text">17.4 信用违约掉期</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%95%86%E4%B8%9A%E5%BF%AB%E7%85%A7-17.1-cds-%E5%B8%82%E5%9C%BA"><span class="nav-text">商业快照 17.1
+CDS 市场</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%95%86%E4%B8%9A%E5%BF%AB%E7%85%A7-17.2-cds-%E6%98%AF%E4%B8%80%E7%A7%8D%E6%9C%89%E7%BC%BA%E9%99%B7%E7%9A%84%E5%90%88%E7%BA%A6%E5%90%97"><span class="nav-text">商业快照
+17.2 CDS 是一种有缺陷的合约吗？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%80%E4%BE%BF%E5%AE%9C%E5%8F%AF%E4%BA%A4%E5%89%B2%E5%80%BA%E5%88%B8"><span class="nav-text">17.4.1 最便宜可交割债券</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BF%A1%E7%94%A8%E6%8C%87%E6%95%B0"><span class="nav-text">17.4.2 信用指数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9B%BA%E5%AE%9A%E7%A5%A8%E6%81%AF%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="nav-text">17.4.3 固定票息的使用</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BF%A1%E7%94%A8%E5%88%A9%E5%B7%AE"><span class="nav-text">17.5 信用利差</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#cds-%E5%88%A9%E5%B7%AE%E4%B8%8E%E5%80%BA%E5%88%B8%E6%94%B6%E7%9B%8A%E7%8E%87"><span class="nav-text">17.5.1 CDS 利差与债券收益率</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%97%A0%E9%A3%8E%E9%99%A9%E5%88%A9%E7%8E%87"><span class="nav-text">17.5.2 无风险利率</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B5%84%E4%BA%A7%E4%BA%92%E6%8D%A2"><span class="nav-text">17.5.3 资产互换</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#cds%E5%80%BA%E5%88%B8%E5%9F%BA%E5%B7%AE"><span class="nav-text">17.5.4 CDS–债券基差</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%8E%E4%BF%A1%E7%94%A8%E5%88%A9%E5%B7%AE%E4%BC%B0%E8%AE%A1%E8%BF%9D%E7%BA%A6%E6%A6%82%E7%8E%87"><span class="nav-text">17.6 从信用利差估计违约概率</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BF%91%E4%BC%BC%E8%AE%A1%E7%AE%97"><span class="nav-text">17.6.1 近似计算</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9B%B4%E7%B2%BE%E7%A1%AE%E7%9A%84%E8%AE%A1%E7%AE%97"><span class="nav-text">17.6.2 更精确的计算</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%9D%E7%BA%A6%E6%A6%82%E7%8E%87%E4%BC%B0%E8%AE%A1%E7%9A%84%E6%AF%94%E8%BE%83"><span class="nav-text">17.7 违约概率估计的比较</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B7%AE%E5%BC%82%E7%9A%84%E5%8E%9F%E5%9B%A0"><span class="nav-text">17.7.1 差异的原因</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%95%86%E4%B8%9A%E5%BF%AB%E7%85%A7-17.3-%E4%BC%A0%E6%9F%93%E6%95%88%E5%BA%94"><span class="nav-text">商业快照 17.3
+传染效应</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BC%B0%E5%80%BC-vs.-%E6%83%85%E6%99%AF%E5%88%86%E6%9E%90"><span class="nav-text">17.7.2 估值 vs. 情景分析</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%A9%E7%94%A8%E8%82%A1%E4%BB%B7%E4%BC%B0%E8%AE%A1%E8%BF%9D%E7%BA%A6%E6%A6%82%E7%8E%87"><span class="nav-text">17.8 利用股价估计违约概率</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E8%A1%A8%E7%8E%B0"><span class="nav-text">17.8.1 模型表现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%9C%9F%E5%AE%9E%E4%B8%96%E7%95%8C%E4%B8%8E%E9%A3%8E%E9%99%A9%E4%B8%AD%E6%80%A7%E8%BF%9D%E7%BA%A6%E6%A6%82%E7%8E%87%E7%9A%84%E5%B7%AE%E5%BC%82"><span class="nav-text">17.8.2
+真实世界与风险中性违约概率的差异</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BF%9D%E7%BA%A6%E8%B7%9D%E7%A6%BB"><span class="nav-text">17.8.3 违约距离</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%83%E4%B9%A0"><span class="nav-text">练习</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%9B%E4%B8%80%E6%AD%A5%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-text">进一步的问题</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、心情记录</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives">
+          <span class="site-state-item-count">333</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/07/17/%E7%AC%AC17%E7%AB%A0%20%E8%BF%9D%E7%BA%A6%E6%A6%82%E7%8E%87%E4%BC%B0%E8%AE%A1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="《风险管理与金融机构》第17章  违约概率估计 | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《风险管理与金融机构》第17章  违约概率估计
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-07-17 00:00:00" itemprop="dateCreated datePublished" datetime="2026-07-17T00:00:00+08:00">2026-07-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="第17章-违约概率估计">第17章 违约概率估计</h2>
+<p>Estimating Default Probabilities</p>
+<p>在本章中，我们将讨论多种估计违约概率的方法，并解释风险中性估计与真实世界估计之间的关键区别。我们所涵盖的内容将在第18章中用于探讨衍生品交易中的对手方信用风险，在第19章中用于讨论信用风险价值的计算。</p>
+<h3 id="信用评级">17.1 信用评级</h3>
+<p>Credit Ratings</p>
+<p>如第1.7节所述，评级机构（如穆迪、标普和惠誉 （Moody’s, S&amp;P, and
+Fitch））提供描述公司债券信用状况的评级。由于信用评级旨在提供有关信用质量的信息，人们可能会期望当正面或负面信息进入市场时，信用评级会频繁变化。然而，评级实际上变动相对不频繁。评级机构在给予评级时的目标之一就是保持评级的稳定性。例如，它们希望避免评级的反复变动——例如一家公司债券被下调评级后，在几周内又被上调评级。因此，评级只有在有理由相信公司的信用状况发生了长期变化时才会改变。</p>
+<p>造成这种情况的一个原因是债券交易员是评级的主要使用者。他们通常受限于持有债券的信用评级规则（例如，许多债券基金只能持有投资级债券）。如果这些评级频繁变化，他们可能不得不为了遵守规定而进行大量交易（从而产生高额交易成本）。</p>
+<p>另一个相关点是，评级机构努力做到“跨周期评级（rate through the
+cycle.）”。假设经济出现下行，从而导致某公司在未来六个月的违约概率上升，但对其在未来三到五年的违约概率几乎没有影响。在这种情况下，评级机构通常不会改变该公司的信用评级。</p>
+<p>像穆迪KMV和Kamakura这样的公司提供基于公司股价和其他变量的违约概率估计。这些估计并不以稳定性为目标，通常比信用评级更快地对市场信息做出反应。用于产生这些估计的模型类型将在第17.8节中讨论。</p>
+<span id="more"></span>
+<h4 id="内部信用评级">17.1.1 内部信用评级</h4>
+<p>Internal Credit Ratings</p>
+<p>大多数银行都有评估其公司客户和零售客户信用状况的程序。这是一项必要措施。评级机构发布的评级通常只适用于发行了公开交易债务的公司。因此，许多中小型公司并没有来自评级机构的信用评级。</p>
+<p>用于估计违约概率的内部评级方法通常涉及盈利能力比率（如资产回报率）以及资产负债表比率（如流动资产除以流动负债，即流动比率，以及负债与股本的比率）。银行认识到，用于偿还贷款的是现金（cash）而非利润（profits）。因此，它们通常会将公司提供的财务信息转换为现金流量表。这使得银行能够估计一家公司偿还债务的难易程度。</p>
+<h4 id="altman-的-z-分数">17.1.2 Altman 的 Z-分数</h4>
+<p>Altman’s Z-Score</p>
+<p>Edward Altman 开创性地使用会计比率（ accounting
+ratios）来预测违约。1968 年，他开发了后来被称为
+Z-分数的方法。他使用一种称为判别分析（discriminant
+analysis）的统计技术，尝试通过以下五个会计比率来预测违约：</p>
+<p><span class="math inline">\(X_1\)</span>: 营运资本 / 总资产 （Working
+capital/Total assets） <span class="math inline">\(X_2\)</span>:
+留存收益 / 总资产 （Retained earnings/Total assets） <span
+class="math inline">\(X_3\)</span>: 息税前利润 / 总资产 （Earnings
+before interest and taxes/Total assets） <span
+class="math inline">\(X_4\)</span>: 股权市值 / 负债账面价值总额 （Market
+value of equity/Book value of total liabilities） <span
+class="math inline">\(X_5\)</span>: 销售额 / 总资产 （Sales/Total
+assets）</p>
+<p>对于<strong>上市制造业公司（ manufacturing
+companies）</strong>，最初的 Z-分数公式为：</p>
+<p><span class="math display">\[
+Z = 1.2X_1 + 1.4X_2 + 3.3X_3 + 0.6X_4 + 0.999X_5 \tag{17.1}
+\]</span></p>
+<p>如果 <span class="math inline">\(Z\)</span> 分数大于
+3.0，公司被认为不太可能违约；如果在 2.7 到 3.0
+之间，则有理由“保持警惕”；如果在 1.8 到 2.7
+之间，则有较高的违约可能性；如果小于
+1.8，则被认为存在很高的财务困境概率。</p>
+<p>公式 (17.1) 是基于一个包含 66 家上市制造业公司的样本估计得出的，其中
+33 家在一年内破产，另 33
+家在一年内未破产。当在样本外测试该模型（即在不同于用于估计公式 17.1
+的公司集上进行测试）时，模型被证明相当准确。第一类错误（预测不会破产但实际上破产的公司）和第二类错误（预测会破产但实际上没有破产的公司）都很小。</p>
+<p>该模型的变体也被开发用于未上市的制造公司以及非制造类公司。自 Altman
+最初的研究以来，Z-分数方法已经过修订和扩展，距今已有五十多年。</p>
+<p><strong>示例 17.1</strong></p>
+<p>考虑一家公司的营运资本为 170,000，总资产为 670,000，息税前利润为
+60,000，销售额为 2,200,000，股权市值为 380,000，总负债为
+240,000，留存收益为 300,000。在这种情况下，</p>
+<p><span class="math inline">\(X_1 = 0.254\)</span>，<span
+class="math inline">\(X_2 = 0.448\)</span>，<span
+class="math inline">\(X_3 = 0.0896\)</span>，<span
+class="math inline">\(X_4 = 1.583\)</span>，<span
+class="math inline">\(X_5 = 3.284\)</span>。</p>
+<p>则 Z-分数为：<br />
+<span class="math display">\[
+Z = 1.2 \times 0.254 + 1.4 \times 0.448 + 3.3 \times 0.0896 + 0.6 \times
+1.583 + 0.999 \times 3.284 = 5.46
+\]</span></p>
+<p>Z-分数表明，该公司在近期内没有违约风险。</p>
+<h3 id="历史违约概率">17.2 历史违约概率</h3>
+<p>Historical Default Probabilities</p>
+<p><img src="/img4/《风险管理与金融机构》/T17.1.png" alt="T17.1" style="zoom:67%;" /></p>
+<p>表 17.1
+是评级机构所提供的典型数据，展示了起始时具有特定信用评级的公司在随后一段时间内的违约经历。例如，表
+17.1 显示，一只初始标准普尔信用评级为 BBB 的债券在第一年末的违约概率为
+0.16%，在第二年末的违约概率为
+0.43%，依此类推。可以从该表中计算出某一年内的违约概率。例如，一只最初评级为
+BBB 的债券在其第二年内违约的概率为 <span class="math inline">\(0.43\% -
+0.16\% = 0.27\%\)</span>。</p>
+<p>表 17.1 显示，<strong>对于投资级 investment-grade）债券（i.e., those
+rated BBB and
+above）</strong>，在头几年中，一年期违约概率往往是时间的<strong>递增</strong>函数。（例如，一只初始评级为
+A 的债券在第 1、2、3 和第 4 年内的违约概率分别为 0.05%、0.08%、0.09% 和
+0.11%。）这是因为债券发行人在最初被认为是具备良好信用的，随着时间的推移，其财务状况恶化的可能性会增加。
+<strong>对于信用评级较差（ poor credit
+rating）的债券</strong>，违约概率可能是时间的<strong>递减</strong>函数。（例如，一只初始评级在最低级别（CCC/C）的债券在第
+1、2、3 和第 4 年内的违约概率分别为 28.3%、10.03%、5.09% 和
+2.94%。）原因在于，对于信用评级较差的债券，接下来一两年可能是关键时期；如果发行人能够度过这段时期，其财务状况很可能会有所改善。</p>
+<h4 id="危险率">17.2.1 危险率</h4>
+<p>Hazard Rates</p>
+<p>根据表 17.1，我们可以计算出一只 CCC/C 级别债券在第三年内违约的概率为
+<span class="math inline">\(43.42\% - 38.33\% =
+5.09\%\)</span>。我们称其为无条件违约概率，即从时间零的视角看，该债券在第三年内违约的概率。该债券在第二年末仍未违约的概率为
+<span class="math inline">\(100\% - 38.33\% =
+61.67\%\)</span>。因此，假设前两年未违约的前提下，该债券在第三年内违约的条件概率为：</p>
+<p><span class="math display">\[
+\frac{0.0509}{0.6167} = 8.25\%
+\]</span></p>
+<p>我们刚才计算的 8.25% 是一个为期一年的条件违约概率（conditional
+default probability）。当我们考虑一个长度为 <span
+class="math inline">\(\Delta t\)</span>
+的较短时间区间的条件违约概率时，我们得到的就是所谓的<strong>危险率</strong>（hazard
+rate）或<strong>违约强度</strong>（default intensity）。</p>
+<p>时间 <span class="math inline">\(t\)</span> 时刻的危险率 <span
+class="math inline">\(\lambda(t)\)</span> 定义为：<span
+class="math inline">\(\lambda(t)\Delta t\)</span> 表示在时间 <span
+class="math inline">\(t\)</span> 到 <span class="math inline">\(t+\Delta
+t\)</span> 之间违约的概率，前提是从时间 0 到时间 <span
+class="math inline">\(t\)</span> 之间没有违约。</p>
+<p>设 <span class="math inline">\(V(t)\)</span> 为公司在时间 <span
+class="math inline">\(t\)</span>
+前未违约（即存活）的累积概率，则时间区间 <span class="math inline">\([t,
+t+\Delta t]\)</span> 内的<strong>无条件违约概率</strong>（unconditional
+default probability）为 <span class="math inline">\([V(t) - V(t+\Delta
+t)]\)</span>。在未提前违约的前提下，该时间区间的<strong>条件违约概率</strong>为：</p>
+<p><span class="math display">\[
+\frac{V(t) - V(t+\Delta t)}{V(t)}
+\]</span></p>
+<p>因此，有：</p>
+<p><span class="math display">\[
+\frac{V(t) - V(t+\Delta t)}{V(t)} = \lambda(t)\Delta t
+\]</span></p>
+<p>或：</p>
+<p><span class="math display">\[
+\frac{V(t+\Delta t) - V(t)}{\Delta t} = -\lambda(t)V(t)
+\]</span></p>
+<p>取极限得：</p>
+<p><span class="math display">\[
+\frac{dV(t)}{dt} = -\lambda(t)V(t)
+\]</span></p>
+<p>由此可以得到：</p>
+<p><span class="math display">\[
+V(t) = e^{-\int_0^t \lambda(\tau)d\tau}
+\]</span></p>
+<p>定义 <span class="math inline">\(Q(t)\)</span> 为在时间 <span
+class="math inline">\(t\)</span> 前违约的概率，即 <span
+class="math inline">\(Q(t) = 1 - V(t)\)</span>，则有：</p>
+<p><span class="math display">\[
+Q(t) = 1 - e^{-\int_0^t \lambda(\tau)d\tau}
+\]</span></p>
+<p>或者，当 <span class="math inline">\(\bar \lambda(t)\)</span>
+是从时间 0 到时间 <span class="math inline">\(t\)</span>
+的<strong>平均危险率</strong>(average hazard rate between time zero and
+time t)时，有：</p>
+<p><span class="math display">\[
+Q(t) = 1 - e^{- \bar \lambda(t)t} \tag{17.2}
+\]</span></p>
+<p><strong>示例 17.2</strong></p>
+<p>假设危险率为每年恒定的 1.5%。在第一年末发生违约的概率为：</p>
+<p><span class="math display">\[
+1 - e^{-0.015 \times 1} = 0.0149
+\]</span></p>
+<p>在第二年末发生违约的概率为：</p>
+<p><span class="math display">\[
+1 - e^{-0.015 \times 2} = 0.0296
+\]</span></p>
+<p>在第三、第四和第五年末发生违约的概率分别为：</p>
+<p><span class="math display">\[
+0.0440,\quad 0.0582,\quad 0.0723
+\]</span></p>
+<p>第四年内发生违约的<strong>无条件</strong>概率为：</p>
+<p><span class="math display">\[
+0.0582 - 0.0440 = 0.0142
+\]</span></p>
+<p>假设前三年未违约的前提下，第四年内发生违约的<strong>条件</strong>概率为：</p>
+<p><span class="math display">\[
+\frac{0.0142}{1 - 0.0440} = 0.0149
+\]</span></p>
+<h3 id="回收率">17.3 回收率</h3>
+<p>Recovery Rates</p>
+<p>当一家公司破产时，所有对该公司有债权的人会向公司提出索赔。有时会进行重组（reorganization），债权人同意只部分偿还其债权；在其他情况下，清算人（liquidator）会出售公司的资产，并尽可能用所得资金偿付债权。一些债权通常相较于其他债权具有优先权，因此会获得更高比例的偿付。</p>
+<p><img src="/img4/《风险管理与金融机构》/T17.2.png" alt="T17.2" style="zoom:67%;" /></p>
+<p><strong>债券的回收率通常定义为其在违约后约一个月内的交易价格，占其本金金额的百分比。</strong>表
+17.2
+提供了美国不同类别债券的平均历史回收率数据。回收率从第一留置权债券的
+54.6% 到次于其他债权人的债券的 22.3% 不等。</p>
+<p>（第一留置权债券对抵押品拥有第一优先索偿权；第二留置权债券则拥有第二优先权。在无抵押担保的债券中，无担保高级债券的清偿顺序高于高级次级债券，高级次级债券又高于次级债券，次级债券再高于次次级债券。）</p>
+<h4 id="回收率对违约率的依赖关系">17.3.1 回收率对违约率的依赖关系</h4>
+<p>The Dependence of Recovery Rates on Default Rates</p>
+<p>在第7章中，我们看到 2007–2008
+年全球金融危机带来的一个教训是：抵押贷款的平均回收率与抵押贷款违约率呈负相关关系。随着抵押贷款违约率的上升，止赎行为导致更多房屋被出售，从而使房价下跌。这又进一步导致回收率下降。</p>
+<p>公司债券的平均回收率也表现出与违约率类似的负相关关系。在债券违约数量较少的年份，经济状况通常良好，违约债券的平均回收率可能高达
+60%；而在公司债券违约率较高的年份，经济状况通常较差，违约债券的平均回收率可能低至
+30%。</p>
+<p>这种负相关关系的结果是，对于放贷人而言，违约高发的年份是“双重不利”的年份，因为这通常伴随着较低的回收率。</p>
+<blockquote>
+<p>个人注：</p>
+<p>屋漏偏逢连夜雨，船迟又遇打头风。---- 冯梦龙</p>
+<p>祸不单行就是这样。</p>
+</blockquote>
+<h3 id="信用违约掉期">17.4 信用违约掉期</h3>
+<p>Credit Default Swaps</p>
+<p>信用违约掉期（Credit Default Swap，简称
+CDS）是一种允许市场参与者交易信用风险的衍生工具。如商业快照 17.1
+所示，这种产品的市场在 2007 年之前迅速增长，随后开始下滑。最简单类型的
+CDS
+是一种为特定公司违约风险提供保险的工具。该公司被称为<strong>参考实体</strong>（reference
+entity），其违约行为被称为<strong>信用事件</strong>（credit
+event）。</p>
+<p>购买该保险的一方在信用事件发生时，获得以债券面值价格出售该公司发行的债券的权利；出售该保险的一方在信用事件发生时同意以债券面值买入这些债券。可以被出售的债券总面值被称为信用违约掉期的<strong>名义本金</strong>（notional
+principal）。</p>
+<h4 id="商业快照-17.1-cds-市场"><strong>商业快照 17.1</strong>
+<strong>CDS 市场</strong></h4>
+<p>1998 年和 1999
+年，国际掉期与衍生工具协会（ISDA）制定了用于场外市场交易信用违约掉期（CDS）的标准合约。此后，该市场迅速增长。国际清算银行（BIS）从
+2004 年 12
+月开始发布有关信用衍生品市场规模的统计数据。当时，未平仓合约的总名义本金估计约为
+6 万亿美元。到 2007 年 12 月，这一数字达到峰值，为 58 万亿美元；但到了
+2021 年 12 月，该数值已下降至不足 10
+万亿美元。银行和其他金融机构既是保护的购买方，也是出售方。银行往往是保护的净购买方，而保险公司则往往是保护的净出售方。<strong>银行有时会使用信用违约掉期来对借款人的敞口进行对冲，这意味着承担贷款信用风险的金融机构并不是最初进行信用审查的机构。</strong></p>
+<p>自 2007 年 8 月信贷动荡开始以来，监管机构开始担心 CDS
+是系统性风险的来源。这种担忧无疑部分源于保险公司 AIG 遭受的损失。AIG
+是住房抵押贷款支持证券中 AAA 评级分层的主要保护卖方（参见第 7
+章）。这些保护最终给 AIG 带来了巨大的代价，若 AIG
+倒闭，将会在金融体系的其他地方造成重大损失。2008 年 9 月，美国政府对 AIG
+进行了救助。</p>
+<p>在欧洲主权债务危机期间，CDS 也受到了批评。一些立法者认为 CDS
+市场中的投机活动加剧了希腊等国家的债务问题；在没有任何相关敞口的情况下购买某国信用保护的“裸
+CDS 仓位”在欧洲于 2013 年被禁止。</p>
+<p>在 2007 和 2008 年间，许多类型的信用衍生品交易停止，但<strong>基础型
+CDS</strong>（plain vanilla
+CDSs）（即针对单一公司或国家违约提供保护的合约）仍保持活跃交易（尽管价差大幅上升）。这是因为与资产支持债务担保债券（ABS
+CDOs，参见第 7 章）相比，它们的结构更易于理解。</p>
+<p>2008 年 9 月雷曼兄弟宣布破产时，有大量以雷曼兄弟为参考实体的 CDS
+合约未到期。通过拍卖确定的回收率仅为每美元 8
+美分，因此对保护买方的赔付大约是名义本金的
+92%。当时有人预测部分保护卖方将无法支付，可能引发更多破产，但在 2008 年
+10 月 21 日的结算日，一切顺利完成。</p>
+<p>CDS 的买方会定期向卖方支付费用，直到 CDS
+到期或发生信用事件。这些付款通常是<strong>按季后付</strong>（quarterly
+in arrears）的。</p>
+<p>下面通过一个例子来说明典型的交易结构。假设双方在 2024 年 12 月 20
+日达成了一项为期五年的信用违约掉期协议。假设名义本金为 1
+亿美元，买方同意每年支付 90
+个基点的费用（按季后付）以获得对参考实体违约的保护。</p>
+<p><img src="/img4/《风险管理与金融机构》/F17.1.png" alt="F17.1" style="zoom:67%;" /></p>
+<p>CDS 如图 17.1
+所示。如果参考实体未发生违约（即未发生信用事件），买方将不获得任何赔付，而在每年的
+3 月 20 日、6 月 20 日、9 月 20 日和 12 月 20 日支付大约 $225,000（=
+$100,000,000 × 0.0090 × 0.25）。这一支付节奏将在 2025、2026、2027、2028
+和 2029 年持续进行。</p>
+<p>如果发生信用事件，买方将获得一笔较大的赔付。例如，假设买方在 2027 年
+5 月 20
+日（即第三年过了五个月）通知卖方发生了信用事件。如果合约规定为实物结算，买方有权以
+$1 亿的价格将参考实体发行、面值为 $1 亿的债券卖给保护卖方。</p>
+<p>但目前通常采用的是现金结算方式，此时会通过一个两阶段拍卖流程（
+two-stage auction
+process），在信用事件发生后几天内确定“最便宜可交割债券”的中间市场价值。假设拍卖结果表明该债券的市场价值为每
+$100 面值中 $35，那么现金赔付金额将为：</p>
+<p><span class="math display">\[
+100,000,000 \times \left(1 - \frac{35}{100}\right) = 65,000,000
+\]</span></p>
+<p>一旦发生信用事件，买方向卖方的定期付款将停止。但由于付款是按季后付的，通常仍需要支付一次<strong>最终应计费用</strong>。在本例中，若违约发生于
+2027 年 5 月 20 日，买方需要向卖方支付 2027 年 3 月 20 日至 5 月 20
+日之间的应计费用，约为：</p>
+<p><span class="math display">\[
+100,000,000 \times 0.0090 \times \frac{2}{12} = 150,000
+\]</span></p>
+<p>此后将不再需要进一步付款。</p>
+<p>每年支付的费用总额占名义本金的比例被称为 <strong>CDS 利差（CDS
+spread）</strong>。在我们的例子中，CDS 利差为 90 个基点。</p>
+<p>几家大型银行是 CDS 市场的做市商。对于一家公司的五年期
+CDS，做市商可能报价如下：<strong>买入价 250 个基点，卖出价 260
+个基点</strong>。这意味着，做市商愿意每年支付 250 个基点（即本金的
+2.5%）购买保护，也愿意以每年 260 个基点（即本金的
+2.6%）的价格出售保护。</p>
+<h4 id="商业快照-17.2-cds-是一种有缺陷的合约吗"><strong>商业快照
+17.2</strong> <strong>CDS 是一种有缺陷的合约吗？</strong></h4>
+<p>Is a CDS a Flawed Contract?</p>
+<p>信用违约掉期（CDS）与大多数其他场外衍生品之间存在一个重要区别。其他场外衍生品的价值取决于利率、汇率、股票指数、商品价格等变量，而对于这些变量，没有理由假设某个市场参与者拥有比其他人更优的信息。</p>
+<p>而 CDS
+利差取决于某一特定公司在某一特定时间段内违约的概率。可以说，一些市场参与者在估计这一概率时比其他人拥有更多信息。与某公司有密切业务往来的金融机构（如提供咨询、发放贷款以及承销新证券发行）通常比那些与该公司没有往来的金融机构更了解其信用状况。经济学家将这种现象称为<strong>信息不对称（asymmetric
+information）问题</strong>。</p>
+<p>《金融时报》在 2018 年 1 月 11 日报道了 CDS
+市场被明显滥用的一个案例。美国一家住宅建筑公司 Hovnanian 与对冲基金 GSO
+Capital Partners 达成协议，从后者获得了有吸引力的融资条件，前提是
+Hovnanian
+同意跳过一次利息支付，从而<strong>人为制造了一次技术性违约</strong>。GSO
+购买了 Hovnanian 的 CDS 并因此获得了巨额赔付。</p>
+<p>如果 CDS
+市场希望长期存在下去，就必须找到方法来禁止此类<strong>人为制造的信用事件</strong>（manufactured
+credit events）。</p>
+<p>许多不同的公司和国家都是交易中的 CDS
+合约所对应的参考实体。虽然<strong>五年期</strong>合约最为常见，但其他期限的合约（如
+1 年、2 年、3 年、7 年和 10
+年）也有交易。通常，合约的到期日为以下标准日期之一：<strong>3 月 20
+日、6 月 20 日、9 月 20 日和 12 月 20 日</strong>。</p>
+<p>其结果是，在合约开始时，其实际到期期限通常接近于所指定的年限，但不一定完全相同。</p>
+<p>假设你在 2024 年 11 月 15
+日致电某交易商，想要购买一份针对某参考实体的五年期 CDS
+保护，那么该合约很可能持续到 <strong>2029 年 12 月 20
+日</strong>。你的首次付款将在 <strong>2024 年 12 月 20 日</strong>
+到期，支付的金额将覆盖 <strong>2024 年 11 月 15 日至 2024 年 12 月 20
+日</strong> 的期间。此后，付款将按季度进行。</p>
+<p>CDS
+合约的一个关键方面是<strong>信用事件</strong>（即违约）的定义。通常，信用事件被定义为：未能按期付款、债务重组或破产。</p>
+<p>在北美地区的 CDS
+合约中，<strong>重组</strong>有时会被排除在信用事件之外，尤其是在公司债务的收益率较高的情况下。</p>
+<p>CDS 市场中潜在的缺陷在<strong>商业快照
+17.2</strong>中已作讨论，这些问题可能是该市场受欢迎程度下降的原因之一。</p>
+<h4 id="最便宜可交割债券">17.4.1 最便宜可交割债券</h4>
+<p>The Cheapest-to-Deliver Bond</p>
+<p>CDS
+合约通常规定，在发生违约时可以交割多种不同的债券。这些债券通常具有相同的清偿顺序，但在违约发生后，它们的交易价格（占面值的百分比）可能并不相同。</p>
+<p>这赋予 CDS
+持有者一种被称为<strong>最便宜可交割债券期权</strong>（cheapest-to-deliver
+bond
+option）的权利。如前所述，通常通过拍卖流程来确定最便宜可交割债券的价值，从而确定对保护买方的赔付金额。</p>
+<p>关于 CDS 利差的确定以及 CDS 交易的估值问题，将在附录 K 中讨论。</p>
+<h4 id="信用指数">17.4.2 信用指数</h4>
+<p>Credit Indices</p>
+<p>信用市场的参与者已经开发出用于追踪信用违约掉期（CDS）利差的指数。2004
+年，不同指数提供商之间达成协议，促使市场实现了部分整合。两种主要的标准化投资组合如下：</p>
+<ol type="1">
+<li><strong>CDX NA IG</strong>：由北美 125
+家投资级公司组成的投资组合<br />
+</li>
+<li><strong>iTraxx Europe</strong>：由欧洲 125
+家投资级公司组成的投资组合</li>
+</ol>
+<p>这些投资组合每年在 <strong>3 月和 9
+月</strong>进行更新。不再具备投资级评级的公司会被移除，同时新增的投资级公司会被加入。</p>
+<p>假设某做市商对五年期 <strong>CDX NA IG
+指数</strong>的报价为：<strong>买入价 165 个基点，卖出价 166
+个基点</strong>。这意味着交易者可以以每家公司 166
+个基点的价格购买该指数中所有 125 家公司的 CDS 保护。</p>
+<p>假设一位投资者希望为每家公司购买 $800,000
+的保护，那么总年度成本为：</p>
+<p><span class="math display">\[
+0.0166 \times 800,000 \times 125 = 1,660,000
+\]</span></p>
+<p>（同样地，投资者也可以以每家公司 $800,000
+的金额出售保护，年收益合计为 $1,650,000。）</p>
+<p>当某家公司违约时，投资者将收到标准的 CDS 赔付，且年度支付将减少：</p>
+<p><span class="math display">\[
+\frac{1,660,000}{125} = 13,280
+\]</span></p>
+<p>对于期限为 3 年、5 年、7 年和 10 年的 CDS
+指数保护合约，市场上有活跃的买卖交易。这类指数合约的标准到期日通常为
+<strong>6 月 20 日</strong> 和 <strong>12 月 20
+日</strong>。（这意味着所谓的“五年期”合约的实际期限通常介于 <span
+class="math inline">\(4\frac{1}{3}\)</span> 年至 <span
+class="math inline">\(5\frac{1}{4}\)</span> 年之间。）</p>
+<p>大致来说，该指数代表的是其基础投资组合中各家公司 CDS
+利差的平均值。</p>
+<h4 id="固定票息的使用">17.4.3 固定票息的使用</h4>
+<p>The Use of Fixed Coupons</p>
+<p>为了便于交易，CDS 和 CDS
+指数交易的实际运作方式比前述内容略为复杂。<strong>在实际操作中，CDS 和
+CDS
+指数的交易类似于债券</strong>。对于每笔标准交易，都会<strong>指定一个固定票息（coupon）和一个回收率（recovery
+rate）</strong>。</p>
+<p>周期性保护付款金额等于该票息。CDS 利差则是在市场上报出的浮动值。</p>
+<p>当达成交易时，会通过特定程序估算出：在交易剩余期限内，按市场报价的利差支付金额与按固定票息支付金额之间的<strong>现值差额</strong>。</p>
+<ul>
+<li>如果<strong>市场报价的利差小于固定票息</strong>，则<strong>保护卖方</strong>需在交易时将这一现值差额支付给保护买方；<br />
+</li>
+<li>如果<strong>市场报价的利差大于固定票息</strong>，则<strong>保护买方</strong>需在交易时将该现值差额支付给保护卖方。</li>
+</ul>
+<p>此后，保护买方将按照票息金额，乘以未违约公司所对应的本金金额，向保护卖方支付定期保护费用。</p>
+<h3 id="信用利差">17.5 信用利差</h3>
+<p>Credit Spreads</p>
+<p><strong>信用利差</strong>是指投资者因承担某一特定信用风险而要求的<strong>额外年利率</strong>。上一节中介绍的
+<strong>CDS 利差</strong>
+提供了一种衡量信用利差的方式。另一种衡量方式是<strong>债券收益率利差</strong>，即公司债券的收益率超过类似无风险债券的收益率的部分。</p>
+<p>我们接下来将说明，这两种利差在理论上应当是大致相等的。</p>
+<p>The <strong>credit spread</strong> is the <strong>extra rate of
+interest</strong> per annum required by investors for bearing a
+particular credit risk. <strong>CDS spreads</strong>, which were
+explained in the previous section, provide one measure of the credit
+spread. Another is the bond <strong>yield spread</strong>. This is the
+amount by which the yield on a corporate bond exceeds the yield on a
+similar risk-free bond. We now show that the two should be approximately
+equal.</p>
+<h4 id="cds-利差与债券收益率">17.5.1 CDS 利差与债券收益率</h4>
+<p>CDS Spreads and Bond Yields</p>
+<p>CDS
+可以用来对冲公司债券头寸中的信用风险。假设一位投资者以面值购买了一只五年期公司债券，该债券的年收益率为
+7%；同时，该投资者还买入了一份五年期的
+CDS，以获得对该债券发行人违约的保护。假设 CDS 的利差为 200
+个基点，即每年 2%。</p>
+<p>CDS
+的作用是将公司债券<strong>转换为一只无风险债券</strong>（至少在近似意义上是如此）。如果债券发行人不违约，则投资者每年净收益为
+5%（即公司债券收益率减去 CDS
+利差）。如果债券发行人违约，则在违约之前，投资者同样获得 5%
+的年收益；<strong>根据 CDS
+的条款，违约发生时，投资者可以将该债券按面值卖回。</strong>此后，这笔面值金额可以在剩余年限内以无风险利率投资。</p>
+<p>这一逻辑表明，<strong><span class="math inline">\(n\)</span> 年期 CDS
+利差应当近似等于 <span class="math inline">\(n\)</span>
+年期公司债券的平价收益率与 <span class="math inline">\(n\)</span>
+年期无风险债券平价收益率之间的差额</strong>。</p>
+<ul>
+<li>如果 CDS
+利差明显小于这一差额，投资者就可以通过购买公司债券并买入保护，获得高于无风险利率的收益；<br />
+</li>
+<li>如果 CDS 利差明显大于这一差额，投资者就可以通过做空公司债券并出售
+CDS 保护，以低于无风险利率的成本融资。</li>
+</ul>
+<p>正如后文将讨论的，这些操作并不是<strong>完全套利</strong>，其可行性在实践中受到<strong>流动性约束</strong>和其他因素的影响。</p>
+<p>As will be discussed later, these are not <strong>perfect
+arbitrages</strong>, and the extent to which they can be used is in
+practice influenced by <strong>liquidity constraints</strong> and other
+considerations.</p>
+<h4 id="无风险利率">17.5.2 无风险利率</h4>
+<p>The Risk-Free Rate</p>
+<p>CDS
+提供了对信用利差的直接估计。而若要通过债券收益率来计算信用利差，则需要<strong>对无风险利率作出假设</strong>。当债券交易员报价债券收益率利差时，所使用的无风险利率通常是<strong>期限相似的国债收益率</strong>。例如，某位债券交易员可能会将某公司债券的收益率报价为“比国债高出
+250 个基点”。</p>
+<p>一些研究人员通过对比债券收益率和 CDS
+利差来<strong>推导隐含的无风险利率</strong>。这需要将 CDS
+的期限与债券的期限进行匹配，并利用前文所述的套利逻辑进行推导。</p>
+<p>例如，如果一只五年期公司债券的收益率为 4.7%，而五年期 CDS 的利差为 80
+个基点，则隐含的五年期无风险利率为：</p>
+<p><span class="math display">\[
+4.7\% - 0.8\% = 3.9\%
+\]</span></p>
+<p>研究发现，这种隐含的无风险利率<strong>通常高于国债利率</strong>。有研究估计，该隐含利率更接近于<strong>AA
+级公司短期借款利率</strong>。</p>
+<h4 id="资产互换">17.5.3 资产互换</h4>
+<p>Asset Swaps</p>
+<p>资产互换为信用市场的交易员提供了一个便捷的参考点，因为它能<strong>直接反映公司债券收益率相对于某一浮动参考利率的超额部分</strong>。</p>
+<p>为说明资产互换的运作方式，假设某一债券的资产互换利差被报价为
+<strong>150 个基点</strong>。以下是三种可能的情形：</p>
+<ol type="1">
+<li><p><strong>债券以面值 100 交易</strong>：此时互换安排为，一方（公司
+A）支付该债券的票息，另一方（公司 B）支付<strong>浮动参考利率加 150
+个基点</strong>。</p></li>
+<li><p><strong>债券以低于面值的价格交易，例如
+95</strong>：此时互换安排为，公司 A 在初始时点向公司 B 支付每 $100
+名义本金 $5。此后，公司 A 支付债券票息，公司 B 支付浮动参考利率加 150
+个基点。</p></li>
+<li><p><strong>债券以高于面值的价格交易，例如
+108</strong>：此时互换安排为，公司 B 在初始时点向公司 A 支付 每 $100
+本金 $8。之后，公司 A 继续支付债券票息，公司 B 支付浮动参考利率加 150
+个基点。</p></li>
+</ol>
+<p>通过这种方式设计资产互换，最终效果是使得<strong>资产互换利差的现值（在本例中为
+150
+个基点）等于公司债券价格与一只类似的无风险浮息债券价格之间的差额</strong>。此处的“无风险利率”被假设为浮动参考利率（参见习题
+17.16）。</p>
+<h4 id="cds债券基差">17.5.4 CDS–债券基差</h4>
+<p>CDS–Bond Basis</p>
+<p><strong>CDS–债券基差</strong>(CDS-bond)指的是某家公司 CDS
+利差超过其债券收益率利差的部分： <span class="math display">\[
+\text{CDS–Bond Basis} = \text{CDS Spread } - \text{Bond Yied Spread}
+\]</span></p>
+<p>根据第 17.5.1 节中 CDS
+利差与债券收益率之间的套利逻辑，这一基差应当<strong>接近于零</strong>。但实际上，由于多种原因，该基差可能偏离零值，例如：</p>
+<ol type="1">
+<li>债券价格显著偏离面值。债券价格高于面值时，通常导致负基差；债券价格低于面值时，通常导致正基差。<br />
+</li>
+<li>CDS 中存在对手方违约风险，这会使基差趋于负值。<br />
+</li>
+<li>CDS 中存在“最便宜可交割债券期权”，这会使基差趋于正值。<br />
+</li>
+<li>CDS 的赔付不包含所交割债券的应计利息，这会使基差趋于负值。<br />
+</li>
+<li>CDS
+合约中的重组条款可能在未发生违约的情况下触发赔付，这会使基差趋于正值。<br />
+</li>
+<li>债券收益率利差可能是相对于与市场使用的无风险利率不同的参考利率计算的。</li>
+</ol>
+<p>在 2007 年市场动荡爆发之前，基差通常为正。例如，De Wit 估计 2004 年和
+2005 年的平均 CDS–债券基差为 16 个基点。</p>
+<p>在全球金融危机期间，该基差曾一度非常负。但正如 Bai 和
+Collin-Dufresne（2011）所解释的，金融机构在当时由于流动性不足及其他因素，很难在债券与
+CDS 之间进行套利操作。</p>
+<p>自全球金融危机以来，CDS–债券基差通常较小且为负值。</p>
+<h3 id="从信用利差估计违约概率">17.6 从信用利差估计违约概率</h3>
+<p>Estimating Default Probabilities from Credit Spreads</p>
+<p>我们现在将讨论如何通过<strong>信用利差</strong>来估计<strong>违约概率</strong>。</p>
+<h4 id="近似计算">17.6.1 近似计算</h4>
+<p>Approximate Calculation</p>
+<p>假设某公司五年期的信用利差（无论是 CDS
+利差、债券收益率利差还是资产互换利差）为 240
+个基点，且在违约发生时的预期回收率为 40%。</p>
+<p>这意味着，该公司发行的公司债券的持有人预计每年因违约造成的损失为 240
+个基点（即 2.4%）。粗略而言，信用利差可被视为平均损失率。在回收率为 40%
+的前提下，五年期内（假设无早期违约）每年的平均违约概率(average
+probability of a default per year)可以估算为：</p>
+<p><span class="math display">\[
+\frac{0.024}{1 - 0.4} = 0.04 = 4\%
+\]</span></p>
+<p>一般而言，有如下公式可用来估算平均危险率（hazard rate）：</p>
+<p><span class="math display">\[
+\bar \lambda = \frac{s(T)}{1 - R} \tag{17.3}
+\]</span></p>
+<p>其中，<span class="math inline">\(s(T)\)</span> 是期限为 <span
+class="math inline">\(T\)</span>
+的信用利差（理论上应以连续复利形式表示），<span
+class="math inline">\(R\)</span> 是回收率，<span
+class="math inline">\(\bar \lambda\)</span> 是从时间 0 到时间 <span
+class="math inline">\(T\)</span> 之间的<strong>平均危险率</strong>。</p>
+<p>如果能获得不同期限的信用利差，就可以<strong>引导出危险率的期限结构</strong>（即
+term structure of the hazard
+rate），尽管只是近似地。下一个示例将对此进行说明。</p>
+<blockquote>
+<p>个人注：这个公式可以简化成t0和t1两个时点，然后根据危险率公式来理解。</p>
+</blockquote>
+<p><strong>示例 17.3</strong></p>
+<p>假设 3 年、5 年和 10 年期的 CDS 利差分别为 <strong>50、60 和 100
+个基点</strong>，且预期回收率为 <strong>60%</strong>。</p>
+<ul>
+<li><p>三年期的平均危险率近似为：</p>
+<p><span class="math display">\[
+\frac{0.005}{1 - 0.6} = 0.0125
+\]</span></p></li>
+<li><p>五年期的平均危险率近似为：</p>
+<p><span class="math display">\[
+\frac{0.006}{1 - 0.6} = 0.015
+\]</span></p></li>
+<li><p>十年期的平均危险率近似为：</p>
+<p><span class="math display">\[
+\frac{0.01}{1 - 0.6} = 0.025
+\]</span></p></li>
+</ul>
+<p>由此可以估算：</p>
+<ul>
+<li><p><strong>第 3 年至第 5 年之间</strong>的平均危险率为： <span
+class="math display">\[
+\frac{5 \times 0.015 - 3 \times 0.0125}{2} = \frac{0.075 - 0.0375}{2} =
+0.01875
+\]</span></p></li>
+<li><p><strong>第 5 年至第 10 年之间</strong>的平均危险率为：</p>
+<p><span class="math display">\[
+\frac{10 \times 0.025 - 5 \times 0.015}{5} = \frac{0.25 - 0.075}{5} =
+0.035
+\]</span></p></li>
+</ul>
+<h4 id="更精确的计算">17.6.2 更精确的计算</h4>
+<p>A More Exact Calculation</p>
+<p>我们刚才介绍的方法适用于 CDS
+利差的情况；当基础债券价格接近面值（close to its par
+value）时，也适用于债券收益率利差和资产互换利差。现在我们考虑当基础债券价格远离面值（
+not close to par）时的更精确计算方法。</p>
+<p>假设一只五年期公司债券，面值为 100，年票息为
+6%（<strong>每半年支付一次 paid
+semiannually(是指半年的那个时点，而不是每半年)）</strong>。该债券的年收益率为
+7%（按连续复利计算），而一只类似的无风险债券的收益率为
+5%（同样为连续复利）。</p>
+<blockquote>
+<p>个人注：需要补充了解债券的定价和运作模式，不然不是很了解这些公式的来历。</p>
+</blockquote>
+<p>根据这些收益率，得出该公司债券的价格为 95.34，无风险债券的价格为
+104.09。因此，五年内因违约造成的预期损失为：</p>
+<p><span class="math display">\[
+104.09 - 95.34 = 8.75
+\]</span></p>
+<p>为简化分析，假设每年无条件违约概率相同，记为 <span
+class="math inline">\(Q\)</span>；并进一步假设违约只可能发生在以下几个时点（即每次付息前）：0.5
+年、 1.5 年 、2.5 年 、3.5 年 、4.5 年 。</p>
+<p>另外，假设所有期限的无风险利率均为 5%（连续复利），回收率为
+40%（即违约时可回收本金的
+40%）。（注：这一分析框架可扩展为更频繁的违约发生模型。）</p>
+<p><img src="/img4/《风险管理与金融机构》/T17.3.png" alt="T17.3" style="zoom:50%;" /></p>
+<p>表 17.3 通过参数 <span
+class="math inline">\(Q\)</span>（每年的无条件违约概率）来计算违约导致的预期损失。为说明计算过程，我们以表
+17.3 中3.5 年那一行为例。</p>
+<p>在 3.5
+年时点，无违约情况下的债券预期价值（通过远期无风险利率计算）为：</p>
+<p><span class="math display">\[
+3 + 3e^{-0.05 \times 0.5} + 3e^{-0.05 \times 1.0} + 103e^{-0.05 \times
+1.5} = 104.34
+\]</span></p>
+<p>根据第 17.3 节对回收率的定义，若在该时点发生违约，可回收金额为
+40，因此违约损失为：</p>
+<p><span class="math display">\[
+104.34 - 40 = 64.34
+\]</span></p>
+<p>该损失的现值为：54.01；所以，在 3.5
+年时点违约所导致的预期损失为：54.01Q</p>
+<p>表 17.3 显示，总的预期损失为：288.48Q</p>
+<p>我们在前文中计算出的总预期损失为 <span
+class="math inline">\(8.75\)</span>，将其代入上式，可求得：</p>
+<p><span class="math display">\[
+Q = \frac{8.75}{288.48} = 3.03\%
+\]</span></p>
+<p>上述计算假设：<br />
+- 每年的无条件违约概率相同； - 每年只有一个违约时点。</p>
+<p>我们可以对这一模型进行扩展，允许违约在一年中更频繁地发生。此外，<strong>还可以不再假设恒定的无条件违约概率，而改用恒定危险率</strong>，或设定违约概率随时间变化的某种模式。</p>
+<p>如果我们拥有多个不同期限的债券，可以据此估计多个参数，以刻画违约概率的期限结构。例如，假设我们持有在第
+3、5、7 和 10 年到期的债券，并假设违约概率为<strong>阶梯函数（a step
+function）形式</strong>，那么我们可以：</p>
+<ul>
+<li>用第一个债券估计前 3 年的年违约概率；</li>
+<li>用第二个债券估计第 4 和第 5 年的年违约概率；</li>
+<li>用第三个债券估计第 6 和第 7 年的年违约概率；</li>
+<li>用第四个债券估计第 8、9 和第 10 年的年违约概率。</li>
+</ul>
+<p>（参见练习题 17.15 与 17.24。）</p>
+<p>这种方法类似于附录 B
+中用于估计<strong>利率期限结构</strong>的<strong>引导法（bootstrap
+procedure）</strong>。</p>
+<h3 id="违约概率估计的比较">17.7 违约概率估计的比较</h3>
+<p>Comparison of Default Probability Estimates</p>
+<p>我们现在将比较历史数据计算得出的违约概率估计值与信用利差推导出的估计值。</p>
+<p><img src="/img4/《风险管理与金融机构》/T17.4.png" alt="T17.4" style="zoom:50%;" /></p>
+<p>表 17.4 展示了以下两项内容：</p>
+<ul>
+<li>不同信用评级公司在七年内的平均累积违约概率：该数据来源于标准普尔（S&amp;P）发布的资料，即表
+17.1 中的七年期违约概率一栏；</li>
+<li>不同信用评级债券在 1996 年 12 月至 2007 年 6
+月间的平均信用利差：该数据来自美林（Merrill
+Lynch）发布的债券收益率数据，并假设参考的无风险利率比七年期互换利率低 10
+个基点。这些债券的平均到期期限约为 <strong>七年</strong>。</li>
+</ul>
+<p><img src="/img4/《风险管理与金融机构》/T17.5.png" alt="T17.5" style="zoom:50%;" /></p>
+<p>该表仅考虑了2008
+年全球金融危机爆发前的债券收益率数据。在危机期间，信用利差大幅飙升。如果将这一异常时期包括在内，那么即将展示的结果（即：通过信用利差计算的危险率高于通过历史违约概率计算的危险率）将会显得更加极端。</p>
+<p>表 17.5 展示了七年平均危险率的估计值。<br />
+假设 <span class="math inline">\(Q\)</span> 是七年累积违约概率，根据公式
+(17.2)： <span class="math display">\[
+Q = 1 - e^{-7\bar \lambda}
+\]</span></p>
+<p>其中，<span class="math inline">\(\bar \lambda\)</span>
+是七年期的<strong>平均危险率</strong>。由此可解得：</p>
+<p><span class="math display">\[
+\bar \lambda(7) = -\frac{1}{7} \ln(1 - Q)
+\]</span></p>
+<p>以 A 级公司为例，七年累积违约率为 <span class="math inline">\(0.76\%
+= 0.0076\)</span>，因此其平均危险率为：</p>
+<p><span class="math display">\[
+\bar \lambda = -\frac{1}{7} \ln(1 - 0.0076) = 0.00109
+\]</span></p>
+<p>即 0.109%。</p>
+<p>而表 17.5 中基于信用利差计算的危险率使用的是公式 (17.3)：</p>
+<p><span class="math display">\[
+\bar \lambda = \frac{s(T)}{1 - R}
+\]</span></p>
+<p>其中假设回收率 <span class="math inline">\(R = 40\%\)</span>。对于 A
+级债券，表 17.4 中的七年平均信用利差为 68.68 个基点，即 <span
+class="math inline">\(0.006868\)</span>。因此，七年期平均危险率为：</p>
+<p><span class="math display">\[
+\frac{0.006868}{1 - 0.4} = 0.01145
+\]</span></p>
+<p>即 1.145%。</p>
+<p>这一结果明显高于从历史违约概率推导出的危险率（0.109%），突显了<strong>基于市场数据的违约概率估计往往高于基于历史数据的估计</strong>。</p>
+<p>表 17.5 显示，在2008
+年全球金融危机之前，由信用利差推导出的危险率高于基于长期历史数据计算出的危险率。两者之间的差异随着信用质量的下降而扩大。</p>
+<p><strong><u>由此可以得出结论：</u></strong><br />
+投资者在承担信用风险时获得了相当充分的补偿，这种补偿超过了精算意义上对违约成本的估计。而且，这种超额补偿（或超额收益）随着所承担的信用风险的增加而增加。</p>
+<p>From this, one can conclude that investors get well
+<strong>compensated</strong> for taking credit risk. The compensation is
+greater than an <strong>actuarial</strong> estimate of the cost of
+defaults. Furthermore, this excess compensation, or excess return,
+increases as the amount of the credit risk assumed increases.</p>
+<p>需要注意的是，这种超额收益<strong>并不是在所有时期都保持不变</strong>。在信用利差较高的时期（例如
+2008 年全球金融危机期间），<strong>超额收益往往会上升</strong>。</p>
+<p>The excess return does not remain constant through time. When credit
+spreads are high (as they were, for example, during the 2008 Global
+Financial Crisis), excess returns tend to increase.</p>
+<h4 id="差异的原因">17.7.1 差异的原因</h4>
+<p>Reason for the Difference</p>
+<p>为什么从历史违约概率估算的危险率与由信用利差推导的危险率之间会存在如此大的差异？换句话说，为什么公司债券交易者获得的补偿通常<strong>远高于违约的预期成本</strong>？</p>
+<p><strong>一个原因是：</strong>公司债券相对缺乏流动性，因此其收益率被人为抬高以补偿这种流动性不足。但这只是原因的一小部分。在正常市场条件下，这种流动性溢价大约只能解释
+25 个基点左右的超额收益。</p>
+<p><strong>另一种可能的解释是：</strong>债券交易员的主观违约概率预期远高于历史数据中给出的估计（如表
+17.1
+所示）。也就是说，交易员可能在考虑比历史上任何情况都更糟的经济衰退情景。然而，这种主观预期的差异也难以解释如此大规模的超额收益。</p>
+<p><strong>最关键的原因在于：</strong>债券之间的违约不是相互独立的。有证据表明，违约率在不同年份之间波动剧烈。<br />
+例如，表 9.6 显示，所有评级公司的违约率在 1981 年最低为 0.15%，而在 2009
+年最高达 4.19%。</p>
+<p><strong>这种年与年之间的巨大波动引发了系统性风险（即无法通过分散化消除的风险）。债券交易员之所以获得超额收益，是因为他们承担了这种系统性风险。</strong></p>
+<p>在这点上，债券交易员与股票交易员并无不同。股票交易员因承担系统性风险而获得的<strong>平均超额收益常被认为是每年
+5% 到
+6%</strong>。而债券交易员的超额收益通常<strong>远低于此数值</strong>，尤其是高等级债券。但随着债券信用质量下降，其风险特征<strong>越来越接近股票</strong>，所获得的超额收益也随之增加。</p>
+<p><strong>那么是什么导致了违约之间的相关性，以及由此产生的系统性风险？</strong></p>
+<p>一种解释是：<strong>宏观经济环境</strong>。良好的宏观经济条件会降低所有公司的违约概率；而糟糕的宏观经济条件则会提高所有公司的违约概率。（在第
+9 章讨论的 Vasicek 模型中，因子 <span class="math inline">\(F\)</span>
+可被视为代表整个经济状况的指标。）</p>
+<p>另一种解释是所谓的<strong>“传染效应（contagion）”</strong>，将在<strong>商业快照
+17.3</strong>中进一步讨论。</p>
+<h4 id="商业快照-17.3-传染效应"><strong>商业快照 17.3</strong>
+<strong>传染效应</strong></h4>
+<p>Contagion</p>
+<p>信用传染是指：<strong>世界经济中一个领域的问题，引发其他无关领域出现问题的过程</strong>。</p>
+<p>例如，在 1998 年俄罗斯债务违约时，市场出现了<strong>“逃向安全资产（a
+flight to quality）”</strong>的行为，所有债券的信用利差随之上升。2007
+年开始的全球金融危机期间，也发生了类似的“逃向安全资产”现象，信用利差再次上升。随后伴随的经济衰退导致
+2009 年公司违约数量创下历史记录。</p>
+<p>2011
+年，希腊的债务问题使得投资者对其他国家（如西班牙、爱尔兰、葡萄牙和意大利）的债务也失去信心，导致这些国家发行的债务的信用利差大幅上升。</p>
+<p>研究人员对信用传染的成因展开了广泛讨论。其中一种观点认为：<strong>当投资者在某一行业遭受损失时，会变得更加风险厌恶</strong>。另一种观点认为：<strong>一个行业出现问题，会导致投资者对其他无关行业的前景也变得更加悲观</strong>。</p>
+<p>无论哪种原因，结果都是：<strong>来自无关行业的实体将更难获得融资</strong>，从而更有可能发生违约。</p>
+<p>除了我们刚刚讨论的<strong>系统性风险</strong>外，每只债券还伴随着<strong>非系统性（或称特有）风险</strong>。</p>
+<p>如果我们在谈论的是股票，那么可以说：投资者通过持有一个包含约 30
+只股票的投资组合，可以实现非系统性风险的多样化，因此不应因为承担这类风险而要求额外的风险溢价。</p>
+<p>但对于债券而言，情况就没有那么清晰。债券的回报分布<strong>高度偏斜</strong>，<strong>上涨空间有限</strong>（highly
+skewed, with limited upside）。例如，一只债券可能在一年内有 99.75%
+的概率获得 7% 的收益（未违约），但也有 0.25% 的概率遭遇 –60%
+的损失（发生违约）。</p>
+<p>这种风险的非系统性部分难以通过分散化来消除——真正实现多样化可能需要持有数万个不同的债券。而在实际操作中，许多债券投资组合远未实现充分多样化。</p>
+<p>因此，<strong>债券交易者除了因为承担系统性风险获得超额收益之外，还可能因为承担非系统性风险而获得额外回报</strong>。</p>
+<h4 id="估值-vs.-情景分析">17.7.2 估值 vs. 情景分析</h4>
+<p>Valuation vs. Scenario Analysis</p>
+<p>在第 10
+章中我们提到，对市场变量的估计值<strong>会因用途不同而有所区别</strong>。</p>
+<p>在进行<strong>估值（valuation）</strong>时，通常采用风险中性世界下的估计（即假设个人不要求因承担风险而获得额外回报），并使用风险中性估值方法。而在进行<strong>情景分析（scenario
+analysis）</strong>时，则应使用真实世界（real-world）中的估计。</p>
+<p>那么，对于违约概率的估计，哪种适用于估值，哪种适用于情景分析？</p>
+<ul>
+<li><p>来自<strong>信用利差</strong>的违约率估计可以用于<strong>估值</strong>，方式与其他变量的风险中性估值类似。例如，在对债券定价时，我们可以使用由信用利差导出的违约概率，并用<strong>无风险利率贴现</strong>。</p></li>
+<li><p>但在进行<strong>情景分析</strong>时，更合适的是使用从<strong>历史数据中获得的“真实世界”违约率估计</strong>。</p></li>
+</ul>
+<h3 id="利用股价估计违约概率">17.8 利用股价估计违约概率</h3>
+<p>Using Equity Prices to Estimate Default Probabilities</p>
+<p>当我们使用如表 17.1
+所示的数据来估计一家公司的真实世界违约概率时，我们是依赖其信用评级的。然而，信用评级的调整频率通常较低，这使得一些分析师认为：<strong>股价可以提供更及时的信息来估计违约概率</strong>。</p>
+<p>1974 年，Merton
+提出了一个模型，将<strong>公司股权视为对公司资产的期权</strong>（a
+company’s equity is an option on the assets of the
+company）。为简单起见，假设某公司仅发行了一笔零息债券，该债券在时间
+<span class="math inline">\(T\)</span> 到期。定义如下变量：</p>
+<ul>
+<li><span class="math inline">\(V_0\)</span>：公司当前的资产价值 Value
+of company’s assets today</li>
+<li><span class="math inline">\(V_T\)</span>：公司在时间 <span
+class="math inline">\(T\)</span> 的资产价值 Value of company’s assets at
+time T</li>
+<li><span class="math inline">\(E_0\)</span>：公司当前的股权价值 Value
+of company’s equity today</li>
+<li><span class="math inline">\(E_T\)</span>：公司在时间 <span
+class="math inline">\(T\)</span> 的股权价值 Value of company’s equity at
+time T</li>
+<li><span class="math inline">\(D\)</span>：时间 <span
+class="math inline">\(T\)</span> 到期时需偿还的债务本息 Amount of debt
+interest and principal due to be repaid at time T</li>
+<li><span
+class="math inline">\(\sigma_V\)</span>：公司资产的波动率（假设为常数）
+Volatility of assets (assumed constant)</li>
+<li><span class="math inline">\(\sigma_E\)</span>：公司股权的瞬时波动率
+Instantaneous volatility of equity</li>
+</ul>
+<p>如果 <span class="math inline">\(V_T &lt;
+D\)</span>，理论上公司在时间 <span class="math inline">\(T\)</span>
+无力还债，因此会违约，此时股东无剩余价值，即 <span
+class="math inline">\(E_T = 0\)</span>；<br />
+如果 <span class="math inline">\(V_T &gt; D\)</span>，公司应在 <span
+class="math inline">\(T\)</span> 时偿还债务，股东在扣除债务后获得剩余
+<span class="math inline">\(V_T - D\)</span>。</p>
+<p>因此，Merton 模型下的公司股权价值为：</p>
+<p><span class="math display">\[
+E_T = \max(V_T - D, 0)
+\]</span></p>
+<p>这说明：<strong>公司股权本质上是对公司资产的看涨期权</strong>，其执行价格等于债务的偿还金额
+<span class="math inline">\(D\)</span>。</p>
+<p>This shows that the equity of a company is a <strong>call
+option</strong> on the value of the assets of the company with a strike
+price equal to the repayment required on the debt.</p>
+<p>在不支付股息的前提下，Black–Scholes–Merton 公式（参见本书附录
+E）给出当前股权价值为：</p>
+<p><span class="math display">\[
+E_0 = V_0 N(d_1) - D e^{-rT} N(d_2) \tag{17.4}
+\]</span></p>
+<p>其中：</p>
+<p><span class="math display">\[
+d_1 = \frac{\ln(V_0 / D) + \left( r +  \sigma_V^2/2 \right) T}{\sigma_V
+\sqrt{T}}, \quad  
+d_2 = d_1 - \sigma_V \sqrt{T}
+\]</span></p>
+<p><span class="math inline">\(N(\cdot)\)</span>
+是标准正态分布函数。</p>
+<p>在 Merton
+模型下，公司发生违约的情形对应于该“期权”不被执行，因此违约概率为：</p>
+<p><span class="math display">\[
+N(-d_2)
+\]</span></p>
+<p>要计算该违约概率，我们需要 <span class="math inline">\(V_0\)</span>
+和 <span
+class="math inline">\(\sigma_V\)</span>，但这两个变量<strong>无法直接观察</strong>。不过，如果公司为上市公司，我们可以观察到
+<span class="math inline">\(E_0\)</span>（股权市值）。</p>
+<p>这意味着公式 (17.4) 为 <span class="math inline">\(V_0\)</span> 和
+<span class="math inline">\(\sigma_V\)</span>
+提供了一个方程关系。同时，我们还可以估算股权的波动率 <span
+class="math inline">\(\sigma_E\)</span>。根据随机微积分中的伊藤引理（Itô's
+Lemma），有：</p>
+<p><span class="math display">\[
+\sigma_E E_0 = \frac{\partial E}{\partial V} \cdot \sigma_V V_0
+\]</span></p>
+<p>其中 <span class="math inline">\({\partial E}/{\partial V}\)</span>
+是股权对资产价值的<strong>敏感度（Delta）</strong>，根据附录 E 可知其为
+<span class="math inline">\(N(d_1)\)</span>，因此：</p>
+<p><span class="math display">\[
+\sigma_E E_0 = N(d_1) \cdot \sigma_V V_0 \tag{17.5}
+\]</span></p>
+<p>这为 <span class="math inline">\(V_0\)</span> 和 <span
+class="math inline">\(\sigma_V\)</span>
+提供了第二个方程。通过<strong>联立方程 (17.4) 和
+(17.5)</strong>，我们就可以求解出 <span
+class="math inline">\(V_0\)</span> 和 <span
+class="math inline">\(\sigma_V\)</span>，进而使用 <span
+class="math inline">\(N(-d_2)\)</span>
+估计公司的<strong>违约概率</strong>。</p>
+<p><strong>示例 17.4</strong></p>
+<p>某公司股权价值为 300 万美元，股权的波动率为
+80%。公司一年后需要偿还的债务为 1000 万美元，无风险利率为 每年 5%。</p>
+<p>因此，给定参数如下：</p>
+<ul>
+<li><span class="math inline">\(E_0 = 3\)</span>（百万美元）<br />
+</li>
+<li><span class="math inline">\(\sigma_E = 0.80\)</span><br />
+</li>
+<li><span class="math inline">\(r = 0.05\)</span><br />
+</li>
+<li><span class="math inline">\(T = 1\)</span><br />
+</li>
+<li><span class="math inline">\(D = 10\)</span></li>
+</ul>
+<p>联立公式 (17.4) 和 (17.5) 解得：</p>
+<ul>
+<li><span class="math inline">\(V_0 = 12.40\)</span><br />
+</li>
+<li><span class="math inline">\(\sigma_V = 0.2123\)</span></li>
+</ul>
+<p>接下来计算 <span class="math inline">\(d_2\)</span>：</p>
+<ul>
+<li><span class="math inline">\(d_2 = 1.1408\)</span></li>
+</ul>
+<p>因此，<strong>违约概率为</strong>：</p>
+<p><span class="math display">\[
+N(-d_2) = N(-1.1408) = 0.127
+\]</span></p>
+<p>即 12.7%。</p>
+<p>公司债务的<strong>市场价值</strong>为：</p>
+<p><span class="math display">\[
+V_0 - E_0 = 12.40 - 3 = 9.40
+\]</span></p>
+<p>债务的<strong>无违约现值</strong>为：</p>
+<p><span class="math display">\[
+10 e^{-0.05 \times 1} = 10 e^{-0.05} \approx 9.51
+\]</span></p>
+<p>因此，债务的<strong>预期损失为</strong>：</p>
+<p><span class="math display">\[
+\frac{9.51 - 9.40}{9.51} \approx 0.012 = 1.2\%
+\]</span></p>
+<p>即该债务相较于无违约情况下的现值，存在 约 1.2% 的预期损失。</p>
+<p>我们刚刚介绍的基本 Merton 模型已经在多个方面得到了扩展。例如：</p>
+<ul>
+<li>有一种模型版本假设：<strong>只要公司资产价值跌破某一障碍水平（barrier
+level），就会触发违约</strong>，而不仅仅是在到期时判断资产是否小于债务；</li>
+<li>另一种扩展则允许：<strong>债务工具的偿付在多个时间点进行</strong>，而非仅限于一个最终到期日。</li>
+</ul>
+<p>Hull 等人（2004）进一步讨论了如何将<strong>隐含波动率（implied
+volatilities）</strong>与 Merton
+模型结合使用，以提高违约概率估计的准确性和市场适应性。</p>
+<h4 id="模型表现">17.8.1 模型表现</h4>
+<p>Performance of the Model</p>
+<p>那么，<strong>Merton
+模型及其扩展版本所生成的违约概率，与实际违约经验之间的吻合度如何</strong>？答案是：<strong>Merton
+模型及其扩展在违约概率的排序（无论是风险中性还是真实世界）方面表现良好</strong>。</p>
+<p>这意味着，我们可以通过一个<strong>单调变换</strong>(a monotonic
+transformation)，将 Merton
+模型生成的违约概率输出，转化为对真实世界或风险中性违约概率的有效估计。</p>
+<p>例如：</p>
+<ul>
+<li><strong>Moody’s KMV</strong> 和 <strong>Kamakura</strong>
+提供的服务正是基于这一原理：它们将 Merton
+模型输出的违约概率<strong>转换为真实世界的违约概率</strong>；</li>
+<li>其他机构则使用 Merton
+模型来估算<strong>信用利差</strong>，而如前所述，信用利差与<strong>风险中性违约概率</strong>密切相关。</li>
+</ul>
+<p>理论上，Merton 模型中产生的违约概率 <span
+class="math inline">\(N(-d_2)\)</span>
+是通过<strong>期权定价模型计算得出</strong>的，因此应被视为<strong>风险中性违约概率</strong>。</p>
+<p>看起来，Moody’s KMV 和 Kamakura
+用这个模型来估计<strong>真实世界的违约概率</strong>似乎有些矛盾。然而，基于我们刚刚所描述的校准过程，其背后的核心假设是：</p>
+<blockquote>
+<p><strong>风险中性违约概率、真实世界违约概率，以及 Merton
+模型产生的违约概率的排序是一致的。</strong></p>
+</blockquote>
+<p>即：虽然数值不同，但它们在“谁更有可能违约”的排序上是一致的。正是这一点，使得
+Merton 模型在实际违约概率估计中具有广泛应用价值。</p>
+<h4 id="真实世界与风险中性违约概率的差异">17.8.2
+真实世界与风险中性违约概率的差异</h4>
+<p>Real-World vs. Risk-Neutral Default Probabilities</p>
+<p>Merton
+模型提供了一个视角，用以解释<strong>为什么在风险中性世界中，违约概率通常高于真实世界中的违约概率</strong>。</p>
+<p>在<strong>风险中性世界</strong>中，公司资产的预期增长率被假设为<strong>无风险利率</strong>；<br />
+而在<strong>真实世界</strong>中，公司资产的增长率<strong>通常高于无风险利率</strong>，这是市场为承担风险所要求的<strong>风险溢价</strong>所致。</p>
+<p>因此，从风险中性世界的角度看，公司资产在未来某一时点<strong>低于债务面值（即发生违约）</strong>的概率<strong>会比在真实世界中更高</strong>。</p>
+<p>简而言之：</p>
+<blockquote>
+<p><strong>风险中性违约概率之所以更高，是因为风险中性世界中假设资产增长较慢（仅等于无风险利率），从而更容易“跌破”债务门槛。</strong></p>
+</blockquote>
+<h4 id="违约距离">17.8.3 违约距离</h4>
+<p>Distance to Default</p>
+<p>术语 <strong>“违约距离”（distance to default）</strong> 是为描述
+Merton 模型的输出结果而提出的。它表示：<strong>从当前时点到未来 <span
+class="math inline">\(T\)</span>
+年，公司资产必须变化多少个标准差，才会触发违约</strong>。</p>
+<p>违约距离的一种定义就是 Merton 模型中的参数 <span
+class="math inline">\(d_2\)</span>，其公式为：</p>
+<p><span class="math display">\[
+d_2 = \frac{\ln V_0 - \ln D + (r -  \sigma_V^2/2) T}{\sigma_V \sqrt{T}}
+\]</span></p>
+<p>其中： - <span class="math inline">\(V_0\)</span>
+是当前资产价值<br />
+- <span class="math inline">\(D\)</span> 是未来 <span
+class="math inline">\(T\)</span> 年时到期需偿还的债务<br />
+- <span class="math inline">\(r\)</span> 是无风险利率<br />
+- <span class="math inline">\(\sigma_V\)</span> 是资产波动率<br />
+- <span class="math inline">\(T\)</span>
+是违约判断的时间窗口（例如一年）</p>
+<p><strong>距离越小，公司违约的可能性就越大</strong>。</p>
+<p>在示例 17.4 中，该公司的一年期违约距离为：</p>
+<p><span class="math display">\[
+d_2 = 1.14
+\]</span></p>
+<p>意味着：公司资产若要跌至触发违约的临界值，需下跌 <strong>1.14
+个标准差</strong>。该指标常被用于信用风险监测和预警。</p>
+<h3 id="总结">总结</h3>
+<p><strong>违约概率和回收率的估计</strong>是风险管理中一项重要工作。</p>
+<p>如果一家公司发行了<strong>公开交易的债务工具</strong>，信用评级就成为一个信息来源。评级机构（如标准普尔
+S&amp;P）会提供大量关于不同评级公司历史违约率的统计数据。<strong>回收率</strong>是债券在违约后不久的交易价格与其面值的比率。</p>
+<p>关于<strong>信用利差</strong>，有多种信息来源，其中之一是<strong>信用违约掉期（CDS）市场</strong>。CDS
+是一种合约，其中一家公司向另一家公司购买第三方公司或国家（参考实体）违约风险的保护。<strong>CDS
+利差</strong>是保护买方每年为保护支付的金额，占名义本金的百分比。</p>
+<p>公司信用利差的其他两个来源包括：<br />
+- 公司发行债券的收益率超过无风险利率的部分（债券利差）；<br />
+- 资产互换利差。</p>
+<p>通过信用利差以及对回收率的假设，可以<strong>反推出违约概率</strong>。</p>
+<p>基于历史数据（如评级机构提供的数据）估算出的违约概率，称为<strong>真实世界违约概率</strong>（real-world
+or physical default probabilities）；</p>
+<p>基于信用利差估算出的违约概率，则为<strong>风险中性违约概率</strong>（risk-neutral
+default probabilities）。</p>
+<p>风险中性违约概率通常<strong>高于</strong>真实世界违约概率：</p>
+<ul>
+<li><strong>风险中性违约概率适用于估值（valuation）</strong>；<br />
+</li>
+<li><strong>真实世界违约概率适用于情景分析（scenario
+analysis）</strong>。</li>
+</ul>
+<p>这两类违约概率都可以通过 <strong>Robert Merton 在 1974
+年提出的模型</strong>进行估算，只要对模型进行了<strong>适当的校准</strong>。</p>
+<h3 id="练习">练习</h3>
+<p><em>(答案见书末)</em></p>
+<p><strong>17.1</strong> S&amp;P 所使用的投资级评级有哪些？<br />
+<strong>17.2</strong> 什么是“危险率”（hazard rate）？<br />
+<strong>17.3</strong> 根据表 17.1 中的数据，计算 B
+级公司在第一年的平均危险率。<br />
+<strong>17.4</strong> 根据表 17.1 中的数据，计算 BB
+级公司在第三年的平均危险率。<br />
+<strong>17.5</strong> 某 CDS 合约要求每半年支付年化 60
+个基点的保护费，名义本金为 3
+亿美元，采用现金结算。四年零两个月后发生违约，计算代理机构估算违约后最便宜可交割债券价格为面值的
+40%。请列出该 CDS 卖方的全部现金流及其时间安排。<br />
+<strong>17.6</strong> 解释 CDS 合约的两种结算方式。<br />
+<strong>17.7</strong>
+说明基于历史违约经验计算的违约概率与基于信用利差计算的违约概率之间的区别。<br />
+<strong>17.8</strong> 写出 CDS
+赔付与名义本金及回收率之间的关系公式。<br />
+<strong>17.9</strong> 某三年期公司债与类似无风险债券之间的利差为 50
+个基点，回收率为 30%。估计三年期间每年的平均隐含危险率。<br />
+<strong>17.10</strong> 某公司五年期债券与类似无风险债券之间的利差为 80
+个基点，假设回收率为
+40%，估计五年期间每年的平均隐含危险率。若该公司三年期债券的利差为 70
+个基点，结果说明第 4 年和第 5 年的隐含平均危险率如何变化？<br />
+<strong>17.11</strong>
+在以下两种场景中应使用历史违约概率还是信用利差推导的违约概率？<br />
+(a) 计算信用风险价值（Credit VaR）<br />
+(b) 对衍生品价格进行违约调整<br />
+<strong>17.12</strong> 回收率通常是如何定义的？<br />
+<strong>17.13</strong> 验证表 17.5 中第二列的数据与表 17.4
+中第二列的数据是否一致。<br />
+<strong>17.14</strong> 一只四年期公司债券每年支付 4%
+的票息（半年付），其收益率为 5%（连续复利），无风险收益率为
+3%（连续复利，期限结构为平坦），假设违约只能在每年年末发生（在支付票息或本金之前），回收率为
+30%。使用表 17.3
+所示方法，估算在违约概率每年相同的前提下的风险中性违约概率。<br />
+<strong>17.15</strong> 某公司发行了三年期和五年期年付息 4%
+的债券，其收益率分别为 4.5% 和 4.75%（连续复利），无风险利率为
+3.5%（连续复利），回收率为 40%。违约可能发生在每年中期。设第 1 至 3
+年的年无条件违约概率为 <span class="math inline">\(Q_1\)</span>，第 4
+与第 5 年为 <span class="math inline">\(Q_2\)</span>。估计 <span
+class="math inline">\(Q_1\)</span> 和 <span
+class="math inline">\(Q_2\)</span>。<br />
+<strong>17.16</strong> 假设在资产互换中，<span
+class="math inline">\(B\)</span> 是每单位本金的债券市场价格，<span
+class="math inline">\(B^*\)</span> 是无违约情况下的债券价值，<span
+class="math inline">\(V\)</span> 是资产互换利差的现值，证明：<span
+class="math inline">\(V = B^* - B\)</span>。<br />
+<strong>17.17</strong> 证明在第 17.8 节 Merton 模型下，<span
+class="math inline">\(T\)</span> 年期零息债券的信用利差为：</p>
+<p><span class="math display">\[
+-\frac{1}{T} \ln \left[ N(d_2) + \frac{N(-d_1)}{L} \right] \quad
+\text{其中} \quad L = \frac{De^{-rT}}{V_0}
+\]</span></p>
+<p><strong>17.18</strong> 某公司股权价值为 200 万美元，股权波动率为
+50%，一年后需偿还的债务为 500 万美元，无风险利率为 4%。使用 Merton
+模型估计违约概率。（提示：可使用 Excel 中的 Solver 函数求解）<br />
+<strong>17.19</strong> 某五年期 CDS 于 2023 年 6 月 20
+日签署，每季度支付年化 400 个基点的保护费，名义本金为 1
+亿美元。四年零两个月后发生违约，拍卖程序确定最便宜可交割债券价格为面值的
+30%。列出 CDS 卖方的全部现金流及时间安排。<br />
+<strong>17.20</strong> “购买 CDS
+的投资者的头寸等同于多头持有无风险债券，空头持有公司债券。”请解释这句话。<br />
+<strong>17.21</strong> 为什么 CDS 市场存在潜在的信息不对称问题？<br />
+<strong>17.22</strong> 假设无风险收益率期限结构为
+6%（连续复利），一只五年期年息 5%（半年付）的债券当前价格为
+90.00。如果这是一只无风险债券，它的价格应为多少？违约导致的预期损失现值是多少？该债券的资产互换应如何构造？相应的资产互换利差是多少？</p>
+<h3 id="进一步的问题">进一步的问题</h3>
+<p><strong>17.23</strong><br />
+假设一只<strong>三年期公司债券</strong>每年支付 7%
+的票息（半年支付一次），收益率为
+<strong>5%（按半年复利计）</strong>。所有无风险债券的收益率为
+<strong>4%（按半年复利计）</strong>。假设违约可能发生在<strong>每个付息日前（每
+6 个月）</strong>，回收率为
+<strong>45%</strong>。请在以下两种假设下估算违约概率：</p>
+<ol type="a">
+<li>所有可能违约时点的<strong>无条件违约概率相同</strong>；<br />
+</li>
+<li>所有可能违约时点的<strong>条件违约概率（在之前未违约的前提下）相同</strong>。</li>
+</ol>
+<p><strong>17.24</strong><br />
+某公司发行了一年期和两年期债券，<strong>票息为
+8%</strong>，每年支付一次。两种债券的收益率分别为：</p>
+<ul>
+<li>一年期：6.0%<br />
+</li>
+<li>两年期：6.6%</li>
+</ul>
+<p>（均按<strong>连续复利</strong>计）。假设无风险利率为
+4.5%（所有期限相同），回收率为
+<strong>35%</strong>，违约可能发生在<strong>每年中期</strong>。请估算<strong>每年的风险中性违约率</strong>。</p>
+<p><strong>17.25</strong><br />
+某公司股权价值为 <strong>400 万美元</strong>，股权波动率为
+<strong>60%</strong>，在两年后需偿还的债务为 <strong>1500
+万美元</strong>，无风险利率为 <strong>6%</strong>（年化）。请使用
+<strong>Merton 模型</strong>估算：</p>
+<ul>
+<li><strong>违约概率</strong><br />
+</li>
+<li><strong>违约情况下的预期损失</strong><br />
+</li>
+<li><strong>违约时的回收率</strong>（占无违约现值的百分比）</li>
+</ul>
+<blockquote>
+<p><em>提示：可使用 Excel 中的 Solver 函数求解。</em></p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/07/16/%E7%AC%AC16%E7%AB%A0%20%E6%83%85%E6%99%AF%E5%88%86%E6%9E%90%E4%B8%8E%E5%8E%8B%E5%8A%9B%E6%B5%8B%E8%AF%95/" rel="prev" title="《风险管理与金融机构》第16章  情景分析与压力测试">
+                  <i class="fa fa-angle-left"></i> 《风险管理与金融机构》第16章  情景分析与压力测试
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/07/18/%E7%AC%AC18%E7%AB%A0%20xVA%E4%BC%B0%E5%80%BC%E8%B0%83%E6%95%B4/" rel="next" title="《风险管理与金融机构》第18章  xVA估值调整">
+                  《风险管理与金融机构》第18章  xVA估值调整 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+    <div id="search-container" style="margin: 20px auto; max-width: 600px;">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js"></script>
+      <div id="search"></div>
+      <script>
+        window.addEventListener('DOMContentLoaded', (event) => {
+            new PagefindUI({ 
+                element: "#search", 
+                showImages: false,
+                translations: {
+                    placeholder: "搜搜看...",
+                    clear_search: "清除",
+                    load_more: "加载更多",
+                    search_label: "搜索",
+                    filters_label: "筛选",
+                    zero_results: "未找到关于 [SEARCH_TERM] 的结果",
+                    many_results: "找到 [COUNT] 条关于 [SEARCH_TERM] 的结果",
+                    one_result: "找到 1 条关于 [SEARCH_TERM] 的结果",
+                    searching: "正在搜索..."
+                }
+            });
+        });
+      </script>
+    </div>
+  
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>

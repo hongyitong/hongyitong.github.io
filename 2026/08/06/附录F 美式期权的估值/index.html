@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false,"path":"/search.json"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="附录F 美式期权的估值 Valuing American Options 为了估值美式期权，我们将期权的生命周期分成 \(n\) 个时间步长，每个时间步长的长度为 \(\Delta t\)。假设在一个时间步长的开始时，资产价格为 \(S\)。在时间步长结束时，资产价格以概率 \(p\) 上涨至 \(S_u\)，以概率 \(1 - p\) 下跌至 \(S_d\)。对于不产生收益的投资资产，\(u\)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《风险管理与金融机构》附录F  美式期权的估值">
+<meta property="og:url" content="http://hongyitong.github.io/2026/08/06/%E9%99%84%E5%BD%95F%20%E7%BE%8E%E5%BC%8F%E6%9C%9F%E6%9D%83%E7%9A%84%E4%BC%B0%E5%80%BC/index.html">
+<meta property="og:site_name" content="墨语浮生">
+<meta property="og:description" content="附录F 美式期权的估值 Valuing American Options 为了估值美式期权，我们将期权的生命周期分成 \(n\) 个时间步长，每个时间步长的长度为 \(\Delta t\)。假设在一个时间步长的开始时，资产价格为 \(S\)。在时间步长结束时，资产价格以概率 \(p\) 上涨至 \(S_u\)，以概率 \(1 - p\) 下跌至 \(S_d\)。对于不产生收益的投资资产，\(u\)">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/img4/%E3%80%8A%E9%A3%8E%E9%99%A9%E7%AE%A1%E7%90%86%E4%B8%8E%E9%87%91%E8%9E%8D%E6%9C%BA%E6%9E%84%E3%80%8B/FF.1.png">
+<meta property="article:published_time" content="2026-08-05T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-09-14T04:10:42.042Z">
+<meta property="article:author" content="Rayman.hung">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hongyitong.github.io/img4/%E3%80%8A%E9%A3%8E%E9%99%A9%E7%AE%A1%E7%90%86%E4%B8%8E%E9%87%91%E8%9E%8D%E6%9C%BA%E6%9E%84%E3%80%8B/FF.1.png">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2026/08/06/%E9%99%84%E5%BD%95F%20%E7%BE%8E%E5%BC%8F%E6%9C%9F%E6%9D%83%E7%9A%84%E4%BC%B0%E5%80%BC/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2026/08/06/%E9%99%84%E5%BD%95F%20%E7%BE%8E%E5%BC%8F%E6%9C%9F%E6%9D%83%E7%9A%84%E4%BC%B0%E5%80%BC/","path":"2026/08/06/附录F 美式期权的估值/","title":"《风险管理与金融机构》附录F  美式期权的估值"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>《风险管理与金融机构》附录F  美式期权的估值 | 墨语浮生</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="fc62aedd-644a-478d-b3c2-d8ba9964421c" src="https://cloud.umami.is/script.js" data-host-url="https://cloud.umami.is"></script>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js" defer></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">墨语浮生</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%99%84%E5%BD%95f-%E7%BE%8E%E5%BC%8F%E6%9C%9F%E6%9D%83%E7%9A%84%E4%BC%B0%E5%80%BC"><span class="nav-text">附录F
+美式期权的估值</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、心情记录</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives">
+          <span class="site-state-item-count">333</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/08/06/%E9%99%84%E5%BD%95F%20%E7%BE%8E%E5%BC%8F%E6%9C%9F%E6%9D%83%E7%9A%84%E4%BC%B0%E5%80%BC/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="《风险管理与金融机构》附录F  美式期权的估值 | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《风险管理与金融机构》附录F  美式期权的估值
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-08-06 00:00:00" itemprop="dateCreated datePublished" datetime="2026-08-06T00:00:00+08:00">2026-08-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="附录f-美式期权的估值"><strong>附录F</strong>
+<strong>美式期权的估值</strong></h2>
+<p>Valuing American Options</p>
+<p>为了估值美式期权，我们将期权的生命周期分成 <span
+class="math inline">\(n\)</span> 个时间步长，每个时间步长的长度为 <span
+class="math inline">\(\Delta
+t\)</span>。假设在一个时间步长的开始时，资产价格为 <span
+class="math inline">\(S\)</span>。在时间步长结束时，资产价格以概率 <span
+class="math inline">\(p\)</span> 上涨至 <span
+class="math inline">\(S_u\)</span>，以概率 <span class="math inline">\(1
+- p\)</span> 下跌至 <span
+class="math inline">\(S_d\)</span>。对于不产生收益的投资资产，<span
+class="math inline">\(u\)</span>、<span class="math inline">\(d\)</span>
+和 <span class="math inline">\(p\)</span> 的值由以下公式给出： <span
+class="math display">\[
+u = e^{\sigma \sqrt{\Delta t}}, \quad d = \frac{1}{u}, \quad p =
+\frac{a-d}{u - d}
+\]</span></p>
+<p>其中，</p>
+<p><span class="math display">\[
+a = e^{r \Delta t}
+\]</span></p>
+<p>这里，<span class="math inline">\(r\)</span> 是无风险利率，<span
+class="math inline">\(\sigma\)</span> 是资产的波动率。</p>
+<p><img src="/img4/《风险管理与金融机构》/FF.1.png" alt="FF.1" style="zoom:67%;" /></p>
+<p>图F.1展示了一个用于估值五个月期美式看跌期权的树状图，标的资产为不支付股息的股票，初始股价为50，执行价格为50，无风险利率为10%，波动率为40%。在这个例子中，时间步长为五个步骤，因此
+<span class="math inline">\(\Delta t = 0.08333\)</span>，<span
+class="math inline">\(u = 1.1224\)</span>，<span class="math inline">\(d
+= 0.8909\)</span>，<span class="math inline">\(a =
+1.0084\)</span>，<span class="math inline">\(p =
+0.5073\)</span>。每个节点上方的数字是股价，下方的数字是期权的价值。</p>
+<p>在树的最终节点，期权价格为其内在价值。例如，在节点G处，期权的价格为
+<span class="math inline">\(50 - 35.36 =
+14.64\)</span>。在较早的节点，我们首先计算期权如果再持有一个时间步长
+<span class="math inline">\(\Delta t\)</span>
+的价值，然后检查是否早期行权是最优的。</p>
+<span id="more"></span>
+<p>首先考虑节点E。如果期权再持有一个时间步长，它的价值将是：如果上涨（概率为
+<span class="math inline">\(p\)</span>），则为 <span
+class="math inline">\(0.00\)</span>，如果下跌（概率为 <span
+class="math inline">\(1 - p\)</span>），则为 <span
+class="math inline">\(5.45\)</span>。因此，期望值为：</p>
+<p><span class="math display">\[
+0.5073 \times 0 + 0.4927 \times 5.45 = 2.686
+\]</span></p>
+<p>节点E的期权价值是通过以10%的无风险利率将这个值折现一个月得到的 <span
+class="math inline">\(2.66\)</span>。由于早期行权的收益为零，因此在节点E不应行权。</p>
+<p>接下来考虑节点A。类似的计算结果显示，如果期权再持有一个时间步长，其在节点A的价值为
+<span class="math inline">\(9.90\)</span>。如果行权，期权的价值为 <span
+class="math inline">\(50 - 39.69 =
+10.31\)</span>。在这种情况下，应当行权，因此节点A的期权价值为 <span
+class="math inline">\(10.31\)</span>。</p>
+<p>继续从树的终端节点向初始节点回溯，期权在初始节点D的价值为4.49。随着树上时间步数的增加，期权价格的准确性也会提高。在30步、50步和100步的情况下，期权的价值分别为4.263、4.272和4.278。</p>
+<p>为了计算Delta，我们考虑在时间步长为 <span
+class="math inline">\(\Delta t\)</span>
+的两个节点。在我们的例子中，从较低节点移动到较高节点时，期权价格从6.96变化为2.16，股票价格从44.55变为56.12。Delta的估算值是期权价格的变化除以股票价格的变化：</p>
+<p><span class="math display">\[
+\Delta = \frac{2.16 - 6.96}{56.12 - 44.55} = -0.415
+\]</span></p>
+<p>为了计算Gamma，我们考虑时间为 <span class="math inline">\(2\Delta
+t\)</span> 时的三个节点。由上面两个节点（C和F）计算得到的Delta为 <span
+class="math inline">\(-0.241\)</span>，这可以视为股票价格为 <span
+class="math inline">\((62.99 + 50) / 2 = 56.49\)</span>
+时的Delta。由下方两个节点（B和C）计算得到的Delta为 <span
+class="math inline">\(-0.639\)</span>，这可以视为股票价格为 <span
+class="math inline">\((50 + 39.69) / 2 = 44.84\)</span>
+时的Delta。Gamma的估算值是Delta的变化除以股票价格的变化：</p>
+<p><span class="math display">\[
+\Gamma = \frac{-0.241 - (-0.639)}{56.49 - 44.84} = 0.034
+\]</span></p>
+<p>我们通过节点D和C估算Theta：</p>
+<p><span class="math display">\[
+\Theta = \frac{3.77 - 4.49}{2 \times 0.08333} = -4.30 \text{ per year}
+\]</span></p>
+<p>即每年 <span class="math inline">\(-4.30\)</span>，这相当于每自然日
+<span class="math inline">\(-0.0118\)</span>。</p>
+<p>Vega通过增加波动率，构建新的树，并观察波动率增加对期权价格的影响来估算。Rho的计算方法类似。</p>
+<p>当标的资产提供收益率 <span class="math inline">\(q\)</span>
+时，计算过程完全相同，只是公式中的 <span class="math inline">\(a = e^{(r
+- q) \Delta t}\)</span>，而不是 <span class="math inline">\(e^{r \Delta
+t}\)</span>。（当标的资产为外币时，<span
+class="math inline">\(q\)</span>
+设置为外币的无风险利率。）当期权是基于远期或期货价格时，<span
+class="math inline">\(a\)</span>
+设置为1，树中的每个节点显示远期或期货价格。</p>
+<p>我们所描述的这些计算可以使用RMFI软件完成，该软件可以通过访问作者的网站获得，并选择“Option
+Type: Binomial
+American”。二项树和其他数值方法在Hull（2022）中有更详细的描述。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/08/05/%E9%99%84%E5%BD%95E%20%E6%AC%A7%E5%BC%8F%E6%9C%9F%E6%9D%83%E7%9A%84%E4%BC%B0%E5%80%BC/" rel="prev" title="《风险管理与金融机构》附录E  欧式期权的估值">
+                  <i class="fa fa-angle-left"></i> 《风险管理与金融机构》附录E  欧式期权的估值
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/08/07/%E9%99%84%E5%BD%95G%20%E6%B3%B0%E5%8B%92%E7%BA%A7%E6%95%B0%E5%B1%95%E5%BC%80/" rel="next" title="《风险管理与金融机构》附录G  泰勒级数展开">
+                  《风险管理与金融机构》附录G  泰勒级数展开 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+    <div id="search-container" style="margin: 20px auto; max-width: 600px;">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js"></script>
+      <div id="search"></div>
+      <script>
+        window.addEventListener('DOMContentLoaded', (event) => {
+            new PagefindUI({ 
+                element: "#search", 
+                showImages: false,
+                translations: {
+                    placeholder: "搜搜看...",
+                    clear_search: "清除",
+                    load_more: "加载更多",
+                    search_label: "搜索",
+                    filters_label: "筛选",
+                    zero_results: "未找到关于 [SEARCH_TERM] 的结果",
+                    many_results: "找到 [COUNT] 条关于 [SEARCH_TERM] 的结果",
+                    one_result: "找到 1 条关于 [SEARCH_TERM] 的结果",
+                    searching: "正在搜索..."
+                }
+            });
+        });
+      </script>
+    </div>
+  
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>

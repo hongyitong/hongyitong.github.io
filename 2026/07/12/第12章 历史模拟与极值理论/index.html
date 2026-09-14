@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false,"path":"/search.json"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="第12章 历史模拟与极值理论 Historical Simulation and Extreme Value Theory 本章介绍了用于计算市场风险的风险价值（VaR）和预期短缺（ES）最常用的方法。这种方法被称为历史模拟。它通过直接利用过去观察到的市场变量日常变动，来估计当前投资组合从今天到明天的价值变化的概率分布。 在描述了历史模拟方法的基本机制之后，本章还解释了一些可以提高其准确性的扩展方">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《风险管理与金融机构》第12章  历史模拟与极值理论">
+<meta property="og:url" content="http://hongyitong.github.io/2026/07/12/%E7%AC%AC12%E7%AB%A0%20%E5%8E%86%E5%8F%B2%E6%A8%A1%E6%8B%9F%E4%B8%8E%E6%9E%81%E5%80%BC%E7%90%86%E8%AE%BA/index.html">
+<meta property="og:site_name" content="墨语浮生">
+<meta property="og:description" content="第12章 历史模拟与极值理论 Historical Simulation and Extreme Value Theory 本章介绍了用于计算市场风险的风险价值（VaR）和预期短缺（ES）最常用的方法。这种方法被称为历史模拟。它通过直接利用过去观察到的市场变量日常变动，来估计当前投资组合从今天到明天的价值变化的概率分布。 在描述了历史模拟方法的基本机制之后，本章还解释了一些可以提高其准确性的扩展方">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/img4/%E3%80%8A%E9%A3%8E%E9%99%A9%E7%AE%A1%E7%90%86%E4%B8%8E%E9%87%91%E8%9E%8D%E6%9C%BA%E6%9E%84%E3%80%8B/T12.1.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/%E3%80%8A%E9%A3%8E%E9%99%A9%E7%AE%A1%E7%90%86%E4%B8%8E%E9%87%91%E8%9E%8D%E6%9C%BA%E6%9E%84%E3%80%8B/T12.2.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/%E3%80%8A%E9%A3%8E%E9%99%A9%E7%AE%A1%E7%90%86%E4%B8%8E%E9%87%91%E8%9E%8D%E6%9C%BA%E6%9E%84%E3%80%8B/T12.3.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/%E3%80%8A%E9%A3%8E%E9%99%A9%E7%AE%A1%E7%90%86%E4%B8%8E%E9%87%91%E8%9E%8D%E6%9C%BA%E6%9E%84%E3%80%8B/F12.1.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/%E3%80%8A%E9%A3%8E%E9%99%A9%E7%AE%A1%E7%90%86%E4%B8%8E%E9%87%91%E8%9E%8D%E6%9C%BA%E6%9E%84%E3%80%8B/T12.4.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/%E3%80%8A%E9%A3%8E%E9%99%A9%E7%AE%A1%E7%90%86%E4%B8%8E%E9%87%91%E8%9E%8D%E6%9C%BA%E6%9E%84%E3%80%8B/T12.5.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/%E3%80%8A%E9%A3%8E%E9%99%A9%E7%AE%A1%E7%90%86%E4%B8%8E%E9%87%91%E8%9E%8D%E6%9C%BA%E6%9E%84%E3%80%8B/T12.6.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/%E3%80%8A%E9%A3%8E%E9%99%A9%E7%AE%A1%E7%90%86%E4%B8%8E%E9%87%91%E8%9E%8D%E6%9C%BA%E6%9E%84%E3%80%8B/T12.7.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/%E3%80%8A%E9%A3%8E%E9%99%A9%E7%AE%A1%E7%90%86%E4%B8%8E%E9%87%91%E8%9E%8D%E6%9C%BA%E6%9E%84%E3%80%8B/T12.8.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/%E3%80%8A%E9%A3%8E%E9%99%A9%E7%AE%A1%E7%90%86%E4%B8%8E%E9%87%91%E8%9E%8D%E6%9C%BA%E6%9E%84%E3%80%8B/T12.9.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/%E3%80%8A%E9%A3%8E%E9%99%A9%E7%AE%A1%E7%90%86%E4%B8%8E%E9%87%91%E8%9E%8D%E6%9C%BA%E6%9E%84%E3%80%8B/T12.10.png">
+<meta property="article:published_time" content="2026-07-11T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-09-14T04:08:36.979Z">
+<meta property="article:author" content="Rayman.hung">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hongyitong.github.io/img4/%E3%80%8A%E9%A3%8E%E9%99%A9%E7%AE%A1%E7%90%86%E4%B8%8E%E9%87%91%E8%9E%8D%E6%9C%BA%E6%9E%84%E3%80%8B/T12.1.png">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2026/07/12/%E7%AC%AC12%E7%AB%A0%20%E5%8E%86%E5%8F%B2%E6%A8%A1%E6%8B%9F%E4%B8%8E%E6%9E%81%E5%80%BC%E7%90%86%E8%AE%BA/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2026/07/12/%E7%AC%AC12%E7%AB%A0%20%E5%8E%86%E5%8F%B2%E6%A8%A1%E6%8B%9F%E4%B8%8E%E6%9E%81%E5%80%BC%E7%90%86%E8%AE%BA/","path":"2026/07/12/第12章 历史模拟与极值理论/","title":"《风险管理与金融机构》第12章  历史模拟与极值理论"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>《风险管理与金融机构》第12章  历史模拟与极值理论 | 墨语浮生</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="fc62aedd-644a-478d-b3c2-d8ba9964421c" src="https://cloud.umami.is/script.js" data-host-url="https://cloud.umami.is"></script>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js" defer></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">墨语浮生</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC12%E7%AB%A0-%E5%8E%86%E5%8F%B2%E6%A8%A1%E6%8B%9F%E4%B8%8E%E6%9E%81%E5%80%BC%E7%90%86%E8%AE%BA"><span class="nav-text">第12章 历史模拟与极值理论</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E8%AE%BA"><span class="nav-text">12.1 方法论</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%BE%E4%BE%8B%E8%AF%B4%E6%98%8E"><span class="nav-text">12.1.1 举例说明</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%A2%84%E6%9C%9F%E7%9F%AD%E7%BC%BA"><span class="nav-text">12.1.2 预期短缺</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8E%8B%E5%8A%9Bvar%E4%B8%8E%E5%8E%8B%E5%8A%9Bes"><span class="nav-text">12.1.3 压力VaR与压力ES</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#var%E7%9A%84%E5%87%86%E7%A1%AE%E6%80%A7"><span class="nav-text">12.2 VaR的准确性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%A9%E5%B1%95%E6%96%B9%E6%B3%95"><span class="nav-text">12.3 扩展方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%82%E6%B5%8B%E5%80%BC%E7%9A%84%E5%8A%A0%E6%9D%83"><span class="nav-text">12.3.1 观测值的加权</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B8%82%E5%9C%BA%E5%8F%98%E9%87%8F%E7%9A%84%E6%B3%A2%E5%8A%A8%E7%8E%87%E7%BC%A9%E6%94%BE"><span class="nav-text">12.3.2 市场变量的波动率缩放</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8A%95%E8%B5%84%E7%BB%84%E5%90%88%E7%9A%84%E6%B3%A2%E5%8A%A8%E7%8E%87%E7%BC%A9%E6%94%BE"><span class="nav-text">12.3.3 投资组合的波动率缩放</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%87%AA%E5%8A%A9%E6%B3%95"><span class="nav-text">12.3.4 自助法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%A1%E7%AE%97%E9%97%AE%E9%A2%98"><span class="nav-text">12.4 计算问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%81%E5%80%BC%E7%90%86%E8%AE%BA"><span class="nav-text">12.5 极值理论</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B3%E9%94%AE%E7%BB%93%E6%9E%9C"><span class="nav-text">12.5.1 关键结果</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%82%E6%95%B0-%CE%BE-%E5%92%8C-%CE%B2-%E7%9A%84%E4%BC%B0%E8%AE%A1"><span class="nav-text">12.5.2 参数 ξ 和 β 的估计</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%B0%BE%E9%83%A8%E7%9A%84%E4%BC%B0%E8%AE%A1"><span class="nav-text">12.5.3 分布尾部的估计</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%8E%E5%B9%82%E5%BE%8B%E7%9A%84%E7%AD%89%E4%BB%B7%E6%80%A7"><span class="nav-text">12.5.4 与幂律的等价性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B7%A6%E5%B0%BE"><span class="nav-text">12.5.5 左尾</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#var-%E4%B8%8E-es-%E7%9A%84%E8%AE%A1%E7%AE%97"><span class="nav-text">12.5.6 VaR 与 ES 的计算</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%81%E5%80%BC%E7%90%86%E8%AE%BAevt%E7%9A%84%E5%BA%94%E7%94%A8"><span class="nav-text">12.6 极值理论（EVT）的应用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#u-%E7%9A%84%E9%80%89%E6%8B%A9"><span class="nav-text">12.6.1 $ u $ 的选择</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%83%E4%B9%A0%E9%A2%98%E4%B8%8E%E9%97%AE%E9%A2%98"><span class="nav-text">练习题与问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%9B%E4%B8%80%E6%AD%A5%E9%97%AE%E9%A2%98"><span class="nav-text">进一步问题</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、心情记录</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives">
+          <span class="site-state-item-count">333</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/07/12/%E7%AC%AC12%E7%AB%A0%20%E5%8E%86%E5%8F%B2%E6%A8%A1%E6%8B%9F%E4%B8%8E%E6%9E%81%E5%80%BC%E7%90%86%E8%AE%BA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="《风险管理与金融机构》第12章  历史模拟与极值理论 | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《风险管理与金融机构》第12章  历史模拟与极值理论
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-07-12 00:00:00" itemprop="dateCreated datePublished" datetime="2026-07-12T00:00:00+08:00">2026-07-12</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="第12章-历史模拟与极值理论">第12章 历史模拟与极值理论</h2>
+<p>Historical Simulation and Extreme Value Theory</p>
+<p>本章介绍了用于计算市场风险的风险价值（VaR）和预期短缺（ES）最常用的方法。这种方法被称为历史模拟。它通过直接利用过去观察到的市场变量日常变动，来估计当前投资组合从今天到明天的价值变化的概率分布。</p>
+<p>在描述了历史模拟方法的基本机制之后，本章还解释了一些可以提高其准确性的扩展方法。同时，本章还介绍了压力VaR和压力ES（
+stressed VaR and stressed
+ES），这两种方法被监管机构用于确定市场风险资本要求。最后，本章介绍了极值理论，这是一种可以用于改进VaR和ES估计、并提高其置信水平的工具。</p>
+<p>本章中介绍的所有模型都以一个包含对四个不同股票指数投资的投资组合为例进行说明。关于这些指数的历史数据和VaR计算可在以下网址找到：www-2.rotman.utoronto.ca/~hull/RMFI/VaRExample。</p>
+<span id="more"></span>
+<h3 id="方法论">12.1 方法论</h3>
+<p>The Methodology</p>
+<p>历史模拟涉及使用过去的数据来预测未来可能发生的情况。假设我们希望使用一天的时间范围、99%的置信水平以及501天的数据来计算一个投资组合的VaR。（我们使用501天的数据，是因为正如我们将看到的，这会生成500个情景。）</p>
+<p><strong>第一步是识别影响投资组合的市场变量。这些市场变量有时被称为风险因子（risk
+factors）。</strong>它们通常包括汇率、利率、股票指数、波动率等等。<strong>然后收集这些市场变量在最近501天中的变动数据。</strong>这将提供500种今天到明天可能发生的替代情景。我们将拥有数据的第一天记作第0天，第二天记作第1天，依此类推。情景1是指所有变量的变动与第0天到第1天之间的变动相同，情景2是与第1天到第2天之间的变动相同，依此类推。对于每个情景，计算从今天到明天投资组合价值的美元变动。这定义了投资组合每日损失（将盈利视为负损失）的概率分布。这个分布的第99百分位可以估算为第五大损失结果。VaR的估计值就是我们处在这一99百分位时的损失。如果过去500天的市场变量变动具有代表性，那么我们有99%的把握不会遭受超过该VaR估计值的损失。</p>
+<p>ES是指在处于损失分布最极端的1%尾部时的平均损失。VaR被估算为第五大损失；ES可以通过对所有比VaR更大的损失（即前四大损失）进行平均来估算。</p>
+<p>为了用代数形式表达这种方法，设 <span
+class="math inline">\(v_i\)</span> 为某市场变量在第 <span
+class="math inline">\(i\)</span> 天的值，假设今天是第 <span
+class="math inline">\(n\)</span>
+天。对于大多数市场变量，假设百分比变动将会重复是比较合适的。在历史模拟法中，第
+<span class="math inline">\(i\)</span>
+个情景假设该市场变量在明天的值为：</p>
+<p><span class="math display">\[
+\text{第 } i \text{ 个情景下的数值 (Value under } i \text{th Scenario)}=
+v_n \cdot \frac{v_i}{v_{i-1}} \tag{12.1}
+\]</span></p>
+<p>对于<strong>某些变量，如利率、信用利差和波动率，考虑的则是市场变量的实际变动而非百分比变动</strong>。在这种情况下，公式（12.1）变为：</p>
+<p><span class="math display">\[
+\text{第 } i \text{ 个情景下的数值} = v_n + (v_i - v_{i-1})
+\]</span></p>
+<p>为简化讨论，在本章其余部分，我们将假设历史模拟基于基础市场变量的百分比变动。</p>
+<h4 id="举例说明">12.1.1 举例说明</h4>
+<p>Illustration</p>
+<p>为说明该方法背后的计算过程，假设一位美国投资者在2020年7月8日持有一个价值1000万美元的投资组合，该组合由对四个股票指数的投资组成：美国的标准普尔500指数（S&amp;P
+500）、英国的富时100指数（FTSE 100）、法国的CAC
+40指数，以及日本的日经225指数（Nikkei
+225）。2020年7月8日，每个指数上的投资金额如表12.1所示。包含这四个指数收盘价501天历史数据及一整套VaR计算的Excel表格可在作者网站上找到：</p>
+<p>www-2.rotman.utoronto.ca/~hull/RMFI/VaRExample</p>
+<p><img src="/img4/《风险管理与金融机构》/T12.1.png" alt="T12.1" style="zoom:67%;" /></p>
+<p>本节中的计算位于工作表1至工作表3中。需要注意的是，我们使用的数据是总回报指数(total
+return indices )，假设股息已被再投资于指数中(that dividends are
+reinvested in the indices)。</p>
+<p>由于我们考虑的是一位美国投资者，因此FTSE 100、CAC
+40和日经225指数的数值必须以美元计价。例如，在我们所考虑的501天期间的起始日——2018年5月9日，FTSE
+100总回报指数为6,515.12，当天的汇率为1.3553美元兑1英镑。这意味着以美元计价时，该指数为：</p>
+<p>6,515.12 × 1.3553 = 8,830.23</p>
+<p>以美元计价的所有指数数据的节选如表12.2所示。</p>
+<p><img src="/img4/《风险管理与金融机构》/T12.2.png" alt="T12.2" style="zoom:67%;" /></p>
+<p><strong>2020年7月8日是一个很有代表性的日期，用于评估股权投资的风险。COVID-19疫情曾在2020年3月导致股市大幅下跌。到了2020年7月，美国市场大致已恢复，但对于疫情将持续多久、经济何时能复苏仍存在很大不确定性。</strong></p>
+<p><img src="/img4/《风险管理与金融机构》/T12.3.png" alt="T12.3" style="zoom:67%;" /></p>
+<p>表12.3显示了在所考虑情景下各指数在2020年7月9日的数值（以美元计）。情景1（表12.3中的第一行）表示：假设各指数在2020年7月8日至7月9日的百分比变化与它们在2018年5月9日至5月10日之间的百分比变化相同；情景2（第二行）表示：假设百分比变化与2018年5月10日至5月11日之间相同；依此类推。一般而言，情景
+<span class="math inline">\(i\)</span>
+假设各指数在2020年7月8日至7月9日之间的百分比变化与第 <span
+class="math inline">\(i-1\)</span> 天至第 <span
+class="math inline">\(i\)</span> 天之间的变化相同，其中 <span
+class="math inline">\(1 \leq i \leq
+500\)</span>。表12.3中的500行即为所考虑的500种情景。</p>
+<p>2020年7月8日，标准普尔500总回报指数为6,496.14。2018年5月10日，该指数为5,343.70，而2018年5月9日为5,292.90。因此，在情景1下，标准普尔500指数的数值为：
+<span class="math display">\[
+6,496.14 \times \frac{5,343.70}{5,292.90} = 6,558.49
+\]</span></p>
+<p>类似地，FTSE 100、CAC 40
+和日经225总回报指数（以美元计）在情景1下的数值分别为：7,334.19、15,545.12
+和 340.79。因此，情景1下投资组合的价值为（以千美元计）：</p>
+<p><span class="math display">\[
+4,000 \times \frac{6,558.49}{6,496.14}
++ 3,000 \times \frac{7,334.19}{7,255.04}
++ 1,000 \times \frac{15,545.12}{15,540.44}
++ 2,000 \times \frac{340.79}{342.01}
+= 10,064.257
+\]</span></p>
+<p>因此，在情景1下，该投资组合实现了64,257美元的收益。其他情景下的计算方式类似。关于损失的直方图（将收益视为负的损失）如图12.1所示。（直方图中的条形表示各损失区间的情况，以千美元计，例如450到550、350到450、250到350等。）</p>
+<p><img src="/img4/《风险管理与金融机构》/F12.1.png" alt="F12.1" style="zoom:67%;" /></p>
+<p>接着对500个不同情景下的损失进行排序。部分排序结果如表12.4所示。最差的情景是编号427。一天期99%置信水平的VaR可以估算为第五大损失，即422,291美元。</p>
+<p><img src="/img4/《风险管理与金融机构》/T12.4.png" alt="T12.4" style="zoom:67%;" /></p>
+<p>监管机构过去在确定市场风险资本要求时，使用的是10天期VaR，并默认其可通过将一天期99%VaR乘以
+<span class="math inline">\(\sqrt{10}\)</span>
+来计算。（参见第11.6.1节。）在我们的例子中，这将给出10天期VaR为：</p>
+<p><span class="math display">\[
+\sqrt{10} \times 422,291 = 1,335,401\ \text{美元}
+\]</span></p>
+<p>正如我们将在第27章看到的，监管机构目前在使用内部模型法时，是通过一系列10天期的预期短缺（ES）计算来确定资本要求的，这些计算采用了重叠的10天期。</p>
+<p><strong>在实际操作中，我们的VaR估计将每日更新，使用最新501天的数据。</strong>例如，考虑2020年7月9日（第501天）的情况。此时我们得到了所有市场变量的新数值，并可以计算投资组合的新价值。随后，按照我们前面所述的程序，计算新的VaR。在该次计算中，使用了从2018年5月10日到2020年7月9日（第1天到第501天）的市场变量数据。（这给我们提供了所需的500个市场变量百分比变动观测值；而第0天，即2018年5月9日的市场变量数值将不再使用。）类似地，在下一个交易日，即2020年7月10日（第502天），将使用2018年5月11日至2020年7月10日（第2天到第502天）之间的数据来确定VaR；依此类推。</p>
+<p>在实际中，金融机构的投资组合当然远比我们这里所考虑的示例复杂得多。<strong>一个真实的投资组合很可能包含数千甚至数万个头寸，其中常常包括远期合约、期权及其他衍生品，这些头寸都需要在每个情景下进行估值。</strong>投资组合本身也可能每天都会发生变化。如果金融机构的交易活动导致组合风险上升，则10天期99%
+VaR通常会上升；如果交易使得组合风险降低，则VaR通常会下降。任意某一天的VaR都是基于投资组合在下一个交易日保持不变这一假设来计算的。</p>
+<p>在VaR计算中需要考虑的市场变量（或风险因子）包括汇率、大宗商品价格和利率。在利率方面，金融机构通常需要若干个描述不同零息利率的期限结构（term
+structure），且这些结构涉及多种货币，以便对其投资组合进行估值。所考虑的市场变量是构建这些期限结构所依据的数据变量（关于如何获取零息利率期限结构的计算方法，参见附录B）。对于每条零利率曲线，金融机构所面临的市场变量可能多达10个。</p>
+<h4 id="预期短缺">12.1.2 预期短缺</h4>
+<p>Expected Shortfall</p>
+<p>要使用历史模拟法计算预期短缺（Expected Shortfall,
+ES），我们需对那些超过VaR的损失进行平均。在我们的示例中，最严重的四个损失（以千美元计）来自情景427、429、424和415（参见表12.4）。这些情景对应损失的平均值为731,166美元，这就是预期短缺的估计值。（关于应当对最差的四个情景还是五个情景取平均这一点存在争议。在监管机构使用预期短缺时，通常只考虑那些导致损失超过VaR水平的情景。）</p>
+<h4 id="压力var与压力es">12.1.3 压力VaR与压力ES</h4>
+<p>Stressed VaR and Stressed ES</p>
+<p>前述计算均假设在任意某一天，历史模拟所使用的数据为最新的。例如，在计算四指数投资组合的VaR和ES时，我们使用了前501天的数据。我们将以这种方式计算出的VaR和ES称为当前VaR和当前ES。然而，历史模拟也可以基于过去任意时期的数据。高波动性的时期往往会给出较高的VaR和ES值，而低波动性时期则会得出较低的结果。</p>
+<p>监管机构引入了称为<strong>压力VaR</strong>（stressed
+VaR）和<strong>压力ES</strong>（stressed
+ES）的度量方法。为计算这些度量，金融机构必须寻找对其当前投资组合而言特别“有压力”的一个251天期间。该251天期间的数据在计算中将起到与我们示例中501天数据相同的作用。具体来说，该251天期间中，第0天与第1天之间的市场变量变化用于构造情景1；第1天与第2天之间的变化用于情景2；依此类推，共构建出250个情景。</p>
+<p>一天期99%置信水平的<strong>压力VaR</strong>被定义为第二差情景损失与第三差情景损失之间的中间值。一日期99%置信水平的<strong>压力ES</strong>则被定义为最差两个情景损失的平均值。</p>
+<h3 id="var的准确性">12.2 VaR的准确性</h3>
+<p>Accuracy of VaR</p>
+<p>历史模拟法是基于有限数量的观测值来估计投资组合变动的分布。因此，对分布百分位数的估计存在误差。</p>
+<p>Kendall和Stuart（1972）描述了当百分位数是从样本数据中估计出来时，如何计算概率分布的置信区间。假设某个分布的第
+<span class="math inline">\(q\)</span> 个百分位数被估计为 <span
+class="math inline">\(x\)</span>，那么该估计的标准误(standard
+error)为：</p>
+<p><span class="math display">\[
+\frac{1}{f(x)} \sqrt{\frac{(1 - q)q}{n}}
+\]</span></p>
+<p>其中，<span class="math inline">\(n\)</span> 是观测值的数量，<span
+class="math inline">\(f(x)\)</span> 是在点 <span
+class="math inline">\(x\)</span> 处损失的概率密度函数的估计值。概率密度
+<span class="math inline">\(f(x)\)</span>
+可以通过将经验数据拟合到一个已知性质的合适分布来进行近似估计。</p>
+<p><strong>示例 12.1</strong></p>
+<p>假设我们希望从500个观测值中估计一个损失分布的第99百分位数，即 <span
+class="math inline">\(n = 500\)</span>，<span class="math inline">\(q =
+0.99\)</span>。我们可以通过将实际经验分布近似为一个性质已知的标准分布来估计
+<span
+class="math inline">\(f(x)\)</span>。假设选择正态分布作为标准分布，并且最佳拟合的均值为0，标准差(
+standard deviation)为 $10 million。</p>
+<p>在 Excel 中，第99百分位数为
+<code>NORMINV(0.99, 0, 10)</code>，结果为23.26。<br />
+对应的 <span class="math inline">\(f(x)\)</span> 值为
+<code>NORMDIST(23.26, 0, 10, FALSE)</code>，结果为0.0027。</p>
+<p>所做估计的标准误差(standard error <strong>标准误？</strong>)为：</p>
+<p><span class="math display">\[
+\frac{1}{0.0027} \times \sqrt{\frac{0.01 \times 0.99}{500}} = 1.67
+\]</span></p>
+<p>如果使用历史模拟法估算的第99百分位数为 $25
+million，则其95%置信区间为：</p>
+<p><span class="math display">\[
+25 - 1.96 \times 1.67\ \text{到}\ 25 + 1.96 \times 1.67
+\]</span></p>
+<p>即，从 $21.7 million 到 $28.3 million.。</p>
+<blockquote>
+<p>个人注：by chatgpt</p>
+<p>标准差（Standard Deviation）与标准误（Standard Error）的区别</p>
+<p>标准误（Standard Error, SE）和标准差（Standard Deviation,
+SD）<strong>不是同一个概念</strong>，但它们之间有紧密联系。</p>
+<p>标准差（Standard Deviation, SD）</p>
+<ul>
+<li><strong>定义</strong>：衡量<strong>总体或样本数据的离散程度</strong>，即数据点偏离均值的平均程度。</li>
+<li><strong>用途</strong>：描述<strong>原始数据的波动性</strong>或不确定性。</li>
+<li><strong>公式（样本标准差）</strong>：</li>
+</ul>
+<p><span class="math display">\[
+s = \sqrt{\frac{1}{n - 1} \sum_{i=1}^n (x_i - \bar{x})^2}
+\]</span></p>
+<p>标准误（Standard Error, SE）</p>
+<ul>
+<li><strong>定义</strong>：衡量<strong>样本统计量（如样本均值）对总体参数的估计精度</strong>，反映了样本均值的波动性。</li>
+<li><strong>用途</strong>：用于<strong>推断统计</strong>中，评估如样本均值等估计量的置信度。</li>
+<li><strong>与标准差的关系</strong>：</li>
+</ul>
+<p><span class="math display">\[
+SE = \frac{s}{\sqrt{n}}
+\]</span></p>
+<p>其中 <span class="math inline">\(s\)</span> 是样本标准差，<span
+class="math inline">\(n\)</span> 是样本大小。</p>
+<p>举例说明</p>
+<p>假设你测量了 100 个学生的身高：</p>
+<ul>
+<li><strong>标准差</strong>衡量这 100 个学生身高的波动性。</li>
+<li><strong>标准误</strong>衡量“样本均值”作为“总体均值”估计值的可信程度。样本越大，SE
+越小，估计越精准。</li>
+</ul>
+<p>总结对比表格</p>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 22%" />
+<col style="width: 30%" />
+<col style="width: 47%" />
+</colgroup>
+<thead>
+<tr>
+<th>项目</th>
+<th>标准差（SD）</th>
+<th>标准误（SE）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>描述对象</td>
+<td>数据的波动性</td>
+<td>统计量的波动性（如样本均值）</td>
+</tr>
+<tr>
+<td>是否依赖样本量</td>
+<td>否</td>
+<td>是（样本大，SE 小）</td>
+</tr>
+<tr>
+<td>数学关系</td>
+<td><span class="math inline">\(SE = SD / \sqrt n\)</span></td>
+<td><span class="math inline">\(SD = SE × \sqrt n\)</span></td>
+</tr>
+<tr>
+<td>主要用途</td>
+<td>描述统计</td>
+<td>推断统计（置信区间、假设检验）</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<p>正如示例12.1所示，使用历史模拟法估计VaR的标准误通常相当高。当VaR的置信水平降低时，标准误也会下降。例如，如果在示例12.1中，VaR的置信水平为95%而不是99%，那么标准误将为$0.95
+million ，而不是$1.67
+million。随着样本数量的增加，标准误会下降——但下降速度仅与样本容量的平方根成反比。例如，在示例12.1中，如果我们将样本数量从500增加四倍至2000，则标准误会从
+$1.67 million 降至约$0.83 million。</p>
+<p>此外，我们应牢记，历史模拟法假设市场变量的日变化的联合分布在时间上是平稳的。而这一假设不太可能完全成立，这也给VaR的估计带来了额外的不确定性。</p>
+<p>Additionally, we should bear in mind that historical simulation
+assumes that the joint distribution of daily changes in market variables
+is <strong>stationary</strong> through time. This is unlikely to be
+exactly true and creates additional uncertainty about VaR.</p>
+<p>以表12.1至表12.4中的数据为例，当损失以千美元计时，其均值为
+−1.660，标准差为120.146。若假设损失服从正态分布，类似于示例12.1的计算可得：</p>
+<p><span class="math display">\[
+f(x) = 0.000222
+\]</span></p>
+<p>对应VaR估计值的标准误为（以千美元计）：</p>
+<p><span class="math display">\[
+\frac{1}{0.000222} \times \sqrt{\frac{0.01 \times 0.99}{500}} = 20.059
+\]</span></p>
+<p>VaR的估计值为422,291美元。这表明其95%的置信区间大约为38万美元至46万美元。</p>
+<p><strong>不过，正态分布并不是损失分布的理想假设，因为损失具有比正态分布更“厚”的尾部。更好的标准误估计可以通过假设
+<span class="math inline">\(f(x)\)</span> 服从帕累托分布(Pareto
+distribution)来获得，相关内容将在第12.5节中讨论。</strong></p>
+<h3 id="扩展方法">12.3 扩展方法</h3>
+<p>Extensions</p>
+<p><strong>在计算当前VaR和当前ES时（即使用紧邻过去一段时间的数据进行计算），隐含的假设是：近期历史在某种程度上可以作为未来的良好参照。更准确地说，这一假设是：在最近时期内对市场变量所估计的经验概率分布，能够很好地反映市场变量在接下来一天中的表现。</strong></p>
+<p><strong>然而，市场变量的行为是非平稳的。有时市场变量的波动率很高，有时又很低。</strong>本节将介绍第12.1节中基本历史模拟方法的几种扩展形式，这些方法旨在对非平稳性(nonstationary.)进行调整。同时，我们还将说明一种称为<strong>自助法（bootstrap
+method）</strong>的方法如何用于估计标准误(standard errors)。</p>
+<h4 id="观测值的加权">12.3.1 观测值的加权</h4>
+<p>Weighting of Observations</p>
+<p>基本的历史模拟法假设过去每一天的数据被赋予相等的权重。更正式地说，如果我们拥有
+<span class="math inline">\(n\)</span>
+天的日间变化观测值，则每个观测值的权重为 <span
+class="math inline">\(1/n\)</span>。Boudoukh、Richardson 和
+Whitelaw（1998）建议应当给予较近期的观测值更高的权重，因为它们更能反映当前的波动性和宏观经济状况。</p>
+<p>一种自然的加权方式是让权重呈指数下降(decline
+exponentially)。（我们在第8章中开发用于监测波动率的指数加权移动平均模型时使用过该方法。）在这种加权方式中，情景1（即使用最早数据计算得出的情景）的权重是情景2的
+<span class="math inline">\(\lambda\)</span> 倍，情景2的权重是情景3的
+<span class="math inline">\(\lambda\)</span>
+倍，依此类推。为了使所有权重加总为1，情景 <span
+class="math inline">\(i\)</span> 所对应的权重为：</p>
+<p><span class="math display">\[
+\frac{\lambda^{n - i}(1 - \lambda)}{1 - \lambda^n}
+\]</span></p>
+<p>其中，<span class="math inline">\(n\)</span> 为情景的总数。随着 <span
+class="math inline">\(\lambda\)</span>
+趋近于1，这一方法趋近于基本的历史模拟法，即每个观测值的权重均为 <span
+class="math inline">\(1/n\)</span>。（参见习题12.2。）</p>
+<p>VaR的计算方法是将所有情景按损失从大到小排序。从最坏的损失开始，依次累加权重，直到累计权重刚好超过所需的分布百分位数为止。例如，在计算99%置信水平的VaR时，我们持续累加情景权重，直到总和刚好超过0.01，此时即达到了99%
+VaR水平。</p>
+<blockquote>
+<p>个人注：<span class="math inline">\(\lambda\)</span>
+的选择就是艺术。或者说经验、水平等。所有的模型都是科学和艺术的结合，而这些
+<span class="math inline">\(\lambda\)</span>的选择就是艺术的体现。</p>
+</blockquote>
+<p><strong>参数 <span class="math inline">\(\lambda\)</span>
+可以通过尝试不同数值并查看其回测效果来选择。</strong>相比于基本历史模拟法，指数加权法的一个缺点是<strong>有效样本数量</strong>(effective
+sample size )较少。但我们可以通过使用更大的 <span
+class="math inline">\(n\)</span>
+值来弥补这个缺点。实际上，随着时间推进，没必要丢弃旧日期的数据，因为它们本身已经被赋予了很小的权重。</p>
+<p><img src="/img4/《风险管理与金融机构》/T12.5.png" alt="T12.5" style="zoom:67%;" /></p>
+<p>表12.5显示了对第12.1节所讨论投资组合采用该加权程序（<span
+class="math inline">\(\lambda =
+0.995\)</span>）后的结果。（参见作者网站上的工作表4和5。）在置信水平为99%的情况下，VaR的数值现在变为第三大损失，即653,541美元（而不是之前第五大损失的422,291美元）。出现这一结果的原因在于：近期的观测值被赋予了更高的权重，而最大的损失正好出现在相对较近的时间。</p>
+<p>第12.1节中的标准计算方法为每个观测值赋予的权重为 <span
+class="math inline">\(1 / 500 =
+0.002\)</span>。最大损失出现在情景427，该情景的权重为：</p>
+<p><span class="math display">\[
+\frac{(0.995^{73}) \times 0.005}{1 - 0.995^{500}} = 0.00378
+\]</span></p>
+<p>因此，损失分布的0.01尾部包括：</p>
+<ul>
+<li>概率为0.00378，损失为922,484美元；</li>
+<li>概率为0.00381，损失为858,423美元；</li>
+<li>概率为 <span class="math inline">\(0.01 - 0.00378 - 0.00381 =
+0.00241\)</span>，损失为653,541美元。</li>
+</ul>
+<p>因此，预期短缺（ES）可以按如下方式计算：</p>
+<p><span class="math display">\[
+0.00378 \times 922,484 + 0.00381 \times 858,423 + 0.00241 \times 653,541
+= 833,228\ \text{美元}
+\]</span></p>
+<h4 id="市场变量的波动率缩放">12.3.2 市场变量的波动率缩放</h4>
+<p>Volatility Scaling for Market Variables</p>
+<p>Hull和White（1998）提出了一种在历史模拟方法中引入波动率估计的方法。设某一市场变量在第
+<span class="math inline">\(i-1\)</span> 天结束时估计的日波动率为 <span
+class="math inline">\(\sigma_i\)</span>。（有关波动率的估计方法已在第8章中讨论过。）这个值可以被视为对从第
+<span class="math inline">\(i-1\)</span> 天到第 <span
+class="math inline">\(i\)</span> 天之间日波动率的估计。假设今天是第
+<span class="math inline">\(n\)</span>
+天，那么当前对该市场变量的波动率估计（即今天到明天之间的波动率）为 <span
+class="math inline">\(\sigma_{n+1}\)</span>。</p>
+<p>假设对于某一市场变量，<span
+class="math inline">\(\sigma_{n+1}\)</span> 是 <span
+class="math inline">\(\sigma_i\)</span>
+的两倍，这意味着我们估计该市场变量当前的日波动率是第 <span
+class="math inline">\(i-1\)</span>
+天的两倍。那么，我们预期今天到明天的变化幅度将是第 <span
+class="math inline">\(i-1\)</span> 天到第 <span
+class="math inline">\(i\)</span> 天之间变化幅度的两倍。因此，在基于第
+<span class="math inline">\(i-1\)</span> 天到第 <span
+class="math inline">\(i\)</span>
+天的变化构建从今天到明天情景样本时，有必要将该变化乘以2。</p>
+<p>更一般地，当使用该方法时，第 <span class="math inline">\(i\)</span>
+个情景下市场变量的数值表达式（即公式12.1）将变为：</p>
+<p><span class="math display">\[
+\text{第 } i \text{ 个情景下的数值} = \nu_n \frac{\nu_{i-1} + (\nu_i -
+\nu_{i-1}) \sigma_{n+1} / \sigma_i}{\nu_{i-1}} \tag{12.2}
+\]</span></p>
+<p>每一个市场变量都可以以相同方式进行处理。</p>
+<p>这种方法以一种自然直观的方式考虑了波动率的变化，从而使VaR估计能够反映出更及时的信息。使用该方法估算出的VaR值可能会高于在所考虑的历史期间内当前投资组合可能出现的任何历史损失。Hull
+和 White
+通过对汇率与股票指数的实证分析提供了证据，表明该方法优于传统历史模拟法以及前述的指数加权方案。</p>
+<p><img src="/img4/《风险管理与金融机构》/T12.6.png" alt="T12.6" style="zoom:67%;" /></p>
+<p>对于表12.2中的数据，采用指数加权移动平均（EWMA）方法并设参数 <span
+class="math inline">\(\lambda =
+0.94\)</span>，估算出的日波动率如表12.6所示。（参见作者网站的工作表6至8。）在2020年7月9日（表格最后一行）估计的波动率与2018年5月10日（表格第一行）估计波动率的比值如下：</p>
+<ul>
+<li>S&amp;P 500：1.06<br />
+</li>
+<li>FTSE 100：1.21<br />
+</li>
+<li>CAC 40：1.23<br />
+</li>
+<li>Nikkei 225：1.25</li>
+</ul>
+<p>这些比值被用作乘数，乘以2018年5月9日至5月10日期间各指数的实际变动，用于公式（12.2）中的调整。</p>
+<p>类似地，2020年7月9日估计的波动率与2018年5月11日（表12.6第二行）估计波动率的比值分别为：</p>
+<ul>
+<li>S&amp;P 500：1.08<br />
+</li>
+<li>FTSE 100：1.22<br />
+</li>
+<li>CAC 40：1.27<br />
+</li>
+<li>Nikkei 225：1.29</li>
+</ul>
+<p>这些比值被用作2018年5月10日至5月11日期间各指数实际变化的乘数。其余498天的乘数亦以相同方式计算。</p>
+<p><img src="/img4/《风险管理与金融机构》/T12.7.png" alt="T12.7" style="zoom:67%;" /></p>
+<p>表12.7展示了对损失从大到小排序的表格节选。与表12.4相比，我们可以看到导致最大损失的情景并不相同。<strong>这是因为：当估计波动率较低时，即便是一次中等程度的损失也可能对应一个更极端的情景；而在波动率较高时，即使损失更大，其极端性也可能较低。</strong></p>
+<p>本方法下的一天期99%
+VaR为566,492美元；对应的一天期ES（取最差4个情景平均）为705,855美元。这些数值是标准历史模拟法所给估计值的两倍多。</p>
+<h4 id="投资组合的波动率缩放">12.3.3 投资组合的波动率缩放</h4>
+<p>Volatility Scaling for the Portfolio</p>
+<p>我们刚才所介绍的方法还有一个变体，即使用EWMA方法来监控标准历史模拟法（第12.1节）中由连续情景所给出的模拟损失的标准差。这些损失对应的是表12.3最后一列中的数值。（相关计算可参见作者网站上的工作表9和10。）</p>
+<p>然后，我们通过将标准方法中第 <span class="math inline">\(i\)</span>
+个情景下的损失乘以一个比值，来计算调整后的损失。该比值是第500个情景的估计标准差与第
+<span class="math inline">\(i\)</span> 个情景的估计标准差之比：</p>
+<p><span class="math display">\[
+\text{调整后损失} = \text{原始损失} \times \frac{\sigma_{500}}{\sigma_i}
+\]</span></p>
+<p>与逐个市场变量进行波动率调整的方法相比，该方法更为简单，并具有一个优势：它隐含地考虑了<strong>相关性变化</strong>(changing
+correlations)以及<strong>波动率变化</strong>(changing
+volatilities)。表12.8展示了投资组合损失标准差的计算过程以及调整后的损失。（同前所述，第1天的损失方差是基于整个500天期间的样本方差计算的，EWMA方法中使用的
+<span class="math inline">\(\lambda\)</span> 参数为0.94。）</p>
+<p>表12.9展示了调整后损失的排序结果。一天期99%
+VaR为517,195美元，一天期预期短缺（ES）为650,354美元。</p>
+<p><img src="/img4/《风险管理与金融机构》/T12.8.png" alt="T12.8" style="zoom:67%;" /></p>
+<p><img src="/img4/《风险管理与金融机构》/T12.9.png" alt="T12.9" style="zoom:67%;" /></p>
+<h4 id="自助法">12.3.4 自助法</h4>
+<p>Bootstrap Method</p>
+<p>自助法是基本历史模拟方法的一种变体，旨在为当前VaR或压力VaR计算置信区间。该方法首先按常规方式，基于历史市场变量的变动生成一组投资组合价值的变动数据。然后，从这组变动中<strong>有放回地抽样</strong>(sample
+with
+replacement)，生成多个新的、类似的数据集。我们为每个新数据集计算VaR。最终，将这些VaR的结果排序，第2.5百分位与第97.5百分位之间的区间即构成VaR的95%置信区间。</p>
+<p>例如，假设我们拥有500天的数据。我们可以从这些数据中有放回地抽样500,000次，以生成1,000组各包含500天的新数据集。然后为每一组数据计算VaR。将所有VaR值排序，假设第25大的VaR为530万美元，第975大的VaR为890万美元。那么VaR的95%置信区间就是530万到890万美元。</p>
+<p>通常，使用自助法计算VaR的置信区间宽度要<strong>小于</strong>第12.2节中所述方法计算得到的置信区间宽度。</p>
+<p>Suppose, for example, that we have 500 days of data. We could sample
+with replacement 500,000 times from the data to obtain 1,000 different
+sets of 500 days of data. We calculate the VaR for each set. We then
+rank the VaRs. Suppose that the 25th largest VaR is $5.3 million and the
+975th largest VaR is $8.9 million. The 95% confidence interval for VaR
+is $5.3 million to $8.9 million. Usually, the width of the confidence
+interval calculated for VaR using the bootstrap method is less than that
+calculated using the procedure in Section 12.2.</p>
+<h3 id="计算问题">12.4 计算问题</h3>
+<p>Computational Issues</p>
+<p>历史模拟需要对一家金融机构的整个投资组合进行多次估值（在我们的例子中是500次）。这在计算上可能非常耗时。尤其当投资组合中的某些工具是通过蒙特卡洛模拟估值时，问题更加复杂，因为这相当于是“模拟中的模拟”：历史模拟的每一次试验都需要进行一次蒙特卡洛模拟。</p>
+<p>为了减少计算时间，金融机构有时会使用近似方法。设想某个金融工具的价格
+$ P $ 依赖于某一单一市场变量 $ S $。由于 $ S $ 发生变化 $ S $ 而导致的 $
+P $ 变化 $ P $，可以用泰勒级数展开式近似估算为：</p>
+<p><span class="math display">\[
+\Delta P = \delta \Delta S + \frac{1}{2} \gamma (\Delta S)^2 \tag{12.3}
+\]</span></p>
+<p>其中，$ $ 和 $ $ 分别是 $ P $ 对 $ S $
+的一阶和二阶偏导数。由于这些导数通常为了对冲目的而已被计算出来（详见第15章的讨论），因此可以利用该公式快速近似地计算在历史模拟中考虑的
+$ S $ 的变动对交易价值的影响。</p>
+<p>当一个工具依赖多个市场变量 $ S_i (1 i n) $
+时，公式（12.3）可扩展为：</p>
+<p><span class="math display">\[
+\Delta P = \sum_{i=1}^{n} \delta_i \Delta S_i + \sum_{i=1}^{n}
+\sum_{j=1}^{n} \frac{1}{2} \gamma_{ij} \Delta S_i \Delta S_j \tag{12.4}
+\]</span></p>
+<p>其中，$ <em>i $ 和 $ </em>{ij} $ 的定义如下：</p>
+<p><span class="math display">\[
+\delta_i = \frac{\partial P}{\partial S_i}, \quad \gamma_{ij} =
+\frac{\partial^2 P}{\partial S_i \partial S_j}
+\]</span></p>
+<blockquote>
+<p>个人注：那<span class="math inline">\(P=f(S)\)</span>
+的函数表达式是不是要知道才行？</p>
+</blockquote>
+<h3 id="极值理论">12.5 极值理论</h3>
+<p>Extreme Value Theory</p>
+<p>第8.4节介绍了幂律，并解释了它如何用于估计各种分布的尾部。我们现在将提供幂律的理论基础，并介绍比第8.4节中使用的方法更为复杂的估计程序。极值理论（Extreme
+Value
+Theory，EVT）是指估计分布尾部的科学。EVT可用于改进VaR或ES的估计，并有助于分析人员希望在非常高的置信水平下估计VaR的情形。它是一种对经验分布的尾部进行平滑处理和外推的方法。</p>
+<blockquote>
+<p>个人注：</p>
+<p>幂律（power
+law）提供了一种不同于正态分布的替代假设。该法则认为，对于实际中遇到的许多变量，以下关系在
+<span class="math inline">\(x\)</span> 较大时近似成立：</p>
+<p><span class="math display">\[
+\text{Prob}(v &gt; x) = Kx^{-\alpha} \tag{8.1}
+\]</span></p>
+<p>其中 <span class="math inline">\(K\)</span> 和 <span
+class="math inline">\(\alpha\)</span> 是常数。</p>
+<p>人们发现，该等式对多种变量 <span class="math inline">\(v\)</span>
+都近似成立，例如个人收入、城市规模，以及某网站一天内的访问次数等。</p>
+</blockquote>
+<h4 id="关键结果">12.5.1 关键结果</h4>
+<p>The Key Result</p>
+<p>极值理论中的关键结果由Gnedenko（1943）证明。它表明，广泛类型的概率分布的尾部具有共同的特性。</p>
+<p>假设 $ F(v) $ 是某一变量 $ v <span
+class="math inline">\(（例如在某一时间段内一个投资组合的损失）的累积分布函数（
+cumulative distribution function），\)</span> u $
+是该分布右尾中的一个取值。变量 $ v $ 介于 $ u $ 与 $ u + <span
+class="math inline">\(（\)</span> &gt; 0 $）之间的概率是 $ F(u + ) -
+F(u) $。变量 $ v $ 大于 $ u $ 的概率是 $ 1 - F(u) $。定义 $ F_u() $ 为在
+$ v &gt; u $ 条件下，$ v $ 介于 $ u $ 与 $ u + $ 之间的概率，即：</p>
+<p><span class="math display">\[
+F_u(\gamma) = \frac{F(u + \gamma) - F(u)}{1 - F(u)}
+\]</span></p>
+<p>变量 $ F_u() $ 描述了概率分布的右尾。它是变量 $ v $ 超过 $ u $
+的前提下，其超过部分的累积分布函数。</p>
+<p>Gnedenko 的结果指出，对于广泛类别的分布 $ F(v) $，当阈值 $ u $
+增大时，分布 $ F_u() $ 收敛于广义帕累托分布（generalized Pareto
+distribution）。广义帕累托（累积）分布形式如下：</p>
+<p><span class="math display">\[
+G_{\xi, \beta}(\gamma) = 1 - \left[1 + \xi \frac{ \gamma}{\beta}
+\right]^{-1/\xi} \tag{12.5}
+\]</span></p>
+<p>该分布包含两个需由数据估计的参数，分别是 $ $ 和 $ $。参数 $ $
+是形状参数，决定了分布尾部的厚度；参数 $ $ 是尺度参数。</p>
+<p>当变量 $ v $ 服从正态分布时，$ = 0 <span
+class="math inline">\(。随着分布尾部变得更厚，\)</span> $
+的数值会增大。对于大多数金融数据，$ $ 是正值，范围通常在 0.1 到 0.4
+之间。</p>
+<h4 id="参数-ξ-和-β-的估计">12.5.2 参数 ξ 和 β 的估计</h4>
+<p>Estimating 𝛏 and β</p>
+<p>参数 ξ 和 β
+可以通过最大似然法进行估计（关于最大似然法的讨论，见第8.9节）。将公式（12.5）中的累积分布函数
+$ G_{,}() $ 对 <span class="math inline">\(\gamma\)</span>
+求导，可以得到其概率密度函数 $ g_{,}() $：</p>
+<p><span class="math display">\[
+g_{\xi,\beta}(\gamma) = \frac{1}{\beta} \left(1 + \frac{\xi
+\gamma}{\beta} \right)^{-1/\xi - 1} \tag{12.6}
+\]</span></p>
+<p>首先选择一个 $ u $
+值（通常选择接近经验分布第95百分位的值效果较好）。然后将变量 $ v $
+的观测值按从大到小排序，重点关注那些满足 $ v &gt; u $ 的观测值。</p>
+<p>假设共有 $ n_u $ 个这样的观测值，记为 $ v_i <span
+class="math inline">\(（\)</span> 1 i n_u
+$）。根据公式（12.6），其似然函数（在假设 $ $ 的前提下）为：</p>
+<p><span class="math display">\[
+\prod_{i=1}^{n_u} \frac{1}{\beta} \left(1 + \frac{\xi (v_i - u)}{\beta}
+\right)^{-1/\xi - 1}
+\]</span></p>
+<p>最大化该函数等价于最大化其对数形式：</p>
+<p><span class="math display">\[
+\sum_{i=1}^{n_u} \ln \left[ \frac{1}{\beta} \left(1 + \frac{\xi (v_i -
+u)}{\beta} \right)^{-1/\xi - 1} \right] \tag{12.7}
+\]</span></p>
+<p>可以使用标准的数值方法(Standard numerical
+procedures)来求出使该表达式最大化的 ξ 和 β 的取值。Excel
+的“求解器”（Solver）功能在此方面效果良好。</p>
+<h4 id="分布尾部的估计">12.5.3 分布尾部的估计</h4>
+<p>Estimating the Tail of the Distribution</p>
+<p>在 $ v &gt; u $ 的条件下，$ v &gt; u + $ 的概率为 $ 1 - G_{, }()
+$。而 $ v &gt; u $ 的概率为 $ 1 - F(u) $。因此，当 $ x &gt; u $ 时，$ v
+&gt; x $ 的无条件概率为：</p>
+<p><span class="math display">\[
+[1 - F(u)][1 - G_{\xi, \beta}(x - u)]
+\]</span></p>
+<p>设 $ n $ 为观测值的总数，由经验数据计算得出 $ 1 - F(u) $ 的估计为 $
+{n_u}/{n} <span class="math inline">\(。因此，\)</span> v &gt; x $
+的无条件概率估计为：</p>
+<p><span class="math display">\[
+\text{Prob}(v &gt; x) = \frac{n_u}{n} [1 - G_{\xi, \beta}(x - u)] =
+\frac{n_u}{n} \left[1 + \xi\frac{ x - u}{\beta} \right]^{-1/\xi}
+\tag{12.8}
+\]</span></p>
+<h4 id="与幂律的等价性">12.5.4 与幂律的等价性</h4>
+<p>Equivalence to the Power Law</p>
+<p>如果我们设定 $ u = {}/{} $，则公式（12.8）可简化为：</p>
+<p><span class="math display">\[
+\text{Prob}(v &gt; x) = \frac{n_u}{n} \left[ \frac{\xi x}{\beta}
+\right]^{-1/\xi}
+\]</span></p>
+<p>这可以表示为：</p>
+<p><span class="math display">\[
+K x^{-\alpha}
+\]</span></p>
+<p>其中，</p>
+<p><span class="math display">\[
+K = \frac{n_u}{n} \left[ \frac{\xi}{\beta} \right]^{-1/\xi}, \quad
+\alpha = \frac{1}{\xi}
+\]</span></p>
+<p>这表明公式（12.8）与第8.4节中介绍的幂律是一致的。</p>
+<h4 id="左尾">12.5.5 左尾</h4>
+<p>The Left Tail</p>
+<p>到目前为止的分析都假设我们关注的是变量 $ v $
+的概率分布的右尾。如果我们关注的是概率分布的左尾，可以用 $ -v $ 来代替 $
+v $
+进行处理。例如，某石油公司收集了关于每日石油价格百分比上涨的数据，并希望估计一个VaR，该VaR表示石油价格在一天内的百分比下跌，并具有99.9%的不被超过的概率。这个统计量是从石油价格上涨概率分布的左尾计算得出的。石油公司可以将每个数据项的符号取反（使数据反映的是油价的下跌而非上涨），然后使用前面介绍的方法进行计算。</p>
+<h4 id="var-与-es-的计算">12.5.6 VaR 与 ES 的计算</h4>
+<p>Calculation of VaR and ES</p>
+<p>要以置信水平 $ q $ 计算 VaR，需要求解下列方程：</p>
+<p><span class="math display">\[
+F(\text{VaR}) = q
+\]</span></p>
+<p>由于 $ F(x) = 1 - (v &gt; x) $，代入公式（12.8）得到：</p>
+<p><span class="math display">\[
+q = 1 - \frac{n_u}{n} \left[ 1 + \xi\frac{ \text{VaR} - u}{\beta}
+\right]^{-1/\xi}
+\]</span></p>
+<p>由此可得：</p>
+<p><span class="math display">\[
+\text{VaR} = u + \frac{\beta}{\xi} \left\{ \left[ \frac{n}{n_u} (1 - q)
+\right]^{-\xi} - 1 \right\} \tag{12.9}
+\]</span></p>
+<p>期望损失（Expected Shortfall, ES）为：</p>
+<p><span class="math display">\[
+\text{ES} = \frac{\text{VaR} + \beta - \xi u}{1 - \xi} \tag{12.10}
+\]</span></p>
+<h3 id="极值理论evt的应用">12.6 极值理论（EVT）的应用</h3>
+<p>Applications of EVT</p>
+<p>我们重新考虑表12.1到表12.4中的数据。当 $ u = 160 <span
+class="math inline">\(，\)</span> n_u = 25
+$（即有25个情景的损失大于160）时，表12.10展示了试验值 $ = 40 $ 和 $ =
+0.3 $ 下的计算结果。对数似然函数（公式12.7）的值为 -160.99。</p>
+<p><img src="/img4/《风险管理与金融机构》/T12.10.png" alt="T12.10" style="zoom:50%;" /></p>
+<p>当使用Excel的“求解器”来搜索最大化对数似然函数的 $ $ 和 $ $
+的值时（参见作者网站上的工作表11），得到：</p>
+<p><span class="math display">\[
+\beta = 110.46, \quad \xi = 0.354
+\]</span></p>
+<p>并且对数似然函数的最大值为 -151.47。</p>
+<p>假设我们希望估计2020年7月8日至7月9日期间投资组合损失超过300,000美元（即超过其价值的3%）的概率。从公式（12.8）中可以得出：</p>
+<p><span class="math display">\[
+\frac{25}{500} \left[ 1 + \frac{0.354 (300 - 160)}{110.46}
+\right]^{-1/0.354} = 0.0176
+\]</span></p>
+<p>这比仅仅计算观测值更为准确。同样，投资组合损失超过500,000美元（即超过其价值的5%）的概率为0.0062。</p>
+<p>根据公式（12.9），99%置信度下的VaR值为：</p>
+<p><span class="math display">\[
+\text{VaR} = 160 + \frac{110.46}{0.354} \left[ \left( \frac{500}{25} (1
+- 0.99) \right)^{-0.354} - 1 \right] = 399.6 \, \text{或} \, 399,600 \,
+\text{美元}
+\]</span></p>
+<p>（在这种情况下，VaR估计约比第五大损失少23,000美元）。当置信水平提高到99.9%时，VaR变为：</p>
+<p><span class="math display">\[
+160 + \frac{110.46}{0.354} \left[ \left( \frac{500}{25} (1 - 0.999)
+\right)^{-0.354} - 1 \right] = 1094.6 \, \text{或} \, 1,094,600 \,
+\text{美元}
+\]</span></p>
+<p>当置信水平进一步提高到99.97%时，VaR变为：</p>
+<p><span class="math display">\[
+160 + \frac{110.46}{0.354} \left[ \left( \frac{500}{25} (1 - 0.9997)
+\right)^{-0.354} - 1 \right] = 1757.4 \, \text{或} \, 1,757,400 \,
+\text{美元}
+\]</span></p>
+<p>公式（12.10）可以改进期望损失（ES）的估计，并允许为ES估计提高置信水平。在我们的例子中，当置信水平为99%时，估计的ES为：</p>
+<p><span class="math display">\[
+\frac{399.6 + 110.46 - 0.354 \times 160}{1 - 0.354} = 702.0 \, \text{或}
+\, 702,000 \, \text{美元}
+\]</span></p>
+<p>当置信水平为99.9%时，估计的ES为：</p>
+<p><span class="math display">\[
+\frac{1094.6 + 110.46 - 0.354 \times 160}{1 - 0.354} = 1778.1 \,
+\text{或} \, 1,778,100 \, \text{美元}
+\]</span></p>
+<p>EVT可以用于当前或压力情境的度量。它还可以与第12.3节中的波动率缩放程序结合使用（参见问题12.11）。此外，它还可以与第12.3节中的加权观测程序结合使用。在这种情况下，公式（12.7）中被求和的项必须乘以适用于底层观测的权重。</p>
+<p>最后，可以使用计算来优化第12.2节中99%
+VaR估计的置信区间。通过在VaR水平上评估的概率密度函数（条件于损失大于160），可以得到公式（12.6）中的
+$ g_{, } $ 函数：</p>
+<p><span class="math display">\[
+\frac{1}{110.5} \left( 1 + \frac{0.354 \times (399.6 - 160)}{110.5}
+\right)^{-1/0.354-1} = 0.0001024
+\]</span></p>
+<p>无条件概率密度函数在VaR水平上的值为 $ {n_u}/{n} = {25}/{500} $
+乘以这个值，即
+0.00005。出乎意料的是，这个值比第12.2节中估计的0.000222要低，因此导致了更宽的VaR置信区间。</p>
+<h4 id="u-的选择">12.6.1 $ u $ 的选择</h4>
+<p>Choice of u</p>
+<p>一个自然的问题是：“结果如何依赖于 $ u $ 的选择？”通常发现，$ $ 和 $ $
+的值确实依赖于 $ u $，但 $ F(x) $
+的估计保持大致相同。（问题12.10探讨了在我们正在考虑的例子中，将 $ u $
+从160更改为150时会发生什么。）我们希望选择的 $ u $
+足够高，以便我们真正研究分布尾部的形状，但又足够低，以使得参与最大似然计算的数据项数量不会过少。更多的数据会导致对尾部形状评估的更高准确性。在本例中，我们应用了包含500个数据项的程序。理想情况下，应使用更多的数据。</p>
+<p><strong>一个经验法则是，$ u $
+应该大约等于经验分布的第95百分位数。</strong>在寻找 $ $ 和 $ $
+的最优值时，两个变量都应该被约束为正值。如果优化器试图将 $ $
+设置为负值，这通常意味着：(a) 分布的尾部并不比正态分布更重，或者 (b)
+选择了不适当的 $ u $ 值。</p>
+<h3 id="总结"><strong>总结</strong></h3>
+<p>历史模拟是一种非常流行的估计VaR或ES的方法。它包括创建一个数据库，包含一段时间内所有市场变量的每日变动。第一次模拟试验假设每个市场变量的百分比变化与数据库中涵盖的第一天相同，第二次模拟试验假设百分比变化与第二天相同，依此类推。计算每次模拟试验中的投资组合价值变化，并将VaR计算为该变化的概率分布的适当百分位数，而ES则计算该分布尾部的平均变化。</p>
+<p>使用历史模拟估计的VaR的标准误通常较高。所需的VaR置信度水平越高，标准误越大。在基本历史模拟方法的一个扩展中，随着观测数据的老化，赋予观测值的权重呈指数递减；在另一个扩展中，对历史数据进行调整以反映波动率的变化。</p>
+<p><strong>极值理论</strong>是一种平滑通过历史模拟计算的投资组合每日变化的概率分布尾部的方法。它避免了在脚注1、2、4和7中提到的计算不确定性。它导致的VaR和ES估计<strong>反映了分布尾部的整体形状，而不仅仅是尾部中几个损失的位置。</strong>极值理论还可以在置信度非常高的情况下用于估计VaR和ES。例如，即使我们只有500天的数据，它也可以用来估算99.9%置信度下的VaR或ES。</p>
+<h3 id="练习题与问题"><strong>练习题与问题</strong></h3>
+<p>（答案见书末）</p>
+<p>12.1 在使用历史模拟法和500天数据计算VaR时，做了什么假设？<br />
+12.2
+证明当λ趋近于1时，第12.3.1节中的加权方案趋近于基本的历史模拟法。<br />
+12.3 假设我们从1,000个观测值（单位：百万美元）中估算出一天的95%
+VaR为5。通过拟合标准分布到观测值，损失分布在95%点的概率密度函数被估算为0.01。VaR估算的标准误差是多少？<br />
+12.4
+在第12.1节中，四指数示例的99%一天VaR被计算为$422,291。查看作者网站上的相关电子表格并计算：(a)
+95%一天VaR，(b) 95%一天ES，(c) 97%一天VaR，(d) 97%一天ES。<br />
+12.5
+使用作者网站上的电子表格，在第12.1节中，如果组合在四个指数之间均等分配，计算一天99%
+VaR和一天99% ES。<br />
+12.6 第12.3.1节中的加权观测值程序使得一天99%
+VaR等于$653,541，一天ES为$833,228。使用作者网站上的电子表格计算当该程序中的λ参数从0.995变为0.99时，VaR和ES的变化。<br />
+12.7 第12.3.3节中的简化波动率缩放法使得一天99%
+VaR等于$517,195，一天ES为$650,354。使用作者网站上的电子表格计算当该程序中的λ参数从0.94变为0.96时，VaR和ES的变化。<br />
+12.8
+在第12.6节中应用极值理论（EVT）时，损失超过$400,000的概率是多少？<br />
+12.9 在第12.6节中应用EVT时，97%置信水平下的一天VaR是多少？<br />
+12.10
+在第12.6节中应用EVT时，将u从160更改为150。这如何改变ξ和β的最大似然估计？当置信限为(a)
+99%和(b) 99.9%时，这如何改变一天99% VaR和一天99% ES？<br />
+12.11
+对第12.7表中的波动率缩放程序数据和作者网站上的数据进行极值理论分析。使用u
+=
+250。ξ和β的最佳拟合值是多少？计算一天VaR和一天ES，置信水平为99%和99.9%。损失大于$600,000的概率是多少？</p>
+<h3 id="进一步问题"><strong>进一步问题</strong></h3>
+<p>12.12 假设一天97.5%
+VaR从2,000个观测值中估算为1300万美元。一天的变化大致符合正态分布，均值为零，标准差为600万美元。估算VaR估计值的99%置信区间。<br />
+12.13
+假设第12.1节中考虑的组合包含（单位：千美元）：3,000美元的标准普尔500指数，3,000美元的富时指数，1,000美元的CAC
+40指数，以及3,000美元的日经225指数。使用作者网站上的电子表格计算这对以下各项的影响：<br />
+(a) 第12.1节中计算的一天99% VaR和ES。<br />
+(b) 使用第12.3.1节中的加权观测值法，λ = 0.995时计算的一天99%
+VaR和ES。<br />
+(c) 使用第12.3.2节和第12.3.3节中的两种波动率缩放法，λ =
+0.94时（假设应用EWMA时的初始方差为样本方差）计算的一天99%
+VaR和ES。<br />
+(d) 使用第12.6节中的极值理论和等权重法计算的一天99% VaR和ES。<br />
+12.14 研究在第12.3.2节中应用波动率调整结果时，使用极值理论的效果，设u =
+350。<br />
+12.15 第12.3.1节中的加权观测值法给出的一天99% VaR为653,541美元，一天99%
+ES为833,228美元。使用作者网站上的电子表格，计算当该方法中的λ参数从0.995变为0.99时，这些度量值的变化。<br />
+12.16 第12.3.2节中的波动率缩放法给出的一天99% VaR为566,492美元，一天99%
+ES为705,855美元。使用作者网站上的电子表格，计算当该方法中的λ参数从0.94变为0.92时，VaR和ES的变化。<br />
+12.17
+可以从作者网站下载2022年3月31日之前1,500天的纳斯达克综合指数的值。使用以下方法，计算2022年3月31日对于1,000万美元投资于该指数的组合的一天99%
+VaR和一天99% ES：<br />
+(a) 基本历史模拟法。<br />
+(b) 第12.3.1节中的指数加权法，λ = 0.995。<br />
+讨论所得结果之间差异的原因。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/07/11/%E7%AC%AC11%E7%AB%A0%20%E9%A3%8E%E9%99%A9%E4%BB%B7%E5%80%BC%E4%B8%8E%E9%A2%84%E6%9C%9F%E6%8D%9F%E5%A4%B1/" rel="prev" title="《风险管理与金融机构》第11章  风险价值与预期损失">
+                  <i class="fa fa-angle-left"></i> 《风险管理与金融机构》第11章  风险价值与预期损失
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/07/13/%E7%AC%AC13%E7%AB%A0%20%E6%A8%A1%E5%9E%8B%E6%9E%84%E5%BB%BA%E6%B3%95/" rel="next" title="《风险管理与金融机构》第13章  模型构建法">
+                  《风险管理与金融机构》第13章  模型构建法 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+    <div id="search-container" style="margin: 20px auto; max-width: 600px;">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js"></script>
+      <div id="search"></div>
+      <script>
+        window.addEventListener('DOMContentLoaded', (event) => {
+            new PagefindUI({ 
+                element: "#search", 
+                showImages: false,
+                translations: {
+                    placeholder: "搜搜看...",
+                    clear_search: "清除",
+                    load_more: "加载更多",
+                    search_label: "搜索",
+                    filters_label: "筛选",
+                    zero_results: "未找到关于 [SEARCH_TERM] 的结果",
+                    many_results: "找到 [COUNT] 条关于 [SEARCH_TERM] 的结果",
+                    one_result: "找到 1 条关于 [SEARCH_TERM] 的结果",
+                    searching: "正在搜索..."
+                }
+            });
+        });
+      </script>
+    </div>
+  
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>
