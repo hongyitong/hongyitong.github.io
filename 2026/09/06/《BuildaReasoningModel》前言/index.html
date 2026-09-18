@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false,"path":"/search.json"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="前言 十余年前，我踏入人工智能领域的旅程始于统计模式分类——在那里，我了解到相对简单的模型在捕捉数据中的有用结构时可以走多远。随着时间的推移，我的好奇心从识别模式的模型转向了能够解释、规划和解决多步问题的模型。 随着 2022 年 ChatGPT 的发布，大型语言模型（LLM）进入了主流视野。随后的一次转变——尤其在 2024 年末和 2025 年全年尤为显著——是将 LLM 扩展为所谓的推理模型">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《Build_a_Reasoning_Model》前言">
+<meta property="og:url" content="http://hongyitong.github.io/2026/09/06/%E3%80%8ABuildaReasoningModel%E3%80%8B%E5%89%8D%E8%A8%80/index.html">
+<meta property="og:site_name" content="墨语浮生">
+<meta property="og:description" content="前言 十余年前，我踏入人工智能领域的旅程始于统计模式分类——在那里，我了解到相对简单的模型在捕捉数据中的有用结构时可以走多远。随着时间的推移，我的好奇心从识别模式的模型转向了能够解释、规划和解决多步问题的模型。 随着 2022 年 ChatGPT 的发布，大型语言模型（LLM）进入了主流视野。随后的一次转变——尤其在 2024 年末和 2025 年全年尤为显著——是将 LLM 扩展为所谓的推理模型">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-09-05T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-09-18T03:34:16.346Z">
+<meta property="article:author" content="Rayman.hung">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2026/09/06/%E3%80%8ABuildaReasoningModel%E3%80%8B%E5%89%8D%E8%A8%80/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2026/09/06/%E3%80%8ABuildaReasoningModel%E3%80%8B%E5%89%8D%E8%A8%80/","path":"2026/09/06/《BuildaReasoningModel》前言/","title":"《Build_a_Reasoning_Model》前言"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>《Build_a_Reasoning_Model》前言 | 墨语浮生</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="fc62aedd-644a-478d-b3c2-d8ba9964421c" src="https://cloud.umami.is/script.js" data-host-url="https://cloud.umami.is"></script>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js" defer></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">墨语浮生</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%87%B4%E8%B0%A2"><span class="nav-text">致谢</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E%E6%9C%AC%E4%B9%A6"><span class="nav-text">关于本书</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%BB%E8%80%85%E5%AF%B9%E8%B1%A1"><span class="nav-text">读者对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E4%B9%A6%E7%9A%84%E7%BB%84%E7%BB%87%E6%96%B9%E5%BC%8F%E8%B7%AF%E7%BA%BF%E5%9B%BE"><span class="nav-text">本书的组织方式：路线图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E%E4%BB%A3%E7%A0%81"><span class="nav-text">关于代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#livebook-%E8%AE%A8%E8%AE%BA%E8%AE%BA%E5%9D%9B"><span class="nav-text">liveBook 讨论论坛</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E5%9C%A8%E7%BA%BF%E8%B5%84%E6%BA%90"><span class="nav-text">其他在线资源</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E%E4%BD%9C%E8%80%85"><span class="nav-text">关于作者</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E%E5%B0%81%E9%9D%A2%E6%8F%92%E5%9B%BE"><span class="nav-text">关于封面插图</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、心情记录</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives">
+          <span class="site-state-item-count">335</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories">
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/09/06/%E3%80%8ABuildaReasoningModel%E3%80%8B%E5%89%8D%E8%A8%80/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="《Build_a_Reasoning_Model》前言 | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《Build_a_Reasoning_Model》前言
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-09-06 00:00:00" itemprop="dateCreated datePublished" datetime="2026-09-06T00:00:00+08:00">2026-09-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="前言">前言</h1>
+<p>十余年前，我踏入人工智能领域的旅程始于统计模式分类——在那里，我了解到相对简单的模型在捕捉数据中的有用结构时可以走多远。随着时间的推移，我的好奇心从识别模式的模型转向了能够解释、规划和解决多步问题的模型。</p>
+<p>随着 2022 年 ChatGPT
+的发布，大型语言模型（LLM）进入了主流视野。随后的一次转变——尤其在 2024
+年末和 2025 年全年尤为显著——是将 LLM
+扩展为所谓的推理模型，这类模型能够解决更复杂的问题，特别是在数学和代码等技术领域。</p>
+<p>与此同时，推理模型有时让人感觉难以捉摸，而本书正是我为了让推理模型更加平易近人所做的一次尝试。我们不会从头训练一个巨型模型，而是从一个较小的预训练
+LLM
+出发，一步一步地应用推理技术。在此过程中，你将亲手实现文本生成、使用验证器进行评估、推理时缩放方法，以及诸如基于<strong>可验证奖励的强化学习和知识蒸馏等训练</strong>方法。到本书结束时，你将理解主要的推理方法在实践中如何运作，以及它们如何融入现代
+LLM 开发工作流。</p>
+<p>与我之前的著作《Build a Large Language Model (From
+Scratch)》一样，本书采用代码优先的方法，但侧重点有所不同。本书不会深入讲解
+Transformer 架构或大规模预训练，而是聚焦于将传统 LLM
+转化为推理模型的方法。如果你读过我之前的那本书，本书会像是一个自然的下一个阶段。如果没有读过，你仍然可以跟随本书的节奏，无需事先掌握所有底层
+LLM 的细节。</p>
+<p>我们将在全书中使用数学示例，因为它们既适合推理研究实践，又便于自动验证。这使得它们成为判断模型是否真正正确解决问题的有效测试平台。更广泛地说，我的目标不是讲授某一个狭窄的基准，而是为你提供构建、评估和改进推理系统所需的工具和直觉——无论在你自己的工作中还是其他地方。</p>
+<p>当我最初开始研究推理模型时，我不得不从论文、代码仓库和零散的实现笔记中拼凑各种想法。我希望本书能够为你省去这些麻烦，为你提供一条从基本原理到可运行代码的更清晰的路径。我坚信，理解推理模型的最佳方式就是亲手构建一个。</p>
+<p>祝阅读和编码愉快！</p>
+<span id="more"></span>
+<h1 id="致谢">致谢</h1>
+<p>写一本书是一项重大的工程，我衷心感谢我的妻子 Liza
+在此过程中的耐心与支持。她无条件的爱和持续的鼓励是我不可或缺的力量源泉。</p>
+<p>我无比感激 Daniel Kleine 和 Dmitry
+Labazkin，他们对本书草稿章节和代码的宝贵反馈远远超出了我的预期。Daniel
+对细节和风格的敏锐眼光，以及 Dmitry
+对代码性能的深刻见解，无疑使本书对所有读者来说更加流畅和愉快。</p>
+<p>我还要感谢 Manning Publications 的出色团队。Michael
+Stephens，感谢你许多富有成效的对话，帮助我们塑造了本书的方向。Dustin
+Archibald，我非常感激你在遵循 Manning
+指南方面的建设性指导，以及你在适应这种非常规的"从零开始"方法的独特需求方面所展现的灵活性。特别感谢
+Aleksandar Dragosavljevic 和 Ivan Martinović
+在版式和格式方面所做的工作。最后，技术编辑 David
+Caswell，感谢你在此过程中周到而慷慨的反馈。David
+是一位行业领先的顾问，专注于将 LLM 应用于新闻业。他曾领导 BBC、Tribune
+Publishing 和 Yahoo!
+的人工智能创新，发表过关于人工智能自动化信息工作流的同行评审研究，并且是新兴的人工智能中介信息生态系统中关于
+LLM 的常驻演讲者和撰稿人。</p>
+<p>最后，我要感谢审阅者 Alejandro Cuevas Rivero、Muhammad Ali
+Shafique、Arun Prakash A、Christopher Brousseau、David Curran、Fabio
+Montagna、Hamza Farooq、Hongming Zheng、Julien Thomazo、Lindo William
+Khoza、Michael Anthony Garcia、Naman Dwivedi、Pere Martra、Pradeep
+Dasigi、Salvatore Raieli、Sifal Klioui、Syed Baqir Ali、Thomas
+Viehmann、Tianrui Liu、Toni Ramchandani 和 Viton Vitanis
+对本书草稿的全面反馈。你们敏锐的目光和富有洞察力的评论对于提高本书的质量至关重要。</p>
+<p>对每一位为这段旅程做出贡献的人，我由衷地感谢。你们的支持、专业知识和奉献精神对于将本书付诸出版起到了关键作用。谢谢！</p>
+<h1 id="关于本书">关于本书</h1>
+<p>《Build a Reasoning Model (From
+Scratch)》是一本实践指南，通过亲手实现核心技术来理解现代推理 LLM
+的工作原理。本书不是从头开始训练基础模型，而是<strong>从一个预训练的开源基础
+LLM
+出发，逐步向你展示如何为其扩展推理能力。</strong>在此过程中，你将学习如何使用基础模型生成文本、使用验证器评估答案、通过推理时缩放提升性能、使用强化学习进行训练，以及将推理行为蒸馏到更小的模型中。到本书结束时，你将理解主要的推理方法如何在实用的
+LLM
+开发工作流中协同工作，以及如何构建你自己的小型但功能完备的推理系统。</p>
+<p>本书采用代码优先的方法。"从零开始"指的是你自己实现推理方法，使底层机制变得透明。如果你对基础
+LLM 的构建和预训练细节感兴趣，我之前的著作《Build a Large Language Model
+(From Scratch)》(http://mng.bz/M96o)
+提供了这一基础，但并非阅读本书的先决条件。</p>
+<h2 id="读者对象">读者对象</h2>
+<p>《Build a Reasoning Model (From
+Scratch)》面向机器学习爱好者、工程师、研究人员、学生以及软件开发者，他们希望实际理解推理模型的工作原理以及如何实现其背后的主要技术。<strong>本书为那些希望超越高层描述、亲眼看到这些系统如何构建、评估和改进的读者而写。</strong></p>
+<p>最重要的先决条件是扎实的 Python
+经验。有机器学习、深度学习或大型语言模型的先前经验会有帮助，但你不需要成为专家。本书旨在让有动力的初学者也能跟上，同时为经验丰富的实践者提供足够的技术深度。</p>
+<p>本书经常使用数学示例，因为它们既适合推理研究实践，又便于自动验证。然而，高级数学知识并非必需。熟悉基础代数和一般的向量及矩阵概念会有所帮助，以便理解部分代码实现。</p>
+<p>有一些 PyTorch
+的先前经验可能会帮助你更快地阅读代码，但并非必需。本书的重点是理解推理方法并清晰地实现它们，而不是掌握深度学习框架的每一个细节。已经阅读过《Build
+a Large Language Model (From Scratch)》的读者可能会认出一些更广泛的 LLM
+概念，但本书是完全自包含的。</p>
+<h2 id="本书的组织方式路线图">本书的组织方式：路线图</h2>
+<p>本书围绕推理模型的实用开发流水线来组织。我们将从传统预训练 LLM
+开始，添加评估能力以便衡量进展，<strong>然后探索改进推理的两种主要方式：推理时方法和额外训练（</strong>inference-time
+methods and additional training.
+）<strong>。</strong>由于后面的章节直接建立在前面章节引入的代码和概念之上，建议按顺序阅读。</p>
+<p>第 1 章介绍了推理在 LLM 语境中的实际含义。它解释了推理模型与传统 LLM
+的区别，在较高层次上回顾了标准的 LLM
+训练流水线，并介绍了用于改进推理的主要方法。</p>
+<p>第 2 章通过加载和使用预训练的基础 LLM
+来建立起点。它涵盖了编码环境、分词、逐步文本生成以及实用的加速技术，如键值缓存和模型代码编译。</p>
+<p>第 3
+章增加了评估功能。它展示了如何可靠地提取最终答案、如何对照参考答案验证正确性，以及如何为面向数学的推理任务构建评估流水线。</p>
+<p>在此基础之上，第 4 章和第 5
+章聚焦于推理时缩放——在不改变模型权重的情况下改进推理。第 4
+章涵盖基于提示的推理、多样化解码和自洽性。第 5
+章将此方向扩展为自我精炼、简单评分策略、置信度估计和迭代答案改进。</p>
+<p>第 6 章到第 8 章实现了训练时的方法（training-time methods）。第 6
+章介绍了用于推理模型的强化学习，重点是基于可验证奖励的强化学习（RLVR）和组相对策略优化（GRPO）。第
+7
+章在此基础上涵盖了实际的监控、常见的训练失败模式、奖励黑客行为以及有用的扩展，如
+KL 正则化和响应格式奖励。第 8
+章以知识蒸馏收尾主体文本，展示了如何创建教师生成的推理数据集、训练更小的学生模型以及评估蒸馏结果。</p>
+<p>附录对主体章节进行了补充。附录 A 提供了参考文献和进一步阅读，附录 B
+总结了练习解答，附录 C 展示了全书中使用的 Qwen3 源代码，附录 D
+讨论了更大的 LLM 变体，附录 E 涵盖了批处理和面向吞吐量的执行，附录 F
+概述了额外的 LLM 评估方法，附录 G 展示了如何围绕模型构建聊天界面。</p>
+<h2 id="关于代码">关于代码</h2>
+<p>为了方便读者跟随学习，本书中的代码示例可从 Manning 图书页面
+(https://www.manning.com/books/build-a-reasoning-model-from-scratch)
+以及配套的 GitHub 仓库 (https://github.com/rasbt/reasoning-from-scratch)
+获取。练习解答总结在附录 B
+中，相应的代码文件链接在仓库的章节文件夹中。你还可以从本书的
+liveBook（在线）版本获取可执行的代码片段，网址为
+https://livebook.manning.com/book/build-a-reasoning-model-from-scratch。</p>
+<p>本书包含大量源代码示例，既有编号列表也穿插在正文中。在这两种情况下，源代码都使用等宽字体（如这样）格式化，以区别于普通文本。</p>
+<p>在许多情况下，原始源代码已被重新格式化；我们添加了换行符并重新调整了缩进，以适应书中可用的页面空间。此外，当代码在正文中已有描述时，列表中的注释通常已被移除。代码注释伴随着许多列表，强调重要概念。</p>
+<p>本书的关键目标之一是易于使用，因此代码示例经过精心设计，可以在普通笔记本电脑上高效运行，无需任何特殊硬件。但如果你确实有
+GPU，某些部分会提供有用的提示，帮助你扩展数据集和模型以充分利用额外算力。</p>
+<p>主体章节中的代码设计为易读且能在消费级硬件上运行。推理和评估章节在
+CPU 和 GPU
+上都能良好运行，而训练导向的章节如果你希望重现较大的实验，则最好有 GPU
+支持。在整本书中，我们使用 PyTorch 配合预训练的开源 Qwen3 模型，附录 C
+提供了底层的 Qwen3 实现，供希望更详细检查该代码的读者参考。</p>
+<h2 id="livebook-讨论论坛">liveBook 讨论论坛</h2>
+<p>购买《Build a Reasoning Model (From Scratch)》包含免费访问
+liveBook（Manning 的在线阅读平台）的权限。利用 liveBook
+独有的讨论功能，你可以将评论附加到全书或特定段落。你可以轻松地为自己做笔记、提出和回答技术问题，并从作者和其他用户那里获得帮助。要访问论坛，请访问
+https://livebook.manning.com/book/build-a-reasoning-model-from-scratch/discussion。</p>
+<p>Manning
+对我们的读者的承诺是提供一个能够让读者之间以及读者与作者之间进行有意义的对话的场所。这不是对作者参与特定程度活动的承诺，作者对论坛的贡献仍然是自愿的（且无报酬的）。我们建议你向他们提出一些挑战性的问题，以免他们的兴趣消退！只要本书仍在印刷，该论坛和之前讨论的档案就可以从出版商的网站上获取。</p>
+<h2 id="其他在线资源">其他在线资源</h2>
+<p>对最新的人工智能和大型语言模型（LLM）研究趋势感兴趣？ - 查看我的博客
+https://magazine.sebastianraschka.com，我定期在那里讨论最新的人工智能研究，重点关注
+LLM。 需要帮助快速掌握深度学习和 PyTorch？ - 我在我的网站
+https://sebastianraschka.com/teaching
+上提供几门免费课程。这些资源可以帮助你快速掌握最新技术。
+在寻找与本书相关的补充材料？ - 访问本书的 GitHub 仓库
+https://github.com/rasbt/reasoning-from-scratch，查找额外的资源和示例，以补充你的学习。</p>
+<h1 id="关于作者">关于作者</h1>
+<p>Sebastian Raschka 是一位 LLM
+研究工程师，在人工智能领域拥有十余年的经验。他的工作涵盖工业界和学术界，包括在
+Lightning AI 担任高级工程师实现 LLM
+解决方案，以及在威斯康星大学麦迪逊分校担任统计学教授进行研究和教学。</p>
+<p>Sebastian
+与行业合作伙伴合作开发人工智能解决方案，并在威斯康星大学麦迪逊分校的开源委员会任职。他专注于
+LLM
+和高性能人工智能系统的开发，重点关注实用的、代码驱动的实现。他是畅销书《Build
+a Large Language Model (From Scratch)》、《Machine Learning with PyTorch
+and Scikit-Learn》以及《Machine Learning Q and AI》的作者。</p>
+<p>你可以在 https://sebastianraschka.com 了解更多关于 Sebastian
+的信息。</p>
+<h1 id="关于封面插图">关于封面插图</h1>
+<p>《Build a Reasoning Model (From Scratch)》封面上的插图题为"La
+Lionne"（母狮），取自 Louis Curmer 于 1841
+年出版的一本书。每幅插图都绘制精细并由手工上色。</p>
+<p>在那个年代，仅凭人们的着装就能轻松判断他们居住在哪里以及从事什么行业或社会地位。Manning
+以基于几个世纪前丰富多样的地域文化的封面插图来庆祝计算机行业的创造力和进取精神——这些插图通过此类收藏中的图片重新焕发生机。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/09/05/%E7%AB%99%E5%9C%A8%20AI%20%E5%8F%98%E9%9D%A9%E7%9A%84%E5%8D%81%E5%AD%97%E8%B7%AF%E5%8F%A3/" rel="prev" title="站在 AI 变革的十字路口">
+                  <i class="fa fa-angle-left"></i> 站在 AI 变革的十字路口
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/09/07/%E3%80%8ABuildaReasoningModel%E3%80%8B%E7%AC%AC1%E7%AB%A0_%E7%90%86%E8%A7%A3%E6%8E%A8%E7%90%86%E6%A8%A1%E5%9E%8B/" rel="next" title="《Build_a_Reasoning_Model》第1章理解推理模型">
+                  《Build_a_Reasoning_Model》第1章理解推理模型 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+    <div id="search-container" style="margin: 20px auto; max-width: 600px;">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js"></script>
+      <div id="search"></div>
+      <script>
+        window.addEventListener('DOMContentLoaded', (event) => {
+            new PagefindUI({ 
+                element: "#search", 
+                showImages: false,
+                translations: {
+                    placeholder: "搜搜看...",
+                    clear_search: "清除",
+                    load_more: "加载更多",
+                    search_label: "搜索",
+                    filters_label: "筛选",
+                    zero_results: "未找到关于 [SEARCH_TERM] 的结果",
+                    many_results: "找到 [COUNT] 条关于 [SEARCH_TERM] 的结果",
+                    one_result: "找到 1 条关于 [SEARCH_TERM] 的结果",
+                    searching: "正在搜索..."
+                }
+            });
+        });
+      </script>
+    </div>
+  
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>
