@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false,"path":"/search.json"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="附录F 模型评估的常见方法 F.1 理解LLM的主要评估方法 在实践中，评估训练好的LLM有四种常见方法：多项选择题、验证器、排行榜和LLM评判器，如图F.1所示。研究论文、营销材料、技术报告和模型卡（指LLM特定的技术报告）通常包含来自两个或更多这些类别的结果。 如图F.1所示，这里介绍的四个评估类别分为两组：基于基准的评估和基于判断的评估。其他指标，如训练损失、困惑度和奖励，通常在模型开发过程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《Build_a_Reasoning_Model》附录F模型评估的常见方法">
+<meta property="og:url" content="http://hongyitong.github.io/2026/09/20/%E3%80%8ABuildaReasoningModel%E3%80%8B%E9%99%84%E5%BD%95F%E6%A8%A1%E5%9E%8B%E8%AF%84%E4%BC%B0/index.html">
+<meta property="og:site_name" content="墨语浮生">
+<meta property="og:description" content="附录F 模型评估的常见方法 F.1 理解LLM的主要评估方法 在实践中，评估训练好的LLM有四种常见方法：多项选择题、验证器、排行榜和LLM评判器，如图F.1所示。研究论文、营销材料、技术报告和模型卡（指LLM特定的技术报告）通常包含来自两个或更多这些类别的结果。 如图F.1所示，这里介绍的四个评估类别分为两组：基于基准的评估和基于判断的评估。其他指标，如训练损失、困惑度和奖励，通常在模型开发过程">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-09-19T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-09-20T03:37:32.257Z">
+<meta property="article:author" content="Rayman.hung">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2026/09/20/%E3%80%8ABuildaReasoningModel%E3%80%8B%E9%99%84%E5%BD%95F%E6%A8%A1%E5%9E%8B%E8%AF%84%E4%BC%B0/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2026/09/20/%E3%80%8ABuildaReasoningModel%E3%80%8B%E9%99%84%E5%BD%95F%E6%A8%A1%E5%9E%8B%E8%AF%84%E4%BC%B0/","path":"2026/09/20/《BuildaReasoningModel》附录F模型评估/","title":"《Build_a_Reasoning_Model》附录F模型评估的常见方法"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>《Build_a_Reasoning_Model》附录F模型评估的常见方法 | 墨语浮生</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="fc62aedd-644a-478d-b3c2-d8ba9964421c" src="https://cloud.umami.is/script.js" data-host-url="https://cloud.umami.is"></script>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js" defer></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">墨语浮生</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-text">附录F 模型评估的常见方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#F-1-%E7%90%86%E8%A7%A3LLM%E7%9A%84%E4%B8%BB%E8%A6%81%E8%AF%84%E4%BC%B0%E6%96%B9%E6%B3%95"><span class="nav-text">F.1 理解LLM的主要评估方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#F-2-%E8%AF%84%E4%BC%B0%E7%AD%94%E6%A1%88%E9%80%89%E6%8B%A9%E7%9A%84%E5%87%86%E7%A1%AE%E6%80%A7"><span class="nav-text">F.2 评估答案选择的准确性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#F-2-1-%E5%8A%A0%E8%BD%BD%E6%A8%A1%E5%9E%8B"><span class="nav-text">F.2.1 加载模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#F-2-2-%E6%A3%80%E6%9F%A5%E7%94%9F%E6%88%90%E7%9A%84%E7%AD%94%E6%A1%88%E5%AD%97%E6%AF%8D"><span class="nav-text">F.2.2 检查生成的答案字母</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#F-3-%E4%BD%BF%E7%94%A8%E9%AA%8C%E8%AF%81%E5%99%A8%E6%A3%80%E6%9F%A5%E7%AD%94%E6%A1%88"><span class="nav-text">F.3 使用验证器检查答案</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#F-4-%E4%BD%BF%E7%94%A8%E5%81%8F%E5%A5%BD%E5%92%8C%E6%8E%92%E8%A1%8C%E6%A6%9C%E6%AF%94%E8%BE%83%E6%A8%A1%E5%9E%8B"><span class="nav-text">F.4 使用偏好和排行榜比较模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#F-5-%E7%94%A8%E5%85%B6%E4%BB%96LLM%E8%AF%84%E5%88%A4%E5%9B%9E%E7%AD%94"><span class="nav-text">F.5 用其他LLM评判回答</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#F-5-1-%E5%9C%A8Ollama%E4%B8%AD%E5%AE%9E%E7%8E%B0LLM-as-a-judge%E6%96%B9%E6%B3%95"><span class="nav-text">F.5.1 在Ollama中实现LLM-as-a-judge方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#F-5-2-%E4%BD%BF%E7%94%A8%E8%AF%84%E5%88%86%E6%A0%87%E5%87%86%E8%AF%84%E4%BC%B0%E5%9B%9E%E7%AD%94"><span class="nav-text">F.5.2 使用评分标准评估回答</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、心情记录</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives">
+          <span class="site-state-item-count">349</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories">
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/09/20/%E3%80%8ABuildaReasoningModel%E3%80%8B%E9%99%84%E5%BD%95F%E6%A8%A1%E5%9E%8B%E8%AF%84%E4%BC%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="《Build_a_Reasoning_Model》附录F模型评估的常见方法 | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《Build_a_Reasoning_Model》附录F模型评估的常见方法
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-09-20 00:00:00" itemprop="dateCreated datePublished" datetime="2026-09-20T00:00:00+08:00">2026-09-20</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1>附录F 模型评估的常见方法</h1>
+<h2 id="F-1-理解LLM的主要评估方法">F.1 理解LLM的主要评估方法</h2>
+<p>在实践中，评估训练好的LLM有四种常见方法：多项选择题、验证器、排行榜和LLM评判器，如图F.1所示。研究论文、营销材料、技术报告和模型卡（指LLM特定的技术报告）通常包含来自两个或更多这些类别的结果。</p>
+<p>如图F.1所示，这里介绍的四个评估类别分为两组：基于基准的评估和基于判断的评估。其他指标，如训练损失、困惑度和奖励，通常在模型开发过程中内部使用。它们包含在模型训练章节（第6至8章）中。</p>
+<span id="more"></span>  
+<h2 id="F-2-评估答案选择的准确性">F.2 评估答案选择的准确性</h2>
+<p>从历史上看，最广泛使用的评估方法之一是多项选择基准测试，如MMLU（Massive Multitask Language Understanding，<a target="_blank" rel="noopener" href="https://huggingface.co/datasets/cais/mmlu%EF%BC%89%E3%80%82">https://huggingface.co/datasets/cais/mmlu）。</a></p>
+<p>图F.2展示了MMLU数据集中的一个示例。完整的MMLU数据集包含57个学科（从高中数学到生物学）和总共约16,000道多项选择题。性能以准确率（正确回答问题的比例）衡量；例如，如果16,000道题中回答了14,000道，分数将为87.5%。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Figure F.1: 本书涵盖主题的模型图，重点介绍了本附录涵盖的两大类评估方法：基于基准的评估和基于判断的评估</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Figure F.2: 在MMLU上评估LLM，通过将其多项选择预测与数据集中的正确答案进行比较</span><br></pre></td></tr></table></figure>
+<p>多项选择基准测试（如MMLU）以直接、可量化的方式测试LLM的知识回忆能力，类似于标准化测试、许多学校考试或理论驾驶考试。</p>
+<p>注意，图F.2展示了一个简化版的多项选择评估，其中模型预测的答案字母直接与正确答案进行比较。其他流行的方法使用对数概率评分（对数概率在第4章中有更详细的讨论）。</p>
+<p>以下小节说明如何用代码实现图F.2所示的MMLU评分。端到端的MMLU脚本，包括不同的评分变体，将作为本书代码仓库中的补充材料提供。</p>
+<h3 id="F-2-1-加载模型">F.2.1 加载模型</h3>
+<p>在评估MMLU上的模型之前，我们必须加载预训练模型。以下代码与清单3.1相同。</p>
+<p><strong>清单F.1 加载预训练模型</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pathlib <span class="keyword">import</span> Path</span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">from</span> reasoning_from_scratch.ch02 <span class="keyword">import</span> get_device</span><br><span class="line"><span class="keyword">from</span> reasoning_from_scratch.qwen3 <span class="keyword">import</span> (</span><br><span class="line">    download_qwen3_small, Qwen3Tokenizer,</span><br><span class="line">    Qwen3Model, QWEN_CONFIG_06_B</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">device = get_device()</span><br><span class="line">torch.set_float32_matmul_precision(<span class="string">&quot;high&quot;</span>)  <span class="comment"># 从&quot;highest&quot;降低精度以启用Tensor Core（如适用）</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># device = &quot;cpu&quot;  # 如果你的设备有兼容性问题，取消注释此行</span></span><br><span class="line"></span><br><span class="line">WHICH_MODEL = <span class="string">&quot;base&quot;</span>  <span class="comment"># 默认使用base模型，类似于第2章</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> WHICH_MODEL == <span class="string">&quot;base&quot;</span>:</span><br><span class="line">    download_qwen3_small(</span><br><span class="line">        kind=<span class="string">&quot;base&quot;</span>, tokenizer_only=<span class="literal">False</span>, out_dir=<span class="string">&quot;qwen3&quot;</span></span><br><span class="line">    )</span><br><span class="line">    tokenizer_path = Path(<span class="string">&quot;qwen3&quot;</span>) / <span class="string">&quot;tokenizer-base.json&quot;</span></span><br><span class="line">    model_path = Path(<span class="string">&quot;qwen3&quot;</span>) / <span class="string">&quot;qwen3-0.6B-base.pth&quot;</span></span><br><span class="line">    tokenizer = Qwen3Tokenizer(tokenizer_file_path=tokenizer_path)</span><br><span class="line"></span><br><span class="line"><span class="keyword">elif</span> WHICH_MODEL == <span class="string">&quot;reasoning&quot;</span>:</span><br><span class="line">    download_qwen3_small(</span><br><span class="line">        kind=<span class="string">&quot;reasoning&quot;</span>, tokenizer_only=<span class="literal">False</span>, out_dir=<span class="string">&quot;qwen3&quot;</span></span><br><span class="line">    )</span><br><span class="line">    tokenizer_path = Path(<span class="string">&quot;qwen3&quot;</span>) / <span class="string">&quot;tokenizer-reasoning.json&quot;</span></span><br><span class="line">    model_path = Path(<span class="string">&quot;qwen3&quot;</span>) / <span class="string">&quot;qwen3-0.6B-reasoning.pth&quot;</span></span><br><span class="line">    tokenizer = Qwen3Tokenizer(</span><br><span class="line">        tokenizer_file_path=tokenizer_path,</span><br><span class="line">        apply_chat_template=<span class="literal">True</span>,</span><br><span class="line">        add_generation_prompt=<span class="literal">True</span>,</span><br><span class="line">        add_thinking=<span class="literal">True</span>,</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    <span class="keyword">raise</span> ValueError(<span class="string">f&quot;Invalid choice: WHICH_MODEL=<span class="subst">&#123;WHICH_MODEL&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">model = Qwen3Model(QWEN_CONFIG_06_B)</span><br><span class="line">model.load_state_dict(torch.load(model_path))</span><br><span class="line">model.to(device)</span><br><span class="line"></span><br><span class="line">USE_COMPILE = <span class="literal">False</span>  <span class="comment"># 可选设置为true以启用模型编译</span></span><br><span class="line"><span class="keyword">if</span> USE_COMPILE:</span><br><span class="line">    torch._dynamo.config.allow_unspec_int_on_nn_module = <span class="literal">True</span></span><br><span class="line">    model = torch.<span class="built_in">compile</span>(model)</span><br></pre></td></tr></table></figure>
+<h3 id="F-2-2-检查生成的答案字母">F.2.2 检查生成的答案字母</h3>
+<p>现在我们将实现最简单且可能最直观的MMLU评分方法，该方法依赖于检查生成的多项选择答案字母是否与正确答案匹配。这与图F.2中说明的方法类似。</p>
+<p>我们将使用MMLU数据集中的一个示例：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">example = &#123;</span><br><span class="line">    <span class="string">&quot;question&quot;</span>: (</span><br><span class="line">        <span class="string">&quot;How many ways are there to put 4 distinguishable&quot;</span></span><br><span class="line">        <span class="string">&quot; balls into 2 indistinguishable boxes?&quot;</span></span><br><span class="line">    ),</span><br><span class="line">    <span class="string">&quot;choices&quot;</span>: [<span class="string">&quot;7&quot;</span>, <span class="string">&quot;11&quot;</span>, <span class="string">&quot;16&quot;</span>, <span class="string">&quot;8&quot;</span>],</span><br><span class="line">    <span class="string">&quot;answer&quot;</span>: <span class="string">&quot;D&quot;</span>,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接下来，我们将定义一个函数来格式化LLM提示。</p>
+<p><strong>清单F.2 格式化LLM提示</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">format_prompt</span>(<span class="params">example</span>):</span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">        <span class="string">f&quot;<span class="subst">&#123;example[<span class="string">&#x27;question&#x27;</span>]&#125;</span>\n&quot;</span></span><br><span class="line">        <span class="string">f&quot;A. <span class="subst">&#123;example[<span class="string">&#x27;choices&#x27;</span>][<span class="number">0</span>]&#125;</span>\n&quot;</span></span><br><span class="line">        <span class="string">f&quot;B. <span class="subst">&#123;example[<span class="string">&#x27;choices&#x27;</span>][<span class="number">1</span>]&#125;</span>\n&quot;</span></span><br><span class="line">        <span class="string">f&quot;C. <span class="subst">&#123;example[<span class="string">&#x27;choices&#x27;</span>][<span class="number">2</span>]&#125;</span>\n&quot;</span></span><br><span class="line">        <span class="string">f&quot;D. <span class="subst">&#123;example[<span class="string">&#x27;choices&#x27;</span>][<span class="number">3</span>]&#125;</span>\n&quot;</span></span><br><span class="line">        <span class="string">&quot;Answer: &quot;</span>  <span class="comment"># 结尾的空格鼓励生成单个字母的下一个词元</span></span><br><span class="line">    )</span><br></pre></td></tr></table></figure>
+<p>让我们在MMLU示例上执行该函数，了解格式化后的LLM输入是什么样子：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">prompt = format_prompt(example)</span><br><span class="line"><span class="built_in">print</span>(prompt)</span><br></pre></td></tr></table></figure>
+<p>输出如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">How many ways are there to put 4 distinguishable balls into 2</span><br><span class="line">indistinguishable boxes?</span><br><span class="line">A. 7</span><br><span class="line">B. 11</span><br><span class="line">C. 16</span><br><span class="line">D. 8</span><br><span class="line">Answer:</span><br></pre></td></tr></table></figure>
+<p>上述模型提示为模型提供了一个答案选项列表，并以&quot;Answer: &quot;文本结尾，鼓励模型生成正确答案。</p>
+<p>虽然这不是严格必需的，但有时提供附加的问题和正确答案作为输入是有帮助的，这样模型可以观察期望它如何解决任务。（例如，提供五个示例的情况被称为5-shot MMLU。）然而，对于当前几代的LLM，即使是基础模型也相当有能力的，因此这不是必需的。</p>
+<p><strong>加载不同的MMLU样本</strong></p>
+<p>你可以直接从datasets库加载MMLU数据集的示例（可以通过<code>pip install datasets</code>或<code>uv add datasets</code>安装）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> datasets <span class="keyword">import</span> load_dataset</span><br><span class="line">configs = get_dataset_config_names(<span class="string">&quot;cais/mmlu&quot;</span>)</span><br><span class="line">dataset = load_dataset(<span class="string">&quot;cais/mmlu&quot;</span>, <span class="string">&quot;high_school_mathematics&quot;</span>)</span><br><span class="line"></span><br><span class="line">example = dataset[<span class="string">&quot;test&quot;</span>][<span class="number">0</span>]  <span class="comment"># 检查测试集中的第一个示例</span></span><br><span class="line"><span class="built_in">print</span>(example)</span><br></pre></td></tr></table></figure>
+<p>这里我们使用了&quot;high_school_mathematics&quot;子集。要获取其他子集的列表，使用以下代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> datasets <span class="keyword">import</span> get_dataset_config_names</span><br><span class="line">subsets = get_dataset_config_names(<span class="string">&quot;cais/mmlu&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(subsets)</span><br></pre></td></tr></table></figure>
+<p>接下来，我们将对提示进行分词，并将其包装在PyTorch张量对象中作为LLM的输入（类似于我们在第2章中所做的）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">prompt_ids = tokenizer.encode(prompt)</span><br><span class="line">prompt_fmt = torch.tensor(prompt_ids, device=device).unsqueeze(<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+<p>现在我们将定义主要的评分函数，该函数生成几个词元（默认为八个），并提取模型打印的第一个字母A、B、C或D。</p>
+<p><strong>清单F.3 提取生成的字母</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> reasoning_from_scratch.ch02 <span class="keyword">import</span> (</span><br><span class="line">    generate_text_basic_stream_cache</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">predict_choice</span>(<span class="params"></span></span><br><span class="line"><span class="params">    model, tokenizer, prompt_fmt, max_new_tokens=<span class="number">8</span></span></span><br><span class="line"><span class="params"></span>):</span><br><span class="line">    pred = <span class="literal">None</span></span><br><span class="line">    <span class="keyword">for</span> t <span class="keyword">in</span> generate_text_basic_stream_cache(</span><br><span class="line">        model=model,</span><br><span class="line">        token_ids=prompt_fmt,</span><br><span class="line">        max_new_tokens=max_new_tokens,</span><br><span class="line">        eos_token_id=tokenizer.eos_token_id,</span><br><span class="line">    ):</span><br><span class="line">        answer = tokenizer.decode(t.squeeze(<span class="number">0</span>).tolist())</span><br><span class="line">        <span class="keyword">for</span> letter <span class="keyword">in</span> answer:</span><br><span class="line">            letter = letter.upper()</span><br><span class="line">            <span class="keyword">if</span> letter <span class="keyword">in</span> <span class="string">&quot;ABCD&quot;</span>:  <span class="comment"># 一旦出现字母就停止</span></span><br><span class="line">                pred = letter</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">        <span class="keyword">if</span> pred:</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">    <span class="keyword">return</span> pred</span><br></pre></td></tr></table></figure>
+<p>现在我们可以使用清单F.3中的函数检查生成的字母：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">pred1 = predict_choice(model, tokenizer, prompt_fmt)</span><br><span class="line"><span class="built_in">print</span>(</span><br><span class="line">    <span class="string">f&quot;Generated letter: <span class="subst">&#123;pred1&#125;</span>\n&quot;</span></span><br><span class="line">    <span class="string">f&quot;Correct? <span class="subst">&#123;pred1 == example[<span class="string">&#x27;answer&#x27;</span>]&#125;</span>&quot;</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>结果如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Generated letter: C</span><br><span class="line">Correct? False</span><br></pre></td></tr></table></figure>
+<p>如你所见，在这个例子中生成的答案是不正确的（False）。</p>
+<p><strong>多项选择答案格式</strong></p>
+<p>本节为了说明目的实现了一个简化版的多项选择评估，其中模型预测的答案字母直接与正确答案进行比较。在实践中，存在更广泛使用的变体，如对数概率评分，我们衡量模型认为每个候选答案的可能性，而不仅仅是检查最终的字母选择。（基于概率的评分在第5章中讨论。）对于推理模型，评估还可以涉及评估将正确答案作为输入时生成正确答案的可能性。</p>
+<p>无论哪种变体，评估仍然归结为检查模型是否从预定义的答案选项中正确选择。这些变体的示例作为可选的补充材料包含在代码仓库中。</p>
+<p>像MMLU这样的多项选择基准测试的一个局限性是，它们只衡量LLM从预定义选项中选择的能力，因此对于评估推理能力不太有用——除了检查模型相比于基础模型遗忘或记住了多少知识。它们不能捕捉自由形式的写作能力或实际效用。尽管如此，它们仍然是一个简单而有用的诊断工具：高MMLU分数不一定意味着模型在实际使用中很强，但低分数可以突出潜在的知识差距。</p>
+<h2 id="F-3-使用验证器检查答案">F.3 使用验证器检查答案</h2>
+<p>与前一节讨论的多项选择题回答相关，基于验证的方法使用准确率指标来量化LLM能力。但与多项选择基准测试不同，验证方法允许LLM提供自由形式的答案。然后我们提取答案的相关部分，并使用验证器将其与数据集中提供的正确答案进行比较，如图F.3所示。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Figure F.3: 使用基于验证的方法在自由形式问答中评估LLM。模型生成自由形式的答案（可能包含多个步骤）和最终的框内答案，该答案被提取出来与数据集中的正确答案进行比较。</span><br></pre></td></tr></table></figure>
+<p>如图F.3所示，当我们比较提取的答案与提供的答案时，我们可以使用外部工具，如代码解释器或计算器软件。</p>
+<p>缺点是该方法只能应用于容易（且最好是确定性地）验证的领域，如数学和代码。此外，这种方法会引入额外的复杂性和依赖性，并且可能将部分评估负担从模型本身转移到外部工具上。</p>
+<p>由于这种方法允许我们以编程方式生成无限数量的数学问题变体，并且它受益于逐步推理，它已成为推理模型评估和开发的基石。第3章提供了该方法的详细示例，因此我们在此跳过代码演示。</p>
+<h2 id="F-4-使用偏好和排行榜比较模型">F.4 使用偏好和排行榜比较模型</h2>
+<p>到目前为止，我们已经介绍了两种提供易于量化的指标（如模型准确率）的方法。但是，到目前为止讨论的方法都没有以更全面的方式评估LLM，包括回答的风格。在本节中，如图F.4所示，我们将讨论一种基于判断的方法：LLM排行榜。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Figure F.4: 本书涵盖主题的模型图，重点介绍了本附录涵盖的基于判断和基于基准的评估方法。在前面的章节中我们已经介绍了基于基准的方法（多项选择和验证器），现在我们将介绍用于衡量LLM性能的基于判断的方法，本节重点关注排行榜。</span><br></pre></td></tr></table></figure>
+<p>排行榜方法是一种基于判断的方法，其中模型的排名不是根据准确率值或其他固定的基准分数，而是根据用户（或另一个LLM）对其输出的偏好。一个流行的排行榜是Arena（原名Chatbot Arena，<a target="_blank" rel="noopener" href="https://arena.ai/leaderboard/text%EF%BC%89%EF%BC%8C%E7%94%A8%E6%88%B7%E5%8F%AF%E4%BB%A5%E5%9C%A8%E5%85%B6%E4%B8%AD%E6%AF%94%E8%BE%83%E4%B8%A4%E4%B8%AA%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%9B%9E%E7%AD%94%EF%BC%8C%E5%8F%AF%E4%BB%A5%E6%98%AF%E7%94%A8%E6%88%B7%E9%80%89%E6%8B%A9%E7%9A%84%E4%B9%9F%E5%8F%AF%E4%BB%A5%E6%98%AF%E5%8C%BF%E5%90%8D%E7%9A%84%EF%BC%8C%E5%B9%B6%E5%AF%B9%E4%BB%96%E4%BB%AC%E5%81%8F%E5%A5%BD%E7%9A%84%E4%B8%80%E4%B8%AA%E6%8A%95%E7%A5%A8%EF%BC%8C%E5%A6%82%E5%9B%BEF.5%E6%89%80%E7%A4%BA%E3%80%82">https://arena.ai/leaderboard/text），用户可以在其中比较两个模型的回答，可以是用户选择的也可以是匿名的，并对他们偏好的一个投票，如图F.5所示。</a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Figure F.5: 基于判断的排行榜界面示例（Arena）。两个LLM被给予相同的提示，它们的回答并排显示，用户投票选择他们偏好的答案。</span><br></pre></td></tr></table></figure>
+<p>这些偏好投票（如图F.5所示收集）然后跨所有用户聚合到排行榜中，按用户偏好对不同模型进行排名。在本节的剩余部分，我们将实现一个简单的排行榜示例。</p>
+<p>让我们考虑用户在不同LLM上提示的设置，类似于图F.5。以下列表表示成对投票，其中第一个模型是获胜者：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">votes = [</span><br><span class="line">    (<span class="string">&quot;GPT-5&quot;</span>, <span class="string">&quot;Claude-3&quot;</span>),</span><br><span class="line">    (<span class="string">&quot;GPT-5&quot;</span>, <span class="string">&quot;Llama-4&quot;</span>),</span><br><span class="line">    (<span class="string">&quot;Claude-3&quot;</span>, <span class="string">&quot;Llama-3&quot;</span>),</span><br><span class="line">    (<span class="string">&quot;Llama-4&quot;</span>, <span class="string">&quot;Llama-3&quot;</span>),</span><br><span class="line">    (<span class="string">&quot;Claude-3&quot;</span>, <span class="string">&quot;Llama-3&quot;</span>),</span><br><span class="line">    (<span class="string">&quot;GPT-5&quot;</span>, <span class="string">&quot;Llama-3&quot;</span>),</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<p>在这个列表中，<code>votes</code>列表中的每个元组代表两个模型之间的成对偏好，写作<code>(winner, loser)</code>。因此<code>(&quot;GPT-5&quot;, &quot;Claude-3&quot;)</code>表示用户更喜欢GPT-5的回答而非Claude-3模型的回答。</p>
+<p>在本节的剩余部分，我们将把<code>votes</code>列表转换为排行榜。我们将使用流行的Elo评分系统，该系统最初是为国际象棋棋手排名而开发的。每个模型将从基准分数开始。然后，每次比较和偏好投票后，模型的评分将被更新。如果用户偏好当前模型胜过排名较高的模型，当前模型将获得相对较大的评分更新，并在排行榜中上升。相反，如果当前模型战胜了排名较低的模型，其评分只会增加一点。（如果当前模型输了，其评分以类似方式更新，但排名点是减去而不是加上。）</p>
+<p>以下清单显示了将这些成对排名转换为排行榜的代码。</p>
+<p><strong>清单F.4 构建排行榜</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">elo_ratings</span>(<span class="params">vote_pairs, k_factor=<span class="number">32</span>, initial_rating=<span class="number">1000</span></span>):</span><br><span class="line">    ratings = &#123;  <span class="comment"># 所有模型初始化为相同的基础评分</span></span><br><span class="line">        model: initial_rating</span><br><span class="line">        <span class="keyword">for</span> pair <span class="keyword">in</span> vote_pairs</span><br><span class="line">        <span class="keyword">for</span> model <span class="keyword">in</span> pair</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> winner, loser <span class="keyword">in</span> vote_pairs:  <span class="comment"># 每场比赛后更新评分</span></span><br><span class="line"></span><br><span class="line">        <span class="comment"># 根据当前评分计算获胜者的预期得分</span></span><br><span class="line">        expected_winner = <span class="number">1.0</span> / (</span><br><span class="line">            <span class="number">1.0</span> + <span class="number">10</span> ** ((ratings[loser] - ratings[winner]) / <span class="number">400.0</span>)</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">        ratings[winner] = (</span><br><span class="line">            ratings[winner] + k_factor * (<span class="number">1</span> - expected_winner)  <span class="comment"># k_factor控制评分更新的敏感度</span></span><br><span class="line">        )</span><br><span class="line">        ratings[loser] = (</span><br><span class="line">            ratings[loser] + k_factor * (<span class="number">0</span> - (<span class="number">1</span> - expected_winner))</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> ratings</span><br></pre></td></tr></table></figure>
+<p>清单F.4中的<code>elo_ratings</code>函数以投票为输入，并将其转换为排行榜，如下所示：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ratings = elo_ratings(votes, k_factor=<span class="number">32</span>, initial_rating=<span class="number">1000</span>)</span><br><span class="line"><span class="keyword">for</span> model <span class="keyword">in</span> <span class="built_in">sorted</span>(ratings, key=ratings.get, reverse=<span class="literal">True</span>):</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;<span class="subst">&#123;model:8s&#125;</span> : <span class="subst">&#123;ratings[model]:<span class="number">.1</span>f&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p>这导致以下排行榜排名，分数越高越好：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">GPT-5    : 1043.7</span><br><span class="line">Claude-3 : 1015.2</span><br><span class="line">Llama-4  : 1000.7</span><br><span class="line">Llama-3  : 940.4</span><br></pre></td></tr></table></figure>
+<p>那么这是如何工作的呢？对于每一对，我们使用以下公式计算获胜者的预期得分：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">expected_winner = <span class="number">1</span> / (<span class="number">1</span> + <span class="number">10</span> ** ((rating_loser - rating_winner) / <span class="number">400</span>))</span><br></pre></td></tr></table></figure>
+<p><code>expected_winner</code>值是基于当前评分，在无平局设置下模型预测的获胜概率。它决定了评分更新的幅度。</p>
+<p>每个模型从<code>initial_rating = 1000</code>开始。如果获胜者和失败者的评分相等，我们有<code>expected_winner = 0.5</code>，表示势均力敌。在这种情况下，更新如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rating_winner + k_factor * (1 - 0.5) = rating_winner + 16</span><br><span class="line">rating_loser  + k_factor * (0 - (1 - 0.5)) = rating_loser - 16</span><br></pre></td></tr></table></figure>
+<p>如果大热门（高评分的模型）获胜，我们有<code>expected_winner ≈ 1</code>。热门只获得少量分数，失败者也只失去少量分数：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rating_winner + 32 * (1 - 0.99) = rating_winner + 0.32</span><br><span class="line">rating_loser  + 32 * (0 - (1 - 0.99)) = rating_loser - 0.32</span><br></pre></td></tr></table></figure>
+<p>但如果黑马（低评分的模型）获胜，我们有<code>expected_winner ≈ 0</code>，获胜者几乎获得全部k_factor分数，而失败者失去大致相同数量的分数：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rating_winner + 32 * (1 - 0.01) = rating_winner + 31.68</span><br><span class="line">rating_loser  + 32 * (0 - (1 - 0.01)) = rating_loser - 31.68</span><br></pre></td></tr></table></figure>
+<p><strong>顺序很重要</strong></p>
+<p>Elo方法在每场比赛（模型比较）后更新评分，因此后续结果建立在已经更新的评分之上。这意味着相同的一组结果以不同的顺序呈现时，最终分数可能略有不同。这种影响通常很小，但可能发生，特别是当冷门事件发生得早而不是晚时。</p>
+<p>为了减少这种顺序效应，我们可以打乱投票对，多次运行<code>elo_ratings</code>函数，并对结果评分取平均。</p>
+<p>像这里描述的排行榜方法提供了比静态基准分数更动态的模型质量视图。但结果可能受到用户人口统计特征、提示选择和投票偏见的影响。基准测试和排行榜也可能被操纵，用户可能根据风格而非正确性选择回答。最后，与自动化基准测试工具相比，排行榜不提供对新开发变体的即时反馈，这使得它们在活跃的模型开发过程中更难使用。</p>
+<p><strong>其他排名方法</strong></p>
+<p>Arena最初使用本节描述的Elo方法，但最近已过渡到基于Bradley–Terry模型的统计方法。Bradley–Terry模型的主要优势在于，由于它在统计上具有理论基础，因此可以构建置信区间来表达排名的不确定性。与Elo评分相比，Bradley–Terry模型还通过在整个数据集上进行统计拟合来联合估计所有评分，这使得它不受顺序效应的影响。</p>
+<p>为了使报告的分数保持在熟悉的范围内，Bradley–Terry模型被拟合以产生与Elo可比较的值。即使排行榜不再正式使用Elo评分，&quot;Elo&quot;一词仍然被LLM研究者和从业者广泛使用。展示Elo评分的代码示例包含在本书的补充材料中，位于<a target="_blank" rel="noopener" href="https://github.com/rasbt/reasoning-from-scratch/tree/main/chF/03_leaderboards%E3%80%82">https://github.com/rasbt/reasoning-from-scratch/tree/main/chF/03_leaderboards。</a></p>
+<h2 id="F-5-用其他LLM评判回答">F.5 用其他LLM评判回答</h2>
+<p>在早期，LLM使用统计和基于启发式的方法进行评估，包括一种称为BLEU的度量，它粗略地衡量生成的文本与参考文本的匹配程度。这类指标的问题在于它们需要精确的单词匹配，不考虑同义词、单词替换等。</p>
+<p>如果我们想要整体评判书面回答文本，一个解决方案是使用相对排名和基于排行榜的方法，如前一节所述。但排行榜的一个缺点是基于偏好的比较具有主观性，因为它们涉及人类反馈，以及收集这些反馈的挑战。</p>
+<p>一个相关的方法是使用另一个LLM，配合预定义的评分标准（即评估指南），比较LLM的回答与参考回答，并基于该标准评判回答质量，如图F.6所示。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Figure F.6: LLM评判器评估示例。要评估的模型生成一个答案，然后由一个单独的评判LLM根据评分标准和提供的参考答案进行评分。</span><br></pre></td></tr></table></figure>
+<p>在实践中，图F.6所示的基于评判器的方法在评判LLM强大时效果很好。常见的设置是通过API使用领先的专有LLM，尽管也存在专门的评判模型（参见附录A的参考文献）。评判器工作得如此之好的一个原因是，评估一个答案通常比生成一个答案更容易。</p>
+<p>为了在Python中以编程方式实现基于评判器的模型评估，我们可以加载一个Qwen3模型（在附录D中讨论），并用评分标准和我们想要评估的模型答案来提示它。或者，我们可以通过API使用其他LLM，例如ChatGPT或Ollama API。</p>
+<p>在本节的剩余部分，我们将使用Python中的Ollama API实现图F.6所示的基于评判器的评估。具体来说，我们将使用OpenAI的200亿参数gpt-oss开放权重模型，因为它在能力和效率之间提供了良好的平衡。有关gpt-oss的更多信息，请参阅我的文章&quot;From GPT-2 to gpt-oss: Analyzing the Architectural Advances&quot;，网址为<a target="_blank" rel="noopener" href="https://magazine.sebastianraschka.com/p/from-gpt-2-to-gpt-oss-analyzing-the%E3%80%82">https://magazine.sebastianraschka.com/p/from-gpt-2-to-gpt-oss-analyzing-the。</a></p>
+<h3 id="F-5-1-在Ollama中实现LLM-as-a-judge方法">F.5.1 在Ollama中实现LLM-as-a-judge方法</h3>
+<p>Ollama（<a target="_blank" rel="noopener" href="https://ollama.com">https://ollama.com</a>）是一个高效的开源应用程序，用于在笔记本电脑上运行LLM。它是对开源llama.cpp库（<a target="_blank" rel="noopener" href="https://github.com/ggerganov/llama.cpp%EF%BC%89%E7%9A%84%E5%8C%85%E8%A3%85%EF%BC%8C%E8%AF%A5%E5%BA%93%E7%94%A8%E7%BA%AFC/C++%E5%AE%9E%E7%8E%B0LLM%E4%BB%A5%E8%8E%B7%E5%BE%97%E6%9C%80%E9%AB%98%E6%95%88%E7%8E%87%E3%80%82%E7%84%B6%E8%80%8C%EF%BC%8COllama%E5%8F%AA%E6%98%AF%E4%B8%80%E4%B8%AA%E4%BD%BF%E7%94%A8LLM%E7%94%9F%E6%88%90%E6%96%87%E6%9C%AC%E7%9A%84%E5%B7%A5%E5%85%B7%EF%BC%88%E6%8E%A8%E7%90%86%EF%BC%89%EF%BC%9B%E5%AE%83%E4%B8%8D%E6%94%AF%E6%8C%81%E8%AE%AD%E7%BB%83%E6%88%96%E5%BE%AE%E8%B0%83LLM%E3%80%82">https://github.com/ggerganov/llama.cpp）的包装，该库用纯C/C++实现LLM以获得最高效率。然而，Ollama只是一个使用LLM生成文本的工具（推理）；它不支持训练或微调LLM。</a></p>
+<p>要执行以下代码，请访问<a target="_blank" rel="noopener" href="https://ollama.xn--comOllama-xi4qu490b">https://ollama.com安装Ollama</a>，并按照操作系统的说明操作：</p>
+<ul>
+<li>对于macOS和Windows用户：打开下载的Ollama应用程序。如果提示安装命令行支持，选择&quot;Yes&quot;。</li>
+<li>对于Linux用户：使用Ollama网站上提供的安装命令。</li>
+</ul>
+<p>在实现模型评估代码之前，让我们先下载gpt-oss模型并验证Ollama是否能在命令行终端中正常运行。在命令行（而不是Python会话中）执行以下命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ollama run gpt-oss:20b</span><br></pre></td></tr></table></figure>
+<p>第一次执行此命令时，将自动下载200亿参数的gpt-oss模型，占用14 GB的存储空间。输出如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$ ollama run gpt-oss:20b</span><br><span class="line">pulling manifest </span><br><span class="line">pulling b112e727c6f1: 100% ████████████████████████  13 GB                         </span><br><span class="line">pulling fa6710a93d78: 100% ████████████████████████ 7.2 KB                         </span><br><span class="line">pulling f60356777647: 100% ████████████████████████  11 KB                         </span><br><span class="line">pulling d8ba2f9a17b3: 100% ████████████████████████   18 B                         </span><br><span class="line">pulling 55c108d8e936: 100% ████████████████████████  489 B                         </span><br><span class="line">verifying sha256 digest </span><br><span class="line">writing manifest </span><br><span class="line">removing unused layers </span><br><span class="line">success</span><br></pre></td></tr></table></figure>
+<p><strong>替代Ollama模型</strong></p>
+<p>注意，<code>ollama run gpt-oss:20b</code>命令中的<code>gpt-oss:20b</code>指的是200亿参数的gpt-oss模型。在Ollama中使用<code>gpt-oss:20b</code>模型需要约13 GB的RAM。如果你的机器没有足够的RAM，可以尝试较小的模型，例如通过<code>ollama run qwen3:4b</code>使用40亿参数的<code>qwen3:4b</code>模型，这只需要约4 GB的RAM。</p>
+<p>对于更强大的计算机，你也可以使用更大的1200亿参数gpt-oss模型，将<code>gpt-oss:20b</code>替换为<code>gpt-oss:120b</code>。但请记住，该模型需要显著更多的计算资源。</p>
+<p>模型下载完成后，你将看到一个命令行界面，允许你与模型交互。例如，尝试问模型&quot;What is 1+2?&quot;：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; What is 1+2?</span><br><span class="line">Thinking...</span><br><span class="line">User asks: &quot;What is 1+2?&quot; This is simple: answer 3. Provide explanation? </span><br><span class="line">Possibly ask for simple arithmetic. Provide answer: 3.</span><br><span class="line">...done thinking.</span><br><span class="line"></span><br><span class="line">1 + 2 = **3**</span><br></pre></td></tr></table></figure>
+<p>你可以使用输入<code>/bye</code>结束此Ollama会话。</p>
+<p>在本节的剩余部分，我们将使用Ollama API。这种方法要求Ollama在后台运行。有三种方式可以实现：</p>
+<ul>
+<li>在终端中运行<code>ollama serve</code>命令（推荐）。这会将Ollama后端作为服务器运行，通常位于<a target="_blank" rel="noopener" href="http://localhost:11434">http://localhost:11434</a>。请注意，它不会加载模型，直到通过API调用它（在本节后面）。</li>
+<li>运行<code>ollama run gpt-oss:20b</code>命令，就像你之前所做的那样，但保持其打开状态，不要通过<code>/bye</code>退出会话。如前所述，这会打开一个围绕本地Ollama服务器的最小便利包装器。在幕后，它使用与<code>ollama serve</code>相同的服务器API。</li>
+<li>打开Ollama桌面应用程序以自动运行相同的后端，它提供了一个图形界面，如图F.6所示。</li>
+</ul>
+<p><strong>Ollama服务器IP地址</strong></p>
+<p>Ollama通过启动一个类似本地服务器的进程在你的机器上本地运行。当你在终端中运行<code>ollama serve</code>时，可能会遇到错误消息：<code>Error: listen tcp 127.0.0.1:11434: bind: address already in use</code>。</p>
+<p>如果是这种情况，尝试使用命令<code>OLLAMA_HOST=127.0.0.1:11435 ollama serve</code>（如果这个地址也在使用中，将数字逐一增加，直到找到一个未被使用的地址）。</p>
+<p>以下代码验证Ollama会话是否正常运行。</p>
+<p><strong>清单F.5 检查Ollama是否在运行</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> psutil</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">check_if_running</span>(<span class="params">process_name</span>):</span><br><span class="line">    running = <span class="literal">False</span></span><br><span class="line">    <span class="keyword">for</span> proc <span class="keyword">in</span> psutil.process_iter([<span class="string">&quot;name&quot;</span>]):</span><br><span class="line">        <span class="keyword">if</span> process_name <span class="keyword">in</span> proc.info[<span class="string">&quot;name&quot;</span>]:</span><br><span class="line">            running = <span class="literal">True</span></span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">    <span class="keyword">return</span> running</span><br><span class="line"></span><br><span class="line">ollama_running = check_if_running(<span class="string">&quot;ollama&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> <span class="keyword">not</span> ollama_running:</span><br><span class="line">    <span class="keyword">raise</span> RuntimeError(</span><br><span class="line">        <span class="string">&quot;Ollama not running. Launch ollama before proceeding.&quot;</span></span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Ollama running:&quot;</span>, check_if_running(<span class="string">&quot;ollama&quot;</span>))</span><br></pre></td></tr></table></figure>
+<p>确保执行上述代码的输出显示<code>Ollama running: True</code>。如果显示<code>False</code>，请验证<code>ollama serve</code>命令或Ollama应用程序是否正在运行。</p>
+<p>在本附录的剩余部分，我们将通过Ollama REST API使用Python与本地gpt-oss模型交互。以下<code>query_model</code>函数展示了如何使用该API。</p>
+<p><strong>清单F.6 查询本地Ollama模型</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">query_model</span>(<span class="params"></span></span><br><span class="line"><span class="params">    prompt,</span></span><br><span class="line"><span class="params">    model=<span class="string">&quot;gpt-oss:20b&quot;</span>,</span></span><br><span class="line"><span class="params">    url=<span class="string">&quot;http://localhost:11434/api/chat&quot;</span>  <span class="comment"># 如果你使用了OLLAMA_HOST=127.0.0.1:11435 ollama serve，请更新地址</span></span></span><br><span class="line"><span class="params"></span>):</span><br><span class="line">    data = &#123;  <span class="comment"># 将数据载荷创建为字典</span></span><br><span class="line">        <span class="string">&quot;model&quot;</span>: model,</span><br><span class="line">        <span class="string">&quot;messages&quot;</span>: [</span><br><span class="line">            &#123;<span class="string">&quot;role&quot;</span>: <span class="string">&quot;user&quot;</span>, <span class="string">&quot;content&quot;</span>: prompt&#125;</span><br><span class="line">        ],</span><br><span class="line">        <span class="string">&quot;options&quot;</span>: &#123;</span><br><span class="line">            <span class="string">&quot;seed&quot;</span>: <span class="number">123</span>,</span><br><span class="line">            <span class="string">&quot;temperature&quot;</span>: <span class="number">0</span>,</span><br><span class="line">            <span class="string">&quot;num_ctx&quot;</span>: <span class="number">2048</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">with</span> requests.post(url, json=data, stream=<span class="literal">True</span>, timeout=<span class="number">30</span>) <span class="keyword">as</span> r:</span><br><span class="line">        r.raise_for_status()</span><br><span class="line">        response_data = <span class="string">&quot;&quot;</span></span><br><span class="line">        <span class="keyword">for</span> line <span class="keyword">in</span> r.iter_lines(decode_unicode=<span class="literal">True</span>):</span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">not</span> line:</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">            response_json = json.loads(line)</span><br><span class="line">            <span class="keyword">if</span> <span class="string">&quot;message&quot;</span> <span class="keyword">in</span> response_json:</span><br><span class="line">                response_data += response_json[<span class="string">&quot;message&quot;</span>][<span class="string">&quot;content&quot;</span>]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> response_data</span><br></pre></td></tr></table></figure>
+<p>以下是使用清单F.6中<code>query_model</code>函数的示例：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ollama_model = <span class="string">&quot;gpt-oss:20b&quot;</span></span><br><span class="line">result = query_model(<span class="string">&quot;What is 1+2?&quot;</span>, ollama_model)</span><br><span class="line"><span class="built_in">print</span>(result)</span><br></pre></td></tr></table></figure>
+<p>得到的回答是&quot;3&quot;。（由于默认设置不同，它与运行<code>ollama run</code>或Ollama应用程序得到的结果不同。）</p>
+<h3 id="F-5-2-使用评分标准评估回答">F.5.2 使用评分标准评估回答</h3>
+<p>使用<code>query_model</code>函数，我们可以通过一个包含评分标准的提示来评估我们的模型生成的回答，该提示要求gpt-oss模型以1到5的等级对目标模型的回答进行评分，并使用正确答案作为参考。我们用于此目的的提示如下所示。</p>
+<p><strong>清单F.7 设置包含评分标准的提示模板</strong></p>
+<pre><code class="language-python">def rubric_prompt(instruction, reference_answer, model_answer):
+    rubric = (
+        &quot;You are a fair judge assistant. You will be given an instruction, &quot;
+        &quot;a refer&quot;,
+    )
+    return rubric
+
+### （注：原始文件在此处中断。）</code></pre>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/09/19/%E3%80%8ABuildaReasoningModel%E3%80%8B%E9%99%84%E5%BD%95E%E6%89%B9%E5%A4%84%E7%90%86/" rel="prev" title="《Build_a_Reasoning_Model》附录E批处理与面向吞吐量的执行">
+                  <i class="fa fa-angle-left"></i> 《Build_a_Reasoning_Model》附录E批处理与面向吞吐量的执行
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/09/21/%E3%80%8ABuildaReasoningModel%E3%80%8B%E9%99%84%E5%BD%95G%E8%81%8A%E5%A4%A9%E7%95%8C%E9%9D%A2+%E7%B4%A2%E5%BC%95/" rel="next" title="《Build_a_Reasoning_Model》附录F模型评估的常见方法（续）">
+                  《Build_a_Reasoning_Model》附录F模型评估的常见方法（续） <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+    <div id="search-container" style="margin: 20px auto; max-width: 600px;">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js"></script>
+      <div id="search"></div>
+      <script>
+        window.addEventListener('DOMContentLoaded', (event) => {
+            new PagefindUI({ 
+                element: "#search", 
+                showImages: false,
+                translations: {
+                    placeholder: "搜搜看...",
+                    clear_search: "清除",
+                    load_more: "加载更多",
+                    search_label: "搜索",
+                    filters_label: "筛选",
+                    zero_results: "未找到关于 [SEARCH_TERM] 的结果",
+                    many_results: "找到 [COUNT] 条关于 [SEARCH_TERM] 的结果",
+                    one_result: "找到 1 条关于 [SEARCH_TERM] 的结果",
+                    searching: "正在搜索..."
+                }
+            });
+        });
+      </script>
+    </div>
+  
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>

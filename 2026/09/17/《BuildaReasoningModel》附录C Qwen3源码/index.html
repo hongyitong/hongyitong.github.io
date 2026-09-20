@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false,"path":"/search.json"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="附录C Qwen3 LLM源码（续）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《Build_a_Reasoning_Model》附录C Qwen3 LLM源码（续）">
+<meta property="og:url" content="http://hongyitong.github.io/2026/09/17/%E3%80%8ABuildaReasoningModel%E3%80%8B%E9%99%84%E5%BD%95C%20Qwen3%E6%BA%90%E7%A0%81/index.html">
+<meta property="og:site_name" content="墨语浮生">
+<meta property="og:description" content="附录C Qwen3 LLM源码（续）">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-09-16T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-09-20T03:37:15.891Z">
+<meta property="article:author" content="Rayman.hung">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2026/09/17/%E3%80%8ABuildaReasoningModel%E3%80%8B%E9%99%84%E5%BD%95C%20Qwen3%E6%BA%90%E7%A0%81/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2026/09/17/%E3%80%8ABuildaReasoningModel%E3%80%8B%E9%99%84%E5%BD%95C%20Qwen3%E6%BA%90%E7%A0%81/","path":"2026/09/17/《BuildaReasoningModel》附录C Qwen3源码/","title":"《Build_a_Reasoning_Model》附录C Qwen3 LLM源码（续）"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>《Build_a_Reasoning_Model》附录C Qwen3 LLM源码（续） | 墨语浮生</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="fc62aedd-644a-478d-b3c2-d8ba9964421c" src="https://cloud.umami.is/script.js" data-host-url="https://cloud.umami.is"></script>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js" defer></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">墨语浮生</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-text">附录C Qwen3 LLM源码（续）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#C-6-%E4%B8%BB%E6%A8%A1%E5%9E%8B%E4%BB%A3%E7%A0%81"><span class="nav-text">C.6 主模型代码</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9B%B4%E7%B2%BE%E7%A1%AE%E7%9A%84%E4%B8%8A%E4%B8%8B%E6%96%87%E9%95%BF%E5%BA%A6%E4%BF%A1%E6%81%AF"><span class="nav-text">更精确的上下文长度信息</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-7-KV%E7%BC%93%E5%AD%98"><span class="nav-text">C.7 KV缓存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-8-%E5%88%86%E8%AF%8D%E5%99%A8"><span class="nav-text">C.8 分词器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-9-%E4%BD%BF%E7%94%A8%E6%A8%A1%E5%9E%8B"><span class="nav-text">C.9 使用模型</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、心情记录</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives">
+          <span class="site-state-item-count">349</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories">
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/09/17/%E3%80%8ABuildaReasoningModel%E3%80%8B%E9%99%84%E5%BD%95C%20Qwen3%E6%BA%90%E7%A0%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="《Build_a_Reasoning_Model》附录C Qwen3 LLM源码（续） | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《Build_a_Reasoning_Model》附录C Qwen3 LLM源码（续）
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-09-17 00:00:00" itemprop="dateCreated datePublished" datetime="2026-09-17T00:00:00+08:00">2026-09-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1>附录C Qwen3 LLM源码（续）</h1>
+<span id="more"></span>  
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">x = tok_embeds</span><br><span class="line"></span><br><span class="line">num_tokens = x.shape[<span class="number">1</span>]</span><br><span class="line"><span class="keyword">if</span> cache <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">    pos_start = self.current_pos</span><br><span class="line">    pos_end = pos_start + num_tokens</span><br><span class="line">    self.current_pos = pos_end</span><br><span class="line">    mask = torch.triu(</span><br><span class="line">        torch.ones(</span><br><span class="line">            pos_end, pos_end, device=x.device, dtype=torch.<span class="built_in">bool</span></span><br><span class="line">        ),</span><br><span class="line">        diagonal=<span class="number">1</span></span><br><span class="line">    )[pos_start:pos_end, :pos_end]</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    pos_start = <span class="number">0</span>  <span class="comment"># 非严格必要，但有助于 torch.compile</span></span><br><span class="line">    mask = torch.triu(</span><br><span class="line">        torch.ones(num_tokens, num_tokens, device=x.device,</span><br><span class="line">                   dtype=torch.<span class="built_in">bool</span>),</span><br><span class="line">        diagonal=<span class="number">1</span></span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">mask = mask[<span class="literal">None</span>, <span class="literal">None</span>, :, :]                 </span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i, block <span class="keyword">in</span> <span class="built_in">enumerate</span>(self.trf_blocks):</span><br><span class="line">    blk_cache = cache.get(i) <span class="keyword">if</span> cache <span class="keyword">else</span> <span class="literal">None</span></span><br><span class="line">    x, new_blk_cache = block(x, mask, self.cos, self.sin,</span><br><span class="line">                             start_pos=pos_start,</span><br><span class="line">                             cache=blk_cache)</span><br><span class="line">    <span class="keyword">if</span> cache <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">        cache.update(i, new_blk_cache)</span><br><span class="line"></span><br><span class="line">x = self.final_norm(x)</span><br></pre></td></tr></table></figure>
+<p>预填充阶段：形状为 (1, 1, T, T)，广播到批次和头维度。缓存阶段：形状为 (1, 1, T, K+T)，其中 T 为新 token 数，K 为缓存的 key 数。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 主模型代码</span></span><br><span class="line">        logits = self.out_head(x.to(self.cfg[<span class="string">&quot;dtype&quot;</span>]))</span><br><span class="line">        <span class="keyword">return</span> logits</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">reset_kv_cache</span>(<span class="params">self</span>):</span><br><span class="line">        self.current_pos = <span class="number">0</span></span><br></pre></td></tr></table></figure>
+<h2 id="C-6-主模型代码">C.6 主模型代码</h2>
+<p>我们已经拥有了所有主要组件，因此清单C.6中的Qwen3Model类仅在Transformer块周围添加了少量额外组件，即嵌入层和输出层，包括另一个RMSNorm层。由于KV缓存选项的存在，代码可能看起来仍然有些复杂。</p>
+<p>如第2章所述，KV缓存可以加速文本生成过程，但这超出了本书的讨论范围。如果你感兴趣，可以在我的文章《从零理解并实现LLM中的KV缓存》（Understanding and Coding the KV Cache in LLMs from Scratch）中了解更多关于KV缓存的内容，文章地址为：<a target="_blank" rel="noopener" href="https://magazine.sebastianraschka.com/p/coding-the-kv-cache-in-llms%E3%80%82">https://magazine.sebastianraschka.com/p/coding-the-kv-cache-in-llms。</a></p>
+<p>注意，清单C.6中实现的Qwen3Model类支持多种模型规模（如附录D所述）。在第2章中，我们使用0.6B参数的模型，因为它是Qwen3模型家族中资源需求最低的模型。该模型的配置如图C.7所示。</p>
+<p>要通过Qwen3Model类使用图C.7所示的0.6B模型，我们可以定义以下配置，并在实例化新的Qwen3Model实例时作为输入（<code>cfg=QWEN_CONFIG_06_B</code>）传入。</p>
+<p><strong>清单C.7 Qwen3 0.6B配置</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">QWEN_CONFIG_06_B = &#123;</span><br><span class="line">    <span class="string">&quot;vocab_size&quot;</span>: <span class="number">151_936</span>,     <span class="comment"># 词表大小</span></span><br><span class="line">    <span class="string">&quot;context_length&quot;</span>: <span class="number">40_960</span>,  <span class="comment"># 训练时原始使用的长度</span></span><br><span class="line">    <span class="string">&quot;emb_dim&quot;</span>: <span class="number">1024</span>,           <span class="comment"># 嵌入维度</span></span><br><span class="line">    <span class="string">&quot;n_heads&quot;</span>: <span class="number">16</span>,             <span class="comment"># 注意力头数</span></span><br><span class="line">    <span class="string">&quot;n_layers&quot;</span>: <span class="number">28</span>,            <span class="comment"># 层数</span></span><br><span class="line">    <span class="string">&quot;hidden_dim&quot;</span>: <span class="number">3072</span>,        <span class="comment"># FeedForward 中间维度大小</span></span><br><span class="line">    <span class="string">&quot;head_dim&quot;</span>: <span class="number">128</span>,           <span class="comment"># GQA 中每个头的大小</span></span><br><span class="line">    <span class="string">&quot;qk_norm&quot;</span>: <span class="literal">True</span>,           <span class="comment"># 是否在 GQA 中对 query 和 key 进行归一化</span></span><br><span class="line">    <span class="string">&quot;n_kv_groups&quot;</span>: <span class="number">8</span>,          <span class="comment"># GQA 的键值组数</span></span><br><span class="line">    <span class="string">&quot;rope_base&quot;</span>: <span class="number">1_000_000.0</span>,  <span class="comment"># RoPE 中 theta 的基数</span></span><br><span class="line">    <span class="string">&quot;dtype&quot;</span>: torch.bfloat16,   <span class="comment"># 降低精度的数据类型以减少内存</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们将在C.9节中使用清单C.7中的QWEN_CONFIG_06_B配置来实例化Qwen3 0.6B模型。</p>
+<h3 id="更精确的上下文长度信息">更精确的上下文长度信息</h3>
+<p>对于Qwen3 0.6B，默认支持的最大上下文长度为40,960个token。但模型本身仅使用32,768个token进行训练。40,960个token的分配方案中，32,768个token用于模型输出（生成的文本），8,192个token用于典型的提示词（用户的问题或指令）。做个对比，40,000个token大约相当于第一本《哈利·波特》书籍的一半长度。</p>
+<p>由于这个长度对于大多数推理任务已经足够，开发者指出，除非平均上下文长度经常超过32,000个token，否则不建议使用上下文扩展方法（如YaRN），因为在较短上下文中启用这些方法可能会略微降低性能。</p>
+<p>词表大小 151,000 | 嵌入维度 1,024 | 支持的上下文长度最高 41,000 个 token</p>
+<p><strong>图C.7 Qwen3 0.6B模型架构。</strong> 该模型由一个token嵌入层和28个Transformer块组成，每个块包含RMSNorm、RoPE、QKNorm、带有16个头的掩码分组查询注意力（masked grouped-query attention）以及一个中间大小为3,072的前馈模块。</p>
+<h2 id="C-7-KV缓存">C.7 KV缓存</h2>
+<p>KV缓存的主要繁重工作大多在Qwen3Model（清单C.6）和GroupedQueryAttention（清单C.4）代码中完成。下面的清单展示了KVCache类，它在文本生成过程中存储键值对，从而带来我们在第2章启用KV缓存时所体验到的加速效果。</p>
+<p><strong>清单C.8 KV缓存</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">KVCache</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, n_layers</span>):</span><br><span class="line">        self.cache = [<span class="literal">None</span>] * n_layers</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">get</span>(<span class="params">self, layer_idx</span>):</span><br><span class="line">        <span class="keyword">return</span> self.cache[layer_idx]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">update</span>(<span class="params">self, layer_idx, value</span>):</span><br><span class="line">        self.cache[layer_idx] = value</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">get_all</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">return</span> self.cache</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">reset</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(self.cache)):</span><br><span class="line">            self.cache[i] = <span class="literal">None</span></span><br></pre></td></tr></table></figure>
+<p>这个KVCache类被用于我们在第2章实现的<code>generate_text_basic_stream_cache</code>函数中。</p>
+<h2 id="C-8-分词器">C.8 分词器</h2>
+<p>分词器代码有些复杂，因为它除了支持基础模型和Qwen3所谓的&quot;思考&quot;（thinking）模型变体（一个推理模型）外，还支持多种特殊token。下面的清单展示了分词器的完整重实现。</p>
+<p><strong>清单C.9 分词器</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> re</span><br><span class="line"><span class="keyword">from</span> tokenizers <span class="keyword">import</span> Tokenizer</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Qwen3Tokenizer</span>:</span><br><span class="line">    _SPECIALS = [</span><br><span class="line">        <span class="string">&quot;&lt;|endoftext|&gt;&quot;</span>,</span><br><span class="line">        <span class="string">&quot;&lt;|im_start|&gt;&quot;</span>, <span class="string">&quot;&lt;|im_end|&gt;&quot;</span>,</span><br><span class="line">        <span class="string">&quot;&lt;|object_ref_start|&gt;&quot;</span>, <span class="string">&quot;&lt;|object_ref_end|&gt;&quot;</span>,</span><br><span class="line">        <span class="string">&quot;&lt;|box_start|&gt;&quot;</span>, <span class="string">&quot;&lt;|box_end|&gt;&quot;</span>,</span><br><span class="line">        <span class="string">&quot;&lt;|quad_start|&gt;&quot;</span>, <span class="string">&quot;&lt;|quad_end|&gt;&quot;</span>,</span><br><span class="line">        <span class="string">&quot;&lt;|vision_start|&gt;&quot;</span>, <span class="string">&quot;&lt;|vision_end|&gt;&quot;</span>,</span><br><span class="line">        <span class="string">&quot;&lt;|vision_pad|&gt;&quot;</span>, <span class="string">&quot;&lt;|image_pad|&gt;&quot;</span>, <span class="string">&quot;&lt;|video_pad|&gt;&quot;</span>,</span><br><span class="line">    ]</span><br><span class="line"></span><br><span class="line">    _SPLIT_RE = re.<span class="built_in">compile</span>(<span class="string">r&quot;(&lt;\|[^&gt;]+?\|&gt;)&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self,</span></span><br><span class="line"><span class="params">                 tokenizer_file_path=<span class="string">&quot;tokenizer-base.json&quot;</span>,</span></span><br><span class="line"><span class="params">                 apply_chat_template=<span class="literal">False</span>,</span></span><br><span class="line"><span class="params">                 add_generation_prompt=<span class="literal">False</span>,</span></span><br><span class="line"><span class="params">                 add_thinking=<span class="literal">False</span></span>):</span><br><span class="line"></span><br><span class="line">        self.apply_chat_template = apply_chat_template</span><br><span class="line">        self.add_generation_prompt = add_generation_prompt</span><br><span class="line">        self.add_thinking = add_thinking</span><br><span class="line"></span><br><span class="line">        tok_path = Path(tokenizer_file_path)</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> tok_path.is_file():</span><br><span class="line">            <span class="keyword">raise</span> FileNotFoundError(</span><br><span class="line">                <span class="string">f&quot;Tokenizer file &#x27;<span class="subst">&#123;tok_path&#125;</span>&#x27; not found. &quot;</span></span><br><span class="line">            )</span><br><span class="line"></span><br><span class="line">        self._tok = Tokenizer.from_file(<span class="built_in">str</span>(tok_path))</span><br><span class="line">        self._special_to_id = &#123;t: self._tok.token_to_id(t)</span><br><span class="line">                               <span class="keyword">for</span> t <span class="keyword">in</span> self._SPECIALS&#125;</span><br><span class="line"></span><br><span class="line">        self.pad_token = <span class="string">&quot;&lt;|endoftext|&gt;&quot;</span></span><br><span class="line">        self.pad_token_id = self._special_to_id.get(self.pad_token)</span><br><span class="line"></span><br><span class="line">        f = tok_path.name.lower()</span><br><span class="line">        <span class="keyword">if</span> <span class="string">&quot;base&quot;</span> <span class="keyword">in</span> f <span class="keyword">and</span> <span class="string">&quot;reasoning&quot;</span> <span class="keyword">not</span> <span class="keyword">in</span> f:</span><br><span class="line">            self.eos_token = <span class="string">&quot;&lt;|endoftext|&gt;&quot;</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            self.eos_token = <span class="string">&quot;&lt;|im_end|&gt;&quot;</span></span><br><span class="line">        self.eos_token_id = self._special_to_id.get(self.eos_token)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">encode</span>(<span class="params">self, prompt, chat_wrapped=<span class="literal">None</span></span>):</span><br><span class="line">        <span class="keyword">if</span> chat_wrapped <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">            chat_wrapped = self.apply_chat_template</span><br><span class="line"></span><br><span class="line">        stripped = prompt.strip()</span><br><span class="line">        <span class="keyword">if</span> stripped <span class="keyword">in</span> self._special_to_id <span class="keyword">and</span> <span class="string">&quot;\n&quot;</span> <span class="keyword">not</span> <span class="keyword">in</span> stripped:</span><br><span class="line">            <span class="keyword">return</span> [self._special_to_id[stripped]]</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> chat_wrapped:</span><br><span class="line">            prompt = self._wrap_chat(prompt)</span><br><span class="line"></span><br><span class="line">        ids = []</span><br><span class="line">        <span class="keyword">for</span> part <span class="keyword">in</span> <span class="built_in">filter</span>(<span class="literal">None</span>, self._SPLIT_RE.split(prompt)):</span><br><span class="line">            <span class="keyword">if</span> part <span class="keyword">in</span> self._special_to_id:</span><br><span class="line">                ids.append(self._special_to_id[part])</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                ids.extend(self._tok.encode(part).ids)</span><br><span class="line">        <span class="keyword">return</span> ids</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">decode</span>(<span class="params">self, token_ids</span>):</span><br><span class="line">        <span class="keyword">return</span> self._tok.decode(token_ids, skip_special_tokens=<span class="literal">False</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">_wrap_chat</span>(<span class="params">self, user_msg</span>):</span><br><span class="line">        <span class="comment"># 匹配 HF 行为：聊天模型使用 &lt;|im_end|&gt;，基础模型使用 &lt;|endoftext|&gt;</span></span><br><span class="line">        s = <span class="string">f&quot;&lt;|im_start|&gt;user\\n<span class="subst">&#123;user_msg&#125;</span>&lt;|im_end|&gt;\\n&quot;</span></span><br><span class="line">        <span class="keyword">if</span> self.add_generation_prompt:</span><br><span class="line">            s += <span class="string">&quot;&lt;|im_start|&gt;assistant&quot;</span></span><br><span class="line">            <span class="keyword">if</span> self.add_thinking:</span><br><span class="line">                s += <span class="string">&quot;\\n&quot;</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                s += <span class="string">&quot;\\n thinking\\n\\n response\\n\\n&quot;</span></span><br><span class="line">        <span class="keyword">return</span> s</span><br></pre></td></tr></table></figure>
+<p>我在清单C.9中的Qwen3Tokenizer重实现可能看起来有些复杂，因为它旨在复现Qwen3团队在Hugging Face Transformers库中发布的官方分词器行为。</p>
+<p>乍看之下，它有一些奇怪之处。例如，当<code>add_thinking=True</code>时，不会插入<code>&quot;\\n thinking\\n\\n response\\n\\n&quot;</code> token（其中<code>\\n</code>是换行符）；但当<code>add_thinking=False</code>时，这些token反而会被加入。这是有意为之的，因为非基础的Qwen3 0.6B模型是一个同时支持推理（“思考”）和标准模式的混合模型。</p>
+<h2 id="C-9-使用模型">C.9 使用模型</h2>
+<p>现在让我们实例化并使用模型，通过复用第2章的文本生成方法来确认代码能够正常工作。</p>
+<p>首先，我们使用预训练模型权重来实例化模型：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pathlib <span class="keyword">import</span> Path</span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> reasoning_from_scratch.ch02 <span class="keyword">import</span> get_device</span><br><span class="line"><span class="keyword">from</span> reasoning_from_scratch.qwen3 <span class="keyword">import</span> download_qwen3_small</span><br><span class="line"></span><br><span class="line"><span class="comment"># device = get_device()</span></span><br><span class="line">device = torch.device(<span class="string">&quot;cpu&quot;</span>)</span><br><span class="line"></span><br><span class="line">download_qwen3_small(kind=<span class="string">&quot;base&quot;</span>, tokenizer_only=<span class="literal">False</span>, out_dir=<span class="string">&quot;qwen3&quot;</span>)</span><br><span class="line"></span><br><span class="line">tokenizer_file_path = Path(<span class="string">&quot;qwen3&quot;</span>) / <span class="string">&quot;tokenizer-base.json&quot;</span></span><br><span class="line">model_file = Path(<span class="string">&quot;qwen3&quot;</span>) / <span class="string">&quot;qwen3-0.6B-base.pth&quot;</span></span><br><span class="line"></span><br><span class="line">tokenizer = Qwen3Tokenizer(tokenizer_file_path=tokenizer_file_path)</span><br><span class="line">model = Qwen3Model(QWEN_CONFIG_06_B)</span><br><span class="line">model.load_state_dict(torch.load(model_file))</span><br><span class="line"></span><br><span class="line">model.to(device)</span><br></pre></td></tr></table></figure>
+<p>以下输出打印了实例化后的模型架构。特别地，它显示了模型对象是以清单C.7中指定的相同设置创建的，包括层数、注意力头数、键值头数、嵌入维度和前馈维度：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">✓ qwen3/qwen3-0.6B-base.pth already up-to-date</span><br><span class="line">✓ qwen3/tokenizer-base.json already up-to-date</span><br></pre></td></tr></table></figure>
+<p>（输出显示模型文件已是最新，无需重新下载。）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">Qwen3Model(</span><br><span class="line">  (tok_emb): Embedding(151936, 1024)</span><br><span class="line">  (trf_blocks): ModuleList(</span><br><span class="line">    (0-27): 28 x TransformerBlock(</span><br><span class="line">      (att): GroupedQueryAttention(</span><br><span class="line">        (W_query): Linear(in_features=1024, out_features=2048, bias=False)</span><br><span class="line">        (W_key): Linear(in_features=1024, out_features=1024, bias=False)</span><br><span class="line">        (W_value): Linear(in_features=1024, out_features=1024, bias=False)</span><br><span class="line">        (out_proj): Linear(in_features=2048, out_features=1024, bias=False)</span><br><span class="line">        (q_norm): RMSNorm()</span><br><span class="line">        (k_norm): RMSNorm()</span><br><span class="line">      )</span><br><span class="line">      (ff): FeedForward(</span><br><span class="line">        (fc1): Linear(in_features=1024, out_features=3072, bias=False)</span><br><span class="line">        (fc2): Linear(in_features=1024, out_features=3072, bias=False)</span><br><span class="line">        (fc3): Linear(in_features=3072, out_features=1024, bias=False)</span><br><span class="line">      )</span><br><span class="line">      (norm1): RMSNorm()</span><br><span class="line">      (norm2): RMSNorm()</span><br><span class="line">    )</span><br><span class="line">  )</span><br><span class="line">  (final_norm): RMSNorm()</span><br><span class="line">  (out_head): Linear(in_features=1024, out_features=151936, bias=False)</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>接下来，我们复用第2章的文本生成函数来生成文本：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> reasoning_from_scratch.ch02 <span class="keyword">import</span> (</span><br><span class="line">   generate_text_basic_stream_cache,</span><br><span class="line">   generate_stats</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">prompt = <span class="string">&quot;Explain large language models in a single sentence.&quot;</span></span><br><span class="line">input_token_ids_tensor = torch.tensor(</span><br><span class="line">    tokenizer.encode(prompt),</span><br><span class="line">    device=device</span><br><span class="line">    ).unsqueeze(<span class="number">0</span>)</span><br><span class="line">max_new_tokens = <span class="number">200</span></span><br><span class="line"></span><br><span class="line">start_time = time.time()</span><br><span class="line">generated_ids = []</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> token <span class="keyword">in</span> generate_text_basic_stream_cache(</span><br><span class="line">    model=model,</span><br><span class="line">    token_ids=input_token_ids_tensor,</span><br><span class="line">    max_new_tokens=max_new_tokens,</span><br><span class="line">    eos_token_id=tokenizer.eos_token_id</span><br><span class="line">):</span><br><span class="line">    token_id = token.squeeze(<span class="number">0</span>).tolist()</span><br><span class="line">    <span class="built_in">print</span>(</span><br><span class="line">        tokenizer.decode(token_id),</span><br><span class="line">        end=<span class="string">&quot;&quot;</span>,</span><br><span class="line">        flush=<span class="literal">True</span></span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    next_token_id = token.squeeze(<span class="number">0</span>)</span><br><span class="line">    generated_ids.append(next_token_id)</span><br><span class="line"></span><br><span class="line">end_time = time.time()</span><br><span class="line"></span><br><span class="line">output_token_ids_tensor = torch.cat(generated_ids, dim=<span class="number">0</span>)</span><br><span class="line">generate_stats(output_token_ids_tensor, tokenizer, start_time, end_time)</span><br></pre></td></tr></table></figure>
+<p>由于上述代码使用了与第2章相同的提示词，生成的文本也与第2章完全一致：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Time: 1.46 sec</span><br><span class="line">28 tokens/sec</span><br><span class="line"></span><br><span class="line"> Large language models are artificial intelligence systems that can</span><br><span class="line">understand, generate, and process human language, enabling them to</span><br><span class="line">perform a wide range of tasks, from answering questions to writing</span><br><span class="line">articles, and even creating creative content.</span><br></pre></td></tr></table></figure>
+<p>虽然我们在各章讨论中使用的是Qwen3的0.6B参数变体以保持本书较低的资源需求，但你可以在附录D中找到关于如何使用更大模型的更多信息。</p>
+<hr>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/09/16/%E3%80%8ABuildaReasoningModel%E3%80%8B%E9%99%84%E5%BD%95B%E4%B9%A0%E9%A2%98%E8%A7%A3%E7%AD%94/" rel="prev" title="《Build_a_Reasoning_Model》附录B习题解答">
+                  <i class="fa fa-angle-left"></i> 《Build_a_Reasoning_Model》附录B习题解答
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/09/18/%E3%80%8ABuildaReasoningModel%E3%80%8B%E9%99%84%E5%BD%95D%E4%BD%BF%E7%94%A8%E6%9B%B4%E5%A4%A7LLM/" rel="next" title="《Build_a_Reasoning_Model》附录D使用更大的LLM">
+                  《Build_a_Reasoning_Model》附录D使用更大的LLM <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+    <div id="search-container" style="margin: 20px auto; max-width: 600px;">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js"></script>
+      <div id="search"></div>
+      <script>
+        window.addEventListener('DOMContentLoaded', (event) => {
+            new PagefindUI({ 
+                element: "#search", 
+                showImages: false,
+                translations: {
+                    placeholder: "搜搜看...",
+                    clear_search: "清除",
+                    load_more: "加载更多",
+                    search_label: "搜索",
+                    filters_label: "筛选",
+                    zero_results: "未找到关于 [SEARCH_TERM] 的结果",
+                    many_results: "找到 [COUNT] 条关于 [SEARCH_TERM] 的结果",
+                    one_result: "找到 1 条关于 [SEARCH_TERM] 的结果",
+                    searching: "正在搜索..."
+                }
+            });
+        });
+      </script>
+    </div>
+  
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>

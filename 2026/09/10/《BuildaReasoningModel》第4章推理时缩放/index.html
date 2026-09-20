@@ -1,0 +1,1259 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false,"path":"/search.json"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="第4章 通过推理时缩放提升推理能力 Introduction to inference-time scaling 本章涵盖  提示 LLM 解释其推理过程以提高答案准确率 修改文本生成函数以生成多样化的响应 通过对多个响应进行采样来提高推理可靠性   This chapter covers  Prompting an LLM to explain its reasoning to improve">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《Build_a_Reasoning_Model》第4章通过推理时缩放提升推理能力">
+<meta property="og:url" content="http://hongyitong.github.io/2026/09/10/%E3%80%8ABuildaReasoningModel%E3%80%8B%E7%AC%AC4%E7%AB%A0%E6%8E%A8%E7%90%86%E6%97%B6%E7%BC%A9%E6%94%BE/index.html">
+<meta property="og:site_name" content="墨语浮生">
+<meta property="og:description" content="第4章 通过推理时缩放提升推理能力 Introduction to inference-time scaling 本章涵盖  提示 LLM 解释其推理过程以提高答案准确率 修改文本生成函数以生成多样化的响应 通过对多个响应进行采样来提高推理可靠性   This chapter covers  Prompting an LLM to explain its reasoning to improve">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/img4/BuildaReasoningModel/Figure_4.1.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/BuildaReasoningModel/Figure_4.2.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/BuildaReasoningModel/Figure_4.3.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/BuildaReasoningModel/Figure_4.4.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/BuildaReasoningModel/Figure_4.5.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/BuildaReasoningModel/Figure_4.6.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/BuildaReasoningModel/Figure_4.7.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/BuildaReasoningModel/Figure_4.8.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/BuildaReasoningModel/Figure_4.9.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/BuildaReasoningModel/Figure_4.10.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/BuildaReasoningModel/Figure_4.11.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/BuildaReasoningModel/Figure_4.12.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/BuildaReasoningModel/Figure_4.13.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/BuildaReasoningModel/Figure_4.14.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/BuildaReasoningModel/Figure_4.15.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/BuildaReasoningModel/Figure_4.16.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/BuildaReasoningModel/Figure_4.17.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/BuildaReasoningModel/Figure_4.18.png">
+<meta property="og:image" content="http://hongyitong.github.io/Users/hongyuanjiao/Desktop/Build_a_Reasoning_Model//img4/BuildaReasoningModel/Table_4.1.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/BuildaReasoningModel/Figure_4.19.png">
+<meta property="article:published_time" content="2026-09-09T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-09-20T03:40:54.404Z">
+<meta property="article:author" content="Rayman.hung">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hongyitong.github.io/img4/BuildaReasoningModel/Figure_4.1.png">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2026/09/10/%E3%80%8ABuildaReasoningModel%E3%80%8B%E7%AC%AC4%E7%AB%A0%E6%8E%A8%E7%90%86%E6%97%B6%E7%BC%A9%E6%94%BE/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2026/09/10/%E3%80%8ABuildaReasoningModel%E3%80%8B%E7%AC%AC4%E7%AB%A0%E6%8E%A8%E7%90%86%E6%97%B6%E7%BC%A9%E6%94%BE/","path":"2026/09/10/《BuildaReasoningModel》第4章推理时缩放/","title":"《Build_a_Reasoning_Model》第4章通过推理时缩放提升推理能力"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>《Build_a_Reasoning_Model》第4章通过推理时缩放提升推理能力 | 墨语浮生</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="fc62aedd-644a-478d-b3c2-d8ba9964421c" src="https://cloud.umami.is/script.js" data-host-url="https://cloud.umami.is"></script>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js" defer></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">墨语浮生</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC4%E7%AB%A0-%E9%80%9A%E8%BF%87%E6%8E%A8%E7%90%86%E6%97%B6%E7%BC%A9%E6%94%BE%E6%8F%90%E5%8D%87%E6%8E%A8%E7%90%86%E8%83%BD%E5%8A%9B"><span class="nav-text">第4章
+通过推理时缩放提升推理能力</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%A8%E7%90%86%E6%97%B6%E6%89%A9%E5%B1%95%E7%AE%80%E4%BB%8B"><span class="nav-text">4.1 推理时扩展简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%A0%E8%BD%BD%E9%A2%84%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B"><span class="nav-text">4.2 加载预训练模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%80%9D%E7%BB%B4%E9%93%BE%E6%8F%90%E7%A4%BA%E7%94%9F%E6%88%90%E6%9B%B4%E5%A5%BD%E7%9A%84%E5%93%8D%E5%BA%94"><span class="nav-text">4.3
+使用思维链提示生成更好的响应</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%B8%A9%E5%BA%A6%E7%BC%A9%E6%94%BE%E6%8E%A7%E5%88%B6%E8%BE%93%E5%87%BA%E5%A4%9A%E6%A0%B7%E6%80%A7"><span class="nav-text">4.4 使用温度缩放控制输出多样性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%90%86%E8%A7%A3%E9%80%89%E6%8B%A9%E4%B8%8B%E4%B8%80%E4%B8%AA-token-%E7%9A%84%E8%BF%87%E7%A8%8B"><span class="nav-text">4.4.1 理解选择下一个 token
+的过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%9A%E8%BF%87%E6%B8%A9%E5%BA%A6%E5%8F%82%E6%95%B0%E9%87%8D%E6%96%B0%E7%BC%A9%E6%94%BE-token-%E5%88%86%E6%95%B0logits"><span class="nav-text">4.4.2
+通过温度参数重新缩放 token 分数（logits）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%8E%E6%A6%82%E7%8E%87%E5%88%86%E5%B8%83%E4%B8%AD%E9%87%87%E6%A0%B7%E4%B8%8B%E4%B8%80%E4%B8%AA-token"><span class="nav-text">4.4.3 从概率分布中采样下一个
+token</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B0%86%E6%B8%A9%E5%BA%A6%E7%BC%A9%E6%94%BE%E6%B7%BB%E5%8A%A0%E5%88%B0%E6%96%87%E6%9C%AC%E7%94%9F%E6%88%90%E5%87%BD%E6%95%B0"><span class="nav-text">4.4.4
+将温度缩放添加到文本生成函数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%A8-top-p-%E9%87%87%E6%A0%B7%E5%B9%B3%E8%A1%A1%E5%A4%9A%E6%A0%B7%E6%80%A7%E4%B8%8E%E8%BF%9E%E8%B4%AF%E6%80%A7"><span class="nav-text">4.5 用 top-p
+采样平衡多样性与连贯性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%89%E6%8B%A9-top-p-%E8%AF%8D%E5%85%83%E7%9A%84%E5%AD%90%E9%9B%86"><span class="nav-text">4.5.1 选择 top-p 词元的子集</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B0%86-top-p-%E8%BF%87%E6%BB%A4%E5%99%A8%E6%B7%BB%E5%8A%A0%E5%88%B0%E6%96%87%E6%9C%AC%E7%94%9F%E6%88%90%E5%87%BD%E6%95%B0"><span class="nav-text">4.5.2 将 top-p
+过滤器添加到文本生成函数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%A8%E8%87%AA%E4%B8%80%E8%87%B4%E6%80%A7%E6%8F%90%E9%AB%98%E5%93%8D%E5%BA%94%E5%87%86%E7%A1%AE%E6%80%A7"><span class="nav-text">4.6 用自一致性提高响应准确性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、心情记录</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives">
+          <span class="site-state-item-count">349</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories">
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/09/10/%E3%80%8ABuildaReasoningModel%E3%80%8B%E7%AC%AC4%E7%AB%A0%E6%8E%A8%E7%90%86%E6%97%B6%E7%BC%A9%E6%94%BE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="《Build_a_Reasoning_Model》第4章通过推理时缩放提升推理能力 | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《Build_a_Reasoning_Model》第4章通过推理时缩放提升推理能力
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-09-10 00:00:00" itemprop="dateCreated datePublished" datetime="2026-09-10T00:00:00+08:00">2026-09-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="第4章-通过推理时缩放提升推理能力">第4章
+通过推理时缩放提升推理能力</h1>
+<p>Introduction to inference-time scaling</p>
+<p><strong>本章涵盖</strong></p>
+<ul>
+<li>提示 LLM 解释其推理过程以提高答案准确率</li>
+<li>修改文本生成函数以生成多样化的响应</li>
+<li>通过对多个响应进行采样来提高推理可靠性</li>
+</ul>
+<blockquote>
+<p>This chapter covers</p>
+<ul>
+<li><p>Prompting an LLM to explain its reasoning to improve answer
+accuracy</p></li>
+<li><p>Modifying the text generation function to produce diverse
+responses</p></li>
+<li><p>Improving reasoning reliability by sampling multiple
+responses</p></li>
+</ul>
+</blockquote>
+<p><img src="/img4/BuildaReasoningModel/Figure_4.1.png"
+alt="Figure 4.1" />
+无需重新训练或修改模型本身，即可提升推理性能和答案准确率。如图 4.1
+的概览所示，本章涵盖两种推理时缩放方法。这些方法在推理阶段（即模型生成文本时）起作用。正如你在本章后续部分将看到的，这两种方法都能将前几章中使用的基础模型的准确率提升一倍以上。</p>
+<p>在讨论图 4.1 中展示的推理方法之前，我们首先了解什么是推理时缩放。</p>
+<p><strong>图 4.1 本书涵盖主题的模型。</strong>
+本章重点讨论<strong>推理时缩放技术，这些技术无需额外训练即可提升推理能力（阶段
+3）。具体来说，它扩展了文本生成函数并实现了一种基于投票的方法来提高答案准确率。下一章将介绍另一种推理时缩放方法，即模型迭代地改进自己的答案。</strong></p>
+<span id="more"></span>
+<h2 id="推理时扩展简介">4.1 推理时扩展简介</h2>
+<p>Introduction to inference-time scaling</p>
+<p>提升推理能力主要有两种策略：</p>
+<ul>
+<li>增加训练计算量(Increasing training compute)</li>
+<li>增加推理计算量（也称为推理时扩展或测试时扩展）( Increasing inference
+compute (also known as inference-time scaling or test-time scaling)</li>
+</ul>
+<blockquote>
+<p><strong>注意</strong>
+在机器学习和人工智能中，<strong>"计算量"指训练或运行模型所需的计算资源。</strong></p>
+</blockquote>
+<p><img src="/img4/BuildaReasoningModel/Figure_4.2.png"
+alt="Figure 4.2" /> 这两种方法如图 4.2
+所示。从图中看，似乎既可以通过增加训练时计算量，也可以通过增加推理时计算量来提升推理能力。实际上，LLM
+通常通过结合大量训练时计算（未来章节的主题）和增加推理时计算（本章的主题）来提升推理能力。</p>
+<p>推理时计算扩展（也称为推理时扩展或测试时计算扩展）是指在模型完成训练后，在答案生成阶段增加计算量，以提升响应质量。我们不改变模型的权重，而是让训练好的模型在每个问题上投入更多计算工作，例如生成更多
+token 并"思考"更长时间、采样多个答案，或逐步迭代优化答案。</p>
+<blockquote>
+<p>个人注：</p>
+<p>“生成更多 token
+并‘思考’更长时间”是指在模型输出最终答案之前，<strong>通过延长内部的文本生成过程，让模型进行类似人类的隐式推理、自我纠错或多步规划</strong>。</p>
+<p>具体来说，在传统的问答中，大模型通常是“直觉式”地直接吐出答案（即从前往后顺着生成）。而在推理时计算扩展中（例如类似
+OpenAI o1、DeepSeek-R1
+等带有长思考过程的模型），其具体表现和实现方式通常有：</p>
+<ul>
+<li><strong>输出中间思考过程（Chain of
+Thought）</strong>：模型在回答前，会先写下一大串分析、拆解、假设和验证的文本（通常放在
+<code>&lt;think&gt;</code> 标签内）。这部分文字也是由 token
+组成的，模型在这个过程中自己和自己“对话”，把复杂问题拆解成一步步小步骤。</li>
+<li><strong>多步试错与自我修正</strong>：在“思考”的 Token
+序列中，模型可能会写下诸如<em>“等等，这样算好像不对，应该是……”</em>或者<em>“换一种方法验证一下”</em>的内容。通过生成这些额外的
+token，模型有机会在输出最终结论前纠正半路产生的错误。</li>
+<li><strong>计算资源的横向或纵向换取质量</strong>：传统的计算量主要在“训练阶段”。而这种方式将算力挪到了“推理阶段”——对于一个困难的数学或编程题，它宁可多花几秒钟、多生成几千个中间思考的
+token，来换取最终答案极高的准确率。</li>
+</ul>
+</blockquote>
+<p><img src="/img4/BuildaReasoningModel/Figure_4.3.png"
+alt="Figure 4.3" />
+在本节中，我们将重点讨论三种实用且基础的推理时技术（如图 4.3
+所示）：</p>
+<ul>
+<li><strong>方法
+1</strong>：扩展思维链响应，引导模型解释其推理过程。这一简单技术能显著提升准确率。</li>
+<li><strong>方法
+2</strong>：通过自一致性进行并行采样，即模型生成多个响应并选择最频繁的那个。</li>
+<li><strong>方法
+3</strong>：迭代自精炼，即模型在多步骤中审查并改进自己的推理和答案。</li>
+</ul>
+<p>这些方法属于推理时扩展的范畴，因为它们促使模型生成更多
+token，从而增加了推理过程中的计算需求。它们在提升准确率的同时增加了推理成本，这是推理时扩展技术的共同特点。本章我们将讨论前两种方法；第三种方法将在第
+5 章介绍。</p>
+<p><strong>图 4.2 对比推理时扩展（本章讨论）和训练时扩展（第 6-8
+章讨论）。两种方法都通过使用更多计算量来提升准确率，但推理时扩展是在推理过程中动态进行，无需改变模型的权重参数。该图灵感来源于
+OpenAI
+介绍其首个推理模型的文章（https://openai.com/index/learning-to-reason-with-llms/）。</strong></p>
+<p><strong>图 4.3
+三种提升推理能力的推理时方法。第一种方法修改提示词以鼓励逐步推理，第二种方法采样多个答案并选择最频繁的那个。这两种方法将在本章讨论。第三种方法让模型迭代优化自身响应，将在下一章介绍。</strong></p>
+<p>第一种方法通过提示模型解释其推理过程来提升答案准确率，这是一种简单却极其有效的方法。</p>
+<p>第二种方法对同一输入采样多个响应并选择最频繁的那个。我们将通过扩展前一章引入的文本生成函数，实现一种基于投票的推理时扩展技术——自一致性。</p>
+<p>总的来说，我评估了超过十种不同的推理时扩展技术，进行了数千次实验。我之所以选择图
+4.3
+中展示的三种方法，是因为它们兼具三个理想特性：它们在本书所用模型上能提升准确率，代表了推理时扩展的主要实用范式，并且实现起来足够简单，无需过多额外机制。它们还涵盖了两种主要模式：生成更长的响应和生成多个响应。</p>
+<p>包含推理和解释的较长响应（方法 1 和
+3）是我们通常期望从推理模型中获得的。并行采样（方法
+2）也广泛应用于生产系统，例如 Claude 4（详见 2025 年 5 月 Claude 4
+发布介绍：https://www.anthropic.com/news/claude-4）。</p>
+<hr />
+<h2 id="加载预训练模型">4.2 加载预训练模型</h2>
+<p>Loading a pretrained model</p>
+<p>在开始实现推理时扩展方法之前，我们先加载预训练的基础模型和分词器。以下代码与我们在前一章中使用的代码类似。</p>
+<p><strong>代码清单 4.1 加载分词器和基础模型</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">from</span> reasoning_from_scratch.ch02 <span class="keyword">import</span> get_device</span><br><span class="line"><span class="keyword">from</span> reasoning_from_scratch.ch03 <span class="keyword">import</span> (</span><br><span class="line">    load_model_and_tokenizer</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">device = get_device()</span><br><span class="line">device = torch.device(<span class="string">&quot;cpu&quot;</span>)  <span class="comment"># 如果你的机器支持 GPU，删除此行可在 GPU 上运行</span></span><br><span class="line"></span><br><span class="line">model, tokenizer = load_model_and_tokenizer(</span><br><span class="line">    which_model=<span class="string">&quot;base&quot;</span>,</span><br><span class="line">    device=device,</span><br><span class="line">    use_compile=<span class="literal">False</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>由于本章代码运行成本较低，建议首次在"cpu"设备上运行以获得与本章相同的结果（在
+GPU 上运行可能会微妙地改变结果）。</p>
+<p>我们来用前一章处理过的 MATH-500 数据集中的提示词测试模型：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> reasoning_from_scratch.ch03 <span class="keyword">import</span> render_prompt</span><br><span class="line"></span><br><span class="line">raw_prompt = (</span><br><span class="line">    <span class="string">&quot;Half the value of $3x-9$ is $x+37$. &quot;</span></span><br><span class="line">    <span class="string">&quot;What is the value of $x$?&quot;</span></span><br><span class="line">)</span><br><span class="line">prompt = render_prompt(raw_prompt)</span><br><span class="line"><span class="built_in">print</span>(prompt)</span><br></pre></td></tr></table></figure>
+<p>格式化后的提示词如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">You are a helpful math assistant.</span><br><span class="line">Answer the question and write the final result on a new line as:</span><br><span class="line">\boxed&#123;ANSWER&#125;</span><br><span class="line"></span><br><span class="line">Question:</span><br><span class="line">Half the value of $3x-9$ is $x+37$. What is the value of $x$?</span><br><span class="line"></span><br><span class="line">Answer:</span><br></pre></td></tr></table></figure>
+<p>我们可以将上述提示词作为输入，传递给前一章定义的
+<code>generate_text_stream_concat</code> 函数。</p>
+<p>为了比较多种推理时扩展策略，我们对文本生成包装器做一个小改动，使其能够在不改变周边提示处理与输出代码的情况下，灵活替换不同的生成函数和设置。改动部分已在以下代码清单的注释中高亮显示。</p>
+<p><strong>代码清单 4.2 修改后的 generate_text_stream_concat
+函数</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> reasoning_from_scratch.ch02 <span class="keyword">import</span> generate_text_basic_stream_cache</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">generate_text_stream_concat_flex</span>(<span class="params"></span></span><br><span class="line"><span class="params">    model, tokenizer, prompt, device, max_new_tokens,</span></span><br><span class="line"><span class="params">    verbose=<span class="literal">False</span>,</span></span><br><span class="line"><span class="params">    generate_func=<span class="literal">None</span>,   <span class="comment"># 新增参数：接收文本生成函数</span></span></span><br><span class="line"><span class="params">    **generate_kwargs     <span class="comment"># 新增参数：接收额外参数</span></span></span><br><span class="line"><span class="params"></span>):</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> generate_func <span class="keyword">is</span> <span class="literal">None</span>:  <span class="comment"># 若未指定生成函数，则使用 generate_text_basic_stream_cache（与第 3 章相同）</span></span><br><span class="line">        generate_func = generate_text_basic_stream_cache</span><br><span class="line"></span><br><span class="line">    input_ids = torch.tensor(</span><br><span class="line">        tokenizer.encode(prompt), device=device</span><br><span class="line">    ).unsqueeze(<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">    generated_ids = []</span><br><span class="line">    <span class="keyword">for</span> token <span class="keyword">in</span> generate_func(</span><br><span class="line">        model=model,</span><br><span class="line">        token_ids=input_ids,</span><br><span class="line">        max_new_tokens=max_new_tokens,</span><br><span class="line">        eos_token_id=tokenizer.eos_token_id,</span><br><span class="line">        **generate_kwargs,  <span class="comment"># 可按需传递额外参数给文本生成函数</span></span><br><span class="line">    ):</span><br><span class="line">        next_token_id = token.squeeze(<span class="number">0</span>)</span><br><span class="line">        generated_ids.append(next_token_id.item())</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> verbose:</span><br><span class="line">            <span class="built_in">print</span>(</span><br><span class="line">                tokenizer.decode(next_token_id.tolist()),</span><br><span class="line">                end=<span class="string">&quot;&quot;</span>,</span><br><span class="line">                flush=<span class="literal">True</span></span><br><span class="line">            )</span><br><span class="line">    <span class="keyword">return</span> tokenizer.decode(generated_ids)</span><br></pre></td></tr></table></figure>
+<p>简而言之，上述 <code>generate_text_stream_concat_flex</code>
+函数与前一章的 <code>generate_text_stream_concat</code>
+函数类似，只是我们现在可以将文本生成函数（如
+<code>generate_text_basic_stream_cache</code>）作为参数传入，而非硬编码。其实际好处是：外层包装器可以统一处理提示编码、流式输出和解码，而内层生成步骤可以替换为不同的解码策略。这使得方法间的对比更加公平，因为我们只改变了生成逻辑，而非整个生成管线。在后续小节中，我们将用更高级的函数替换
+<code>generate_text_basic_stream_cache</code>。</p>
+<p><code>generate_text_basic_stream_cache</code>
+函数的使用方式也与之前类似，只是我们现在可以显式传入该函数：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">response = generate_text_stream_concat_flex(</span><br><span class="line">    model, tokenizer, prompt, device,</span><br><span class="line">    max_new_tokens=<span class="number">2048</span>, verbose=<span class="literal">True</span>,</span><br><span class="line">    generate_func=generate_text_basic_stream_cache</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>生成的输出如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">\boxed&#123;20&#125;</span><br></pre></td></tr></table></figure>
+<p>注意这个答案是错误的；正确答案是
+83。在本章及下一章的剩余部分，我们将实现推理时扩展方法，使模型生成正确答案。</p>
+<hr />
+<h2 id="使用思维链提示生成更好的响应">4.3
+使用思维链提示生成更好的响应</h2>
+<p>Generating better responses with chain-of-thought prompting</p>
+<p><img src="/img4/BuildaReasoningModel/Figure_4.4.png"
+alt="Figure 4.4" />
+我们已经加载了预训练的基础模型并设置好了文本生成函数；现在我们将专注于通过所谓的思维链提示来改进模型输出。这种提示技术经典、简单且有效。它修改输入提示词，鼓励
+LLM 生成解释或思维链（也称为推理链），如图 4.4 所示。</p>
+<p><strong>实现思维链提示的最简单方法是在提示词末尾附加一条额外指令，要求模型逐步推理。</strong>表述方式有多种。例如，该主题的原始论文使用了
+"Let's think step by
+step."（https://arxiv.org/abs/2205.11916），但不同的表述方式可能在不同模型和任务上效果各异。这里我们使用
+"Explain step by
+step."，因为它在我的本章实验中效果良好，且能保持示例简洁：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">prompt_cot = prompt + <span class="string">&quot; \n\nExplain step by step.&quot;</span></span><br><span class="line"></span><br><span class="line">response_cot = generate_text_stream_concat_flex(</span><br><span class="line">    model, tokenizer, prompt_cot, device,</span><br><span class="line">    max_new_tokens=<span class="number">2048</span>, verbose=<span class="literal">True</span>,</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><strong>图 4.4
+我们的第一种推理时方法——思维链提示，通过修改提示词鼓励模型在给出最终答案之前，逐步解释其推理过程。</strong></p>
+<p>现在响应如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">To solve the problem, we need to find the value of \( x \) such that</span><br><span class="line">half the value of \( 3x - 9 \) is equal to \( x + 37 \).</span><br><span class="line"></span><br><span class="line"># ... （为节省篇幅，响应内容已被截断。）</span><br><span class="line"></span><br><span class="line">### Step 3: Solve for \( x \)</span><br><span class="line">Subtract \( 2x \) from both sides to isolate \( x \):</span><br><span class="line">\[</span><br><span class="line">3x - 2x - 9 = 74</span><br><span class="line">\]</span><br><span class="line">Simplify:</span><br><span class="line">\[</span><br><span class="line">x - 9 = 74</span><br><span class="line">\]</span><br><span class="line">Add 9 to both sides to solve for \( x \):</span><br><span class="line">\[</span><br><span class="line">x = 74 + 9</span><br><span class="line">\]</span><br><span class="line">\[</span><br><span class="line">x = 83</span><br><span class="line">\]</span><br><span class="line"></span><br><span class="line">### Final Answer:</span><br><span class="line">\[</span><br><span class="line">\boxed&#123;83&#125;</span><br><span class="line">\]</span><br></pre></td></tr></table></figure>
+<p>如你所见，模型现在写出了冗长的逐步解释，并在此情况下得出了正确答案。</p>
+<p>这个简单的思维链提示很好地展示了推理时扩展的权衡。虽然模型现在正确回答了问题，但消耗的
+token 数量远多于之前。如第 2 章所述，LLM 逐个 token 生成文本，每增加一个
+token
+都需要一次前向传播。因此，这些中间推理步骤不仅使答案变得更长，还直接增加了延迟、计算成本和通常的
+API 成本。</p>
+<p>注意，虽然本例中模型生成了正确答案，但并非所有问题都能从思维链提示中受益。对于简单问题，它有时甚至会降低模型性能，因为模型可能生成错误解释并误导自身。这种现象称为"过度思考"。</p>
+<p>最后，并非所有模型都能从"Explain step by
+step"（或类似）指令中受益。本例中我们使用的是一个简单的基础模型，它并不总是生成解释，因此思维链提示有所帮助。而经过训练的推理模型，如我们在前一章中使用的
+Qwen3
+模型的"推理"变体，已经能在生成响应时附带解释，因此不需要也不会从这类思维链提示中受益。</p>
+<blockquote>
+<p>思维链为何能提升准确率</p>
+<p>思维链提示要求模型写出通向最终答案的中间步骤。这在两个实用方面有所帮助。</p>
+<p>首先，逐步推理给了模型更多自我纠正的机会。</p>
+<p>其次，<strong>逐步推理与许多训练示例的写法相匹配。例如，大型数学和逻辑数据集通常包含详细的求解过程，因此要求模型输出思维链有助于将其引导至已经学习过的模式。</strong></p>
+<p>同时，思维链推理并不能保证正确性。它仍然可能产生错误的推理，对于非常简单的问题，甚至可能引入不必要的步骤，导致更多错误。换句话说，思维链可以提升许多推理任务的准确率，但并非普遍有益。</p>
+<p>总体而言，思维链提示并未为模型提供新知识，而是改变了模型使用已有知识的方式。通常，这种转变可以带来更可靠的答案，尤其是在数学、代码、逻辑及其他多步骤问题上。</p>
+</blockquote>
+<blockquote>
+<p>练习 4.1：在 MATH-500 上使用思维链提示</p>
+<p>修改代码清单 3.15 中的 <code>evaluate_math500_stream</code>
+函数，检验思维链提示是否能提升基础模型在 MATH-500 上的准确率。</p>
+</blockquote>
+<hr />
+<h2 id="使用温度缩放控制输出多样性">4.4 使用温度缩放控制输出多样性</h2>
+<p>Controlling output diversity with temperature scaling</p>
+<p>上一节通过思维链提示扩展模型答案，初步介绍了推理时扩展。思维链提示可以被视为一种顺序技术，因为它增加了下一个
+token 预测的步数。</p>
+<p><img src="/img4/BuildaReasoningModel/Figure_4.5.png"
+alt="Figure 4.5" />
+在本章剩余部分，我们将实现一种自一致性技术（也称为自一致性采样），它能生成多个答案，如图
+4.5 所示。该技术在 Google Research 的论文《Self-Consistency Improves
+Chain of Thought Reasoning in Language
+Models》（https://arxiv.org/abs/2203.11171）中得到了正式描述。</p>
+<p><strong>图 4.5
+自一致性采样——我们的第二种推理时方法——生成多个答案并选择最频繁的那个。该方法依赖于温度缩放，后者影响模型采样下一个
+token 的方式。</strong></p>
+<p>由于使用该技术生成的多个答案彼此独立，因此可以通过并行采样实现（如果具备多
+GPU
+等必要资源），这不会增加用户等待答案的时间。（思维链提示可以与这种技术结合使用，具体稍后讨论。）</p>
+<p>在实现自一致性采样（图 4.5 中的第 5
+步）之前，我们首先需要扩展文本生成函数，使其能够对同一提示词生成不同的答案。为此，我们将实现两种允许模型采样不同响应的技术：温度缩放（第
+3 步）和 top-p 过滤（第 4 步）。</p>
+<p><strong>温度缩放是本节的焦点；它将是本章后续内容中控制输出多样性的关键手段之一，并且构成了随之而来的
+top-p 过滤方法的基础。</strong>不过，我们首先来看 LLM 如何采样下一个
+token。这些底层的采样控制看似过于技术性，但正是它们让我们能够为自一致性采样生成多样化的候选答案。</p>
+<h3 id="理解选择下一个-token-的过程">4.4.1 理解选择下一个 token
+的过程</h3>
+<p>Understanding the process of selecting the next token</p>
+<p>让我们更仔细地看看目前实现的文本生成过程，了解下一个 token
+选择在底层是如何工作的。这将帮助你理解温度缩放背后的动机。</p>
+<p>假设我们有如下简单提示词：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ex_prompt = <span class="string">&quot;The capital of Germany is&quot;</span></span><br><span class="line"></span><br><span class="line">response = generate_text_stream_concat_flex(</span><br><span class="line">    model, tokenizer, ex_prompt, device,</span><br><span class="line">    max_new_tokens=<span class="number">1</span>, verbose=<span class="literal">True</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><img src="/img4/BuildaReasoningModel/Figure_4.6.png"
+alt="Figure 4.6" /> 模型的响应是 "
+Berlin"。这看起来相对简单，但底层发生了多个步骤，如图 4.6 所示。</p>
+<p>生成文本时，输入首先被转换为 token ID（如第 2 章所述）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">input_token_ids = torch.tensor(</span><br><span class="line">    tokenizer.encode(ex_prompt), device=device</span><br><span class="line">).unsqueeze(<span class="number">0</span>)</span><br><span class="line"><span class="built_in">print</span>(input_token_ids)</span><br></pre></td></tr></table></figure>
+<p>在本例中，这些 token ID 为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tensor([[ 785, 6722,  315, 9856,  374]])</span><br></pre></td></tr></table></figure>
+<p><strong>图 4.6 LLM 如何生成下一个
+token。与本书所有过程图一样，流程由下至上进行。模型将输入转换为 token
+ID，计算所有可能的下一个 token
+的分数，然后选择分数最高的那个作为输出。</strong></p>
+<p>在图 4.6 的第二步中，我们获取想要生成的目标输出 token
+的分数。这些输出分数也被称为 logits。LLM 为每个输入 token 生成一个输出
+token，但我们只关心最后一个 token，通过 <code>[:, -1]</code>
+张量索引进行选取。这个最后的 token 对应于我们要生成的 token：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">with</span> torch.inference_mode():</span><br><span class="line">    next_token_logits = model(input_token_ids)[:, -<span class="number">1</span>]</span><br><span class="line"><span class="built_in">print</span>(next_token_logits.shape)</span><br></pre></td></tr></table></figure>
+<p>输出的形状为 <code>[1, 151936]</code>，其中 151936
+是该分词器和模型的词汇表大小。词汇表包含分词器能处理且 LLM
+能生成的所有唯一 token。</p>
+<p>要获得下一个生成的 token（本例中为 "
+Berlin"），我们需要找到与最大分数相关联的词汇表条目（图 4.6 中的第 3
+步）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">max_token_id = torch.argmax(next_token_logits)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;Token ID: <span class="subst">&#123;max_token_id&#125;</span>&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;Decoded token: &#x27;<span class="subst">&#123;tokenizer.decode([max_token_id])&#125;</span>&#x27;&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p>输出如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Token ID: 19846</span><br><span class="line">Decoded token: &#x27; Berlin&#x27;</span><br></pre></td></tr></table></figure>
+<p>至此，我们已介绍了生成下一个 token
+的三个主要步骤。在进入下一节之前，让我们更仔细地看看传递给
+<code>torch.argmax</code> 函数以获取 token ID 的
+<code>next_token_logits</code> 张量的分数分布。我们使用 Matplotlib
+将其绘制出来。</p>
+<p><strong>代码清单 4.3 绘制下一个 token 的 logit 分数</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">plot_scores_bar</span>(<span class="params"></span></span><br><span class="line"><span class="params">    next_token_logits, start=<span class="number">19_800</span>, end=<span class="number">19_900</span>,</span></span><br><span class="line"><span class="params">    arrow=<span class="literal">True</span>, ylabel=<span class="string">&quot;Logit value&quot;</span></span></span><br><span class="line"><span class="params"></span>):</span><br><span class="line">    x = torch.arange(start, end)  <span class="comment"># 选择词汇表子区间</span></span><br><span class="line">    logits_section = next_token_logits[<span class="number">0</span>, start:end].<span class="built_in">float</span>().cpu()</span><br><span class="line">    <span class="comment"># .cpu() 是 to(torch.device(&quot;cpu&quot;)) 的简写</span></span><br><span class="line"></span><br><span class="line"><span class="comment">### plt.bar(x, logits_section)  # 在选定范围内绘制 logits（分数）</span></span><br><span class="line">    plt.xlabel(<span class="string">&quot;Vocabulary index&quot;</span>)</span><br><span class="line">    plt.ylabel(ylabel)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> arrow:  <span class="comment"># 绘制箭头以高亮最大分数</span></span><br><span class="line">        max_idx = torch.argmax(logits_section)</span><br><span class="line">        plt.annotate(</span><br><span class="line">            <span class="string">&quot;Berlin&quot;</span>,</span><br><span class="line">            xy=(x[max_idx], logits_section[max_idx]),</span><br><span class="line">            xytext=(x[max_idx] - <span class="number">25</span>, logits_section[max_idx] - <span class="number">2</span>),</span><br><span class="line">            arrowprops=&#123;</span><br><span class="line">                <span class="string">&quot;facecolor&quot;</span>: <span class="string">&quot;black&quot;</span>, <span class="string">&quot;arrowstyle&quot;</span>: <span class="string">&quot;-&gt;&quot;</span>, <span class="string">&quot;lw&quot;</span>: <span class="number">1.5</span></span><br><span class="line">            &#125;,</span><br><span class="line">            fontsize=<span class="number">10</span>,</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">    plt.grid(alpha=<span class="number">0.3</span>)</span><br><span class="line">    plt.tight_layout()</span><br><span class="line">    plt.show()</span><br><span class="line"></span><br><span class="line">plot_scores_bar(next_token_logits)</span><br></pre></td></tr></table></figure>
+<p><img src="/img4/BuildaReasoningModel/Figure_4.7.png"
+alt="Figure 4.7" /> 我们将绘图范围限制在 19,800 到 19,900 之间的 100
+个词汇表索引，而不是绘制全部 151,936
+个条目，因为后者会使图表过于拥挤。选择这个范围是因为它包含得分最高的条目。结果图如图
+4.7 所示。</p>
+<p>图 4.7 展示了词汇表索引 19,800–19,899 范围内 100 个 logit
+值（分数）。这些值大致在 –8 到 20 之间，其中值 20 对应 token " Berlin"
+的词汇表索引。</p>
+<p><strong>图 4.7 语言模型词汇表（远大于此）中一个 100-token
+切片的下一个 token logits。每个柱状条代表该切片中一个可能 token
+的分数，"Berlin" 具有最高的 logit 值，被选为下一个 token。</strong></p>
+<h3 id="通过温度参数重新缩放-token-分数logits">4.4.2
+通过温度参数重新缩放 token 分数（logits）</h3>
+<p>Rescaling token scores (logits) via a temperature parameter</p>
+<p>现在你已经了解了模型如何选择下一个
+token，我们可以引入温度的概念。温度，或者更准确地说，温度参数，对 logits
+进行重新缩放，使对应的概率分布变得更尖锐或更平坦，从而影响下一个 token
+的选择方式。</p>
+<p><img src="/img4/BuildaReasoningModel/Figure_4.8.png"
+alt="Figure 4.8" /> 如图 4.8 所示，本节重点讨论在使用 logits
+进行采样之前，用温度参数对其重新缩放。这里的重新缩放意味着调整分数的大小，使得采样步骤对分数差异的敏感度发生变化。</p>
+<p><strong>图 4.8 在本节中，我们将实现温度缩放的核心部分（步骤
+3.2），即调整下一个 token
+的分数。这使得我们能在后续步骤中控制模型选择下一个 token
+的置信度。</strong></p>
+<p>实现温度重新缩放的代码（图 4.8 中的步骤
+3.2）相对简短且简单。本质上，以下代码在将 logit
+值转换为概率（将在下一节讨论）之前对其进行重新缩放。</p>
+<p><strong>代码清单 4.4 通过温度缩放重新缩放下一个 token
+的分数</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">scale_logits_by_temperature</span>(<span class="params">logits, temperature</span>):</span><br><span class="line">    <span class="keyword">if</span> temperature &lt;= <span class="number">0</span>:</span><br><span class="line">        <span class="keyword">raise</span> ValueError(<span class="string">&quot;Temperature must be positive&quot;</span>)</span><br><span class="line">    <span class="keyword">return</span> logits / temperature</span><br></pre></td></tr></table></figure>
+<p>在实际应用中，温度值应为正数，因此如果温度为零或负数，我们会抛出错误。稍后在将温度缩放添加到文本生成函数时，我们还会增加更多温度缩放的安全措施。</p>
+<p>对于其他所有值，logits 均除以温度。温度为 1.0
+表示不变，因为任何数除以 1 都保持不变。温度低于 1.0
+会使分布更尖锐，使模型在选择下一个 token 时更自信。温度高于 1.0 会使
+logit 分布更平坦，这可以使采样（图 4.8 中的步骤
+3.4）更多样化。换句话说，更高的温度降低了最高分 token 与低排名 token
+之间的概率差距，增加了采样选中非最大 token 的机会。</p>
+<p>让我们看看这个 <code>scale_logits_by_temperature</code>
+函数的实际效果。我们将使用相对极端的温度值 0.5 和 5.0
+来获得更明显的效果。</p>
+<p><strong>代码清单 4.5 绘制温度重新缩放后的 logits</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">plot_logits_with_temperature</span>(<span class="params"></span></span><br><span class="line"><span class="params">    next_token_logits, start=<span class="number">19_800</span>, end=<span class="number">19_900</span>,</span></span><br><span class="line"><span class="params">    temps=(<span class="params"><span class="number">0.5</span>, <span class="number">5.0</span></span>),</span></span><br><span class="line"><span class="params"></span>):</span><br><span class="line">    x = torch.arange(start, end)</span><br><span class="line">    logits_orig = next_token_logits[<span class="number">0</span>, start:end].<span class="built_in">float</span>().cpu()</span><br><span class="line"></span><br><span class="line">    logits_scaled = [   <span class="comment"># 应用温度缩放</span></span><br><span class="line">        scale_logits_by_temperature(logits_orig, T) <span class="keyword">for</span> T <span class="keyword">in</span> temps</span><br><span class="line">    ]</span><br><span class="line"></span><br><span class="line">    plt.plot(x, logits_orig, label=<span class="string">&quot;Original logits&quot;</span>, lw=<span class="number">2</span>)  <span class="comment"># 在选定范围内绘制 logits（分数）</span></span><br><span class="line">    plt.plot(</span><br><span class="line">        x, logits_scaled[<span class="number">0</span>],</span><br><span class="line">        label=<span class="string">f&quot;T=<span class="subst">&#123;temps[<span class="number">0</span>]&#125;</span> (sharper)&quot;</span>, ls=<span class="string">&quot;--&quot;</span>, lw=<span class="number">1</span></span><br><span class="line">    )</span><br><span class="line">    plt.plot(</span><br><span class="line">        x, logits_scaled[<span class="number">1</span>],</span><br><span class="line">        label=<span class="string">f&quot;T=<span class="subst">&#123;temps[<span class="number">1</span>]&#125;</span> (flatter)&quot;</span>, ls=<span class="string">&quot;:&quot;</span>, lw=<span class="number">3</span></span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 高亮最大 logit</span></span><br><span class="line">    max_idx = torch.argmax(logits_orig)</span><br><span class="line">    plt.annotate(</span><br><span class="line">        <span class="string">&quot;Berlin&quot;</span>,</span><br><span class="line">        xy=(x[max_idx], logits_orig[max_idx]),</span><br><span class="line">        xytext=(x[max_idx] - <span class="number">25</span>, logits_orig[max_idx] + <span class="number">2</span>),</span><br><span class="line">        arrowprops=&#123;<span class="string">&quot;facecolor&quot;</span>: <span class="string">&quot;black&quot;</span>, <span class="string">&quot;arrowstyle&quot;</span>: <span class="string">&quot;-&gt;&quot;</span>, <span class="string">&quot;lw&quot;</span>: <span class="number">1.5</span>&#125;,</span><br><span class="line">        fontsize=<span class="number">12</span>,</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    plt.xlabel(<span class="string">&quot;Vocabulary index&quot;</span>)</span><br><span class="line">    plt.ylabel(<span class="string">&quot;Logit value&quot;</span>)</span><br><span class="line">    plt.legend()</span><br><span class="line">    plt.grid(alpha=<span class="number">0.3</span>)</span><br><span class="line">    plt.tight_layout()</span><br><span class="line">    plt.show()</span><br><span class="line"></span><br><span class="line">plot_logits_with_temperature(</span><br><span class="line">    next_token_logits,</span><br><span class="line">    temps=(<span class="number">0.5</span>, <span class="number">5.0</span>)  <span class="comment"># 使用温度 0.5 和 5 运行重新缩放和绘图</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><img src="/img4/BuildaReasoningModel/Figure_4.9.png"
+alt="Figure 4.9" /> 如图 4.9
+所示，较高的温度（5.0）产生了更平坦的分数分布，而较低的温度（0.5）则产生了更尖锐的分布。</p>
+<p><strong>图 4.9 温度缩放对 logits
+的影响。较低的温度使分布更尖锐，而较高的温度使其更平坦。（注意，为便于阅读，本图以折线图展示；柱状图能更准确地表示各个词汇表分数。）</strong></p>
+<p>代码清单 4.5 中的绘图代码与代码清单 4.3
+中的绘图代码非常相似。除了应用温度缩放外，我们现在使用折线图（<code>plt.plot</code>）而不是柱状图（<code>plt.bar</code>）。虽然从技术上讲，对于
+x
+轴上的离散词汇表索引，柱状图是更好的选择，但在本例中，折线图更容易可视化和比较重新缩放后的
+logits。</p>
+<p>重要的不是 logit 本身的绝对高度，而是 logits 之间差异的变化。如果像
+"Berlin" 这样的 token
+相比其他候选更加突出，那么它在后续被选中的可能性就更大。如果差异缩小，低排名
+token 被选中的可能性就会增加。下一节将通过将 logits
+转换为概率来进一步说明这一点。</p>
+<blockquote>
+<p>为什么叫温度？</p>
+<p>"温度"一词来源于物理学，在物理学中温度控制系统中随机性或运动的大小。在
+LLM 中，我们使用同样的概念来控制模型选择下一个 token
+时的置信度或创造性，你将在后续章节中看到这一点。</p>
+</blockquote>
+<h3 id="从概率分布中采样下一个-token">4.4.3 从概率分布中采样下一个
+token</h3>
+<p>Sampling the next token from a probability distribution</p>
+<p><img src="/img4/BuildaReasoningModel/Figure_4.10.png"
+alt="Figure 4.10" /> 在上一节中，我们使用不同的温度值重新缩放 logit
+值。这让我们能够影响模型选择下一个 token 的方式。在进入下一节的 token
+采样部分之前，我们再增加一个中间步骤：将重新缩放后的 logits
+转换为概率分数，如图 4.10 所示。</p>
+<p><strong>图 4.10 生成 token 的采样过程概览。此处我们重点介绍步骤 3.3
+和 3.4，其中下一个 token 的分数被转换为概率分布。下一个 token
+将根据该分布进行采样。</strong></p>
+<p>为了演示重新缩放后的 logits 如何转换为概率分数（图 4.10 中的步骤
+3.3），我们将使用温度为 5.0，这将使结果概率更容易在图中可视化。例如，"
+Berlin" token 的 logit 值太高，否则会主导整个尺度，使周围 token
+的概率难以观察。</p>
+<p>从重新缩放后的 logits 到概率分数的转换只需一次函数调用
+<code>torch.softmax</code>，如下列代码清单所示。</p>
+<p><strong>代码清单 4.6 从概率分布中采样下一个 token</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">rescaled_logits = scale_logits_by_temperature(next_token_logits, <span class="number">5.0</span>)  <span class="comment"># 步骤 3.2：重新缩放下一个 token 的分数</span></span><br><span class="line"></span><br><span class="line">next_token_probas = torch.softmax(  <span class="comment"># 步骤 3.3：将重新缩放后的 logits 转换为概率分数</span></span><br><span class="line">    rescaled_logits, dim=-<span class="number">1</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><code>torch.softmax</code> 函数将 logit 值归一化到 0 到 1
+之间，且所有值之和为 1。我们可以用以下代码验证：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Probability sum:&quot;</span>, torch.<span class="built_in">sum</span>(next_token_probas))</span><br></pre></td></tr></table></figure>
+<p>此外，让我们复用代码清单 4.3 中的 <code>plot_scores_bar</code>
+函数来可视化转换后的分数：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">plot_scores_bar(</span><br><span class="line">    next_token_probas, arrow=<span class="literal">False</span>, ylabel=<span class="string">&quot;Probability value&quot;</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p><img src="/img4/BuildaReasoningModel/Figure_4.11.png"
+alt="Figure 4.11" /> 结果图如图 4.11 所示，y
+轴现在显示概率值。可以看到，在选定的词汇表范围内，token ID 19,846（"
+Berlin"）具有最高值。其概率为 0.0003，可用以下代码确认：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Token ID 19,846 probability:&quot;</span>, next_token_probas[:, <span class="number">19846</span>])</span><br></pre></td></tr></table></figure>
+<p>注意，虽然 0.0003
+这个值相对较小，但在本图所选的词汇表范围之外没有更大的值。例如，使用以下代码可以确认
+0.0003 确实是最大值：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Highest probability:&quot;</span>, <span class="built_in">max</span>(next_token_probas.squeeze(<span class="number">0</span>)))</span><br></pre></td></tr></table></figure>
+<p><strong>图 4.11 对重新缩放后的 logits 应用 softmax 函数得到的 token
+概率。概率最高的 token（对应
+"Berlin"，为简化代码省略了标签）被选为下一个输出。</strong></p>
+<p>我们可以将这个分数解释为模型的置信度。这意味着模型在选择 "
+Berlin"（索引 19,846）作为下一个 token 时，比选择任何其他 token
+都更自信。</p>
+<p>这个值之所以如此之小，是因为我们使用了较高的温度，这使得我们更容易将它与其它
+token 的值一起绘制。如果将温度从 5 改为 0.5，概率分数将从 0.0003 增加到
+0.3398，而其他 token 的概率分数则将变得更接近于 0。</p>
+<blockquote>
+<p>Softmax 函数的底层原理</p>
+<p>Softmax 函数将原始分数（logits）向量转换为概率分布，其中每个值介于 0
+和 1 之间，且所有值之和为
+1。这种转换使数值更易于解释，也便于后续从中采样。</p>
+<p>如果你熟悉数学符号，softmax 函数的公式为：</p>
+<p><span class="math display">\[
+\text{softmax}(z_i) = \frac{\exp(z_i)}{\sum_j \exp(z_j)}
+\]</span> 其中，<span class="math inline">\(z\)</span>
+是一个实数输入向量：</p>
+<p><span class="math display">\[
+z = [z_1, z_2, \ldots, z_n]
+\]</span> 这里：</p>
+<ul>
+<li><span class="math inline">\(n\)</span> 是向量中元素的数量。</li>
+<li><span class="math inline">\(i\)</span> 是当前元素的索引（<span
+class="math inline">\(1 \leq i \leq n\)</span>）。</li>
+<li><span class="math inline">\(j\)</span>
+是用于对所有元素求和的索引（<span class="math inline">\(1 \leq j \leq
+n\)</span>）。</li>
+</ul>
+<p>由此得到每个元素 <span class="math inline">\(z_i\)</span>
+的归一化概率，满足：</p>
+<p><span class="math display">\[
+\sum_i \text{softmax}(z_i) = 1
+\]</span> 在代码中，softmax 函数可以用三行实现：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">softmax_with_temperature</span>(<span class="params">logits, temperature</span>):</span><br><span class="line">    scaled_logits = logits / temperature</span><br><span class="line">    <span class="keyword">return</span> torch.softmax(scaled_logits, dim=<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+<p>在实践中，我更喜欢使用 <code>torch.softmax</code>
+函数，因为它有一些额外的数值稳定性改进，能够更可靠地处理极小和极大的值。</p>
+</blockquote>
+<p>将 logits 转换为概率分数的目的是使结果更易解释，并且我们现在可以使用
+<code>torch.multinomial</code>
+函数从中采样。例如，如果从这个概率分布中抽取一个样本，在温度为 5.0
+的设置下，我们有 0.03% 的概率得到 " Berlin"（而在温度为 0.5 时，有
+33.98% 的概率得到 " Berlin"）。</p>
+<p>对应于图 4.10 中步骤 3.4 的采样过程，可以实现如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">torch.manual_seed(<span class="number">123</span>)</span><br><span class="line"><span class="built_in">print</span>(</span><br><span class="line">    <span class="string">&quot;Sampled token:&quot;</span>,</span><br><span class="line">    torch.multinomial(next_token_probas.cpu(), num_samples=<span class="number">1</span>)</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>这段代码返回 token ID 65,094，对应单词 "
+mistress"。注意，这个单词在我们的上下文 "The capital of Germany is"
+中毫无意义。这种情况下，它被随机选中是由于高温设置，该设置鼓励采样 "
+Berlin" 以外的 token。</p>
+<p><code>torch.multinomial</code>
+函数按其概率比例采样词汇表索引。换句话说，概率越高的词汇表索引越有可能被采样到。如果我们将采样重复非常多次，那么以
+5 的温度设置，采样到 token " Berlin" 对应词汇表索引的概率为 0.03%。</p>
+<p>在查看更多示例之前，请注意我们指定了随机种子，以使本章代码可复现。<code>torch.multinomial()</code>
+函数在 CUDA 和 MPS
+设备上可能产生不同结果，甚至在抽取较大样本量时可能崩溃（我在 PyTorch 2.9
+的 CUDA 和 MPS 设备上都观察到了这个问题），因此我们通过
+<code>.cpu()</code> 在 CPU 上运行采样。</p>
+<p>现在让我们再采样一些下一个 token 的候选，以获得更具代表性的样本。</p>
+<p><strong>代码清单 4.7 采样多个下一个 token 候选</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">count_samples</span>(<span class="params">probas, num_samples=<span class="number">1000</span>, threshold=<span class="number">1</span>, tokenizer=<span class="literal">None</span></span>):</span><br><span class="line">    samples = torch.multinomial(  <span class="comment"># 按概率抽取样本</span></span><br><span class="line">        probas.cpu(), num_samples=num_samples, replacement=<span class="literal">True</span></span><br><span class="line">    )</span><br><span class="line">    counts = torch.bincount(samples.squeeze(<span class="number">0</span>), minlength=<span class="number">1</span>)  <span class="comment"># 统计每个索引被选中的次数</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> i, c <span class="keyword">in</span> <span class="built_in">enumerate</span>(counts):</span><br><span class="line"><span class="comment">### if c &gt; threshold:   # 打印频繁被采样的词汇表索引（条目）</span></span><br><span class="line">            <span class="keyword">if</span> tokenizer <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;Vocab index <span class="subst">&#123;i&#125;</span>: <span class="subst">&#123;c.item()&#125;</span>x&quot;</span>)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;&#x27;<span class="subst">&#123;tokenizer.decode([i])&#125;</span>&#x27;: <span class="subst">&#123;c.item()&#125;</span>x&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p>代码清单 4.7 中的 <code>count_samples</code> 函数从概率分布中采样
+token 索引，并统计每个 token 被抽取的次数。它使用
+<code>torch.multinomial</code> 按其概率比例随机选择
+<code>num_samples</code> 个索引。<code>replacement=True</code>
+设置允许我们多次抽取同一个 token。</p>
+<p>然后，<code>torch.bincount</code>
+统计每个索引出现的次数。它只打印出现次数超过指定阈值的
+token，以避免输出被不常被抽取的 token 淹没。</p>
+<blockquote>
+<p>多项式采样</p>
+<p>多项式采样是在给定词汇表概率分布（如 softmax
+概率分数）的情况下，选择下一个 token
+的过程。在多项式采样中，我们并非总是选择最可能的
+token（称为贪婪解码），而是随机抽取一个 token，概率越高的 token
+越有可能被选中。这种随机性对于生成多样化的响应至关重要，我们将在后续的自一致性采样中使用这一特性。</p>
+<p>为了进一步说明这一点，我们可以将概率分数看作一组加权选择。例如，一个概率为
+0.40 的 token 出现的概率是一个概率为 0.10 的 token
+的四倍，但两者都是可能的结果。</p>
+<p>假设模型分配了以下概率：</p>
+<ul>
+<li>"Berlin": 0.70</li>
+<li>"Munich": 0.20</li>
+<li>"Hamburg": 0.10</li>
+</ul>
+<p>贪婪解码总是返回 "Berlin"。而多项式采样则根据这些权重抽取一个
+token。在大量抽取中，"Berlin" 出现频率最高（70% 的时间），"Munich"
+有时出现（20% 的时间），"Hamburg" 仅偶尔出现（10% 的时间）。</p>
+<p>这种可变性使我们能够在后续小节中为自一致性生成多个候选答案。</p>
+</blockquote>
+<blockquote>
+<p><strong>注意</strong> 此 <code>count_samples</code>
+函数仅用于演示。在实际文本生成中，我们每次只抽取一个
+token。该函数从分布中抽取大量样本，以展示每个 token
+被选中的频率，使底层概率更易于可视化和理解。</p>
+</blockquote>
+<p>首先，让我们在温度为 5 时获得的概率分数上运行
+<code>count_samples</code> 函数：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">torch.manual_seed(<span class="number">123</span>)</span><br><span class="line">count_samples(next_token_probas, tokenizer=tokenizer)</span><br></pre></td></tr></table></figure>
+<p>输出如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#x27;&#125;&#x27;: 2x</span><br><span class="line">&#x27; &lt;/&#x27;: 2x</span><br><span class="line">&#x27; represent&#x27;: 2x</span><br><span class="line">&#x27; Inf&#x27;: 2x</span><br><span class="line">&#x27;()*&#x27;: 2x</span><br><span class="line">&#x27; beside&#x27;: 2x</span><br><span class="line">&#x27; Kob&#x27;: 2x</span><br><span class="line">&#x27;\u0000&#x27;: 2x</span><br></pre></td></tr></table></figure>
+<p>如你所见，尽管默认样本量为 1,000，但所采样到的 token
+中没有哪个出现次数超过两次。而且，所有这些 token 在 "The capital of
+Germany is"
+查询的上下文中都是无意义的。产生这些无意义结果的原因是我们使用了过高的温度值。</p>
+<p>让我们尝试较低的温度值
+0.35，它会使分数分布更尖锐，从而更有可能选择有意义的 token：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">torch.manual_seed(<span class="number">123</span>)</span><br><span class="line">probas_lowT = torch.softmax(</span><br><span class="line">    scale_logits_by_temperature(next_token_logits, <span class="number">0.35</span>), dim=-<span class="number">1</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>在本例中，我们看到如下输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#x27; __&#x27;: 158x</span><br><span class="line">&#x27; Berlin&#x27;: 435x</span><br><span class="line">&#x27; ____&#x27;: 169x</span><br><span class="line">&#x27; ______&#x27;: 209x</span><br><span class="line">&#x27; Munich&#x27;: 3x</span><br><span class="line">&#x27; Hamburg&#x27;: 3x</span><br><span class="line">&#x27; _____&#x27;: 18x</span><br></pre></td></tr></table></figure>
+<p>这个输出作为 "The capital of Germany is" 查询的下一个 token
+候选集更有意义。在 1,000 个样本中，" Berlin" token 被抽取了 435
+次。你可以通过 <code>print(probas_lowT[0, 19_846])</code> 确认，在温度值
+0.35 时，抽取该 token 的概率约为 42%。要使 " Berlin"
+更有可能被采样到，我们可以进一步降低温度。</p>
+<p>请注意，其他一些较罕见的候选词也是有意义的。例如，"慕尼黑"和"汉堡"都是德国的大城市，因此它们与查询并非完全无关。下划线响应（"____"）很可能是由于模型曾见过带有占位符的测验文本，例如"德国的首都是____"。</p>
+<p>你可能会想，既然"柏林"是正确的答案，那么通过温度缩放和多项分布采样让模型偶尔给出错误答案又有什么意义呢？对于不同类型的查询，在采样过程中引入随机性有助于模型探索替代响应，而不是总是选择单一最可能的词元。这种多样性对于创造性或开放式的任务非常有用，因为在这些任务中可能存在多个有效的补全。</p>
+<p>具体来说，在推理任务中，我们可以通过自一致性（self-consistency，在第4.6节中讨论）等技术来利用这种采样多样性，这些技术生成多个候选答案并比较它们，以提高答案的准确性。</p>
+<h3 id="将温度缩放添加到文本生成函数">4.4.4
+将温度缩放添加到文本生成函数</h3>
+<p>Adding temperature scaling to the text generation function</p>
+<p>在通过添加词元概率选择滤波器来改进文本生成过程之前，让我们先将温度缩放修改添加到文本生成函数中，这样我们就可以更方便地用模型生成新的词元。</p>
+<p><strong>代码清单 4.8 带温度缩放的文本生成</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> reasoning_from_scratch.qwen3 <span class="keyword">import</span> KVCache</span><br><span class="line"></span><br><span class="line"><span class="meta">@torch.inference_mode()</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">generate_text_temp_stream_cache</span>(<span class="params"></span></span><br><span class="line"><span class="params">    model,</span></span><br><span class="line"><span class="params">    token_ids,</span></span><br><span class="line"><span class="params">    max_new_tokens,</span></span><br><span class="line"><span class="params">    eos_token_id=<span class="literal">None</span>,</span></span><br><span class="line"><span class="params">    temperature=<span class="number">0.</span></span></span><br><span class="line"><span class="params"></span>):</span><br><span class="line">    model.<span class="built_in">eval</span>()</span><br><span class="line">    cache = KVCache(n_layers=model.cfg[<span class="string">&quot;n_layers&quot;</span>])</span><br><span class="line">    model.reset_kv_cache()</span><br><span class="line"></span><br><span class="line">    out = model(token_ids, cache=cache)[:, -<span class="number">1</span>]  </span><br><span class="line">    <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(max_new_tokens):</span><br><span class="line"></span><br><span class="line">        <span class="comment">########################################</span></span><br><span class="line">        <span class="comment"># 新增：</span></span><br><span class="line">        orig_device = token_ids.device</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> temperature <span class="keyword">is</span> <span class="literal">None</span> <span class="keyword">or</span> temperature == <span class="number">0.0</span>:</span><br><span class="line">            next_token = torch.argmax(out, dim=-<span class="number">1</span>, keepdim=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">else</span>: </span><br><span class="line">            logits = scale_logits_by_temperature(out, temperature)  </span><br><span class="line">                                                                   </span><br><span class="line">                                                                   </span><br><span class="line"></span><br><span class="line">            probas = torch.softmax(logits, dim=-<span class="number">1</span>)  </span><br><span class="line">            next_token = torch.multinomial(probas.cpu(), num_samples=<span class="number">1</span>)  </span><br><span class="line">            next_token = next_token.to(orig_device)</span><br><span class="line">            </span><br><span class="line">        <span class="comment">#########################################</span></span><br><span class="line">        <span class="keyword">if</span> (eos_token_id <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span></span><br><span class="line">                <span class="keyword">and</span> torch.<span class="built_in">all</span>(next_token == eos_token_id)):</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">yield</span> next_token</span><br><span class="line">        out = model(next_token, cache=cache)[:, -<span class="number">1</span>]</span><br></pre></td></tr></table></figure>
+<p>代码清单 4.8 中的 <code>generate_text_temp_stream_cache</code> 与第 2
+章中的 <code>generate_text_stream_cache</code>
+类似。新增的内容是它现在包含了温度重新缩放和采样（在代码中
+<code># 新增</code> 注释标记下方）。</p>
+<p>以下代码展示了温度缩放和采样是如何集成到词元生成循环本身的。该函数可以传入第
+4.2 节中引入的更灵活的 <code>generate_text_stream_concat_flex</code>
+包装器中，该包装器保持外部提示处理代码不变，同时允许我们替换不同的解码策略：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">torch.manual_seed(<span class="number">123</span>)</span><br><span class="line">response = generate_text_stream_concat_flex(</span><br><span class="line">    model, tokenizer, prompt, device,</span><br><span class="line">    max_new_tokens=<span class="number">2048</span>, verbose=<span class="literal">True</span>,</span><br><span class="line">    generate_func=generate_text_temp_stream_cache,  </span><br><span class="line">    temperature=<span class="number">1.1</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>输出结果为 <span class="math inline">\(\boxed{x =
+\frac{90}{7}}\)</span>。正确答案是
+83，所以模型仍然是错的，但这只是一个演示，表明我们可以通过使用温度缩放和采样来调整答案。</p>
+<blockquote>
+<p><strong>选择温度设置</strong></p>
+<p>在实践中，<strong>温度的选择取决于目标。温度 0.0
+对应贪婪解码，即我们总是选择概率最高的词元。较小的非零值（如
+0.3–0.8）通常在我们想要一点多样性但又不想让输出过于不稳定时很有用。更高的值会让模型探索更广泛的范围，这对创造性生成或广泛搜索可能有用，但在我们需要单一最可能答案的任务中，通常会损害可靠性。</strong></p>
+<p>个人注：温度高变化大！0度表示不变。</p>
+</blockquote>
+<p>在下一节中，我们将改进采样过程。</p>
+<h2 id="用-top-p-采样平衡多样性与连贯性">4.5 用 top-p
+采样平衡多样性与连贯性</h2>
+<p>Balancing diversity and coherence with top-p sampling</p>
+<p>你已经看到温度缩放和采样（通过
+<code>torch.multinomial</code>）如何增加 LLM
+响应的多样性，无论这种多样性是好是坏。具体来说，你看到这种方法可能最终采样到与用户查询无关的词元。</p>
+<p><img src="/img4/BuildaReasoningModel/Figure_4.12.png"
+alt="Figure 4.12" /> 现在，我们将通过添加一个 top-p 滤波器（图
+4.12）来改进采样过程，使得极低置信度的词元不会被意外采样到。本节描述的
+top-p 采样过程也称为核采样（nucleus sampling）。在本节中，我们实现 top-p
+过滤，它选择一部分最高概率的词元进行采样。</p>
+<p><strong>图 4.12 top-p 过滤过程概览。</strong>
+该滤波器通过对词元排序、应用累积截断、选择 top-p
+子集并重新归一化结果，仅保留最高概率的词元。</p>
+<p>图 4.12 总结了构成 top-p
+滤波器的四个步骤：对词元概率进行排序、计算其累积和、选择满足 top-p
+截断条件的子集，以及重新归一化剩余概率，使其再次形成一个有效的概率分布。重新归一化步骤是必要的，因为一旦我们移除所有低概率词元，剩余的概率之和就不再为
+1。为了正确采样，我们需要重新缩放剩余值，使其代表一个适当的概率分布。</p>
+<p>现在我们将详细讲解图 4.12 中的步骤 4.1 到 4.4。</p>
+<h3 id="选择-top-p-词元的子集">4.5.1 选择 top-p 词元的子集</h3>
+<p>Selecting a subset of top-p tokens</p>
+<p>在实现 top-p
+滤波器之前，让我们先引入一个简单的玩具数据集，这将使温度缩放和采样过程更容易说明。首先，假设模型和分词器的词汇表只有
+10 个条目，而不是 151,936 个。</p>
+<p><strong>代码清单 4.9 用玩具数据进行温度缩放和采样</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">toy_logits = torch.tensor(  </span><br><span class="line">    [-<span class="number">0.7</span>, -<span class="number">3.0</span>, <span class="number">0.1</span>, -<span class="number">1.2</span>, <span class="number">2.0</span>, -<span class="number">1.0</span>, -<span class="number">0.5</span>, -<span class="number">2.0</span>, <span class="number">0.3</span>, <span class="number">1.5</span>]</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">toy_logits_scaled = scale_logits_by_temperature(toy_logits, <span class="number">1.0</span>)  </span><br><span class="line">toy_probas = torch.softmax(toy_logits_scaled, dim=-<span class="number">1</span>)   </span><br><span class="line"></span><br><span class="line">plt.bar(  </span><br><span class="line">    torch.arange(<span class="built_in">len</span>(toy_probas)), toy_probas,</span><br><span class="line">    alpha=<span class="number">0.5</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">plt.ylim([<span class="number">0</span>, <span class="number">1</span>])</span><br><span class="line">plt.xlabel(<span class="string">&quot;词汇索引&quot;</span>)</span><br><span class="line">plt.ylabel(<span class="string">&quot;概率&quot;</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<p>请注意，<code>toy_logits</code> 变量保存了来自代码清单 4.8 中
+<code>model(token_ids, cache=cache)[:, -1]</code> 调用的下一个词元 logit
+分数的示例值，假设词汇表大小为 10。</p>
+<p><img src="/img4/BuildaReasoningModel/Figure_4.13.png"
+alt="Figure 4.13" /> 得到的柱状图（图
+4.13）显示了重新缩放为概率后的下一个词元 logit 分数。</p>
+<p><strong>图 4.13 top-p 过滤前的词元概率示例。</strong>
+该分布包含许多低概率词元，稍后将通过应用累积概率阈值进行截断。</p>
+<p>到目前为止，这基本上是前一节的回顾。现在我们将添加图 4.12
+中所示的前两个 top-p 过滤步骤（步骤 4.1 和
+4.2）。这涉及将概率分数按降序排序并计算累积和。</p>
+<p><strong>代码清单 4.10 计算累积概率和</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">sorted_probas, sorted_idx = torch.sort(toy_probas, descending=<span class="literal">True</span>)  </span><br><span class="line">cumsum = torch.cumsum(sorted_probas, dim=-<span class="number">1</span>)  </span><br><span class="line"></span><br><span class="line">plt.bar(</span><br><span class="line">    torch.arange(<span class="built_in">len</span>(sorted_probas)), sorted_probas, </span><br><span class="line">        alpha=<span class="number">0.5</span></span><br><span class="line">)</span><br><span class="line">plt.step(</span><br><span class="line">    torch.arange(<span class="built_in">len</span>(cumsum)), cumsum, </span><br><span class="line">    where=<span class="string">&quot;mid&quot;</span>, color=<span class="string">&quot;C1&quot;</span>, label=<span class="string">&quot;累积和&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">plt.ylim([<span class="number">0</span>, <span class="number">1</span>])</span><br><span class="line"><span class="comment">### plt.xlabel(&quot;词元排序（按概率排序）&quot;)</span></span><br><span class="line">plt.ylabel(<span class="string">&quot;概率&quot;</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<p>代码清单 4.10 中使用的 <code>torch.cumsum</code>
+函数计算沿给定维度的元素的累积和。在此示例中，它接受排序后的词元概率并逐步累加，使得结果中的每个位置代表累积到该词元的总概率。</p>
+<p><img src="/img4/BuildaReasoningModel/Figure_4.14.png"
+alt="Figure 4.14" />
+例如，第一个元素等于最高概率，第二个元素等于前两个概率之和，依此类推，直到最后一个值达到
+1。通过查看代码清单 4.10 生成的累积阶梯图（图
+4.14），可以最好地理解这一点。</p>
+<p><strong>图 4.14 排序后的词元概率及其累积和的可视化。</strong>
+这一步通过展示概率从高到低排序时的累积方式，为 top-p
+过滤做准备，有助于确定截断阈值的位置。</p>
+<p>现在我们有了累积概率和，就可以实现核心的 top-p 过滤步骤。top-p 中的 p
+代表概率（probability），top-p 可以理解为"保留累积概率小于或等于 p
+的最小词元集合"。以下代码清单展示了一个简单的 top-p 过滤实现。</p>
+<p><strong>代码清单 4.11 一个简单的 top-p 过滤规则</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">top_p = <span class="number">0.8</span></span><br><span class="line">keep_mask = cumsum &lt;= top_p</span><br><span class="line">n_kept = torch.<span class="built_in">sum</span>(keep_mask).item()</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;累积和:&quot;</span>, cumsum)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;保留的词元数:&quot;</span>, n_kept)</span><br></pre></td></tr></table></figure>
+<p>在代码中，这实现为
+<code>keep_mask = cumsum &lt;= top_p</code>，它标记所有累积概率质量尚未超过阈值
+p（此处定义为
+<code>top_p=0.8</code>）的词元。然后计算保留的词元数量并赋值给变量
+<code>n_kept</code>。输出如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">累积和: tensor([0.4538, 0.7290, 0.8119, 0.8798,</span><br><span class="line">0.9170, 0.9475, 0.9701, 0.9886, 0.9969, 1.0000])</span><br><span class="line">保留的词元数: 2</span><br></pre></td></tr></table></figure>
+<p>查看返回的累积概率，第二个条目（0.7290）刚好低于 top-p 阈值
+0.8，而第三个条目（0.8119）超过了该阈值，这就是为什么只保留了前两个词元。</p>
+<p>一个更常见的 top-p
+过滤变体包括超过阈值的那个词元，如以下代码清单所示。</p>
+<p><strong>代码清单 4.12 一个常见的 top-p 过滤变体</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">keep_mask = (cumsum - sorted_probas) &lt; top_p</span><br><span class="line">n_kept = keep_mask.<span class="built_in">sum</span>().item()</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;保留的词元数:&quot;</span>, n_kept)</span><br></pre></td></tr></table></figure>
+<p>这段代码返回 3 作为保留的词元数。这遵循了 top-p
+过滤的定义：保留最小词元集合，使得累积概率质量至少为 p。</p>
+<p>让我们用图表来说明这个 top-p 过滤。</p>
+<p><strong>代码清单 4.13 可视化 top-p 过滤</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">plt.bar(</span><br><span class="line">    torch.arange(<span class="built_in">len</span>(sorted_probas)), sorted_probas, </span><br><span class="line">    alpha=<span class="number">0.5</span>, label=<span class="string">&quot;排序后的概率&quot;</span></span><br><span class="line">)</span><br><span class="line">plt.step(</span><br><span class="line">    torch.arange(<span class="built_in">len</span>(cumsum)), cumsum, where=<span class="string">&quot;mid&quot;</span>,</span><br><span class="line">    color=<span class="string">&quot;darkorange&quot;</span>, label=<span class="string">&quot;累积和&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">plt.axhline(</span><br><span class="line">    top_p, color=<span class="string">&quot;red&quot;</span>, linestyle=<span class="string">&quot;--&quot;</span>,</span><br><span class="line">    label=<span class="string">f&quot;top_p = <span class="subst">&#123;top_p&#125;</span>&quot;</span></span><br><span class="line">)</span><br><span class="line">plt.axvline(</span><br><span class="line">    n_kept - <span class="number">0.5</span>, color=<span class="string">&quot;gray&quot;</span>, linestyle=<span class="string">&quot;:&quot;</span>,</span><br><span class="line">    label=<span class="string">f&quot;Top-p 截断在 <span class="subst">&#123;n_kept&#125;</span> 个词元处&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">### plt.xlabel(&quot;词元排名（按概率排序）&quot;)</span></span><br><span class="line">plt.ylabel(<span class="string">&quot;概率&quot;</span>)</span><br><span class="line">plt.legend()</span><br><span class="line">plt.grid(alpha=<span class="number">0.3</span>)</span><br><span class="line">plt.ylim(<span class="number">0</span>, <span class="number">1.05</span>)</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<p><img src="/img4/BuildaReasoningModel/Figure_4.15.png"
+alt="Figure 4.15" /> 执行代码清单 4.13 中的代码生成的图表如图 4.15
+所示。该图显示了 <code>top_p = 0.8</code>
+的阈值（虚线水平线），它定义了哪些词元被保留。在这种情况下，前两个词元的累积和低于阈值，因此我们排除截断点右侧的所有其他词元（垂直虚线）。</p>
+<p><strong>图 4.15 Top-p（核）过滤。</strong>
+词元按概率排序，累积概率超过阈值（p =
+0.8）的最小词元子集被保留用于采样。</p>
+<p>为了实现这个阈值截断，我们可以使用以下代码，它首先将截断点右侧的所有值置零（图
+4.15 中的垂直虚线），然后恢复原始排序顺序。</p>
+<p><strong>代码清单 4.14 应用 top-p 过滤</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">kept_sorted = torch.where(</span><br><span class="line">    keep_mask, sorted_probas,</span><br><span class="line">    torch.zeros_like(sorted_probas)</span><br><span class="line">)</span><br><span class="line">filtered = torch.zeros_like(toy_probas).scatter(<span class="number">0</span>, sorted_idx, kept_sorted)</span><br><span class="line"><span class="built_in">print</span>(filtered)</span><br></pre></td></tr></table></figure>
+<p>得到的张量如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">tensor([0.0000, 0.0000, 0.0000, 0.0000, 0.4538, 0.0000, 0.0000, 0.0000, </span><br><span class="line">0.0829, 0.2752])</span><br></pre></td></tr></table></figure>
+<p>你可以看到，除了索引位置 4、8 和 9
+的值之外，所有其他值都被清零了。这意味着如果现在我们使用多项分布函数，只有这三个词元会被考虑。</p>
+<p>最后，我们重新归一化这些值，使它们之和再次为 1：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">denom = torch.<span class="built_in">sum</span>(filtered).clamp_min(<span class="number">1e-12</span>)</span><br><span class="line">renormalized = filtered / denom</span><br><span class="line"><span class="built_in">print</span>(renormalized)</span><br></pre></td></tr></table></figure>
+<p>得到的归一化张量如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">tensor([0.0000, 0.0000, 0.0000, 0.0000, 0.5589, 0.0000, 0.0000, 0.0000,</span><br><span class="line">0.1021, 0.3390])</span><br></pre></td></tr></table></figure>
+<p>这种 top-p
+过滤的目标是移除低概率的词元，使它们不会被后续采样到。这有助于减少在给定上下文中出现无意义词元响应的情况。</p>
+<h3 id="将-top-p-过滤器添加到文本生成函数">4.5.2 将 top-p
+过滤器添加到文本生成函数</h3>
+<p>Adding a top-p filter to the text generation function</p>
+<p><img src="/img4/BuildaReasoningModel/Figure_4.16.png"
+alt="Figure 4.16" /> 我们已经通过一个玩具示例完成了 top-p
+过滤的步骤。现在让我们将 top-p 过滤的四个步骤（图 4.16 中的步骤
+4.1–4.4）添加到我们现有的文本生成函数中，放在概率转换和采样之间。</p>
+<p>我们首先将上一节中的 top-p 过滤步骤组装成一个方便调用的函数。</p>
+<p><strong>代码清单 4.15 Top-p 过滤函数</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">top_p_filter</span>(<span class="params">probas, top_p</span>):</span><br><span class="line">    <span class="keyword">if</span> top_p <span class="keyword">is</span> <span class="literal">None</span> <span class="keyword">or</span> top_p &gt;= <span class="number">1.0</span>:</span><br><span class="line">        <span class="keyword">return</span> probas</span><br><span class="line"></span><br><span class="line">    sorted_probas, sorted_idx = torch.sort(probas, dim=<span class="number">1</span>, descending=<span class="literal">True</span>) </span><br><span class="line">    cumprobas = torch.cumsum(sorted_probas, dim=<span class="number">1</span>)  </span><br><span class="line"></span><br><span class="line">    prefix = cumprobas - sorted_probas  </span><br><span class="line">    keep = prefix &lt; top_p               </span><br><span class="line">    keep[:, <span class="number">0</span>] = <span class="literal">True</span>          </span><br><span class="line"></span><br><span class="line">    kept_sorted = torch.where(          </span><br><span class="line">        keep, sorted_probas,            </span><br><span class="line">        torch.zeros_like(sorted_probas) </span><br><span class="line">    )</span><br><span class="line">    </span><br><span class="line">    filtered = torch.zeros_like(probas).scatter(<span class="number">1</span>, sorted_idx, kept_sorted)</span><br><span class="line"></span><br><span class="line">    denom = torch.<span class="built_in">sum</span>(filtered, dim=<span class="number">1</span>, keepdim=<span class="literal">True</span>).clamp_min(<span class="number">1e-12</span>)</span><br><span class="line">    <span class="keyword">return</span> filtered / denom</span><br></pre></td></tr></table></figure>
+<p>我们将 top-p 过滤与温度缩放结合；top-p 过滤插入在步骤 3.3 和 3.4
+之间。</p>
+<p><strong>图 4.16 将 top-p 过滤与温度缩放集成。</strong>
+在重新缩放下一个词元分数后，top-p 过滤应用于步骤 3.3 和 3.4
+之间，将采样限制在最可能的词元上。</p>
+<p>代码清单 4.15 中的 <code>top_p_filter</code>
+函数首先对词元概率进行排序并计算其累积和。然后它保留其前缀累积质量（每个词元之前的累积概率）低于
+<code>top_p</code>
+阈值的词元，这包括了第一个超过阈值的词元。它将其余部分置零，将保留的值映射回原始顺序，并重新归一化剩余概率，使其之和再次为
+1。</p>
+<p>在将 <code>top_p_filter</code>
+函数添加到我们的文本生成函数之前，让我们先尝试一下，看看它如何与之前的温度缩放方法配合使用。首先，获取
+logits：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">with</span> torch.inference_mode():</span><br><span class="line">    next_token_logits = model(input_token_ids)[:, -<span class="number">1</span>]</span><br><span class="line"><span class="built_in">print</span>(next_token_logits.shape)</span><br></pre></td></tr></table></figure>
+<p>上述代码打印出 <code>next_token_logits</code> 张量的维度
+<code>[1, 151936]</code>。我们现在使用的是真实数据和完整词汇表，共有
+151,936 个条目。</p>
+<p>接下来，我们将 logits 重新缩放为概率分数，并应用温度为 0.35
+的温度缩放，和之前一样：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">torch.manual_seed(<span class="number">123</span>)</span><br><span class="line">probas_lowT = torch.softmax(</span><br><span class="line">    scale_logits_by_temperature(next_token_logits, <span class="number">0.35</span>), dim=-<span class="number">1</span></span><br><span class="line">)</span><br><span class="line">count_samples(probas_lowT, threshold=<span class="number">1</span>, tokenizer=tokenizer)</span><br></pre></td></tr></table></figure>
+<p>这段代码与我们之前温度缩放示例中使用的代码类似，它打印以下采样输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#x27; __&#x27;: 158x</span><br><span class="line">&#x27; Berlin&#x27;: 435x</span><br><span class="line">&#x27; ____&#x27;: 169x</span><br><span class="line">&#x27; ______&#x27;: 209x</span><br><span class="line">&#x27; Munich&#x27;: 3x</span><br><span class="line">&#x27; Hamburg&#x27;: 3x</span><br><span class="line">&#x27; _____&#x27;: 18x</span><br></pre></td></tr></table></figure>
+<p>现在，让我们添加 top-p 过滤器，看看它如何改变结果：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">torch.manual_seed(<span class="number">123</span>)</span><br><span class="line">probas_lowT = torch.softmax(</span><br><span class="line">    scale_logits_by_temperature(next_token_logits, <span class="number">0.35</span>), dim=-<span class="number">1</span></span><br><span class="line">)</span><br><span class="line">probas_lowT_filtered = top_p_filter(probas_lowT, top_p=<span class="number">0.8</span>)</span><br><span class="line">count_samples(probas_lowT_filtered, threshold=<span class="number">1</span>, tokenizer=tokenizer)</span><br></pre></td></tr></table></figure>
+<p>使用 top_p 阈值 0.8（这是一个典型值），我们排除了累积概率构成剩余 20%
+的最低概率词元。采样输出现在如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#x27; Berlin&#x27;: 534x </span><br><span class="line">&#x27; ____&#x27;: 217x </span><br><span class="line">&#x27; ______&#x27;: 249x </span><br></pre></td></tr></table></figure>
+<p>如你所见，我们现在要么选择正确的城市（移除" Munich"和"
+Hamburg"作为采样选项），要么打印下划线词元——模型可能使用这些下划线词元将文本格式化为测验问题，其中
+' ______' 作为占位符。</p>
+<p>现在让我们回到数学查询，并将 top-p 过滤器添加到我们在代码清单 4.8
+中编写的 <code>generate_text_temp_stream_cache</code>
+函数中。更新后的函数现在称为
+<code>generate_text_top_p_stream_cache</code>，如下所示。</p>
+<p><strong>代码清单 4.16 带 top-p 过滤的文本生成</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@torch.inference_mode()</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">generate_text_top_p_stream_cache</span>(<span class="params"></span></span><br><span class="line"><span class="params">    model,</span></span><br><span class="line"><span class="params">    token_ids,</span></span><br><span class="line"><span class="params">    max_new_tokens,</span></span><br><span class="line"><span class="params">    eos_token_id=<span class="literal">None</span>,</span></span><br><span class="line"><span class="params">    temperature=<span class="number">0.</span>,</span></span><br><span class="line"><span class="params">    top_p=<span class="literal">None</span></span></span><br><span class="line"><span class="params"></span>):</span><br><span class="line">    model.<span class="built_in">eval</span>()</span><br><span class="line">    cache = KVCache(n_layers=model.cfg[<span class="string">&quot;n_layers&quot;</span>])</span><br><span class="line">    model.reset_kv_cache()</span><br><span class="line"></span><br><span class="line">    out = model(token_ids, cache=cache)[:, -<span class="number">1</span>]  </span><br><span class="line">    <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(max_new_tokens):</span><br><span class="line"></span><br><span class="line">        orig_device = token_ids.device</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> temperature <span class="keyword">is</span> <span class="literal">None</span> <span class="keyword">or</span> temperature == <span class="number">0.0</span>:</span><br><span class="line">            next_token = torch.argmax(out, dim=-<span class="number">1</span>, keepdim=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            logits = scale_logits_by_temperature(out, temperature)  </span><br><span class="line">            probas = torch.softmax(logits, dim=-<span class="number">1</span>)  </span><br><span class="line"></span><br><span class="line">            probas = top_p_filter(probas, top_p)  </span><br><span class="line"></span><br><span class="line">            next_token = torch.multinomial(probas.cpu(), num_samples=<span class="number">1</span>) </span><br><span class="line">            next_token = next_token.to(orig_device)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (eos_token_id <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span></span><br><span class="line">                <span class="keyword">and</span> torch.<span class="built_in">all</span>(next_token == eos_token_id)):</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">yield</span> next_token</span><br><span class="line">        out = model(next_token, cache=cache)[:, -<span class="number">1</span>]</span><br></pre></td></tr></table></figure>
+<p>让我们将这个新的文本生成函数插入
+<code>generate_text_stream_concat_flex</code>，就像之前对温度缩放版本的文本生成函数所做的那样：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">torch.manual_seed(<span class="number">123</span>)</span><br><span class="line">response = generate_text_stream_concat_flex(</span><br><span class="line">    model, tokenizer, prompt, device,</span><br><span class="line">    max_new_tokens=<span class="number">2048</span>, verbose=<span class="literal">True</span>,</span><br><span class="line">    generate_func=generate_text_top_p_stream_cache,</span><br><span class="line">    temperature=<span class="number">0.5</span>,</span><br><span class="line">    top_p=<span class="number">0.8</span>, </span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>输出结果为 " <span
+class="math inline">\(\boxed{18}\)</span>"，这仍然是错误的。到目前为止，我们所做的一切都是为了让我们能够采样出不同的输出。在下一节中，我们将使用
+<code>generate_text_stream_concat_flex</code>
+和我们增强后的文本生成函数（<code>generate_text_top_p_stream_cache</code>）来采样不同的输出，以实现自一致性推理时间缩放技术。</p>
+<blockquote>
+<p><strong>Top-k 过滤</strong></p>
+<p>Top-k
+过滤是在采样过程中限制候选下一个词元集的另一种方法。与保留所有累积概率低于阈值的词元不同（如
+top-p），top-k 仅根据模型 logits 保留 k
+个最可能的词元。在按概率对词汇表排序后，前 k
+个条目之后的所有内容均被移除。剩余的 k
+个词元随后被重新归一化并从中采样。</p>
+<p>简而言之，top-k 保留固定数量的最可能词元，而 top-p
+根据累积质量保留可变数量的词元。</p>
+<p>Top-k 实现起来更简单，我在《Build a Large Language Model (From
+Scratch)》一书中介绍过它。Top-p 采样最近变得更流行了。</p>
+</blockquote>
+<blockquote>
+<p><strong>练习 4.2：在 MATH-500 上使用温度缩放和 top-p
+过滤</strong></p>
+<p>修改代码清单 3.15 中的 <code>evaluate_math500_stream</code>
+函数，看看添加温度缩放和 top-p 采样是否会改变基础模型在 MATH-500
+上的准确率。你可以将温度缩放和 top-p 都设置为 0.9。</p>
+</blockquote>
+<h2 id="用自一致性提高响应准确性">4.6 用自一致性提高响应准确性</h2>
+<p>Improving response accuracy with self-consistency</p>
+<p>现在我们已编写了温度缩放和 top-p
+过滤的代码，可以开始实现本章中的第二个推理时间缩放技术了：自一致性采样（self-consistency
+sampling）。</p>
+<p><img src="/img4/BuildaReasoningModel/Figure_4.17.png"
+alt="Figure 4.17" /> 自一致性采样的想法来源于 Google Research
+的论文《Self-Consistency Improves Chain-of-Thought Reasoning in Language
+Models》(https://arxiv.org/abs/2203.11171)。<strong>尽管名字很花哨，自一致性采样本质上是一种多数投票形式：我们使用温度缩放和
+top-p 过滤生成多个答案，然后选择出现频率最高的一个</strong>，如图 4.17
+所示。</p>
+<p><strong>图 4.17 自一致性采样方法从 LLM
+生成多个响应，并通过多数投票选择最频繁的答案，从而提高答案准确性。</strong></p>
+<p>图 4.17
+所示的自一致性采样技术算是一种推理时间缩放技术，因为我们没有更新模型本身，而是花费更多的计算资源来提高响应准确性。</p>
+<p><img src="/img4/BuildaReasoningModel/Figure_4.18.png"
+alt="Figure 4.18" /> 为了构建我们基于投票的推理时间流水线，我们将重用第
+2 章的生成代码、第 3 章的答案提取逻辑以及本章的采样控制。得益于
+<code>generate_text_stream_concat_flex</code>
+函数，自一致性代码的实现相对简单。主要过程可以概括为三个步骤，如图 4.18
+所示。</p>
+<p>为实现图 4.18 所示的三个步骤，我们只需重复调用
+<code>generate_text_stream_concat_flex</code> 来生成多个答案，并重用第 3
+章的 <code>extract_final_candidate</code>
+函数。唯一的新代码是基于答案频率实现多数投票。</p>
+<p><strong>图 4.18 实现自一致性采样的三个主要步骤。</strong>
+首先，我们使用大于零的温度和 top-p
+过滤为同一提示生成多个答案。其次，我们从每个生成的解答中提取最终的盒式答案。第三，我们选择出现最频繁的提取答案作为最终预测。</p>
+<p><strong>代码清单 4.17 带 top-p 过滤的文本生成</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> reasoning_from_scratch.ch03 <span class="keyword">import</span> extract_final_candidate</span><br><span class="line"><span class="keyword">from</span> collections <span class="keyword">import</span> Counter</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">self_consistency_vote</span>(<span class="params"></span></span><br><span class="line"><span class="params">    model, tokenizer, prompt, device,</span></span><br><span class="line"><span class="params">    num_samples=<span class="number">10</span>, temperature=<span class="number">0.8</span>, top_p=<span class="number">0.9</span>, max_new_tokens=<span class="number">2048</span>,</span></span><br><span class="line"><span class="params">    show_progress=<span class="literal">True</span>, show_long_answer=<span class="literal">False</span>, seed=<span class="literal">None</span>,</span></span><br><span class="line"><span class="params"></span>):</span><br><span class="line">    full_answers, short_answers = [], []</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(num_samples):  </span><br><span class="line">        <span class="keyword">if</span> seed <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">            torch.manual_seed(seed + i + <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">        answer = generate_text_stream_concat_flex(</span><br><span class="line">            model=model, tokenizer=tokenizer, prompt=prompt, device=device,</span><br><span class="line">            max_new_tokens=max_new_tokens, verbose=show_long_answer,</span><br><span class="line">            generate_func=generate_text_top_p_stream_cache,</span><br><span class="line">            temperature=temperature, top_p=top_p,</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">        short = extract_final_candidate(           </span><br><span class="line">            answer, fallback=<span class="string">&quot;number_then_full&quot;</span>    </span><br><span class="line">        )                                          </span><br><span class="line">        full_answers.append(answer)</span><br><span class="line">        short_answers.append(short)</span><br><span class="line">        <span class="keyword">if</span> show_progress:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;[样本 <span class="subst">&#123;i+<span class="number">1</span>&#125;</span>/<span class="subst">&#123;num_samples&#125;</span>] → <span class="subst">&#123;short!r&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">    counts = Counter(short_answers)</span><br><span class="line">    groups = &#123;s: [] <span class="keyword">for</span> s <span class="keyword">in</span> counts&#125;</span><br><span class="line">    <span class="keyword">for</span> idx, s <span class="keyword">in</span> <span class="built_in">enumerate</span>(short_answers):</span><br><span class="line">        groups[s].append(idx)</span><br><span class="line"></span><br><span class="line">    mc = counts.most_common()  </span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> mc:</span><br><span class="line">        majority_winners, final_answer = [], <span class="literal">None</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        top_freq = mc[<span class="number">0</span>][<span class="number">1</span>]</span><br><span class="line">        majority_winners = [s <span class="keyword">for</span> s, f <span class="keyword">in</span> mc <span class="keyword">if</span> f == top_freq]</span><br><span class="line">        final_answer = mc[<span class="number">0</span>][<span class="number">0</span>] <span class="keyword">if</span> <span class="built_in">len</span>(majority_winners) == <span class="number">1</span> <span class="keyword">else</span> <span class="literal">None</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">        <span class="string">&quot;full_answers&quot;</span>: full_answers,</span><br><span class="line">        <span class="string">&quot;short_answers&quot;</span>: short_answers,</span><br><span class="line">        <span class="string">&quot;counts&quot;</span>: <span class="built_in">dict</span>(counts),</span><br><span class="line">        <span class="string">&quot;groups&quot;</span>: groups,</span><br><span class="line">        <span class="string">&quot;majority_winners&quot;</span>: majority_winners,</span><br><span class="line">        <span class="string">&quot;final_answer&quot;</span>: final_answer,</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>简而言之，代码清单 4.17 中的自一致性方法执行以下操作：</p>
+<ol type="1">
+<li>使用大于 0 的温度和 top-p 采样多个答案</li>
+<li>从每个响应中提取最终的盒式答案</li>
+<li>选择出现最频繁的最终答案</li>
+</ol>
+<p>请注意，在我们的实现中，我们使用 for
+循环顺序生成这些答案。在实践中，在不同的设备上生成答案也很常见，这样采样可以并行化。</p>
+<p>此外，在上述代码中，我们分别为每一轮设置随机种子：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> seed <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">    torch.manual_seed(seed + i + <span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+<p>从技术上讲，这不是必需的；设置一次随机种子就足以生成多样化的样本。这种显式种子设置在我们想要单独重新运行某些轮次时很有用。</p>
+<p>让我们尝试这个函数，看看能得到什么：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">results = self_consistency_vote(</span><br><span class="line">    model,</span><br><span class="line">    tokenizer,</span><br><span class="line">    prompt,</span><br><span class="line">    device=device,</span><br><span class="line">    num_samples=<span class="number">5</span>,</span><br><span class="line">    temperature=<span class="number">0.8</span>,</span><br><span class="line">    top_p=<span class="number">0.9</span>,</span><br><span class="line">    max_new_tokens=<span class="number">2048</span>,</span><br><span class="line">    seed=<span class="number">123</span>,</span><br><span class="line">    show_progress=<span class="literal">True</span>,</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>打印的结果如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[样本 1/5] → &#x27;83&#x27;</span><br><span class="line">[样本 2/5] → &#x27;22&#x27;</span><br><span class="line">[样本 3/5] → &#x27;54&#x27;</span><br><span class="line">[样本 4/5] → &#x27;83&#x27;</span><br><span class="line">[样本 5/5] → &#x27;61&#x27;</span><br></pre></td></tr></table></figure>
+<p>由于 83 是最频繁的答案，最终答案为 83（我们可以通过
+<code>results["final_answer"]</code>
+以编程方式访问这个数字）。如果你想查看解释和完整答案，可以访问返回 83
+的正确解答之一；例如，<code>print(results["full_answers"][0])</code>
+打印以下内容：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">要求 x 的值，让我们逐步解方程。</span><br><span class="line"></span><br><span class="line">1. **已知方程:** </span><br><span class="line">   \[ </span><br><span class="line">   \frac&#123;1&#125;&#123;2&#125; \times (3x - 9) = x + 37 </span><br><span class="line">   \] </span><br><span class="line"></span><br><span class="line"># ...</span><br><span class="line"></span><br><span class="line">**最终答案:** </span><br><span class="line">\[ </span><br><span class="line">\boxed&#123;83&#125; </span><br><span class="line">\] </span><br></pre></td></tr></table></figure>
+<p>通过这种自一致性方法，我们最终能够生成正确的答案。（注意，在 "mps" 或
+"cuda" 设备上运行代码时，结果可能会有所不同。）</p>
+<p><code>self_consistency_vote</code>
+函数目前不处理平局，因此如果多个样本出现相同的频率，它返回
+<code>None</code>
+作为最终答案。在下一章中，我们将实现一个评分方法来计算给定答案的置信度，这可以用作平局决胜器。</p>
+<blockquote>
+<p><strong>练习 4.3：在 MATH-500 上使用自一致性采样</strong></p>
+<p>修改代码清单 3.15 中的 <code>evaluate_math500_stream</code>
+函数，评估自一致性采样是否提高了基础模型在 MATH-500
+上的准确率。使用样本数量为 3，并将温度和 top-p 都设置为 0.9。</p>
+<p>作为练习的一部分，实现平局决胜机制，使得平局由样本列表中第一个出现的答案解决。例如，如果样本答案为
+13, 15, 13, 15, 16，则选择的答案应为 13。</p>
+<p>注意，你不需要修改 <code>self_consistency_vote</code>
+本身来实现这个平局决胜规则；你可以直接使用该函数返回的
+<code>results</code> 字典。</p>
+</blockquote>
+<blockquote>
+<p><strong>练习 4.4：自一致性采样中的早停</strong></p>
+<p>为了提高计算效率，实现自一致性的早停版本，在超过一半的答案一致时就结束采样。</p>
+</blockquote>
+<blockquote>
+<p><strong>选择温度和 top-p 设置</strong></p>
+<p>我们已经讨论过温度，但实际问题是：对于自一致性采样，我们应该引入多少随机性？我们的目标不是让模型尽可能随机，而是生成足够多样化的答案，使得多数投票能够起作用，同时仍然让大多数样本保持合理。在实践中，温度值在
+0.5 到 0.9 左右，top-p 值在 0.7 到 0.9 左右，是合理的起点。</p>
+<p>作为经验法则，如果所有长答案看起来几乎相同，那么最好温和地增加温度或
+top-p
+值以鼓励更多多样性。如果长答案开始看起来异常或毫无意义，那么设置可能过于激进，应该降低，通常首先降低温度。这里，"长"答案指在提取最终盒式结果之前的完整答案。你可以检查
+<code>self_consistency_vote</code>
+函数返回的结果字典中的长答案，或者使用
+<code>show_long_answer=True</code> 设置运行该函数。</p>
+</blockquote>
+<p>你可能还记得，描述这种技术的论文标题是《Self-Consistency Improves
+Chain-of-Thought Reasoning in Language
+Models》。"思维链推理"在这里如何发挥作用？这里的思维链推理简单地指我们本章前面介绍的思维链提示，即我们通过
+<code>"\n\nExplain step by step."</code> 修改提示，使 LLM
+生成更长的响应。</p>
+<p>让我们将思维链提示与自一致性采样结合起来：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">results = self_consistency_vote(</span><br><span class="line">    model,</span><br><span class="line">    tokenizer,</span><br><span class="line">    prompt + <span class="string">&quot;\n\nExplain step by step.&quot;</span>,</span><br><span class="line">    device=device,</span><br><span class="line">    num_samples=<span class="number">5</span>,</span><br><span class="line">    temperature=<span class="number">0.8</span>,</span><br><span class="line">    top_p=<span class="number">0.9</span>,</span><br><span class="line">    max_new_tokens=<span class="number">2048</span>,</span><br><span class="line">    seed=<span class="number">123</span>,</span><br><span class="line">    show_progress=<span class="literal">True</span>,</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>在这种情况下，所有五个答案都是 83（正确），很可能是因为对于 LLM
+来说，在使用思维链时，这个问题相对简单。看看模型在整个 MATH-500
+数据集上的表现会更有趣。各项实验的结果如表 4.1 所示。</p>
+<p><img src="/Users/hongyuanjiao/Desktop/Build_a_Reasoning_Model//img4/BuildaReasoningModel/Table_4.1.png" alt="Table 4.1"></p>
+<p><strong>表 4.1 不同方法在 MATH-500 任务上的准确率</strong></p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>模型</th>
+<th>准确率</th>
+<th>时间</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>基线（第 3 章），贪婪解码</td>
+<td>基础</td>
+<td>15.2%</td>
+<td>10.1 分钟</td>
+</tr>
+<tr>
+<td>基线（第 3 章），贪婪解码</td>
+<td>推理</td>
+<td>48.2%</td>
+<td>182.1 分钟</td>
+</tr>
+<tr>
+<td>思维链提示 (CoT)</td>
+<td>基础</td>
+<td>40.6%</td>
+<td>84.5 分钟</td>
+</tr>
+<tr>
+<td>温度和 top-p (Top-p)</td>
+<td>基础</td>
+<td>17.8%</td>
+<td>30.7 分钟</td>
+</tr>
+<tr>
+<td>Top-p + 自一致性 (n=3)</td>
+<td>基础</td>
+<td>29.6%</td>
+<td>97.6 分钟</td>
+</tr>
+<tr>
+<td>Top-p + 自一致性 (n=5)</td>
+<td>基础</td>
+<td>27.8%</td>
+<td>116.8 分钟</td>
+</tr>
+<tr>
+<td>Top-p + 自一致性 (n=10)</td>
+<td>基础</td>
+<td>31.6%</td>
+<td>300.4 分钟</td>
+</tr>
+<tr>
+<td>Top-p + CoT</td>
+<td>基础</td>
+<td>33.4%</td>
+<td>129.2 分钟</td>
+</tr>
+<tr>
+<td>自一致性 (n=3) + Top-p + CoT</td>
+<td>基础</td>
+<td>42.2%</td>
+<td>211.6 分钟</td>
+</tr>
+<tr>
+<td>自一致性 (n=5) + Top-p + CoT</td>
+<td>基础</td>
+<td>48.0%</td>
+<td>452.9 分钟</td>
+</tr>
+<tr>
+<td>自一致性 (n=10) + Top-p + CoT</td>
+<td>基础</td>
+<td>52.0%</td>
+<td>862.6 分钟</td>
+</tr>
+<tr>
+<td>自一致性 (n=3) + Top-p + CoT</td>
+<td>推理</td>
+<td>55.2%</td>
+<td>544.4 分钟</td>
+</tr>
+</tbody>
+</table>
+<p>为简洁起见，表 4.1 中标注为"Top-p"的方法同时使用了温度缩放和 top-p
+采样。表中显示的准确率值是在 MATH-500 测试集的所有 500 个样本上使用
+"cuda" GPU（DGX Spark）计算得出的。</p>
+<p>让我们逐一分析这些结果。n = 3 的缩写表示我们在自一致性采样中使用了 3
+的样本量。第 1 行和第 2 行显示了使用第 3
+章代码的基础模型和推理变体的结果；也就是说，我们使用了不带温度缩放或
+top-p
+过滤的文本生成函数。这个文本生成函数在每个步骤简单地选择得分最高的词元（贪婪解码）。我们可以看到，推理变体的准确率大约是基础模型的三倍，但运行时间也大幅增加，因为它生成了更多的词元。</p>
+<p>在第 3 行，我们看到了使用 <code>"\n\nExplain step by step."</code>
+提示修改的思维链提示方法的结果。如你所见，这使基础模型的准确率从大约 15%
+提升到了 40%。</p>
+<p>第 4 行展示了为基础模型添加温度缩放和 top-p 采样后的结果。（表 4.1
+中所有涉及温度缩放和 top-p 采样的实验都将两者设置为 0.9。）相对于第 1
+行的基础模型，准确率仅适度提高，从 15.2% 提升到
+17.8%。这是意料之中的，因为温度缩放和 top-p
+采样仅仅帮助我们控制采样多样性，它们本身并不是推理时间缩放技术。我们还可以看到运行时间从
+10.1 分钟增加到了 30.7
+分钟。这不是由于采样代码的开销，而是因为模型在某些情况下现在生成了更长的响应。</p>
+<p>第 5–7 行展示了自一致性缩放的结果。将样本数从 3 增加到 10
+进一步将准确率提高到 31.6%，但也显著增加了运行时间。在这种情况下，使用
+10 个样本相对于 3 个样本几乎没有准确率优势。</p>
+<p>第 8 行展示了温度缩放和 top-p
+采样与思维链提示结合的结果。在这种情况下，采样使思维链的结果变差了（33.4%，而第
+3 行为 40.6%）。将思维链提示与自一致性结合，在样本数为 10
+时将准确率提高到 52%，但也将运行时间大幅增加到惊人的 862.6 分钟。</p>
+<p>在实践中，如果你有多个
+GPU，自一致性采样中的不同样本可以并行计算，而不是顺序计算。这仍然使用相同数量的计算资源，但可以分布在多个
+GPU 上以更快地生成结果。</p>
+<p>最后，在第 12
+行，我们可以看到推理变体也从自一致性采样中受益，准确率从第 2 行的 48.2%
+提高到 55.2%。同样，这也伴随着运行时间的增加。</p>
+<p>关键是，表 4.1
+中的结果凸显了<strong>推理时间缩放中的权衡：更高的准确率需要更多的计算量。</strong></p>
+<p>本章中自一致性采样方法的一个主要缺点是，它依赖于我们可以提取出来进行多数投票的最终盒式答案。这种方法对于没有数值或简短最终答案的问题来说应用起来比较棘手。</p>
+<p><img src="/img4/BuildaReasoningModel/Figure_4.19.png"
+alt="Figure 4.19" /> 在下一章中，如图 4.19
+所示，我们将实现一种不同且更通用的推理时间缩放方法，称为自我改进（self-refinement），其中模型迭代地改进自己的答案。</p>
+<p><strong>图 4.19 本章重点关注的推理时间技术总结。</strong>
+在此，文本生成函数通过基于投票的方法进行了扩展，以提高答案准确性。下一章将介绍自我改进，模型在其中迭代改进其响应。</p>
+<h2 id="总结">总结</h2>
+<ul>
+<li>推理能力和答案准确性可以通过在推理时增加计算量来改进，而无需重新训练模型（推理时间缩放）。</li>
+<li>一个灵活的文本生成包装器（<code>generate_text_stream_concat_flex</code>）允许插入不同的采样策略，而无需更改周围的代码。</li>
+<li>下一个词元通过 softmax 从 logits 产生。</li>
+<li>温度缩放改变 logits，以控制生成文本的多样性。</li>
+<li>Top-p（核）采样过滤掉低概率词元，以减少生成无意义答案的机会。</li>
+<li>思维链提示（如"请逐步解释。"）通常通过鼓励模型写出其中间推理过程来产生更准确的答案，尽管它增加了生成的词元数量，从而增加了运行时间成本。</li>
+<li>自一致性采样生成多个答案，从每个答案中提取最终的盒式结果，并通过多数投票选择最频繁的答案以提高答案准确性。</li>
+<li>在 MATH-500
+数据集上的实验表明，将思维链提示与自一致性结合，可以相对于无采样基线大幅提高准确率，但代价是运行时间大大增加。</li>
+<li>推理时间缩放的核心权衡是：更高的准确率换取更多的计算量。</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/09/09/%E3%80%8ABuildaReasoningModel%E3%80%8B%E7%AC%AC3%E7%AB%A0%E8%AF%84%E4%BC%B0%E6%8E%A8%E7%90%86%E6%A8%A1%E5%9E%8B/" rel="prev" title="《Build_a_Reasoning_Model》第3章评估推理模型">
+                  <i class="fa fa-angle-left"></i> 《Build_a_Reasoning_Model》第3章评估推理模型
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/09/11/%E3%80%8ABuildaReasoningModel%E3%80%8B%E7%AC%AC5%E7%AB%A0%E8%87%AA%E6%88%91%E6%94%B9%E8%BF%9B/" rel="next" title="《Build_a_Reasoning_Model》第5章通过自我改进进行推理时间缩放">
+                  《Build_a_Reasoning_Model》第5章通过自我改进进行推理时间缩放 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+    <div id="search-container" style="margin: 20px auto; max-width: 600px;">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js"></script>
+      <div id="search"></div>
+      <script>
+        window.addEventListener('DOMContentLoaded', (event) => {
+            new PagefindUI({ 
+                element: "#search", 
+                showImages: false,
+                translations: {
+                    placeholder: "搜搜看...",
+                    clear_search: "清除",
+                    load_more: "加载更多",
+                    search_label: "搜索",
+                    filters_label: "筛选",
+                    zero_results: "未找到关于 [SEARCH_TERM] 的结果",
+                    many_results: "找到 [COUNT] 条关于 [SEARCH_TERM] 的结果",
+                    one_result: "找到 1 条关于 [SEARCH_TERM] 的结果",
+                    searching: "正在搜索..."
+                }
+            });
+        });
+      </script>
+    </div>
+  
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>
