@@ -175,7 +175,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives">
-          <span class="site-state-item-count">349</span>
+          <span class="site-state-item-count">342</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -203,810 +203,6 @@
     </div>
 
     <div class="main-inner index posts-expand">
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/09/11/%E3%80%8ABuildaReasoningModel%E3%80%8B%E7%AC%AC5%E7%AB%A0%E8%87%AA%E6%88%91%E6%94%B9%E8%BF%9B/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Rayman.hung">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="墨语浮生">
-      <meta itemprop="description" content="技术分享、读书心得、心情记录">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | 墨语浮生">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/09/11/%E3%80%8ABuildaReasoningModel%E3%80%8B%E7%AC%AC5%E7%AB%A0%E8%87%AA%E6%88%91%E6%94%B9%E8%BF%9B/" class="post-title-link" itemprop="url">《Build_a_Reasoning_Model》第5章通过自我改进进行推理时间缩放</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-09-11 00:00:00" itemprop="dateCreated datePublished" datetime="2026-09-11T00:00:00+08:00">2026-09-11</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="第-5-章-通过自我改进进行推理时间缩放">第 5
-章 通过自我改进进行推理时间缩放</h1>
-<p>Scoring and iteratively improving model responses</p>
-<p><strong>本章涵盖</strong></p>
-<ul>
-<li>用简单的基于规则的评分器对 LLM 答案进行评分</li>
-<li>计算 LLM 对其答案的置信度</li>
-<li>编写一个自我改进循环，其中 LLM 迭代改进其答案</li>
-</ul>
-<blockquote>
-<p>This chapter covers</p>
-<ul>
-<li><p>Scoring LLM answers with a simple rule-based scorer</p></li>
-<li><p>Computing an LLM’s confidence in its answers</p></li>
-<li><p>Coding a self-refinement loop where the LLM iteratively improves
-its answers</p></li>
-</ul>
-</blockquote>
-<p>前一章介绍了推理时间缩放（简称推理缩放）的概念，即在不进一步训练的情况下提高模型响应的准确性。具体来说，它重点介绍了自一致性，即模型生成多个答案，最终答案选择出现最频繁的那个。</p>
-<p><img src="/img4/BuildaReasoningModel/Figure_5.1.png"
-alt="Figure 5.1" /> 如图 5.1
-所示，<strong>本章将超越自一致性推理缩放，涵盖另一种流行且有用的推理缩放技术——自我改进（self-refinement)。与生成多个答案并从中选择不同，自我改进侧重于迭代改进单个答案，以纠正潜在的错误。</strong></p>
-<table>
-<thead>
-<tr>
-<th>评分和迭代改进模型响应</th>
-<th>本章涵盖无需模型训练即可改进推理的技术。</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>前一章重点</td>
-<td>扩展文本生成函数并实现基于投票的技术以提高答案准确性。</td>
-</tr>
-<tr>
-<td>本章介绍</td>
-<td>一种模型迭代改进自己答案的推理时间缩放技术。</td>
-</tr>
-</tbody>
-</table>
-<p><strong>图 5.1 本书涵盖主题的模型图。</strong> 本章继续阶段
-3，重点放在无需额外训练即可改进推理的推理时间技术上。它引入了自我改进，即模型迭代地批评和改进自己的答案。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2026/09/11/%E3%80%8ABuildaReasoningModel%E3%80%8B%E7%AC%AC5%E7%AB%A0%E8%87%AA%E6%88%91%E6%94%B9%E8%BF%9B/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/09/10/%E3%80%8ABuildaReasoningModel%E3%80%8B%E7%AC%AC4%E7%AB%A0%E6%8E%A8%E7%90%86%E6%97%B6%E7%BC%A9%E6%94%BE/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Rayman.hung">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="墨语浮生">
-      <meta itemprop="description" content="技术分享、读书心得、心情记录">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | 墨语浮生">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/09/10/%E3%80%8ABuildaReasoningModel%E3%80%8B%E7%AC%AC4%E7%AB%A0%E6%8E%A8%E7%90%86%E6%97%B6%E7%BC%A9%E6%94%BE/" class="post-title-link" itemprop="url">《Build_a_Reasoning_Model》第4章通过推理时缩放提升推理能力</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-09-10 00:00:00" itemprop="dateCreated datePublished" datetime="2026-09-10T00:00:00+08:00">2026-09-10</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="第4章-通过推理时缩放提升推理能力">第4章
-通过推理时缩放提升推理能力</h1>
-<p>Introduction to inference-time scaling</p>
-<p><strong>本章涵盖</strong></p>
-<ul>
-<li>提示 LLM 解释其推理过程以提高答案准确率</li>
-<li>修改文本生成函数以生成多样化的响应</li>
-<li>通过对多个响应进行采样来提高推理可靠性</li>
-</ul>
-<blockquote>
-<p>This chapter covers</p>
-<ul>
-<li><p>Prompting an LLM to explain its reasoning to improve answer
-accuracy</p></li>
-<li><p>Modifying the text generation function to produce diverse
-responses</p></li>
-<li><p>Improving reasoning reliability by sampling multiple
-responses</p></li>
-</ul>
-</blockquote>
-<p><img src="/img4/BuildaReasoningModel/Figure_4.1.png"
-alt="Figure 4.1" />
-无需重新训练或修改模型本身，即可提升推理性能和答案准确率。如图 4.1
-的概览所示，本章涵盖两种推理时缩放方法。这些方法在推理阶段（即模型生成文本时）起作用。正如你在本章后续部分将看到的，这两种方法都能将前几章中使用的基础模型的准确率提升一倍以上。</p>
-<p>在讨论图 4.1 中展示的推理方法之前，我们首先了解什么是推理时缩放。</p>
-<p><strong>图 4.1 本书涵盖主题的模型。</strong>
-本章重点讨论<strong>推理时缩放技术，这些技术无需额外训练即可提升推理能力（阶段
-3）。具体来说，它扩展了文本生成函数并实现了一种基于投票的方法来提高答案准确率。下一章将介绍另一种推理时缩放方法，即模型迭代地改进自己的答案。</strong></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2026/09/10/%E3%80%8ABuildaReasoningModel%E3%80%8B%E7%AC%AC4%E7%AB%A0%E6%8E%A8%E7%90%86%E6%97%B6%E7%BC%A9%E6%94%BE/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/09/09/%E3%80%8ABuildaReasoningModel%E3%80%8B%E7%AC%AC3%E7%AB%A0%E8%AF%84%E4%BC%B0%E6%8E%A8%E7%90%86%E6%A8%A1%E5%9E%8B/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Rayman.hung">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="墨语浮生">
-      <meta itemprop="description" content="技术分享、读书心得、心情记录">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | 墨语浮生">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/09/09/%E3%80%8ABuildaReasoningModel%E3%80%8B%E7%AC%AC3%E7%AB%A0%E8%AF%84%E4%BC%B0%E6%8E%A8%E7%90%86%E6%A8%A1%E5%9E%8B/" class="post-title-link" itemprop="url">《Build_a_Reasoning_Model》第3章评估推理模型</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-09-09 00:00:00" itemprop="dateCreated datePublished" datetime="2026-09-09T00:00:00+08:00">2026-09-09</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="第-3-章-评估推理模型">第 3 章 评估推理模型</h1>
-<p>Evaluating reasoning models</p>
-<p><strong>本章涵盖</strong></p>
-<ul>
-<li>从 LLM 响应中可靠地提取最终答案</li>
-<li>通过将 LLM
-的输出与参考解决方案进行比较，使用符号数学求解器验证答案的正确性</li>
-<li>运行一个完整的评估流水线，加载预训练模型，生成输出，并对照数据集进行评分</li>
-</ul>
-<blockquote>
-<p>This chapter covers</p>
-<ul>
-<li><p>Extracting final answers reliably from an LLM response</p></li>
-<li><p>Verifying answer correctness by comparing an LLM’s output to the
-reference solution using a symbolic math solver</p></li>
-<li><p>Running a full evaluation pipeline that loads a pretrained model,
-generates outputs, and grades them against a dataset</p></li>
-</ul>
-</blockquote>
-<p>评估是我们区分那些仅仅听起来有说服力的 LLM 和那些能够正确解决问题的
-LLM 的方法。<strong>LLM 评估技术涵盖了广泛的方法，从衡量任务准确性到确保
-LLM
-遵守特定的安全标准。</strong>在本章中，"评估"意味着在大量样本上定量测试模型，并将其输出与参考答案进行评分。</p>
-<p>更具体地说，我们将重点实现一种基于验证的方法，通过使用类似计算器的实现，将
-LLM 的答案与参考解决方案进行比较，从而检查 LLM
-是否能准确解决数学问题。</p>
-<p>这种验证器特别有用，因为它不仅评估了数学任务上的性能，还引入了可验证奖励（verifiable
-rewards）的原则，这是我们在第 6 章中将要实现的强化学习方法的基础。</p>
-<p><img src="/img4/BuildaReasoningModel/Figure_3.1.png"
-alt="Figure 3.1" /> <strong>图 3.1</strong>
-本书所涵盖主题的模型图。本章介绍评估方法（第 2
-阶段)，特别侧重于实现验证器，我们将在第 6
-章中将其作为可验证奖励的基础进行复用。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">本章涵盖基于基准的评估方法：验证器。</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2026/09/09/%E3%80%8ABuildaReasoningModel%E3%80%8B%E7%AC%AC3%E7%AB%A0%E8%AF%84%E4%BC%B0%E6%8E%A8%E7%90%86%E6%A8%A1%E5%9E%8B/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/09/08/%E3%80%8ABuildaReasoningModel%E3%80%8B%E7%AC%AC2%E7%AB%A0%E4%BD%BF%E7%94%A8%E9%A2%84%E8%AE%AD%E7%BB%83LLM%E7%94%9F%E6%88%90%E6%96%87%E6%9C%AC/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Rayman.hung">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="墨语浮生">
-      <meta itemprop="description" content="技术分享、读书心得、心情记录">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | 墨语浮生">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/09/08/%E3%80%8ABuildaReasoningModel%E3%80%8B%E7%AC%AC2%E7%AB%A0%E4%BD%BF%E7%94%A8%E9%A2%84%E8%AE%AD%E7%BB%83LLM%E7%94%9F%E6%88%90%E6%96%87%E6%9C%AC/" class="post-title-link" itemprop="url">《Build_a_Reasoning_Model》第2章使用预训练LLM生成文本</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-09-08 00:00:00" itemprop="dateCreated datePublished" datetime="2026-09-08T00:00:00+08:00">2026-09-08</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1>第 2 章 使用预训练 LLM 生成文本</h1>
-<p>Introducing LLMs for text generation</p>
-<h3 id="本章涵盖">本章涵盖</h3>
-<ul>
-<li>设置处理 LLM 的代码环境</li>
-<li>使用分词器为 LLM 准备输入文本</li>
-<li>使用预训练 LLM 生成文本的逐步过程</li>
-<li>加速 LLM 文本生成的缓存和编译技术</li>
-</ul>
-<blockquote>
-<p>This chapter covers</p>
-<ul>
-<li>
-<p>Setting up the code environment for working with LLMs</p>
-</li>
-<li>
-<p>Using a tokenizer to prepare input text for an LLM</p>
-</li>
-<li>
-<p>The step-by-step process of generating text with a pretrained LLM</p>
-</li>
-<li>
-<p>Caching and compilation techniques for speeding up LLM text generation</p>
-</li>
-</ul>
-</blockquote>
-<p>在上一章中，我们讨论了传统大语言模型（LLM）与推理模型之间的区别。我们还介绍了几种可以提升 LLM 推理能力的技术。这些技术通常应用于传统（基础）LLM 之上。</p>
-<p>在本章中，我们将通过加载一个预训练的基础模型来为后续章节奠定基础，如图 2.1 所示。之前讨论过，推理方法通常是在通常的后训练阶段之后添加的。但从基础模型开始，可以更容易地看到哪些能力来自推理方法本身。本章中的传统 LLM 是一个非推理型 LLM，更具体地说，是一个预训练的基础模型，而非指令微调或偏好微调的助手模型。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">阶段 1：我们从预训练对于比较我们开发的基础模型，再将其转变为推理模型（第 2 章）。</span><br><span class="line">阶段 2：模型评估技术评估基础后，我们将各种方法和 LLM 的响应质量至关重要（第 3 章）。</span><br><span class="line">阶段 3：掌握 LLM 和两类训练技术来探索无需训练 LLM 的推理增强技术（第 4—5 章）。</span><br><span class="line">阶段 4：我们将涵盖LLM 开始，将其作为提升 LLM 的推理能力（第 6—8 章）。</span><br></pre></td></tr></table></figure>
-<p><img src="/img4/BuildaReasoningModel/Figure_2.1.png" alt="Figure 2.1"><br>
-<strong>图 2.1</strong> 开发推理模型的四个主要阶段。本章聚焦于阶段 1：加载传统 LLM 并实现文本生成功能。</p>
-<p>除了设置编码环境和加载预训练 LLM 之外，你还将学习如何使用分词器为模型准备文本输入。如图 2.1 所示，你还将实现一个文本生成函数，使 LLM 能够实际用于生成文本。这一功能将在后续章节中使用和改进。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2026/09/08/%E3%80%8ABuildaReasoningModel%E3%80%8B%E7%AC%AC2%E7%AB%A0%E4%BD%BF%E7%94%A8%E9%A2%84%E8%AE%AD%E7%BB%83LLM%E7%94%9F%E6%88%90%E6%96%87%E6%9C%AC/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/09/07/%E3%80%8ABuildaReasoningModel%E3%80%8B%E7%AC%AC1%E7%AB%A0_%E7%90%86%E8%A7%A3%E6%8E%A8%E7%90%86%E6%A8%A1%E5%9E%8B/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Rayman.hung">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="墨语浮生">
-      <meta itemprop="description" content="技术分享、读书心得、心情记录">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | 墨语浮生">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/09/07/%E3%80%8ABuildaReasoningModel%E3%80%8B%E7%AC%AC1%E7%AB%A0_%E7%90%86%E8%A7%A3%E6%8E%A8%E7%90%86%E6%A8%A1%E5%9E%8B/" class="post-title-link" itemprop="url">《Build_a_Reasoning_Model》第1章理解推理模型</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-09-07 00:00:00" itemprop="dateCreated datePublished" datetime="2026-09-07T00:00:00+08:00">2026-09-07</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="第-1-章-理解推理模型">第 1 章 理解推理模型</h1>
-<p>Understanding reasoning models</p>
-<h3 id="本章涵盖">本章涵盖</h3>
-<ul>
-<li>对大型语言模型而言，"推理"意味着什么</li>
-<li>回顾 LLM 的传统预训练和后训练阶段</li>
-<li>介绍提升 LLM 推理能力的关键方法</li>
-<li>推理与模式匹配有何不同</li>
-<li>为什么我们应该从头构建推理模型</li>
-</ul>
-<blockquote>
-<p>This chapter covers - What “reasoning” means for a large language
-model - Reviewing the conventional pretraining and post-training stages
-of LLMs - Introducing key approaches to improving reasoning abilities in
-LLMs - How reasoning differs from pattern matching - Why we should build
-reasoning models from scratch</p>
-</blockquote>
-<p>欢迎来到大型语言模型（LLM）的下一个阶段：推理。LLM
-已经改变了我们处理和生成文本的方式，但它们的成功很大程度上是由统计模式识别驱动的。推理方法的新进展现在使
-LLM 能够处理更复杂的任务，例如解决逻辑谜题和多步数学问题。</p>
-<p>此外，推理是使 AI
-智能体变得实用的关键技术——例如当智能体需要将任务分解为步骤、使用工具并从错误中恢复时。推理
-LLM 已经应用于像 OpenClaw 这样的智能体应用中。</p>
-<p>在本书中，你将通过动手实践、代码优先的方法学习 LLM
-推理方法的内在运作方式。我们将从一个预训练的 LLM
-出发，逐步为其扩展推理能力。我们将从零开始亲自实现这些推理组件，以了解这些方法在实践中如何工作。</p>
-<p>如果你对 LLM 本身是如何构建和训练的感到好奇，我之前由 Manning
-出版的著作《Build a Large Language Model (From
-Scratch)》(http://mng.bz/orYv)
-详细介绍了这些基础，但并非跟随本书的先决条件。</p>
-<p>即使你只是粗略了解 LLM
-的构建方式，到本书结束时，你也会理解推理模型的工作原理，并能够设计、原型化和评估改进
-LLM 推理的主要方法。</p>
-<p>在处理推理模型时，关键是要知道如何在数学等任务上自动检查答案是否正确，以及如何将通用模型转化为更小的推理模型。我们将在全书中使用数学示例，因为它们易于自动检查，但你不需要高级数学知识来跟随学习。理解推理方法是本书的核心重点。</p>
-<p>本书以实际应用和解释为重点，面向 LLM
-工程师、机器学习研究人员、应用科学家和软件开发者。理解推理模型的设置方式将帮助我们判断何时标准
-LLM
-已足够，何时额外的推理机制值得增加的复杂性、成本和延迟。它还帮助我们设计更好的评估、调试多步任务中的失败，并将推理技术适配到实际产品和研究工作流中。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2026/09/07/%E3%80%8ABuildaReasoningModel%E3%80%8B%E7%AC%AC1%E7%AB%A0_%E7%90%86%E8%A7%A3%E6%8E%A8%E7%90%86%E6%A8%A1%E5%9E%8B/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/09/06/%E3%80%8ABuildaReasoningModel%E3%80%8B%E5%89%8D%E8%A8%80/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Rayman.hung">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="墨语浮生">
-      <meta itemprop="description" content="技术分享、读书心得、心情记录">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | 墨语浮生">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/09/06/%E3%80%8ABuildaReasoningModel%E3%80%8B%E5%89%8D%E8%A8%80/" class="post-title-link" itemprop="url">《Build_a_Reasoning_Model》前言</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-09-06 00:00:00" itemprop="dateCreated datePublished" datetime="2026-09-06T00:00:00+08:00">2026-09-06</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="前言">前言</h1>
-<p>十余年前，我踏入人工智能领域的旅程始于统计模式分类——在那里，我了解到相对简单的模型在捕捉数据中的有用结构时可以走多远。随着时间的推移，我的好奇心从识别模式的模型转向了能够解释、规划和解决多步问题的模型。</p>
-<p>随着 2022 年 ChatGPT
-的发布，大型语言模型（LLM）进入了主流视野。随后的一次转变——尤其在 2024
-年末和 2025 年全年尤为显著——是将 LLM
-扩展为所谓的推理模型，这类模型能够解决更复杂的问题，特别是在数学和代码等技术领域。</p>
-<p>与此同时，推理模型有时让人感觉难以捉摸，而本书正是我为了让推理模型更加平易近人所做的一次尝试。我们不会从头训练一个巨型模型，而是从一个较小的预训练
-LLM
-出发，一步一步地应用推理技术。在此过程中，你将亲手实现文本生成、使用验证器进行评估、推理时缩放方法，以及诸如基于<strong>可验证奖励的强化学习和知识蒸馏等训练</strong>方法。到本书结束时，你将理解主要的推理方法在实践中如何运作，以及它们如何融入现代
-LLM 开发工作流。</p>
-<p>与我之前的著作《Build a Large Language Model (From
-Scratch)》一样，本书采用代码优先的方法，但侧重点有所不同。本书不会深入讲解
-Transformer 架构或大规模预训练，而是聚焦于将传统 LLM
-转化为推理模型的方法。如果你读过我之前的那本书，本书会像是一个自然的下一个阶段。如果没有读过，你仍然可以跟随本书的节奏，无需事先掌握所有底层
-LLM 的细节。</p>
-<p>我们将在全书中使用数学示例，因为它们既适合推理研究实践，又便于自动验证。这使得它们成为判断模型是否真正正确解决问题的有效测试平台。更广泛地说，我的目标不是讲授某一个狭窄的基准，而是为你提供构建、评估和改进推理系统所需的工具和直觉——无论在你自己的工作中还是其他地方。</p>
-<p>当我最初开始研究推理模型时，我不得不从论文、代码仓库和零散的实现笔记中拼凑各种想法。我希望本书能够为你省去这些麻烦，为你提供一条从基本原理到可运行代码的更清晰的路径。我坚信，理解推理模型的最佳方式就是亲手构建一个。</p>
-<p>祝阅读和编码愉快！</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2026/09/06/%E3%80%8ABuildaReasoningModel%E3%80%8B%E5%89%8D%E8%A8%80/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/09/05/%E7%AB%99%E5%9C%A8%20AI%20%E5%8F%98%E9%9D%A9%E7%9A%84%E5%8D%81%E5%AD%97%E8%B7%AF%E5%8F%A3/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Rayman.hung">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="墨语浮生">
-      <meta itemprop="description" content="技术分享、读书心得、心情记录">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | 墨语浮生">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/09/05/%E7%AB%99%E5%9C%A8%20AI%20%E5%8F%98%E9%9D%A9%E7%9A%84%E5%8D%81%E5%AD%97%E8%B7%AF%E5%8F%A3/" class="post-title-link" itemprop="url">站在 AI 变革的十字路口</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-09-05 00:00:00" itemprop="dateCreated datePublished" datetime="2026-09-05T00:00:00+08:00">2026-09-05</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%8A%80%E6%9C%AF%E7%9B%B8%E5%85%B3/" itemprop="url" rel="index"><span itemprop="name">技术相关</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <blockquote>
-<p>前言：</p>
-<p>从ChatGPT 2022 年11月 30日面世，这3年多来，手头积累了很多关于AI的资料，包括文章摘录的内容，包括自己的感悟，包括自己使用的感想。</p>
-<p>一直想把这些大杂烩整理成一篇文章，但因为头绪太过繁杂，就一直没有动手，最近借着Obsidian的使用，开始着手整理这些。</p>
-<p>一开始，把原始的资料发给Gemini整理，Gemini给出了一篇中规中矩的、80分水平的文章，文章只是提炼了资料几个重要的观点，遗漏了大部分信息。</p>
-<p>因为原始的资料就像垃圾，俗话说，垃圾进垃圾出。因此还是花了一个上午，好好的把原始资料分门别类的整理了一遍，相当于也把资料的知识过了一遍。把整理后、相对原始的资料发给Gemini，经过以下多轮对话以后，终于成为这篇文章。不过，感觉基本是按照我整理的结构，只是针对我的每段话，加了一些提炼的标题。字数从我原先1.2万多，变成了1.3万。不过总结得还不错，整体结构看起来更规范。</p>
-<blockquote>
-<p>Q: 我有一篇AI的资料，见附件，帮忙转换成一篇通畅的、可以发博客的文章。请不要遗漏任何内容。</p>
-<p>A: 我只是一个语言模型，无法为你提供这方面的帮助。</p>
-</blockquote>
-<blockquote>
-<p>Q: 意思是按照这个整理的资料，你帮忙写一篇关于AI的文章。</p>
-<p>A: 这里是一篇根据你提供的资料进行深度整理、去重与逻辑提炼后撰写的博客文章。文章保留了原文中的所有关键观点、案例与细节，并以流畅、专业的结构呈现：</p>
-</blockquote>
-<blockquote>
-<p>Q: 你精简太多字数了，请不要遗漏任何内容。</p>
-<p>A: 这里为您提供一份<strong>全面保留所有原始观点、细节、案例与金句</strong>的精细化重构文章。全文在保留原文所有逻辑分支与讨论细节（包括“三根支柱倒塌”、Hotz与Karpathy的观点冲突、Photoshop/相机类比、FDE角色、ToB落地三大鸿沟、甚至无厘头幽默与哲理讨论）的基础上，梳理出流畅、连贯的博客逻辑链条，无任何删减与遗漏。</p>
-</blockquote>
-<blockquote>
-<p>Q: 我原文有1.2万字，你的文章才6千多字。</p>
-<p>A: 这里为你整理一份<strong>1:1 完全对齐原文体量与结构</strong>的全景深度文章。</p>
-<p>在本次重构中，<strong>完全保留了你资料中的所有句段、对话逻辑、案例细节、反思金句、数据引用、括号备注及引用链接</strong>，不作任何压缩与删减，确保每一段思考、每一处语气和每一个细节都得到完整还原：</p>
-</blockquote>
-</blockquote>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2026/09/05/%E7%AB%99%E5%9C%A8%20AI%20%E5%8F%98%E9%9D%A9%E7%9A%84%E5%8D%81%E5%AD%97%E8%B7%AF%E5%8F%A3/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
 
     
 
@@ -1267,6 +463,728 @@ LLM 的细节。</p>
 </blockquote>
 <p>就像有钱人总说钱不重要一样。</p>
 
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/08/17/%E3%80%8A%E9%A3%8E%E9%99%A9%E7%AE%A1%E7%90%86%E4%B8%8E%E9%87%91%E8%9E%8D%E6%9C%BA%E6%9E%84%E3%80%8B%20%E8%AF%BB%E4%B9%A6%E8%AE%B0%E5%BD%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/08/17/%E3%80%8A%E9%A3%8E%E9%99%A9%E7%AE%A1%E7%90%86%E4%B8%8E%E9%87%91%E8%9E%8D%E6%9C%BA%E6%9E%84%E3%80%8B%20%E8%AF%BB%E4%B9%A6%E8%AE%B0%E5%BD%95/" class="post-title-link" itemprop="url">《风险管理与金融机构》 读书记录</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-08-17 00:00:00" itemprop="dateCreated datePublished" datetime="2026-08-17T00:00:00+08:00">2026-08-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AF%BB%E4%B9%A6%E5%BF%83%E5%BE%97%EF%BC%88%E7%A4%BE%E4%BC%9A%E7%A7%91%E5%AD%A6%EF%BC%89/" itemprop="url" rel="index"><span itemprop="name">读书心得（社会科学）</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>CFA 特许金融分析师</p>
+<p><strong>FRM 金融风险管理师</strong></p>
+<p>BUSINESS SNAPSHOT 业界事例</p>
+<p>FMA</p>
+<p>PRM</p>
+<p>venture 项目？</p>
+<p>shareholder 股票</p>
+<p>portfolio</p>
+<p>risk exposure：风险敞口？风险头寸？</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2026/08/17/%E3%80%8A%E9%A3%8E%E9%99%A9%E7%AE%A1%E7%90%86%E4%B8%8E%E9%87%91%E8%9E%8D%E6%9C%BA%E6%9E%84%E3%80%8B%20%E8%AF%BB%E4%B9%A6%E8%AE%B0%E5%BD%95/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/08/16/%E6%9C%AF%E8%AF%AD%E8%A1%A8%20%2020250411/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/08/16/%E6%9C%AF%E8%AF%AD%E8%A1%A8%20%2020250411/" class="post-title-link" itemprop="url">《风险管理与金融机构》术语表</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-08-16 00:00:00" itemprop="dateCreated datePublished" datetime="2026-08-16T00:00:00+08:00">2026-08-16</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="术语表">术语表</h1>
+<h2 id="a">A</h2>
+<p><strong>ABS</strong> 参见资产支持证券（Asset-Backed
+Security）。<br />
+<strong>ABS CDO</strong>
+由不同资产支持证券（ABS）的分层（tranches）构建的证券。<br />
+<strong>应计利息（Accrued Interest）</strong>
+自上一次付息日以来，债券所累积的利息。<br />
+<strong>附加第一类资本（Additional Tier 1 Capital）</strong>
+如非累积优先股等不符合第一类股权资本资格的项目。<br />
+<strong>附加因子（Add-On Factor）</strong>
+在计算衍生品交易的等价信用量时，为考虑未来衍生品价值可能的变动，在当前敞口基础上所增加的一定比例的本金。<br />
+<strong>联合差分（Adjoint Differentiation）</strong>
+修改计算机程序的一种方法，使其能够以高效方式计算希腊字母（即金融风险指标）。<br />
+<strong>高级计量法（Advanced Measurement Approach）</strong>
+在巴塞尔协议Ⅱ中，大多数管理成熟的银行被允许用于操作风险监管资本计算的方法。<br />
+<strong>逆向选择（Adverse Selection）</strong>
+一种现象，如果保险公司对所有人收取相同的保费，它最终可能主要为高风险人群提供保障。<br />
+<strong>代理成本（Agency Costs）</strong>
+当业务关系中的双方利益并不完全一致时所产生的成本。<br />
+<strong>阿尔法（Alpha）</strong>
+投资组合获得的超出资本资产定价模型（CAPM）所预测的收益部分。<br />
+<strong>另类投资（Alternative Investments）</strong> 参见对冲基金（Hedge
+Funds）。<br />
+<strong>美式期权（American Option）</strong>
+可以在其整个有效期内任何时间行权的期权。<br />
+<strong>解析结果（Analytic Result）</strong>
+解以公式形式表达的结果。<br />
+<strong>套利（Arbitrage）</strong>
+一种利用两个或多个证券之间相对定价错误的交易策略。<br />
+<strong>套利定价理论（Arbitrage Pricing Theory）</strong>
+一种理论，认为投资回报取决于多个因素。</p>
+<p><strong>套利者（Arbitrageur）</strong> 从事套利活动的个人。<br />
+<strong>ASF因子（ASF Factor）</strong> 可用稳定资金因子（Available
+Stable Funding
+Factor），在计算净稳定资金比率（NSFR）时用于资金来源的一种权重因子。<br />
+<strong>亚式期权（Asian Option）</strong>
+其收益取决于标的资产在特定期间内平均价格的期权。<br />
+<strong>卖出价（Ask Price）</strong>
+做市商（dealer）愿意出售某项资产的价格，也称offer price。<br />
+<strong>索要价（Asked Price）</strong> 参见卖出价（Ask Price）。<br />
+<strong>资产互换（Asset Swap）</strong>
+将债券承诺支付的票息交换为LIBOR加点差的一种交易。<br />
+<strong>资产支持证券（Asset-Backed Security）</strong>
+由债券、抵押贷款、信用卡应收账款或其他工具产生的现金流构建的证券。<br />
+<strong>平值期权（At-the-Money Option）</strong>
+行权价等于标的资产当前价格的期权。<br />
+<strong>自相关（Autocorrelation）</strong>
+某一变量与其在k天后取值之间的相关性（k称为时间滞后）。<br />
+<strong>均价看涨期权（Average Price Call Option）</strong>
+收益为零与资产平均价格超过行权价的差值之间较大者的期权。<br />
+<strong>均价看跌期权（Average Price Put Option）</strong>
+收益为零与行权价超过资产平均价格的差值之间较大者的期权。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2026/08/16/%E6%9C%AF%E8%AF%AD%E8%A1%A8%20%2020250411/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/08/15/RMFI%E8%BD%AF%E4%BB%B6%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/08/15/RMFI%E8%BD%AF%E4%BB%B6%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/" class="post-title-link" itemprop="url">《风险管理与金融机构》RMFI软件使用指南</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-08-15 00:00:00" itemprop="dateCreated datePublished" datetime="2026-08-15T00:00:00+08:00">2026-08-15</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="rmfi软件使用指南"><strong>RMFI软件使用指南</strong></h2>
+<p>RMFI Software</p>
+<p>从作者的网站下载：www-2.rotman.utoronto.ca/∼hull/software。</p>
+<h3 id="开始使用"><strong>开始使用</strong></h3>
+<p>使用软件最困难的部分通常是开始。以下是使用RMFI软件进行期权估值的逐步指南。</p>
+<ol type="1">
+<li>打开您已下载的Excel文件 <strong>RMFI Software v1.00</strong>。</li>
+<li>如果您使用的是Office
+2007，请点击屏幕顶部（F列上方）的<strong>Options</strong>，然后点击<strong>Enable
+content</strong>。如果您使用的不是Office
+2007，确保您的宏安全设置为中等或低。
+(您可以通过点击<strong>Tools</strong>，然后是<strong>Macros</strong>，再点击<strong>Security</strong>来设置)。</li>
+<li>点击页面底部的<strong>Equity_FX_Indx_Fut_Opts_Calc</strong>工作表标签。</li>
+<li>选择<strong>Currency</strong>作为标的类型，选择<strong>Binomial:
+American</strong>作为期权类型，然后点击<strong>Put</strong>按钮。保持<strong>Imply
+Volatility</strong>未勾选。</li>
+<li>现在，您已经准备好计算一个美式看跌期权的价格了。需要输入七个参数：汇率、波动率、无风险利率（本国）、外币无风险利率、到期时间（年）、行权价格和时间步数。将这些参数输入到以下单元格中：D5、D6、D7、D8、D13、D14、D15，具体数值为：1.61、12%、8%、9%、1.0、1.60
+和 4。</li>
+<li>按下键盘上的<strong>Enter</strong>键并点击<strong>Calculate</strong>。您将在D20单元格看到期权的价格为<strong>0.07099</strong>，希腊字母值显示在D21到D25单元格中。</li>
+<li>点击<strong>Display
+Tree</strong>，您将看到用于计算期权的二项树。</li>
+</ol>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2026/08/15/RMFI%E8%BD%AF%E4%BB%B6%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/08/13/%E9%99%84%E5%BD%95%20M%20SIMM%EF%BC%88%E6%A0%87%E5%87%86%E5%88%9D%E5%A7%8B%E4%BF%9D%E8%AF%81%E9%87%91%E6%A8%A1%E5%9E%8B%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/08/13/%E9%99%84%E5%BD%95%20M%20SIMM%EF%BC%88%E6%A0%87%E5%87%86%E5%88%9D%E5%A7%8B%E4%BF%9D%E8%AF%81%E9%87%91%E6%A8%A1%E5%9E%8B%EF%BC%89/" class="post-title-link" itemprop="url">《风险管理与金融机构》附录M  SIMM（标准初始保证金模型）</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-08-13 00:00:00" itemprop="dateCreated datePublished" datetime="2026-08-13T00:00:00+08:00">2026-08-13</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="附录-m-simm"><strong>附录 M</strong> <strong>SIMM</strong></h2>
+<p>Standard Initial Margin Model 标准初始保证金模型</p>
+<p>如第6章所讨论的，部分标准的OTC衍生品交易通过中央对手方（CCPs）进行清算，而一些交易仍然通过双边清算。监管机构要求对于双边清算的交易，必须提交初始保证金和变动保证金。变动保证金要求对未清算交易的估值达成一致，并已制定程序以解决任何有关估值的分歧。初始保证金的计算比交易估值更为复杂，且不同模型可能会得出不同的结果。因此，业界曾尝试制定一个行业标准。</p>
+<p>初始保证金在监管规定中被指定为两方之间未清算交易的组合的10天内的价值增益，我们有99%的把握它不会在市场压力情况下被超越。需要注意的是，初始保证金是VaR的镜像。当我们计算VaR时，我们是在确定损失分布的极端百分位数，而当我们计算初始保证金时，我们是在确定收益分布的极端百分位数。这是因为随着未抵押组合价值的增加，风险敞口也随之增加。</p>
+<p>巴塞尔委员会提出了一种网格方法来计算初始保证金，该方法将初始保证金规定为不同类型交易的名义本金的百分比。然而，这种方法不受欢迎，因为它没有考虑净额对冲的因素。如果市场参与者在第1天进行某个交易，并在第5天与相同的对手方几乎完全对冲的交易，尽管与对手方的净敞口接近零，第5天的初始保证金几乎是第1天的两倍。为了解决这个问题，国际衍生品市场协会（ISDA）提出了所谓的标准初始保证金模型（SIMM）。该模型现在已获得监管机构的批准。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2026/08/13/%E9%99%84%E5%BD%95%20M%20SIMM%EF%BC%88%E6%A0%87%E5%87%86%E5%88%9D%E5%A7%8B%E4%BF%9D%E8%AF%81%E9%87%91%E6%A8%A1%E5%9E%8B%EF%BC%89/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/08/12/%E9%99%84%E5%BD%95%20L%20%E5%90%88%E6%88%90CDO%E5%8F%8A%E5%85%B6%E4%BC%B0%E5%80%BC/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/08/12/%E9%99%84%E5%BD%95%20L%20%E5%90%88%E6%88%90CDO%E5%8F%8A%E5%85%B6%E4%BC%B0%E5%80%BC/" class="post-title-link" itemprop="url">《风险管理与金融机构》附录L  合成CDO及其估值</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-08-12 00:00:00" itemprop="dateCreated datePublished" datetime="2026-08-12T00:00:00+08:00">2026-08-12</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="附录-l-合成cdo及其估值"><strong>附录 L</strong>
+<strong>合成CDO及其估值</strong></h2>
+<p>Synthetic CDOs and Their Valuation</p>
+<p>合成担保债务义务（CDO）由不同的级别组成，其中一方（Party
+A）同意向另一方（Party
+B）支付等同于特定债务工具组合在某一范围内发生的损失的款项。作为回报，Party
+B 同意向 Party A 支付一部分被保险本金的金额。</p>
+<p>假设某个级别的损失范围从 <span
+class="math inline">\(\alpha_L\)</span> 到 <span
+class="math inline">\(\alpha_H\)</span>。其中，变量 <span
+class="math inline">\(\alpha_L\)</span> 和 <span
+class="math inline">\(\alpha_H\)</span> 分别被称为附着点和脱离点。如果
+<span class="math inline">\(\alpha_L = 8\%\)</span> 且 <span
+class="math inline">\(\alpha_H = 18\%\)</span>，Party A 向 Party B
+支付在该债务组合中，损失发生时位于 8% 到 18% 之间的部分。因此，组合的前
+8% 损失不会影响该级别。该级别负责承担接下来的 10% 损失（其名义本金最初为
+18% - 8% = 10%
+的组合本金），随着损失的发生，名义本金逐渐减少。当损失超过 18%
+时，该级别被完全清除。Party B 向 Party A
+支付的款项是定期支付的，按照适用于剩余名义本金的指定利率进行。这一指定利率被称为该级别的利差（tranche
+spread）。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2026/08/12/%E9%99%84%E5%BD%95%20L%20%E5%90%88%E6%88%90CDO%E5%8F%8A%E5%85%B6%E4%BC%B0%E5%80%BC/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/08/11/%E9%99%84%E5%BD%95%20K%20%E4%BF%A1%E7%94%A8%E8%BF%9D%E7%BA%A6%E6%8E%89%E6%9C%9F%EF%BC%88CDS%EF%BC%89%E7%9A%84%E4%BC%B0%E5%80%BC/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/08/11/%E9%99%84%E5%BD%95%20K%20%E4%BF%A1%E7%94%A8%E8%BF%9D%E7%BA%A6%E6%8E%89%E6%9C%9F%EF%BC%88CDS%EF%BC%89%E7%9A%84%E4%BC%B0%E5%80%BC/" class="post-title-link" itemprop="url">《风险管理与金融机构》附录K  信用违约掉期（CDS）的估值</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-08-11 00:00:00" itemprop="dateCreated datePublished" datetime="2026-08-11T00:00:00+08:00">2026-08-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="附录-k-信用违约掉期cds的估值"><strong>附录 K</strong>
+<strong>信用违约掉期（CDS）的估值</strong></h2>
+<p>Valuation of Credit Default Swaps</p>
+<p><img src="/img4/《风险管理与金融机构》/TK.1.png" alt="TK.1" style="zoom:67%;" /></p>
+<p><img src="/img4/《风险管理与金融机构》/TK.2.png" alt="TK.2" style="zoom:67%;" /></p>
+<p><img src="/img4/《风险管理与金融机构》/TK.3.png" alt="TK.3" style="zoom:67%;" /></p>
+<p><img src="/img4/《风险管理与金融机构》/TK.4.png" alt="TK.4" style="zoom:67%;" /></p>
+<p>信用违约掉期（CDS）在第17章中进行了描述。CDS的估值使用（风险中性）违约概率估计。假设某参考实体的危险率为每年2%，持续五年。表K.1展示了每一年期的生存概率和无条件违约概率（即从零时刻看到的违约概率）。根据公式
+(17.2)，生存到时间 <span class="math inline">\(t\)</span> 的概率为 <span
+class="math inline">\(e^{-0.02t}\)</span>。每年违约的概率是年初的生存概率减去年末的生存概率。例如，生存到2年的概率为
+<span class="math inline">\(e^{-0.02 \times 2} =
+0.9608\)</span>，生存到3年的概率为 <span class="math inline">\(e^{-0.02
+\times 3} = 0.9418\)</span>。因此，第三年的违约概率为 <span
+class="math inline">\(0.9608 - 0.9418 = 0.0190\)</span>。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2026/08/11/%E9%99%84%E5%BD%95%20K%20%E4%BF%A1%E7%94%A8%E8%BF%9D%E7%BA%A6%E6%8E%89%E6%9C%9F%EF%BC%88CDS%EF%BC%89%E7%9A%84%E4%BC%B0%E5%80%BC/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/08/10/%E9%99%84%E5%BD%95%20J%20%E4%BF%A1%E7%94%A8%E8%BD%AC%E7%A7%BB%E7%9F%A9%E9%98%B5%E7%9A%84%E6%93%8D%E4%BD%9C/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/08/10/%E9%99%84%E5%BD%95%20J%20%E4%BF%A1%E7%94%A8%E8%BD%AC%E7%A7%BB%E7%9F%A9%E9%98%B5%E7%9A%84%E6%93%8D%E4%BD%9C/" class="post-title-link" itemprop="url">《风险管理与金融机构》附录J  信用转移矩阵的操作</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-08-10 00:00:00" itemprop="dateCreated datePublished" datetime="2026-08-10T00:00:00+08:00">2026-08-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="附录-j-信用转移矩阵的操作"><strong>附录 J</strong>
+<strong>信用转移矩阵的操作</strong></h2>
+<p>Manipulation of Credit Transition Matrices</p>
+<p>假设 <span class="math inline">\(A\)</span> 是一个 <span
+class="math inline">\(n \times n\)</span>
+的信用评级变化矩阵，表示一年内的信用评级变化。假设在连续时间段内的评级变化是独立的，那么
+<span class="math inline">\(m\)</span> 年的信用评级变化矩阵为 <span
+class="math inline">\(A^m\)</span>。如果 <span
+class="math inline">\(m\)</span>
+是整数，则可以使用常规的矩阵乘法规则轻松计算。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2026/08/10/%E9%99%84%E5%BD%95%20J%20%E4%BF%A1%E7%94%A8%E8%BD%AC%E7%A7%BB%E7%9F%A9%E9%98%B5%E7%9A%84%E6%93%8D%E4%BD%9C/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 

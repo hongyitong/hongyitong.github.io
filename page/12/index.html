@@ -175,7 +175,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives">
-          <span class="site-state-item-count">349</span>
+          <span class="site-state-item-count">342</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -203,702 +203,6 @@
     </div>
 
     <div class="main-inner index posts-expand">
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/02/23/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B8%E3%80%81%E5%9B%BE%E5%83%8F%E5%88%86%E7%B1%BB/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Rayman.hung">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="墨语浮生">
-      <meta itemprop="description" content="技术分享、读书心得、心情记录">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | 墨语浮生">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/02/23/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B8%E3%80%81%E5%9B%BE%E5%83%8F%E5%88%86%E7%B1%BB/" class="post-title-link" itemprop="url">《DEEP LEARNING with Python》第八章 图像分类</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-02-23 00:00:00" itemprop="dateCreated datePublished" datetime="2026-02-23T00:00:00+08:00">2026-02-23</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p><strong>第八章 图像分类</strong></p>
-<p>Image classification</p>
-<p><strong>运行代码</strong></p>
-<p><a target="_blank" rel="noopener" href="https://colab.research.google.com/github/fchollet/deep-learning-with-python-notebooks/blob/master/chapter08_image-classification.ipynb">在 Colab 上运行</a></p>
-<p><a target="_blank" rel="noopener" href="https://github.com/fchollet/deep-learning-with-python-notebooks">在 GitHub 上查看</a></p>
-<p>本章内容</p>
-<ul>
-<li>理解卷积神经网络（ConvNets）</li>
-<li>利用数据增强来缓解过拟合</li>
-<li>使用预训练的卷积神经网络进行特征提取</li>
-<li>对预训练卷积神经网络进行微调</li>
-<li>Understanding convolutional neural networks (ConvNets)</li>
-<li>Using data augmentation to mitigate overfitting</li>
-<li>Using a pretrained ConvNet for feature extraction</li>
-<li>Fine-tuning a pretrained ConvNet</li>
-</ul>
-<p>计算机视觉是深度学习的第一个重大成功案例。它引领了深度学习在2011年至2015年间的初期发展。一种名为<em>卷积神经网络</em>的深度学习方法 在当时开始在图像分类竞赛中取得显著成果。首先是Dan Ciresan赢得了两项小众竞赛（2011年ICDAR汉字识别竞赛和2011年IJCNN德国交通标志识别竞赛），随后，更引人注目的是，在2012年秋季，Hinton的团队赢得了备受瞩目的ImageNet大规模视觉识别挑战赛。此后，在其他计算机视觉任务中，也涌现出了许多令人瞩目的成果。</p>
-<p>有趣的是，这些早期的成功并不足以让深度学习在当时成为主流——这花了几年时间。计算机视觉研究界多年来一直致力于神经网络以外的方法，他们并不急于因为出现了一种新技术就放弃这些方法。在2013年和2014年，深度学习仍然面临着许多资深计算机视觉研究人员的强烈质疑。直到2016年，它才最终占据主导地位。一位作者回忆说，在2014年2月，他曾力劝一位前教授转向深度学习。“这是下一个重大突破！”他说道。“嗯，也许这只是一时的风潮，”教授回答道。到了2016年，他的整个实验室都在从事深度学习研究。一个时代到来的理念是无法阻挡的。</p>
-<p>如今，你无时无刻不在与基于深度学习的视觉模型（vision models）互动——通过谷歌相册、谷歌图片搜索、手机摄像头、YouTube、OCR软件等等。这些模型也是自动驾驶、机器人、人工智能辅助医疗诊断、自助零售结账系统，甚至是自主农业等前沿研究的核心。</p>
-<p>本章介绍卷积神经网络 <em>（ConvNets</em>或<em>CNNs）</em> ，这是一种被大多数计算机视觉应用广泛使用的深度学习模型。您将学习如何将 ConvNets 应用于图像分类问题——特别是那些涉及小型训练数据集的问题，如果您不是大型科技公司，这通常是最常见的应用场景。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2026/02/23/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B8%E3%80%81%E5%9B%BE%E5%83%8F%E5%88%86%E7%B1%BB/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/02/22/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B7%E3%80%81%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3%20Keras/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Rayman.hung">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="墨语浮生">
-      <meta itemprop="description" content="技术分享、读书心得、心情记录">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | 墨语浮生">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/02/22/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B7%E3%80%81%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3%20Keras/" class="post-title-link" itemprop="url">《DEEP LEARNING with Python》第七章 深入了解 Keras</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-02-22 00:00:00" itemprop="dateCreated datePublished" datetime="2026-02-22T00:00:00+08:00">2026-02-22</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p><strong>第七章 深入了解 Keras</strong></p>
-<p>A deep dive on Keras</p>
-<p><strong>运行代码</strong></p>
-<p><a target="_blank" rel="noopener" href="https://colab.research.google.com/github/fchollet/deep-learning-with-python-notebooks/blob/master/chapter07_deep-dive-keras.ipynb">在 Colab 上运行</a></p>
-<p><a target="_blank" rel="noopener" href="https://github.com/fchollet/deep-learning-with-python-notebooks">在 GitHub 上查看</a></p>
-<p>本章内容</p>
-<ul>
-<li>创建 Keras 模型的不同方法：<code>Sequential</code>类、函数式 API 和模型子类化</li>
-<li>如何使用 Keras 内置的训练和评估循环，包括如何使用自定义指标和自定义损失函数。</li>
-<li>使用 Keras 回调函数进一步自定义训练过程</li>
-<li>使用 TensorBoard 来监控您的训练和评估指标随时间的变化</li>
-<li>如何从零开始编写自己的训练和评估循环</li>
-</ul>
-<p>你已经开始积累一些使用 Keras 的经验了。你熟悉<code>Sequential</code>模型、<code>Dense</code>层以及用于训练、评估和推理的内置 API——<code>train</code>、<code>evaluate</code>、<code>compile()``</code>fit()<code>catch``evaluate()</code>和 <code>catch</code> <code>predict()</code>。你甚至在第 3 章中学习了如何继承 <code>Training</code> 类 <code>Layer</code>来创建自定义层，以及如何使用 TensorFlow、JAX 和 PyTorch 中的梯度 API 来实现逐步训练循环。</p>
-<p>在接下来的章节中，我们将深入探讨计算机视觉、时间序列预测、自然语言处理和生成式深度学习(computer vision, timeseries forecasting, natural language processing, and generative deep learning)。这些复杂的应用需要的远不止<code>Sequential</code>架构和默认<code>fit()</code>循环。所以，首先让我们把你培养成 Keras 专家！在本章中，你将全面了解使用 Keras API 的关键方法：你需要掌握的所有内容，足以应对接下来遇到的各种高级深度学习用例。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2026/02/22/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B7%E3%80%81%E6%B7%B1%E5%85%A5%E4%BA%86%E8%A7%A3%20Keras/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/02/21/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B6%E3%80%81%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E9%80%9A%E7%94%A8%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Rayman.hung">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="墨语浮生">
-      <meta itemprop="description" content="技术分享、读书心得、心情记录">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | 墨语浮生">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/02/21/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B6%E3%80%81%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E9%80%9A%E7%94%A8%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B/" class="post-title-link" itemprop="url">《DEEP LEARNING with Python》第六章 机器学习的通用工作流程</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-02-21 00:00:00" itemprop="dateCreated datePublished" datetime="2026-02-21T00:00:00+08:00">2026-02-21</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p><strong>第六章 机器学习的通用工作流程</strong></p>
-<p>The universal workflow of machine learning</p>
-<p>本章内容</p>
-<ul>
-<li>构建机器学习问题</li>
-<li>开发工作模型</li>
-<li>在生产环境中部署和维护您的模型</li>
-</ul>
-<p>我们之前的例子都假设我们已经有了一个带标签的数据集，可以立即开始训练模型。但在现实世界中，情况往往并非如此。<strong>你不是从数据集开始，而是从问题开始。</strong></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2026/02/21/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B6%E3%80%81%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E9%80%9A%E7%94%A8%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/02/20/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B5%E3%80%81%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Rayman.hung">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="墨语浮生">
-      <meta itemprop="description" content="技术分享、读书心得、心情记录">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | 墨语浮生">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/02/20/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B5%E3%80%81%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80/" class="post-title-link" itemprop="url">《DEEP LEARNING with Python》第五章 机器学习基础</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-02-20 00:00:00" itemprop="dateCreated datePublished" datetime="2026-02-20T00:00:00+08:00">2026-02-20</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p><strong>第五章 机器学习基础</strong></p>
-<p>Fundamentals of machine learning</p>
-<p><strong>运行代码</strong></p>
-<p><a target="_blank" rel="noopener" href="https://colab.research.google.com/github/fchollet/deep-learning-with-python-notebooks/blob/master/chapter05_fundamentals-of-ml.ipynb">在 Colab 上运行</a></p>
-<p><a target="_blank" rel="noopener" href="https://github.com/fchollet/deep-learning-with-python-notebooks">在 GitHub 上查看</a></p>
-<p>本章内容</p>
-<ul>
-<li>理解泛化和优化之间的张力( Understanding the <strong>tension</strong> between <strong>generalization</strong> and <strong>optimization</strong> )，这是机器学习中的一个根本问题</li>
-<li>机器学习模型的评估方法</li>
-<li>提高模型拟合度的最佳实践</li>
-<li>实现更好泛化的最佳实践</li>
-</ul>
-<p>读完第四章的三个实例后，你应该开始熟悉如何使用神经网络解决分类和回归问题，并且已经了解了机器学习的核心问题：过拟合(overfitting)。本章将把你对机器学习的一些新理解形式化为一个坚实的理论框架，重点强调准确评估模型的重要性以及训练和泛化之间的平衡。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2026/02/20/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B5%E3%80%81%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%9F%BA%E7%A1%80/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/02/19/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B4%E3%80%81%E5%88%86%E7%B1%BB%E4%B8%8E%E5%9B%9E%E5%BD%92/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Rayman.hung">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="墨语浮生">
-      <meta itemprop="description" content="技术分享、读书心得、心情记录">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | 墨语浮生">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/02/19/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B4%E3%80%81%E5%88%86%E7%B1%BB%E4%B8%8E%E5%9B%9E%E5%BD%92/" class="post-title-link" itemprop="url">《DEEP LEARNING with Python》第四章 分类与回归</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-02-19 00:00:00" itemprop="dateCreated datePublished" datetime="2026-02-19T00:00:00+08:00">2026-02-19</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p><strong>第四章 分类与回归</strong></p>
-<p>Classification and regression</p>
-<p><strong>运行代码</strong></p>
-<p><a target="_blank" rel="noopener" href="https://colab.research.google.com/github/fchollet/deep-learning-with-python-notebooks/blob/master/chapter04_classification-and-regression.ipynb">在 Colab 上运行</a></p>
-<p><a target="_blank" rel="noopener" href="https://github.com/fchollet/deep-learning-with-python-notebooks">在 GitHub 上查看</a></p>
-<p>本章内容</p>
-<ul>
-<li>您的第一个真实世界机器学习工作流程示例</li>
-<li>处理二元分类和类别分类问题</li>
-<li>处理连续回归问题</li>
-</ul>
-<p>本章旨在引导你开始使用神经网络解决实际问题。你将巩固从第 2 章和第 3 章中获得的知识，并将所学知识应用于三个新任务，这三个任务涵盖了神经网络的三种最常见应用场景——二元分类、类别分类和标量回归（binary classification, categorical classification, and scalar regression）：</p>
-<ul>
-<li>将电影评论分类为正面或负面（二元分类）</li>
-<li>按主题对新闻稿进行分类（类别分类）</li>
-<li>利用房地产数据估算房屋价格（标量回归）</li>
-</ul>
-<p>这些示例将是您首次接触端到端机器学习工作流程：您将了解数据预处理、基本模型架构原则和模型评估（data preprocessing, basic model architecture principles, and model evaluation.）。</p>
-<p>学完本章后，你将能够使用神经网络处理向量数据的简单分类和回归任务。之后，你将准备好在第五章中开始构建更系统、更具理论基础的机器学习理解。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2026/02/19/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B4%E3%80%81%E5%88%86%E7%B1%BB%E4%B8%8E%E5%9B%9E%E5%BD%92/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/02/18/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B3%E3%80%81TensorFlow%E3%80%81PyTorch%E3%80%81JAX%20%E5%92%8C%20Keras%20%E7%AE%80%E4%BB%8B/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Rayman.hung">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="墨语浮生">
-      <meta itemprop="description" content="技术分享、读书心得、心情记录">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | 墨语浮生">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/02/18/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B3%E3%80%81TensorFlow%E3%80%81PyTorch%E3%80%81JAX%20%E5%92%8C%20Keras%20%E7%AE%80%E4%BB%8B/" class="post-title-link" itemprop="url">《DEEP LEARNING with Python》第三章 TensorFlow、PyTorch、JAX 和 Keras 简介</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-02-18 00:00:00" itemprop="dateCreated datePublished" datetime="2026-02-18T00:00:00+08:00">2026-02-18</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p><strong>第三章 TensorFlow、PyTorch、JAX 和 Keras 简介</strong></p>
-<p>Introduction to TensorFlow, PyTorch, JAX, and Keras</p>
-<p><strong>运行代码</strong></p>
-<p><a target="_blank" rel="noopener" href="https://colab.research.google.com/github/fchollet/deep-learning-with-python-notebooks/blob/master/chapter03_introduction-to-ml-frameworks.ipynb">在 Colab 上运行</a></p>
-<p><a target="_blank" rel="noopener" href="https://github.com/fchollet/deep-learning-with-python-notebooks">在 GitHub 上查看</a></p>
-<p>本章内容</p>
-<ul>
-<li>深入了解所有主要的深度学习框架及其关系</li>
-<li>概述深度学习核心概念如何在所有框架中转化为代码</li>
-</ul>
-<p>本章旨在为您提供开始实践深度学习所需的一切。首先，您将熟悉三种可与 Keras 配合使用的常用深度学习框架：</p>
-<ul>
-<li>TensorFlow（<a target="_blank" rel="noopener" href="https://tensorflow.org/">https://tensorflow.org</a>）</li>
-<li>PyTorch ( https://pytorch.org/ )</li>
-<li>JAX（https://jax.readthedocs.io/）</li>
-</ul>
-<p>然后，在第 2 章中你第一次接触 Keras 的基础上，我们将回顾神经网络的核心组件以及它们如何转换为 Keras API。</p>
-<p>读完本章，你就可以开始学习实际的、现实世界的应用了——这将从第 4 章开始。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2026/02/18/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B3%E3%80%81TensorFlow%E3%80%81PyTorch%E3%80%81JAX%20%E5%92%8C%20Keras%20%E7%AE%80%E4%BB%8B/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/02/17/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B2%E3%80%81%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Rayman.hung">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="墨语浮生">
-      <meta itemprop="description" content="技术分享、读书心得、心情记录">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content=" | 墨语浮生">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2026/02/17/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B2%E3%80%81%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/" class="post-title-link" itemprop="url">《DEEP LEARNING with Python》第二章 神经网络的数学基础</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2026-02-17 00:00:00" itemprop="dateCreated datePublished" datetime="2026-02-17T00:00:00+08:00">2026-02-17</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p><strong>第二章 神经网络的数学基础</strong></p>
-<p>The mathematical building blocks of neural networks</p>
-<p><strong>运行代码</strong></p>
-<p><a target="_blank" rel="noopener" href="https://colab.research.google.com/github/fchollet/deep-learning-with-python-notebooks/blob/master/chapter02_mathematical-building-blocks.ipynb">在 Colab 上运行</a></p>
-<p><a target="_blank" rel="noopener" href="https://github.com/fchollet/deep-learning-with-python-notebooks">在 GitHub 上查看</a></p>
-<p>本章内容</p>
-<ul>
-<li>神经网络的第一个例子</li>
-<li>张量和张量运算（ Tensors and tensor operations）</li>
-<li>神经网络如何通过反向传播和梯度下降进行学习</li>
-</ul>
-<p>理解深度学习需要熟悉许多简单的数学概念：<em>张量</em>、<em>张量运算</em>、<em>微分</em>、<em>梯度下降</em>（tensors, tensor operations, differentiation, gradient descent）等等。本章的目标是在不涉及过多技术细节的情况下，帮助你建立对这些概念的直觉。特别是，我们将避免使用数学符号，因为这些符号可能会给没有数学基础的人造成不必要的障碍，而且对于清晰地解释概念也并非必要。对数学运算最精确、最明确的描述就是它的可执行代码。</p>
-<p>为了充分理解张量和梯度下降的概念，本章将以一个神经网络的实际例子作为开篇。然后，我们将逐一讲解引入的每一个新概念。请记住，这些概念对于理解后续章节中的实际例子至关重要！</p>
-<p>读完本章后，你将对深度学习背后的数学理论有一个直观的理解，并准备好在第 3 章中开始深入学习现代深度学习框架。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2026/02/17/%E3%80%8ADEEP%20LEARNING%20with%20Python%E3%80%8B2%E3%80%81%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
 
     
 
@@ -1145,6 +449,636 @@
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2026/01/23/Introduction%20to%20Probability%20%E7%AC%AC13%E7%AB%A0%20%E6%B3%8A%E6%9D%BE%E8%BF%87%E7%A8%8B/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/01/22/Introduction%20to%20Probability%20%E7%AC%AC12%E7%AB%A0%20%E9%A9%AC%E5%B0%94%E5%8F%AF%E5%A4%AB%E9%93%BE%E8%92%99%E7%89%B9%E5%8D%A1%E7%BD%97/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/01/22/Introduction%20to%20Probability%20%E7%AC%AC12%E7%AB%A0%20%E9%A9%AC%E5%B0%94%E5%8F%AF%E5%A4%AB%E9%93%BE%E8%92%99%E7%89%B9%E5%8D%A1%E7%BD%97/" class="post-title-link" itemprop="url">《Introduction to Probability》第12章 马尔可夫链蒙特卡罗</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-01-22 00:00:00" itemprop="dateCreated datePublished" datetime="2026-01-22T00:00:00+08:00">2026-01-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="第12章-马尔可夫链蒙特卡罗">第12章 马尔可夫链蒙特卡罗</h1>
+<p>Markov chain Monte Carlo</p>
+<p>贯穿本书，我们已经看到<strong>模拟是概率论中一项强大的技术</strong>。如果你无法说服你的朋友在三门问题（Monty Hall problem）中换门是一个好主意，你可以在一秒钟内模拟玩几千次这个游戏，你的朋友就会看到换门的成功率约为 2/3。如果你不确定如何计算随机变量 <span class="math inline">\(X\)</span> 的期望和方差，但你知道如何从该分布中生成独立同分布（i.i.d.）的抽取值 <span class="math inline">\(X_1, X_2, \dots, X_n\)</span>，你可以使用模拟抽取值的样本均值和样本方差来近似真实的期望和真实的方差： <span class="math display">\[
+E(X) \approx \bar{X}_n = \frac{1}{n}(X_1 + \dots + X_n),
+\]</span> <span class="math display">\[
+Var(X) \approx \frac{1}{n-1} \sum_{j=1}^{n} (X_j - \bar{X}_n)^2.
+\]</span></p>
+<p>大数定律告诉我们，如果 <span class="math inline">\(n\)</span> 很大，这些近似将会很好。通过增加 <span class="math inline">\(n\)</span>，即仅仅通过让计算机运行更长时间（而不是不得不挣扎于一个可能无法处理的求和或积分），我们可以得到越来越好的近似。正如第 10 章所讨论的，这种<strong>通过生成随机值来近似某个数值的模拟方法被称为蒙特卡罗方法（Monte Carlo method）</strong>。
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2026/01/22/Introduction%20to%20Probability%20%E7%AC%AC12%E7%AB%A0%20%E9%A9%AC%E5%B0%94%E5%8F%AF%E5%A4%AB%E9%93%BE%E8%92%99%E7%89%B9%E5%8D%A1%E7%BD%97/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/01/21/Introduction%20to%20Probability%20%E7%AC%AC11%E7%AB%A0%20%E9%A9%AC%E5%B0%94%E5%8F%AF%E5%A4%AB%E9%93%BE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/01/21/Introduction%20to%20Probability%20%E7%AC%AC11%E7%AB%A0%20%E9%A9%AC%E5%B0%94%E5%8F%AF%E5%A4%AB%E9%93%BE/" class="post-title-link" itemprop="url">《Introduction to Probability》第11章 马尔可夫链</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-01-21 00:00:00" itemprop="dateCreated datePublished" datetime="2026-01-21T00:00:00+08:00">2026-01-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="第-11-章-马尔可夫链">第 11 章 马尔可夫链</h1>
+<p>Markov chains</p>
+<p><strong>马尔可夫链由安德烈·马尔可夫（Andrey Markov，马尔可夫不等式的提出者）于 1906 年首次引入，其目标是证明大数定律同样适用于非独立的随机变量。</strong></p>
+<p>为了理解马尔可夫模型的由来，首先考虑独立同分布（i.i.d.）的随机变量序列 <span class="math inline">\(X_0, X_1, \dots, X_n, \dots\)</span>，其中 <span class="math inline">\(n\)</span> 代表时间。这是我们在第 10 章中一直采用的设定，但对于模拟现实世界的现象，独立性假设可能过于苛刻；它意味着 <span class="math inline">\(X_n\)</span> 彼此之间完全不提供任何信息。在另一个极端，允许 <span class="math inline">\(X_n\)</span> 之间存在任意的相互作用会使计算变得异常困难。<strong>马尔可夫链是一种表现出“一步相关性”的随机变量序列。因此，马尔可夫链是完全独立与完全相关之间的一个理想折中点。</strong></p>
+<p>自发明以来，马尔可夫链已在生物学、博弈论、金融、机器学习和统计物理等众多领域变得极其重要。它们还广泛用于通过被称为<strong>马尔可夫链蒙特卡罗（MCMC）</strong>的算法来模拟复杂分布。在本章中，我们将介绍马尔可夫链及其性质，并在下一章探讨一些 MCMC 技术的示例。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2026/01/21/Introduction%20to%20Probability%20%E7%AC%AC11%E7%AB%A0%20%E9%A9%AC%E5%B0%94%E5%8F%AF%E5%A4%AB%E9%93%BE/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/01/20/Introduction%20to%20Probability%20%E7%AC%AC10%E7%AB%A0%20%E4%B8%8D%E7%AD%89%E5%BC%8F%E4%B8%8E%E6%9E%81%E9%99%90%E7%90%86%E8%AE%BA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/01/20/Introduction%20to%20Probability%20%E7%AC%AC10%E7%AB%A0%20%E4%B8%8D%E7%AD%89%E5%BC%8F%E4%B8%8E%E6%9E%81%E9%99%90%E7%90%86%E8%AE%BA/" class="post-title-link" itemprop="url">《Introduction to Probability》第10章 不等式与极限理论</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-01-20 00:00:00" itemprop="dateCreated datePublished" datetime="2026-01-20T00:00:00+08:00">2026-01-20</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="第10章-不等式与极限理论">第10章 不等式与极限理论</h2>
+<p>Inequalities and limit theorems</p>
+<p>“如果我无法精确计算概率或期望，我该怎么办？”几乎每个使用概率论的人有时都必须处理这种情况。不要惊慌。有一些强大的策略可用：模拟它、界定它或近似它。</p>
+<p>• <strong>使用蒙特卡罗（Monte Carlo）进行模拟</strong>：我们已经在本书中看到了许多模拟的例子；R 语言部分提供了大量示例，其中几行代码和计算机上的几秒钟就足以获得良好的近似答案。“蒙特卡罗”仅仅意味着模拟使用了随机数（该术语起源于摩纳哥的蒙特卡罗赌场）。</p>
+<p>蒙特卡罗模拟是一种极其强大的技术，在许多问题中，它是目前唯一可行的合理方法。那么，为什么不总是直接进行模拟呢？以下是几个原因：</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2026/01/20/Introduction%20to%20Probability%20%E7%AC%AC10%E7%AB%A0%20%E4%B8%8D%E7%AD%89%E5%BC%8F%E4%B8%8E%E6%9E%81%E9%99%90%E7%90%86%E8%AE%BA/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/01/19/Introduction%20to%20Probability%20%E7%AC%AC9%E7%AB%A0%20%E6%9D%A1%E4%BB%B6%E6%9C%9F%E6%9C%9B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/01/19/Introduction%20to%20Probability%20%E7%AC%AC9%E7%AB%A0%20%E6%9D%A1%E4%BB%B6%E6%9C%9F%E6%9C%9B/" class="post-title-link" itemprop="url">《Introduction to Probability》第9章 条件期望</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-01-19 00:00:00" itemprop="dateCreated datePublished" datetime="2026-01-19T00:00:00+08:00">2026-01-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="第9章-条件期望">第9章 条件期望</h2>
+<p>Conditional expectation</p>
+<p>既然你已经阅读了前面的章节，你已经知道什么是条件期望了：它就是期望，只不过使用了条件概率。这是一个至关重要的概念，其原因与我们需要条件概率的原因类似：</p>
+<ul>
+<li><strong>条件期望是计算期望的强大工具。</strong> 通过使用诸如“对我们希望知道的信息进行条件化”以及“第一步分析”等策略，我们通常可以将复杂的期望问题分解为更简单的部分。</li>
+<li><strong>条件期望本身就是一个相关的量</strong>，它允许我们基于当前可用的任何证据来预测或估计未知量。例如，在统计学中，我们经常希望基于解释变量（如解决的练习题数量或参加职业培训计划的情况）来预测响应变量（如考试成绩或收入）。</li>
+</ul>
+<p>关于条件期望，有两个不同但又紧密联系的概念：</p>
+<ul>
+<li><strong>给定事件下的条件期望 <span class="math inline">\(E(Y|A)\)</span></strong>：设 <span class="math inline">\(Y\)</span> 是一个随机变量，<span class="math inline">\(A\)</span> 是一个事件。如果我们获知 <span class="math inline">\(A\)</span> 发生了，我们对 <span class="math inline">\(Y\)</span> 更新后的期望记作 <span class="math inline">\(E(Y|A)\)</span>，其计算方法与 <span class="math inline">\(E(Y)\)</span> 类似，只是使用给定 <span class="math inline">\(A\)</span> 下的条件概率。</li>
+<li><strong>给定随机变量下的条件期望 <span class="math inline">\(E(Y|X)\)</span></strong>：一个更微妙的问题是如何定义 <span class="math inline">\(E(Y|X)\)</span>，其中 <span class="math inline">\(X\)</span> 和 <span class="math inline">\(Y\)</span> 都是随机变量。直观地说，<span class="math inline">\(E(Y|X)\)</span> 是一个仅使用从 <span class="math inline">\(X\)</span> 中获得的信息来最好地预测 <span class="math inline">\(Y\)</span> 的随机变量。</li>
+</ul>
+<p>在本章中，我们将探索这两种形式的条件期望的定义、性质、直觉和应用。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2026/01/19/Introduction%20to%20Probability%20%E7%AC%AC9%E7%AB%A0%20%E6%9D%A1%E4%BB%B6%E6%9C%9F%E6%9C%9B/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/01/18/Introduction%20to%20Probability%20%20%E7%AC%AC8%E7%AB%A0%20%E5%8F%98%E6%8D%A2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/01/18/Introduction%20to%20Probability%20%20%E7%AC%AC8%E7%AB%A0%20%E5%8F%98%E6%8D%A2/" class="post-title-link" itemprop="url">《Introduction to Probability》第8章 变换</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-01-18 00:00:00" itemprop="dateCreated datePublished" datetime="2026-01-18T00:00:00+08:00">2026-01-18</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="第8章-变换">第8章 变换</h2>
+<p>transformations</p>
+<p>本章的主题是随机变量和随机向量的变换。在对随机变量 <span class="math inline">\(X\)</span> 或随机向量 <span class="math inline">\(\mathbf{X}\)</span> 应用一个函数后，目标是找到变换后的随机变量的分布或变换后的随机向量的联合分布。</p>
+<p>随机变量的变换在统计学中无处不在。以下是一些例子，用以预演本章将要探讨的各种变换。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2026/01/18/Introduction%20to%20Probability%20%20%E7%AC%AC8%E7%AB%A0%20%E5%8F%98%E6%8D%A2/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/01/17/Introduction%20to%20Probability%20%E7%AC%AC7%E7%AB%A0%20%E8%81%94%E5%90%88%E5%88%86%E5%B8%83/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/01/17/Introduction%20to%20Probability%20%E7%AC%AC7%E7%AB%A0%20%E8%81%94%E5%90%88%E5%88%86%E5%B8%83/" class="post-title-link" itemprop="url">《Introduction to Probability》第7 章 联合分布</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-01-17 00:00:00" itemprop="dateCreated datePublished" datetime="2026-01-17T00:00:00+08:00">2026-01-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="第7-章-联合分布">第7 章 联合分布</h2>
+<p>Joint distributions</p>
+<p>当我们最初在第3章介绍随机变量及其分布时，我们注意到两个随机变量各自的分布并不能告诉我们这两个随机变量是相互独立还是相关的。例如，如果两个 <span class="math inline">\(Bern(1/2)\)</span> 随机变量 <span class="math inline">\(X\)</span> 和 <span class="math inline">\(Y\)</span> 分别表示两次不同硬币投掷的正面向上的情况，则它们可能是独立的；如果它们分别表示同一次硬币投掷的正面向上的情况和背面向上的情况，则它们是相关的。因此，尽管 <span class="math inline">\(X\)</span> 的 PMF 是 <span class="math inline">\(X\)</span> 的完整蓝图，<span class="math inline">\(Y\)</span> 的 PMF 是 <span class="math inline">\(Y\)</span> 的完整蓝图，但这些单独的 PMF 缺失了关于这两个随机变量如何关联的重要信息。
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2026/01/17/Introduction%20to%20Probability%20%E7%AC%AC7%E7%AB%A0%20%E8%81%94%E5%90%88%E5%88%86%E5%B8%83/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/01/16/Introduction%20to%20Probability%20%20%E7%AC%AC%206%20%E7%AB%A0%20%E7%9F%A9/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content=" | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2026/01/16/Introduction%20to%20Probability%20%20%E7%AC%AC%206%20%E7%AB%A0%20%E7%9F%A9/" class="post-title-link" itemprop="url">《Introduction to Probability》第 6 章 矩</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-01-16 00:00:00" itemprop="dateCreated datePublished" datetime="2026-01-16T00:00:00+08:00">2026-01-16</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h2 id="第-6-章-矩">第 6 章 矩</h2>
+<p>Moments</p>
+<p>随机变量 <span class="math inline">\(X\)</span> 的第 <span class="math inline">\(n\)</span> 阶矩是 <span class="math inline">\(E(X^n)\)</span>。在本章中，我们将探讨随机变量的矩如何揭示其分布的特征。我们已经看到前两阶矩非常有用，因为它们提供了均值 <span class="math inline">\(E(X)\)</span> 和方差 <span class="math inline">\(E(X^2) - (EX)^2\)</span>，这些是关于 <span class="math inline">\(X\)</span> 的平均值及其分布离散程度的重要汇总信息。但分布的含义远不止于其均值和方差。</p>
+<p>我们将看到，第三阶和第四阶矩告诉我们分布的非对称性以及尾部或极端值的行为，这两个性质是均值和方差无法捕捉到的。在介绍矩之后，<strong>我们将讨论矩生成函数 (MGF)，它不仅能帮助我们计算矩，还提供了一种有用的替代方法来指定一个分布。</strong></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2026/01/16/Introduction%20to%20Probability%20%20%E7%AC%AC%206%20%E7%AB%A0%20%E7%9F%A9/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
