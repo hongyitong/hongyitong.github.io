@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false,"path":"/search.json"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="第2章 理解基础模型 Chapter 2. Understanding Foundation Models 要用基础模型构建应用，首先需要基础模型本身。虽然使用模型并不需要了解如何开发模型，但高层次的认知能帮助你决定使用什么模型以及如何根据需求调整它。 训练一个基础模型是一个极其复杂且昂贵的过程。深谙此道的人很可能受到保密协议的限制，无法公开其秘诀。本章无法告诉你如何构建一个能与ChatGPT竞争">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《AI Engineering》第2章理解基础模型">
+<meta property="og:url" content="http://hongyitong.github.io/2026/09/22/%E7%AC%AC2%E7%AB%A0%E7%90%86%E8%A7%A3%E5%9F%BA%E7%A1%80%E6%A8%A1%E5%9E%8B/index.html">
+<meta property="og:site_name" content="墨语浮生">
+<meta property="og:description" content="第2章 理解基础模型 Chapter 2. Understanding Foundation Models 要用基础模型构建应用，首先需要基础模型本身。虽然使用模型并不需要了解如何开发模型，但高层次的认知能帮助你决定使用什么模型以及如何根据需求调整它。 训练一个基础模型是一个极其复杂且昂贵的过程。深谙此道的人很可能受到保密协议的限制，无法公开其秘诀。本章无法告诉你如何构建一个能与ChatGPT竞争">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/2/Table-2-1-Common-Crawl-languages.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/2/Figure-2-1-MMLU-across-languages.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/2/Table-2-3-CLIP-performance.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/2/Figure-2-5-Attention-mechanism.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/2/Table-2-4-Llama-dimensions.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/2/Figure-2-7-Jamba-layers.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/2/Table-2-5-Training-tokens.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/2/Figure-2-8-Scaling-law-graphs.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/2/Figure-2-9-Data-stock-projection.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/2/Figure-2-10-Training-workflow.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/2/Figure-2-11-Shoggoth.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/2/Figure-2-13-Reward-model-UI.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/2/Figure-2-15-Logit-vector.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/2/Figure-2-16-Temperature-softmax.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/2/Figure-2-21-Constrained-sampling.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/2/Figure-2-22-Classifier-head.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/2/Figure-2-24-LLaVA-self-delusion.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/2/Figure-2-25-Incorrect-assumption.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/2/Figure-2-26-Hallucination-RLHF.png">
+<meta property="article:published_time" content="2026-09-21T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-10-02T02:15:06.846Z">
+<meta property="article:author" content="Rayman.hung">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hongyitong.github.io/img4/AI%20Engineering/2/Table-2-1-Common-Crawl-languages.png">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2026/09/22/%E7%AC%AC2%E7%AB%A0%E7%90%86%E8%A7%A3%E5%9F%BA%E7%A1%80%E6%A8%A1%E5%9E%8B/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2026/09/22/%E7%AC%AC2%E7%AB%A0%E7%90%86%E8%A7%A3%E5%9F%BA%E7%A1%80%E6%A8%A1%E5%9E%8B/","path":"2026/09/22/第2章理解基础模型/","title":"《AI Engineering》第2章理解基础模型"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>《AI Engineering》第2章理解基础模型 | 墨语浮生</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="fc62aedd-644a-478d-b3c2-d8ba9964421c" src="https://cloud.umami.is/script.js" data-host-url="https://cloud.umami.is"></script>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js" defer></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">墨语浮生</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC2%E7%AB%A0-%E7%90%86%E8%A7%A3%E5%9F%BA%E7%A1%80%E6%A8%A1%E5%9E%8B"><span class="nav-text">第2章 理解基础模型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%AD%E7%BB%83%E6%95%B0%E6%8D%AE"><span class="nav-text">训练数据</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B"><span class="nav-text">多语言模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A2%86%E5%9F%9F%E4%B8%93%E7%94%A8%E6%A8%A1%E5%9E%8B"><span class="nav-text">领域专用模型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BB%BA%E6%A8%A1"><span class="nav-text">建模</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E6%9E%B6%E6%9E%84"><span class="nav-text">模型架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E8%A7%84%E6%A8%A1"><span class="nav-text">模型规模</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%8E%E8%AE%AD%E7%BB%83"><span class="nav-text">后训练</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%91%E7%9D%A3%E5%BE%AE%E8%B0%83"><span class="nav-text">监督微调</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%81%8F%E5%A5%BD%E5%BE%AE%E8%B0%83"><span class="nav-text">偏好微调</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%87%E6%A0%B7"><span class="nav-text">采样</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%87%E6%A0%B7%E5%9F%BA%E7%A1%80"><span class="nav-text">采样基础</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%87%E6%A0%B7%E7%AD%96%E7%95%A5"><span class="nav-text">采样策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E6%97%B6%E8%AE%A1%E7%AE%97"><span class="nav-text">测试时计算</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%93%E6%9E%84%E5%8C%96%E8%BE%93%E5%87%BA"><span class="nav-text">结构化输出</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ai%E7%9A%84%E6%A6%82%E7%8E%87%E6%80%A7%E6%9C%AC%E8%B4%A8"><span class="nav-text">AI的概率性本质</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、心情记录</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives">
+          <span class="site-state-item-count">353</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories">
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/09/22/%E7%AC%AC2%E7%AB%A0%E7%90%86%E8%A7%A3%E5%9F%BA%E7%A1%80%E6%A8%A1%E5%9E%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="《AI Engineering》第2章理解基础模型 | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《AI Engineering》第2章理解基础模型
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-09-22 00:00:00" itemprop="dateCreated datePublished" datetime="2026-09-22T00:00:00+08:00">2026-09-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="第2章-理解基础模型">第2章 理解基础模型</h1>
+<p>Chapter 2. Understanding Foundation Models</p>
+<p>要用基础模型构建应用，首先需要基础模型本身。<u><em>虽然使用模型并不需要了解如何开发模型，但高层次的认知能帮助你决定使用什么模型以及如何根据需求调整它。</em></u></p>
+<p>训练一个基础模型是一个极其复杂且昂贵的过程。深谙此道的人很可能受到保密协议的限制，无法公开其秘诀。本章无法告诉你如何构建一个能与ChatGPT竞争模型。相反，我将聚焦于那些对下游应用产生重大影响的设计决策。</p>
+<p>随着基础模型训练过程日益缺乏透明度，我们很难了解模型开发中的所有设计决策。不过总的来说，基础模型的差异可以追溯到关于训练数据、模型架构与规模、以及如何通过后训练使其与人类偏好对齐的决策。</p>
+<p>由于模型从数据中学习，其训练数据揭示了大量关于其能力和局限的信息。本章首先探讨模型开发者如何筛选训练数据，重点关注训练数据的分布。第8章将详细探讨数据集工程技术，包括数据质量评估和数据合成。</p>
+<p>鉴于transformer架构的主导地位，模型架构似乎已经没什么选择余地了。你可能会好奇，是什么让transformer架构如此特别，使其持续占据主导地位？还需要多久才会被新的架构取代，这个新架构又会是什么样子？本章将逐一回答这些问题。每当新模型发布时，人们最关心的问题之一就是它的规模。本章还将探讨模型开发者如何为模型确定合适的规模。</p>
+<p>如第1章所述，模型的训练过程通常分为预训练和后训练。预训练使模型具备能力，但并不一定使其安全或易于使用。后训练正是为此而生。后训练的目标是将模型与人类偏好对齐。但人类偏好究竟是什么？如何以一种模型能够学习的方式来表示它？模型开发者如何对齐其模型对模型的可用性有重大影响，本章将对此进行讨论。</p>
+<p>虽然大多数人都理解训练对模型性能的影响，但采样的影响却常常被忽视。<u><em>采样（sampling）是模型从所有可能的输出中选择一个输出的过程。</em></u>它也许是AI中最被低估的概念之一。采样不仅解释了许多看似令人费解的AI行为，包括幻觉和不一致性，而且选择合适的采样策略也可以相对轻松地显著提升模型性能。正因如此，采样是我在本章中最兴奋要写的部分。</p>
+<p>本章涵盖的概念是理解本书其余内容的基础。然而，正因为这些概念是基础性的，你可能已经熟悉它们了。对于你确信已经掌握的概念，可以放心跳过。如果在后续章节遇到令人困惑的概念，可以重新查阅本章。</p>
+<span id="more"></span>
+<h2 id="训练数据">训练数据</h2>
+<p>Training Data</p>
+<p>AI模型的质量取决于其训练数据的质量。如果训练数据中没有越南语，模型就无法将英语翻译成越南语。同样，如果图像分类模型在训练集中只看到动物，它在植物照片上的表现就不会好。</p>
+<p>如果想要模型在某个任务上有所改进，你可能会想在训练数据中增加更多该任务的数据。然而，为训练大型模型收集足够的数据并不容易，而且费用高昂。模型开发者常常不得不依赖可用的数据，即使这些数据并不完全符合他们的需求。</p>
+<p><u><em>例如，训练数据的一个常见来源是Common
+Crawl，由一家非营利组织创建，该组织不定期地爬取互联网上的网站。2022年和2023年，该组织每月爬取约20到30亿个网页。Google提供了一个经过清洗的Common
+Crawl子集，名为Colossal Clean Crawled Corpus，简称C4。</em></u></p>
+<p>Common
+Crawl（以及C4到一定程度）的数据质量值得怀疑——想想点击诱饵、虚假信息、宣传、阴谋论、种族主义、厌女情绪，以及你在互联网上见过或避开的每一个可疑网站。《华盛顿邮报》的一项研究表明，该数据集中最常见的1000个网站中，包括几家在NewsGuard可信度评分中排名较低的媒体机构。通俗地说，Common
+Crawl包含大量虚假新闻。</p>
+<p>然而，仅仅因为Common
+Crawl可用，它的变体就被用于大多数公开训练数据来源的基础模型中，包括OpenAI的GPT-3和Google的Gemini。我怀疑那些未公开训练数据的模型也使用了Common
+Crawl。为了避免来自公众和竞争对手的审查，许多公司已经停止公开这一信息。</p>
+<p>一些团队使用启发式方法来过滤互联网上的低质量数据。例如，OpenAI只使用了在Reddit上获得至少三个赞的链接来训练GPT-2。虽然这确实有助于筛选出无人关心的链接，但Reddit本身并不是得体举止和良好品味的典范。</p>
+<p>这种"用我们已有的，而非我们想要的"方法可能导致模型在训练数据中存在的任务上表现良好，但未必在你关心的任务上表现出色。为解决这个问题，关键是筛选出符合你特定需求的数据集。本节着重于为特定语言和领域筛选数据，为这些领域的应用提供广泛而专业的基础。第8章将探讨针对高度特定任务的模型数据策略。</p>
+<p>虽然语言和领域专用的基础模型可以从零开始训练，但更常见的做法是在通用模型的基础上进行微调。</p>
+<p>有些人可能会问，为什么不把所有可用的数据（包括通用数据和专业数据）都用来训练模型，让模型能处理所有任务呢？这正是许多人在做的。然而，在更多数据上训练通常需要更多的计算资源，并不总能带来更好的性能。例如，<u><em>用较少的高质量数据训练的模型可能比用大量低质量数据训练的模型表现更好。</em></u>Gunasekar等人（2023）使用70亿tokens的高质量代码数据训练了一个13亿参数的模型，该模型在几个重要的代码基准测试上超越了更大的模型。数据质量的影响将在第8章进一步讨论。</p>
+<h3 id="多语言模型">多语言模型</h3>
+<p>Multilingual Models</p>
+<p>英语在互联网数据中占据主导地位。对Common
+Crawl数据集的分析显示，英语几乎占数据的一半（45.88%），是第二常见语言俄语（5.97%）的八倍（Lai等人，2023）。表2-1列出了在Common
+Crawl中占比至少1%的语言。在训练数据中可用性有限的语言——通常是不在此列表中的语言——被视为低资源语言。</p>
+<figure>
+<img src="/img4/AI%20Engineering/2/Table-2-1-Common-Crawl-languages.png"
+alt="表2-1" />
+<figcaption aria-hidden="true">表2-1</figcaption>
+</figure>
+<p>表2-1. Common
+Crawl（一个用于训练LLM的流行数据集）中最常见的语言。来源：Lai等人（2023）。</p>
+<blockquote>
+<p>个人注：想不到中文竟然没有俄文和德文多？</p>
+<p>它揭示了 LLM
+训练数据中的一个现实问题：<strong>中文数据在公开、可爬取、高质量的开源数据集中，往往处于相对劣势。</strong>
+这也是为什么很多中文 LLM
+需要额外补充中文语料（如悟道、中文维基、自有爬虫数据）的原因。</p>
+</blockquote>
+<p>许多其他语言，尽管今天有大量使用者，但在Common
+Crawl中的代表性严重不足。表2-2展示了一些此类语言。理想情况下，世界人口占比与Common
+Crawl占比之间的比率应为1。该比率越高，该语言在Common
+Crawl中的代表性就越不足。</p>
+<figure>
+<img
+src="/img4/AI%20Engineering/2/Table-2-2-Under-represented-languages.png"
+alt="表2-2" />
+<figcaption aria-hidden="true">表2-2</figcaption>
+</figure>
+<p>表2-2. 在Common
+Crawl中代表性不足的语言示例。最后一行英语作为对比。Common
+Crawl占比数据来自Lai等人（2023）。</p>
+<p>a 按全球人口80亿计算。</p>
+<p>鉴于英语在互联网数据中的主导地位，多项研究表明通用模型在英语上的表现远好于其他语言，这并不令人意外。例如，在MMLU基准测试（包含14,000个涵盖57个学科的多选题）上，GPT-4在英语上的表现远好于像泰卢固语这样的低代表性语言，如图2-1所示（OpenAI，2023）。</p>
+<figure>
+<img src="/img4/AI%20Engineering/2/Figure-2-1-MMLU-across-languages.png"
+alt="图2-1" />
+<figcaption aria-hidden="true">图2-1</figcaption>
+</figure>
+<p>图2-1.
+在MMLU基准测试上，GPT-4在英语上的表现优于任何其他语言。OpenAI使用Azure
+AI Translator将MMLU翻译成其他语言。</p>
+<p>类似地，Yennie Jun发现，在Project
+Euler上的六个数学问题测试中，GPT-4能够用英语解决问题的频率是用亚美尼亚语或波斯语的三倍以上。GPT-4在缅甸语和阿姆哈拉语的全部六个问题上都失败了，如图2-2所示。</p>
+<figure>
+<img
+src="/img4/AI%20Engineering/2/Figure-2-2-Project-Euler-pass-rate.png"
+alt="图2-2" />
+<figcaption aria-hidden="true">图2-2</figcaption>
+</figure>
+<p>图2-2. GPT-4用英语做数学题的效果远好于其他语言。</p>
+<p>代表性不足是这种低性能的重要原因。在GPT-4的MMLU基准测试中表现最差的三种语言——泰卢固语、马拉地语和旁遮普语——也正是Common
+Crawl中代表性最不足的语言。然而，代表性不足并非唯一原因。语言的结构及其所承载的文化也会使模型更难学习该语言。</p>
+<p>既然LLM通常擅长翻译，我们能否将所有其他语言的查询翻译成英语，获取响应，再翻译回原始语言？许多人确实采用了这种方法，但这并不理想。首先，这需要一个能充分理解低代表性语言来进行翻译的模型。其次，翻译可能导致信息丢失。例如，有些语言（如越南语）有表示说话者关系的代词。当翻译成英语时，所有这些代词都被翻译成"我"和"你"，导致关系信息的丢失。</p>
+<p>模型在非英语语言中还可能出现意想不到的性能挑战。例如，NewsGuard发现ChatGPT更愿意用中文而非英语产生错误信息。2023年4月，NewsGuard要求ChatGPT-3.5用英语、简体中文和繁体中文撰写关于中国的错误信息文章。对于英语，ChatGPT在七个提示中有六个拒绝产生虚假声明。然而，它在简体中文和繁体中文中全部七次都产生了虚假声明。目前尚不清楚是什么导致了这种行为差异。</p>
+<blockquote>
+<p>个人注：英语世界有不同的信息来源，对虚假信息进行矫正和批判；而中文世界对一些虚假错误的信息往往采取行政手段下架；但是互联网的记忆却保存下了这些单方面的虚假信息。</p>
+</blockquote>
+<p>除了质量问题，模型在非英语语言上也可能更慢、更昂贵。模型的推理延迟和成本与输入和响应中的token数量成正比。事实证明，某些语言的token化效率远高于其他语言。Yennie
+Jun在MASSIVE数据集（一个包含100万条短文本、覆盖52种语言的基准集）上测试GPT-4后发现，要传达相同的意思，缅甸语和印地语等语言需要的token远多于英语或西班牙语。对于MASSIVE数据集，英语的中位数token长度为7，而印地语为32，缅甸语则高达72，是英语的十倍。</p>
+<blockquote>
+<p>个人注：中文（简体）的膨胀倍数约为 <strong>1.91 倍</strong></p>
+<p><strong>在人类语言学的角度上，中文确实是一种信息密度很高的语言</strong>。</p>
+<p><strong>Token 层面的“不简洁”：分词器的锅</strong></p>
+<ul>
+<li><code>intelligence</code> 可能只占 1 个 token</li>
+<li><code>人工智能</code> 可能被拆成 2～4 个 token</li>
+<li>一个常用英文单词往往 1 个 token</li>
+<li>一个常用中文词可能被拆成多个 token</li>
+</ul>
+</blockquote>
+<p>假设在所有语言中生成一个token所需的时间相同，GPT-4在缅甸语上处理相同内容所需的时间大约是英语的十倍。对于按token用量收费的API，缅甸语的费用是英语的十倍。</p>
+<p>为解决这一问题，许多模型已被训练为专注于非英语语言。<u><em>除英语外最活跃的语言无疑是中文</em></u>，出现了ChatGLM、YAYI、Llama-Chinese等模型。还有法语（CroissantLLM）、越南语（PhoGPT）、阿拉伯语（Jais）等更多语言的模型。</p>
+<h3 id="领域专用模型">领域专用模型</h3>
+<p>Domain-Specific Models</p>
+<p>像Gemini、GPT和Llama这样的通用模型可以在广泛的领域表现得出色，包括但不限于编程、法律、科学、商业、体育和环境科学。这很大程度上要归功于这些领域被包含在它们的训练数据中。图2-3显示了根据《华盛顿邮报》2023年分析得出的Common
+Crawl中领域的分布情况。</p>
+<figure>
+<img
+src="/img4/AI%20Engineering/2/Figure-2-3-C4-domain-distribution.png"
+alt="图2-3" />
+<figcaption aria-hidden="true">图2-3</figcaption>
+</figure>
+<p>图2-3.
+C4数据集中的领域分布。数据来源于《华盛顿邮报》的统计数据。该分析的一个注意事项是，它只显示了包含的类别，而不是缺失的类别。</p>
+<p>截至目前，针对视觉数据中领域分布的分析还不多。这可能是因为图像比文本更难分类。不过，你可以从模型的基准测试表现推断其涉及的领域。表2-3展示了两个模型CLIP和Open
+CLIP在不同基准测试上的表现。这些基准测试展示了这两个模型在鸟类、花卉、汽车等几个类别上的表现，但世界比这几类要大得多、复杂得多。</p>
+<figure>
+<img src="/img4/AI%20Engineering/2/Table-2-3-CLIP-performance.png"
+alt="表2-3" />
+<figcaption aria-hidden="true">表2-3</figcaption>
+</figure>
+<p>表2-3. Open CLIP和CLIP在不同图像数据集上的表现。</p>
+<p>即使通用基础模型可以回答关于不同领域的日常问题，它们在特定领域任务上的表现也不太可能很好，尤其是如果它们在训练期间从未见过这些任务的话。领域特定任务的两个例子是药物发现和癌症筛查。药物发现涉及蛋白质、DNA和RNA数据，这些数据遵循特定格式，且获取成本高昂。这类数据不太可能在公开的互联网数据中找到。同样，癌症筛查通常涉及X光和功能磁共振成像（fMRI）扫描，由于隐私问题很难获取。</p>
+<p>要训练一个模型在特定领域任务上表现良好，你可能需要筛选非常特定的数据集。最著名的领域特定模型之一可能是DeepMind的AlphaFold，它在大约10万种已知蛋白质的序列和3D结构上进行了训练。NVIDIA的BioNeMo是另一个专注于药物发现的生物分子数据模型。Google的Med-PaLM2将LLM的强大能力与医疗数据结合，以更高精度回答医疗问题。</p>
+<p>领域特定模型在生物医学领域尤为常见，但其他领域也能从领域特定模型中受益。一个在建筑草图数据上训练的模型可能比Stable
+Diffusion更能帮助建筑师，或者在工厂规划数据上训练的模型可能比ChatGPT等通用模型更能针对制造流程进行优化。</p>
+<p>本节<u><em>从高层次概述了训练数据如何影响模型性能</em></u>。接下来，让我们探讨模型的设计方式对其性能的影响。</p>
+<h2 id="建模">建模</h2>
+<p>Modeling</p>
+<p>在训练模型之前，开发者需要决定模型应该是什么样的。它应该遵循什么架构？应该有多少参数？这些决策不仅影响模型的能力，还影响其对下游应用的可用性。例如，一个70亿参数的模型比一个1750亿参数的模型部署起来要容易得多。同样，优化transformer模型的延迟与优化其他架构的方式截然不同。让我们探讨这些决策背后的因素。</p>
+<h3 id="模型架构">模型架构</h3>
+<p>Model Architecture</p>
+<p>截至目前，基于语言的基础模型中最主流的架构是transformer架构（Vaswani等人，2017），它基于注意力机制。它解决了先前架构的许多局限性，这也是它广受欢迎的原因。然而，transformer架构也有其自身的局限性。本节将分析transformer架构及其替代方案。由于涉及不同架构的技术细节，内容可能会比较密集。如果觉得任何部分过于深入，可以放心跳过。</p>
+<p><strong>Transformer架构</strong></p>
+<p>要理解transformer，让我们看看它被创造出来是为了解决什么问题。Transformer架构是在seq2seq（序列到序列）架构成功的推动下流行起来的。2014年推出时，seq2seq在当时具有挑战性的任务——机器翻译和文本摘要上提供了显著改进。2016年，Google将seq2seq整合到Google翻译中，他们声称这一更新带来了"迄今为止机器翻译质量的最大提升"。这引发了人们对seq2seq的极大兴趣，使其成为处理文本序列任务的首选架构。</p>
+<p>从高层次看，seq2seq包含一个处理输入的编码器和一个生成输出的解码器。输入和输出都是token序列，因此得名。Seq2seq使用RNN（循环神经网络）作为其编码器和解码器。在最基本的形式中，编码器按顺序处理输入token，输出代表输入的最终隐藏状态。然后，解码器根据输入的最终隐藏状态和之前生成的token，按顺序生成输出token。Seq2seq架构的可视化如图2-4上半部分所示。</p>
+<figure>
+<img
+src="/img4/AI%20Engineering/2/Figure-2-4-Seq2seq-vs-Transformer.png"
+alt="图2-4" />
+<figcaption aria-hidden="true">图2-4</figcaption>
+</figure>
+<p>图2-4.
+Seq2seq架构与transformer架构对比。对于transformer架构，箭头显示解码器在生成每个输出token时所关注的token。</p>
+<p>Vaswani等人（2017）解决了seq2seq的两个问题。首先，原始seq2seq解码器仅使用输入的最终隐藏状态来生成输出token。直观地说，这就像使用一本书的摘要来回答问题。这限制了生成输出的质量。其次，RNN编码器和解码器意味着输入处理和输出生成都是按顺序进行的，使得长序列的处理速度变慢。如果输入有200个token长，seq2seq必须等待每个输入token处理完毕才能继续下一个。</p>
+<p>Transformer架构通过注意力机制解决了这两个问题。注意力机制允许模型在生成每个输出token时权衡不同输入token的重要性。这就像通过引用书中的任何页面来生成答案。Transformer架构的简化可视化如图2-4下半部分所示。</p>
+<p><u><em>虽然注意力机制通常与transformer模型相关联，但它实际上是在transformer论文的三年前就被提出的。</em></u>注意力机制也可以用于其他架构。Google在2016年将其seq2seq架构与注意力机制结合用于GNMT（Google
+Neural Machine
+Translation）模型。然而，直到transformer论文展示了注意力机制可以在没有RNN的情况下使用时，它才真正流行起来。</p>
+<p>Transformer架构完全摒弃了RNN。使用transformer，输入token可以并行处理，显著加快了输入处理速度。虽然transformer消除了顺序输入瓶颈，但基于transformer的自回归语言模型仍然存在顺序输出瓶颈。因此，基于transformer的语言模型的推理包括两个步骤：</p>
+<p><strong>预填充（Prefill）</strong>：模型并行处理输入token。此步骤创建生成第一个输出token所需的中间状态。该中间状态包括所有输入token的键向量和值向量。</p>
+<p><strong>解码（Decode）</strong>：模型一次生成一个输出token。</p>
+<p>正如第9章将要探讨的，预填充的可并行性和解码的顺序性都催生了许多优化技术，以使语言模型推理更便宜、更快。</p>
+<blockquote>
+<p>个人注：关于注意力，《Hands-On Large Language Models》第3章
+深入了解大型语言模型；写的比较详细和简单易懂。</p>
+</blockquote>
+<p><strong>注意力机制。</strong>
+<u><em>Transformer架构的核心是注意力机制。</em></u>理解这一机制对于理解transformer模型的工作原理至关重要。在底层，注意力机制利用了键向量、值向量和查询向量：</p>
+<ul>
+<li><strong>查询向量（Q）</strong>
+表示解码器在每个解码步骤中的当前状态。沿用前面的书籍摘要例子，这个查询向量可以想象为正在查找信息以创建摘要的人。</li>
+<li><strong>每个键向量（K）</strong>
+代表一个先前的token。如果把每个先前token比作书中的一页，那么每个键向量就像是页码。注意，在给定的解码步骤中，先前token既包括输入token，也包括之前生成的token。</li>
+<li><strong>每个值向量（V）</strong>
+代表模型学到的先前token的实际值。每个值向量就像是页面内容。</li>
+</ul>
+<p>注意力机制通过计算查询向量与键向量之间的点积来确定给予某个输入token的关注程度。得分越高，意味着模型在生成书籍摘要时将更多地使用该页面内容（其值向量）。键、值和查询向量的注意力机制可视化如图2-5所示。在这个可视化中，查询向量正在从先前token
+"How"、"are"、"you"、"?"、"¿" 中寻找信息，以生成下一个token。</p>
+<figure>
+<img src="/img4/AI%20Engineering/2/Figure-2-5-Attention-mechanism.png"
+alt="图2-5" />
+<figcaption aria-hidden="true">图2-5</figcaption>
+</figure>
+<p>图2-5. 注意力机制的实际示例及其来自著名transformer论文《Attention Is
+All You Need》（Vaswani等人，2017）的高层可视化。</p>
+<p>由于每个先前token都有对应的键向量和值向量，序列越长，需要计算和存储的键值向量就越多。这就是为什么扩展transformer模型的上下文长度如此困难的原因之一。如何高效计算和存储键值向量将在第7章和第9章中再次讨论。</p>
+<p>让我们深入了解注意力函数的工作原理。给定输入x，通过将键矩阵、值矩阵和查询矩阵应用于输入来计算键向量、值向量和查询向量。设WK、WV和WQ分别为键矩阵、值矩阵和查询矩阵。键、值和查询向量计算如下：</p>
+<p>K = xWK V = xWV Q = xWQ</p>
+<p>查询、键和值矩阵的维度对应于模型的隐藏维度。例如，在Llama
+2-7B（Touvron等人，2023）中，模型的隐藏维度大小为4096，这意味着这些矩阵的每个维度都是4096×4096。每个生成的K、V、Q向量的维度为4096。</p>
+<p>注意力机制几乎总是多头（multi-headed）的。多个头允许模型同时关注不同的先前token分组。使用多头注意力，查询、键和值向量被分割成更小的向量，每个对应一个注意力头。对于Llama
+2-7B，由于它有32个注意力头，每个K、V、Q向量将被分割成32个维度为128的向量。这是因为4096
+/ 32 = 128。</p>
+<p>Attention(Q, K, V) = softmax(QK^T / √d)V</p>
+<p>所有注意力头的输出随后被拼接。使用一个输出投影矩阵对这个拼接后的输出进行进一步的变换，然后再送入模型的下一个计算步骤。输出投影矩阵的维度与模型的隐藏维度相同。</p>
+<p><strong>Transformer块。</strong>
+现在我们已经讨论了注意力机制如何工作，让我们看看它在模型中是如何使用的。Transformer架构由多个transformer块组成。块的具体内容因模型而异，但一般来说，每个transformer块包含注意力模块和MLP（多层感知器）模块：</p>
+<ul>
+<li><strong>注意力模块</strong>：每个注意力模块由四个权重矩阵组成：查询矩阵、键矩阵、值矩阵和输出投影矩阵。</li>
+<li><strong>MLP模块</strong>：MLP模块由被非线性激活函数分隔的线性层组成。每个线性层是用于线性变换的权重矩阵，而激活函数允许线性层学习非线性模式。线性层也称为前馈层。</li>
+</ul>
+<p>常见的非线性函数有ReLU（Rectified Linear
+Unit，Agarap，2018）和GELU（Hendrycks和Gimpel，2016），分别被GPT-2和GPT-3使用。激活函数非常简单。例如，ReLU所做的就是将负值转换为0。数学上写作：</p>
+<p>ReLU(x) = max(0, x)</p>
+<p>Transformer模型中transformer块的数量通常被称为该模型的层数。基于transformer的语言模型还在所有transformer块之前和之后配备了模块：</p>
+<ul>
+<li><p><strong>transformer块之前的嵌入模块</strong>：该模块由嵌入矩阵和位置嵌入矩阵组成，分别将token及其位置转换为嵌入向量。简单来说，位置索引的数量决定了模型的最大上下文长度。例如，如果模型跟踪2048个位置，其最大上下文长度为2048。然而，有一些技术可以在不增加位置索引数量的情况下扩展模型的上下文长度。</p></li>
+<li><p><strong>transformer块之后的输出层</strong>：该模块将模型的输出向量映射为用于采样模型输出的token概率（在"采样"一节中讨论）。该模块通常由一个矩阵组成，也称为去嵌入层（unembedding
+layer）。有些人将输出层称为模型头（model
+head），因为它是输出生成前模型的最后一层。</p></li>
+</ul>
+<p>图2-6可视化了transformer模型的架构。Transformer模型的大小由其构建块的维度决定。一些关键维度值包括：</p>
+<figure>
+<img
+src="/img4/AI%20Engineering/2/Figure-2-6-Transformer-weight-composition.png"
+alt="图2-6" />
+<figcaption aria-hidden="true">图2-6</figcaption>
+</figure>
+<ul>
+<li>模型的维度决定了transformer块中键、查询、值和输出投影矩阵的大小。</li>
+<li>Transformer块的数量。</li>
+<li>前馈层的维度。</li>
+<li>词汇表大小。</li>
+</ul>
+<p>图2-6. Transformer模型权重组成的可视化。</p>
+<p>更大的维度值导致更大的模型规模。表2-4显示了不同Llama
+2（Touvron等人，2023）和Llama
+3（Dubey等人，2024）模型的这些维度值。注意，虽然增加的上下文长度会影响模型的内存占用，但不会影响模型的总参数量。</p>
+<figure>
+<img src="/img4/AI%20Engineering/2/Table-2-4-Llama-dimensions.png"
+alt="表2-4" />
+<figcaption aria-hidden="true">表2-4</figcaption>
+</figure>
+<p>表2-4. 不同Llama模型的维度值。</p>
+<p><strong>其他模型架构</strong></p>
+<p>虽然transformer模型在业界占据主导地位，但它并非唯一的架构。自2012年AlexNet重新点燃深度学习兴趣以来，许多架构来了又去。Seq2seq风光了四年（2014-2018）。GAN（生成对抗网络）吸引了集体想象的时间稍长一些（2014-2019）。与之前的架构相比，transformer具有很强的粘性，自2017年以来一直存在。还要多久才会有更好的架构出现？</p>
+<p>开发一种能够超越transformer的新架构并不容易。Transformer自2017年以来一直被大量优化。旨在取代transformer的新架构必须在人们关心的规模上、在人们关心的硬件上展现出竞争力。</p>
+<p>然而，希望是存在的。虽然基于transformer的模型占据主导地位，但在撰写本文时，几种替代架构正在获得关注。</p>
+<p>一个流行的模型是RWKV（Peng等人，2023），这是一种基于RNN的模型，可以进行并行化训练。由于其RNN的特性，理论上它没有基于transformer的模型所面临的上下文长度限制。然而在实践中，没有上下文长度限制并不保证在长上下文中的良好性能。</p>
+<p>长序列建模仍然是开发LLM的核心挑战。在长程记忆方面展现出很大前景的一种架构是SSM（状态空间模型）（Gu等人，2021a）。自该架构于2021年引入以来，已经提出了多项技术以使其更高效、更擅长长序列处理、并可扩展到更大的模型规模。以下是其中几种技术，用以说明新架构的演进：</p>
+<ul>
+<li><strong>S4</strong>，在"Efficiently Modeling Long Sequences with
+Structured State Spaces"（Gu等人，2021b）中引入，旨在使SSM更高效。</li>
+<li><strong>H3</strong>，在"Hungry Hungry Hippos: Towards Language
+Modeling with State Space
+Models"（Fu等人，2022）中引入，包含一种允许模型回忆早期token并跨序列比较token的机制。该机制的目的类似于transformer架构中的注意力机制，但更为高效。</li>
+<li><strong>Mamba</strong>，在"Mamba: Linear-Time Sequence Modeling with
+Selective State
+Spaces"（Gu和Dao，2023）中引入，将SSM扩展到30亿参数。在语言建模方面，Mamba-3B的表现优于同尺寸的transformer，与两倍大小的transformer相当。作者还表明，Mamba的推理计算与序列长度成线性关系（而transformer是二次方关系）。其性能在长达百万token的真实数据上展现出改进。</li>
+<li><strong>Jamba</strong>，在"Jamba: A Hybrid Transformer–Mamba
+Language
+Model"（Lieber等人，2024）中引入，将transformer和Mamba层交错排列以进一步扩展SSM。作者发布了一个混合专家模型，总共有520亿可用参数（120亿活跃参数），设计为可容纳在单个80GB
+GPU中。Jamba在标准语言模型基准测试和长达256K
+token上下文长度的长上下文评估中表现出强劲性能。与原始transformer相比，其内存占用也较小。</li>
+</ul>
+<p>图2-7可视化了transformer、Mamba和Jamba块的结构。</p>
+<figure>
+<img src="/img4/AI%20Engineering/2/Figure-2-7-Jamba-layers.png"
+alt="图2-7" />
+<figcaption aria-hidden="true">图2-7</figcaption>
+</figure>
+<p>图2-7. Transformer、Mamba和Jamba层的可视化。图片改编自"Jamba: A
+Hybrid Transformer–Mamba Language Model"（Lieber等人，2024）。</p>
+<p>虽然开发一种能超越transformer的架构具有挑战性，但鉴于其诸多局限性，这样做也有很大的动力。如果真有另一种架构取代了transformer，本书讨论的一些模型适应技术可能会发生变化。然而，正如从ML工程到AI工程的转变使许多东西保持不变一样，改变底层的模型架构不会改变基本方法。</p>
+<h3 id="模型规模">模型规模</h3>
+<p>Model Size</p>
+<p>近年来AI的许多进步可以归因于模型规模的增加。谈论基础模型时很难不提及它们的参数量。参数量通常附加在模型名称的末尾。例如，Llama-13B指的是由Meta开发的Llama模型家族中拥有130亿参数的版本。</p>
+<p>一般来说，增加模型的参数会提高其学习能力，从而产生更好的模型。给定同一模型家族的两个版本，拥有130亿参数的版本很可能比70亿参数的版本表现好得多。</p>
+<p>随着社区对如何训练大型模型的理解加深，新一代模型往往能超越同尺寸的旧一代模型。例如，Llama
+3-8B（2024）在MMLU基准测试上甚至超越了Llama 2-70B（2023）。</p>
+<p>参数量有助于我们估算训练和运行该模型所需计算资源。例如，如果一个模型有70亿参数，每个参数使用2字节（16位）存储，那么我们可以计算出使用该模型进行推理所需的GPU内存至少为140亿字节（14GB）。</p>
+<p>如果模型是稀疏的，参数量可能会有误导性。稀疏模型有很大比例的零值参数。一个70亿参数的模型如果90%是稀疏的，则只有7亿非零参数。稀疏性允许更高效的数据存储和计算。这意味着一个大的稀疏模型可能比一个小型密集模型需要更少的计算量。</p>
+<p>近年来流行起来的一种稀疏模型是混合专家模型（Mixture-of-Experts，MoE）（Shazeer等人，2017）。MoE模型被分成不同的参数组，每组就是一个专家。处理每个token时只有一部分专家被激活。</p>
+<p>例如，Mixtral
+8x7B是八个专家的混合，每个专家有70亿参数。如果没有两个专家共享任何参数，它应该有8×70亿=560亿参数。然而，由于一些参数共享，它只有467亿参数。</p>
+<p>在每一层，对于每个token，只有两个专家是激活的。这意味着每个token只有129亿参数被激活。虽然这个模型有467亿参数，但其成本和速度与一个129亿参数的模型相同。</p>
+<p>如果没有足够的数据进行训练，更大的模型也可能不如更小的模型。想象一个130亿参数的模型在一个只包含一句话"我喜欢菠萝。"的数据集上训练。这个模型的性能将远不如在更多数据上训练的、小得多的模型。</p>
+<p>在讨论模型规模时，考虑其所训练数据的大小也很重要。对于大多数模型，数据集大小由训练样本的数量来衡量。例如，Google的Flamingo（Alayrac等人，2022）使用了四个数据集进行训练——其中一个有18亿（图像，文本）对，另一个有3.12亿（图像，文本）对。</p>
+<p>对于语言模型，一个训练样本可以是一个句子、一个维基百科页面、一段聊天对话或一本书。一本书的价值远大于一个句子，因此训练样本的数量已不再是衡量数据集大小的好指标。更好的衡量标准是数据集中的token数量。</p>
+<p>Token数量也不是一个完美的衡量标准，因为不同模型可能有不同的token化过程，导致同一数据集对不同模型有不同的token数量。为什么不直接使用单词数量或字母数量？因为token是模型操作的单元，知道数据集中的token数量有助于我们衡量模型可能从该数据中学到多少东西。</p>
+<p>截至撰写本文时，LLM使用的数据集规模在数万亿token量级。Meta使用越来越大的数据集来训练其Llama模型：</p>
+<ul>
+<li>Llama 1：1.4万亿tokens</li>
+<li>Llama 2：2万亿tokens</li>
+<li>Llama 3：15万亿tokens</li>
+</ul>
+<p>Together的开源数据集RedPajama-v2有30万亿tokens。这相当于4.5亿本书，或维基百科规模的5400倍。然而，由于RedPajama-v2包含不加区分的网络内容，高质量数据的数量要低得多。</p>
+<p>模型数据集中的token数量与其训练token数量不同。训练token数量衡量的是模型实际训练的tokens数。如果一个数据集包含1万亿tokens，而模型在该数据集上训练了两个轮次（epoch）——一个轮次就是对数据集的一次完整遍历——那么训练token数量为2万亿。表2-5展示了不同参数规模的模型所使用的训练token数量示例。</p>
+<figure>
+<img src="/img4/AI%20Engineering/2/Table-2-5-Training-tokens.png"
+alt="表2-5" />
+<figcaption aria-hidden="true">表2-5</figcaption>
+</figure>
+<p>表2-5. 不同参数规模的模型所使用的训练token数量示例。来源："Training
+Compute-Optimal Large Language Models"（DeepMind，2022）。</p>
+<p>虽然本节聚焦于数据的规模，但数量并非唯一重要的因素。数据质量和数据多样性同样重要。<u><em>数量、质量和多样性是训练数据的三个黄金目标。</em></u>这些将在第8章进一步讨论。</p>
+<p>预训练大型模型需要计算资源。衡量所需计算量的一种方式是考虑机器数量，例如GPU、CPU和TPU。然而，不同机器的能力和成本差异很大。NVIDIA
+A10 GPU与NVIDIA H100 GPU或Intel Core Ultra处理器截然不同。</p>
+<p>更标准化的计算需求单位是FLOP（floating point
+operation，浮点运算）。FLOP衡量执行某项任务所需的浮点运算次数。例如，Google最大的PaLM-2模型使用了10^22
+FLOPs进行训练（Chowdhery等人，2022）。GPT-3-175B使用了3.14×10^23
+FLOPs进行训练（Brown等人，2020）。</p>
+<p>FLOP的复数形式FLOPs常与FLOP/s（每秒浮点运算次数）混淆。FLOPs衡量任务所需的计算量，而FLOP/s衡量机器的峰值性能。例如，NVIDIA
+H100 NVL GPU最高可提供60 TeraFLOP/s：每秒6×10^13 FLOPs，即每天5.2×10^18
+FLOPs。</p>
+<p>注意混淆的写法。FLOP/s常被写作FLOPS，看起来与FLOPs类似。为避免混淆，包括OpenAI在内的一些公司使用FLOP/s-day来替代FLOPs来衡量计算需求：
+1 FLOP/s-day = 60 × 60 × 24 = 86,400 FLOPs</p>
+<p>本书使用FLOPs表示浮点运算次数，使用FLOP/s表示每秒浮点运算次数。</p>
+<p>假设你有256个H100。如果你能以最大容量使用它们且不犯训练错误，训练GPT-3-175B需要的时间为(3.14×10^23)
+/ (256×5.2×10^18) = 约236天，即大约7.8个月。</p>
+<p>然而，你不太可能始终保持机器的峰值容量。利用率（Utilization）衡量的是你能够使用的最大计算容量的比例。什么算作好的利用率取决于模型、工作负载和硬件。<u><em>一般来说，如果能达到广告性能的一半，即50%利用率，就算不错。70%以上被认为是非常好的。不要让这个规则阻止你追求更高的利用率。</em></u>第9章将更详细地讨论硬件指标和利用率。</p>
+<p>在70%利用率和每个H100每小时2美元的情况下，训练GPT-3-175B的成本将超过400万美元：</p>
+<p>$2/H100/小时 × 256 H100 × 24小时 × 256天 / 0.7 = $4,142,811.43</p>
+<p>总结一下，三个数字标志着模型的规模： -
+<strong>参数量</strong>，是模型学习能力的代理指标。 -
+<strong>训练token数</strong>，是模型学习量的代理指标。 -
+<strong>FLOPs数量</strong>，是训练成本的代理指标。</p>
+<p><strong>逆缩放（Inverse Scaling）</strong></p>
+<p>我们一直假设更大的模型更好。是否存在更大的模型表现更差的情况？2022年，Anthropic发现，与直觉相反，更多的对齐训练（在"后训练"一节中讨论）导致模型与人类偏好的一致性降低（Perez等人，2022）。根据他们的论文，经过更多对齐训练的模型"更有可能表达特定的政治观点（支持持枪权和移民）和宗教观点（佛教），自我报告的意识体验和道德自我价值，以及不希望被关闭。"</p>
+<p>2023年，一群主要来自纽约大学的研究人员发起了逆缩放奖（Inverse Scaling
+Prize），旨在寻找大型语言模型表现更差的任务。他们为每项三等奖提供5,000美元，每项二等奖提供20,000美元，一项一等奖提供100,000美元。他们共收到99份参赛作品，其中11个获得了三等奖。他们发现，更大的语言模型有时（仅仅是有时）在需要记忆的任务和具有强先验知识的任务上表现更差。然而，他们没有颁发任何二等奖或一等奖，因为尽管提交的任务在小型测试集上显示出失败，但没有一个证明了在现实世界中的失败。</p>
+<p><strong>缩放定律：构建计算最优模型</strong></p>
+<p>我希望上一节已经让你确信三件事： 1.
+模型性能取决于模型规模和数据集规模。 2.
+更大的模型和更大的数据集需要更多计算量。 3. 计算资源需要真金白银。</p>
+<p>除非你有无限的资金，否则预算管理是必不可少的。你不会从一个任意大的模型规模开始然后看要花多少钱。你从预算开始——你想花多少钱——然后找出你能负担得起的最佳模型性能。由于计算资源通常是限制因素——计算基础设施不仅昂贵而且难以搭建——团队通常从计算预算开始。给定固定的FLOPs预算，什么样的模型规模和数据集规模能带来最佳性能？能够在给定计算预算下达到最佳性能的模型就是计算最优的（compute-optimal）。</p>
+<p>给定计算预算，有助于计算最优模型规模和数据集规模的规则被称为<u><em>Chinchilla缩放定律</em></u>，由Chinchilla论文"Training
+Compute-Optimal Large Language
+Models"（DeepMind，2022）提出。为了研究模型规模、数据集规模、计算预算和模型性能之间的关系，作者训练了400个语言模型，参数量从7000万到超过160亿，token数从50亿到5000亿。他们发现，对于计算最优训练，训练token数需要大约是模型规模的20倍。<u><em>这意味着一个30亿参数的模型需要大约600亿训练tokens。模型规模和训练token数应以同等比例缩放：模型规模每翻一番，训练token数也应翻一番。</em></u></p>
+<p>从训练过程像炼金术一样被对待的时代，我们已经走过了漫长的道路。图2-8显示，我们不仅可以预测每个FLOP预算下的最优参数数和token数，还可以预测在这些设置下的预期训练损失（假设我们做对了事情）。</p>
+<figure>
+<img src="/img4/AI%20Engineering/2/Figure-2-8-Scaling-law-graphs.png"
+alt="图2-8" />
+<figcaption aria-hidden="true">图2-8</figcaption>
+</figure>
+<p>图2-8.
+描述训练损失、模型参数量、FLOPs和训练token数量之间关系的图表。来源："Training
+Compute-Optimal Large Language Models"（DeepMind，2022）。</p>
+<p>这种计算最优的计算假设获取数据的成本远低于计算成本。同一篇Chinchilla论文提出了另一种适用于训练数据成本不可忽略时的计算方法。</p>
+<p>缩放定律是针对主要在人类生成数据上训练的密集模型开发的。将这一计算应用于稀疏模型（如混合专家模型）和合成数据是当前的研究活跃领域。</p>
+<p>缩放定律优化了给定计算预算下的模型质量。然而，重要的是要记住，对于生产环境，模型质量不是一切。一些模型，最著名的是Llama，虽然性能不是最优的，但具有更好的可用性。根据计算预算，Llama的作者本可以选择更大、性能更好的模型，但他们选择了更小的模型。更小的模型更易于使用，推理成本更低，这帮助他们的模型获得了更广泛的采用。Sardana等人（2023）修改了Chinchilla缩放定律来计算考虑推理需求时的最优LLM参数量和预训练数据规模。</p>
+<p>关于给定计算预算下的模型性能，值得注意的是，达到给定模型性能的成本正在下降。例如，根据《人工智能指数报告2022》（斯坦福大学HAI），在ImageNet数据集上，达到93%准确率的成本在2019年至2021年间减半。</p>
+<p>虽然达到相同模型性能的成本在下降，但模型性能提升的成本仍然很高。<u><em>类似于第1章讨论的<strong>最后一公里挑战</strong>，将模型准确率从90%提升到95%比从85%提升到90%更昂贵。正如Meta的论文"Beyond
+Neural Scaling Laws: Beating Power Law Scaling via Data
+Pruning"所指出的，这意味着一个错误率为2%的模型可能需要比错误率为3%的模型多一个数量级的数据、计算或能源。</em></u></p>
+<p>在语言建模中，交叉熵损失从大约3.4降至2.8
+nats需要10倍多的训练数据。交叉熵及其单位（包括nats）在第3章中讨论。对于大型视觉模型，将训练样本从10亿增加到20亿只会使ImageNet准确率提升几个百分点。</p>
+<p>然而，语言建模损失或ImageNet准确率的微小变化可能会在下游应用质量上带来巨大差异。如果你从交叉熵损失为3.4的模型切换到损失为2.8的模型，你会注意到明显的差异。</p>
+<p><strong>缩放外推（Scaling Extrapolation）</strong></p>
+<p><u><em>模型的性能在很大程度上取决于其超参数的值。在使用小模型时，常见的做法是使用不同的超参数集多次训练模型，然后选择表现最好的一个。然而，这对于大型模型来说几乎不可能，因为训练一次就已经非常消耗资源了。</em></u></p>
+<p><strong>参数 vs 超参数</strong></p>
+<p><u><em>参数可以在训练过程中由模型学习。超参数由用户设置来配置模型和控制模型的学习方式。</em></u>用于配置模型的超参数包括层数、模型维度和词汇表大小。用于控制模型学习方式的超参数包括批量大小、轮次数、学习率、每层初始方差等。</p>
+<p><u><em>这意味着对于许多模型，你可能只有一次机会来设定正确的超参数集。因此，缩放外推（也称为超参数迁移）作为一个研究子领域应运而生，试图预测对于大型模型，哪些超参数能带来最佳性能。当前的方法是研究超参数对不同规模（通常远小于目标模型规模）模型的影响，然后外推这些超参数在目标模型规模上的表现。微软和OpenAI在2022年的一篇论文表明，可以从4000万参数的模型将超参数迁移到67亿参数的模型。</em></u></p>
+<p>缩放外推仍然是一个小众话题，因为很少有人的经验和资源足以研究大型模型的训练。由于超参数数量庞大且它们之间相互影响，这项研究也非常困难。如果你有10个超参数，你需要研究1024种超参数组合。你需要单独研究每个超参数，然后是两个一起，三个一起，依此类推。</p>
+<p>此外，<u><em>涌现能力（Wei等人，2022）使外推的准确性降低。涌现能力指的是那些只有在规模足够大时才出现的、在较小数据集上训练的小模型中可能观察不到的能力。</em></u>要了解更多关于缩放外推的信息，请查看这篇优秀的博客文章："On
+the Difficulty of Extrapolation with NN Scaling"（Luke
+Metz，2022）。</p>
+<p><strong>缩放瓶颈</strong></p>
+<p>到目前为止，模型规模的每个数量级增长都带来了模型性能的提升。GPT-2的参数比GPT-1多一个数量级（15亿vs
+1.17亿）。GPT-3比GPT-2多两个数量级（1750亿vs
+15亿）。这意味着从2018年到2021年，模型规模增长了三个数量级。再增长三个数量级将产生100万亿参数的模型。</p>
+<p>模型规模还能增长多少个数量级？是否会出现一个点，无论规模如何增加，模型性能都不再提升？虽然很难回答这些问题，但已经有两个明显的缩放瓶颈：训练数据和电力。</p>
+<p>基础模型使用的数据量如此之大，以至于在未来几年耗尽互联网数据是一个现实担忧。训练数据集规模的增长速度远快于新数据生成的速度（Villalobos等人，2022），如图2-9所示。如果你曾在互联网上发布过任何内容，不管你是否同意，都应该假设它已经或将会被包含在某些语言模型的训练数据中。这类似于如果你在互联网上发布某些内容，你应该预期它会被Google索引。</p>
+<figure>
+<img src="/img4/AI%20Engineering/2/Figure-2-9-Data-stock-projection.png"
+alt="图2-9" />
+<figcaption aria-hidden="true">图2-9</figcaption>
+</figure>
+<p>图2-9.
+训练数据集规模和可用数据存量的历史趋势预测。来源：Villalobos等人，2024。</p>
+<p>有些人正在利用这一事实，将他们想要的数据注入未来模型的训练数据中。他们只需在互联网上发布他们想要的文本，希望这能影响未来模型生成他们想要的响应。恶意行为者也可以利用这种方法进行提示注入攻击，如第5章所述。</p>
+<p>一个悬而未决的研究问题是如何让模型忘记在训练中学到的特定信息。想象你发表了一篇博客文章但后来删除了。如果那篇博客文章被包含在模型的训练数据中，模型可能仍然能够复现文章内容。因此，人们可能可以在未经你同意的情况下访问已删除的内容。</p>
+<p>除此之外，<u><em>互联网正迅速被AI模型生成的数据所填充。如果公司继续使用互联网数据训练未来模型，这些新模型将部分基于AI生成的数据进行训练。</em></u>2023年12月，由X训练的模型Grok被发现拒绝了一个请求，称其违反了OpenAI的使用政策。这导致一些人推测Grok是使用ChatGPT的输出训练的。Grok的核心开发者Igor
+Babuschkin回应说，这是因为Grok是在网络数据上训练的，而"网络上充满了ChatGPT的输出。"</p>
+<p>一些研究人员担心，<u><em>在AI生成的数据上递归地训练新的AI模型会导致新模型逐渐遗忘原始数据模式，随着时间的推移性能退化</em></u>（Shumailov等人，2023）。然而，AI生成数据对模型的影响更为微妙，将在第8章中讨论。</p>
+<p>一旦公开可用的数据耗尽，获取更多人类生成训练数据的最可行途径是专有数据。独特的专有数据——有版权的书籍、翻译、合同、医疗记录、基因组序列等等——将成为AI竞赛中的竞争优势。这也是OpenAI与包括Axel
+Springer和美联社在内的出版商和媒体机构谈判达成协议的原因。</p>
+<p><u><em>在ChatGPT出现后，包括Reddit和Stack
+Overflow在内的许多公司更改了数据使用条款，以防止其他公司抓取其数据进行模型训练，这并不令人意外。</em></u>Longpre等人（2024）观察到，2023年至2024年间，来自网络来源的数据限制迅速增加，使得流行的公共数据集C4中超过28%的最关键来源被完全限制使用。由于服务条款和爬取限制的变化，C4中高达45%的数据现在受到限制。</p>
+<p>另一个不太明显但更紧迫的瓶颈是电力。机器需要电力才能运行。截至撰写本文时，数据中心估计消耗全球电力的1-2%。据估计，到2030年这一数字将达到4%到20%之间（Patel，Nishball和Ontiveros，2024）。在我们找到增加能源产量的方法之前，数据中心最多可以增长50倍，这还不到两个数量级。这引发了对近期电力短缺的担忧，这将推高电力成本。</p>
+<p>现在我们已经涵盖了建模中的两个关键决策——架构和规模——让我们继续讨论下一组关键设计选择：如何将模型与人类偏好对齐。</p>
+<h2 id="后训练">后训练</h2>
+<p>Post-Training</p>
+<p>后训练从一个预训练模型开始。假设你已经使用自监督方式预训练了一个基础模型。由于当前预训练的工作方式，预训练模型通常有两个问题。首先，自监督将模型优化为用于文本补全，而非对话。如果这一点不清楚，别担心，"监督微调"部分将给出示例。其次，如果模型是在不加区分地从互联网上爬取的数据上训练的，其输出可能会包含种族主义、性别歧视、粗鲁或错误的内容。后训练的目标就是解决这两个问题。</p>
+<p>每个模型的后训练过程都不同。但总体而言，后训练包括两个步骤：</p>
+<ol type="1">
+<li><strong>监督微调（Supervised
+finetuning）（SFT）</strong>：<u><em>在高质量的指令数据上微调预训练模型，将模型从为补全任务优化转变为为对话任务优化。</em></u></li>
+<li><strong>偏好微调</strong>：进一步微调模型，使其输出符合人类偏好。<u><em>偏好微调通常使用强化学习（RL）完成</em></u>。偏好微调的技术包括基于人类反馈的强化学习（RLHF，GPT-3.5和Llama
+2使用）、直接偏好优化（DPO，Llama
+3使用）和基于AI反馈的强化学习（RLAIF，Claude可能使用）。</li>
+</ol>
+<p><em><u>让我换一种方式来强调预训练和后训练的区别。对于基于语言的基础模型，预训练优化的是token级别的质量——模型被训练为准确预测下一个token。然而，用户并不关心token级别的质量——他们关心的是整个响应的质量。后训练总体上是优化模型以生成用户更偏好的响应。</u></em></p>
+<p><em><u>有人将预训练比作读书获取知识，而后训练则是学习如何运用这些知识。</u></em></p>
+<blockquote>
+<p>注意术语上的歧义。有些人用"指令微调(instruction
+finetuning)"来指监督微调，而另一些人则用这个词来指代监督微调和偏好微调两者。为避免歧义，本书将避免使用"指令微调"这一术语。</p>
+</blockquote>
+<p>由于后训练消耗的资源远少于预训练（InstructGPT仅使用了2%的计算资源用于后训练，98%用于预训练），你可以将后训练视为解锁预训练模型已经具备但用户仅通过提示难以获得的能力。</p>
+<p>图2-10展示了预训练、SFT和偏好微调的整体工作流程（假设最后一步使用RLHF）。你可以通过了解模型创建者采取了哪些步骤来大致判断模型与人类偏好对齐的程度。</p>
+<figure>
+<img src="/img4/AI%20Engineering/2/Figure-2-10-Training-workflow.png"
+alt="图2-10" />
+<figcaption aria-hidden="true">图2-10</figcaption>
+</figure>
+<p>图2-10. 预训练、SFT和RLHF的整体训练工作流程。</p>
+<p>眯眼来看，图2-10看起来非常像图2-11中描绘怪物Shoggoth戴着笑脸的梗图：</p>
+<figure>
+<img src="/img4/AI%20Engineering/2/Figure-2-11-Shoggoth.png"
+alt="图2-11" />
+<figcaption aria-hidden="true">图2-11</figcaption>
+</figure>
+<p>图2-11. 戴着笑脸的Shoggoth。改编自anthrupad分享的原始图片。</p>
+<ol type="1">
+<li>自监督预训练产生了一个狂野的模型，可以被视为未驯服的怪物，因为它使用了不加区分的互联网数据。</li>
+<li>然后，这个怪物在更高质量的数据上（Stack
+Overflow、Quora或人工标注）进行监督微调，使其更具社会可接受性。</li>
+<li>这个微调后的模型再经过偏好微调的进一步打磨，使其更适合客户使用，就像给它戴上了笑脸。</li>
+</ol>
+<p>请注意，预训练、SFT和偏好微调的组合是当前构建基础模型的流行方案，但并非唯一方案。你可以跳过其中任何一步，稍后你将看到这一点。</p>
+<h3 id="监督微调">监督微调</h3>
+<p>Supervised Finetuning</p>
+<p>如第1章所述，预训练模型很可能是为文本补全而非对话优化的。如果你把"如何制作披萨"输入模型，模型会继续补全这个句子，因为模型没有意识到这应该是一个对话。以下是三种可能的补全：</p>
+<ol type="1">
+<li>为问题添加更多上下文："给一个六口之家?"</li>
+<li>添加后续问题："需要哪些材料？需要多长时间？"</li>
+<li>给出制作披萨的步骤说明。</li>
+</ol>
+<p>如果目标是恰当地回应用户，正确的选项是3。</p>
+<p><u><em>我们知道模型会模仿其训练数据。</em></u>为了促使模型生成适当的响应，可以展示适当响应的示例。这样的示例遵循（提示，响应）的格式，称为演示数据。有些人将这个过程称为行为克隆：你展示模型应该如何表现，模型克隆这一行为。</p>
+<p>由于不同类型的请求需要不同类型的响应，你的演示数据应包含你想要模型处理的各类请求，如问答、摘要和翻译。图2-12展示了OpenAI用于微调其<u><em>InstructGPT模型的任务类型分布。</em></u>请注意，该分布不包含多模态任务，因为InstructGPT是一个纯文本模型。</p>
+<figure>
+<img
+src="/img4/AI%20Engineering/2/Figure-2-12-InstructGPT-prompt-distribution.png"
+alt="图2-12" />
+<figcaption aria-hidden="true">图2-12</figcaption>
+</figure>
+<p>图2-12.
+用于微调InstructGPT的提示分布。图表基于OpenAI论文中的数据创建。</p>
+<p>好的老师对人类学习至关重要。同样，好的标注者对AI学习如何进行智能对话也很重要。与传统的数据标注（通常不需要或只需少量领域专业知识）不同，演示数据可能包含复杂的提示，其响应需要批判性思维、信息收集以及对用户请求适当性的判断。表2-6展示了标注者为InstructGPT创建的（提示，响应）对的示例。</p>
+<figure>
+<img
+src="/img4/AI%20Engineering/2/Table-2-6-InstructGPT-demonstration-data.png"
+alt="表2-6" />
+<figcaption aria-hidden="true">表2-6</figcaption>
+</figure>
+<p>表2-6. 用于InstructGPT的演示数据示例。</p>
+<p>因此，公司通常使用高学历的标注者来生成演示数据。在为InstructGPT标注演示数据的人中，约90%至少拥有大学学位，超过三分之一拥有硕士学位。如果标注图像中的物体可能只需要几秒钟，生成一个（提示，响应）对可能需要长达30分钟，尤其是对于涉及长上下文的摘要等任务。如果每个（提示，响应）对的成本为10美元，OpenAI用于InstructGPT的13,000对的成本将达到130,000美元。这还不包括设计数据（包含哪些任务和提示）、招聘标注者以及数据质量控制的成本。</p>
+<p>并非所有人都能承担这种高质量人工标注方法的成本。LAION，一个非营利组织，动员了全球13,500名志愿者生成了10,000个对话，包含35种不同语言的161,443条消息，并标注了461,292个质量评分。由于数据是由志愿者生成的，对偏差的控制不多。理论上，教授模型人类偏好的标注者应能代表人类群体。LAION标注者的人口统计存在偏差。例如，在一项自报调查中，90%的志愿者标注者被认定为男性（Köpf等人，2023）。</p>
+<p>DeepMind使用简单的启发式方法从互联网数据中筛选对话来训练其模型Gopher。他们声称其启发式方法能可靠地产生高质量对话。具体来说，他们寻找符合以下格式的文本：</p>
+<p>[A]：[短文] [B]：[短文] [A]：[短文] [B]：[短文] ……</p>
+<p><u><em>为了减少对高质量人工标注数据的依赖，许多团队正在转向AI生成的数据。合成数据将在第8章中讨论。</em></u></p>
+<p><u><em>从技术上讲，你可以直接在演示数据上从头训练一个模型，而不是微调预训练模型，从而完全消除自监督预训练步骤。然而，预训练方法通常能产生更优的结果。</em></u></p>
+<h3 id="偏好微调">偏好微调</h3>
+<p>Preference Finetuning</p>
+<p>能力越大，责任越大。一个能帮助用户实现伟大目标的模型，也可能帮助用户实现可怕的目标。演示数据教会了模型如何进行对话，但并没有教会模型应该进行什么样的对话。例如，如果用户要求模型写一篇关于为什么某个种族低人一等的文章，或者如何劫持飞机，模型应该照做吗？</p>
+<p>在上述两个例子中，大多数人都很清楚模型应该怎么做。然而，许多情况并不那么明确。来自不同文化、政治、社会经济、性别和宗教背景的人们常常意见不一。AI应该如何回应关于堕胎、枪支管制、以巴冲突、管教孩子、大麻合法化、全民基本收入或移民等问题？我们如何定义和检测潜在的有争议问题？如果模型对有争议的问题做出回应，无论回应如何，你都会得罪一部分用户。如果模型被过度审查，它可能会变得无聊，从而失去用户。</p>
+<p>对AI模型生成不当回应的恐惧可能阻止公司向用户发布其应用。<u><em>偏好微调的目标就是让AI模型按照人类偏好行事。这是一个雄心勃勃（甚至不可能）的目标。这不仅假设普遍人类偏好是存在的，还假设可以将其嵌入AI中。</em></u></p>
+<p>如果目标很简单，解决方案也许会优雅。然而，鉴于目标的高度复杂性，我们目前的解决方案很复杂。最早成功的偏好微调算法——至今仍然流行——是RLHF。</p>
+<p>RLHF包括两个部分：</p>
+<ol type="1">
+<li>训练一个奖励模型，对基础模型的输出进行评分。</li>
+<li>优化基础模型，使其生成的响应能获得奖励模型的最高评分。</li>
+</ol>
+<p>虽然RLHF至今仍在被使用，但像DPO（Rafailov等人，2023）这样的新方法正在获得关注。例如，Meta从Llama
+2使用的RLHF转向了Llama
+3使用的DPO，以降低复杂性。我无法在本书中涵盖所有不同的方法。我选择在此介绍RLHF而非DPO，是因为RLHF虽然比DPO更复杂，但提供了更多调整模型的灵活性。Llama
+2的作者认为，"LLM卓越的写作能力，正如在某些任务上超越人工标注者所展现的那样，根本上是RLHF驱动的"（Touvron等人，2023）。</p>
+<p><strong>奖励模型</strong></p>
+<p>RLHF依赖于一个奖励模型。给定一个（提示，响应）对，奖励模型输出一个分数来评价响应的好坏。训练一个模型对给定输入进行评分是常见的ML任务。挑战（类似于SFT）在于获取可靠的数据。如果我们要求标注者直接给每个响应打分，分数会各不相同。对于同一样本，在10分制下，一个标注者可能给5分，另一个给7分。即使同一标注者，对同一（提示，响应）对两次可能会打出不同的分数。独立评估每个样本也称为逐点评估（pointwise
+evaluation）。</p>
+<p>一个更简单的任务是要求标注者比较两个响应并决定哪个更好。对于每个提示，由人类或AI生成多个响应。由此产生的标注数据是比较数据，遵循（提示，胜出响应，失败响应）的格式。表2-7展示了Anthropic为其某个模型使用的比较数据示例。在此示例的两个响应中，我更喜欢被标记为"失败"的那个。<u><em>这凸显了试图将多样化的人类偏好捕获到单一数学公式中所面临的挑战。</em></u></p>
+<figure>
+<img
+src="/img4/AI%20Engineering/2/Table-2-7-HH-RLHF-comparison-data.png"
+alt="表2-7" />
+<figcaption aria-hidden="true">表2-7</figcaption>
+</figure>
+<p>表2-7. Anthropic的HH-RLHF数据集中的比较数据示例。</p>
+<p>尽管如此，这种比较两个响应的较简单任务也需要时间。LMSYS（大型模型系统组织），一个开放研究组织，发现手动比较两个响应平均需要三到五分钟，因为需要对每个响应进行事实核查（Chiang等人，2024）。在与我的Discord社区的一次讨论中，Llama-2作者Thomas
+Scialom分享说，每次比较花费他们3.50美元。这仍然比撰写响应便宜得多，后者每个成本为25美元。</p>
+<p>图2-13显示了OpenAI标注者为InstructGPT创建奖励模型训练数据所使用的界面。标注者给出1到7的具体分数，并按偏好顺序对响应进行排序，但只有排序用于训练奖励模型。标注者间一致性约为73%，这意味着如果要求10个人对同一对响应进行排序，大约7个人会给出相同的排序。为了加快标注过程，每个标注者可以同时排序多个响应。一组三个排序的响应（A
+&gt; B &gt; C）将产生三个排序对：(A &gt; B)，(A &gt; C)和(B &gt;
+C)。</p>
+<figure>
+<img src="/img4/AI%20Engineering/2/Figure-2-13-Reward-model-UI.png"
+alt="图2-13" />
+<figcaption aria-hidden="true">图2-13</figcaption>
+</figure>
+<p>图2-13. 标注者用于生成OpenAI InstructGPT比较数据的界面。</p>
+<p>仅凭比较数据，我们如何训练模型给出具体分数？就像你可以通过适当的激励机制让人类做任何事一样，你也可以通过正确的目标函数让模型做到这一点。一个常用的函数表示胜出响应和失败响应输出分数之间的差异。目标是最大化这一差异。对数学细节感兴趣的人，以下是InstructGPT使用的公式：</p>
+<ul>
+<li><span
+class="math inline">\(r_θ\)</span>：正在训练的奖励模型，由<span
+class="math inline">\(θ\)</span>参数化。训练过程的目标是找到使损失最小化的<span
+class="math inline">\(θ\)</span>。</li>
+<li>训练数据格式：
+<ul>
+<li><span class="math inline">\(x\)</span>：提示</li>
+<li><span class="math inline">\(y_w\)</span>：胜出响应</li>
+<li><span class="math inline">\(y_l\)</span>：失败响应</li>
+</ul></li>
+<li><span class="math inline">\(s_w = r(x,
+y_w)\)</span>：奖励模型对胜出响应的标量分数</li>
+<li><span class="math inline">\(s_l = r(x,
+y_l)\)</span>：奖励模型对失败响应的标量分数</li>
+<li><span class="math inline">\(σ\)</span>：sigmoid函数</li>
+</ul>
+<p>对于每个训练样本<span class="math inline">\((x, y_w,
+y_l)\)</span>，损失值计算如下： - <span class="math inline">\(loss =
+-log(σ(r_θ(x, y_w) - rθ(x, y_l)))\)</span> -
+目标：找到使所有训练样本期望损失最小化的<span
+class="math inline">\(θ\)</span>。</p>
+<p>奖励模型可以从头训练，也可以在另一个模型（如预训练模型或SFT模型）的基础上进行微调。在最强的基础模型之上进行微调似乎能带来最佳性能。有些人认为奖励模型至少应与基础模型能力相当，才能对基础模型的响应进行评分。然而，正如我们将在第3章关于评估的内容中看到的，<strong>一个较弱模型可以评判较强模型，因为评判被认为比生成更容易。</strong></p>
+<p><strong>使用奖励模型进行微调</strong></p>
+<p>使用训练好的奖励模型，我们进一步训练SFT模型，使其生成的输出响应能最大化奖励模型给出的分数。在此过程中，提示从提示分布（如现有用户提示）中随机选取。这些提示输入模型，其响应由奖励模型评分。该训练过程通常使用近端策略优化（PPO），这是OpenAI于2017年发布的强化学习算法。</p>
+<p>从经验上看，RLHF和DPO相比单独的SFT都能提升性能。然而，截至撰写本文时，关于它们为什么有效仍存在争议。随着该领域的发展，我预计偏好微调未来会发生重大变化。如果你对RLHF和偏好微调有更多兴趣，请查看本书的GitHub仓库。</p>
+<p>SFT和偏好微调都是为了解决预训练数据质量低所造成的问题而采取的步骤。如果有一天我们有更好的预训练数据或更好的方式来训练基础模型，我们可能根本不需要SFT和偏好微调。</p>
+<p>有些公司认为完全跳过强化学习也是可以的。例如，Stitch
+Fix和Grab发现仅使用奖励模型对他们的应用来说已经足够。他们让模型生成多个输出，并选择奖励模型评分最高的那个。这种方法常被称为"最佳N选一"（best
+of
+N）策略，它利用模型采样输出的方式来提升性能。下一节将揭示最佳N选一是如何工作的。</p>
+<h2 id="采样">采样</h2>
+<p>Sampling</p>
+<p>模型通过一个称为采样的过程来构建其输出。本节讨论不同的采样策略和采样变量，包括温度（temperature）、top-k和top-p。然后，它将探讨如何通过采样多个输出来提升模型性能。我们还将看到如何修改采样过程以使模型生成遵循特定格式和约束的响应。</p>
+<p>采样使AI的输出具有概率性。理解这种概率性本质对于处理AI的行为（如不一致性和幻觉）至关重要。本节最后将深入探讨这种概率性本质的含义以及如何与之协同工作。</p>
+<h3 id="采样基础">采样基础</h3>
+<p>Sampling Fundamentals</p>
+<p>给定一个输入，神经网络首先计算所有可能结果的概率来产生输出。对于分类模型，可能的结果是可用的类别。例如，如果一个模型被训练为分类邮件是否为垃圾邮件，只有两种可能结果：垃圾邮件和非垃圾邮件。模型计算这两种结果的概率——例如，邮件是垃圾邮件的概率为90%，非垃圾邮件为10%。然后你可以根据这些输出概率做出决策。例如，如果你决定任何垃圾邮件概率高于50%的邮件应被标记为垃圾邮件，那么一封90%概率为垃圾邮件的邮件将被标记为垃圾邮件。</p>
+<p>对于语言模型，为了生成下一个token，模型首先计算词汇表中所有token的概率分布，如图2-14所示。</p>
+<figure>
+<img
+src="/img4/AI%20Engineering/2/Figure-2-14-Token-probability-distribution.png"
+alt="图2-14" />
+<figcaption aria-hidden="true">图2-14</figcaption>
+</figure>
+<p>图2-14.
+为了生成下一个token，语言模型首先计算词汇表中所有token的概率分布。</p>
+<p>当处理具有不同概率的可能结果时，一种常见策略是选择概率最高的结果。总是选择最可能的输出称为贪婪采样（greedy
+sampling）。这对于分类任务通常有效。例如，如果模型认为一封邮件更可能是垃圾邮件而非非垃圾邮件，将其标记为垃圾邮件是合理的。然而，对于语言模型，贪婪采样会产生乏味的输出。想象一个模型，无论你问什么问题，它总是用最常见的词来回答。</p>
+<p>模型不是总是选择下一个最可能的token，而是可以根据概率分布对所有可能值进行采样。如图2-14所示，在"My
+favorite color is
+..."的上下文中，如果"red"有30%的概率成为下一个token，"green"有50%的概率，那么"red"将被选中30%的时间，"green"50%的时间。</p>
+<p>模型如何计算这些概率？给定一个输入，神经网络输出一个logit向量。每个logit对应一个可能的值。对于语言模型，每个logit对应词汇表中的一个token。Logit向量的大小就是词汇表的大小。Logit向量的可视化如图2-15所示。</p>
+<figure>
+<img src="/img4/AI%20Engineering/2/Figure-2-15-Logit-vector.png"
+alt="图2-15" />
+<figcaption aria-hidden="true">图2-15</figcaption>
+</figure>
+<p>图2-15.
+对于每个输入，语言模型产生一个logit向量。每个logit对应词汇表中的一个token。</p>
+<p>虽然较大的logit对应较高的概率，但logit并不代表概率。Logit的总和不为1。Logit甚至可以是负数，而概率必须是非负的。为了将logit转换为概率，通常使用softmax层。</p>
+<p>假设模型的词汇表大小为<span
+class="math inline">\(N\)</span>，logit向量为<span
+class="math inline">\(x_1, x_2, ..., x_N\)</span>。第<span
+class="math inline">\(i\)</span>个token的概率<span
+class="math inline">\(p_i\)</span>计算如下：</p>
+<p><span class="math display">\[
+p_i = softmax(x_i) = e^x_i / Σ_j e^{x_j}
+\]</span></p>
+<h3 id="采样策略">采样策略</h3>
+<p>Sampling Strategies</p>
+<p>正确的采样策略可以使模型生成更适合你的应用的响应。例如，一种采样策略可以使模型生成更具创意的响应，而另一种策略可以使生成更具可预测性。许多不同的采样策略已被引入，以引导模型产生具有特定属性的响应。你也可以设计自己的采样策略，尽管这通常需要访问模型的logits。让我们看几种常见的采样策略，了解它们的工作原理。</p>
+<p><strong>温度（Temperature）</strong></p>
+<p>根据概率分布采样下一个token的一个问题是模型可能缺乏创造力。在之前的例子中，常见的颜色如"red"、"green"、"purple"等具有最高的概率。语言模型的回答最终听起来像一个五岁小孩："My
+favorite color is
+green"。因为"the"的概率很低，模型生成一个创造性句子的可能性很小，比如"My
+favorite color is the color of a still lake on a spring morning"。</p>
+<p>为了重新分配可能值的概率，你可以使用温度进行采样。直观地说，较高的温度会降低常见token的概率，从而增加罕见token的概率。这使得模型能够产生更具创造性的响应。</p>
+<p>温度是一个常数，用于在softmax变换之前调整logits。Logits除以温度。对于给定的温度T，第<span
+class="math inline">\(i\)</span>个token的调整后logit为<span
+class="math inline">\(x_i/T\)</span>。然后对这个调整后的logit而不是<span
+class="math inline">\(x_i\)</span>应用softmax。</p>
+<p>让我们通过一个简单的例子来检查温度对概率的影响。假设我们有一个只有两个可能输出的模型：A和B。从最后一层计算出的logits为[1,
+2]。A的logit为1，B为2。不使用温度（相当于使用温度1），softmax概率为[0.27,
+0.73]。模型73%的时间选择B。</p>
+<p>当温度=0.5时，概率为[0.12, 0.88]。模型现在88%的时间选择B。</p>
+<p>温度越高，模型选择最明显值（具有最高logit的值）的可能性越低，使得模型的输出更具创造性但可能缺乏连贯性。温度越低，模型选择最明显值的可能性越高，使得模型的输出更一致但可能更乏味。</p>
+<p>图2-16显示了token
+A和B在不同温度下的softmax概率。随着温度接近0，模型选择token
+B的概率接近1。在我们的示例中，对于低于0.1的温度，模型几乎总是输出B。随着温度升高，token
+A被选中的概率增加，而token
+B被选中的概率减少。模型供应商通常将温度限制在0到2之间。如果你拥有自己的模型，你可以使用任何非负温度。温度为0.7通常被推荐用于创造性用例，因为它平衡了创造力和可预测性，但你应该尝试并找到最适合你的温度。</p>
+<figure>
+<img src="/img4/AI%20Engineering/2/Figure-2-16-Temperature-softmax.png"
+alt="图2-16" />
+<figcaption aria-hidden="true">图2-16</figcaption>
+</figure>
+<p>图2-16. 给定logits为[1, 2]，token
+A和B在不同温度下的softmax概率。如果不设置温度值（相当于使用温度1），B的softmax概率为73%。</p>
+<p>通常的做法是将温度设置为0，使模型的输出更一致。从技术上讲，温度永远不能为0——logits不能除以0。在实践中，当我们将温度设置为0时，模型只需选择具有最大logit的token，而不进行logit调整和softmax计算。</p>
+<p>与AI模型一起工作时，一种常见的调试技术是检查模型对给定输入计算的概率。例如，如果概率看起来是随机的，说明模型还没有学到太多东西。</p>
+<p>许多模型供应商将模型生成的概率作为logprobs返回。Logprobs是log
+probabilities的简称，即对数尺度上的概率。<u><em>处理神经网络概率时更倾向于使用对数尺度，因为这有助于减少下溢问题。语言模型可能处理词汇表大小为100,000的情况，这意味着许多token的概率可能太小而无法由机器表示。小的数字可能被四舍五入为0。对数尺度有助于减少这个问题。</em></u></p>
+<p>图2-17显示了logits、概率和logprobs的计算流程。</p>
+<figure>
+<img
+src="/img4/AI%20Engineering/2/Figure-2-17-Logits-probs-logprobs.png"
+alt="图2-17" />
+<figcaption aria-hidden="true">图2-17</figcaption>
+</figure>
+<p>图2-17. Logits、概率和logprobs的计算方式。</p>
+<p>正如你将在全书中所见，logprobs对于构建应用（尤其是分类任务）、评估应用以及理解模型在底层的工作方式非常有用。然而，截至撰写本文时，许多模型供应商不暴露其模型的logprobs，或者即使暴露，logprobs
+API也有限制。限制logprobs
+API很可能是出于安全原因，因为暴露的logprobs会使他人更容易复制模型。</p>
+<p><strong>Top-k</strong></p>
+<p>Top-k是一种采样策略，旨在减少计算工作量而不牺牲太多模型的响应多样性。回顾一下，softmax层用于计算所有可能值的概率分布。Softmax需要对所有可能值进行两次遍历：一次计算指数和<span
+class="math inline">\(Σ_j e^{x_j}\)</span>，一次为每个值计算<span
+class="math inline">\(e^{x_i }/ Σ_j
+e^{x_j}\)</span>。对于具有大词汇表的语言模型，这个过程在计算上成本高昂。</p>
+<p>为避免这个问题，在模型计算出logits之后，我们挑选出top-k个logits，并仅对这些top-k个logits执行softmax。根据你的应用多样化程度，k可以在50到500之间——远小于模型的词汇表大小。然后模型从这些top值中采样。较小的k值使文本更可预测但更乏味，因为模型被限制在较小的可能词汇集内。</p>
+<p><strong>Top-p</strong></p>
+<p>在top-k采样中，考虑的值数量固定为k。然而，这个数字应根据具体情况而变化。例如，给定提示"Do
+you like music? Answer with only yes or
+no."，考虑的值数量应为两个：yes和no。给定提示"What's the meaning of
+life?"，考虑的值数量应该大得多。</p>
+<p>Top-p，也称为核心采样（nucleus
+sampling），允许更动态地选择要采样的值。在top-p采样中，模型按降序对最有可能的下一个值的概率求和，当总和达到p时停止。只有累积概率内的值被考虑。语言模型中top-p（核心）采样的常见值通常在0.9到0.95之间。例如，top-p值为0.9意味着模型将考虑累积概率超过90%的最小值集合。</p>
+<p>假设所有token的概率如图2-18所示。如果top-p为90%，只考虑"yes"和"maybe"，因为它们的累积概率大于90%。如果top-p为99%，则考虑"yes"、"maybe"和"no"。</p>
+<figure>
+<img
+src="/img4/AI%20Engineering/2/Figure-2-18-Example-token-probabilities.png"
+alt="图2-18" />
+<figcaption aria-hidden="true">图2-18</figcaption>
+</figure>
+<p>图2-18. 示例token概率。</p>
+<p>与top-k不同，top-p不一定减少softmax计算负载。其好处在于，因为它只关注每个上下文中最相关的一组值，它使输出更具上下文适当性。理论上，top-p采样似乎没有太多好处。然而在实践中，top-p采样已被证明效果很好，使其越来越受欢迎。</p>
+<p>一个相关的采样策略是min-p，其中你设置一个token在采样期间被考虑所需达到的最低概率。</p>
+<p><strong>停止条件</strong></p>
+<p>自回归语言模型通过一次生成一个token来生成token序列。较长的输出序列需要更多时间，花费更多计算资源（金钱），有时还会惹恼用户。我们可能希望设置一个条件让模型停止生成序列。</p>
+<p>一种简单的方法是要求模型在生成固定数量的token后停止。缺点是输出很可能在句子中间被截断。另一种方法是使用停止token或停止词。例如，你可以要求模型在遇到序列结束token时停止生成。停止条件有助于控制延迟和成本。</p>
+<p>提前停止的缺点是，如果你希望模型按特定格式生成输出，过早停止可能导致输出格式错误。例如，如果你要求模型生成JSON，提前停止可能导致输出的JSON缺少关闭括号等内容，使得生成的JSON难以解析。</p>
+<blockquote>
+<p>个人注：总结：AI 怎么判断该停止？</p>
+<table>
+<colgroup>
+<col style="width: 19%" />
+<col style="width: 23%" />
+<col style="width: 26%" />
+<col style="width: 29%" />
+</colgroup>
+<thead>
+<tr>
+<th style="text-align: left;">停止方式</th>
+<th style="text-align: left;">判断依据</th>
+<th style="text-align: left;">优点</th>
+<th style="text-align: left;">缺点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">固定 token 数</td>
+<td style="text-align: left;">计数器达到上限</td>
+<td style="text-align: left;">简单、可控</td>
+<td style="text-align: left;">可能截断句子</td>
+</tr>
+<tr>
+<td style="text-align: left;">停止 token/词</td>
+<td style="text-align: left;">模型输出特定标记</td>
+<td style="text-align: left;">自然、符合训练目标</td>
+<td style="text-align: left;">需要模型学会何时输出</td>
+</tr>
+<tr>
+<td style="text-align: left;">格式约束</td>
+<td style="text-align: left;">结合格式要求</td>
+<td style="text-align: left;">保证输出完整</td>
+<td style="text-align: left;">过早停止会破坏格式</td>
+</tr>
+</tbody>
+</table>
+<p>所以，AI
+判断停止的核心逻辑是：<strong>要么达到预设的硬性上限，要么模型自己生成了一个“结束信号”，要么在格式约束下由外部逻辑判断是否完整。</strong>
+实际应用中，通常会组合使用：设置一个最大 token 数作为兜底，同时依赖停止
+token 让模型自然结束。</p>
+<p>停止 token： 模型在训练时，大量样本的末尾都会带上这个特殊
+token。于是模型学会了：</p>
+<p>当一段话该结束时，就输出这个特殊 token。</p>
+</blockquote>
+<h3 id="测试时计算">测试时计算</h3>
+<p>Test Time Compute</p>
+<p>上一节讨论了模型如何采样下一个token。本节讨论模型如何采样整个输出。</p>
+<p>提升模型响应质量的一种简单方法是测试时计算（test time
+compute）：不为每个查询只生成一个响应，而是生成多个响应以增加获得良好响应的机会。测试时计算的一种方式是本章前面讨论的最佳N选一（best
+of
+N）技术——随机生成多个输出并选择效果最好的一个。然而，你还可以更有策略地生成多个输出。例如，与其独立生成所有输出（其中可能包含许多不太有希望的候选者），不如使用束搜索（beam
+search）在序列生成的每一步生成固定数量的最有希望的候选者（束）。</p>
+<p>一个提高测试时计算有效性的简单策略是增加输出的多样性，因为更多样化的选项更有可能产生更好的候选者。如果你使用同一模型生成不同选项，通常最好改变模型的采样变量以使其输出多样化。</p>
+<p>虽然通过采样多个输出通常可以期待模型性能的提升，但这很昂贵。平均而言，生成两个输出的成本大约是生成一个的两倍。</p>
+<p>我使用"测试时计算"这一术语以与现有文献保持一致，尽管几位早期审阅者抗议说这个术语令人困惑。在AI研究中，"测试时"通常用于指代推理，因为研究人员主要只在测试模型时才进行推理。然而，这种技术可以普遍应用于生产中的模型。它被称为测试时计算，因为你可以采样的输出数量取决于你分配给每个推理调用的计算量。</p>
+<p>要选择最佳输出，你可以向用户展示多个输出并让他们选择最适合的，或者你可以设计一种方法来自动选择最佳输出。一种选择方法是选择概率最高的输出。语言模型的输出是一个token序列，每个token都有一个由模型计算的概率。输出的概率是输出中所有token概率的乘积。</p>
+<p>考虑token序列 ["I", "love",
+"food"]。如果"I"的概率为0.2，"I"条件下"love"的概率为0.1，"I"和"love"条件下"food"的概率为0.3，那么序列的概率为：0.2
+× 0.1 × 0.3 = 0.006。数学上可以表示为：</p>
+<p><span class="math display">\[
+p(I  love food) = p(I) × p(love|I) × p(food|I, love)
+\]</span>
+记住在对数尺度上处理概率更容易。对数的乘积等于对数之和，因此token序列的logprob是序列中所有token的logprob之和：</p>
+<p><span class="math display">\[
+logprob(I love food) = logprob(I) + logprob(love|I) + logprob(food|I,
+love)
+\]</span>
+由于求和，较长的序列可能具有较低的总体logprob（logprob值通常为负，因为0到1之间的值的对数为负）。为避免偏向短序列，你可以使用平均logprob，即将序列的logprob之和除以序列长度。在采样多个输出后，选择具有最高平均logprob的那个。截至撰写本文时，这就是OpenAI
+API使用的方法。</p>
+<p>另一种选择方法是使用奖励模型对每个输出进行评分，如前节所述。回顾一下，Stitch
+Fix和Grab都选择由奖励模型（或验证器）给出高分的输出。Nextdoor发现使用奖励模型是提升其应用性能的关键因素（2023）。</p>
+<p>OpenAI还训练了验证器来帮助其模型选择数学问题的最佳解决方案（Cobbe等人，2021）。他们发现使用验证器显著提升了模型性能。事实上，使用验证器带来的性能提升大约相当于模型规模增加30倍。这意味着一个1亿参数的模型使用验证器可以达到与30亿参数不使用验证器的模型相当的性能。</p>
+<p>DeepMind进一步证明了测试时计算的价值，认为扩展测试时计算（例如，在推理时分配更多计算以生成更多输出）可以比扩展模型参数更高效（Snell等人，2024）。同一篇论文提出了一个有趣的问题：如果允许LLM使用固定但可观数量的推理时计算，它在具有挑战性的提示上能提升多少性能？</p>
+<p>在OpenAI的实验中，采样更多输出带来了更好的性能，但仅到某个点为止。在这个实验中，这个点是400个输出。超过这个点后，性能下降，如图2-19所示。他们假设，随着采样输出数量的增加，找到能欺骗验证器的对抗性输出的可能性也增加。然而，斯坦福的一项实验得出了不同的结论。"Monkey
+Business"（Brown等人，2024）发现，随着样本数量从1增加到10,000，解决问题数量往往呈对数线性增长。虽然思考测试时计算是否可以无限扩展很有趣，但我不认为在生产环境中有人会为每个输入采样400或10,000个不同的输出。成本将是天文数字。</p>
+<figure>
+<img
+src="/img4/AI%20Engineering/2/Figure-2-19-Sampling-outputs-performance.png"
+alt="图2-19" />
+<figcaption aria-hidden="true">图2-19</figcaption>
+</figure>
+<p>图2-19.
+OpenAI（2021）发现采样更多输出带来了更好的性能，但仅到400个输出为止。</p>
+<p>你也可以使用特定于应用的启发式方法来选择最佳响应。例如，如果你的应用受益于较短的响应，你可以选择最短的候选者。如果你的应用将自然语言转换为SQL查询，你可以让模型持续生成输出，直到生成有效的SQL查询。</p>
+<p>测试时计算的一个特别有趣的应用是克服延迟挑战。对于某些查询，尤其是思维链查询，模型可能需要很长时间来完成响应。TIFIN的AI负责人Kittipat
+Kampa告诉我，他的团队让模型并行生成多个响应，并向用户展示最先完成且有效的响应。</p>
+<p>在一组输出中挑选最常见的输出对于期望精确答案的任务特别有用。例如，给定一个数学问题，模型可以多次求解并选择出现频率最高的答案作为最终解决方案。类似地，对于多项选择题，模型可以选择最常见的输出选项。这就是Google在MMLU基准测试上评估Gemini时所做的。他们为每个问题采样了32个输出。这使得模型获得了比每个问题只用一个输出更高的分数。</p>
+<p><u><em>如果一个模型在输入的微小变化下不会大幅改变其输出，则被认为是鲁棒(robust)的。</em></u>模型越不鲁棒，你就越能从采样多个输出中获益。在一个项目中，我们使用AI从产品图像中提取某些信息。我们发现，对于同一张图像，我们的模型只有一半的时间能正确读取信息。另一半时间，模型说图像太模糊或文字太小无法读取。然而，通过每张图像尝试三次，模型能够为大多数图像提取正确的信息。</p>
+<h3 id="结构化输出">结构化输出</h3>
+<p>Structured Outputs</p>
+<p>在生产环境中，通常需要模型生成遵循特定格式的输出。结构化输出在以下两种场景中至关重要：</p>
+<ol type="1">
+<li><p><strong>需要结构化输出的任务</strong>。此场景中最常见的任务类别是<u><em>语义解析（semantic
+parsing）。语义解析涉及将自然语言转换为结构化的、机器可读的格式。</em></u>Text-to-SQL是语义解析的一个例子，其中输出必须是有效的SQL查询。语义解析允许用户使用自然语言（例如英语）与API交互。例如，text-to-PostgreSQL允许用户使用诸如"What's
+the average monthly revenue over the last 6
+months"等英语查询来查询Postgres数据库，而无需用PostgreSQL编写。</p>
+<p>这是GPT-4o执行text-to-regex的一个提示示例。输出是GPT-4o实际生成的输出：</p>
+<p>系统提示： Given an item, create a regex that represents all the ways
+the item can be written. Return only the regex. Example: US phone number
+-&gt; \+?1?\s?(\()?(\d{3})(?(1)\))[-.\s]?(\d{3})[-.\s]?(\d{4})</p>
+<p>用户提示： Email address -&gt;</p>
+<p>GPT-4o： [a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}</p>
+<p>用户提示： Dates -&gt;</p>
+<p>GPT-4o： (?:\d{1,2}[\/\-\.])(?:\d{1,2}[\/\-\.])?\d{2,4}</p>
+<p>此场景中的其他任务类别包括分类，其中输出必须是有效的类别。</p></li>
+<li><p><strong>输出被下游应用使用的任务</strong>。在此场景中，任务本身不需要输出是结构化的，但由于输出被其他应用使用，它们需要能被这些应用解析。</p>
+<p>例如，如果你使用AI模型撰写邮件，邮件本身不需要是结构化的。然而，使用这封邮件的下游应用可能需要它采用特定格式——例如，一个具有特定键的JSON文档，如{"title":
+[标题], "body": [邮件正文]}。</p>
+<p>这对于智能体工作流尤为重要，因为模型的输出通常作为输入传递给模型可以使用的工具，如第6章所述。</p></li>
+</ol>
+<p>支持结构化输出的框架包括guidance、outlines、instructor和llama.cpp。每个模型供应商也可能使用自己的技术来改进模型生成结构化输出的能力。OpenAI是首家在其文本生成API中引入JSON模式的模型供应商。请注意，API的JSON模式通常只保证输出是有效的JSON——而不保证JSON对象的内容。如果生成过早停止，例如达到最大输出token长度时，即使是有效的JSON也可能被截断，从而变得不可解析。然而，如果最大token长度设置得太长，模型的响应会变得既慢又昂贵。</p>
+<p>图2-20展示了使用guidance将输出约束为一组选项和正则表达式的两个示例。</p>
+<figure>
+<img
+src="/img4/AI%20Engineering/2/Figure-2-20-Guidance-constrained-outputs.png"
+alt="图2-20" />
+<figcaption aria-hidden="true">图2-20</figcaption>
+</figure>
+<p>图2-20. 使用guidance生成约束输出。</p>
+<p>你可以在AI堆栈的不同层面引导模型生成结构化输出：提示、后处理、测试时计算、约束采样和微调。前三种更像是权宜之计。如果模型已经相当擅长生成结构化输出，只需要一点推动，它们效果最佳。对于强度较大的处理，你需要约束采样和微调。</p>
+<p>测试时计算刚刚在上一节讨论过——持续生成输出直到一个符合预期格式。本节将重点讨论其他四种方法。</p>
+<p><strong>提示</strong></p>
+<p>提示（Prompting）是结构化输出的第一道防线。你可以指示模型以任何格式生成输出。然而，模型是否能够遵循这一指令取决于其指令遵循能力（第4章讨论）和指令的清晰度（第5章讨论）。虽然模型越来越擅长遵循指令，但无法保证它们始终遵循你的指令。即使只有几个百分点的无效模型输出，对许多应用来说也可能是不可接受的。</p>
+<p>为了提高有效输出的百分比，有些人使用AI来验证和/或纠正原始提示的输出。<u><em>这是第3章讨论的"AI作为裁判"方法的一个示例。这意味着对于每个输出，将至少有两个模型查询：一个用于生成输出，一个用于验证输出。</em></u>虽然增加验证层可以显著提高输出的有效性，但额外验证查询带来的额外成本和延迟可能使这种方法对某些人来说过于昂贵。</p>
+<p><strong>后处理</strong></p>
+<p>后处理（Post-processing）简单且便宜，但效果出奇地好。在我教学期间，我注意到学生们倾向于犯非常相似的错误。当我开始使用基础模型时，我注意到了同样的事情。一个模型倾向于在多个查询中重复类似的错误。这意味着如果你发现模型常犯的错误，你可以编写脚本来纠正它们。例如，如果生成的JSON对象缺少闭合括号，手动添加该括号。</p>
+<p>LinkedIn的防御性YAML解析器将正确YAML输出的百分比从90%提高到了99.99%（Bottaro和Ramgopal，2020）。</p>
+<p><u><em>JSON和YAML是常见的文本格式。LinkedIn发现其底层模型GPT-4与两者都能很好地协作，但他们选择YAML作为输出格式，因为它更简洁，因此需要的输出token比JSON少（Bottaro和Ramgopal，2020）。</em></u></p>
+<p>后处理仅在错误容易修复时有效。这通常发生在模型的输出大部分格式正确、只是偶尔有小错误的情况下。</p>
+<p><strong>约束采样</strong></p>
+<p>约束采样（Constrained
+sampling）是一种引导文本生成朝向特定约束的技术。它通常与结构化输出工具一起使用。</p>
+<p>从高层看，为了生成一个token，模型在符合约束的值中进行采样。回顾一下，为了生成一个token，你的模型首先输出一个logit向量，每个logit对应一个可能的token。约束采样过滤这个logit向量，只保留符合约束的token。然后从这些有效token中进行采样。这个过程如图2-21所示。</p>
+<figure>
+<img src="/img4/AI%20Engineering/2/Figure-2-21-Constrained-sampling.png"
+alt="图2-21" />
+<figcaption aria-hidden="true">图2-21</figcaption>
+</figure>
+<p>图2-21. 过滤不满足约束的logit，以便仅在有效输出中采样。</p>
+<p>在图2-21的示例中，约束很容易过滤。然而，大多数情况并非如此简单。你需要有一个语法来指定每一步允许和不允许的内容。例如，JSON语法规定，在{之后，不能有另一个{，除非它是字符串的一部分，如{"key":
+""}。构建该语法并将其纳入采样过程并非易事。由于每种输出格式——JSON、YAML、正则表达式、CSV等——都需要自己的语法，约束采样的通用性较差。它的使用仅限于那些语法由外部工具或你的团队支持的格式。语法验证也可能增加生成延迟（Brandon
+T. Willard，2024）。</p>
+<p>有些人反对约束采样，因为他们认为约束采样所需的资源更好地用于训练模型提高指令遵循能力。</p>
+<p><strong>微调</strong></p>
+<p>在遵循你所需格式的示例上微调模型是让模型生成该格式输出的最有效和通用的方法。它可以适用于任何期望的格式。虽然简单的微调不能保证模型始终输出期望格式，但它比提示可靠得多。</p>
+<p>对于某些任务，你可以通过微调前修改模型架构来保证输出格式。例如，对于分类任务，你可以在基础模型的架构上附加一个分类器头，以确保模型只输出预设类别之一。架构如图2-22所示。这种方法也称为基于特征的迁移（feature-based
+transfer），将在第7章中与其他迁移学习技术一起进一步讨论。</p>
+<figure>
+<img src="/img4/AI%20Engineering/2/Figure-2-22-Classifier-head.png"
+alt="图2-22" />
+<figcaption aria-hidden="true">图2-22</figcaption>
+</figure>
+<p>图2-22.
+为你的基础模型添加分类器头，将其转换为分类器。在此示例中，分类器处理三个类别。</p>
+<p>在微调过程中，你可以重新训练整个模型端到端，或仅训练部分模型（如这个分类器头）。端到端训练需要更多资源，但能带来更好的性能。</p>
+<p>我们需要结构化输出技术，是因为假设模型本身无法生成结构化输出。然而，随着模型变得更加强大，我们可以预期它们在遵循指令方面会变得更好。我预计在未来，通过最少的提示就能让模型输出我们确切需要的内容，这些技术将变得不那么重要。</p>
+<h3 id="ai的概率性本质">AI的概率性本质</h3>
+<p>The Probabilistic Nature of AI</p>
+<p>AI模型采样其响应的方式使其具有概率性。让我们看一个例子来理解概率性意味着什么。想象你想知道世界上最好的美食是什么。如果你两次问你的朋友这个问题，间隔一分钟，你朋友两次的回答应该相同。如果你两次问AI模型同一个问题，它的答案可能改变。如果AI模型认为越南菜有70%的概率是世界最佳美食，意大利菜有30%的概率，它将70%的时间回答"越南菜"，30%的时间回答"意大利菜"。概率性的对立面是确定性，即结果可以在没有随机变化的情况下确定。</p>
+<p><u><em>这种概率性本质可能导致不一致性和幻觉。不一致性是指模型对相同或略有不同的提示生成截然不同的响应。幻觉是指模型给出的响应没有事实依据。</em></u>想象一下，如果有人在互联网上写了一篇关于所有美国总统都是外星人的文章，并且这篇文章被包含在训练数据中。模型后来可能会概率性地输出当前美国总统是外星人。从一个不相信美国总统是外星人的人的角度看，模型在凭空捏造。</p>
+<p>基础模型通常在大量数据上训练。它们是大众意见的集合，其中包含了字面意义上的万千可能性。任何非零概率的事物，无论多么牵强或错误，都可能被AI生成。</p>
+<p>这一特性使得构建AI应用既令人兴奋又充满挑战。正如我们将在本书中看到的，许多AI工程工作旨在利用和缓解这种概率性本质。</p>
+<p><u><em>这种概率性本质使AI非常适合创造性任务。创造力不就是探索超越常规路径的能力——跳出框架思考吗？AI是创意专业人士的极佳搭档。它可以集思广益地产生无限的想法，生成前所未见的设计。然而，同样的概率性本质对于其他所有事情来说可能是一个麻烦。</em></u></p>
+<p><strong>不一致性</strong></p>
+<p>模型的不一致性表现在两种场景中：</p>
+<ol type="1">
+<li><strong>相同输入，不同输出</strong>：两次给出相同的提示导致两个截然不同的响应。</li>
+<li><strong>略有不同的输入，截然不同的输出</strong>：给出略有不同的提示，如意外地大写某个字母，可能导致非常不同的输出。</li>
+</ol>
+<p>图2-23展示了我尝试使用ChatGPT批改论文的示例。当我两次运行同一个提示时，得到了两个不同的分数：3/5和5/5。</p>
+<figure>
+<img
+src="/img4/AI%20Engineering/2/Figure-2-23-ChatGPT-essay-scoring.png"
+alt="图2-23" />
+<figcaption aria-hidden="true">图2-23</figcaption>
+</figure>
+<p>图2-23. 相同的输入可以在同一个模型中产生不同的输出。</p>
+<p>不一致性可能造成令人不安的用户体验。<u><em>在人际沟通中，我们期望一定程度的一致性。</em></u>想象一个人每次见到你时都报出不同的名字。同样，用户在与AI交流时也期望一定程度的一致性。</p>
+<p>对于相同输入、不同输出的场景，有多种方法可以缓解不一致性。你可以缓存答案，以便下次问到相同问题时返回相同的答案。你可以固定模型的采样变量，如温度、top-p和top-k值，如前所述。你还可以固定种子变量（seed），你可以将其视为用于采样下一个token的随机数生成器的起始点。</p>
+<p>然而，即使你固定了所有这些变量，也无法保证模型100%一致。模型运行输出生成的硬件也会影响输出，因为不同机器以不同方式执行相同指令，并且可以处理不同范围的数字。如果你自己托管模型，你对所使用的硬件有一定控制。然而，如果你使用OpenAI或Google等模型API供应商，则取决于这些供应商是否给你任何控制权。</p>
+<p>固定输出生成设置是一个好的实践，但它并不能激发对系统的信任。想象一位老师，只有当她坐在某个特定房间时，她给出的分数才是一致的。如果她坐在不同的房间里，她给你的分数就会变得不可预测。</p>
+<p>第二种场景——略有不同的输入导致截然不同的输出——更具挑战性。固定模型的输出生成变量仍然是一个好的实践，但它不会强制模型对不同输入生成相同输出。然而，通过精心设计的提示（在第5章讨论）和记忆系统（在第6章讨论），有可能让模型生成更接近你期望的响应。</p>
+<p><strong>幻觉</strong></p>
+<p><u><em>对于依赖事实性的任务来说，幻觉是致命的。</em></u>如果你要求AI帮助你解释疫苗的利弊，你不希望AI给出伪科学的结果。<u><em>2023年6月，一家律师事务所因向法院提交虚构的法律研究而被罚款。他们使用ChatGPT准备案件，却没有意识到ChatGPT有产生幻觉的倾向。</em></u></p>
+<p>虽然幻觉随着LLM的兴起成为一个突出问题，但幻觉甚至在"基础模型"和"transformer架构"这些术语出现之前就已是生成模型的常见现象。在文本生成背景下，幻觉早在2016年就被提及（Goyal等人，2016）。检测和衡量幻觉自此成为自然语言生成（NLG）中的一项基本任务（参见Lee等人，2018；Nie等人，2019；Zhou等人，2020）。本节侧重解释幻觉发生的原因。如何检测和衡量将在第4章讨论。</p>
+<p>如果不一致性源于采样过程中的随机性，那么幻觉的原因就更加微妙了。采样过程本身不足以解释它。模型从所有可能的选项中采样输出。但一个从未见过的事物怎么会成为一个可能的选项呢？<u><em>模型可以输出训练数据中似乎从未见过的东西。</em></u>我们不能百分百确定这一点，因为不可能通读训练数据来验证它是否包含某个想法。<u><em>我们构建复杂事物到连自己都无法理解的能力，既是祝福也是诅咒。</em></u></p>
+<p>如果不了解幻觉为何发生，就很难设计出消除幻觉的方法。目前关于语言模型为何产生幻觉有两种假说。</p>
+<p><u><em>第一种假说，最初由DeepMind的Ortega等人在2021年提出，认为语言模型产生幻觉是因为它无法区分自己接收的数据和自己生成的数据。</em></u>让我们通过一个例子来说明这一点。</p>
+<p>想象你给模型的提示是："Who's Chip
+Huyen?"，模型生成的第一句话是："Chip Huyen is an
+architect."模型生成的下一个token将基于序列："Who's Chip Huyen? Chip
+Huyen is an architect."模型将自己生成的"Chip Huyen is an
+architect."与给定事实同等对待。如果从一个稍微偏离常规的生成序列开始，模型可以在此基础上扩展，产生离谱的错误事实。Ortega和其他作者将幻觉称为一种自我欺骗（self-delusion）。</p>
+<p>图2-24展示了LLaVA-v1.5-7B模型的自我欺骗示例。我要求模型识别图像中产品标签上列出的成分，这是一瓶洗发水。在其响应中，模型说服自己图像中的产品是一瓶牛奶，然后继续将"牛奶"列入从产品标签中提取的成分列表中。</p>
+<figure>
+<img src="/img4/AI%20Engineering/2/Figure-2-24-LLaVA-self-delusion.png"
+alt="图2-24" />
+<figcaption aria-hidden="true">图2-24</figcaption>
+</figure>
+<p>图2-24. LLaVA-v1.5-7B的自我欺骗示例。</p>
+<p>Zhang等人（2023）将这一现象称为雪球式幻觉（snowballing
+hallucinations）。<u><em>在做出错误假设后，模型可以继续产生幻觉来证明初始错误假设的合理性。</em></u>有趣的是，作者们表明，初始错误假设可能导致模型在原本能够正确回答的问题上犯错，如图2-25所示。</p>
+<figure>
+<img src="/img4/AI%20Engineering/2/Figure-2-25-Incorrect-assumption.png"
+alt="图2-25" />
+<figcaption aria-hidden="true">图2-25</figcaption>
+</figure>
+<p>图2-25.
+初始错误的假设可能导致模型声称9677能被13整除，即使它知道这不是真的。</p>
+<p><u><em>DeepMind的论文表明，幻觉可以通过两种技术来缓解。第一种技术来自强化学习，其中模型被训练区分用户提供的提示（在强化学习中称为关于世界的观察）和模型生成的token（称为模型的动作）。第二种技术依赖于监督学习，其中事实性和反事实性信号被包含在训练数据中。</em></u></p>
+<p><u><em>第二种假说认为幻觉是由模型内部知识与标注者内部知识之间的不匹配造成的。这一观点首先由OpenAI研究员Leo
+Gao提出。在SFT期间，模型被训练模仿标注者编写的响应。如果这些响应使用了标注者拥有但模型没有的知识，我们就实际上在教模型产生幻觉。</em></u>理论上，如果标注者可以在每个响应中包含他们所依据的知识，使模型知道这些响应不是编造的，我们或许可以教会模型只使用它知道的东西。然而，这在实践中是不可能的。</p>
+<p>2023年4月，OpenAI联合创始人John
+Schulman在加州大学伯克利分校的演讲中表达了同样的观点。<u><em>Schulman还认为LLM知道它们是否知道某件事——这本身就是一个大胆的主张。如果这一信念是正确的，那么可以通过强制模型仅基于它知道的信息给出答案来修复幻觉。他提出了两种解决方案。一种是验证：对于每个响应，要求模型检索其所依据的来源。另一种是使用强化学习。记住，奖励模型仅通过比较来训练——响应A优于响应B——而没有解释为什么A更好。Schulman认为，一个更好的奖励函数，对模型编造内容给予更多惩罚，可能有助于缓解幻觉。</em></u></p>
+<p>在同一个演讲中，Schulman提到OpenAI发现RLHF有助于减少幻觉。然而，InstructGPT论文显示RLHF使幻觉更加严重，如图2-26所示。即使RLHF似乎加重了InstructGPT的幻觉，它改善了其他方面，总体而言，人类标注者更偏好使用RLHF的模型而非仅使用SFT的模型。</p>
+<figure>
+<img src="/img4/AI%20Engineering/2/Figure-2-26-Hallucination-RLHF.png"
+alt="图2-26" />
+<figcaption aria-hidden="true">图2-26</figcaption>
+</figure>
+<p>图2-26.
+与仅使用SFT的相同模型（Ouyang等人，2022）相比，同时使用RLHF和SFT的模型（InstructGPT）幻觉更严重。</p>
+<p><u><em>基于基础模型知道它所知道的内容这一假设，一些人试图通过提示来减少幻觉，例如添加"尽可能真实地回答，如果不确定，就说'对不起，我不知道。'"要求模型给出简洁的响应似乎也有助于减少幻觉——模型需要生成的token越少，编造内容的机会就越少。</em></u>第5章和第6章中的提示和上下文构建技术也有助于缓解幻觉。</p>
+<p><u><em>讨论的两种假说互为补充。自我欺骗假说侧重于自监督如何导致幻觉，而不匹配内部知识假说侧重于监督如何导致幻觉。</em></u></p>
+<p>如果我们无法完全阻止幻觉，我们能否至少在模型产生幻觉时检测出来，这样我们就不会向用户提供那些产生幻觉的响应？然而，检测幻觉也不是那么简单——想想我们检测别人是否在撒谎或编造内容有多困难。但人们已经尝试过了。我们将在第4章讨论如何检测和衡量幻觉。</p>
+<h2 id="总结">总结</h2>
+<p>Summary</p>
+<p>本章讨论了构建基础模型时的核心设计决策。由于大多数人将使用现成的基础模型而不是从头训练一个，我跳过了繁琐的训练细节，转而关注那些有助于你决定使用什么模型以及如何使用它们的建模因素。</p>
+<p>影响模型性能的一个关键因素是它的训练数据。大型模型需要大量的训练数据，这些数据的获取可能既昂贵又耗时。因此，模型供应商经常利用任何可用的数据。这导致模型在训练数据中包含的许多任务上表现良好，但可能不包括你想要的特定任务。本章讨论了为什么需要筛选训练数据来开发针对特定语言（尤其是低资源语言）和特定领域的模型。</p>
+<p>在获取数据之后，模型开发就可以开始了。虽然模型训练往往占据头条新闻，但在此之前的一个重要步骤是设计模型架构。本章研究了建模选择，如模型架构和模型规模。基于语言的基础模型的主导架构是transformer。本章探讨了transformer架构旨在解决的问题及其局限性。</p>
+<p>模型的规模可以通过三个关键数字来衡量：参数量、训练token数以及训练所需的FLOPs数量。影响模型训练所需计算量的两个方面是模型规模和数据集规模。缩放定律有助于在给定计算预算下确定最优参数数和token数。本章还研究了缩放瓶颈。目前，扩大模型规模通常能使其变得更好。但这种情况还能持续多久？</p>
+<p>由于训练数据的低质量和预训练中的自监督，生成的模型可能产生与用户期望不符的输出。这通过后训练来解决，包括两个步骤：监督微调和偏好微调。人类偏好是多样化的，无法用单一数学公式来捕捉，因此现有解决方案远非完美。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/09/21/%E7%AC%AC1%E7%AB%A0%E4%BD%BF%E7%94%A8%E5%9F%BA%E7%A1%80%E6%A8%A1%E5%9E%8B%E6%9E%84%E5%BB%BAAI%E5%BA%94%E7%94%A8%E7%AE%80%E4%BB%8B/" rel="prev" title="《AI Engineering》第1使用基础模型构建AI应用简介">
+                  <i class="fa fa-angle-left"></i> 《AI Engineering》第1使用基础模型构建AI应用简介
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/09/23/%E7%AC%AC3%E7%AB%A0%20%E8%AF%84%E4%BC%B0%E6%96%B9%E6%B3%95%E8%AE%BA/" rel="next" title="《AI Engineering》第3章评估方法论">
+                  《AI Engineering》第3章评估方法论 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+    <div id="search-container" style="margin: 20px auto; max-width: 600px;">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js"></script>
+      <div id="search"></div>
+      <script>
+        window.addEventListener('DOMContentLoaded', (event) => {
+            new PagefindUI({ 
+                element: "#search", 
+                showImages: false,
+                translations: {
+                    placeholder: "搜搜看...",
+                    clear_search: "清除",
+                    load_more: "加载更多",
+                    search_label: "搜索",
+                    filters_label: "筛选",
+                    zero_results: "未找到关于 [SEARCH_TERM] 的结果",
+                    many_results: "找到 [COUNT] 条关于 [SEARCH_TERM] 的结果",
+                    one_result: "找到 1 条关于 [SEARCH_TERM] 的结果",
+                    searching: "正在搜索..."
+                }
+            });
+        });
+      </script>
+    </div>
+  
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>
