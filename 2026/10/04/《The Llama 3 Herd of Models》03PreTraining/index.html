@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false,"path":"/search.json"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="3 预训练 Pre-Training 语言模型预训练包括：(1) 大规模训练语料的策划与过滤；(2) 模型架构的研发及相应的用于确定模型规模的缩放法则；(3) 大规模高效预训练技术的开发；(4) 预训练方案的制定。下面我们将分别介绍这些组成部分。 3.1 预训练数据 Pre-Training Data 我们通过多种数据来源为语言模型预训练创建数据集，这些数据包含截至 2023 年底的知识。我们对每">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《The Llama 3 Herd of Models》3 预训练">
+<meta property="og:url" content="http://hongyitong.github.io/2026/10/04/%E3%80%8AThe%20Llama%203%20Herd%20of%20Models%E3%80%8B03PreTraining/index.html">
+<meta property="og:site_name" content="墨语浮生">
+<meta property="og:description" content="3 预训练 Pre-Training 语言模型预训练包括：(1) 大规模训练语料的策划与过滤；(2) 模型架构的研发及相应的用于确定模型规模的缩放法则；(3) 大规模高效预训练技术的开发；(4) 预训练方案的制定。下面我们将分别介绍这些组成部分。 3.1 预训练数据 Pre-Training Data 我们通过多种数据来源为语言模型预训练创建数据集，这些数据包含截至 2023 年底的知识。我们对每">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-10-04T03:00:00.000Z">
+<meta property="article:modified_time" content="2026-10-05T03:52:40.339Z">
+<meta property="article:author" content="Rayman.hung">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2026/10/04/%E3%80%8AThe%20Llama%203%20Herd%20of%20Models%E3%80%8B03PreTraining/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2026/10/04/%E3%80%8AThe%20Llama%203%20Herd%20of%20Models%E3%80%8B03PreTraining/","path":"2026/10/04/《The Llama 3 Herd of Models》03PreTraining/","title":"《The Llama 3 Herd of Models》3 预训练"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>《The Llama 3 Herd of Models》3 预训练 | 墨语浮生</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="fc62aedd-644a-478d-b3c2-d8ba9964421c" src="https://cloud.umami.is/script.js" data-host-url="https://cloud.umami.is"></script>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js" defer></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">墨语浮生</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-text">3 预训练</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-%E9%A2%84%E8%AE%AD%E7%BB%83%E6%95%B0%E6%8D%AE"><span class="nav-text">3.1 预训练数据</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-1-%E7%BD%91%E7%BB%9C%E6%95%B0%E6%8D%AE%E7%AD%96%E5%B1%95"><span class="nav-text">3.1.1 网络数据策展</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-2-%E7%A1%AE%E5%AE%9A%E6%95%B0%E6%8D%AE%E6%B7%B7%E5%90%88%E6%AF%94%E4%BE%8B"><span class="nav-text">3.1.2 确定数据混合比例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-3-%E9%80%80%E7%81%AB%E6%95%B0%E6%8D%AE"><span class="nav-text">3.1.3 退火数据</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-%E6%A8%A1%E5%9E%8B%E6%9E%B6%E6%9E%84"><span class="nav-text">3.2 模型架构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-1-%E7%BC%A9%E6%94%BE%E6%B3%95%E5%88%99"><span class="nav-text">3.2.1 缩放法则</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-%E5%9F%BA%E7%A1%80%E8%AE%BE%E6%96%BD%E3%80%81%E6%89%A9%E5%B1%95%E4%B8%8E%E6%95%88%E7%8E%87"><span class="nav-text">3.3 基础设施、扩展与效率</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-1-%E8%AE%AD%E7%BB%83%E5%9F%BA%E7%A1%80%E8%AE%BE%E6%96%BD"><span class="nav-text">3.3.1 训练基础设施</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-2-%E6%A8%A1%E5%9E%8B%E6%89%A9%E5%B1%95%E7%9A%84%E5%B9%B6%E8%A1%8C%E7%AD%96%E7%95%A5"><span class="nav-text">3.3.2 模型扩展的并行策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-3-%E9%9B%86%E5%90%88%E9%80%9A%E4%BF%A1"><span class="nav-text">3.3.3 集合通信</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-4-%E5%8F%AF%E9%9D%A0%E6%80%A7%E4%B8%8E%E8%BF%90%E8%90%A5%E6%8C%91%E6%88%98"><span class="nav-text">3.3.4 可靠性与运营挑战</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-%E8%AE%AD%E7%BB%83%E6%96%B9%E6%A1%88"><span class="nav-text">3.4 训练方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-1-%E5%88%9D%E5%A7%8B%E9%A2%84%E8%AE%AD%E7%BB%83"><span class="nav-text">3.4.1 初始预训练</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-2-%E9%95%BF%E4%B8%8A%E4%B8%8B%E6%96%87%E9%A2%84%E8%AE%AD%E7%BB%83"><span class="nav-text">3.4.2 长上下文预训练</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-3-%E9%80%80%E7%81%AB"><span class="nav-text">3.4.3 退火</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、心情记录</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives">
+          <span class="site-state-item-count">363</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/10/04/%E3%80%8AThe%20Llama%203%20Herd%20of%20Models%E3%80%8B03PreTraining/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="《The Llama 3 Herd of Models》3 预训练 | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《The Llama 3 Herd of Models》3 预训练
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-10-04 11:00:00" itemprop="dateCreated datePublished" datetime="2026-10-04T11:00:00+08:00">2026-10-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1>3 预训练</h1>
+<p>Pre-Training</p>
+<p>语言模型预训练包括：(1) 大规模训练语料的策划与过滤；(2) 模型架构的研发及相应的用于确定模型规模的缩放法则；(3) 大规模高效预训练技术的开发；(4) 预训练方案的制定。下面我们将分别介绍这些组成部分。</p>
+<h2 id="3-1-预训练数据">3.1 预训练数据</h2>
+<p>Pre-Training Data</p>
+<p>我们通过多种数据来源为语言模型预训练创建数据集，这些数据包含截至 2023 年底的知识。<u><em>我们对每个数据来源应用多种去重方法和数据清洗机制，以获得高质量的 token。我们移除包含大量个人可识别信息（PII）的域名，以及已知包含成人内容的域名。</em></u></p>
+<span id="more"></span>  
+<h3 id="3-1-1-网络数据策展">3.1.1 网络数据策展</h3>
+<p>Web Data Curation</p>
+<p>我们使用的数据大部分来自网络，以下描述我们的清洗流程。</p>
+<p><strong>PII 与安全过滤。</strong> 除其他缓解措施外，我们实施了过滤器，旨在移除来自以下网站的数据：可能包含不安全内容或大量 PII 的网站、根据 Meta 多项安全标准被认定为有害的域名，以及已知包含成人内容的域名。</p>
+<p><strong>文本提取与清洗。</strong> 我们处理非截断网络文档的原始 HTML 内容，以提取高质量且多样化的文本。为此，我们构建了一个自定义解析器，用于提取 HTML 内容，并在样板移除的精确性和内容召回率方面进行优化。我们通过人工评估来评价解析器的质量，并将其与优化用于提取文章类内容的流行的第三方 HTML 解析器进行比较，发现我们的解析器表现更优。我们仔细处理包含数学和代码内容的 HTML 页面，以保留这些内容的结构。我们保留了图像的 alt 属性文本，因为数学内容通常以预渲染图像的形式呈现，而数学公式也同时包含在 alt 属性中。我们通过实验评估了不同的清洗配置。<u><em>我们发现，与纯文本相比，markdown 对主要基于网络数据训练的模型性能有害，因此我们移除了所有 markdown 标记。</em></u></p>
+<p><strong>去重。</strong> 我们在 URL、文档和行级别应用了多轮去重：</p>
+<ul>
+<li><strong>URL 级别去重。</strong> 我们在整个数据集上执行 URL 级别的去重。对于每个 URL 对应的页面，我们保留最新的版本。</li>
+<li><strong>文档级别去重。</strong> 我们在整个数据集上执行全局 MinHash（Broder, 1997）去重，以移除近似重复的文档。</li>
+<li><strong>行级别去重。</strong> 我们执行类似于 ccNet（Wenzek et al., 2019）的激进的行级别去重。我们移除在每桶 3000 万文档中出现超过 6 次的行。尽管我们的人工定性分析显示，行级别去重不仅移除了来自各种网站的残余样板内容（如导航菜单、Cookie 警告），也会移除频繁出现的高质量文本，但我们的实证评估显示其带来了显著的改进。</li>
+</ul>
+<p><strong>启发式过滤。</strong> 我们开发了启发式方法，用于移除额外的低质量文档、异常值和过度重复的文档。一些启发式方法的示例包括：</p>
+<ul>
+<li>我们使用重复 n-gram 覆盖率（Rae et al., 2021）来移除由重复内容（如日志或错误信息）组成的行。这些行可能非常长且独特，因此无法通过行去重过滤。</li>
+<li>我们使用&quot;脏词&quot;计数（Raffel et al., 2020）来过滤未被域名屏蔽列表覆盖的成人网站。</li>
+<li>我们使用 token 分布的 Kullback-Leibler 散度来过滤包含与训练语料分布相比异常 token 过多的文档。</li>
+</ul>
+<p><strong>基于模型的质量过滤。</strong> 此外，我们尝试应用多种基于模型的质量分类器来子选择高质量 token。这包括使用诸如 fasttext（Joulin et al., 2017）等快速分类器，训练其识别给定文本是否会被维基百科引用（Touvron et al., 2023a），以及使用基于 Llama 2 预测训练的、计算密集度更高的 Roberta 分类器（Liu et al., 2019a）。为了训练基于 Llama 2 的质量分类器，我们创建了一个由清洗后的网络文档组成的训练集，描述了质量要求，并指示 Llama 2 的聊天模型判断文档是否满足这些要求。出于效率考虑，我们使用 DistilRoberta（Sanh et al., 2019）为每个文档生成质量分数。我们通过实验评估了各种质量过滤配置的有效性。</p>
+<p><strong>代码与推理数据。</strong> 与 DeepSeek-AI et al.（2024）类似，我们构建了特定领域的流水线，用于提取与代码和数学相关的网页。具体来说，代码和推理分类器都是 DistilRoberta 模型，在由 Llama 2 标注的网络数据上训练。与上述通用质量分类器不同，我们进行了提示调优，以针对包含数学推导、STEM 领域推理以及与自然语言交错的代码的网页。由于代码和数学的 token 分布与自然语言有显著差异，这些流水线实现了领域特定的 HTML 提取、定制的文本特征和过滤启发式方法。</p>
+<p><strong>多语言数据。</strong> 与我们上述针对英语的处理流水线类似，我们实施了过滤器，用于移除可能包含 PII 或不安全内容的网站的数据。我们的多语言文本处理流水线具有若干独特特征：</p>
+<ul>
+<li>我们使用基于 fasttext 的语言识别模型将文档归类为 176 种语言。</li>
+<li>我们在每种语言的数据内部执行文档级和行级去重。</li>
+<li>我们应用语言特定的启发式方法和基于模型的过滤器来移除低质量文档。</li>
+</ul>
+<p>此外，我们使用基于多语言 Llama 2 的分类器对多语言文档进行质量排序，以确保高质量内容获得优先处理。我们通过实验确定预训练中使用的多语言 token 数量，平衡模型在英语和多语言基准上的性能。</p>
+<h3 id="3-1-2-确定数据混合比例">3.1.2 确定数据混合比例</h3>
+<p>Determining the Data Mix</p>
+<p>要获得高质量的语言模型，必须仔细确定预训练数据混合中不同数据来源的比例。我们确定数据混合比例的主要工具是知识分类和缩放法则实验。</p>
+<p><strong>知识分类。</strong> 我们开发了一个分类器，对网络数据中包含的信息类型进行分类，以便更有效地确定数据混合比例。我们使用该分类器对网络上过度呈现的数据类别（例如，艺术与娱乐）进行降采样。</p>
+<p><strong>数据混合的缩放法则。</strong> 为了确定最佳的数据混合比例，我们进行了缩放法则实验，在实验中我们使用某种数据混合训练若干小模型，并利用结果预测大模型在该混合上的表现（见第 3.2.1 节）。我们对不同的数据混合比例重复此过程多次，以选择新的候选数据混合。随后，我们在此候选数据混合上训练一个更大的模型，并在若干关键基准上评估该模型的性能。</p>
+<p><strong>数据混合总结。</strong> <u><em>我们最终的数据混合大约包含 50% 对应通用知识的 token、25% 的数学和推理 token、17% 的代码 token 以及 8% 的多语言 token。</em></u></p>
+<h3 id="3-1-3-退火数据">3.1.3 退火数据</h3>
+<p>Annealing Data</p>
+<p>根据经验，我们发现使用少量高质量代码和数学数据进行退火（见第 3.4.3 节）可以提升预训练模型在关键基准上的表现。与 Li et al.（2024b）类似，我们使用一种对选定领域的高质量数据进行上采样的数据混合来执行退火。我们未在退火数据中包含任何来自常用基准训练集的数据。这使我们能够评估 Llama 3 真正的少样本学习能力和域外泛化能力。</p>
+<blockquote>
+<p>个人注：这里的“退火”借用了冶金学里的概念，在<strong>大模型训练</strong>中指的是一种<strong>学习率调度策略</strong>，核心是：<strong>在预训练接近尾声时，把学习率降得很低，同时换用少量高质量数据，让模型“精修”一下。</strong></p>
+<p>冶金学里的“退火”：金属加热后缓慢冷却，能消除内部应力、让结构更稳定、性能更好。关键词是：<strong>先高温，后缓慢降温</strong>。</p>
+</blockquote>
+<p>参考 OpenAI（2023a），我们评估了在退火过程中使用 GSM8k（Cobbe et al., 2021）和 MATH（Hendrycks et al., 2021b）训练集进行退火的效果。我们发现，退火使预训练的 Llama 3 8B 模型在 GSM8k 和 MATH 验证集上的性能分别提升了 24.0% 和 6.4%。然而，405B 模型的改进微乎其微，这表明我们的旗舰模型具有较强的上下文学习和推理能力，不需要特定的域内训练样本即可获得优异表现。</p>
+<p><strong>使用退火评估数据质量。</strong> 与 Blakeney et al.（2024）类似，我们发现退火使我们能够判断小型领域特定数据集的价值。我们通过将训练了 50% 的 Llama 3 8B 模型的学习率在 400 亿 token 上线性退火至 0 来评估此类数据集的价值。在这些实验中，我们赋予新数据集 30% 的权重，其余 70% 的权重分配给默认数据混合。对于每个小数据集，使用退火来评估新数据源比执行缩放法则实验更高效。</p>
+<h2 id="3-2-模型架构">3.2 模型架构</h2>
+<p>Model Architecture</p>
+<p>Llama 3 使用标准的密集 Transformer 架构（Vaswani et al., 2017）。在模型架构方面，它与 Llama 和 Llama 2（Touvron et al., 2023a,b）没有显著差异；我们的性能提升主要源于数据质量和多样性的改进，以及训练规模的扩大。</p>
+<p>与 Llama 2 相比，我们做了几项小改动：</p>
+<ul>
+<li>我们使用分组查询注意力（GQA；Ainslie et al.（2023）），采用 8 个键值头，以提高推理速度并减少解码过程中键值缓存的大小。</li>
+<li>我们使用一种注意力掩码，防止同一序列中不同文档之间的自注意力。我们发现这一改动在标准预训练期间影响有限，但在超长序列的持续预训练中很重要。</li>
+<li>我们使用包含 128K token 的词表。我们的 token 词表将 tiktoken³ 分词器的 100K token 与额外 28K 用于更好支持非英语语言的 token 相结合。与 Llama 2 分词器相比，我们的新分词器在英语数据样本上的压缩率从每个 token 3.17 个字符提高到 3.94 个字符。这使得模型能够在相同的训练计算量下&quot;阅读&quot;更多文本。我们还发现，从选定的非英语语言中添加 28K token 既提高了压缩率，也提升了下游性能，且对英语分词没有影响。</li>
+<li>我们将 RoPE 基频超参数增加到 500,000。这使得我们能够更好地支持更长的上下文；Xiong et al.（2023）表明该值对于最长 32,768 的上下文长度是有效的。</li>
+</ul>
+<p>Llama 3 405B 采用包含 126 层、token 表示维度为 16,384 以及 128 个注意力头的架构；详情见表 3。根据我们训练预算为 3.8 × 10²⁵ FLOPs 的数据上的缩放法则，这使得模型规模大致达到计算最优。</p>
+<p>![Table-3.png](/img4/The Llama 3 Herd of Models/Table-3.png)</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>8B</th>
+<th>70B</th>
+<th>405B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>层数</td>
+<td>32</td>
+<td>80</td>
+<td>126</td>
+</tr>
+<tr>
+<td>模型维度</td>
+<td>4,096</td>
+<td>8192</td>
+<td>16,384</td>
+</tr>
+<tr>
+<td>FFN 维度</td>
+<td>14,336</td>
+<td>28,672</td>
+<td>53,248</td>
+</tr>
+<tr>
+<td>注意力头数</td>
+<td>32</td>
+<td>64</td>
+<td>128</td>
+</tr>
+<tr>
+<td>键/值头数</td>
+<td>8</td>
+<td>8</td>
+<td>8</td>
+</tr>
+<tr>
+<td>峰值学习率</td>
+<td>3 × 10⁻⁴</td>
+<td>1.5 × 10⁻⁴</td>
+<td>8 × 10⁻⁵</td>
+</tr>
+<tr>
+<td>激活函数</td>
+<td>SwiGLU</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>词表大小</td>
+<td>128,000</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>位置编码</td>
+<td>RoPE (θ = 500,000)</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>表 3：Llama 3 关键超参数概览。我们展示了 8B、70B 和 405B 语言模型的设置。</p>
+<p>³<a target="_blank" rel="noopener" href="https://github.com/openai/tiktoken/tree/main">https://github.com/openai/tiktoken/tree/main</a></p>
+<h3 id="3-2-1-缩放法则">3.2.1 缩放法则</h3>
+<p>Scaling Laws</p>
+<p>我们开发了缩放法则（Hoffmann et al., 2022；Kaplan et al., 2020），以根据我们的预训练计算预算确定旗舰模型的最优规模。除了确定最优模型规模外，一个主要挑战是预测旗舰模型在下游基准任务上的性能，这涉及几个问题：(1) 现有的缩放法则通常只预测下一个 token 预测损失，而非特定的基准性能。(2) 缩放法则可能噪声大且不可靠，因为它们是基于小计算预算下的预训练运行开发的（Wei et al., 2022b）。</p>
+<p>为应对这些挑战，我们实施了一个两阶段方法来开发能准确预测下游基准性能的缩放法则：</p>
+<ol>
+<li>我们首先建立计算最优模型在下游任务上的负对数似然与训练 FLOPs 之间的相关性。</li>
+<li>接着，我们利用缩放法则模型和使用更高计算 FLOPs 训练的较早模型，将下游任务上的负对数似然与任务准确率关联起来。在此步骤中，我们特别利用了 Llama 2 模型家族。</li>
+</ol>
+<p>这种方法使我们能够针对特定数量的训练 FLOPs 预测计算最优模型的下游任务性能。我们使用类似的方法来选择我们的预训练数据混合（见第 3.4 节）。</p>
+<p><strong>缩放法则实验。</strong> 具体来说，我们通过在 6 × 10¹⁸ FLOPs 到 10²² FLOPs 之间的计算预算下预训练模型来构建缩放法则。在每个计算预算下，我们预训练大小在 40M 到 16B 参数之间的模型，在每个计算预算下使用部分模型大小。在这些训练运行中，我们使用余弦学习率调度，并配备 2,000 个训练步骤的线性预热。峰值学习率根据模型大小设置在 2 × 10⁻⁴ 到 4 × 10⁻⁴ 之间。我们将余弦衰减设定为峰值的 0.1。每一步的权重衰减设置为该步学习率的 0.1 倍。对于每个计算规模，我们使用固定的批次大小，范围在 250K 到 4M 之间。</p>
+<p>这些实验产生了图 2 中的 IsoFLOPs 曲线。这些曲线中的损失是在一个独立的验证集上测量的。我们使用二次多项式拟合测得的损失值，并确定每条抛物线的极小值。我们将抛物线的极小值称为对应预训练计算预算下的计算最优模型。</p>
+<p>![Figure-2.png](/img4/The Llama 3 Herd of Models/Figure-2.png)</p>
+<p>图 2：6 × 10¹⁸ 到 10²² FLOPs 之间的缩放法则 IsoFLOPs 曲线。损失是保留验证集上的负对数似然。我们使用二次多项式近似每个计算规模下的测量值。</p>
+<p>图 3：已识别的计算最优模型中训练 token 数量与预训练计算预算的函数关系。图中同时包含拟合的缩放法则预测。计算最优模型对应图 2 中抛物线的极小值。</p>
+<p>![Figure-3.png](/img4/The Llama 3 Herd of Models/Figure-3.png)</p>
+<p>我们使用以这种方式识别的计算最优模型来预测特定计算预算下的最优训练 token 数量。为此，我们假设计算预算 C 与最优训练 token 数量 N⋆© 之间存在幂律关系：</p>
+<p>$$<br>
+N⋆© = ACᵅ<br>
+$$<br>
+我们使用图 2 中的数据拟合 A 和 α。我们得到 (α, A) = (0.53, 0.29)；相应的拟合结果如图 3 所示。将所得的缩放法则外推至 3.8 × 10²⁵ FLOPs，建议训练一个 402B 参数的模型，使用 16.55T token。</p>
+<p>一个重要发现是，随着计算预算的增加，IsoFLOPs 曲线在极小值附近变得更加平坦。这意味着旗舰模型的性能对模型规模与训练 token 之间权衡的细微变化相对稳健。基于这一观察，我们最终决定训练一个拥有 405B 参数的旗舰模型。</p>
+<p><strong>预测下游任务性能。</strong> 我们使用由此产生的计算最优模型来预测旗舰 Llama 3 模型在基准数据集上的性能。首先，我们建立（归一化的）基准中正确答案的负对数似然与训练 FLOPs 之间的线性相关性。在此分析中，我们仅使用在所述数据混合上训练至 10²² FLOPs 的缩放法则模型。接着，我们利用缩放法则模型和 Llama 2 模型（使用 Llama 2 数据混合和分词器训练）建立对数似然与准确率之间的 S 形关系。我们在 ARC Challenge 基准上展示了这一实验的结果（图 4）。我们发现这种跨越四个数量级外推的两步缩放法则预测相当准确：它仅略微低估了旗舰 Llama 3 模型的最终性能。</p>
+<p>![Figure-4.png](/img4/The Llama 3 Herd of Models/Figure-4.png)</p>
+<p>图 4：ARC Challenge 的缩放法则预测。左图：ARC Challenge 基准上正确答案的归一化负对数似然与预训练 FLOPs 的函数关系。右图：ARC Challenge 基准准确率与正确答案归一化负对数似然的函数关系。该分析使我们能够在预训练开始前预测模型在 ARC Challenge 基准上的性能。详见正文。</p>
+<h2 id="3-3-基础设施、扩展与效率">3.3 基础设施、扩展与效率</h2>
+<p>Infrastructure, Scaling, and Efficiency</p>
+<p>我们描述了为 Llama 3 405B 大规模预训练提供动力的硬件和基础设施，并讨论了带来训练效率提升的多项优化。</p>
+<h3 id="3-3-1-训练基础设施">3.3.1 训练基础设施</h3>
+<p>Training Infrastructure</p>
+<p>Llama 1 和 Llama 2 模型是在 Meta 的 AI Research SuperCluster（Lee and Sengupta, 2022）上训练的。随着我们进一步扩展规模，Llama 3 的训练迁移到了 Meta 的生产集群（Lee et al., 2024）。这种设置针对生产级可靠性进行了优化，这对于我们扩展训练规模至关重要。</p>
+<p><strong>计算资源。</strong> Llama 3 405B 在最多达 16K 块 H100 GPU 上进行训练，每块 GPU 运行在 700W TDP，配备 80GB HBM3 显存，使用 Meta 的 Grand Teton AI 服务器平台（Matt Bowman, 2022）。每台服务器配备 8 块 GPU 和 2 个 CPU。在服务器内部，8 块 GPU 通过 NVLink 连接。训练任务通过 MAST（Choudhury et al., 2024）——Meta 的全球级训练调度器——进行调度。</p>
+<p><strong>存储。</strong> Tectonic（Pan et al., 2021），Meta 的通用分布式文件系统，被用于为 Llama 3 预训练构建存储架构（Battey and Gupta, 2024）。它提供来自 7,500 台配备 SSD 的服务器的 240 PB 存储容量，并支持 2 TB/s 的持续吞吐量和 7 TB/s 的峰值吞吐量。一个主要挑战是支持高度突发性的检查点写入，这些写入会在短时间内饱和存储架构。检查点保存每块 GPU 的模型状态，每块 GPU 的范围为 1 MB 到 4 GB，用于恢复和调试。我们旨在最小化检查点期间的 GPU 暂停时间，并增加检查点频率以减少恢复后丢失的工作量。</p>
+<p><strong>网络。</strong> Llama 3 405B 使用了基于 Arista 7800 和 Minipack2 Open Compute Project⁴ OCP 机架交换机的 RDMA over Converged Ethernet（RoCE）架构。Llama 3 系列中较小的模型使用 Nvidia Quantum2 InfiniBand 架构进行训练。RoCE 和 InfiniBand 集群都利用 GPU 之间的 400 Gbps 互连。尽管这些集群在底层网络技术方面存在差异，但我们对两者都进行了调优，使其在这些大规模训练工作负载上提供同等的性能。由于我们完全拥有其设计，我们将进一步详细阐述我们的 RoCE 网络。</p>
+<p>⁴Open Compute Project：<a target="_blank" rel="noopener" href="https://www.opencompute.org/">https://www.opencompute.org/</a></p>
+<ul>
+<li><strong>网络拓扑。</strong> 我们的基于 RoCE 的 AI 集群包含 24K 块 GPU⁵，通过三层 Clos 网络（Lee et al., 2024）连接。在底层，每个机架托管 16 块 GPU，分布在两台服务器之间，并通过一个 Minipack2 架顶（ToR）交换机连接。在中间层，192 个这样的机架通过集群交换机连接，形成一个拥有 3,072 块 GPU 且具有全二分带宽的 pod，确保无超分。在顶层，同一数据中心建筑内的 8 个此类 pod 通过汇聚交换机连接，形成一个 24K GPU 的集群。然而，汇聚层的网络连接并未保持全二分带宽，而是具有 1:7 的超分比。我们的模型并行方法（见第 3.3.2 节）和训练任务调度器（Choudhury et al., 2024）都针对网络拓扑感知进行了优化，旨在最小化跨 pod 的网络通信。</li>
+</ul>
+<p>⁵请注意，我们在 Llama 3 预训练中仅使用这 24K GPU 中的最多 16K。</p>
+<ul>
+<li><strong>负载均衡。</strong> LLM 训练会产生巨大的网络流量，难以使用传统方法（如等价多路径（ECMP）路由）在所有可用网络路径上进行负载均衡。为应对这一挑战，我们采用了两种技术。首先，我们的集合通信库在两个 GPU 之间创建 16 条网络流，而非仅一条，从而减少每条流的流量并提供更多流用于负载均衡。其次，我们的增强型 ECMP（E-ECMP）协议通过哈希数据包 RoCE 头部中的额外字段，有效地将这 16 条流均衡分布到不同的网络路径上。</li>
+<li><strong>拥塞控制。</strong> 我们在 spine 层使用深缓冲交换机（Gangidi et al., 2024），以容纳由集合通信模式引起的瞬时拥塞和缓冲。这种设置有助于限制持久拥塞和由慢速服务器引起的网络背压的影响，这在训练中很常见。最后，通过 E-ECMP 实现更好的负载均衡显著减少了拥塞的可能性。凭借这些优化，我们成功地在没有使用数据中心量化拥塞通知（DCQCN）等传统拥塞控制方法的情况下运行了一个 24K GPU 集群。</li>
+</ul>
+<h3 id="3-3-2-模型扩展的并行策略">3.3.2 模型扩展的并行策略</h3>
+<p>Parallelism for Model Scaling</p>
+<p>为了扩展我们最大模型的训练规模，我们使用了 4D 并行——四种不同并行方法的组合——来分片模型。这种方法高效地将计算分布到众多 GPU 上，并确保每块 GPU 的模型参数、优化器状态、梯度和激活值都能容纳在其 HBM 中。我们的 4D 并行实现如图 5 所示。它结合了张量并行（TP；Krizhevsky et al.（2012）；Shoeybi et al.（2019）；Korthikanti et al.（2023））、流水线并行（PP；Huang et al.（2019）；Narayanan et al.（2021）；Lamy-Poirier（2023））、上下文并行（CP；Liu et al.（2023a））和数据并行（DP；Rajbhandari et al.（2020）；Ren et al.（2021）；Zhao et al.（2023b））。</p>
+<p>![Figure-5.png](/img4/The Llama 3 Herd of Models/Figure-5.png)</p>
+<p>张量并行将单个权重张量分割成多个块，分布在不同的设备上。流水线并行将模型按层垂直划分为多个阶段，使得不同设备可以并行处理完整模型流水线的不同阶段。上下文并行将输入上下文分割成多个段，减少超长序列输入的内存瓶颈。我们使用全分片数据并行（FSDP；Rajbhandari et al., 2020；Ren et al., 2021；Zhao et al., 2023b），它对模型、优化器和梯度进行分片，同时实现数据并行——在多个 GPU 上并行处理数据并在每个训练步骤后同步。我们在 Llama 3 中使用 FSDP 对优化器状态和梯度进行分片，但对于模型分片，我们在前向计算后不重新分片，以避免反向传播过程中额外的 all-gather 通信。</p>
+<p><strong>GPU 利用率。</strong> 通过对并行配置、硬件和软件的仔细调优，我们为表 4 所示的配置实现了 38-43% 的整体 BF16 模型 FLOPs 利用率（MFU；Chowdhery et al.（2023））。在 16K GPU 上 DP=128 时 MFU 略微下降至 41%（而在 8K GPU 上 DP=64 时为 43%），原因是每 DP 组的批次大小较低，以在训练期间保持全局每批次 token 数量恒定。</p>
+<p>![Table-4.png](/img4/The Llama 3 Herd of Models/Table-4.png)</p>
+<table>
+<thead>
+<tr>
+<th>GPU 数量</th>
+<th>TP</th>
+<th>CP</th>
+<th>PP</th>
+<th>DP</th>
+<th>序列长度</th>
+<th>每 DP 批次大小</th>
+<th>Token/批次</th>
+<th>TFLOPs/GPU</th>
+<th>BF16 MFU</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8,192</td>
+<td>8</td>
+<td>1</td>
+<td>16</td>
+<td>64</td>
+<td>8,192</td>
+<td>32</td>
+<td>16M</td>
+<td>430</td>
+<td>43%</td>
+</tr>
+<tr>
+<td>16,384</td>
+<td>8</td>
+<td>1</td>
+<td>16</td>
+<td>128</td>
+<td>8,192</td>
+<td>16</td>
+<td>16M</td>
+<td>400</td>
+<td>41%</td>
+</tr>
+<tr>
+<td>16,384</td>
+<td>8</td>
+<td>16</td>
+<td>16</td>
+<td>8</td>
+<td>131,072</td>
+<td>16</td>
+<td>16M</td>
+<td>380</td>
+<td>38%</td>
+</tr>
+</tbody>
+</table>
+<p>表 4：Llama 3 405B 预训练各阶段的扩展配置和 MFU。每种并行类型的描述见正文和图 5。</p>
+<p><strong>流水线并行改进。</strong> 我们在现有实现中遇到了几个挑战：</p>
+<ul>
+<li><strong>批次大小约束。</strong> 现有实现对每 GPU 支持的批次大小有限制，要求其能被流水线阶段数整除。对于图 6 中的示例，流水线并行的深度优先调度（DFS；Narayanan et al.（2021））要求 N = PP = 4，而广度优先调度（BFS；Lamy-Poirier（2023））要求 N = M，其中 M 是微批次的总体数量，N 是同一阶段前向或后向的连续微批次数量。然而，预训练通常需要灵活调整批次大小。</li>
+</ul>
+<p>![Figure-6.png](/img4/The Llama 3 Herd of Models/Figure-6.png)</p>
+<ul>
+<li><strong>内存不平衡。</strong> 现有的流水线并行实现会导致资源消耗不平衡。第一阶段由于嵌入层和预热微批次，消耗更多内存。</li>
+<li><strong>计算不平衡。</strong> 在模型的最后一层之后，我们需要计算输出和损失，使得这一阶段成为执行延迟的瓶颈。</li>
+</ul>
+<p>图 5：4D 并行示意图。GPU 按照 [TP, CP, PP, DP] 的顺序划分为并行组，其中 DP 代表 FSDP。在本示例中，16 块 GPU 的配置组大小为 |TP|=2、|CP|=2、|PP|=2 和 |DP|=2。GPU 在 4D 并行中的位置表示为向量 [D1, D2, D3, D4]，其中 Di 是第 i 个并行维度上的索引。在本例中，GPU0[TP0, CP0, PP0, DP0] 和 GPU1[TP1, CP0, PP0, DP0] 属于同一 TP 组，GPU0 和 GPU2 属于同一 CP 组，GPU0 和 GPU4 属于同一 PP 组，GPU0 和 GPU8 属于同一 DP 组。</p>
+<p>为解决这些问题，我们修改了流水线调度方案，如图 6 所示，该方案允许灵活设置 N——在此例中 N = 5，可以在每个批次中运行任意数量的微批次。这使我们能够：(1) 在大规模下受限于批次大小时，运行比阶段数更少的微批次；或 (2) 运行更多微批次以隐藏点对点通信，从而在 DFS 和 BFS 之间找到通信效率和内存效率的最佳平衡点。为平衡流水线，我们分别从第一阶段和最后阶段各减少一个 Transformer 层。这意味着第一阶段上的第一个模型块仅包含嵌入层，最后阶段上的最后一个模型块仅包含输出投影和损失计算。为减少流水线气泡，我们使用交错调度（Narayanan et al., 2021），每个流水线 rank 上包含 V 个流水线阶段。整体流水线气泡比例为 PP−1 / (V × M)。此外，我们在 PP 中采用异步点对点通信，这显著加速了训练，尤其是在文档掩码引入额外计算不平衡的情况下。我们启用 TORCH_NCCL_AVOID_RECORD_STREAMS 来减少异步点对点通信带来的内存使用。最后，为降低内存成本，基于详细的内存分配分析，我们主动释放不会用于后续计算的张量，包括每个流水线阶段的输入和输出张量以及不会用于后续计算的张量。凭借这些优化，我们可以在不使用激活检查点的情况下，在 8K token 的序列上预训练 Llama 3。</p>
+<p><strong>长序列的上下文并行。</strong> 我们利用上下文并行（CP）来提高扩展 Llama 3 上下文长度时的内存效率，并支持训练最长 128K 的超长序列。在 CP 中，我们沿序列维度进行划分，具体来说，我们将输入序列划分为 2 × CP 个块，使每个 CP rank 接收两个块以实现更好的负载均衡。第 i 个 CP rank 同时接收第 i 块和第 (2 × CP − 1 − i) 块。</p>
+<p>与采用环形结构重叠通信和计算的现有 CP 实现（Liu et al., 2023a）不同，我们的 CP 实现采用基于 all-gather 的方法：我们首先 all-gather 键（K）和值（V）张量，然后为本地查询（Q）张量块计算注意力输出。尽管 all-gather 通信延迟暴露在关键路径中，但我们仍然采用这种方法，主要有两个原因：(1) 在基于 all-gather 的 CP 注意力中，更容易且更灵活地支持不同类型的注意力掩码，例如文档掩码；(2) 暴露的 all-gather 延迟很小，因为由于使用 GQA（Ainslie et al., 2023），通信的 K 和 V 张量比 Q 张量小得多。因此，注意力计算的时间复杂度比 all-gather 高一个数量级（O(S²) 对比 O(S)，其中 S 表示完整因果掩码中的序列长度），使得 all-gather 开销可以忽略不计。</p>
+<p><strong>网络感知的并行配置。</strong> 并行维度的顺序 [TP, CP, PP, DP] 是针对网络通信优化的。最内层的并行需要最高的网络带宽和最低的延迟，因此通常限制在同一台服务器内。最外层的并行可能跨越多跳网络，应能容忍更高的网络延迟。因此，基于网络带宽和延迟的要求，我们按 [TP, CP, PP, DP] 的顺序排列并行维度。DP（即 FSDP）是最外层的并行，因为它可以通过异步预取分片的模型权重和规约梯度来容忍更长的网络延迟。在避免 GPU 内存溢出的同时，确定具有最小通信开销的最优并行配置是具有挑战性的。我们开发了一个内存消耗估算器和一个性能预测工具，帮助我们探索各种并行配置，预测整体训练性能，并有效识别内存缺口。</p>
+<p><strong>数值稳定性。</strong> 通过比较不同并行设置下的训练损失，我们修复了影响训练稳定性的若干数值问题。为确保训练收敛，我们在反向计算中使用 FP32 梯度累积跨多个微批次，并在 FSDP 中的数据并行工作节点间以 FP32 进行 reduce-scatter 梯度。对于在前向计算中被多次使用的中间张量（例如视觉编码器输出），其反向梯度也以 FP32 累积。</p>
+<h3 id="3-3-3-集合通信">3.3.3 集合通信</h3>
+<p>Collective Communication</p>
+<p>我们用于 Llama 3 的集合通信库基于 Nvidia NCCL 库的一个分支，称为 NCCLX。NCCLX 显著提升了 NCCL 的性能，特别是在高延迟网络环境下。回顾一下，并行维度的顺序是 [TP, CP, PP, DP]，其中 DP 对应 FSDP。最外层的并行维度 PP 和 DP 可能通过多跳网络通信，延迟高达数十微秒。原始的 NCCL 集合操作——FSDP 中的 all-gather 和 reduce-scatter，以及 PP 中的点对点通信——需要数据分块和阶段性数据拷贝。这种方法存在若干低效问题，包括 (1) 需要通过网络交换大量小型控制消息来协调数据传输，(2) 额外的内存拷贝操作，以及 (3) 将额外的 GPU 周期用于通信。对于 Llama 3 训练，我们通过调整分块和数据处理以适配我们的网络延迟（对于大型集群，可能高达数十微秒），解决了其中的部分低效问题。我们还允许小型控制消息以更高优先级穿越我们的网络，特别是在深缓冲核心交换机中避免队头阻塞。我们正在为未来 Llama 版本进行的工作包括在 NCCLX 中进行更深层次的更改，以全面解决上述所有问题。</p>
+<table>
+<thead>
+<tr>
+<th>组件</th>
+<th>类别</th>
+<th>中断次数</th>
+<th>中断占比</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>故障 GPU</td>
+<td>GPU</td>
+<td>148</td>
+<td>30.1%</td>
+</tr>
+<tr>
+<td>GPU HBM3 显存</td>
+<td>GPU</td>
+<td>72</td>
+<td>17.2%</td>
+</tr>
+<tr>
+<td>软件缺陷</td>
+<td>依赖</td>
+<td>54</td>
+<td>12.9%</td>
+</tr>
+<tr>
+<td>网络交换机/线缆</td>
+<td>网络</td>
+<td>35</td>
+<td>8.4%</td>
+</tr>
+<tr>
+<td>主机维护</td>
+<td>非计划维护</td>
+<td>32</td>
+<td>7.6%</td>
+</tr>
+<tr>
+<td>GPU SRAM 显存</td>
+<td>GPU</td>
+<td>19</td>
+<td>4.5%</td>
+</tr>
+<tr>
+<td>GPU 系统处理器</td>
+<td>GPU</td>
+<td>17</td>
+<td>4.1%</td>
+</tr>
+<tr>
+<td>NIC</td>
+<td>主机</td>
+<td>7</td>
+<td>1.7%</td>
+</tr>
+<tr>
+<td>NCCL 看门狗超时</td>
+<td>未知</td>
+<td>7</td>
+<td>1.7%</td>
+</tr>
+<tr>
+<td>静默数据损坏</td>
+<td>GPU</td>
+<td>6</td>
+<td>1.4%</td>
+</tr>
+<tr>
+<td>GPU 热接口 + 传感器</td>
+<td>GPU</td>
+<td>6</td>
+<td>1.4%</td>
+</tr>
+<tr>
+<td>SSD</td>
+<td>主机</td>
+<td>3</td>
+<td>0.7%</td>
+</tr>
+<tr>
+<td>电源</td>
+<td>主机</td>
+<td>3</td>
+<td>0.7%</td>
+</tr>
+<tr>
+<td>服务器机箱</td>
+<td>主机</td>
+<td>2</td>
+<td>0.5%</td>
+</tr>
+<tr>
+<td>IO 扩展板</td>
+<td>主机</td>
+<td>2</td>
+<td>0.5%</td>
+</tr>
+<tr>
+<td>依赖</td>
+<td>依赖</td>
+<td>2</td>
+<td>0.5%</td>
+</tr>
+<tr>
+<td>CPU</td>
+<td>主机</td>
+<td>2</td>
+<td>0.5%</td>
+</tr>
+<tr>
+<td>系统内存</td>
+<td>主机</td>
+<td>2</td>
+<td>0.5%</td>
+</tr>
+</tbody>
+</table>
+<p>表 5：Llama 3 405B 预训练 54 天期间意外中断的根因分类。约 78% 的意外中断归因于已确认或疑似硬件问题。</p>
+<p>![Table-5.png](/img4/The Llama 3 Herd of Models/Table-5.png)</p>
+<h3 id="3-3-4-可靠性与运营挑战">3.3.4 可靠性与运营挑战</h3>
+<p>Reliability and Operational Challenges</p>
+<p>16K GPU 训练的复杂性和潜在故障场景超过了我们运营过的规模更大的 CPU 集群。此外，训练的同步性质使其容错性较差——单个 GPU 故障可能需要重启整个作业。尽管面临这些挑战，在 Llama 3 中，我们实现了超过 90% 的有效训练时间，同时支持自动化集群维护（如固件和 Linux 内核升级（Vigraham and Leonhardi, 2024）），这导致了每天至少一次训练中断。有效训练时间衡量的是在总经过时间中用于有效训练的时间。</p>
+<p>在预训练的 54 天快照期内，我们共经历了 466 次作业中断。其中 47 次是计划内中断，由自动化维护操作（如固件升级）或操作员发起的操作（如配置或数据集更新）导致。其余 419 次是意外中断，分类如表 5 所示。约 78% 的意外中断归因于已确认的硬件问题（如 GPU 或主机组件故障），或疑似硬件相关的问题（如静默数据损坏和非计划的单个主机维护事件）。GPU 问题是最大的类别，占所有意外问题的 58.7%。尽管故障数量较大，在此期间仅需三次重大人工干预，其余问题均由自动化处理。</p>
+<p>为提高有效训练时间，我们减少了作业启动和检查点保存时间，并开发了用于快速诊断和问题解决的工具。我们广泛使用 PyTorch 内置的 NCCL 飞行记录器（Ansel et al., 2024），该功能将集合元数据和堆栈跟踪捕获到环形缓冲区中，从而允许我们在大规模下快速诊断挂起和性能问题，尤其是与 NCCLX 相关的问题。利用这一工具，我们高效地记录每个通信事件和每个集合操作的持续时间，并在 NCCLX 看门狗或心跳超时时自动转储跟踪数据。我们通过在线配置更改（Tang et al., 2015），在不需代码发布或作业重启的情况下，按需在生产环境中选择性启用计算密集度更高的跟踪操作和元数据收集。</p>
+<p>大规模训练中的调试问题因我们的网络混合使用 NVLink 和 RoCE 而变得复杂。通过 NVLink 的数据传输通常通过 CUDA 内核发出的 load/store 操作进行，而远程 GPU 或 NVLink 连接的故障通常表现为 CUDA 内核中 stalled 的 load/store 操作，且未返回清晰的错误码。NCCLX 通过与 PyTorch 的紧密协同设计，增强了故障检测和定位的速度与准确性，使 PyTorch 能够访问 NCCLX 的内部状态并跟踪相关信息。虽然由 NVLink 故障引起的 stall 无法完全避免，但我们的系统会监控通信库的状态，并在检测到此类 stall 时自动超时。此外，NCCLX 跟踪每个 NCCLX 通信的内核和网络活动，并提供故障 NCCLX 集合的内部状态快照，包括所有 rank 之间已完成和待处理的数据传输。我们分析这些数据以调试 NCCLX 的扩展问题。</p>
+<p>有时，硬件问题可能导致仍在运行但速度变慢的问题节点，这些节点难以检测。即使单个慢节点也能拖慢数千个其他 GPU，通常表现为通信正常但缓慢。我们开发了工具，用于优先处理来自选定进程组的潜在问题通信。通过仅调查少数几个主要嫌疑对象，我们通常能够有效识别出慢节点。</p>
+<p>一个有趣的观察是环境因素对大规模训练性能的影响。对于 Llama 3 405B，我们注意到存在约 1-2% 的日内吞吐量波动，取决于具体时段。这种波动是午间较高温度影响 GPU 动态电压和频率调整的结果。</p>
+<p>在训练过程中，数万块 GPU 可能同时增加或减少功耗，例如，由于所有 GPU 等待检查点保存或集合通信完成，或整个训练作业的启动或关闭。发生这种情况时，可能导致数据中心内功耗瞬时波动达到数十兆瓦级别，对电网容量构成挑战。随着我们为未来更大的 Llama 模型扩展训练规模，这仍是一个持续的挑战。</p>
+<h2 id="3-4-训练方案">3.4 训练方案</h2>
+<p>Training Recipe</p>
+<p><u><em>用于预训练 Llama 3 405B 的方案包含三个主要阶段：(1) 初始预训练，(2) 长上下文预训练，以及 (3) 退火。</em></u>这三个阶段分别描述如下。我们使用类似的方案来预训练 8B 和 70B 模型。</p>
+<h3 id="3-4-1-初始预训练">3.4.1 初始预训练</h3>
+<p>Initial Pre-Training</p>
+<p>我们使用 AdamW 预训练 Llama 3 405B，峰值学习率为 8 × 10⁻⁵，线性预热 8,000 步，余弦学习率调度在 1,200,000 步内衰减至 8 × 10⁻⁷。我们在训练早期使用较小的批次大小以提高训练稳定性，随后增加批次大小以提高效率。具体来说，我们使用初始批次大小为 400 万 token，序列长度为 4,096，在预训练 2.52 亿 token 后，将这些值翻倍为批次大小 800 万 token，序列长度 8,192。在预训练约 2.87T token 后，我们再次将批次大小翻倍至 1,600 万。我们发现该训练方案非常稳定：我们观察到很少的损失尖峰，且无需干预即可纠正模型训练发散。</p>
+<p><strong>调整数据混合。</strong> 我们在训练过程中对预训练数据混合进行了多次调整，以改善模型在特定下游任务上的表现。具体来说，我们在预训练期间增加了非英语数据的比例，以改善 Llama 3 的多语言性能。我们还上采样了数学数据，以提升模型的数学推理能力；在预训练后期添加了更多近期网络数据，以推进模型的知识截止日期；并对后来被识别为质量较低的预训练数据子集进行了降采样。</p>
+<h3 id="3-4-2-长上下文预训练">3.4.2 长上下文预训练</h3>
+<p>Long Context Pre-Training</p>
+<p>在预训练的最后阶段，我们在长序列上进行训练，以支持最长 128K token 的上下文窗口。<u><em>我们不更早地在长序列上训练，因为自注意力层中的计算量随序列长度呈二次增长。我们逐步增加支持的上下文长度，预训练直到模型成功适应增加后的上下文长度。</em></u>我们通过衡量以下两方面来评估成功适应：(1) 短上下文评估上的模型性能已完全恢复；(2) 模型在该长度下完美解决了&quot;大海捞针&quot;任务。在 Llama 3 405B 预训练中，我们分六个阶段逐步增加上下文长度，从原始的 8K 上下文窗口开始，最终达到 128K 上下文窗口。此长上下文预训练阶段使用了约 8000 亿训练 token。</p>
+<h3 id="3-4-3-退火">3.4.3 退火</h3>
+<p>Annealing</p>
+<p>在最后 4000 万 token 的预训练过程中，我们将学习率线性退火至 0，同时保持 128K token 的上下文长度。在此退火阶段，我们还调整了数据混合，对高质量数据来源进行上采样；详见第 3.1.3 节。最后，我们在退火过程中计算模型检查点的平均值（Polyak (1991) 平均），以产生最终的预训练模型。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/10/04/%E3%80%8AThe%20Llama%203%20Herd%20of%20Models%E3%80%8B01-02/" rel="prev" title="《The Llama 3 Herd of Models》引言">
+                  <i class="fa fa-angle-left"></i> 《The Llama 3 Herd of Models》引言
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/10/04/%E3%80%8AThe%20Llama%203%20Herd%20of%20Models%E3%80%8B04PostTraining/" rel="next" title="《The Llama 3 Herd of Models》4 后训练">
+                  《The Llama 3 Herd of Models》4 后训练 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+    <div id="search-container" style="margin: 20px auto; max-width: 600px;">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js"></script>
+      <div id="search"></div>
+      <script>
+        window.addEventListener('DOMContentLoaded', (event) => {
+            new PagefindUI({ 
+                element: "#search", 
+                showImages: false,
+                translations: {
+                    placeholder: "搜搜看...",
+                    clear_search: "清除",
+                    load_more: "加载更多",
+                    search_label: "搜索",
+                    filters_label: "筛选",
+                    zero_results: "未找到关于 [SEARCH_TERM] 的结果",
+                    many_results: "找到 [COUNT] 条关于 [SEARCH_TERM] 的结果",
+                    one_result: "找到 1 条关于 [SEARCH_TERM] 的结果",
+                    searching: "正在搜索..."
+                }
+            });
+        });
+      </script>
+    </div>
+  
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>

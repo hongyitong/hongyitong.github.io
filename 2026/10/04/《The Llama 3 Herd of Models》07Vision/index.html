@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false,"path":"/search.json"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="7 视觉实验 7 Vision Experiments 我们通过一系列实验，将视觉识别能力以组合方式集成到 Llama 3 中，主要分为两个阶段。首先，我们在一个大规模图像-文本对上，通过在预训练的图像编码器（Xu et al., 2023）和预训练的语言模型之间引入并训练一组交叉注意力层（Alayrac et al., 2022），将两者组合起来，得到如图 28 所示的模型。其次，我们引入时序聚">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《The Llama 3 Herd of Models》7 视觉实验">
+<meta property="og:url" content="http://hongyitong.github.io/2026/10/04/%E3%80%8AThe%20Llama%203%20Herd%20of%20Models%E3%80%8B07Vision/index.html">
+<meta property="og:site_name" content="墨语浮生">
+<meta property="og:description" content="7 视觉实验 7 Vision Experiments 我们通过一系列实验，将视觉识别能力以组合方式集成到 Llama 3 中，主要分为两个阶段。首先，我们在一个大规模图像-文本对上，通过在预训练的图像编码器（Xu et al., 2023）和预训练的语言模型之间引入并训练一组交叉注意力层（Alayrac et al., 2022），将两者组合起来，得到如图 28 所示的模型。其次，我们引入时序聚">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-10-04T07:00:00.000Z">
+<meta property="article:modified_time" content="2026-10-05T03:53:11.364Z">
+<meta property="article:author" content="Rayman.hung">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2026/10/04/%E3%80%8AThe%20Llama%203%20Herd%20of%20Models%E3%80%8B07Vision/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2026/10/04/%E3%80%8AThe%20Llama%203%20Herd%20of%20Models%E3%80%8B07Vision/","path":"2026/10/04/《The Llama 3 Herd of Models》07Vision/","title":"《The Llama 3 Herd of Models》7 视觉实验"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>《The Llama 3 Herd of Models》7 视觉实验 | 墨语浮生</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="fc62aedd-644a-478d-b3c2-d8ba9964421c" src="https://cloud.umami.is/script.js" data-host-url="https://cloud.umami.is"></script>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js" defer></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">墨语浮生</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-text">7 视觉实验</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#7-1-%E6%95%B0%E6%8D%AE"><span class="nav-text">7.1 数据</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#7-1-1-%E5%9B%BE%E5%83%8F%E6%95%B0%E6%8D%AE"><span class="nav-text">7.1.1 图像数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-1-2-%E8%A7%86%E9%A2%91%E6%95%B0%E6%8D%AE"><span class="nav-text">7.1.2 视频数据</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-2-%E6%A8%A1%E5%9E%8B%E6%9E%B6%E6%9E%84"><span class="nav-text">7.2 模型架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-3-%E6%A8%A1%E5%9E%8B%E7%BC%A9%E6%94%BE"><span class="nav-text">7.3 模型缩放</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-4-%E9%A2%84%E8%AE%AD%E7%BB%83"><span class="nav-text">7.4 预训练</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-5-%E5%90%8E%E8%AE%AD%E7%BB%83"><span class="nav-text">7.5 后训练</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#7-5-1-%E7%9B%91%E7%9D%A3%E5%BE%AE%E8%B0%83%E6%95%B0%E6%8D%AE"><span class="nav-text">7.5.1 监督微调数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-5-2-%E7%9B%91%E7%9D%A3%E5%BE%AE%E8%B0%83%E6%96%B9%E6%A1%88"><span class="nav-text">7.5.2 监督微调方案</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-5-3-%E5%81%8F%E5%A5%BD%E6%95%B0%E6%8D%AE"><span class="nav-text">7.5.3 偏好数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-5-4-%E5%A5%96%E5%8A%B1%E5%BB%BA%E6%A8%A1"><span class="nav-text">7.5.4 奖励建模</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-5-5-%E7%9B%B4%E6%8E%A5%E5%81%8F%E5%A5%BD%E4%BC%98%E5%8C%96"><span class="nav-text">7.5.5 直接偏好优化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-5-6-%E6%8B%92%E7%BB%9D%E9%87%87%E6%A0%B7"><span class="nav-text">7.5.6 拒绝采样</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-5-7-%E8%B4%A8%E9%87%8F%E8%B0%83%E4%BC%98"><span class="nav-text">7.5.7 质量调优</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-6-%E5%9B%BE%E5%83%8F%E8%AF%86%E5%88%AB%E7%BB%93%E6%9E%9C"><span class="nav-text">7.6 图像识别结果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-7-%E8%A7%86%E9%A2%91%E8%AF%86%E5%88%AB%E7%BB%93%E6%9E%9C"><span class="nav-text">7.7 视频识别结果</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、心情记录</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives">
+          <span class="site-state-item-count">363</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/10/04/%E3%80%8AThe%20Llama%203%20Herd%20of%20Models%E3%80%8B07Vision/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="《The Llama 3 Herd of Models》7 视觉实验 | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《The Llama 3 Herd of Models》7 视觉实验
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-10-04 15:00:00" itemprop="dateCreated datePublished" datetime="2026-10-04T15:00:00+08:00">2026-10-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1>7 视觉实验</h1>
+<p>7 Vision Experiments</p>
+<p>我们通过一系列实验，将视觉识别能力以组合方式集成到 Llama 3 中，主要分为两个阶段。首先，<u><em>我们在一个大规模图像-文本对上，通过在预训练的图像编码器（Xu et al., 2023）和预训练的语言模型之间引入并训练一组交叉注意力层（Alayrac et al., 2022），将两者组合起来</em></u>，得到如图 28 所示的模型。其次，我们引入时序聚合器层和额外的视频交叉注意力层，在大规模视频-文本对上进行训练，使模型学会识别和处理视频中的时序信息。</p>
+<span id="more"></span>  
+<p>![Figure-28.png](/img4/The Llama 3 Herd of Models/Figure-28.png)</p>
+<p><strong>图 28：</strong> 本文研究的为 Llama 3 添加多模态能力的组合方法示意图。该方法产生一个经过五个阶段训练的多模态模型：(1) 语言模型预训练，(2) 多模态编码器预训练，(3) 视觉适配器训练，(4) 模型微调，(5) 语音适配器训练。</p>
+<p>这种基座模型开发的组合方式具有以下几个优势：(1) 它使我们能够并行开发视觉和语言建模能力；(2) 它规避了在视觉和语言数据上联合预训练的复杂性，这些复杂性源于视觉数据的 tokenization、不同模态 token 的背景困惑度差异以及模态间的竞争；(3) 它保证了模型在纯文本任务上的性能不受引入视觉识别能力的影响；(4) 交叉注意力架构确保我们无需将全分辨率图像通过日益庞大的 LLM 主干网络（特别是每个 Transformer 层中的前馈网络），从而在推理时更加高效。我们指出，我们的多模态模型仍在开发中，尚未准备好发布。</p>
+<p>在 7.6 节和 7.7 节展示实验结果之前，我们先描述用于训练视觉识别能力的数据、视觉组件的模型架构、如何扩展这些组件的训练，以及我们的预训练和后训练方案。</p>
+<h2 id="7-1-数据">7.1 数据</h2>
+<p>7.1 Data</p>
+<p>下面我们分别描述图像和视频数据。</p>
+<h3 id="7-1-1-图像数据">7.1.1 图像数据</h3>
+<p>7.1.1 Image Data</p>
+<p>我们的图像编码器和适配器在图像-文本对上训练。我们通过复杂的数据处理流水线构建该数据集，包括四个主要阶段：(1) 质量过滤，(2) 感知去重，(3) 重采样，(4) 光学字符识别。我们还应用了一系列安全措施。</p>
+<ul>
+<li>
+<p><strong>质量过滤</strong>：我们通过启发式方法（如 Radford et al. (2021) 产生的低对齐分数）实现质量过滤器，<u><em>去除非英文字幕和低质量字幕。具体来说，我们移除所有低于特定 CLIP 分数的图像-文本对。</em></u></p>
+</li>
+<li>
+<p><strong>去重</strong>：对大规模训练数据集进行去重有利于模型性能，因为它减少了在冗余数据上的训练计算量（Esser et al., 2024; Lee et al., 2021; Abbas et al., 2023）和记忆化问题（Carlini et al., 2023; Somepalli et al., 2023）。因此，我们出于效率和隐私原因对训练数据进行去重。为此，我们使用内部版本的先进 SSCD 拷贝检测模型（Pizzi et al., 2022）对图像进行大规模去重。对于所有图像，我们首先使用 SSCD 模型计算 512 维表示。然后使用这些嵌入，通过余弦相似度度量对数据集中的每张图像进行最近邻（NN）搜索。我们将超过特定相似度阈值的示例定义为重复项。使用连通分量算法对这些重复项进行分组，每个连通分量仅保留一个图像-文本对。我们通过以下方式提高去重流水线的效率：(1) 使用 k-means 对数据进行预聚类，(2) 使用 FAISS（Johnson et al., 2019）进行 NN 搜索和聚类。</p>
+</li>
+<li>
+<p><strong>重采样</strong>：我们通过类似于 Xu et al. (2023)、Mahajan et al. (2018)、Mikolov et al. (2013) 的重采样方法确保图像-文本对的多样性。首先，我们通过解析高质量文本源构建一个 n-gram 词汇表。然后，计算数据集中每个词汇 n-gram 的频率。接着按如下方式对数据进行重采样：如果字幕中的任何一个 n-gram 在词汇表中出现的次数少于 T 次，则保留对应的图像-文本对；否则，我们以概率 p ∝ √(T/fᵢ) 对字幕中的每个 n-gram nᵢ 独立采样（其中 fᵢ 表示 n-gram nᵢ 的频率）；如果采到了任何一个 n-gram，则保留该图像-文本对。这种重采样有助于在低频类别和细粒度识别任务上的表现。</p>
+</li>
+<li>
+<p><strong>光学字符识别</strong>：我们通过提取图像中的文本并将其与字幕拼接，进一步改进图像-文本数据。图像中的文本使用专有光学字符识别（OCR）流水线提取。我们观察到，将 OCR 数据加入训练数据极大提升了需要 OCR 能力的任务，如文档理解。</p>
+</li>
+</ul>
+<p><u><em><strong>转录文档</strong>：为了提高模型在文档理解任务上的性能，我们将文档页面渲染为图像，并将图像与其对应的文本配对。文档文本直接从源文件或通过文档解析流水线获取。</em></u></p>
+<p><strong>安全性</strong>：我们主要确保图像识别的预训练数据集不包含不安全内容，例如性虐待材料（CSAM）（Thiel, 2023）。我们使用感知哈希方法（如 PhotoDNA（Farid, 2021））以及内部专有分类器扫描所有训练图像中的 CSAM。我们还使用专有的媒体风险检索流水线，识别并移除我们认为不宜工作场合（NSFW）的图像-文本对，例如包含色情或暴力内容的材料。我们相信，最小化训练数据集中此类材料的比例可以提高最终模型的安全性，同时不影响其有用性。最后，<u><em>我们对训练集中的所有图像进行人脸模糊处理</em></u>。我们使用人类生成的、引用附件图像的提示对模型进行测试。</p>
+<p><strong>退火数据</strong>：我们通过使用 n-gram 将图像-字幕对重采样至约 3.5 亿个示例，创建一个退火数据集。由于 n-gram 重采样偏向更丰富的文本描述，这筛选出了一个更高质量的数据子集。我们通过从五个额外来源加入约 1.5 亿个示例来增强所得数据：</p>
+<ul>
+<li>
+<p><strong>视觉定位</strong>：我们将文本中的名词短语链接到图像中的边界框或掩码。定位信息（边界框和掩码）以两种方式在图像-文本对中指定：(1) 我们在图像上叠加带有标记的框或掩码，并在文本中使用标记作为参考，类似于 set-of-marks（Yang et al., 2023a）；(2) 我们将归一化的 (xmin, ymin, xmax, ymax) 坐标直接插入文本中，由特殊标记分隔。</p>
+</li>
+<li>
+<p><strong>截图解析</strong>：我们从 HTML 代码渲染截图，并让模型预测截图中某个特定元素对应的代码，类似于 Lee et al. (2023)。感兴趣的元素在截图中通过边界框标示。</p>
+</li>
+<li>
+<p><strong>问答对</strong>：我们包含问答对，这使得我们能够使用数量过多、无法用于模型微调的问答数据。</p>
+</li>
+<li>
+<p><strong>合成字幕</strong>：<u><em>我们包含由早期版本模型生成的带有合成字幕的图像。与原始字幕相比，我们发现合成字幕对图像的描述比原始字幕更全面。</em></u></p>
+</li>
+<li>
+<p><strong>合成生成的結構化图像</strong>：<u><em>我们还包括针对各种领域（如图表、表格、流程图、数学公式和文本数据）的合成生成图像。这些图像附有相应的结构化表示，如对应的 Markdown 或 LaTeX 符号。除了提高模型在这些领域的识别能力外</em></u>，我们发现这些数据有助于通过文本模型生成问答对用于微调。</p>
+</li>
+</ul>
+<blockquote>
+<p>个人注：<br>
+你引用的这段是<strong>构造训练数据</strong>：用合成图片 + 已知 LaTeX 标签，训练多模态大模型学会&quot;看图输出 LaTeX&quot;。所以现代系统里，公式转 LaTeX 越来越多地<strong>靠大模型本身的能力</strong>，而非外部 OCR 工具——而这种能力，正是这类合成数据训练出来的。专用 OCR 工具仍用于高精度或特定场景，实际系统常是两者结合。</p>
+</blockquote>
+<h3 id="7-1-2-视频数据">7.1.2 视频数据</h3>
+<p>7.1.2 Video Data</p>
+<p>对于视频预训练，我们使用一个大规模的視頻-文本对数据集。我们的数据集通过多阶段流程进行策展。我们使用基于规则的启发式方法（如确保最小长度和修正大小写）对相关文本进行过滤和清洗。然后，运行语言识别模型过滤掉非英文文本。运行 OCR 检测模型过滤掉叠加文本过多的视频。为确保视频-文本对之间有合理的对齐，我们使用 CLIP（Radford et al., 2021）风格的图像-文本和视频-文本对比模型。我们首先使用视频中的单帧计算图像-文本相似度，过滤掉低相似度的配对，然后进一步过滤掉低视频-文本对齐的配对。部分数据包含静态或低运动视频；我们使用基于运动分数的过滤方法（Girdhar et al., 2023）过滤掉此类数据。我们不对视频的视觉质量（如美学评分或分辨率）应用任何过滤。</p>
+<p>我们的数据集包含平均时长 21 秒、中位数时长 16 秒的视频，其中超过 99% 的视频时长在 1 分钟以内。空间分辨率从 320p 到 4K 不等，超过 70% 的视频短边大于 720 像素。视频的长宽比各不相同，几乎所有视频的长宽比介于 1:2 和 2:1 之间，中位数为 1:1。</p>
+<h2 id="7-2-模型架构">7.2 模型架构</h2>
+<p>7.2 Model Architecture</p>
+<p>我们的视觉识别模型由三个主要组件组成：(1) 图像编码器，(2) 图像适配器，(3) 视频适配器。</p>
+<p><strong>图像编码器</strong>：我们的图像编码器是一个标准的视觉 Transformer（ViT；Dosovitskiy et al. (2020)），经过训练以对齐图像和文本（Xu et al., 2023）。我们使用 ViT-H/14 变体的图像编码器，其参数量为 6.3 亿，在 25 亿个图像-文本对上训练了五个 epoch。图像编码器在 224×224 分辨率图像上预训练；图像被分割为 16×16 个等大小块（即块大小为 14×14 像素）。正如 prior work（如 ViP-Llava，Cai et al., 2024）所展示的，我们观察到通过对比文本对齐目标训练的图像编码器无法保留细粒度的定位信息。为解决此问题，我们采用多层特征提取，除最终层特征外，还从第 4、8、16、24 和 31 层提取特征。此外，我们在预训练交叉注意力层之前进一步插入 8 个门控自注意力层（总共 40 个 Transformer 块），以学习对齐特定的特征。因此，图像编码器最终共有 8.5 亿参数（含额外层）。通过多层特征，图像编码器为每个 16×16=256 个块生成 7680 维的表示。在后续训练阶段中，图像编码器的参数不被冻结，因为我们发现这能提高性能，尤其在文本识别等领域。</p>
+<p><u><em><strong>图像适配器</strong>：我们在图像编码器产生的视觉 token 表示与语言模型产生的 token 表示之间引入交叉注意力层（Alayrac et al., 2022）。</em></u>交叉注意力层在核心语言模型的每第四个自注意力层之后应用。与语言模型本身一样，交叉注意力层使用广义查询注意力（GQA）以提高效率。交叉注意力层为模型引入了大量额外的可训练参数：对于 Llama 3 405B，交叉注意力层约有 1000 亿参数。我们分两个阶段预训练图像适配器：(1) 初始预训练，然后 (2) 退火：</p>
+<ul>
+<li>
+<p><strong>初始预训练</strong>：我们在上述约 60 亿图像-文本对的数据集上预训练图像适配器。出于计算效率考虑，我们将所有图像调整为最多四个 336×336 像素的 tile，支持不同的宽高比排列，例如 672×672、672×336 和 1344×336。</p>
+</li>
+<li>
+<p><strong>退火</strong>：我们在上述退火数据集的约 5 亿图像上继续训练图像适配器。在退火过程中，我们增加每个 tile 的图像分辨率，以提高在需要更高分辨率图像的任务（如信息图理解）上的性能。</p>
+</li>
+</ul>
+<p><strong>视频适配器</strong>：我们的模型最多接受 64 帧输入（从完整视频中均匀采样），每帧由图像编码器处理。我们通过两个组件建模视频中的时序结构：(i) 编码后的视频帧由时序聚合器汇总，将连续的 32 帧合并为一帧；(ii) 在每第四层图像交叉注意力层之前添加额外的视频交叉注意力层。时序聚合器实现为 perceiver resampler（Jaegle et al., 2021; Alayrac et al., 2022）。我们使用每视频 16 帧进行预训练（聚合为 1 帧），但在监督微调期间将输入帧数增加到 64 帧。对于 Llama 3 8B 和 70B，视频聚合器和交叉注意力层分别有 0.6B 和 4.6B 参数。</p>
+<p>[PAGE 56]</p>
+<h2 id="7-3-模型缩放">7.3 模型缩放</h2>
+<p>7.3 Model Scaling</p>
+<p>在将视觉识别组件添加到 Llama 3 之后，模型包含自注意力层、交叉注意力层和 ViT 图像编码器。对于训练 8B 和 70B 参数较小模型的适配器，我们发现数据和张量并行化的组合最为高效。在这些规模下，模型并行或流水线并行不会提高效率，因为模型参数的收集将主导计算。然而，在训练 405B 参数模型的适配器时，我们确实使用了流水线并行（除数据和张量并行外）。在此规模下训练，除了第 3.3 节中概述的问题外，还引入了三个新挑战：模型异构性、数据异构性和数值不稳定性。</p>
+<p><strong>模型异构性</strong>：模型计算是异构的，因为某些 token 上的计算量比其他 token 更多。具体而言，图像 token 由图像编码器和交叉注意力层处理，而文本 token 仅由语言主干处理。这种异构性导致流水线并行调度出现瓶颈。我们通过确保每个流水线阶段包含五层来解决此问题：即语言主干中的四个自注意力层和一个交叉注意力层。（回顾一下，我们在每第四层自注意力层之后引入一个交叉注意力层。）此外，我们在所有流水线阶段复制图像编码器。由于我们在配对的图像-文本数据上训练，这使我们能够在图像和文本部分的计算之间进行负载均衡。</p>
+<p><strong>数据异构性</strong>：数据是异构的，因为平均而言，图像的 token 数多于关联的文本：一张图像有 2,308 个 token，而关联的文本平均只有 192 个 token。因此，交叉注意力层的计算需要比自注意力层更多的时间和内存。我们通过引入图像编码器的序列并行化来解决此问题，使每个 GPU 处理大致相同数量的 token。由于平均文本长度相对较短，我们还使用了更大的微批次大小（8 而非 1）。</p>
+<p><strong>数值不稳定性</strong>：在将图像编码器加入模型后，我们发现以 bf16 进行梯度累积会导致数值不稳定性。最可能的原因是图像 token 通过所有交叉注意力层被引入语言主干。这意味着图像 token 表示中的数值偏差对整体计算具有不成比例的影响，因为误差会被累积。我们通过在 FP32 中进行梯度累积来解决此问题。</p>
+<h2 id="7-4-预训练">7.4 预训练</h2>
+<p>7.4 Pre-training</p>
+<p><strong>图像</strong>：我们从预训练的文本模型和视觉编码器权重进行初始化。视觉编码器保持不冻结，而文本模型权重如上所述保持冻结。首先，我们使用 60 亿个图像-文本对训练模型，其中每张图像被调整为适合四个 336×336 像素的 tile。我们使用全局批次大小 16,384 和余弦学习率调度，初始学习率为 10×10⁻⁴，权重衰减为 0.01。初始学习率基于小规模实验确定。然而，这些发现未能很好地泛化到非常长的训练计划，我们在损失值停滞时在训练过程中几次降低学习率。在基础预训练之后，我们进一步提高图像分辨率，并在退火数据集上继续训练相同的权重。优化器通过预热重新初始化为学习率 2×10⁻⁵，并再次遵循余弦调度。</p>
+<p><strong>视频</strong>：对于视频预训练，我们从上述图像预训练和退火后的权重开始。我们按照架构描述添加视频聚合器和交叉注意力层，随机初始化。我们冻结模型中除视频特定参数（聚合器和视频交叉注意力）之外的所有参数，并在视频预训练数据上训练它们。我们使用与图像退火阶段相同的训练超参数，学习率略有不同。我们从完整视频中均匀采样 16 帧，每帧使用四个块表示，每个块大小为 448×448 像素。我们在视频聚合器中使用聚合因子 16，从而获得一个有效帧，文本 token 交叉注意力到该帧。我们使用全局批次大小 4,096、序列长度 190 个 token 和学习率 10⁻⁴ 进行训练。</p>
+<h2 id="7-5-后训练">7.5 后训练</h2>
+<p>7.5 Post-Training</p>
+<p>在本节中，我们描述视觉适配器的后训练方案。预训练后，我们在高度策展的多模态对话数据上微调模型，以启用聊天能力。我们进一步实现直接偏好优化（DPO）以提升人工评估性能，以及拒绝采样以提升多模态推理能力。最后，我们加入一个质量调优阶段，在一小批高质量对话数据上继续微调模型，进一步提升人工评估效果，同时保持各基准性能。以下提供关于每个步骤的更多细节。</p>
+<h3 id="7-5-1-监督微调数据">7.5.1 监督微调数据</h3>
+<p>7.5.1 Supervised Finetuning Data</p>
+<p>下面我们分别描述图像和视频能力的监督微调（SFT）数据。</p>
+<p><strong>图像</strong>：我们使用多种不同数据集的混合进行监督微调。</p>
+<ul>
+<li>
+<p><strong>学术数据集</strong>：我们将经过高度过滤的现有学术数据集集合通过模板或 LLM 重写转换为问答对。LLM 重写的目的是用不同的指令增强数据，并提高答案的语言质量。</p>
+</li>
+<li>
+<p><strong>人工标注</strong>：我们通过人工标注员为广泛的任务（开放式问答、字幕、实际用例等）和领域（如自然图像和结构化图像）收集多模态对话数据。标注员获得图像并被要求撰写对话。为确保多样性，我们对大规模数据集进行聚类，并均匀地从不同聚类中采样图像。此外，通过 k-最近邻扩展种子，我们为几个特定领域获取额外图像。标注员还获得现有模型的中间检查点，以促进模型参与式（model-in-the-loop）风格的标注，使得模型生成的内容可以作为标注员的起点进行人工编辑。这是一个迭代过程，模型检查点会定期更新为在最新数据上训练的更好性能版本。这提高了人工标注的数量和效率，同时也提升了质量。</p>
+</li>
+<li>
+<p><strong>合成数据</strong>：我们探索了通过使用图像的文本表示和文本输入 LLM 生成合成多模态数据的不同方法。总体思路是利用文本输入 LLM 的推理能力在文本领域生成问答对，然后用对应的图像替换文本表示，产生合成的多模态数据。示例包括将问答数据集中的文本渲染为图像，或将表格数据渲染为表格和图表的合成图像。此外，我们使用现有图像的标题和 OCR 提取结果，生成与图像相关的额外对话或问答数据。</p>
+</li>
+</ul>
+<p><strong>视频</strong>：与图像适配器类似，我们使用带有现有标注的学术数据集，将其转换为适当的文本指令和对应的目标回答。目标被转换为开放式答案或多项选择选项，视哪种更合适而定。我们请人工为视频标注问题及答案。标注员被要求关注那些不能基于单帧回答的问题，以引导标注员提出需要时序理解的问题。</p>
+<h3 id="7-5-2-监督微调方案">7.5.2 监督微调方案</h3>
+<p>7.5.2 Supervised Finetuning Recipe</p>
+<p>下面我们分别描述图像和视频能力的监督微调（SFT）方案。</p>
+<p><strong>图像</strong>：我们从预训练的图像适配器初始化，但将预训练语言模型的权重热替换为经过指令调优的语言模型的权重。语言模型权重保持冻结以维持纯文本性能，即我们仅更新视觉编码器和图像适配器的权重。</p>
+<p>我们的模型微调方法类似于 Wortsman et al. (2022)。首先，我们使用多个随机数据子集、学习率和权重衰减值进行超参数搜索。然后，根据性能对模型进行排序。最后，对前 K 个模型的权重取平均，得到最终模型。K 的值通过评估平均后的模型并选择性能最佳的实例来确定。我们观察到，平均后的模型始终优于通过网格搜索找到的最佳单个模型。此外，这种策略降低了对超参数的敏感性。</p>
+<p><strong>视频</strong>：对于视频 SFT，我们使用预训练权重初始化视频聚合器和交叉注意力层。模型中的其余参数（图像权重和 LLM）从对应模型微调阶段后的权重初始化。与视频预训练类似，我们随后仅在视频 SFT 数据上微调视频参数。在此阶段，我们将视频长度增加到 64 帧，并使用聚合因子 32 得到两个有效帧。块的解析度也相应提高，以与图像超参数保持一致。</p>
+<h3 id="7-5-3-偏好数据">7.5.3 偏好数据</h3>
+<p>7.5.3 Preference Data</p>
+<p>我们构建了多模态成对偏好数据集，用于奖励建模和直接偏好优化。</p>
+<ul>
+<li>
+<p><strong>人工标注</strong>：人工标注的偏好数据包含两个不同模型输出之间的比较，标记为&quot;选中&quot;和&quot;拒绝&quot;，采用 7 级评分。用于生成回答的模型是实时从最佳最新模型池中采样的，每个模型具有不同特性。我们每周更新模型池。除偏好标签外，我们还要求标注员提供可选的人工编辑，以纠正&quot;选中&quot;回答中的不准确之处，因为视觉任务对不准确性的容忍度较低。注意，人工编辑是一个可选步骤，因为在实际操作中数量和质量之间存在权衡。</p>
+</li>
+<li>
+<p><strong>合成数据</strong>：合成偏好对也可以通过使用纯文本 LLM 编辑监督微调数据集并故意引入错误来生成。我们将对话数据作为输入，使用 LLM 引入细微但有意义的错误（例如，更改对象、更改属性、在计算中引入错误等）。这些编辑后的回答作为负面的&quot;拒绝&quot;样本，与原始的&quot;选中&quot;监督微调数据配对。</p>
+</li>
+<li>
+<p><strong>拒绝采样</strong>：此外，为了创建更多在策略（on-policy）的负样本，我们利用拒绝采样的迭代过程收集额外的偏好数据。我们将在后续章节中更详细地讨论拒绝采样的使用。总体而言，拒绝采样用于迭代地从模型中采样高质量生成结果。因此，作为副产品，所有未被选中的生成结果可以用作负面的拒绝样本，并作为额外的偏好数据对使用。</p>
+</li>
+</ul>
+<h3 id="7-5-4-奖励建模">7.5.4 奖励建模</h3>
+<p>7.5.4 Reward Modeling</p>
+<p>我们在视觉 SFT 模型和语言 RM 之上训练视觉奖励模型（RM）。视觉编码器和交叉注意力层从视觉 SFT 模型初始化并在训练期间不冻结，而自注意力层从语言 RM 初始化并保持冻结。我们观察到，冻结语言 RM 部分通常能带来更好的准确率，尤其是在需要 RM 基于自身知识或语言质量进行判断的任务上。我们采用与语言 RM 相同的训练目标，但增加了一个加权的正则化项，基于批次中奖励 logits 的平方均值，以防止奖励分数偏离。</p>
+<p>第 7.5.3 节中的人工偏好标注用于训练视觉 RM。我们遵循与语言偏好数据（第 4.2.1 节）相同的实践，创建两个或三个具有明确排序的对（edited &gt; chosen &gt; rejected）。此外，我们还通过扰动与图像信息相关的词语或短语（如数字或视觉文本）来合成增强负面回答。这鼓励视觉 RM 基于实际图像内容进行判断。</p>
+<h3 id="7-5-5-直接偏好优化">7.5.5 直接偏好优化</h3>
+<p>7.5.5 Direct Preference Optimization</p>
+<p>与语言模型类似（第 4.1.4 节），我们使用第 7.5.3 节描述的偏好数据，通过直接偏好优化（DPO；Rafailov et al., 2023）进一步训练视觉适配器。为应对后训练轮次中的分布偏移，我们只保留最近批次的人工偏好标注，同时丢弃那些足够偏离策略（off-policy）的批次（例如，如果基础预训练模型发生变更）。我们发现，不总是冻结参考模型，而是以指数移动平均（EMA）的方式每 k 步更新它，有助于模型从数据中学到更多，从而在人工评估中取得更好的性能。总体而言，我们观察到在每个微调迭代中，视觉 DPO 模型在人工评估中始终优于其 SFT 起点。</p>
+<h3 id="7-5-6-拒绝采样">7.5.6 拒绝采样</h3>
+<p>7.5.6 Rejection Sampling</p>
+<p>大多数可用的问答对仅包含最终答案，缺乏训练推理任务泛化模型所需的思维链解释。我们使用拒绝采样为这些示例生成缺失的解释，并提升模型的推理能力。</p>
+<p>给定一个问答对，我们通过使用不同的系统提示或温度对微调后的模型进行采样，生成多个答案。然后，通过启发式方法或 LLM 评审将生成的答案与真实答案进行比较。最后，将正确的答案重新加入微调数据混合中，重新训练模型。我们发现每个问题保留多个正确答案是有用的。</p>
+<p>为确保只将高质量示例重新加入训练，我们实施了以下两项防护措施。首先，我们发现一些示例尽管最终答案正确，但包含不正确的解释。我们观察到，这种模式在只有小部分生成答案正确的问题中更频繁出现。因此，对于答案正确概率低于某个阈值的问题，我们丢弃其答案。其次，由于语言或风格的差异，评估者更偏好某些答案。我们使用奖励模型选择前 K 个最高质量的答案，并将其重新加入训练。</p>
+<h3 id="7-5-7-质量调优">7.5.7 质量调优</h3>
+<p>7.5.7 Quality Tuning</p>
+<p>我们策划了一个小型但高度精选的 SFT 数据集，其中所有样本都经过人工或我们最佳模型的重写和验证，以达到最高标准。我们使用此数据训练 DPO 模型以提高回答质量，将这一过程称为质量调优（QT）。我们发现，当 QT 数据集覆盖广泛的任务范围并应用适当的早停时，QT 能显著提升人工评估效果，同时不影响基准测试验证的泛化能力。我们在此阶段仅根据基准测试选择检查点，以确保能力得到保持或提升。</p>
+<p><strong>表 29：</strong> 附加到 Llama 3 的视觉模块的图像理解性能。我们将模型性能与 GPT-4V、GPT-4o、Gemini 1.5 Pro 和 Claude 3.5 Sonnet 进行了比较。△表示使用外部 OCR 工具得到的结果。</p>
+<p>![Table-29.png](/img4/The Llama 3 Herd of Models/Table-29.png)</p>
+<h2 id="7-6-图像识别结果">7.6 图像识别结果</h2>
+<p>7.6 Image Recognition Results</p>
+<p>我们在涵盖自然图像理解、文本理解、图表理解和多模态推理的一系列任务上评估了 Llama 3 的图像理解能力：</p>
+<ul>
+<li>
+<p><strong>MMMU</strong>（Yue et al., 2024a）是一个具有挑战性的多模态推理数据集，要求模型理解图像并解决涵盖 30 个不同学科的大学生水平问题，包括多项选择和开放式问题。我们在包含 900 张图像的验证集上进行评估，与其他工作保持一致。</p>
+</li>
+<li>
+<p><strong>VQAv2</strong>（Antol et al., 2015）测试模型结合图像理解、语言理解和常识知识来回答有关自然图像的通用问题的能力。</p>
+</li>
+<li>
+<p><strong>AI2 Diagram</strong>（Kembhavi et al., 2016）评估模型解析科学图表并回答相关问题的能力。我们使用与 Gemini 和 <a target="_blank" rel="noopener" href="http://x.ai">x.ai</a> 相同的评估协议，并使用透明边界框报告分数。</p>
+</li>
+<li>
+<p><strong>ChartQA</strong>（Masry et al., 2022）是一个具有挑战性的图表理解基准。它要求模型视觉上理解不同类型的图表，并回答关于这些图表的逻辑问题。</p>
+</li>
+<li>
+<p><strong>TextVQA</strong>（Singh et al., 2019）是一个流行的基准数据集，要求模型读取并推理图像中的文本以回答相关问题。这测试了模型在自然图像上的 OCR 理解能力。</p>
+</li>
+<li>
+<p><strong>DocVQA</strong>（Mathew et al., 2020）是一个专注于文档分析和识别的基准数据集。它包含各种文档的图像，评估模型执行 OCR 理解并推理文档内容以回答问题的能力。</p>
+</li>
+</ul>
+<p>表 29 展示了我们的实验结果。表中的结果显示，附加到 Llama 3 的视觉模块在不同模型容量下，在广泛的图像识别基准上表现具有竞争力。使用最终的 Llama 3-V 405B 模型，我们在所有基准上优于 GPT-4V，同时略低于 Gemini 1.5 Pro 和 Claude 3.5 Sonnet。Llama 3 405B 在文档理解任务上显得尤其具有竞争力。</p>
+<h2 id="7-7-视频识别结果">7.7 视频识别结果</h2>
+<p>7.7 Video Recognition Results</p>
+<p>我们在三个基准上评估了 Llama 3 的视频适配器：</p>
+<ul>
+<li>
+<p><strong>PerceptionTest</strong>（Pătrăucean et al., 2023）评估模型回答时序推理问题的能力，重点关注技能（记忆、抽象、物理、语义）和不同类型的推理（描述性、解释性、预测性、反事实）。它包含 11,600 个测试问答对，每个配对对应一段平均时长 23 秒的视频，由全球 100 名参与者拍摄，以展示感知上有趣的任务。我们专注于多项选择问答任务，每个问题配有三个选项。我们在保留的测试集上报告性能，通过将预测结果提交至在线挑战服务器获得。¹⁶</p>
+</li>
+<li>
+<p><strong>NExT-QA</strong>（Xiao et al., 2021）是另一个时序和因果推理基准，专注于开放式问答。它包含 1,000 个测试视频，平均时长 44 秒，配对 9,000 个问题。评估通过将模型回答与参考答案使用 Wu-Palmer 相似度（WUPS）进行比较。¹⁷</p>
+</li>
+<li>
+<p><strong>TVQA</strong>（Lei et al., 2018）评估模型执行组合推理的能力，需要对相关时刻进行时空定位、识别视觉概念，并与基于字幕的对话进行联合推理。该数据集来源于热门电视节目，还额外测试模型在回答问题中利用这些电视节目的外部知识的能力。它包含超过 15,000 个验证问答对，每个对应视频片段平均时长 76 秒，采用五项选择的多选题格式，我们按照先前工作（OpenAI, 2023b）报告的验证集性能。</p>
+</li>
+<li>
+<p><strong>ActivityNet-QA</strong>（Yu et al., 2019）评估模型对长视频片段进行推理以理解动作、空间关系、时序关系、计数等的能力。它包含 800 个视频的 8,000 个测试问答对，平均每个视频时长 3 分钟。评估时，我们遵循先前工作（Google, 2023; Lin et al., 2023; Maaz et al., 2024）的协议，模型生成简短的一词或短语答案，使用 GPT-3.5 API 将输出与参考答案进行比较，报告平均准确率。</p>
+</li>
+</ul>
+<p>进行推理时，我们从完整视频片段中均匀采样帧，并将这些帧连同简短文本提示输入模型。由于大多数基准涉及回答多项选择题，我们使用如下提示：<em>从以下选项中选择正确答案：{问题}。仅用正确的选项字母回答，不要其他内容。</em> 对于需要生成简短答案的基准（如 ActivityNet-QA 和 NExT-QA），我们使用如下提示：<em>用一个词或短语回答问题。{问题}。</em> 对于 NExT-QA，由于评估指标（WUPS）对长度和用词敏感，我们额外提示模型具体回答，例如在问及位置时回答&quot;客厅&quot;而非&quot;房子&quot;。对于包含字幕的基准（如 TVQA），我们在推理时在提示中提供视频对应的字幕。</p>
+<p>我们在表 30 中展示了 Llama 3 8B 和 70B 的性能。我们将 Llama 3 的表现与两个 Gemini 模型和两个 GPT-4 模型进行比较。注意，我们的所有结果都是零样本的，因为我们未将这些基准的任何部分纳入训练或微调数据。我们发现，在后训练期间训练了小型视频适配器的 Llama 3 模型具有极强的竞争力，在某些情况下甚至优于那些可能从预训练开始就采用原生多模态处理的其他模型。考虑到我们仅评估了 8B 和 70B 参数模型，Llama 3 在视频识别方面表现尤为出色。Llama 3 在 PerceptionTest 上取得了最佳性能，表明该模型具有较强的复杂时序推理能力。在 ActivityNet-QA 等长时活动理解任务中，Llama 3 仅处理最多 64 帧（对于一段 3 分钟的视频，模型每 3 秒仅处理一帧）即可获得优异结果。</p>
+<p>![Table-30.png](/img4/The Llama 3 Herd of Models/Table-30.png)</p>
+<p>表 30：我们的视觉模块附加到 Llama 3 后的视频理解性能。我们发现，在涵盖长视频和时序视频理解的各类任务中，我们为 Llama 3 8B 和 70B 参数版本配备的视觉适配器具有竞争力，有时甚至优于其他模型。</p>
+<p>¹⁶See <a target="_blank" rel="noopener" href="https://eval.ai/web/challenges/challenge-page/2091/overview">https://eval.ai/web/challenges/challenge-page/2091/overview</a>.<br>
+¹⁷See <a target="_blank" rel="noopener" href="https://github.com/doc-doc/NExT-OE">https://github.com/doc-doc/NExT-OE</a>.</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/10/04/%E3%80%8AThe%20Llama%203%20Herd%20of%20Models%E3%80%8B06Inference/" rel="prev" title="《The Llama 3 Herd of Models》6 推理">
+                  <i class="fa fa-angle-left"></i> 《The Llama 3 Herd of Models》6 推理
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/10/04/%E3%80%8AThe%20Llama%203%20Herd%20of%20Models%E3%80%8B08Speech/" rel="next" title="《The Llama 3 Herd of Models》8 语音实验">
+                  《The Llama 3 Herd of Models》8 语音实验 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+    <div id="search-container" style="margin: 20px auto; max-width: 600px;">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js"></script>
+      <div id="search"></div>
+      <script>
+        window.addEventListener('DOMContentLoaded', (event) => {
+            new PagefindUI({ 
+                element: "#search", 
+                showImages: false,
+                translations: {
+                    placeholder: "搜搜看...",
+                    clear_search: "清除",
+                    load_more: "加载更多",
+                    search_label: "搜索",
+                    filters_label: "筛选",
+                    zero_results: "未找到关于 [SEARCH_TERM] 的结果",
+                    many_results: "找到 [COUNT] 条关于 [SEARCH_TERM] 的结果",
+                    one_result: "找到 1 条关于 [SEARCH_TERM] 的结果",
+                    searching: "正在搜索..."
+                }
+            });
+        });
+      </script>
+    </div>
+  
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>

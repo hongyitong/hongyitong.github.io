@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false,"path":"/search.json"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="4 后训练 Post-Training 我们通过对预训练检查点应用多轮后训练³⁶，即让模型与人类反馈对齐（Ouyang et al., 2022; Rafailov et al., 2024），来产生对齐后的 Llama 3 模型。每轮后训练包括监督微调（SFT）以及随后的直接偏好优化（DPO；Rafailov et al., 2024），训练数据来自人工标注或合成生成。我们的后训练建模和数据方法">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《The Llama 3 Herd of Models》4 后训练">
+<meta property="og:url" content="http://hongyitong.github.io/2026/10/04/%E3%80%8AThe%20Llama%203%20Herd%20of%20Models%E3%80%8B04PostTraining/index.html">
+<meta property="og:site_name" content="墨语浮生">
+<meta property="og:description" content="4 后训练 Post-Training 我们通过对预训练检查点应用多轮后训练³⁶，即让模型与人类反馈对齐（Ouyang et al., 2022; Rafailov et al., 2024），来产生对齐后的 Llama 3 模型。每轮后训练包括监督微调（SFT）以及随后的直接偏好优化（DPO；Rafailov et al., 2024），训练数据来自人工标注或合成生成。我们的后训练建模和数据方法">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-10-04T04:00:00.000Z">
+<meta property="article:modified_time" content="2026-10-05T03:52:48.850Z">
+<meta property="article:author" content="Rayman.hung">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2026/10/04/%E3%80%8AThe%20Llama%203%20Herd%20of%20Models%E3%80%8B04PostTraining/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2026/10/04/%E3%80%8AThe%20Llama%203%20Herd%20of%20Models%E3%80%8B04PostTraining/","path":"2026/10/04/《The Llama 3 Herd of Models》04PostTraining/","title":"《The Llama 3 Herd of Models》4 后训练"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>《The Llama 3 Herd of Models》4 后训练 | 墨语浮生</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="fc62aedd-644a-478d-b3c2-d8ba9964421c" src="https://cloud.umami.is/script.js" data-host-url="https://cloud.umami.is"></script>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js" defer></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">墨语浮生</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-text">4 后训练</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-%E5%BB%BA%E6%A8%A1"><span class="nav-text">4.1 建模</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-1-%E8%81%8A%E5%A4%A9%E5%AF%B9%E8%AF%9D%E6%A0%BC%E5%BC%8F"><span class="nav-text">4.1.1 聊天对话格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-2-%E5%A5%96%E5%8A%B1%E5%BB%BA%E6%A8%A1"><span class="nav-text">4.1.2 奖励建模</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-3-%E7%9B%91%E7%9D%A3%E5%BE%AE%E8%B0%83"><span class="nav-text">4.1.3 监督微调</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-4-%E7%9B%B4%E6%8E%A5%E5%81%8F%E5%A5%BD%E4%BC%98%E5%8C%96"><span class="nav-text">4.1.4 直接偏好优化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-5-%E6%A8%A1%E5%9E%8B%E5%B9%B3%E5%9D%87"><span class="nav-text">4.1.5 模型平均</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-6-%E8%BF%AD%E4%BB%A3%E8%BD%AE%E6%AC%A1"><span class="nav-text">4.1.6 迭代轮次</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-%E5%90%8E%E8%AE%AD%E7%BB%83%E6%95%B0%E6%8D%AE"><span class="nav-text">4.2 后训练数据</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-1-%E5%81%8F%E5%A5%BD%E6%95%B0%E6%8D%AE"><span class="nav-text">4.2.1 偏好数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-2-SFT-%E6%95%B0%E6%8D%AE"><span class="nav-text">4.2.2 SFT 数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-3-%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86%E4%B8%8E%E8%B4%A8%E9%87%8F%E6%8E%A7%E5%88%B6"><span class="nav-text">4.2.3 数据处理与质量控制</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3-%E8%83%BD%E5%8A%9B"><span class="nav-text">4.3 能力</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-1-%E7%BC%96%E7%A8%8B"><span class="nav-text">4.3.1 编程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-2-%E5%A4%9A%E8%AF%AD%E8%A8%80%E8%83%BD%E5%8A%9B"><span class="nav-text">4.3.2 多语言能力</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-3-%E6%95%B0%E5%AD%A6%E4%B8%8E%E6%8E%A8%E7%90%86"><span class="nav-text">4.3.3 数学与推理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-4-%E9%95%BF%E4%B8%8A%E4%B8%8B%E6%96%87"><span class="nav-text">4.3.4 长上下文</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-5-%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8"><span class="nav-text">4.3.5 工具使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-6-%E4%BA%8B%E5%AE%9E%E6%80%A7"><span class="nav-text">4.3.6 事实性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-7-%E5%8F%AF%E5%BC%95%E5%AF%BC%E6%80%A7"><span class="nav-text">4.3.7 可引导性</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、心情记录</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives">
+          <span class="site-state-item-count">363</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/10/04/%E3%80%8AThe%20Llama%203%20Herd%20of%20Models%E3%80%8B04PostTraining/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="《The Llama 3 Herd of Models》4 后训练 | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《The Llama 3 Herd of Models》4 后训练
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-10-04 12:00:00" itemprop="dateCreated datePublished" datetime="2026-10-04T12:00:00+08:00">2026-10-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1>4 后训练</h1>
+<p>Post-Training</p>
+<p>我们通过对预训练检查点应用多轮后训练³⁶，即让模型与人类反馈对齐（Ouyang et al., 2022; Rafailov et al., 2024），来产生对齐后的 Llama 3 模型。每轮后训练包括监督微调（SFT）以及随后的直接偏好优化（DPO；Rafailov et al., 2024），训练数据来自人工标注或合成生成。我们的后训练建模和数据方法分别在第 4.1 节和第 4.2 节中描述。我们进一步在第 4.3 节中详细介绍了用于提升推理、编程、事实性、多语言、工具使用、长上下文和精准指令遵循能力的定制数据策略。</p>
+<span id="more"></span>  
+<p>图 7 展示了 Llama 3 整体后训练方法的示意图。我们的后训练策略包括拒绝采样、监督微调和直接偏好优化。详见正文。</p>
+<p>![Figure-7.png](/img4/The Llama 3 Herd of Models/Figure-7.png)</p>
+<h2 id="4-1-建模">4.1 建模</h2>
+<p>Modeling</p>
+<p>我们后训练策略的核心是一个奖励模型和一个语言模型。我们首先在预训练检查点之上使用人工标注的偏好数据训练一个奖励模型（详见第 4.1.2 节）。然后使用监督微调（SFT；详见第 4.1.3 节）微调预训练检查点，并进一步使用直接偏好优化（DPO；详见第 4.1.4 节）对齐检查点。该过程如图 7 所示。除非另有说明，我们的建模过程适用于 Llama 3 405B，为简洁起见，我们将 Llama 3 405B 简称为 Llama 3。</p>
+<h3 id="4-1-1-聊天对话格式">4.1.1 聊天对话格式</h3>
+<p>Chat Dialog Format</p>
+<p>为了针对人机交互微调 LLM，我们需要定义一个聊天对话协议，使模型能够理解人类指令并执行对话任务。</p>
+<p>与其前代产品相比，Llama 3 增加了新的能力，如工具使用（第 4.3.5 节），这可能需要在单个对话轮次中生成多条消息并将其发送到不同位置（例如，用户、ipython）。为了支持这一点，我们设计了一种新的多消息聊天协议，该协议使用各种特殊的头部标记和终止标记。头部标记用于指示对话中每条消息的来源和目的地。类似地，终止标记指示何时应该交替由人类和 AI 发言。</p>
+<h3 id="4-1-2-奖励建模">4.1.2 奖励建模</h3>
+<p>Reward Modeling</p>
+<p>我们在预训练检查点之上训练一个覆盖不同能力的奖励模型（RM）。训练目标与 Llama 2 相同，只是我们去掉了损失中的边际项，因为我们观察到在数据规模扩展后改进效果递减。遵循 Llama 2 的做法，我们在过滤掉具有相似响应的样本后，使用所有偏好数据进行奖励建模。除了标准的偏好对（chosen、rejected）响应外，标注还为某些提示创建了第三种&quot;编辑后响应&quot;（edited response），即从偏好对中选择的响应经过进一步编辑以进行改进（详见第 4.2.1 节）。因此，每个偏好排序样本包含两个或三个具有明确排序的响应（edited &gt; chosen &gt; rejected）。在训练期间，我们将提示和多个响应连接成一行，其中响应随机打乱。这是将响应放在不同行并计算分数的标准场景的近似方法，但在我们的消融实验中，这种方法提高了训练效率且没有损失准确性。</p>
+<h3 id="4-1-3-监督微调">4.1.3 监督微调</h3>
+<p>Supervised Finetuning</p>
+<p>然后使用奖励模型对我们的人工标注提示进行拒绝采样，其细节在第 4.2 节中描述。结合这些拒绝采样数据和其他数据源（包括合成数据），我们使用标准交叉熵损失对预训练语言模型进行微调（同时屏蔽提示标记上的损失）。关于数据混合的更多细节可在第 4.2 节中找到。我们将此阶段称为监督微调（SFT；Wei et al., 2022a; Sanh et al., 2022; Wang et al., 2022b），尽管许多训练目标是由模型生成的。我们最大的模型以 10⁻⁵ 的学习率在 8.5K 到 9K 步中进行微调。我们发现这些超参数设置在不同轮次和数据混合下都表现良好。</p>
+<h3 id="4-1-4-直接偏好优化">4.1.4 直接偏好优化</h3>
+<p>Direct Preference Optimization</p>
+<p>我们进一步使用直接偏好优化（DPO；Rafailov et al., 2024）训练我们的 SFT 模型，以进行人类偏好对齐。在训练中，我们主要使用来自之前对齐轮次中表现最佳的模型收集的最新批次偏好数据。因此，我们的训练数据更好地符合每轮正在优化的策略模型的分布。我们还探索了策略梯度算法如 PPO（Schulman et al., 2017），但发现 DPO 在大型模型上需要的计算量更少，且表现更好，特别是在指令遵循基准测试如 IFEval（Zhou et al., 2023）上。</p>
+<p>对于 Llama 3，我们使用 10⁻⁵ 的学习率，并将 β 超参数设为 0.1。此外，我们对 DPO 应用了以下算法修改：</p>
+<ul>
+<li>
+<p><strong>在 DPO 损失中屏蔽格式化标记</strong>：我们从 chosen 和 rejected 响应中的损失中屏蔽了特殊的格式化标记，包括头部标记和终止标记（在第 4.1.1 节中描述），以稳定 DPO 训练。我们观察到，让这些标记对损失产生贡献可能导致不期望的模型行为，如尾部重复或突然生成终止标记。我们推测这是由于 DPO 损失的对比性质——chosen 和 rejected 响应中共同标记的存在导致了冲突的学习目标，因为模型需要同时增加和减少这些标记的似然。</p>
+</li>
+<li>
+<p><strong>使用 NLL 损失进行正则化</strong>：我们在 chosen 序列上添加了一个额外的负对数似然（NLL）损失项，缩放系数为 0.2，类似于 Pang et al.（2024）。这通过维持生成的期望格式并防止 chosen 响应的对数概率下降（Pang et al., 2024; Pal et al., 2024），进一步帮助稳定 DPO 训练。</p>
+</li>
+</ul>
+<h3 id="4-1-5-模型平均">4.1.5 模型平均</h3>
+<p>Model Averaging</p>
+<p>最后，我们对在 RM、SFT 或 DPO 各个阶段使用不同版本的数据或超参数进行实验所获得的模型进行平均（Izmailov et al., 2019; Wortsman et al., 2022; Li et al., 2022）。</p>
+<h3 id="4-1-6-迭代轮次">4.1.6 迭代轮次</h3>
+<p>Iterative Rounds</p>
+<p>遵循 Llama 2 的做法，我们以六轮的方式应用上述方法。在每轮循环中，我们收集新的偏好标注和 SFT 数据，并从最新模型中采样合成数据。</p>
+<h2 id="4-2-后训练数据">4.2 后训练数据</h2>
+<p>Post-training Data</p>
+<p>后训练数据组成在语言模型的有用性和行为中起着关键作用。在本节中，我们讨论我们的人工标注流程和偏好数据收集（第 4.2.1 节）、SFT 数据的组成（第 4.2.2 节），以及数据质量控制和清洗方法（第 4.2.3 节）。</p>
+<h3 id="4-2-1-偏好数据">4.2.1 偏好数据</h3>
+<p>Preference Data</p>
+<p>我们的偏好数据标注过程与 Llama 2 类似。我们在每轮后部署多个模型进行标注，并为每个用户提示从两个不同模型采样两个响应。这些模型可以使用不同的数据混合和对齐方案进行训练，从而允许不同的能力强度（例如，代码专业知识）并增加数据多样性。我们要求标注者通过将偏好强度分为四个级别来评价他们更喜欢 chosen 响应而非 rejected 响应的程度：显著更好（significantly better）、更好（better）、稍微更好（slightly better）或略微更好（marginally better）。我们还在偏好排序后引入了一个编辑步骤，以鼓励标注者进一步改进偏好的响应。标注者直接编辑 chosen 响应，或向模型提供反馈提示以改进其自身的响应。因此，我们的一部分偏好数据包含三个排序后的响应（edited &gt; chosen &gt; rejected）。</p>
+<p>在表 6 中，我们报告了用于 Llama 3 训练的偏好标注的统计数据。通用英语涵盖多个子类别，如基于知识的问答或精确指令遵循，这些超出了特定能力的范围。与 Llama 2 相比，我们观察到提示和响应的平均长度增加，这表明我们在更复杂的任务上训练 Llama 3。此外，我们实施了一个质量分析和人工评估流程来严格评估收集的数据，使我们能够优化提示并为标注者提供系统性的、可操作的反馈。例如，随着 Llama 3 在每轮后改进，我们相应地增加提示复杂度，以针对模型落后的领域。</p>
+<p>在后训练的每一轮中，我们使用所有当时可用的偏好数据进行奖励建模，而仅使用来自各能力的最新批次数据进行 DPO 训练。对于奖励建模和 DPO，我们都使用那些 chosen 响应被标记为显著更好或更好于 rejected 响应的样本，并丢弃具有相似响应的样本。</p>
+<table>
+<thead>
+<tr>
+<th>数据集</th>
+<th>比较占比</th>
+<th>平均对话轮次</th>
+<th>平均每样本词元数</th>
+<th>提示中平均词元数</th>
+<th>响应中平均词元数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>通用英语</td>
+<td>81.99%</td>
+<td>4.1</td>
+<td>1,000.4</td>
+<td>36.4</td>
+<td>271.2</td>
+</tr>
+<tr>
+<td>编程</td>
+<td>6.93%</td>
+<td>3.2</td>
+<td>1,621.0</td>
+<td>113.8</td>
+<td>462.9</td>
+</tr>
+<tr>
+<td>多语言</td>
+<td>5.19%</td>
+<td>1.8</td>
+<td>1,299.4</td>
+<td>77.1</td>
+<td>420.9</td>
+</tr>
+<tr>
+<td>推理与工具</td>
+<td>5.89%</td>
+<td>1.6</td>
+<td>707.7</td>
+<td>46.6</td>
+<td>129.9</td>
+</tr>
+<tr>
+<td>总计</td>
+<td>100%</td>
+<td>3.8</td>
+<td>1,041.6</td>
+<td>44.5</td>
+<td>284.0</td>
+</tr>
+</tbody>
+</table>
+<p>![Table-6.png](/img4/The Llama 3 Herd of Models/Table-6.png)</p>
+<blockquote>
+<p><strong>表 6：人类偏好数据统计。</strong> 我们列出了用于 Llama 3 对齐的内部收集的人类偏好数据的统计信息。我们要求标注者与模型进行多轮对话，并在每轮中对响应进行比较。在后处理中，我们将每个对话按轮次拆分为多个示例。每个示例包含一个提示（包括之前的对话内容，如果有的话）和一个响应（例如，chosen 或 rejected 响应）。</p>
+</blockquote>
+<h3 id="4-2-2-SFT-数据">4.2.2 SFT 数据</h3>
+<p>SFT Data</p>
+<p>我们的微调数据主要由以下来源组成：</p>
+<ul>
+<li>来自我们人工标注收集的提示及拒绝采样的响应。</li>
+<li>针对特定能力的合成数据（更多详情见第 4.3 节）。</li>
+<li>少量人工筛选的数据（更多详情见第 4.3 节）。</li>
+</ul>
+<p>随着我们后训练轮次的推进，我们开发出更强的 Llama 3 变体，用于收集覆盖广泛复杂能力的更大数据集。在本节中，我们讨论拒绝采样过程的细节以及最终 SFT 数据混合的总体组成。</p>
+<p><strong>拒绝采样（Rejection sampling）。</strong> 在拒绝采样（RS）过程中，对于在人工标注期间收集的每个提示（第 4.2.1 节），我们从最新的聊天模型策略（通常是来自上一轮后训练迭代中表现最佳的检查点，或针对特定能力表现最佳的检查点）中采样 K 个输出（通常在 10 到 30 之间），并使用我们的奖励模型选择最佳候选，这与 Bai et al.（2022）一致。在后训练的后期轮次中，我们引入系统提示来引导 RS 响应符合期望的语气、风格或格式，这些可能因不同的能力而异。</p>
+<blockquote>
+<p>个人注：为了让你更直观地理解这段描述中拒绝采样（Rejection Sampling, RS）在现代大模型后训练（Post-training，如 RLHF / DPO 流程中生成高质量偏好数据）中的实际应用，我们可以通过一个具体的场景来走一遍这个流程。</p>
+<p>场景设定</p>
+<p>假设你正在训练一个 AI 助手，现在正在进行第 2 轮的后训练（Post-training）。</p>
+<ul>
+<li><strong>输入提示（Prompt）</strong>：“请用通俗易懂的语言向小学生解释什么是量子力学。”</li>
+<li><strong>参数设置</strong>：
+<ul>
+<li>采样数量 $K = 3$（实际中通常是 10 到 30 ），即让模型对同一个提示连续生成 3 个不同的回答。</li>
+<li><strong>当前策略模型</strong>：上一轮迭代中训练出来的最优模型检查点（Checkpoint）。</li>
+<li><strong>奖励模型（Reward Model, RM）</strong>：一个已经训练好的、专门给回答质量打分的“裁判模型”。</li>
+<li><strong>系统提示（System Prompt）</strong>：为了契合这一轮对“生动活泼、通俗易懂”的风格要求，加入系统提示：“你是一位充满童趣的科学老师。”</li>
+</ul>
+</li>
+</ul>
+<p>具体的执行步骤</p>
+<p>第一步：带系统提示的多候选生成（Sampling $K$ outputs）</p>
+<p>模型带着系统提示（“你是一位充满童趣的科学老师”），对同一个提示词（Prompt）独立运行 3 次，生成 3 个不同的输出候选：</p>
+<ul>
+<li>
+<p><strong>候选 $A_1$</strong>：</p>
+<blockquote>
+<p>“想象一下，乐高积木是由一块块小方块组成的。量子力学就像是研究这些乐高积木到底有多小，以及它们之间怎么通过魔法连接在一起的科学……”（<strong>得分：8.5 分</strong>）</p>
+</blockquote>
+</li>
+<li>
+<p><strong>候选 $A_2$</strong>：</p>
+<blockquote>
+<p>“量子力学是物理学的一个分支，主要研究微观粒子的运动规律。它的核心概念包括波粒二象性和不确定性原理……”（<strong>得分：4.2 分</strong> —— <em>太学术了，不适合小学生</em>）</p>
+</blockquote>
+</li>
+<li>
+<p><strong>候选 $A_3$</strong>：</p>
+<blockquote>
+<p>“嘿！小朋友，你知道吗？世界上所有东西都是由超级无敌小的‘小精灵’（原子和电子）组成的。量子力学就是研究这群小精灵在捉迷藏时有什么奇怪规矩的学问！”（<strong>得分：9.6 分</strong>）</p>
+</blockquote>
+</li>
+</ul>
+<p>第二步：奖励模型打分与最佳候选筛选（Reward Model Selection）</p>
+<p>奖励模型（RM）对这 3 个候选回答进行评分：</p>
+<ul>
+<li>候选 $A_1$：8.5 分</li>
+<li>候选 $A_2$：4.2 分</li>
+<li>候选 $A_3$：9.6 分</li>
+</ul>
+<p>第三步：执行“拒绝”（Rejection）与保留</p>
+<ul>
+<li><strong>被拒绝的（Rejected）</strong>：候选 $A_1$ 和 $A_2$ 的综合得分没有 $A_3$ 高，它们在这一步被<strong>拒绝并抛弃</strong>（不用于后续的高质量微调数据集）。</li>
+<li><strong>被接受的（Accepted / Retained）</strong>：分数最高的候选 $A_3$ 连同原提示（Prompt）一起被保留下来。</li>
+</ul>
+<p>为什么这里叫“拒绝采样”？</p>
+<p>虽然它不像传统数学统计学里的拒绝采样那样去卡 $M \cdot q(x)$ 的上界，但在大模型语境下，它的<strong>本质逻辑是一样的</strong>：</p>
+<ol>
+<li><strong>从候选池中“采样”</strong>：利用模型随机生成多个可能的输出（形成一个临时的候选分布）。</li>
+<li><strong>用“准则”去“拒绝”</strong>：利用奖励模型（和系统提示约束）作为筛子，<strong>拒绝</strong>掉质量低、风格不符的次品。</li>
+<li><strong>留下最优解</strong>：只“接受”最符合期望的优质样本。</li>
+</ol>
+<p>通过对成千上万个提示重复这个过程，团队就能构建出一个高质量的偏好/微调数据集，用来在下一轮训练中让模型变得更聪明、更符合人类的预期。</p>
+</blockquote>
+<p>为了提高拒绝采样的效率，我们采用了 PagedAttention（Kwon et al., 2023）。PagedAttention 通过动态键值缓存分配增强了内存效率。它通过根据当前缓存容量动态调度请求来支持任意输出长度。不幸的是，这存在内存不足时发生交换的风险。为了消除这种交换开销，我们定义了一个最大输出长度，并且仅在存在足够内存以容纳该长度的输出时才执行请求。PagedAttention 还使我们能够为提示的所有对应输出共享键值缓存页面。这些措施共同使拒绝采样期间的吞吐量提升了超过 2 倍。</p>
+<p><strong>总体数据组成。</strong> 表 7 显示了我们的&quot;有用性&quot;（helpfulness）数据混合中每个大类的数据统计。虽然 SFT 和偏好数据包含重叠的领域，但它们的筛选方式不同，从而产生了不同的计数统计。在第 4.2.3 节中，我们描述了分类数据样本的主题、复杂度和质量的技术。在后训练的每一轮中，我们根据这些维度仔细调整整体数据混合，以在广泛的基准测试中调整性能。我们的最终数据混合对某些高质量来源进行多次遍历（epoch），并对其他来源进行下采样。</p>
+<table>
+<thead>
+<tr>
+<th>数据集</th>
+<th>示例占比</th>
+<th>平均对话轮次</th>
+<th>平均词元数</th>
+<th>上下文中平均词元数</th>
+<th>最终响应中平均词元数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>通用英语</td>
+<td>52.66%</td>
+<td>6.3</td>
+<td>974.0</td>
+<td>656.7</td>
+<td>317.1</td>
+</tr>
+<tr>
+<td>编程</td>
+<td>14.89%</td>
+<td>2.7</td>
+<td>753.3</td>
+<td>378.8</td>
+<td>374.5</td>
+</tr>
+<tr>
+<td>多语言</td>
+<td>3.01%</td>
+<td>2.7</td>
+<td>520.5</td>
+<td>230.8</td>
+<td>289.7</td>
+</tr>
+<tr>
+<td>考试类</td>
+<td>8.14%</td>
+<td>2.3</td>
+<td>297.8</td>
+<td>124.4</td>
+<td>173.4</td>
+</tr>
+<tr>
+<td>推理与工具</td>
+<td>21.19%</td>
+<td>3.1</td>
+<td>661.6</td>
+<td>359.8</td>
+<td>301.9</td>
+</tr>
+<tr>
+<td>长上下文</td>
+<td>0.11%</td>
+<td>6.7</td>
+<td>38,135.6</td>
+<td>37,395.2</td>
+<td>740.5</td>
+</tr>
+<tr>
+<td>总计</td>
+<td>100%</td>
+<td>4.7</td>
+<td>846.1</td>
+<td>535.7</td>
+<td>310.4</td>
+</tr>
+</tbody>
+</table>
+<p>![Table-7.png](/img4/The Llama 3 Herd of Models/Table-7.png)</p>
+<blockquote>
+<p><strong>表 7：SFT 数据统计。</strong> 我们列出了用于 Llama 3 对齐的内部收集的 SFT 数据。每个 SFT 示例包含一个上下文（即除最后一轮外的所有对话轮次）和一个最终响应。</p>
+</blockquote>
+<h3 id="4-2-3-数据处理与质量控制">4.2.3 数据处理与质量控制</h3>
+<p>Data Processing and Quality Control</p>
+<p>鉴于我们的大部分训练数据是模型生成的，因此需要仔细的清洗和质量控制。</p>
+<p><strong>数据清洗。</strong> 在早期轮次中，我们观察到数据中常见一些不期望的模式，例如过度使用表情符号或感叹号。因此，我们实施了一系列基于规则的数据删除和修改策略来过滤或清洗有问题的数据。例如，为了缓解过度道歉的语气问题，我们识别过度使用的短语（如&quot;我很抱歉&quot;或&quot;我道歉&quot;），并仔细平衡数据集中此类样本的比例。</p>
+<p><strong>数据剪枝。</strong> 我们还应用了一系列基于模型的技术来移除低质量的训练样本并提高整体模型性能：</p>
+<ul>
+<li><strong>主题分类：</strong> 我们首先将 Llama 3 8B 微调为一个主题分类器，并对所有数据进行推理，将其分类为粗粒度桶（如&quot;数学推理&quot;）和细粒度桶（如&quot;几何与三角学&quot;）。</li>
+<li><strong>质量评分：</strong> 我们使用奖励模型和基于 Llama 的信号来获取每个样本的质量分数。对于基于 RM 的分数（<strong>RM 分数</strong>，指的是<strong>奖励模型（Reward Model）给一个样本打出的质量分</strong>），我们将 RM 分数处于前四分位数的数据视为高质量。对于基于 Llama 的分数，我们提示 Llama 3 检查点对通用英语数据按三分制（准确性、指令遵循、语气/呈现）每条样本评分，对编程数据按两分制（错误识别和用户意图）评分，并将获得最高分的样本视为高质量。RM 和基于 Llama 的分数具有较高的不一致率，我们发现组合这些信号可以在我们的内部测试集上获得最佳召回率。最终，我们选择那些被 RM 或基于 Llama 的过滤器标记为高质量的样本。</li>
+<li><strong>难度评分：</strong> 由于我们还关注优先选择对模型来说更复杂的示例，我们使用两种难度度量对数据进行评分：Instag（Lu et al., 2023）和基于 Llama 的评分。对于 Instag，我们提示 Llama 3 70B 对 SFT 提示进行意图标注，其中意图越多意味着复杂度越高。我们还将 Llama 3 提示对话的难度按三分制评分（Liu et al., 2024c）。</li>
+<li><strong>语义去重：</strong> 最后，我们进行语义去重（Abbas et al., 2023; Liu et al., 2024c）。我们首先使用 RoBERTa（Liu et al., 2019b）对完整对话进行聚类，在每个聚类内按质量分数 × 难度分数排序。然后我们通过遍历所有排序后的样本进行贪心选择，仅保留与聚类中已见过的示例的最大余弦相似度低于阈值的样本。</li>
+</ul>
+<h2 id="4-3-能力">4.3 能力</h2>
+<p>Capabilities</p>
+<p>我们强调为提升特定能力所做的特别努力，如编程（第 4.3.1 节）、多语言能力（第 4.3.2 节）、数学与推理（第 4.3.3 节）、长上下文（第 4.3.4 节）、工具使用（第 4.3.5 节）、事实性（第 4.3.6 节）和可引导性（第 4.3.7 节）。</p>
+<h3 id="4-3-1-编程">4.3.1 编程</h3>
+<p>Code</p>
+<p>自 Copilot 和 Codex（Chen et al., 2021）发布以来，面向编程的 LLM 受到了广泛关注。开发者现在广泛使用这些模型来生成代码片段、调试、自动化任务和改进代码质量。对于 Llama 3，我们的目标是改进和评估以下高优先级编程语言的代码生成、文档编写、调试和审查能力：Python、Java、Javascript、C/C++、Typescript、Rust、PHP、HTML/CSS、SQL、bash/shell。在这里，我们介绍了通过训练代码专家、生成 SFT 合成数据、使用系统提示引导改进格式以及创建质量过滤器以从训练数据中移除不良样本来改进这些编程能力的工作。</p>
+<p><strong>专家训练。</strong> 我们训练了一个代码专家模型，用于在后续后训练轮次中收集高质量的编程人工标注。<u><em>这是通过从主预训练运行中分支出来，并在 1T 词元的以代码数据为主（&gt;85%）的数据混合上继续预训练来实现的。在领域特定数据上继续预训练已被证明可以有效提高特定领域的性能（Gururangan et al., 2020）。</em></u>我们遵循类似于 CodeLlama（Rozière et al., 2023）的配方。在训练的最后几千步中，我们进行长上下文微调（LCFT），在高质量仓库级代码数据混合上将专家的上下文长度扩展到 16K 词元。最后，我们遵循第 4.1 节中描述的类似后训练建模配方来对齐此模型，不同之处在于 SFT 和 DPO 数据混合主要针对编程。此模型也用于编程提示的拒绝采样（第 4.2.2 节）。</p>
+<p><strong>合成数据生成。</strong> 在开发过程中，我们识别了代码生成中的关键问题，包括难以遵循指令、代码语法错误、不正确的代码生成以及难以修复错误。虽然密集的人工标注理论上可以解决这些问题，但合成数据生成提供了一种成本更低、规模更大的补充方法，不受标注者专业水平的限制。因此，我们使用 Llama 3 和代码专家生成大量合成 SFT 对话。我们描述了生成合成代码数据的三种高级方法。<u><em>总共，我们生成了超过 270 万个合成示例，用于 SFT 训练。</em></u></p>
+<ol>
+<li>
+<p><strong>合成数据生成：执行反馈。</strong> 8B 和 70B 模型在使用更大、更有能力的模型生成的数据进行训练时显示出显著性能提升。然而，我们的初始实验表明，在 Llama 3 405B 上使用其自身生成的数据进行训练没有帮助（甚至可能降低性能）。为了解决这一局限性，我们引入了执行反馈作为真实性来源，使模型能够从错误中学习并保持正轨。具体而言，我们使用以下流程生成了一个约一百万合成编程对话的大规模数据集：</p>
+<ul>
+<li><strong>问题描述生成：</strong> <u><em>首先，我们生成大量涵盖广泛主题的编程问题描述，包括长尾分布中的主题。为了实现这种多样性，我们从各种来源采样随机代码片段，并提示模型基于这些示例生成编程问题。</em></u>这使我们能够涉足广泛的主题，并创建一组全面的问题描述（Wei et al., 2024）。</li>
+<li><strong>解决方案生成：</strong> 然后，我们提示 Llama 3 以给定的编程语言解决每个问题。我们观察到，在提示中添加良好编程的一般规则可以提高生成解决方案的质量。此外，我们发现要求模型在注释中解释其思维过程是有帮助的。</li>
+<li><strong>正确性分析：</strong> 在生成解决方案后，认识到其正确性无法得到保证是关键的一步，将不正确的解决方案纳入微调数据集可能会损害模型的质量。虽然我们不确保完全正确性，但我们开发了近似方法来实现这一目标。为此，我们从生成的解决方案中提取源代码，并应用了静态和动态分析技术组合来测试其正确性，包括：
+<ul>
+<li><strong>静态分析：</strong> 我们通过解析器和 linter 运行所有生成的代码，以确保语法正确性，捕获语法错误、未初始化变量或未导入函数的使用、代码风格问题、类型错误等错误。</li>
+<li><strong>单元测试生成与执行：</strong> 对于每个问题和解决方案，我们提示模型生成单元测试，在容器化环境中与解决方案一起执行，捕获运行时执行错误和一些语义错误。</li>
+</ul>
+</li>
+<li><strong>错误反馈与迭代自我修正：</strong> 当解决方案在任何步骤失败时，我们提示模型进行修改。提示包括原始问题描述、有缺陷的解决方案以及来自解析器/linter/测试器的反馈（标准输出、标准错误和返回码）。在单元测试执行失败后，模型可以修复代码以通过现有测试，或修改其单元测试以适应生成的代码。只有通过所有检查的对话才被纳入最终数据集，用于监督微调（SFT）。值得注意的是，我们观察到约 20% 的解决方案最初不正确但进行了自我修正，这表明模型从执行反馈中学习并提高了性能。</li>
+<li><strong>微调与迭代改进：</strong> 微调过程跨多轮进行，每轮建立在上一轮的基础上。每轮之后，模型得到改进，为下一轮生成更高质量的合成数据。这种迭代过程允许模型的性能逐步精化和增强。</li>
+</ul>
+</li>
+<li>
+<p><strong>合成数据生成：编程语言翻译。</strong> 我们观察到主要编程语言（如 Python/C++）与不太常见的语言（如 Typescript/PHP）之间存在性能差距。这并不令人惊讶，因为我们对不太常见的编程语言的训练数据更少。为了缓解这一问题，我们通过将数据从常见编程语言翻译到不太常见的语言来补充现有数据（类似于 Chen et al.（2023）在推理方面的做法）。这是通过提示 Llama 3 并通过语法解析、编译和执行来确保质量来实现的。图 8 展示了一个从 Python 翻译而来的合成 PHP 代码示例。通过 MultiPL-E（Cassano et al., 2023）基准测试衡量，这显著提高了不太常见语言的性能。</p>
+</li>
+</ol>
+<p>![Figure-8.png](/img4/The Llama 3 Herd of Models/Figure-8.png)</p>
+<ol start="3">
+<li><strong>合成数据生成：反向翻译。</strong> 为了改进某些编程能力（如文档编写、代码解释），其中执行反馈对质量判断的信息量较少，我们采用了另一种多步骤方法。通过这一流程，我们生成了约 120 万个与代码解释、生成、文档编写和调试相关的合成对话。从预训练数据中各种语言的代码片段开始：
+<ul>
+<li><strong>生成：</strong> 我们提示 Llama 3 生成代表我们目标能力的数据（例如，为代码片段添加注释和文档字符串，或要求模型解释一段代码）。</li>
+<li><strong>反向翻译：</strong> 然后我们提示模型将合成生成的数据&quot;反向翻译&quot;为原始代码（例如，我们提示模型仅根据文档生成代码，或仅根据解释生成代码）。</li>
+<li><strong>过滤：</strong> 使用原始代码作为参考，我们提示 Llama 3 评估输出的质量（例如，我们询问模型反向翻译的代码与原始代码的忠实程度）。然后，我们在 SFT 中使用具有最高自我验证分数的生成示例。</li>
+</ul>
+</li>
+</ol>
+<p><strong>拒绝采样期间的系统提示引导。</strong> 在拒绝采样过程中，我们使用代码特定的系统提示来提高代码可读性、文档完整性、全面性和具体性。回想一下，第 7 节描述了这些数据用于微调语言模型。图 9 展示了一个系统提示如何帮助改进生成的代码质量的示例——它添加了必要的注释，使用了更具信息量的变量名，节省了内存等。</p>
+<p>![Figure-9.png](/img4/The Llama 3 Herd of Models/Figure-9.png)</p>
+<p><strong>使用执行和模型即评判者信号过滤训练数据。</strong> 如第 4.2.3 节所述，我们偶尔会在拒绝采样数据中遇到质量问题，例如包含错误的代码块。在我们的拒绝采样数据中检测这些问题不像在合成代码数据中那样直接，因为拒绝采样的响应通常包含自然语言和代码的混合，而代码可能并不总是预期可执行的。（例如，用户提示可能明确要求伪代码或仅对可执行程序的极小片段进行编辑。）为了解决这个问题，我们利用&quot;模型即评判者&quot;（model-as-judge）方法，由早期版本的 Llama 3 根据两个标准评估并分配二进制（0/1）分数：代码正确性和代码风格。我们只保留那些获得满分 2 的样本。最初，这种严格的过滤导致下游基准性能下降，主要原因是它不成比例地移除了具有挑战性提示的示例。为了应对这种情况，我们策略性地修改了一些被归类为最具挑战性的编程数据的响应，直到它们满足基于 Llama 的&quot;模型即评判者&quot;标准。通过改进这些挑战性问题，编程数据在质量和难度之间取得了平衡，从而实现了最优的下游性能。</p>
+<h3 id="4-3-2-多语言能力">4.3.2 多语言能力</h3>
+<p>Multilinguality</p>
+<p>我们描述了如何改进 Llama 3 的多语言能力，包括训练一个专门针对更多多语言数据的专家，为德语、法语、意大利语、葡萄牙语、印地语、西班牙语和泰语获取并生成高质量的多语言指令微调数据，以及解决多语言语言引导的具体挑战，以增强我们模型的整体性能。</p>
+<p><strong>专家训练。</strong> 我们的 Llama 3 预训练数据混合包含的英语词元显著多于非英语词元。为了收集更高质量的非英语语言人工标注，我们通过<u><em>从预训练运行中分支出来，在包含 90% 多语言词元的数据混合上继续预训练，训练了一个多语言专家。</em></u>然后我们按照第 4.1 节对此专家进行后训练。该专家模型随后被用于收集更高质量的非英语语言标注，直到预训练完全完成。</p>
+<p><strong>多语言数据收集。</strong> 我们的多语言 SFT 数据主要来源于以下描述的资源。整体分布为：2.4% 人工标注、44.2% 来自其他 NLP 任务的数据、18.8% 拒绝采样数据和 34.6% 翻译后的推理数据。</p>
+<ul>
+<li><strong>人工标注：</strong> 我们从语言学家和母语者那里收集高质量的人工标注数据。这些标注主要包括代表真实世界使用场景的开放式提示。</li>
+<li><strong>来自其他 NLP 任务的数据：</strong> 为了进一步扩充数据，我们使用来自其他任务的多语言训练数据并将其改写成对话格式。例如，我们使用来自 exams-qa（Hardalov et al., 2020）和 Conic10k（Wu et al., 2023）的数据。为了改进语言对齐，我们还使用了来自 GlobalVoices（Prokopidis et al., 2016）和 Wikimedia（Tiedemann, 2012）的平行文本。我们使用基于 LID 的过滤和 Blaser2.0（Seamless Communication et al., 2023）来移除低质量数据。对于平行文本数据，我们不直接使用双语文本对，而是应用受 Wei et al.（2022a）启发的多语言模板，以更好地模拟翻译和语言学习场景中的真实对话。</li>
+<li><strong>拒绝采样数据：</strong> 我们对人工标注的提示进行拒绝采样，以生成高质量的微调样本，与英语数据的过程相比几乎没有修改：
+<ul>
+<li><strong>生成：</strong> 在后训练的早期轮次中，我们探索了从 0.2 到 1 的范围内随机选择温度超参数，以实现多样化的生成。在高温下，多语言提示的响应可能具有创造性和启发性，但也容易出现不必要或不自然的语码转换。在后训练的最终轮次中，我们使用恒定值 0.6 来平衡这种权衡。此外，我们使用了专门的系统提示来改善响应的格式、结构和整体可读性。</li>
+<li><strong>选择：</strong> 在基于奖励模型的选择之前，我们实施了多语言特定的检查，以确保提示和响应之间的语言匹配率较高（例如，罗马化的印地语提示不应期望以印地语天城文书写的响应）。</li>
+</ul>
+</li>
+<li><strong>翻译数据：</strong> 我们尽量避免使用机器翻译的数据来微调模型，以防止翻译腔（Bizzoni et al., 2020; Muennighoff et al., 2023）或可能的名字偏见（Wang et al., 2022a）、性别偏见（Savoldi et al., 2021）或文化偏见（Ji et al., 2023）。此外，我们的目标是防止模型仅接触根植于英语文化背景的任务，这可能无法代表我们旨在捕捉的语言和文化多样性。我们做了一个例外，翻译了我们的合成定量推理数据（详见第 4.3.3 节），以提高非英语语言中的定量推理性能。由于这些数学问题中语言的简单性，翻译后的样本几乎没有发现质量问题。我们观察到，添加这些翻译数据后，MGSM（Shi et al., 2022）上取得了显著提升。</li>
+</ul>
+<h3 id="4-3-3-数学与推理">4.3.3 数学与推理</h3>
+<p>Math and Reasoning</p>
+<p>我们将推理定义为执行多步计算并得出正确最终答案的能力。以下几个挑战指导了我们训练在数学推理方面表现出色的模型的方法：</p>
+<ul>
+<li><strong>缺乏提示：</strong> 随着问题复杂度的增加，用于监督微调（SFT）的有效提示或问题数量减少。这种稀缺性使得创建多样且具有代表性的训练数据集来教授模型各种数学技能变得困难（Yu et al., 2023; Yue et al., 2023; Luo et al., 2023; Mitra et al., 2024; Shao et al., 2024; Yue et al., 2024b）。</li>
+<li><strong>缺乏真实思维链：</strong> 有效的推理需要逐步的解决方案来促进推理过程（Wei et al., 2022c）。然而，通常缺少真实的思维链，这对于引导模型如何逐步分解问题并得出最终答案至关重要（Zelikman et al., 2022）。</li>
+<li><strong>不正确的中间步骤：</strong> 在使用模型生成的思维链时，中间步骤可能并不总是正确的（Cobbe et al., 2021; Uesato et al., 2022; Lightman et al., 2023; Wang et al., 2023a）。这种不准确性可能导致错误的最终答案，需要加以解决。</li>
+<li><strong>教授模型使用外部工具：</strong> 增强模型利用外部工具（如代码解释器）的能力，使它们能够通过交错代码和文本来进行推理（Gao et al., 2023; Chen et al., 2022; Gou et al., 2023）。这种能力可以显著提高其问题解决能力。</li>
+<li><strong>训练与推理之间的差异：</strong> 模型在训练期间的微调方式与其在推理期间的使用方式之间通常存在差异。在推理期间，微调后的模型可能会与人类或其他模型交互，要求其利用反馈来改进推理。确保训练和实际使用之间的一致性对于维持推理性能至关重要。</li>
+</ul>
+<p>为了应对这些挑战，我们应用了以下方法：</p>
+<ul>
+<li><strong>解决提示缺乏问题：</strong> 我们从数学上下文中获取相关的预训练数据，并将其转换为问答格式，然后可用于监督微调。此外，我们识别了模型表现不佳的数学技能，并主动从人类那里收集提示来教授模型这些技能。为了促进这一过程，我们创建了一个数学技能分类体系（Didolkar et al., 2024），并据此要求人类提供相关的提示/问题。</li>
+<li><strong>用逐步推理轨迹增强训练数据：</strong> 我们使用 Llama 3 为一组提示生成逐步的解决方案。对于每个提示，模型生成可变数量的结果。然后根据正确答案对这些结果进行过滤（Li et al., 2024a）。我们还进行自我验证，即使用 Llama 3 来验证特定逐步解决方案对给定问题是否有效。这个过程通过消除模型未产生有效推理轨迹的实例，提高了微调数据的质量。</li>
+<li><strong>过滤不正确的推理轨迹：</strong> 我们训练了结果和逐步奖励模型（Lightman et al., 2023; Wang et al., 2023a）来过滤中间推理步骤不正确的训练数据。这些奖励模型用于消除具有无效逐步推理的数据，确保微调数据的高质量。对于更具挑战性的提示，我们使用蒙特卡洛树搜索（MCTS）配合学习到的逐步奖励模型来生成有效的推理轨迹，进一步增强了高质量推理数据的收集（Xie et al., 2024）。</li>
+<li><strong>交错代码与文本推理：</strong> 我们提示 Llama 3 通过文本推理与相关 Python 代码的组合来解决推理问题（Gou et al., 2023）。代码执行被用作反馈信号，以消除推理链无效的情况，确保推理过程的正确性。</li>
+<li><strong>从反馈和错误中学习：</strong> 为了模拟人类反馈，我们利用不正确的生成结果（即导致不正确推理轨迹的生成结果），并通过提示 Llama 3 进行错误修正以产生正确的生成结果（An et al., 2023b; Welleck et al., 2022; Madaan et al., 2024a）。利用来自错误尝试的反馈并进行修正的迭代过程，有助于提高模型准确推理和从错误中学习的能力。</li>
+</ul>
+<h3 id="4-3-4-长上下文">4.3.4 长上下文</h3>
+<p>Long Context</p>
+<p>在最终的预训练阶段，我们将 Llama 3 的上下文长度从 8K 词元扩展到 128K 词元（更多详情见第 3.4 节）。与预训练类似，我们发现微调期间必须仔细调整方法以平衡短上下文和长上下文能力。</p>
+<p><strong>SFT 和合成数据生成。</strong> 仅使用短上下文数据天真地应用我们现有的 SFT 方法导致预训练的长上下文能力显著下降，这凸显了将长上下文数据纳入 SFT 数据混合的必要性。然而，实际上，由于阅读长文本的繁琐和耗时性质，让人类标注此类示例基本上是不切实际的，因此我们主要依赖合成数据来填补这一空白。我们使用早期版本的 Llama 3 基于关键的长上下文用例生成合成数据：可能为多轮的问答、长文档摘要以及代码仓库推理，并在下面详细描述。</p>
+<ul>
+<li><strong>问答：</strong> 我们从预训练混合数据中精心筛选了一组长文档。我们将这些文档分割为 8K 词元的块，并提示早期版本的 Llama 3 模型基于随机选择的块生成问答对。在训练期间，整个文档被用作上下文。</li>
+<li><strong>摘要：</strong> 我们应用了长上下文文档的分层摘要方法，首先使用我们最强的 Llama 3 8K 上下文模型对 8K 输入长度的块进行摘要，然后对摘要进行再摘要。在训练期间，我们提供完整文档并提示模型在保留所有重要细节的情况下对文档进行摘要。我们还基于文档摘要生成问答对，并向模型提出需要全局理解整个长文档的问题。</li>
+<li><strong>长上下文代码推理：</strong> 我们解析 Python 文件以识别导入语句并确定其依赖关系。从中，我们选择最常被依赖的文件，特别是那些至少被其他五个文件引用的文件。我们从仓库中移除其中一个关键文件，并提示模型识别哪些文件依赖于缺失的文件，并生成必要的缺失代码。</li>
+</ul>
+<p>我们进一步根据序列长度（16K、32K、64K 和 128K）对这些合成生成的样本进行分类，以便更精细地针对输入长度。</p>
+<p>通过仔细的消融实验，我们观察到将 0.1% 的合成生成的长上下文数据与原始短上下文数据混合，可以优化短上下文和长上下文基准测试上的性能。</p>
+<p><strong>DPO。</strong> 我们观察到在 DPO 中仅使用短上下文训练数据不会对长上下文性能产生负面影响，只要 SFT 模型在长上下文任务上质量足够高。我们推测这是因为我们的 DPO 方法比 SFT 使用更少的优化器步骤。基于这一发现，我们在长上下文 SFT 检查点之上保持标准的短上下文 DPO 方法。</p>
+<h3 id="4-3-5-工具使用">4.3.5 工具使用</h3>
+<p>Tool Use</p>
+<p>教授 LLM 使用搜索引擎或代码解释器等工具极大地扩展了它们可以解决的任务范围，将它们从纯聊天模型转变为更通用的助手（Nakano et al., 2021; Thoppilan et al., 2022; Parisi et al., 2022; Gao et al., 2023; Mialon et al., 2023a; Schick et al., 2024）。我们训练 Llama 3 与以下工具进行交互：</p>
+<ul>
+<li><strong>搜索引擎。</strong> Llama 3 被训练使用 Brave Search⁷ 来回答关于超出其知识截止日期的最新事件或需要从网络中检索特定信息的问题。</li>
+<li><strong>Python 解释器。</strong> Llama 3 可以生成并执行代码以执行复杂计算、读取用户上传的文件，并基于这些文件解决任务，如问答、摘要、数据分析或可视化。</li>
+<li><strong>数学计算引擎。</strong> Llama 3 可以使用 Wolfram Alpha API⁸ 来更准确地解决数学和科学问题，或从 Wolfram 数据库中检索准确信息。</li>
+</ul>
+<p>最终的模型能够在聊天设置中使用这些工具来解决用户的查询，包括在多轮对话中。如果查询需要多次工具调用，模型可以编写逐步计划，按顺序调用工具，并在每次工具调用后进行推理。</p>
+<p>我们还改进了 Llama 3 的零样本工具使用能力——给定上下文中的、可能未见过的工具定义和用户查询，我们训练模型生成正确的工具调用。</p>
+<p><strong>实现。</strong> 我们将核心工具实现为具有不同方法的 Python 对象。零样本工具可以实现为具有描述和文档（即使用方法的示例）的 Python 函数，模型只需函数的签名和文档字符串作为上下文即可生成适当的调用。我们还将函数定义和调用转换为 JSON 格式，例如用于 Web API 调用。所有工具调用都由 Python 解释器执行，该解释器必须在 Llama 3 系统提示中启用。核心工具可以在系统提示中单独启用或禁用。</p>
+<p><strong>数据收集。</strong> 与 Schick et al.（2024）不同，我们依赖人工标注和偏好来教授 Llama 3 使用工具。与 Llama 3 中通常使用的后训练流程有两个主要区别：</p>
+<ul>
+<li>对于工具，对话通常包含不止一条助手消息（例如，调用工具和推理工具输出）。因此，我们在消息级别进行标注以收集细粒度的反馈：标注者对具有相同上下文的两条助手消息提供偏好比较，或者如果两者都包含重大问题，则编辑其中一条消息。被选择或编辑的消息随后被添加到上下文中，对话继续。这为助手调用工具的能力和推理工具输出的能力提供了人类反馈。标注者不能对工具输出进行排序或编辑。</li>
+<li>我们不进行拒绝采样，因为我们在工具基准测试中没有观察到收益。</li>
+</ul>
+<p>为了加速标注过程，我们首先通过在来自先前 Llama 3 检查点的合成生成数据上进行微调来引导基本的工具使用能力。这样，标注者需要执行的编辑更少。类似地，随着 Llama 3 在开发过程中逐步改进，我们逐渐复杂化我们的人工标注协议：我们从单轮工具使用标注开始，然后过渡到对话中的工具使用，最后标注多步工具使用和数据分析。</p>
+<p><strong>工具数据集。</strong> 为了创建工具使用应用的数据，我们利用以下流程：</p>
+<ul>
+<li><strong>单步工具使用：</strong> 我们从少量示例生成合成用户提示开始，这些提示根据构造需要调用我们的一个核心工具（例如，超出我们知识截止日期的问题）。然后，仍然依靠少量示例生成，我们为这些提示生成适当的工具调用，执行它们，并将输出添加到模型上下文中。最后，我们再次提示模型基于工具输出生成用户查询的最终答案。最终得到以下形式的轨迹：系统提示、用户提示、工具调用、工具输出、最终答案。我们还过滤了约 30% 的数据集，以移除无法执行的工具调用或其他格式问题。</li>
+<li><strong>多步工具使用：</strong> 我们遵循类似的协议，首先生成合成数据来教授模型基本的多步工具使用能力。为此，我们首先提示 Llama 3 生成需要至少两次工具调用的用户提示，这些调用可以是相同或不同的核心工具。然后，在这些提示的条件下，我们进行少量示例提示 Llama 3 生成由交错的推理步骤和工具调用组成的解决方案，类似于 ReAct（Yao et al., 2022）。图 10 展示了 Llama 3 执行涉及多步工具使用的任务的示例。</li>
+</ul>
+<p>![Figure-10.png](/img4/The Llama 3 Herd of Models/Figure-10.png)</p>
+<ul>
+<li><strong>文件上传：</strong> 我们对以下文件类型进行标注：.txt、.docx、.pdf、.pptx、.xlsx、.csv、.tsv、.py、.json、.jsonl、.html、.xml。我们的提示基于提供的文件，并要求总结文件内容、查找并修复错误、优化代码片段、执行数据分析或可视化。图 11 展示了 Llama 3 执行涉及文件上传的任务的示例。</li>
+</ul>
+<p>![Figure-11.png](/img4/The Llama 3 Herd of Models/Figure-11.png)</p>
+<p>在此合成数据上微调后，我们在多样化和具有挑战性的场景中收集人工标注，包括多轮交互、超过三步的工具使用，以及工具调用未产生满意答案的情况。我们使用不同的系统提示增强合成数据，以教授模型仅在激活时才使用工具。为了训练模型避免对简单查询调用工具，我们还添加了来自简单数学或问答数据集（Berant et al., 2013; Koncel-Kedziorski et al., 2016; Joshi et al., 2017; Amini et al., 2019）的查询及其不带工具的响应，但系统提示中工具处于激活状态。</p>
+<p><strong>零样本工具使用数据。</strong> 我们通过在大量且多样化的部分合成（函数定义、用户查询、对应调用）元组上进行微调，改进了 Llama 3 的零样本工具使用能力（也称为函数调用）。我们在未见过的工具集上评估我们的模型。</p>
+<ul>
+<li><strong>单次、嵌套和并行函数调用：</strong> 调用可以是简单的、嵌套的（即我们将一个函数调用作为另一个函数的参数传递），或并行的（即模型返回一个独立的函数调用列表）。生成多样化的函数、查询和真实数据可能具有挑战性（Mekala et al., 2024），我们利用 Stack（Kocetkov et al., 2022）来将合成用户查询扎根于真实函数中。更准确地说，我们提取函数调用及其定义，进行清洗和过滤（例如，去除缺少文档字符串或不可执行的函数），并使用 Llama 3 生成与函数调用对应的自然语言查询。</li>
+<li><strong>多轮函数调用：</strong> 我们还为带函数调用的多轮对话生成合成数据，遵循类似于 Li et al.（2023b）提出的协议。我们使用多个代理来生成领域、API、用户查询、API 调用和响应，同时确保生成的数据覆盖一组多样化的领域和真实的 API。所有代理都是 Llama 3 的变体，根据其角色以不同方式进行提示，并以逐步方式协作。</li>
+</ul>
+<h3 id="4-3-6-事实性">4.3.6 事实性</h3>
+<p>Factuality</p>
+<p><u><em>幻觉仍然是大型语言模型面临的主要挑战。模型往往过度自信，即使是在它们知之甚少的领域也是如此。</em></u>尽管存在这些缺陷，它们仍经常被用作知识库，这可能导致风险性后果，如错误信息的传播。虽然我们认识到事实性问题可能超越幻觉，但我们在这里采取了以幻觉为先的方法。</p>
+<p>我们遵循的原则是，后训练应该使模型与&quot;知道它知道什么&quot;对齐，而不是增加知识（Gekhman et al., 2024; Mielke et al., 2020）。我们的主要方法包括生成将模型生成与预训练数据中存在的事实数据子集对齐的数据。为此，我们开发了一种知识探查技术，利用 Llama 3 的上下文能力。此数据生成过程包括以下步骤：</p>
+<ol>
+<li>从预训练数据中提取一个数据片段。</li>
+<li>通过提示 Llama 3 生成关于这些片段（上下文）的事实性问题。</li>
+<li>从 Llama 3 采样对问题的响应。</li>
+<li>使用原始上下文作为参考，Llama 3 作为评判者，对生成结果的正确定性进行评分。</li>
+<li>使用 Llama 3 作为评判者，对生成结果的信息量进行评分。</li>
+<li>对于在生成结果中持续具有信息量但不正确的响应，使用 Llama 3 生成拒绝回答。</li>
+</ol>
+<p>我们使用从知识探查生成的数据来鼓励模型只回答它确实了解的问题，并拒绝回答那些它不确定的问题。此外，预训练数据并不总是在事实上一致或正确的。因此，我们还收集了一组有限的事实性标注数据，处理那些事实性矛盾或错误陈述普遍存在的敏感话题。</p>
+<p>[PAGE 28]</p>
+<h3 id="4-3-7-可引导性">4.3.7 可引导性</h3>
+<p>Steerability</p>
+<p>可引导性是指将模型的行为和输出导向开发者及用户特定规范的能力。由于 Llama 3 是一个通用基础模型，它应当能够最大程度地适应不同的下游应用场景。对于 Llama 3，我们专注于通过自然语言指令的系统提示（system prompt）来增强其可引导性，特别是在回复长度、格式、语气和角色/人格方面。</p>
+<p><strong>数据收集（Data collection）.</strong> 我们在通用英语类别中收集可引导性偏好样本，方法是请标注者为 Llama 3 设计不同的系统提示。然后，标注者与模型进行对话，评估模型在对话过程中是否一致地遵循系统提示中定义的指令。下面展示了一个用于增强可引导性的自定义系统提示示例：</p>
+<p>你是一个乐于助人且开朗的 AI 聊天机器人，担任忙碌家庭的膳食计划助手。这个家庭由 2 名成人、3 名青少年和 2 名学龄前儿童组成。每次规划两到三天的膳食，并利用剩菜或多余食材来安排第二天的计划。用户会告诉你他们想要两天还是三天。如果他们没说，就默认三天。每份计划都应包含早餐、午餐、零食和晚餐。询问用户是否认可该计划，或是否需要调整。在他们认可后，提供一份考虑到家庭人数的购物清单。始终牢记家庭偏好，如果有他们不喜欢的东西，就提供替代方案。如果用户缺乏灵感，就问他们这周最想去哪里度假，然后根据那个地方的文化推荐膳食。周末的饭菜可以更复杂一些。工作日的饭菜应该快速简单。早餐和午餐，偏好像麦片、配预熟培根英式松饼这类快捷方便的食物。这个家庭很忙。一定要问他们手头是否有咖啡或能量饮料这类必需品和常备品，以免忘记购买。记住要精打细算，除非是特殊场合。</p>
+<p><strong>建模（Modeling）.</strong> 收集到偏好数据后，我们利用这些数据进行奖励建模、拒绝采样、SFT 和 DPO，以增强 Llama 3 的可引导性。</p>
+<blockquote>
+<p>³⁶ 我们使用术语&quot;后训练&quot;（post-training）指代在预训练之外发生的任何模型训练。<br>
+⁷ <a target="_blank" rel="noopener" href="https://brave.com/search/api/">https://brave.com/search/api/</a><br>
+⁸ <a target="_blank" rel="noopener" href="https://products.wolframalpha.com/llm-api/documentation">https://products.wolframalpha.com/llm-api/documentation</a></p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/10/04/%E3%80%8AThe%20Llama%203%20Herd%20of%20Models%E3%80%8B03PreTraining/" rel="prev" title="《The Llama 3 Herd of Models》3 预训练">
+                  <i class="fa fa-angle-left"></i> 《The Llama 3 Herd of Models》3 预训练
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/10/04/%E3%80%8AThe%20Llama%203%20Herd%20of%20Models%E3%80%8B05Results-LM/" rel="next" title="《The Llama 3 Herd of Models》5 结果">
+                  《The Llama 3 Herd of Models》5 结果 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+    <div id="search-container" style="margin: 20px auto; max-width: 600px;">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js"></script>
+      <div id="search"></div>
+      <script>
+        window.addEventListener('DOMContentLoaded', (event) => {
+            new PagefindUI({ 
+                element: "#search", 
+                showImages: false,
+                translations: {
+                    placeholder: "搜搜看...",
+                    clear_search: "清除",
+                    load_more: "加载更多",
+                    search_label: "搜索",
+                    filters_label: "筛选",
+                    zero_results: "未找到关于 [SEARCH_TERM] 的结果",
+                    many_results: "找到 [COUNT] 条关于 [SEARCH_TERM] 的结果",
+                    one_result: "找到 1 条关于 [SEARCH_TERM] 的结果",
+                    searching: "正在搜索..."
+                }
+            });
+        });
+      </script>
+    </div>
+  
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>

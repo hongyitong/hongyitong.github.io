@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false,"path":"/search.json"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="6 推理 Inference 我们研究了两种使 Llama 3 405B 模型高效推理的主要技术：（1）流水线并行（pipeline parallelism）和（2）FP8 量化。我们已经公开发布了 FP8 量化的实现。 6.1 流水线并行 Pipeline Parallelism 当使用 BF16 数值表示模型参数时，Llama 3 405B 无法放入单台配备 8 张 Nvidia H100 G">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《The Llama 3 Herd of Models》6 推理">
+<meta property="og:url" content="http://hongyitong.github.io/2026/10/04/%E3%80%8AThe%20Llama%203%20Herd%20of%20Models%E3%80%8B06Inference/index.html">
+<meta property="og:site_name" content="墨语浮生">
+<meta property="og:description" content="6 推理 Inference 我们研究了两种使 Llama 3 405B 模型高效推理的主要技术：（1）流水线并行（pipeline parallelism）和（2）FP8 量化。我们已经公开发布了 FP8 量化的实现。 6.1 流水线并行 Pipeline Parallelism 当使用 BF16 数值表示模型参数时，Llama 3 405B 无法放入单台配备 8 张 Nvidia H100 G">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-10-04T06:00:00.000Z">
+<meta property="article:modified_time" content="2026-10-05T03:53:04.877Z">
+<meta property="article:author" content="Rayman.hung">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2026/10/04/%E3%80%8AThe%20Llama%203%20Herd%20of%20Models%E3%80%8B06Inference/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2026/10/04/%E3%80%8AThe%20Llama%203%20Herd%20of%20Models%E3%80%8B06Inference/","path":"2026/10/04/《The Llama 3 Herd of Models》06Inference/","title":"《The Llama 3 Herd of Models》6 推理"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>《The Llama 3 Herd of Models》6 推理 | 墨语浮生</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="fc62aedd-644a-478d-b3c2-d8ba9964421c" src="https://cloud.umami.is/script.js" data-host-url="https://cloud.umami.is"></script>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js" defer></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">墨语浮生</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-text">6 推理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#6-1-%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%B9%B6%E8%A1%8C"><span class="nav-text">6.1 流水线并行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-2-FP8-%E9%87%8F%E5%8C%96"><span class="nav-text">6.2 FP8 量化</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、心情记录</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives">
+          <span class="site-state-item-count">363</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2026/10/04/%E3%80%8AThe%20Llama%203%20Herd%20of%20Models%E3%80%8B06Inference/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="《The Llama 3 Herd of Models》6 推理 | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《The Llama 3 Herd of Models》6 推理
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2026-10-04 14:00:00" itemprop="dateCreated datePublished" datetime="2026-10-04T14:00:00+08:00">2026-10-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E4%B9%A6%E7%B1%8D%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">书籍翻译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1>6 推理</h1>
+<p>Inference</p>
+<p>我们研究了两种使 Llama 3 405B 模型高效推理的主要技术：（1）流水线并行（pipeline parallelism）和（2）FP8 量化。我们已经公开发布了 FP8 量化的实现。</p>
+<h2 id="6-1-流水线并行">6.1 流水线并行</h2>
+<p>Pipeline Parallelism</p>
+<p>当使用 BF16 数值表示模型参数时，Llama 3 405B 无法放入单台配备 8 张 Nvidia H100 GPU 的机器中。为了解决这个问题，我们使用 BF16 精度在两台机器的 16 张 GPU 上进行并行模型推理。在每台机器内部，高 NVLink 带宽支持使用张量并行（tensor parallelism）（Shoeybi et al., 2019）。然而，跨节点间的连接带宽较低且延迟较高，因此我们改用流水线并行（pipeline parallelism）（Huang et al., 2019）。</p>
+<span id="more"></span>  
+<p>在训练中使用流水线并行时，气泡（bubble）是一个主要的效率问题（参见第 3.3 节）。然而，这在推理过程中不是问题，因为推理不需要涉及需要流水线刷新的反向传播。因此，我们使用微批处理（micro-batching）来提高流水线并行的推理吞吐量。</p>
+<p>我们评估了在推理工作负载（4,096 个输入 token 和 256 个输出 token）中使用两个微批次的效果，涵盖推理的键值缓存预填充（pre-fill）阶段和解码（decoding）阶段。我们发现，微批处理在相同的本地批量大小下提高了推理吞吐量，参见图 24。这些改进源于微批处理使得这两个阶段中的微批次能够并发执行。由于微批处理引入的额外同步点也会增加延迟，但总体而言，微批处理仍然实现了更好的吞吐量-延迟权衡。</p>
+<p>![Figure-24.png](/img4/The Llama 3 Herd of Models/Figure-24.png)</p>
+<p><strong>图 24：微批处理对推理吞吐量和延迟的影响，左：预填充阶段，右：解码阶段。</strong> 图中数字对应（微）批量大小。TP8/PP2 (BF16) 与 TP8/PP2 (BF16) + 微批处理的对比。</p>
+<h2 id="6-2-FP8-量化">6.2 FP8 量化</h2>
+<p>FP8 Quantization</p>
+<p>我们利用 H100 GPU 的原生 FP8 支持进行低精度推理实验。为了实现低精度推理，我们对模型中的大多数矩阵乘法应用了 FP8 量化。具体而言，我们对模型中前馈网络层的大多数参数和激活值进行了量化，这些层约占推理计算时间的 50%。我们不对模型的自注意力层中的参数进行量化。我们利用动态缩放因子以获得更好的精度（Xiao et al., 2024b），并优化 CUDA kernel¹⁵ 以减少计算缩放因子的开销。我们发现 Llama 3 405B 的质量对某些类型的量化很敏感，因此我们进行了一些额外改进以提高模型输出质量：</p>
+<ol>
+<li>类似 Zhang et al. (2021)，我们不对第一个和最后一个 Transformer 层进行量化。</li>
+<li>高困惑度（high-perplexity）的 token（如日期）可能导致较大的激活值。反过来，这可能导致 FP8 中出现较高的动态缩放因子以及不可忽视数量的下溢，从而导致解码错误。为了解决这个问题，我们将动态缩放因子上限设定为 1200。</li>
+<li>我们采用行级量化（row-wise quantization），对参数和激活矩阵按行计算缩放因子（见图 25）。我们发现这种方法优于张量级量化（tensor-wise quantization）方法。</li>
+</ol>
+<p>![Figure-25.png](/img4/The Llama 3 Herd of Models/Figure-25.png)</p>
+<p><strong>图 25：张量级与行级 FP8 量化示意图。</strong> 右：行级量化能够使用比左：张量级量化更细粒度的激活因子。</p>
+<p><strong>图 26：使用 BF16 和 FP8 推理的 Llama 3 405B 奖励分数分布。</strong> 我们的 FP8 量化方法对模型响应的影响可以忽略不计。</p>
+<p>![Figure-26.png](/img4/The Llama 3 Herd of Models/Figure-26.png)</p>
+<p><strong>量化误差的影响。</strong> 标准基准上的评估通常表明，即使没有这些缓解措施，FP8 推理也能达到与 BF16 推理相当的性能。然而，我们发现这些基准并未充分反映 FP8 量化的影响。当缩放因子未设置上限时，即使基准性能表现良好，模型偶尔也会产生损坏的响应。与其依赖基准来衡量量化带来的分布变化，我们更倾向于分析使用 FP8 和 BF16 生成的 100,000 条响应的奖励模型分数分布。图 26 展示了我们量化方法产生的奖励分布。图中的结果表明，我们的 FP8 量化方法对模型响应的影响非常有限。</p>
+<p><strong>效率的实验评估。</strong> 图 27 展示了使用 Llama 3 405B 在预填充和解码阶段进行 FP8 推理时的吞吐量-延迟权衡，使用 4,096 个输入 token 和 256 个输出 token。该图比较了 FP8 推理与第 6.1 节中描述的双机 BF16 推理方法的效率。结果表明，使用 FP8 推理在预填充阶段的吞吐量提升了高达 50%，并且在解码阶段实现了显著更好的吞吐量-延迟权衡。</p>
+<p>![Figure-27.png](/img4/The Llama 3 Herd of Models/Figure-27.png)</p>
+<p><strong>图 27：</strong> Llama 3 405B 在 FP8 推理中吞吐量与延迟的权衡，与使用不同流水线并行设置的 BF16 推理对比。左图：预填充结果。右图：解码结果。</p>
+<blockquote>
+<p>¹⁵ 我们的 FP8 kernel 可在 <a target="_blank" rel="noopener" href="https://github.com/pytorch/FBGEMM/tree/main/fbgemm_gpu/experimental/gen_ai">https://github.com/pytorch/FBGEMM/tree/main/fbgemm_gpu/experimental/gen_ai</a> 获取。使用示例见 <a target="_blank" rel="noopener" href="https://github.com/meta-llama/llama-agentic-system%E3%80%82">https://github.com/meta-llama/llama-agentic-system。</a></p>
+</blockquote>
+<hr>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2026/10/04/%E3%80%8AThe%20Llama%203%20Herd%20of%20Models%E3%80%8B05Results-LM/" rel="prev" title="《The Llama 3 Herd of Models》5 结果">
+                  <i class="fa fa-angle-left"></i> 《The Llama 3 Herd of Models》5 结果
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2026/10/04/%E3%80%8AThe%20Llama%203%20Herd%20of%20Models%E3%80%8B07Vision/" rel="next" title="《The Llama 3 Herd of Models》7 视觉实验">
+                  《The Llama 3 Herd of Models》7 视觉实验 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+    <div id="search-container" style="margin: 20px auto; max-width: 600px;">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js"></script>
+      <div id="search"></div>
+      <script>
+        window.addEventListener('DOMContentLoaded', (event) => {
+            new PagefindUI({ 
+                element: "#search", 
+                showImages: false,
+                translations: {
+                    placeholder: "搜搜看...",
+                    clear_search: "清除",
+                    load_more: "加载更多",
+                    search_label: "搜索",
+                    filters_label: "筛选",
+                    zero_results: "未找到关于 [SEARCH_TERM] 的结果",
+                    many_results: "找到 [COUNT] 条关于 [SEARCH_TERM] 的结果",
+                    one_result: "找到 1 条关于 [SEARCH_TERM] 的结果",
+                    searching: "正在搜索..."
+                }
+            });
+        });
+      </script>
+    </div>
+  
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>
