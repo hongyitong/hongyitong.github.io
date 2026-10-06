@@ -27,10 +27,15 @@
 <meta property="og:site_name" content="墨语浮生">
 <meta property="og:description" content="6 推理 Inference 我们研究了两种使 Llama 3 405B 模型高效推理的主要技术：（1）流水线并行（pipeline parallelism）和（2）FP8 量化。我们已经公开发布了 FP8 量化的实现。 6.1 流水线并行 Pipeline Parallelism 当使用 BF16 数值表示模型参数时，Llama 3 405B 无法放入单台配备 8 张 Nvidia H100 G">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/img4/The%20Llama%203%20Herd%20of%20Models/Figure-24.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/The%20Llama%203%20Herd%20of%20Models/Figure-25.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/The%20Llama%203%20Herd%20of%20Models/Figure-26.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/The%20Llama%203%20Herd%20of%20Models/Figure-27.png">
 <meta property="article:published_time" content="2026-10-04T06:00:00.000Z">
 <meta property="article:modified_time" content="2026-10-05T03:53:04.877Z">
 <meta property="article:author" content="Rayman.hung">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hongyitong.github.io/img4/The%20Llama%203%20Herd%20of%20Models/Figure-24.png">
 
 
 <link rel="canonical" href="http://hongyitong.github.io/2026/10/04/%E3%80%8AThe%20Llama%203%20Herd%20of%20Models%E3%80%8B06Inference/">
@@ -165,7 +170,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-text">6 推理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#6-1-%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%B9%B6%E8%A1%8C"><span class="nav-text">6.1 流水线并行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-2-FP8-%E9%87%8F%E5%8C%96"><span class="nav-text">6.2 FP8 量化</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8E%A8%E7%90%86"><span class="nav-text">6 推理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%81%E6%B0%B4%E7%BA%BF%E5%B9%B6%E8%A1%8C"><span class="nav-text">6.1 流水线并行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#fp8-%E9%87%8F%E5%8C%96"><span class="nav-text">6.2 FP8 量化</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -266,37 +271,100 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h1>6 推理</h1>
+    <div class="post-body" itemprop="articleBody"><h1 id="推理">6 推理</h1>
 <p>Inference</p>
-<p>我们研究了两种使 Llama 3 405B 模型高效推理的主要技术：（1）流水线并行（pipeline parallelism）和（2）FP8 量化。我们已经公开发布了 FP8 量化的实现。</p>
-<h2 id="6-1-流水线并行">6.1 流水线并行</h2>
+<p>我们研究了两种使 Llama 3 405B
+模型高效推理的主要技术：（1）流水线并行（pipeline
+parallelism）和（2）FP8 量化。我们已经公开发布了 FP8 量化的实现。</p>
+<h2 id="流水线并行">6.1 流水线并行</h2>
 <p>Pipeline Parallelism</p>
-<p>当使用 BF16 数值表示模型参数时，Llama 3 405B 无法放入单台配备 8 张 Nvidia H100 GPU 的机器中。为了解决这个问题，我们使用 BF16 精度在两台机器的 16 张 GPU 上进行并行模型推理。在每台机器内部，高 NVLink 带宽支持使用张量并行（tensor parallelism）（Shoeybi et al., 2019）。然而，跨节点间的连接带宽较低且延迟较高，因此我们改用流水线并行（pipeline parallelism）（Huang et al., 2019）。</p>
-<span id="more"></span>  
-<p>在训练中使用流水线并行时，气泡（bubble）是一个主要的效率问题（参见第 3.3 节）。然而，这在推理过程中不是问题，因为推理不需要涉及需要流水线刷新的反向传播。因此，我们使用微批处理（micro-batching）来提高流水线并行的推理吞吐量。</p>
-<p>我们评估了在推理工作负载（4,096 个输入 token 和 256 个输出 token）中使用两个微批次的效果，涵盖推理的键值缓存预填充（pre-fill）阶段和解码（decoding）阶段。我们发现，微批处理在相同的本地批量大小下提高了推理吞吐量，参见图 24。这些改进源于微批处理使得这两个阶段中的微批次能够并发执行。由于微批处理引入的额外同步点也会增加延迟，但总体而言，微批处理仍然实现了更好的吞吐量-延迟权衡。</p>
-<p>![Figure-24.png](/img4/The Llama 3 Herd of Models/Figure-24.png)</p>
-<p><strong>图 24：微批处理对推理吞吐量和延迟的影响，左：预填充阶段，右：解码阶段。</strong> 图中数字对应（微）批量大小。TP8/PP2 (BF16) 与 TP8/PP2 (BF16) + 微批处理的对比。</p>
-<h2 id="6-2-FP8-量化">6.2 FP8 量化</h2>
+<p>当使用 BF16 数值表示模型参数时，Llama 3 405B 无法放入单台配备 8 张
+Nvidia H100 GPU 的机器中。为了解决这个问题，我们使用 BF16
+精度在两台机器的 16 张 GPU 上进行并行模型推理。在每台机器内部，高 NVLink
+带宽支持使用张量并行（tensor parallelism）（Shoeybi et al.,
+2019）。然而，跨节点间的连接带宽较低且延迟较高，因此我们改用流水线并行（pipeline
+parallelism）（Huang et al., 2019）。</p>
+<span id="more"></span>
+<p>在训练中使用流水线并行时，气泡（bubble）是一个主要的效率问题（参见第
+3.3
+节）。然而，这在推理过程中不是问题，因为推理不需要涉及需要流水线刷新的反向传播。因此，我们使用微批处理（micro-batching）来提高流水线并行的推理吞吐量。</p>
+<p>我们评估了在推理工作负载（4,096 个输入 token 和 256 个输出
+token）中使用两个微批次的效果，涵盖推理的键值缓存预填充（pre-fill）阶段和解码（decoding）阶段。我们发现，微批处理在相同的本地批量大小下提高了推理吞吐量，参见图
+24。这些改进源于微批处理使得这两个阶段中的微批次能够并发执行。由于微批处理引入的额外同步点也会增加延迟，但总体而言，微批处理仍然实现了更好的吞吐量-延迟权衡。</p>
+<figure>
+<img src="/img4/The%20Llama%203%20Herd%20of%20Models/Figure-24.png"
+alt="Figure-24.png" />
+<figcaption aria-hidden="true">Figure-24.png</figcaption>
+</figure>
+<p><strong>图
+24：微批处理对推理吞吐量和延迟的影响，左：预填充阶段，右：解码阶段。</strong>
+图中数字对应（微）批量大小。TP8/PP2 (BF16) 与 TP8/PP2 (BF16) +
+微批处理的对比。</p>
+<h2 id="fp8-量化">6.2 FP8 量化</h2>
 <p>FP8 Quantization</p>
-<p>我们利用 H100 GPU 的原生 FP8 支持进行低精度推理实验。为了实现低精度推理，我们对模型中的大多数矩阵乘法应用了 FP8 量化。具体而言，我们对模型中前馈网络层的大多数参数和激活值进行了量化，这些层约占推理计算时间的 50%。我们不对模型的自注意力层中的参数进行量化。我们利用动态缩放因子以获得更好的精度（Xiao et al., 2024b），并优化 CUDA kernel¹⁵ 以减少计算缩放因子的开销。我们发现 Llama 3 405B 的质量对某些类型的量化很敏感，因此我们进行了一些额外改进以提高模型输出质量：</p>
-<ol>
-<li>类似 Zhang et al. (2021)，我们不对第一个和最后一个 Transformer 层进行量化。</li>
-<li>高困惑度（high-perplexity）的 token（如日期）可能导致较大的激活值。反过来，这可能导致 FP8 中出现较高的动态缩放因子以及不可忽视数量的下溢，从而导致解码错误。为了解决这个问题，我们将动态缩放因子上限设定为 1200。</li>
-<li>我们采用行级量化（row-wise quantization），对参数和激活矩阵按行计算缩放因子（见图 25）。我们发现这种方法优于张量级量化（tensor-wise quantization）方法。</li>
+<p>我们利用 H100 GPU 的原生 FP8
+支持进行低精度推理实验。为了实现低精度推理，我们对模型中的大多数矩阵乘法应用了
+FP8
+量化。具体而言，我们对模型中前馈网络层的大多数参数和激活值进行了量化，这些层约占推理计算时间的
+50%。我们不对模型的自注意力层中的参数进行量化。我们利用动态缩放因子以获得更好的精度（Xiao
+et al., 2024b），并优化 CUDA kernel¹⁵ 以减少计算缩放因子的开销。我们发现
+Llama 3 405B
+的质量对某些类型的量化很敏感，因此我们进行了一些额外改进以提高模型输出质量：</p>
+<ol type="1">
+<li>类似 Zhang et al. (2021)，我们不对第一个和最后一个 Transformer
+层进行量化。</li>
+<li>高困惑度（high-perplexity）的
+token（如日期）可能导致较大的激活值。反过来，这可能导致 FP8
+中出现较高的动态缩放因子以及不可忽视数量的下溢，从而导致解码错误。为了解决这个问题，我们将动态缩放因子上限设定为
+1200。</li>
+<li>我们采用行级量化（row-wise
+quantization），对参数和激活矩阵按行计算缩放因子（见图
+25）。我们发现这种方法优于张量级量化（tensor-wise
+quantization）方法。</li>
 </ol>
-<p>![Figure-25.png](/img4/The Llama 3 Herd of Models/Figure-25.png)</p>
-<p><strong>图 25：张量级与行级 FP8 量化示意图。</strong> 右：行级量化能够使用比左：张量级量化更细粒度的激活因子。</p>
-<p><strong>图 26：使用 BF16 和 FP8 推理的 Llama 3 405B 奖励分数分布。</strong> 我们的 FP8 量化方法对模型响应的影响可以忽略不计。</p>
-<p>![Figure-26.png](/img4/The Llama 3 Herd of Models/Figure-26.png)</p>
-<p><strong>量化误差的影响。</strong> 标准基准上的评估通常表明，即使没有这些缓解措施，FP8 推理也能达到与 BF16 推理相当的性能。然而，我们发现这些基准并未充分反映 FP8 量化的影响。当缩放因子未设置上限时，即使基准性能表现良好，模型偶尔也会产生损坏的响应。与其依赖基准来衡量量化带来的分布变化，我们更倾向于分析使用 FP8 和 BF16 生成的 100,000 条响应的奖励模型分数分布。图 26 展示了我们量化方法产生的奖励分布。图中的结果表明，我们的 FP8 量化方法对模型响应的影响非常有限。</p>
-<p><strong>效率的实验评估。</strong> 图 27 展示了使用 Llama 3 405B 在预填充和解码阶段进行 FP8 推理时的吞吐量-延迟权衡，使用 4,096 个输入 token 和 256 个输出 token。该图比较了 FP8 推理与第 6.1 节中描述的双机 BF16 推理方法的效率。结果表明，使用 FP8 推理在预填充阶段的吞吐量提升了高达 50%，并且在解码阶段实现了显著更好的吞吐量-延迟权衡。</p>
-<p>![Figure-27.png](/img4/The Llama 3 Herd of Models/Figure-27.png)</p>
-<p><strong>图 27：</strong> Llama 3 405B 在 FP8 推理中吞吐量与延迟的权衡，与使用不同流水线并行设置的 BF16 推理对比。左图：预填充结果。右图：解码结果。</p>
+<figure>
+<img src="/img4/The%20Llama%203%20Herd%20of%20Models/Figure-25.png"
+alt="Figure-25.png" />
+<figcaption aria-hidden="true">Figure-25.png</figcaption>
+</figure>
+<p><strong>图 25：张量级与行级 FP8 量化示意图。</strong>
+右：行级量化能够使用比左：张量级量化更细粒度的激活因子。</p>
+<p><strong>图 26：使用 BF16 和 FP8 推理的 Llama 3 405B
+奖励分数分布。</strong> 我们的 FP8
+量化方法对模型响应的影响可以忽略不计。</p>
+<figure>
+<img src="/img4/The%20Llama%203%20Herd%20of%20Models/Figure-26.png"
+alt="Figure-26.png" />
+<figcaption aria-hidden="true">Figure-26.png</figcaption>
+</figure>
+<p><strong>量化误差的影响。</strong>
+标准基准上的评估通常表明，即使没有这些缓解措施，FP8 推理也能达到与 BF16
+推理相当的性能。然而，我们发现这些基准并未充分反映 FP8
+量化的影响。当缩放因子未设置上限时，即使基准性能表现良好，模型偶尔也会产生损坏的响应。与其依赖基准来衡量量化带来的分布变化，我们更倾向于分析使用
+FP8 和 BF16 生成的 100,000 条响应的奖励模型分数分布。图 26
+展示了我们量化方法产生的奖励分布。图中的结果表明，我们的 FP8
+量化方法对模型响应的影响非常有限。</p>
+<p><strong>效率的实验评估。</strong> 图 27 展示了使用 Llama 3 405B
+在预填充和解码阶段进行 FP8 推理时的吞吐量-延迟权衡，使用 4,096 个输入
+token 和 256 个输出 token。该图比较了 FP8 推理与第 6.1 节中描述的双机
+BF16 推理方法的效率。结果表明，使用 FP8
+推理在预填充阶段的吞吐量提升了高达
+50%，并且在解码阶段实现了显著更好的吞吐量-延迟权衡。</p>
+<figure>
+<img src="/img4/The%20Llama%203%20Herd%20of%20Models/Figure-27.png"
+alt="Figure-27.png" />
+<figcaption aria-hidden="true">Figure-27.png</figcaption>
+</figure>
+<p><strong>图 27：</strong> Llama 3 405B 在 FP8
+推理中吞吐量与延迟的权衡，与使用不同流水线并行设置的 BF16
+推理对比。左图：预填充结果。右图：解码结果。</p>
 <blockquote>
-<p>¹⁵ 我们的 FP8 kernel 可在 <a target="_blank" rel="noopener" href="https://github.com/pytorch/FBGEMM/tree/main/fbgemm_gpu/experimental/gen_ai">https://github.com/pytorch/FBGEMM/tree/main/fbgemm_gpu/experimental/gen_ai</a> 获取。使用示例见 <a target="_blank" rel="noopener" href="https://github.com/meta-llama/llama-agentic-system%E3%80%82">https://github.com/meta-llama/llama-agentic-system。</a></p>
+<p>¹⁵ 我们的 FP8 kernel 可在
+https://github.com/pytorch/FBGEMM/tree/main/fbgemm_gpu/experimental/gen_ai
+获取。使用示例见
+https://github.com/meta-llama/llama-agentic-system。</p>
 </blockquote>
-<hr>
+<hr />
 
     </div>
 
