@@ -27,22 +27,10 @@
 <meta property="og:site_name" content="墨语浮生">
 <meta property="og:description" content="第10章 AI工程架构与用户反馈 Chapter 10. AI Engineering Architecture and User Feedback 迄今为止，本书介绍了大量将基础模型适配到特定应用的技术。本章将讨论如何将这些技术整合起来，构建成功的产品。 面对种类繁多的AI工程技术及工具，选择合适的方案可能令人不知所措。为简化这一过程，本章采取渐进式方法：从基础模型应用的最简单架构出发，指出该架">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/10/Figure-10-3-PII-redaction.png">
-<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/10/Figure-10-5-Routing.png">
-<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/10/Figure-10-6-Model-gateway.png">
-<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/10/Figure-10-8-Cache-architecture.png">
-<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/10/Figure-10-9-Feedback-loop.png">
-<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/10/Figure-10-10-Write-actions.png">
-<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/10/Figure-10-11-LangSmith-trace.png">
-<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/10/Figure-10-12-Query-rephrasing.png">
-<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/10/Table-10-1-Feedback-types.png">
-<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/10/Figure-10-14-DALL-E-inpainting.png">
-<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/10/Figure-10-21-Luma-emoji-order.png">
 <meta property="article:published_time" content="2026-09-29T16:00:00.000Z">
 <meta property="article:modified_time" content="2026-10-02T02:16:14.626Z">
 <meta property="article:author" content="Rayman.hung">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://hongyitong.github.io/img4/AI%20Engineering/10/Figure-10-3-PII-redaction.png">
 
 
 <link rel="canonical" href="http://hongyitong.github.io/2026/09/30/%E7%AC%AC10%E7%AB%A0AI%E5%B7%A5%E7%A8%8B%E6%9E%B6%E6%9E%84%E4%B8%8E%E7%94%A8%E6%88%B7%E5%8F%8D%E9%A6%88/">
@@ -177,7 +165,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC10%E7%AB%A0-ai%E5%B7%A5%E7%A8%8B%E6%9E%B6%E6%9E%84%E4%B8%8E%E7%94%A8%E6%88%B7%E5%8F%8D%E9%A6%88"><span class="nav-text">第10章 AI工程架构与用户反馈</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ai%E5%B7%A5%E7%A8%8B%E6%9E%B6%E6%9E%84"><span class="nav-text">AI工程架构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A41.-%E5%A2%9E%E5%BC%BA%E4%B8%8A%E4%B8%8B%E6%96%87"><span class="nav-text">步骤1. 增强上下文</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A42.-%E6%B7%BB%E5%8A%A0%E6%8A%A4%E6%A0%8F"><span class="nav-text">步骤2. 添加护栏</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A43.-%E6%B7%BB%E5%8A%A0%E6%A8%A1%E5%9E%8B%E8%B7%AF%E7%94%B1%E5%99%A8%E5%92%8C%E7%BD%91%E5%85%B3"><span class="nav-text">步骤3. 添加模型路由器和网关</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A44.-%E4%BD%BF%E7%94%A8%E7%BC%93%E5%AD%98%E9%99%8D%E4%BD%8E%E5%BB%B6%E8%BF%9F"><span class="nav-text">步骤4. 使用缓存降低延迟</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A45.-%E6%B7%BB%E5%8A%A0agent%E6%A8%A1%E5%BC%8F"><span class="nav-text">步骤5. 添加Agent模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%91%E6%8E%A7%E4%B8%8E%E5%8F%AF%E8%A7%82%E6%B5%8B%E6%80%A7"><span class="nav-text">监控与可观测性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ai%E6%B5%81%E6%B0%B4%E7%BA%BF%E7%BC%96%E6%8E%92"><span class="nav-text">AI流水线编排</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%A8%E6%88%B7%E5%8F%8D%E9%A6%88"><span class="nav-text">用户反馈</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8F%90%E5%8F%96%E5%AF%B9%E8%AF%9D%E5%8F%8D%E9%A6%88"><span class="nav-text">提取对话反馈</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%8D%E9%A6%88%E8%AE%BE%E8%AE%A1"><span class="nav-text">反馈设计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%8D%E9%A6%88%E7%9A%84%E5%B1%80%E9%99%90%E6%80%A7"><span class="nav-text">反馈的局限性</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-text">第10章 AI工程架构与用户反馈</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#AI%E5%B7%A5%E7%A8%8B%E6%9E%B6%E6%9E%84"><span class="nav-text">AI工程架构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A41-%E5%A2%9E%E5%BC%BA%E4%B8%8A%E4%B8%8B%E6%96%87"><span class="nav-text">步骤1. 增强上下文</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A42-%E6%B7%BB%E5%8A%A0%E6%8A%A4%E6%A0%8F"><span class="nav-text">步骤2. 添加护栏</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A43-%E6%B7%BB%E5%8A%A0%E6%A8%A1%E5%9E%8B%E8%B7%AF%E7%94%B1%E5%99%A8%E5%92%8C%E7%BD%91%E5%85%B3"><span class="nav-text">步骤3. 添加模型路由器和网关</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A44-%E4%BD%BF%E7%94%A8%E7%BC%93%E5%AD%98%E9%99%8D%E4%BD%8E%E5%BB%B6%E8%BF%9F"><span class="nav-text">步骤4. 使用缓存降低延迟</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A45-%E6%B7%BB%E5%8A%A0Agent%E6%A8%A1%E5%BC%8F"><span class="nav-text">步骤5. 添加Agent模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%91%E6%8E%A7%E4%B8%8E%E5%8F%AF%E8%A7%82%E6%B5%8B%E6%80%A7"><span class="nav-text">监控与可观测性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AI%E6%B5%81%E6%B0%B4%E7%BA%BF%E7%BC%96%E6%8E%92"><span class="nav-text">AI流水线编排</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%A8%E6%88%B7%E5%8F%8D%E9%A6%88"><span class="nav-text">用户反馈</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8F%90%E5%8F%96%E5%AF%B9%E8%AF%9D%E5%8F%8D%E9%A6%88"><span class="nav-text">提取对话反馈</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%8D%E9%A6%88%E8%AE%BE%E8%AE%A1"><span class="nav-text">反馈设计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%8D%E9%A6%88%E7%9A%84%E5%B1%80%E9%99%90%E6%80%A7"><span class="nav-text">反馈的局限性</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -278,25 +266,20 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h1 id="第10章-ai工程架构与用户反馈">第10章 AI工程架构与用户反馈</h1>
+    <div class="post-body" itemprop="articleBody"><h1>第10章 AI工程架构与用户反馈</h1>
 <p>Chapter 10. AI Engineering Architecture and User Feedback</p>
 <p>迄今为止，本书介绍了大量将基础模型适配到特定应用的技术。本章将讨论如何将这些技术整合起来，构建成功的产品。</p>
 <p>面对种类繁多的AI工程技术及工具，选择合适的方案可能令人不知所措。为简化这一过程，本章采取渐进式方法：从基础模型应用的最简单架构出发，指出该架构面临的挑战，然后逐步添加组件以应对这些挑战。</p>
-<p>我们可以花无尽的时间来思考如何构建一个成功的应用，但验证一个应用是否真正实现了目标，唯一的方法就是将它交给用户使用。用户反馈对于指导产品开发一直至关重要，但对于AI应用而言，用户反馈作为改进模型的数据来源，其作用更为关键。对话式交互界面使用户更容易给出反馈，但也让开发者更难以从中提取信号。本章将讨论各类对话式AI反馈，以及<em><u>如何设计一套系统，在不损害用户体验的前提下收集正确的反馈。</u></em></p>
-<span id="more"></span>
-<h2 id="ai工程架构">AI工程架构</h2>
+<p>我们可以花无尽的时间来思考如何构建一个成功的应用，但验证一个应用是否真正实现了目标，唯一的方法就是将它交给用户使用。用户反馈对于指导产品开发一直至关重要，但对于AI应用而言，用户反馈作为改进模型的数据来源，其作用更为关键。对话式交互界面使用户更容易给出反馈，但也让开发者更难以从中提取信号。本章将讨论各类对话式AI反馈，以及*<u>如何设计一套系统，在不损害用户体验的前提下收集正确的反馈。</u>*</p>
+<span id="more"></span>  
+<h2 id="AI工程架构">AI工程架构</h2>
 <p>AI Engineering Architecture</p>
 <p>一个完整的AI架构可能非常复杂。本节遵循团队在生产环境中可能遵循的流程，从最简单的架构开始，逐步添加更多组件。尽管AI应用多种多样，但它们共享许多通用组件。这里提出的架构已在多家公司得到验证，可适用于广泛的应用场景，但某些应用可能会有所偏离。</p>
 <p>在最简单的形式中，你的应用接收一个查询并将其发送给模型。模型生成一个响应，然后返回给用户，如图10-1所示。这里没有上下文增强、护栏（Guardrails）或优化。模型API框涵盖了第三方API（例如OpenAI、Google、Anthropic）和自托管模型。关于为自托管模型构建推理服务器的内容，已在第9章中讨论。</p>
-<figure>
-<img
-src="/img4/AI%20Engineering/10/Figure-10-1-Simplest-architecture.png"
-alt="图10-1" />
-<figcaption aria-hidden="true">图10-1</figcaption>
-</figure>
+<p>![图10-1](/img4/AI Engineering/10/Figure-10-1-Simplest-architecture.png)</p>
 <p><strong>图10-1. 运行AI应用的最简单架构。</strong></p>
 <p>从这个简单的架构出发，你可以根据需要添加更多组件。这个过程可能如下所示：</p>
-<ol type="1">
+<ol>
 <li>通过让模型访问外部数据源和用于信息收集的工具，增强输入到模型中的上下文。</li>
 <li><u><em>添加护栏以保护你的系统和用户。</em></u></li>
 <li>添加模型路由器和网关，以支持复杂的流水线并增加更多的安全性。</li>
@@ -305,7 +288,7 @@ alt="图10-1" />
 </ol>
 <p>本章遵循我在生产环境中常见的发展路径。然而，每个人的需求都不同，你应该按照最适合你应用的顺序来推进。</p>
 <p><u><em>监控和可观测性对于任何应用的质量控制和性能改进都至关重要</em></u>，将在本流程的最后讨论。而将所有这些组件串联起来的编排（Orchestration），将在其后讨论。</p>
-<h3 id="步骤1.-增强上下文">步骤1. 增强上下文</h3>
+<h3 id="步骤1-增强上下文">步骤1. 增强上下文</h3>
 <p>Step 1. Enhance Context</p>
 <p>平台的初始扩展通常涉及添加机制，使系统能够为每个查询构建模型所需的上下文。如第6章所述，上下文可以通过多种检索机制构建，包括文本检索、图像检索和表格数据检索。</p>
 <p>上下文也可以通过工具来增强，这些工具允许模型通过API自动收集信息，例如网络搜索、新闻、天气、活动等。</p>
@@ -313,14 +296,9 @@ alt="图10-1" />
 <p>然而，<u><em>正如模型在能力上存在差异一样，这些提供商在上下文构建支持方面也各不相同。例如，它们可能对可以上传的文档类型和数量有限制。一个专门的RAG解决方案可能允许你上传向量数据库能容纳的任意数量的文档，而通用的模型API可能只允许你上传少量文档。</em></u></p>
 <p>不同的框架在检索算法和其他检索配置（如块大小）上也存在差异。类似地，在工具使用方面，不同解决方案所支持的工具类型以及执行模式（例如是否支持并行函数执行或长时间运行的任务）也各不相同。</p>
 <p>通过上下文构建，现在的架构如图10-2所示。</p>
-<figure>
-<img
-src="/img4/AI%20Engineering/10/Figure-10-2-Context-construction.png"
-alt="图10-2" />
-<figcaption aria-hidden="true">图10-2</figcaption>
-</figure>
+<p>![图10-2](/img4/AI Engineering/10/Figure-10-2-Context-construction.png)</p>
 <p><strong>图10-2. 带有上下文构建的平台架构。</strong></p>
-<h3 id="步骤2.-添加护栏">步骤2. 添加护栏</h3>
+<h3 id="步骤2-添加护栏">步骤2. 添加护栏</h3>
 <p>Step 2. Put in Guardrails</p>
 <p>护栏有助于降低风险，保护你和你的用户。<u><em>只要有风险暴露的地方，就应该放置护栏。通常，护栏可以分为输入护栏和输出护栏两大类。</em></u></p>
 <p><strong>输入护栏（Input Guardrails）</strong></p>
@@ -328,8 +306,7 @@ alt="图10-2" />
 <blockquote>
 <p>一个例子是，一名三星员工将三星的专有信息输入到ChatGPT中，意外泄露了公司机密。</p>
 </blockquote>
-<p>第五章讨论了许多攻击者通过提示攻击（Prompt
-Hacks）利用应用的途径，以及如何防御这些攻击。虽然你可以缓解风险，但由于模型生成响应的固有特性以及不可避免的人为失误，风险永远无法完全消除。</p>
+<p>第五章讨论了许多攻击者通过提示攻击（Prompt Hacks）利用应用的途径，以及如何防御这些攻击。虽然你可以缓解风险，但由于模型生成响应的固有特性以及不可避免的人为失误，风险永远无法完全消除。</p>
 <p>向外部API泄露私人信息是使用外部模型API时特有的风险，因为你需要将数据发送到组织外部。这可能是由多种原因造成的，包括：</p>
 <ul>
 <li>一名员工将公司的秘密或用户的私人信息复制到提示中，并将其发送给第三方API</li>
@@ -342,16 +319,9 @@ Hacks）利用应用的途径，以及如何防御这些攻击。虽然你可以
 <li>人脸</li>
 <li>与公司知识产权或特权信息相关的特定关键词和短语</li>
 </ul>
-<p>许多敏感数据检测工具使用AI来识别潜在的敏感信息，例如判断一个字符串是否类似于有效的家庭住址。如果发现查询包含敏感信息，你有两个选择：阻止整个查询，或从中移除敏感信息。例如，你<u><em>可以用占位符
-[PHONE NUMBER]
-来屏蔽用户的电话号码。如果生成的响应包含这个占位符，则使用一个PII反向字典，将该占位符映射回原始信息，以便你可以解除屏蔽</em></u>，如图10-3所示。</p>
-<figure>
-<img src="/img4/AI%20Engineering/10/Figure-10-3-PII-redaction.png"
-alt="图10-3" />
-<figcaption aria-hidden="true">图10-3</figcaption>
-</figure>
-<p><strong>图10-3.
-使用PII反向映射来屏蔽和解除屏蔽PII信息，以避免将其发送到外部API的示例。</strong></p>
+<p>许多敏感数据检测工具使用AI来识别潜在的敏感信息，例如判断一个字符串是否类似于有效的家庭住址。如果发现查询包含敏感信息，你有两个选择：阻止整个查询，或从中移除敏感信息。例如，你<u><em>可以用占位符 [PHONE NUMBER] 来屏蔽用户的电话号码。如果生成的响应包含这个占位符，则使用一个PII反向字典，将该占位符映射回原始信息，以便你可以解除屏蔽</em></u>，如图10-3所示。</p>
+<p>![图10-3](/img4/AI Engineering/10/Figure-10-3-PII-redaction.png)</p>
+<p><strong>图10-3. 使用PII反向映射来屏蔽和解除屏蔽PII信息，以避免将其发送到外部API的示例。</strong></p>
 <p><strong>输出护栏（Output Guardrails）</strong></p>
 <p>模型可能以多种方式失败。输出护栏有两个主要功能：</p>
 <ul>
@@ -365,14 +335,16 @@ alt="图10-3" />
 <li>格式错误的响应，不符合预期的输出格式。例如，应用期望JSON格式，但模型生成了无效的JSON。</li>
 <li>模型幻觉产生的事实不一致的响应。</li>
 <li>整体上糟糕的响应。例如，你让模型写一篇文章，而那篇文章写得很差。</li>
-</ul></li>
+</ul>
+</li>
 <li><strong>安全</strong>
 <ul>
 <li>包含种族主义、色情内容或非法活动的有毒响应。</li>
 <li>包含私人信息和敏感信息的响应。</li>
 <li>会触发远程工具和代码执行的响应。</li>
 <li>对你的公司或竞争对手进行错误描述的品牌风险响应。</li>
-</ul></li>
+</ul>
+</li>
 </ul>
 <p>回顾第5章，对于安全评估，不仅需要跟踪安全失败率，还需要跟踪虚假拒绝率。系统可能过于安全，例如，它甚至阻止了合法的请求，中断了用户的工作，导致用户沮丧。</p>
 <p>许多失败可以通过简单的重试逻辑来缓解。AI模型是概率性的，这意味着如果你再次尝试同一个查询，可能会得到不同的响应。例如，如果响应为空，就重试X次，直到获得非空响应。同样，如果响应格式错误，就重试直到响应格式正确。</p>
@@ -383,19 +355,11 @@ alt="图10-3" />
 <p>输出护栏在流式补全模式下可能效果不佳。默认情况下，整个响应在展示给用户之前就已生成完毕，这可能需要很长时间。在流式补全模式下，新的令牌在生成时就会流式传输给用户，减少了用户等待看到响应的时间。缺点是很难评估部分响应，因此不安全的响应可能在系统护栏判定其应被阻止之前就已经流式传输给了用户。</p>
 <p>你需要实施多少护栏也取决于你是自托管模型还是使用第三方API。虽然两者都可以在上面实现护栏，但第三方API可以减少你需要实现的护栏，因为API提供商通常会为你提供许多开箱即用的护栏。同时，自托管意味着你不需要将请求发送到外部，这减少了许多类型的输入护栏的需求。</p>
 <p>鉴于应用可能失败的地方众多，护栏可以在多个层面实现。模型提供商会为其模型提供护栏，使其模型更安全、更好。然而，模型提供商必须在安全性和灵活性之间取得平衡。限制可能使模型更安全，但也可能使其对特定用例的可用性降低。</p>
-<p>护栏也可以由应用开发者实施。第5章中讨论了许多防御提示攻击的技术。可以直接使用的护栏解决方案包括Meta的Purple
-Llama、NVIDIA的NeMo
-Guardrails、Azure的PyRIT、Azure的AI内容过滤器、Perspective
-API和OpenAI的内容审核API。由于输入和输出风险存在重叠，一个护栏解决方案通常会为输入和输出提供双重保护。一些模型网关也提供护栏功能，这将在下一节讨论。</p>
+<p>护栏也可以由应用开发者实施。第5章中讨论了许多防御提示攻击的技术。可以直接使用的护栏解决方案包括Meta的Purple Llama、NVIDIA的NeMo Guardrails、Azure的PyRIT、Azure的AI内容过滤器、Perspective API和OpenAI的内容审核API。由于输入和输出风险存在重叠，一个护栏解决方案通常会为输入和输出提供双重保护。一些模型网关也提供护栏功能，这将在下一节讨论。</p>
 <p>有了护栏，架构看起来如图10-4所示。我把评分器放在模型API框内，因为评分器通常由AI驱动，即使评分器通常比生成模型更小、更快。然而，评分器也可以放在输出护栏框中。</p>
-<figure>
-<img
-src="/img4/AI%20Engineering/10/Figure-10-4-Input-output-guardrails.png"
-alt="图10-4" />
-<figcaption aria-hidden="true">图10-4</figcaption>
-</figure>
+<p>![图10-4](/img4/AI Engineering/10/Figure-10-4-Input-output-guardrails.png)</p>
 <p><strong>图10-4. 增加了输入和输出护栏的应用架构。</strong></p>
-<h3 id="步骤3.-添加模型路由器和网关">步骤3. 添加模型路由器和网关</h3>
+<h3 id="步骤3-添加模型路由器和网关">步骤3. 添加模型路由器和网关</h3>
 <p>Step 3. Add Model Router and Gateway</p>
 <p>随着应用的发展，涉及越来越多的模型，路由器和网关应运而生，以帮助你管理多个模型服务的复杂性和成本。</p>
 <p><strong>路由器（Router）</strong></p>
@@ -406,50 +370,32 @@ alt="图10-4" />
 <li>如果请求是为了纠正账单错误，将其路由到人工操作员。</li>
 <li>如果请求是关于排查技术问题，将其路由到专门负责故障排查的聊天机器人。</li>
 </ul>
-<p><u><em>意图分类器可以防止你的系统参与超出范围的对话。</em></u>如果查询被认为不合适，聊天机器人可以使用预设回复礼貌地拒绝回应，而无需浪费API调用。例如，如果用户问你在即将到来的选举中会投谁的票，聊天机器人可以回应："作为一个聊天机器人，我没有投票能力。如果您对我们的产品有疑问，我很乐意提供帮助。"</p>
-<p><u><em>意图分类器可以帮助系统检测模糊查询并请求澄清。</em></u>例如，对于"冻结"这个查询，系统可能会问："您是想冻结账户还是在谈论天气？"或者简单地问："对不起，您能详细说明一下吗？"</p>
-<p><u><em>其他路由器可以帮助模型决定下一步做什么。</em></u>例如，对于一个能够执行多种动作的Agent，路由器可以采取下一步动作预测器的形式：模型下一步应该使用代码解释器还是搜索API？对于具有记忆系统的模型，路由器可以预测模型应该从记忆层次结构的哪个部分提取信息。想象一下，用户在当前对话中附加了一份提到墨尔本的文件。之后，用户问："墨尔本最可爱的动物是什么？"模型需要决定是依赖附件文档中的信息，还是上网搜索这个查询。</p>
-<p><u><em>意图分类器和下一步动作预测器可以在基础模型之上实现。</em></u>许多团队采用较小的语言模型，如GPT-2、BERT和Llama
-7B，作为他们的意图分类器。许多团队选择从头开始训练更小的分类器。路由器应该快速且廉价，以便可以同时使用多个路由器而不会增加显著的额外延迟和成本。</p>
+<p><u><em>意图分类器可以防止你的系统参与超出范围的对话。</em></u>如果查询被认为不合适，聊天机器人可以使用预设回复礼貌地拒绝回应，而无需浪费API调用。例如，如果用户问你在即将到来的选举中会投谁的票，聊天机器人可以回应：“作为一个聊天机器人，我没有投票能力。如果您对我们的产品有疑问，我很乐意提供帮助。”</p>
+<p><u><em>意图分类器可以帮助系统检测模糊查询并请求澄清。</em></u>例如，对于&quot;冻结&quot;这个查询，系统可能会问：&quot;您是想冻结账户还是在谈论天气？&quot;或者简单地问：“对不起，您能详细说明一下吗？”</p>
+<p><u><em>其他路由器可以帮助模型决定下一步做什么。</em></u>例如，对于一个能够执行多种动作的Agent，路由器可以采取下一步动作预测器的形式：模型下一步应该使用代码解释器还是搜索API？对于具有记忆系统的模型，路由器可以预测模型应该从记忆层次结构的哪个部分提取信息。想象一下，用户在当前对话中附加了一份提到墨尔本的文件。之后，用户问：&quot;墨尔本最可爱的动物是什么？&quot;模型需要决定是依赖附件文档中的信息，还是上网搜索这个查询。</p>
+<p><u><em>意图分类器和下一步动作预测器可以在基础模型之上实现。</em></u>许多团队采用较小的语言模型，如GPT-2、BERT和Llama 7B，作为他们的意图分类器。许多团队选择从头开始训练更小的分类器。路由器应该快速且廉价，以便可以同时使用多个路由器而不会增加显著的额外延迟和成本。</p>
 <p>当将查询路由到具有不同上下文限制的模型时，查询的上下文可能需要相应调整。考虑一个1000个令牌的查询，计划发送给一个具有4K上下文限制的模型。系统随后执行一个动作（例如网络搜索），返回了8000个令牌的上下文。你可以截断查询的上下文以适应该模型，或者将查询路由到一个具有更大上下文限制的模型。</p>
 <p>由于<u><em>路由通常由模型完成</em></u>，我将路由放在图10-5的模型API框内。与评分器一样，路由器通常比用于生成的模型更小。</p>
-<figure>
-<img src="/img4/AI%20Engineering/10/Figure-10-5-Routing.png"
-alt="图10-5" />
-<figcaption aria-hidden="true">图10-5</figcaption>
-</figure>
+<p>![图10-5](/img4/AI Engineering/10/Figure-10-5-Routing.png)</p>
 <p><strong>图10-5. 路由帮助系统为每个查询使用最优解决方案。</strong></p>
-<p>将路由器与其他模型分组可以使模型更容易管理。然而，需要注意的是，路由通常发生在检索之前。例如，在检索之前，路由器可以帮助确定查询是否在范围内，如果是，是否需要检索。路由也可以发生在检索之后，例如确定是否应将查询路由到人工操作员。然而，路由
--&gt; 检索 -&gt; 生成 -&gt; 评分是更常见的AI应用模式。</p>
+<p>将路由器与其他模型分组可以使模型更容易管理。然而，需要注意的是，路由通常发生在检索之前。例如，在检索之前，路由器可以帮助确定查询是否在范围内，如果是，是否需要检索。路由也可以发生在检索之后，例如确定是否应将查询路由到人工操作员。然而，路由 -&gt; 检索 -&gt; 生成 -&gt; 评分是更常见的AI应用模式。</p>
 <p><strong>网关（Gateway）</strong></p>
 <p><u><em>模型网关是一个中间层，允许你的组织以统一且安全的方式与不同模型进行交互。</em></u>模型网关最基本的功能是为不同模型提供统一接口，包括自托管模型和商业API背后的模型。模型网关使维护代码更加容易。如果某个模型API发生变更，你只需要更新网关，而不是更新所有依赖此API的应用。图10-6展示了模型网关的高层级视图。</p>
-<figure>
-<img src="/img4/AI%20Engineering/10/Figure-10-6-Model-gateway.png"
-alt="图10-6" />
-<figcaption aria-hidden="true">图10-6</figcaption>
-</figure>
+<p>![图10-6](/img4/AI Engineering/10/Figure-10-6-Model-gateway.png)</p>
 <p><strong>图10-6. 模型网关为与不同模型协作提供统一接口。</strong></p>
 <p>在最简单的形式中，模型网关是一个统一的封装器。下面的代码示例给出了模型网关可能如何实现的概念。它并不旨在成为功能完备的代码，因为它不包含任何错误检查或优化：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> google.generativeai <span class="keyword">as</span> genai</span><br><span class="line"><span class="keyword">import</span> openai</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">openai_model</span>(<span class="params">input_data, model_name, max_tokens</span>):</span><br><span class="line">    openai.api_key = os.environ[<span class="string">&quot;OPENAI_API_KEY&quot;</span>]</span><br><span class="line">    response = openai.Completion.create(</span><br><span class="line">        engine=model_name,</span><br><span class="line">        prompt=input_data,</span><br><span class="line">        max_tokens=max_tokens</span><br><span class="line">    )</span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;response&quot;</span>: response.choices[<span class="number">0</span>].text.strip()&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">gemini_model</span>(<span class="params">input_data, model_name, max_tokens</span>):</span><br><span class="line">    genai.configure(api_key=os.environ[<span class="string">&quot;GOOGLE_API_KEY&quot;</span>])</span><br><span class="line">    model = genai.GenerativeModel(model_name=model_name)</span><br><span class="line">    response = model.generate_content(input_data, max_tokens=max_tokens)</span><br><span class="line">    <span class="keyword">return</span> &#123;<span class="string">&quot;response&quot;</span>: response[<span class="string">&quot;choices&quot;</span>][<span class="number">0</span>][<span class="string">&quot;message&quot;</span>][<span class="string">&quot;content&quot;</span>]&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/model&#x27;</span>, methods=[<span class="string">&#x27;POST&#x27;</span>]</span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">model_gateway</span>():</span><br><span class="line">    data = request.get_json()</span><br><span class="line">    model_type = data.get(<span class="string">&quot;model_type&quot;</span>)</span><br><span class="line">    model_name = data.get(<span class="string">&quot;model_name&quot;</span>)</span><br><span class="line">    input_data = data.get(<span class="string">&quot;input_data&quot;</span>)</span><br><span class="line">    max_tokens = data.get(<span class="string">&quot;max_tokens&quot;</span>)</span><br><span class="line">    <span class="keyword">if</span> model_type == <span class="string">&quot;openai&quot;</span>:</span><br><span class="line">        result = openai_model(input_data, model_name, max_tokens)</span><br><span class="line">    <span class="keyword">elif</span> model_type == <span class="string">&quot;gemini&quot;</span>:</span><br><span class="line">        result = gemini_model(input_data, model_name, max_tokens)</span><br><span class="line">    <span class="keyword">return</span> jsonify(result)</span><br></pre></td></tr></table></figure>
-<p><u><em>模型网关提供了访问控制和成本管理。</em></u>与其让每个需要访问OpenAI
-API的人都使用你组织的令牌（这很容易泄露），不如只允许人们访问模型网关，从而创建一个集中且受控的访问点。网关还可以实现细粒度的访问控制，指定哪个用户或应用可以访问哪个模型。此外，网关可以监控和限制API调用的使用，防止滥用并有效管理成本。</p>
+<p><u><em>模型网关提供了访问控制和成本管理。</em></u>与其让每个需要访问OpenAI API的人都使用你组织的令牌（这很容易泄露），不如只允许人们访问模型网关，从而创建一个集中且受控的访问点。网关还可以实现细粒度的访问控制，指定哪个用户或应用可以访问哪个模型。此外，网关可以监控和限制API调用的使用，防止滥用并有效管理成本。</p>
 <p>模型网关也可用于实施回退策略，以克服速率限制或API故障（后者不幸很常见）。当主要API不可用时，网关可以将请求路由到备用模型，在短暂等待后重试，或以其他方式优雅地处理故障。这确保了你的应用能够持续运行，不会中断。</p>
 <p>由于请求和响应已经流经网关，这里也是实现其他功能的好地方，例如负载均衡、日志记录和分析。一些网关甚至提供缓存和护栏功能。</p>
-<p>鉴于网关的实现相对简单，市面上有许多现成的网关。例如Portkey的AI
-Gateway、MLflow AI Gateway、Wealthsimple的LLM
-Gateway、TrueFoundry、Kong和Cloudflare。</p>
+<p>鉴于网关的实现相对简单，市面上有许多现成的网关。例如Portkey的AI Gateway、MLflow AI Gateway、Wealthsimple的LLM Gateway、TrueFoundry、Kong和Cloudflare。</p>
 <p>在我们的架构中，网关现在取代了模型API框，如图10-7所示。</p>
-<figure>
-<img
-src="/img4/AI%20Engineering/10/Figure-10-7-Routing-gateway-architecture.png"
-alt="图10-7" />
-<figcaption aria-hidden="true">图10-7</figcaption>
-</figure>
+<p>![图10-7](/img4/AI Engineering/10/Figure-10-7-Routing-gateway-architecture.png)</p>
 <p><strong>图10-7. 增加了路由和网关模块的架构。</strong></p>
 <blockquote>
 <p>类似的抽象层，例如工具网关，对于访问各种工具也可能很有用。由于截至本书写作时尚不常见，本书不对此进行讨论。</p>
 </blockquote>
-<h3 id="步骤4.-使用缓存降低延迟">步骤4. 使用缓存降低延迟</h3>
+<h3 id="步骤4-使用缓存降低延迟">步骤4. 使用缓存降低延迟</h3>
 <p>Step 4. Reduce Latency with Caches</p>
 <p>缓存长期以来一直是软件应用中不可或缺的部分，用于降低延迟和成本。软件缓存中的许多概念可以用于AI应用。<u><em>推理缓存技术，包括KV缓存和提示缓存，在第9章中已有讨论。本节重点讨论系统缓存</em></u>。由于缓存是一项成熟的技术，已有大量文献，本书仅作概略介绍。通常，系统缓存主要有两种机制：精确缓存和语义缓存。</p>
 <p><strong>精确缓存（Exact Caching）</strong></p>
@@ -457,14 +403,14 @@ alt="图10-7" />
 <p>精确缓存也用于基于嵌入的检索，以避免重复的向量搜索。如果传入的查询已在向量搜索缓存中，则获取缓存的结果。如果没有，则对该查询执行向量搜索并缓存结果。</p>
 <p><u><em>对于涉及多个步骤（例如思维链）和/或耗时操作（例如检索、SQL执行或网络搜索）的查询，缓存尤其有价值。</em></u></p>
 <p>精确缓存可以使用内存存储来实现快速检索。然而，由于内存存储是有限的，缓存也可以使用PostgreSQL、Redis等数据库或分层存储来实现，以平衡速度和存储容量。拥有一个驱逐策略对于管理缓存大小和保持性能至关重要。常见的驱逐策略包括最近最少使用（LRU）、最不经常使用（LFU）和先进先出（FIFO）。</p>
-<p><em><u>查询在缓存中保留多长时间取决于该查询再次被调用的可能性。</u>用户特定的查询，例如"我最近的订单状态如何？"，不太可能被其他用户复用，因此不应缓存。同样，缓存对时间敏感的查询（例如"天气怎么样？"）也意义不大。<u>许多团队会训练一个分类器来预测一个查询是否应该被缓存。</u></em></p>
+<p><em><u>查询在缓存中保留多长时间取决于该查询再次被调用的可能性。</u>用户特定的查询，例如&quot;我最近的订单状态如何？“，不太可能被其他用户复用，因此不应缓存。同样，缓存对时间敏感的查询（例如&quot;天气怎么样？”）也意义不大。<u>许多团队会训练一个分类器来预测一个查询是否应该被缓存。</u></em></p>
 <blockquote>
-<p>如果不当处理，缓存可能导致数据泄露。想象一下，你为一家电商网站工作，用户X问了一个看似通用的问题："电子产品退货政策是什么？"由于退货政策取决于用户的会员身份，系统首先检索用户X的信息，然后生成一个包含X信息的响应。系统误以为这是一个通用问题，于是缓存了答案。之后，当用户Y问同样的问题时，缓存的结果被返回，从而将X的信息泄露给了Y。</p>
+<p>如果不当处理，缓存可能导致数据泄露。想象一下，你为一家电商网站工作，用户X问了一个看似通用的问题：&quot;电子产品退货政策是什么？&quot;由于退货政策取决于用户的会员身份，系统首先检索用户X的信息，然后生成一个包含X信息的响应。系统误以为这是一个通用问题，于是缓存了答案。之后，当用户Y问同样的问题时，缓存的结果被返回，从而将X的信息泄露给了Y。</p>
 </blockquote>
 <p><strong>语义缓存（Semantic Caching）</strong></p>
-<p>与精确缓存不同，语义缓存中，即使缓存项与传入的查询仅在语义上相似（而非完全相同），也会被使用。想象一下，一个用户问"越南的首都是什么？"，模型回答"河内"。后来，另一个用户问"越南的首都城市是什么？"，这在语义上是同一个问题，但措辞略有不同。使用语义缓存，系统可以复用第一个查询的答案，而不必从头开始计算新查询。复用相似查询可以提高缓存的命中率，并可能降低成本。然而，语义缓存可能会降低模型的性能。</p>
+<p>与精确缓存不同，语义缓存中，即使缓存项与传入的查询仅在语义上相似（而非完全相同），也会被使用。想象一下，一个用户问&quot;越南的首都是什么？“，模型回答&quot;河内”。后来，另一个用户问&quot;越南的首都城市是什么？&quot;，这在语义上是同一个问题，但措辞略有不同。使用语义缓存，系统可以复用第一个查询的答案，而不必从头开始计算新查询。复用相似查询可以提高缓存的命中率，并可能降低成本。然而，语义缓存可能会降低模型的性能。</p>
 <p>语义缓存只有在你有可靠的方法来判断两个查询是否相似时才有效。一种常见的方法是使用语义相似度，如第3章所述。回顾一下，语义相似度的工作原理如下：</p>
-<ol type="1">
+<ol>
 <li>对于每个查询，使用嵌入模型生成其嵌入。</li>
 <li>使用向量搜索从缓存中找到与当前查询嵌入相似度得分最高的嵌入。设此相似度得分为X。</li>
 <li>如果X高于某个相似度阈值，则认为缓存的查询与当前查询相似，并返回缓存的结果。如果不是，则处理当前查询，并将其连同其嵌入和结果一起存入缓存。</li>
@@ -473,30 +419,15 @@ alt="图10-7" />
 <p>此外，语义缓存可能耗时且计算密集，因为它涉及向量搜索。该向量搜索的速度和成本取决于缓存嵌入的大小。</p>
 <p>如果缓存命中率很高（即大部分查询可以通过利用缓存结果有效回答），语义缓存可能仍然值得采用。然而，在引入语义缓存的复杂性之前，请务必评估相关的效率、成本和性能风险。</p>
 <p>通过添加缓存系统，平台看起来如图10-8所示。KV缓存和提示缓存通常由模型API提供商实现，因此未在图中显示。为了可视化它们，我会把它们放在模型API框内。图中增加了一个新的箭头，用于将生成的响应添加到缓存中。</p>
-<figure>
-<img src="/img4/AI%20Engineering/10/Figure-10-8-Cache-architecture.png"
-alt="图10-8" />
-<figcaption aria-hidden="true">图10-8</figcaption>
-</figure>
+<p>![图10-8](/img4/AI Engineering/10/Figure-10-8-Cache-architecture.png)</p>
 <p><strong>图10-8. 增加了缓存的AI应用架构。</strong></p>
-<h3 id="步骤5.-添加agent模式">步骤5. 添加Agent模式</h3>
+<h3 id="步骤5-添加Agent模式">步骤5. 添加Agent模式</h3>
 <p>Step 5. Add Agent Patterns</p>
-<p>到目前为止讨论的应用仍然相当简单。每个查询都遵循一个顺序流程。然而，如第6章所述，应用流程可以更加复杂，包括循环、并行执行和条件分支。第6章讨论的Agentic模式（Agentic
-Patterns）可以帮助你构建复杂的应用。例如，在系统生成输出后，它可能判定任务尚未完成，需要执行另一次检索来收集更多信息。原始的响应与新检索到的上下文一起传递到同一个模型或不同的模型中。这就形成了一个循环，如图10-9所示。</p>
-<figure>
-<img src="/img4/AI%20Engineering/10/Figure-10-9-Feedback-loop.png"
-alt="图10-9" />
-<figcaption aria-hidden="true">图10-9</figcaption>
-</figure>
-<p><strong>图10-9.
-黄色箭头允许生成的响应被反馈到系统中，从而实现更复杂的应用模式。</strong></p>
-<p>模型的输出也可用于调用写入动作（Write
-Actions），例如撰写邮件、下订单或发起银行转账。写入动作允许系统直接对其环境做出更改。如第6章所述，写入动作能使系统能力大幅提升，但也会使其暴露于显著更高的风险中。<u><em>授予模型访问写入动作的权限应极为谨慎</em></u>。添加了写入动作后，架构如图10-10所示。</p>
-<figure>
-<img src="/img4/AI%20Engineering/10/Figure-10-10-Write-actions.png"
-alt="图10-10" />
-<figcaption aria-hidden="true">图10-10</figcaption>
-</figure>
+<p>到目前为止讨论的应用仍然相当简单。每个查询都遵循一个顺序流程。然而，如第6章所述，应用流程可以更加复杂，包括循环、并行执行和条件分支。第6章讨论的Agentic模式（Agentic Patterns）可以帮助你构建复杂的应用。例如，在系统生成输出后，它可能判定任务尚未完成，需要执行另一次检索来收集更多信息。原始的响应与新检索到的上下文一起传递到同一个模型或不同的模型中。这就形成了一个循环，如图10-9所示。</p>
+<p>![图10-9](/img4/AI Engineering/10/Figure-10-9-Feedback-loop.png)</p>
+<p><strong>图10-9. 黄色箭头允许生成的响应被反馈到系统中，从而实现更复杂的应用模式。</strong></p>
+<p>模型的输出也可用于调用写入动作（Write Actions），例如撰写邮件、下订单或发起银行转账。写入动作允许系统直接对其环境做出更改。如第6章所述，写入动作能使系统能力大幅提升，但也会使其暴露于显著更高的风险中。<u><em>授予模型访问写入动作的权限应极为谨慎</em></u>。添加了写入动作后，架构如图10-10所示。</p>
+<p>![图10-10](/img4/AI Engineering/10/Figure-10-10-Write-actions.png)</p>
 <p><strong>图10-10. 使系统能够执行写入动作的应用架构。</strong></p>
 <p>如果迄今为止你已经遵循了所有步骤，你的架构可能已经变得相当复杂。虽然复杂系统能解决更多任务，但它们也会引入更多的失败模式，由于潜在的故障点众多，使得调试变得更加困难。下一节将介绍提高系统可观测性的最佳实践。</p>
 <h3 id="监控与可观测性">监控与可观测性</h3>
@@ -512,9 +443,9 @@ alt="图10-10" />
 </ul>
 <p>高CFR并不一定意味着监控系统不好。然而，你应该重新思考你的评估流程，以便在部署之前就能捕获不良变更。评估和监控需要紧密协作。<u><em>评估指标应能很好地转化为监控指标</em></u>，这意味着在评估中表现良好的模型在监控中也应表现良好。监控期间发现的问题应反馈到评估流程中。</p>
 <p><strong>监控与可观测性的区别</strong></p>
-<p>自2010年代中期以来，业界广泛采用"可观测性"一词而非"监控"。监控对系统内部状态与其输出之间的关系不作任何假设。你监控系统的外部输出，以判断系统内部何时出现问题——但无法保证外部输出能帮助你找出问题所在。</p>
+<p>自2010年代中期以来，业界广泛采用&quot;可观测性&quot;一词而非&quot;监控&quot;。监控对系统内部状态与其输出之间的关系不作任何假设。你监控系统的外部输出，以判断系统内部何时出现问题——但无法保证外部输出能帮助你找出问题所在。</p>
 <p>另一方面，<u><em>可观测性做出的假设比传统监控更强：系统的内部状态可以从其外部输出的知识中推断出来。当一个可观测的系统出现问题时，我们应该能够通过查看系统的日志和指标来找出问题所在，而无需向系统发布新代码。可观测性是关于以这样一种方式对系统进行检测，确保系统运行时的足够信息被收集和分析，以便在出现问题时帮助你找出问题所在。</em></u></p>
-<p>在本书中，我将使用"监控"来指代跟踪系统信息的行为，使用"可观测性"来指代检测、跟踪和调试系统的整个过程。</p>
+<p>在本书中，我将使用&quot;监控&quot;来指代跟踪系统信息的行为，使用&quot;可观测性&quot;来指代检测、跟踪和调试系统的整个过程。</p>
 <p><strong>指标（Metrics）</strong></p>
 <p>在讨论监控时，大多数人会想到指标。然而，指标本身并不是目标。坦率地说，大多数公司并不关心你的应用输出相关性得分是多少，除非它服务于某个目的。<u><em>指标的目的是告诉你何时出了问题，并识别改进的机会。</em></u></p>
 <p>在列出要跟踪的指标之前，重要的是要了解你想要捕获哪些失败模式，并围绕这些失败来设计你的指标。例如，如果你不希望你的应用产生幻觉，就设计能帮助你检测幻觉的指标。一个相关的指标可能是应用的输出是否能从上下文中推断出来。如果你不希望应用耗尽API额度，就跟踪与API成本相关的指标，例如每个请求的输入和输出令牌数，或缓存的成本及其命中率。</p>
@@ -533,9 +464,7 @@ alt="图10-10" />
 </ul>
 <p>与长度相关的指标对于跟踪延迟和成本也很重要，因为更长的上下文和响应通常会增加延迟并产生更高的成本。</p>
 <p>应用流水线中的每个组件都有自己的指标。例如，在RAG应用中，检索质量通常使用上下文相关性和上下文精度进行评估。向量数据库可以通过其索引数据所需的存储空间以及查询数据所需的时间来评估。</p>
-<p><u><em>鉴于你可能会有多个指标，衡量这些指标之间的相关性，特别是与你的业务北极星指标（business
-north star
-metrics）（可以是日活跃用户（DAU）、会话时长或订阅数量）的相关性会很有用。与你的北极星强相关的指标可能会给你改进北极星的想法。完全不相关的指标也可能为你提供不应优化哪些方面的思路。</em></u></p>
+<p><u><em>鉴于你可能会有多个指标，衡量这些指标之间的相关性，特别是与你的业务北极星指标（business north star metrics）（可以是日活跃用户（DAU）、会话时长或订阅数量）的相关性会很有用。与你的北极星强相关的指标可能会给你改进北极星的想法。完全不相关的指标也可能为你提供不应优化哪些方面的思路。</em></u></p>
 <p>跟踪延迟对于理解用户体验至关重要。如第9章所述，常见的延迟指标包括：</p>
 <ul>
 <li><strong>首令牌时间（TTFT）</strong>：生成第一个令牌所需的时间。</li>
@@ -544,14 +473,12 @@ metrics）（可以是日活跃用户（DAU）、会话时长或订阅数量）�
 </ul>
 <p>按用户跟踪所有这些指标，以查看你的系统如何随用户数量扩展。</p>
 <p>你还需要跟踪成本。成本相关指标包括查询数量以及输入和输出令牌的体量，如每秒令牌数（TPS）。如果你使用的是有速率限制的API，跟踪每秒请求次数对于确保你保持在分配的限额内并避免潜在的服务中断非常重要。</p>
-<p>在计算指标时，你可以选择<u><em>抽查（Spot
-Checks）和全面检查（Exhaustive
-Checks）</em></u>。抽查涉及对数据子集进行采样以快速发现问题，而全面检查则评估每个请求以获得全面的性能视图。选择取决于你的系统需求和可用资源，将两者结合可以提供平衡的监控策略。</p>
+<p>在计算指标时，你可以选择<u><em>抽查（Spot Checks）和全面检查（Exhaustive Checks）</em></u>。抽查涉及对数据子集进行采样以快速发现问题，而全面检查则评估每个请求以获得全面的性能视图。选择取决于你的系统需求和可用资源，将两者结合可以提供平衡的监控策略。</p>
 <p>在计算指标时，确保它们可以按相关维度进行细分，例如用户、发布版本、提示/链版本、提示/链类型和时间。这种细化有助于理解性能变化并识别特定问题。</p>
 <p><strong>日志与追踪（Logs and Traces）</strong></p>
-<p><u><em>指标通常是聚合的。它们浓缩了系统中随时间发生的事件信息。它们帮助你一目了然地了解系统的运行状况。</em></u>然而，有许多问题指标无法帮助你回答。例如，在观察到某个特定活动出现峰值后，你可能想知道："这种情况以前发生过吗？"日志可以帮助你回答这个问题。</p>
+<p><u><em>指标通常是聚合的。它们浓缩了系统中随时间发生的事件信息。它们帮助你一目了然地了解系统的运行状况。</em></u>然而，有许多问题指标无法帮助你回答。例如，在观察到某个特定活动出现峰值后，你可能想知道：&quot;这种情况以前发生过吗？&quot;日志可以帮助你回答这个问题。</p>
 <p>如果<u><em>指标是代表属性和事件的数值度量，那么日志是一种只能追加的事件记录。</em></u>在生产环境中，调试过程可能如下所示：</p>
-<ol type="1">
+<ol>
 <li>指标告诉你五分钟前出了问题，但它们没有告诉你发生了什么。</li>
 <li>你查看发生在五分钟前左右的事件日志，以找出发生了什么。</li>
 <li>将日志中的错误与指标关联起来，以确保你已识别出正确的问题。</li>
@@ -561,29 +488,25 @@ Checks）</em></u>。抽查涉及对数据子集进行采样以快速发现问�
 <p>记录用户查询、发送给模型的最终提示、输出以及中间输出。记录是否调用了任何工具。记录工具的输出。记录组件何时开始、结束、何时崩溃等信息。在记录一条日志时，确保为其添加标签和ID，以帮助你了解该日志在系统中的来源。</p>
 <p>记录所有内容意味着日志的数量会迅速增长。许多用于自动化日志分析和日志异常检测的工具都由AI驱动。虽然手动处理日志是不可能的，但每天手动检查你的生产数据有助于了解用户如何使用你的应用。Shankar等人（2024）发现，开发者对什么构成好的和坏的输出的看法会随着他们与更多数据的交互而改变，这使他们能够重写提示以增加获得良好响应的机会，并更新他们的评估流程以捕获不良响应。</p>
 <p>如果说<u><em>日志是一系列不连贯的事件，那么追踪（Traces）是通过将相关事件链接在一起，重建一个完整的事务或流程时间线，展示每个步骤从头到尾是如何连接的。</em></u>简而言之，追踪是对一个请求通过各种系统组件和服务的执行路径的详细记录。在AI应用中，追踪揭示了从用户发送查询到最终返回响应的整个过程，包括系统执行的动作、检索到的文档以及发送给模型的最终提示。它还应显示每个步骤所需的时间及其相关成本（如果可以衡量）。图10-11是LangSmith中一个请求追踪的可视化。</p>
-<figure>
-<img src="/img4/AI%20Engineering/10/Figure-10-11-LangSmith-trace.png"
-alt="图10-11" />
-<figcaption aria-hidden="true">图10-11</figcaption>
-</figure>
+<p>![图10-11](/img4/AI Engineering/10/Figure-10-11-LangSmith-trace.png)</p>
 <p><strong>图10-11. 由LangSmith可视化的请求追踪。</strong></p>
 <p>理想情况下，你应该能够逐步追踪每个查询在系统中的转换过程。如果一个查询失败，你应该能够精确指出它出错的步骤：是被错误处理了，检索的上下文不相关，还是模型生成了错误的响应。</p>
 <p><strong>漂移检测（Drift Detection）</strong></p>
 <p>系统包含的部件越多，可能发生变化的东西就越多。在AI应用中，这些可能包括：</p>
-<p><strong>系统提示变更</strong>
+<p><strong>系统提示变更</strong><br>
 你的应用系统提示可能在你不了解的情况下发生变化，原因有很多。系统提示可能构建在提示模板之上，而该提示模板已更新。某个同事可能发现了一个错别字并进行了修复。一个简单的逻辑就足以捕捉到应用系统提示的变化。</p>
-<p><strong>用户行为变化</strong>
+<p><strong>用户行为变化</strong><br>
 随着时间的推移，用户会适应技术并改变他们的行为。例如，人们已经学会了如何构建查询以在Google搜索中获得更好的结果，或如何使他们的文章在搜索结果中排名更高。生活在有自动驾驶汽车地区的人们已经学会了如何欺负自动驾驶汽车，让它们给自己让路（Liu等人，2020）。你的用户很可能会改变他们的行为，以从你的应用中获得更好的结果。例如，你的用户可能学会编写指令以使响应更简洁。这可能会导致响应长度随时间逐渐下降。如果你只看指标，可能不清楚是什么导致了这种逐渐下降。你需要进行调查才能理解根本原因。</p>
-<p><strong>底层模型变更</strong>
+<p><strong>底层模型变更</strong><br>
 当通过API使用模型时，有可能API保持不变，而底层模型却更新了。如第4章所述，模型提供商可能并不总是披露这些更新，因此需要你自己去检测任何变化。同一API的不同版本可能对性能产生重大影响。例如，Chen等人（2023）观察到GPT-4和GPT-3.5的2023年3月版本和2023年6月版本在基准测试得分上存在显著差异。同样，Voiceflow报告称，从较旧的GPT-3.5-turbo-0301切换到较新的GPT-3.5-turbo-1106时，性能下降了10%。</p>
-<h3 id="ai流水线编排">AI流水线编排</h3>
+<h3 id="AI流水线编排">AI流水线编排</h3>
 <p>AI Pipeline Orchestration</p>
 <p><u><em>一个AI应用可能变得相当复杂，包含多个模型、从多个数据库检索数据，并可访问各种工具。编排器帮助你指定这些不同的组件如何协同工作，以创建端到端的流水线。它确保数据在组件之间无缝流动。在高层次上，编排器在两个步骤中运行：组件定义和链式组合。</em></u></p>
-<p><strong>组件定义</strong>
+<p><strong>组件定义</strong><br>
 你需要告诉编排器你的系统使用了哪些组件，包括不同的模型、用于检索的外部数据源以及你的系统可以使用的工具。模型网关可以使添加模型更加容易。你还可以告诉编排器是否使用了任何用于评估和监控的工具。</p>
-<p><strong>链式组合（Chaining）</strong>
+<p><strong>链式组合（Chaining）</strong><br>
 链式组合本质上是函数组合：它将不同的函数（组件）组合在一起。在链式组合（流水线化）中，你告诉编排器你的系统从接收用户查询到完成任务所采取的步骤。以下是一个步骤示例：</p>
-<ol type="1">
+<ol>
 <li>处理原始查询。</li>
 <li>基于处理后的查询检索相关数据。</li>
 <li>将原始查询和检索到的数据组合起来，创建模型期望格式的提示。</li>
@@ -599,11 +522,11 @@ alt="图10-11" />
 <p><u><em>有许多AI编排工具，包括LangChain、LlamaIndex、Flowise、Langflow和Haystack。由于检索和工具使用是常见的应用模式，许多RAG和Agent框架也是编排工具。</em></u></p>
 <p><u><em>虽然在开始项目时直接跳到编排工具很有诱惑力，但你可能希望首先不要使用它来构建你的应用。任何外部工具都会带来额外的复杂性。编排器可以抽象掉系统工作的关键细节，使其难以理解和调试。</em></u></p>
 <p>当你进入应用开发过程的后期阶段时，你可能会认为编排器可以让你的生活更轻松。在评估编排器时，需要牢记以下三个方面：</p>
-<p><strong>集成与可扩展性</strong>
+<p><strong>集成与可扩展性</strong><br>
 评估编排器是否支持你正在使用或将来可能采用的组件。例如，如果你想使用Llama模型，检查编排器是否支持它。鉴于有如此多的模型、数据库和框架，编排器不可能支持所有东西。因此，你还需要考虑编排器的可扩展性。如果它不支持特定组件，修改它有多难？</p>
-<p><strong>对复杂流水线的支持</strong>
+<p><strong>对复杂流水线的支持</strong><br>
 随着应用的复杂性增长，你可能需要管理涉及多个步骤和条件逻辑的复杂流水线。一个支持分支、并行处理和错误处理等高级功能的编排器将帮助你高效地管理这些复杂性。</p>
-<p><strong>易用性、性能和可扩展性</strong>
+<p><strong>易用性、性能和可扩展性</strong><br>
 考虑编排器的用户友好性。寻找直观的API、全面的文档和强大的社区支持，这些都可以显著降低你和你团队的学习曲线。避免那些会发起隐藏API调用或给你的应用引入延迟的编排器。此外，确保编排器能随着应用、开发者和流量的增长而有效扩展。</p>
 <h2 id="用户反馈">用户反馈</h2>
 <p>User Feedback</p>
@@ -612,19 +535,34 @@ alt="图10-11" />
 <p>重要的是要记住，用户反馈就是用户数据。利用用户反馈需要与利用任何数据时相同的谨慎。应尊重用户隐私。用户有权知道他们的数据是如何被使用的。</p>
 <h3 id="提取对话反馈">提取对话反馈</h3>
 <p>Extracting Conversational Feedback</p>
-<p>传统上，反馈可以是显式的或隐式的。显式反馈是用户响应应用中明确的反馈请求而提供的信息，例如赞/踩、顶/踩、星级评分，或对"我们解决了您的问题吗？"这个问题的"是/否"回答。显式反馈在各种应用中相当标准化——询问某人是否喜欢某件事的方式只有那么几种。因此，显式反馈更容易被理解。</p>
+<p>传统上，反馈可以是显式的或隐式的。显式反馈是用户响应应用中明确的反馈请求而提供的信息，例如赞/踩、顶/踩、星级评分，或对&quot;我们解决了您的问题吗？&quot;这个问题的&quot;是/否&quot;回答。显式反馈在各种应用中相当标准化——询问某人是否喜欢某件事的方式只有那么几种。因此，显式反馈更容易被理解。</p>
 <p>隐式反馈是从用户行为中推断出来的信息。例如，如果有人购买了向他们推荐的产品，这意味着它是一个好的推荐。什么可以被视为隐式反馈取决于用户在每种应用中能做什么，因此高度依赖应用。基础模型开启了一个全新的应用世界，随之而来的是许多类型的隐式反馈。</p>
 <p>许多AI应用使用的对话式界面使用户更容易提供反馈。用户可以像在日常对话中提供反馈一样，鼓励好的行为并纠正错误。用户用来给AI下达指令的语言可以传递关于应用性能和用户偏好的反馈。</p>
 <p>例如，想象你正在使用一个AI助手来帮助规划你的澳大利亚之旅。你让AI在悉尼找一个住三晚的酒店。它推荐了三个选项如下：</p>
 <blockquote>
-<p>以下是悉尼三晚入住的三个酒店建议： 1. 历史岩石精品酒店（岩石区） *
-价格：约$400/晚 * 街区：迷人的街道，靠近标志性景点。 2.
-时尚萨里山住宅酒店（萨里山） * 价格：约$200/晚 *
-街区：时尚，有充满活力的咖啡馆和艺术画廊。 3.
-轻松邦迪海滩酒店（邦迪海滩） * 价格：约$300/晚 *
-街区：海滨，适合放松和城市探索。</p>
+<p>以下是悉尼三晚入住的三个酒店建议：</p>
+<ol>
+<li>历史岩石精品酒店（岩石区）
+<ul>
+<li>价格：约$400/晚</li>
+<li>街区：迷人的街道，靠近标志性景点。</li>
+</ul>
+</li>
+<li>时尚萨里山住宅酒店（萨里山）
+<ul>
+<li>价格：约$200/晚</li>
+<li>街区：时尚，有充满活力的咖啡馆和艺术画廊。</li>
+</ul>
+</li>
+<li>轻松邦迪海滩酒店（邦迪海滩）
+<ul>
+<li>价格：约$300/晚</li>
+<li>街区：海滨，适合放松和城市探索。</li>
+</ul>
+</li>
+</ol>
 </blockquote>
-<p>你如何回应这三个推荐揭示了你的偏好。例如，如果你回答"是的，给我订靠近画廊的那家"，你表现出对艺术的兴趣。另一方面，回应"没有低于$200的吗？"则揭示了价格敏感的偏好，并表明助手还不太了解你。</p>
+<p>你如何回应这三个推荐揭示了你的偏好。例如，如果你回答&quot;是的，给我订靠近画廊的那家&quot;，你表现出对艺术的兴趣。另一方面，回应&quot;没有低于$200的吗？&quot;则揭示了价格敏感的偏好，并表明助手还不太了解你。</p>
 <p>从对话中提取的用户反馈可用于评估、开发和个性化：</p>
 <ul>
 <li><strong>评估</strong>：推导出用于监控应用的指标</li>
@@ -632,42 +570,23 @@ alt="图10-11" />
 <li><strong>个性化</strong>：为每个用户个性化应用</li>
 </ul>
 <p>隐式对话反馈可以从用户消息的内容及其沟通模式中推断出来。由于反馈融入了日常对话中，提取起来也很有挑战性。虽然对对话线索的直觉可以帮助你设计最初要寻找的信号集，但严格的数据分析和用户研究对于理解是必要的。</p>
-<p>尽管得益于对话式机器人的普及，对话反馈获得了更多关注，但在ChatGPT出现之前，它已经是一个活跃了几年的研究领域。自2010年代末以来，强化学习社区一直试图让RL算法从自然语言反馈中学习，许多都取得了有希望的结果；参见Fu等人（2019）；Goyal等人（2019）；Zhou和Small（2020）；以及Sumers等人（2020）。自然语言反馈对于早期的对话式AI应用也引起了极大兴趣，如Amazon
-Alexa（Ponnusamy等人，2019；Park等人，2020）、Spotify的语音控制功能（Xiao等人，2021）以及Yahoo！Voice（Hashimoto和Sassano，2018）。</p>
+<p>尽管得益于对话式机器人的普及，对话反馈获得了更多关注，但在ChatGPT出现之前，它已经是一个活跃了几年的研究领域。自2010年代末以来，强化学习社区一直试图让RL算法从自然语言反馈中学习，许多都取得了有希望的结果；参见Fu等人（2019）；Goyal等人（2019）；Zhou和Small（2020）；以及Sumers等人（2020）。自然语言反馈对于早期的对话式AI应用也引起了极大兴趣，如Amazon Alexa（Ponnusamy等人，2019；Park等人，2020）、Spotify的语音控制功能（Xiao等人，2021）以及Yahoo！Voice（Hashimoto和Sassano，2018）。</p>
 <p><strong>自然语言反馈（Natural Language Feedback）</strong></p>
 <p><u><em>从消息内容中提取的反馈称为自然语言反馈。</em></u>以下是一些可以告诉你对话进展如何的自然语言反馈信号。在生产环境中跟踪这些信号有助于监控你的应用性能。</p>
-<p><strong>提前终止（Early
-Termination）</strong>。如果用户提前终止了一个响应，例如中途停止响应生成、退出应用（对于网页和移动应用）、告诉模型停止（对于语音助手），或者干脆让Agent处于挂起状态（例如，不回应Agent询问你希望它继续执行哪个选项），那么很可能对话进展不顺利。</p>
-<p><strong>错误纠正（Error
-Correction）</strong>。如果用户以"不，……"或"我的意思是，……"开始后续对话，模型的响应很可能偏离了目标。</p>
+<p><strong>提前终止（Early Termination）</strong>。如果用户提前终止了一个响应，例如中途停止响应生成、退出应用（对于网页和移动应用）、告诉模型停止（对于语音助手），或者干脆让Agent处于挂起状态（例如，不回应Agent询问你希望它继续执行哪个选项），那么很可能对话进展不顺利。</p>
+<p><strong>错误纠正（Error Correction）</strong>。如果用户以&quot;不，……&quot;或&quot;我的意思是，……&quot;开始后续对话，模型的响应很可能偏离了目标。</p>
 <p>为了纠正错误，用户可能会尝试重新表述他们的请求。图10-12显示了一个用户试图纠正模型误解的例子。可以使用启发式方法或ML模型来检测重新表述的尝试。</p>
-<figure>
-<img src="/img4/AI%20Engineering/10/Figure-10-12-Query-rephrasing.png"
-alt="图10-12" />
-<figcaption aria-hidden="true">图10-12</figcaption>
-</figure>
-<p><strong>图10-12.
-由于用户既提前终止了生成，又重新表述了问题，可以推断模型误解了原始请求的意图。</strong></p>
-<p>用户也可以指出模型本应做的不同具体事项。例如，如果用户要求模型总结一个故事，而模型混淆了某个角色，该用户可以给出反馈，例如："Bill是嫌疑人，不是受害者。"模型应该能够接受这个反馈并修改总结。</p>
-<p><u><em>这类纠正动作的反馈在Agent用例中尤其常见，用户可能会引导Agent采取更优的动作。</em></u>例如，如果用户给Agent分配了一项对公司XYZ进行市场分析的任务，该用户可能会给出诸如"你也应该查看XYZ的GitHub页面"或"查看CEO的X个人资料"之类的反馈。</p>
-<p>有时，用户可能希望通过请求明确的确认来让模型自我纠正，例如"你确定吗？"、"再检查一下"或"给我看看来源"。这未必意味着模型给出了错误答案。然而，这可能意味着你的模型的回答缺乏用户正在寻找的细节。它也可能表明用户对你的模型普遍缺乏信任。</p>
+<p>![图10-12](/img4/AI Engineering/10/Figure-10-12-Query-rephrasing.png)</p>
+<p><strong>图10-12. 由于用户既提前终止了生成，又重新表述了问题，可以推断模型误解了原始请求的意图。</strong></p>
+<p>用户也可以指出模型本应做的不同具体事项。例如，如果用户要求模型总结一个故事，而模型混淆了某个角色，该用户可以给出反馈，例如：&quot;Bill是嫌疑人，不是受害者。&quot;模型应该能够接受这个反馈并修改总结。</p>
+<p><u><em>这类纠正动作的反馈在Agent用例中尤其常见，用户可能会引导Agent采取更优的动作。</em></u>例如，如果用户给Agent分配了一项对公司XYZ进行市场分析的任务，该用户可能会给出诸如&quot;你也应该查看XYZ的GitHub页面&quot;或&quot;查看CEO的X个人资料&quot;之类的反馈。</p>
+<p>有时，用户可能希望通过请求明确的确认来让模型自我纠正，例如&quot;你确定吗？&quot;、“再检查一下&quot;或&quot;给我看看来源”。这未必意味着模型给出了错误答案。然而，这可能意味着你的模型的回答缺乏用户正在寻找的细节。它也可能表明用户对你的模型普遍缺乏信任。</p>
 <p>一些应用允许用户直接编辑模型的响应。例如，如果用户要求模型生成代码，并且用户纠正了生成的代码，这是一个非常强烈的信号，表明被编辑的代码并不完全正确。</p>
 <p>用户编辑也是偏好数据的宝贵来源。回顾一下，偏好数据通常采用（查询，获胜响应，失败响应）的格式，可以用于将模型与人类偏好对齐。每次用户编辑都构成一个偏好示例，其中原始生成响应作为失败响应，编辑后的响应作为获胜响应。</p>
 <p><strong>抱怨（Complaints）</strong>。通常，用户只是抱怨你的应用的输出，而不尝试纠正它们。例如，他们可能抱怨答案错误、不相关、有毒、冗长、缺乏细节，或者只是糟糕。表10-1显示了通过对FITS（反馈互动式对话与搜索）数据集（Xu等人，2022）进行自动聚类得出的八组自然语言反馈。</p>
-<figure>
-<img src="/img4/AI%20Engineering/10/Table-10-1-Feedback-types.png"
-alt="表10-1" />
-<figcaption aria-hidden="true">表10-1</figcaption>
-</figure>
-<p><strong>表10-1.
-通过对FITS数据集（Xu等人，2022）进行自动聚类得出的反馈类型。结果来自Yuan等人（2023）。</strong></p>
+<p>![表10-1](/img4/AI Engineering/10/Table-10-1-Feedback-types.png)</p>
+<p><strong>表10-1. 通过对FITS数据集（Xu等人，2022）进行自动聚类得出的反馈类型。结果来自Yuan等人（2023）。</strong></p>
 <table>
-<colgroup>
-<col style="width: 23%" />
-<col style="width: 23%" />
-<col style="width: 23%" />
-<col style="width: 30%" />
-</colgroup>
 <thead>
 <tr>
 <th>组别</th>
@@ -715,7 +634,7 @@ alt="表10-1" />
 </tr>
 <tr>
 <td>7</td>
-<td>指出机器人的回答缺乏自信，总是以"我不确定"或"我不知道"开头。</td>
+<td>指出机器人的回答缺乏自信，总是以&quot;我不确定&quot;或&quot;我不知道&quot;开头。</td>
 <td>582</td>
 <td>4.17%</td>
 </tr>
@@ -728,28 +647,19 @@ alt="表10-1" />
 </tbody>
 </table>
 <p>了解机器人如何让用户失望对于改进它至关重要。例如，如果你知道用户不喜欢冗长的答案，你可以更改机器人的提示使其更简洁。如果用户因为答案缺乏细节而不满意，你可以提示机器人更具体一些。</p>
-<p><strong>情绪（Sentiment）</strong>。抱怨也可以是普遍的负面情绪表达（沮丧、失望、嘲笑等），而不解释原因，例如"呃"。这听起来可能有些反乌托邦，但分析用户在与机器人对话过程中的情绪变化，可能会让你深入了解机器人的表现。一些呼叫中心会在整个通话过程中跟踪用户的声音。如果用户声音越来越大，说明出了问题。相反，如果有人生气地开始对话，但开心地结束，说明对话可能解决了他们的问题。</p>
-<p>自然语言反馈也可以从模型的响应中推断出来。一个重要的信号是模型的拒绝率。如果模型说"抱歉，我不知道这个"或"作为一个语言模型，我无法……"，用户很可能不高兴。</p>
+<p><strong>情绪（Sentiment）</strong>。抱怨也可以是普遍的负面情绪表达（沮丧、失望、嘲笑等），而不解释原因，例如&quot;呃&quot;。这听起来可能有些反乌托邦，但分析用户在与机器人对话过程中的情绪变化，可能会让你深入了解机器人的表现。一些呼叫中心会在整个通话过程中跟踪用户的声音。如果用户声音越来越大，说明出了问题。相反，如果有人生气地开始对话，但开心地结束，说明对话可能解决了他们的问题。</p>
+<p>自然语言反馈也可以从模型的响应中推断出来。一个重要的信号是模型的拒绝率。如果模型说&quot;抱歉，我不知道这个&quot;或&quot;作为一个语言模型，我无法……&quot;，用户很可能不高兴。</p>
 <p><strong>其他对话反馈（Other Conversational Feedback）</strong></p>
 <p>其他类型的对话反馈可以从用户的操作而非消息中推导出来。</p>
 <p><em><u><strong>重新生成（Regeneration）</strong>。许多应用允许用户生成另一个响应，有时使用不同的模型。如果用户选择重新生成，可能是因为他们对第一个响应不满意。然而，也可能第一个响应已经足够，但用户想要选项进行比较。对于创意性请求（如图像或故事生成），这尤其常见。</u></em></p>
 <p><em><u>对于基于使用量计费的应用，重新生成信号可能比订阅制的应用更强。在基于使用量计费的情况下，用户不太可能因为无聊的好奇心而重新生成并花费额外的钱。</u></em></p>
 <p><em><u>就我个人而言，我经常对复杂的请求选择重新生成，以确保模型的响应是一致的。如果两个响应给出相互矛盾的答案，我哪个都不能信任。</u></em></p>
 <p>重新生成之后，一些应用可能会明确要求将新响应与先前的响应进行比较，如图10-13所示。这种更好或更差的数据，同样可以用于偏好微调。</p>
-<figure>
-<img
-src="/img4/AI%20Engineering/10/Figure-10-13-ChatGPT-comparative-feedback.png"
-alt="图10-13" />
-<figcaption aria-hidden="true">图10-13</figcaption>
-</figure>
-<p><strong>图10-13.
-当用户重新生成另一个响应时，ChatGPT会请求比较反馈。</strong></p>
-<p><strong>对话组织（Conversation
-Organization）</strong>。用户为组织对话而采取的行动，例如删除、重命名、分享和书签，也可以作为信号。<u><em>删除对话是一个相当强烈的信号，表明对话不理想，除非这是一段令人尴尬的对话，用户想要删除其痕迹。重命名对话表明对话内容很好，但自动生成的标题很差。</em></u></p>
-<p><strong>对话长度（Conversation
-Length）</strong>。<u><em>另一个常用的信号是每次对话的轮数。这是正面信号还是负面信号取决于应用。对于AI伴侣，长时间的对话可能表明用户享受对话。然而，对于面向生产力的聊天机器人（如客户支持），长时间的对话可能表明机器人在帮助用户解决问题方面效率低下。</em></u></p>
-<p><strong>对话多样性（Dialogue
-Diversity）</strong>。对话长度也可以与对话多样性一起解释，对话多样性可以通过不同的令牌或主题数量来衡量。例如，如果对话很长，但机器人不断重复几句话，用户可能陷入了循环。</p>
+<p>![图10-13](/img4/AI Engineering/10/Figure-10-13-ChatGPT-comparative-feedback.png)</p>
+<p><strong>图10-13. 当用户重新生成另一个响应时，ChatGPT会请求比较反馈。</strong></p>
+<p><strong>对话组织（Conversation Organization）</strong>。用户为组织对话而采取的行动，例如删除、重命名、分享和书签，也可以作为信号。<u><em>删除对话是一个相当强烈的信号，表明对话不理想，除非这是一段令人尴尬的对话，用户想要删除其痕迹。重命名对话表明对话内容很好，但自动生成的标题很差。</em></u></p>
+<p><strong>对话长度（Conversation Length）</strong>。<u><em>另一个常用的信号是每次对话的轮数。这是正面信号还是负面信号取决于应用。对于AI伴侣，长时间的对话可能表明用户享受对话。然而，对于面向生产力的聊天机器人（如客户支持），长时间的对话可能表明机器人在帮助用户解决问题方面效率低下。</em></u></p>
+<p><strong>对话多样性（Dialogue Diversity）</strong>。对话长度也可以与对话多样性一起解释，对话多样性可以通过不同的令牌或主题数量来衡量。例如，如果对话很长，但机器人不断重复几句话，用户可能陷入了循环。</p>
 <p>显式反馈更容易解释，但需要用户付出额外的努力。由于许多用户可能不愿意投入这种额外的工作，显式反馈可能很稀疏，尤其是在用户基数较小的应用中。显式反馈也存在响应偏差。例如，<em><u>不满意的用户可能更倾向于抱怨，导致反馈看起来比实际情况更负面。</u></em></p>
 <p><u><em>隐式反馈更加丰富——什么可以被视为隐式反馈只受你的想象力限制——但它的噪声更大。解释隐式信号可能具有挑战性。</em></u>例如，分享一段对话可能是一个负面或正面的信号。例如，我的一个朋友主要在模型犯了一些明显错误时分享对话，而另一个朋友则主要与同事分享有用的对话。研究你的用户以了解他们执行每个操作的原因是非常重要的。</p>
 <p>添加更多的信号可以帮助澄清意图。例如，如果用户在分享链接后重新表述了他们的提问，这可能表明对话没有达到他们的期望。从对话中提取、解释和利用隐式响应是一个虽小但不断增长的研究领域。</p>
@@ -758,102 +668,50 @@ Diversity）</strong>。对话长度也可以与对话多样性一起解释，�
 <p>如果你不确定要收集什么反馈，我希望上一节能给你一些想法。本节讨论何时以及如何收集这种宝贵的反馈。</p>
 <p><strong>何时收集反馈</strong></p>
 <p>反馈可以在整个用户体验旅程中收集，也应当如此收集。用户应该有选择提供反馈的选项，特别是当需要报告错误时。然而，反馈收集选项不应该具有侵入性。它不应干扰用户的工作流程。以下是用户反馈可能特别有价值的几个地方。</p>
-<p><strong>在开始时（In the
-Beginning）</strong>。当用户刚刚注册时，用户反馈可以帮助为校准应用。例如，一个人脸识别应用首先必须扫描你的脸才能工作。一个语音助手可能会要求你大声朗读一个句子来识别你的声音以用于唤醒词。一个语言学习应用可能会问你好几个问题来评估你的技能水平。对于某些应用，如人脸识别，校准是必需的。<u><em>然而，对于其他应用，初始反馈应该是可选的，因为它会给用户试用你的产品带来摩擦。如果用户没有指定他们的偏好，你可以退回到一个中立的选项，并随着时间的推移进行校准。</em></u></p>
-<p><strong>当坏事发生时（When Something Bad
-Happens）</strong>。当模型产生幻觉响应、阻止合法请求、生成有损形象或响应时间过长时，用户应该能够向你通知这些失败。你可以让用户选择对响应投反对票、使用相同模型重新生成或切换到另一个模型。用户也可能只是给出对话反馈，如"你错了"、"太俗气了"或"我想要更短的东西"。</p>
+<p><strong>在开始时（In the Beginning）</strong>。当用户刚刚注册时，用户反馈可以帮助为校准应用。例如，一个人脸识别应用首先必须扫描你的脸才能工作。一个语音助手可能会要求你大声朗读一个句子来识别你的声音以用于唤醒词。一个语言学习应用可能会问你好几个问题来评估你的技能水平。对于某些应用，如人脸识别，校准是必需的。<u><em>然而，对于其他应用，初始反馈应该是可选的，因为它会给用户试用你的产品带来摩擦。如果用户没有指定他们的偏好，你可以退回到一个中立的选项，并随着时间的推移进行校准。</em></u></p>
+<p><strong>当坏事发生时（When Something Bad Happens）</strong>。当模型产生幻觉响应、阻止合法请求、生成有损形象或响应时间过长时，用户应该能够向你通知这些失败。你可以让用户选择对响应投反对票、使用相同模型重新生成或切换到另一个模型。用户也可能只是给出对话反馈，如&quot;你错了&quot;、“太俗气了&quot;或&quot;我想要更短的东西”。</p>
 <p>理想情况下，当你的产品犯错时，用户应该仍然能够完成他们的任务。例如，如果模型错误地对某个产品进行了分类，用户可以编辑该类别。让用户与AI协作。如果这不起作用，让他们与人类协作。许多客户支持机器人提供将用户转交给人工客服的选项。</p>
 <p>人-AI协作的一个例子是图像生成中的修补功能。如果生成的图像不完全是用户所需要的，他们可以选择图像的某个区域，并描述如何改进它。图10-14展示了DALL-E中的修补示例。这个功能允许用户获得更好的结果，同时为开发者提供高质量的反馈。</p>
-<figure>
-<img src="/img4/AI%20Engineering/10/Figure-10-14-DALL-E-inpainting.png"
-alt="图10-14" />
-<figcaption aria-hidden="true">图10-14</figcaption>
-</figure>
-<p><strong>图10-14.
-DALL-E中修补功能的一个示例。图片由OpenAI提供。</strong></p>
-<p><strong>当模型置信度低时（When the Model Has Low
-Confidence）</strong>。<u><em>当模型对某个动作不确定时，你可以向用户请求反馈以提高其置信度。</em></u>例如，给定一个总结论文的请求，如果模型不确定用户是希望简短的高层总结还是详细的分节总结，模型可以同时输出两种总结（假设生成两种总结不会增加用户的延迟）。用户可以选择他们更喜欢哪一个。这种比较信号可以用于偏好微调。生产环境中比较评估的一个例子如图10-15所示。</p>
-<figure>
-<img
-src="/img4/AI%20Engineering/10/Figure-10-15-Side-by-side-comparison.png"
-alt="图10-15" />
-<figcaption aria-hidden="true">图10-15</figcaption>
-</figure>
+<p>![图10-14](/img4/AI Engineering/10/Figure-10-14-DALL-E-inpainting.png)</p>
+<p><strong>图10-14. DALL-E中修补功能的一个示例。图片由OpenAI提供。</strong></p>
+<p><strong>当模型置信度低时（When the Model Has Low Confidence）</strong>。<u><em>当模型对某个动作不确定时，你可以向用户请求反馈以提高其置信度。</em></u>例如，给定一个总结论文的请求，如果模型不确定用户是希望简短的高层总结还是详细的分节总结，模型可以同时输出两种总结（假设生成两种总结不会增加用户的延迟）。用户可以选择他们更喜欢哪一个。这种比较信号可以用于偏好微调。生产环境中比较评估的一个例子如图10-15所示。</p>
+<p>![图10-15](/img4/AI Engineering/10/Figure-10-15-Side-by-side-comparison.png)</p>
 <p><strong>图10-15. 两个ChatGPT响应的并排比较。</strong></p>
-<p><u><em>展示两个完整的响应供用户选择，意味着要求该用户给出显式反馈。用户可能没有时间阅读两个完整的响应，或足够在意以给出深思熟虑的反馈。这可能导致噪声投票。</em></u>一些应用，如Google
-Gemini，只显示每个响应的开头部分，如图10-16所示。用户可以点击展开他们想阅读的响应。然而，目前尚不清楚并排显示完整响应还是部分响应能提供更可靠的反馈。</p>
-<figure>
-<img
-src="/img4/AI%20Engineering/10/Figure-10-16-Gemini-partial-responses.png"
-alt="图10-16" />
-<figcaption aria-hidden="true">图10-16</figcaption>
-</figure>
-<p><strong>图10-16. Google
-Gemini并排显示部分响应以进行比较反馈。用户必须点击他们想了解更多信息的响应，这提供了关于他们认为哪个响应更有希望的反馈。</strong></p>
-<p>另一个例子是一个照片组织应用，它会自动标记你的照片，以便它能响应诸如"显示所有包含X的照片"之类的查询。当不确定两个人是否为同一个人时，它可以向你请求反馈，就像Google
-Photos在图10-17中做的那样。</p>
-<figure>
-<img
-src="/img4/AI%20Engineering/10/Figure-10-17-Google-Photos-feedback.png"
-alt="图10-17" />
-<figcaption aria-hidden="true">图10-17</figcaption>
-</figure>
-<p><strong>图10-17. Google
-Photos在不确定时请求用户反馈。两张猫的图片来源为ChatGPT。</strong></p>
+<p><u><em>展示两个完整的响应供用户选择，意味着要求该用户给出显式反馈。用户可能没有时间阅读两个完整的响应，或足够在意以给出深思熟虑的反馈。这可能导致噪声投票。</em></u>一些应用，如Google Gemini，只显示每个响应的开头部分，如图10-16所示。用户可以点击展开他们想阅读的响应。然而，目前尚不清楚并排显示完整响应还是部分响应能提供更可靠的反馈。</p>
+<p>![图10-16](/img4/AI Engineering/10/Figure-10-16-Gemini-partial-responses.png)</p>
+<p><strong>图10-16. Google Gemini并排显示部分响应以进行比较反馈。用户必须点击他们想了解更多信息的响应，这提供了关于他们认为哪个响应更有希望的反馈。</strong></p>
+<p>另一个例子是一个照片组织应用，它会自动标记你的照片，以便它能响应诸如&quot;显示所有包含X的照片&quot;之类的查询。当不确定两个人是否为同一个人时，它可以向你请求反馈，就像Google Photos在图10-17中做的那样。</p>
+<p>![图10-17](/img4/AI Engineering/10/Figure-10-17-Google-Photos-feedback.png)</p>
+<p><strong>图10-17. Google Photos在不确定时请求用户反馈。两张猫的图片来源为ChatGPT。</strong></p>
 <p><em>你可能想知道：当好事发生时，反馈呢？用户可以采取的表示满意度的动作包括点赞、收藏或分享。然而，<u>Apple的人机界面指南警告不要同时请求正面和负面反馈。你的应用应默认产生良好结果。为良好结果请求反馈可能给用户留下良好结果是例外的印象。归根结底，如果用户满意，他们会继续使用你的应用。</u></em></p>
 <p>然而，我交谈过的许多人认为，当用户遇到令人惊艳的事情时，他们应该有提供反馈的选项。一位流行AI驱动产品的产品经理提到，他们的团队需要正面反馈，因为它揭示了用户喜爱到愿意给出热情反馈的功能。这使得团队能够集中精力完善一小部分高影响力的功能，而不是将资源分散在许多价值不大的功能上。</p>
 <p>一些团队避免请求正面反馈，担心这会弄乱界面或打扰用户。然而，这种风险可以通过限制反馈请求的频率来管理。例如，如果你有大量用户，每次只向1%的用户显示该请求，有助于收集足够的反馈，同时不干扰大多数用户的体验。请记住，被问及的用户比例越小，反馈偏差的风险就越大。尽管如此，只要有足够大的样本池，反馈就能提供有意义的产品洞察。</p>
 <p><strong>如何收集反馈</strong></p>
 <p>反馈应无缝地融入用户的工作流程。用户应该能够轻松提供反馈，而无需额外工作。反馈收集不应破坏用户体验，并且应易于忽略。应该有激励措施促使用户提供良好的反馈。</p>
 <p>一个常被引用的良好反馈设计例子来自图像生成应用Midjourney。对于每个提示，Midjourney生成一组（四张）图像，并给用户以下选项，如图10-18所示：</p>
-<figure>
-<img
-src="/img4/AI%20Engineering/10/Figure-10-18-Midjourney-implicit-feedback.png"
-alt="图10-18" />
-<figcaption aria-hidden="true">图10-18</figcaption>
-</figure>
-<p><strong>图10-18.
-Midjourney的工作流程允许应用收集隐式反馈。</strong></p>
-<ol type="1">
+<p>![图10-18](/img4/AI Engineering/10/Figure-10-18-Midjourney-implicit-feedback.png)</p>
+<p><strong>图10-18. Midjourney的工作流程允许应用收集隐式反馈。</strong></p>
+<ol>
 <li>生成这些图像中任一张的未缩放版本（Upscale）。</li>
 <li>生成这些图像中任一张的变体（Variations）。</li>
 <li>重新生成（Regenerate）。</li>
 </ol>
 <p>所有这些选项都为Midjourney提供了不同的信号。选项1和2告诉Midjourney这四张照片中哪一张被用户认为是最有希望的。选项1对所选照片给出了最强的正面信号。选项2给出了较弱的正面信号。选项3表示没有一张照片足够好。然而，用户也可能选择重新生成，即使现有照片已经不错，只是为了看看还有什么其他可能。</p>
-<p>像GitHub
-Copilot这样的代码助手可能会以比最终文本更浅的颜色显示其草稿，如图10-19所示。用户可以使用Tab键接受建议，或简单地继续输入以忽略该建议，两者都提供了反馈。</p>
-<figure>
-<img
-src="/img4/AI%20Engineering/10/Figure-10-19-Copilot-suggestions.png"
-alt="图10-19" />
-<figcaption aria-hidden="true">图10-19</figcaption>
-</figure>
-<p><strong>图10-19. GitHub
-Copilot使建议和拒绝建议都变得容易。</strong></p>
-<p>像ChatGPT和Claude这样独立的AI应用面临的最大挑战之一是，它们没有集成到用户的日常工作流程中，这使得收集像GitHub
-Copilot这样的集成产品所能收集的高质量反馈变得困难。例如，如果Gmail建议了一个邮件草稿，Gmail可以跟踪这个草稿是如何被使用或编辑的。然而，如果你使用ChatGPT来写一封邮件，ChatGPT并不知道生成的邮件是否真的被发送了。</p>
+<p>像GitHub Copilot这样的代码助手可能会以比最终文本更浅的颜色显示其草稿，如图10-19所示。用户可以使用Tab键接受建议，或简单地继续输入以忽略该建议，两者都提供了反馈。</p>
+<p>![图10-19](/img4/AI Engineering/10/Figure-10-19-Copilot-suggestions.png)</p>
+<p><strong>图10-19. GitHub Copilot使建议和拒绝建议都变得容易。</strong></p>
+<p>像ChatGPT和Claude这样独立的AI应用面临的最大挑战之一是，它们没有集成到用户的日常工作流程中，这使得收集像GitHub Copilot这样的集成产品所能收集的高质量反馈变得困难。例如，如果Gmail建议了一个邮件草稿，Gmail可以跟踪这个草稿是如何被使用或编辑的。然而，如果你使用ChatGPT来写一封邮件，ChatGPT并不知道生成的邮件是否真的被发送了。</p>
 <p>反馈本身可能对产品分析有所帮助。例如，仅查看点赞/踩的信息对于计算用户对你的产品满意或不满意的频率是有用的。然而，为了更深入的分析，你需要反馈的上下文，例如之前的5到10轮对话。这个上下文可以帮助你找出问题所在。然而，没有用户的明确同意，可能无法获取此上下文，尤其是如果上下文可能包含个人身份信息。</p>
 <p>出于这个原因，一些产品在其服务协议中包含了允许他们出于分析和产品改进目的访问用户数据的条款。对于没有此类条款的应用，用户反馈可能与用户数据捐赠流程相关联，在该流程中，用户被要求捐赠（例如分享）他们最近的交互数据以及反馈。例如，在提交反馈时，你可能会被要求勾选一个框，以分享你最近的数据作为此反馈的上下文。</p>
 <p>向用户解释他们的反馈如何使用，可以激励他们提供更多、更好的反馈。你是用用户的反馈来为此用户个性化产品，收集一般使用情况的统计数据，还是训练一个新模型？如果用户担心隐私问题，请向他们保证他们的数据不会被用于训练模型，或者不会离开他们的设备（前提是这些承诺属实）。</p>
-<p>不要要求用户做不可能的事。例如，如果你从用户那里收集比较信号，不要要求他们在两个他们不理解的选择之间做选择。例如，ChatGPT曾要求我在两个可能的答案中选择一个统计问题答案，这让我很困惑，如图10-20所示。我希望有一个选项让我说"我不知道"。</p>
-<figure>
-<img
-src="/img4/AI%20Engineering/10/Figure-10-20-Statistical-response-choice.png"
-alt="图10-20" />
-<figcaption aria-hidden="true">图10-20</figcaption>
-</figure>
-<p><strong>图10-20.
-ChatGPT要求用户选择他们更喜欢的响应的一个示例。然而，对于这样的数学问题，正确答案不应是偏好问题。</strong></p>
+<p>不要要求用户做不可能的事。例如，如果你从用户那里收集比较信号，不要要求他们在两个他们不理解的选择之间做选择。例如，ChatGPT曾要求我在两个可能的答案中选择一个统计问题答案，这让我很困惑，如图10-20所示。我希望有一个选项让我说&quot;我不知道&quot;。</p>
+<p>![图10-20](/img4/AI Engineering/10/Figure-10-20-Statistical-response-choice.png)</p>
+<p><strong>图10-20. ChatGPT要求用户选择他们更喜欢的响应的一个示例。然而，对于这样的数学问题，正确答案不应是偏好问题。</strong></p>
 <p>如果图标和工具提示能帮助人们理解，就添加它们。避免使用可能让用户困惑的设计。模糊的说明可能导致噪声反馈。我曾主持过一个GPU优化工作坊，使用Luma来收集反馈。当我阅读负面反馈时感到很困惑。尽管回复是正面的，但星级评分却是1/5。当我深入调查时，我意识到Luma在其反馈收集表中使用了表情符号代表数字，但对应一星评分的愤怒表情符号却被放在五星评分应该放的地方，如图10-21所示。</p>
-<figure>
-<img src="/img4/AI%20Engineering/10/Figure-10-21-Luma-emoji-order.png"
-alt="图10-21" />
-<figcaption aria-hidden="true">图10-21</figcaption>
-</figure>
-<p><strong>图10-21.
-由于Luma将对应一星评分的愤怒表情符号放在了五星评分应该放的位置，一些用户在给正面评价时错误地选择了它。</strong></p>
+<p>![图10-21](/img4/AI Engineering/10/Figure-10-21-Luma-emoji-order.png)</p>
+<p><strong>图10-21. 由于Luma将对应一星评分的愤怒表情符号放在了五星评分应该放的位置，一些用户在给正面评价时错误地选择了它。</strong></p>
 <p>要注意你是希望用户的反馈是私密的还是公开的。例如，如果一个用户喜欢某样东西，你是否希望将此信息显示给其他用户？在早期，Midjourney的反馈——某人选择放大图像、生成变体或重新生成另一批图像——是公开的。</p>
-<p><u><em>信号的可见性会深刻影响用户行为、用户体验和反馈的质量。用户在私下里往往更坦率——他们的行为被评判的可能性较低——这可以产生更高质量的信号。2024年，X（前身为Twitter）将"喜欢"设为了私密。X的所有者埃隆·马斯克声称，这一改变后，点赞数量显著增加。</em></u></p>
+<p><u><em>信号的可见性会深刻影响用户行为、用户体验和反馈的质量。用户在私下里往往更坦率——他们的行为被评判的可能性较低——这可以产生更高质量的信号。2024年，X（前身为Twitter）将&quot;喜欢&quot;设为了私密。X的所有者埃隆·马斯克声称，这一改变后，点赞数量显著增加。</em></u></p>
 <p>然而，私密信号可能会降低可发现性和可解释性。例如，隐藏点赞会阻止用户发现他们的联系人点赞过的推文。如果X根据你关注的人点赞的推文来推荐，隐藏点赞可能导致用户对为什么某些推文出现在他们的信息流中感到困惑。</p>
 <h3 id="反馈的局限性">反馈的局限性</h3>
 <p>Feedback Limitations</p>
@@ -866,25 +724,25 @@ alt="图10-21" />
 <p>这种偏差不一定是致命问题。Uber的目标是区分好司机和差司机。即使存在这种偏差，他们的评分系统似乎也帮助他们实现了这个目标。查看用户评分的分布对于检测这种偏差至关重要。</p>
 <p>如果你想要更细粒度的反馈，消除与低评分相关的强烈负面含义可以帮助人们打破这种偏差。例如，不向用户展示数字1到5，而是向用户展示如下选项：</p>
 <ul>
-<li>"很棒的体验。很棒的司机。"</li>
-<li>"还不错。"</li>
-<li>"没什么可抱怨的，但也没什么突出的。"</li>
-<li>"本可以更好。"</li>
-<li>"不要再给我匹配这个司机了。"</li>
+<li>“很棒的体验。很棒的司机。”</li>
+<li>“还不错。”</li>
+<li>“没什么可抱怨的，但也没什么突出的。”</li>
+<li>“本可以更好。”</li>
+<li>“不要再给我匹配这个司机了。”</li>
 </ul>
-<p><strong>随机性（Randomness）</strong>
+<p><strong>随机性（Randomness）</strong><br>
 用户经常提供随机的反馈，不是出于恶意，而是因为他们缺乏提供更深思熟虑输入的动机。例如，当两个长响应并排显示用于比较评估时，用户可能不想阅读两者，只是随意点击一个。在Midjourney的情况下，用户也可能随机选择一张图像来生成变体。</p>
-<p><strong>位置偏差（Position Bias）</strong>
+<p><strong>位置偏差（Position Bias）</strong><br>
 选项呈现给用户的位置会影响用户对该选项的看法。用户通常更倾向于点击第一个建议而不是第二个。如果用户点击了第一个建议，这并不一定意味着它是一个好建议。</p>
 <p>在设计反馈系统时，可以通过随机改变建议的位置，或通过构建一个模型来根据建议的位置计算其真实成功率，来缓解这种偏差。</p>
-<p><strong>偏好偏差（Preference Bias）</strong>
+<p><strong>偏好偏差（Preference Bias）</strong><br>
 许多其他偏差可能会影响一个人的反馈，其中一些本书已经讨论过。例如，在并排比较中，人们可能更喜欢较长的响应，即使较长的响应准确度较低——长度比不准确更容易被注意到。<u><em>另一个偏差是近因偏差，即在比较两个答案时，人们倾向于偏爱他们最后看到的那个。</em></u></p>
 <p>检查你的用户反馈以发现其偏差非常重要。理解这些偏差将帮助你正确解释反馈，避免做出误导性的产品决策。</p>
 <p><strong>退化反馈循环（Degenerate Feedback Loop）</strong></p>
 <p>请记住，用户反馈是不完整的。你只能得到你展示给用户的内容的反馈。</p>
 <p><u><em>在一个用户反馈被用于修改模型行为的系统中，可能会产生退化反馈循环。当预测本身影响反馈，而反馈又反过来影响模型的下一轮迭代，从而放大初始偏差时，就会发生退化反馈循环。</em></u></p>
 <p><em><u>想象你正在建立一个视频推荐系统。排名高的视频会首先出现，因此它们获得更多点击，这强化了系统认为它们是最佳选择的信念。最初，视频A和视频B之间的差异可能很小，但由于A的排名略高，它获得了更多点击，系统不断推高它。随着时间的推移，A的排名飙升，将B远远甩在后面。这种反馈循环就是为什么热门视频一直保持热门，使得新视频难以突围的原因。</u></em></p>
-<p><em><u>这个问题被称为"曝光偏差"、"流行度偏差"或"过滤气泡"，这是一个经过充分研究的问题。</u></em></p>
+<p><em><u>这个问题被称为&quot;曝光偏差&quot;、“流行度偏差&quot;或&quot;过滤气泡”，这是一个经过充分研究的问题。</u></em></p>
 <p>退化反馈循环可以改变你的产品重心和用户基础。想象一下，最初，少数用户反馈他们喜欢猫的照片。系统捕捉到了这一点，并开始生成更多带有猫的图片。这吸引了猫爱好者，他们给出更多反馈说猫的照片很好，鼓励系统生成更多的猫。不久之后，你的应用就变成了猫咪乐园。这里我用猫的照片作为例子，但同样的机制可以放大其他偏见，如种族主义、性别主义和对色情内容的偏好。</p>
 <p><u><em>根据用户反馈行动也可能将对话Agent变成一个，找不到更好的词，说谎者。多项研究表明，在用户反馈上训练模型可能会使其学会给用户它认为用户想要的东西，即使那不是最准确或最有益的</em></u>（Stray，2023）。Sharma等人（2023）表明，在人类反馈上训练的AI模型趋于逢迎。它们更有可能呈现与用户看法相符的响应。</p>
 <p>用户反馈对于改善用户体验至关重要，但如果不经区分地使用，它会延续偏见并毁掉你的产品。在将反馈纳入你的产品之前，请确保你理解此反馈的局限性及其潜在影响。</p>
