@@ -62,7 +62,7 @@
 <meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F0.16.png">
 <meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F0.17.png">
 <meta property="article:published_time" content="2025-04-02T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-10-08T02:28:28.548Z">
+<meta property="article:modified_time" content="2026-10-08T04:55:15.048Z">
 <meta property="article:author" content="Rayman.hung">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F2.1.png">
@@ -324,7 +324,7 @@
 <p>然后我们可以继续进行实际的生成。我们首先声明我们的提示，然后对其进行<strong>分词</strong>，然后将这些词元传递给模型，模型将生成其输出。在这种情况下，我们要求模型只生成 20 个新的词元：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">prompt = <span class="string">&quot;Write an email apologizing to Sarah for the tragic gardening mishap.</span></span><br><span class="line"><span class="string">Explain how it happened.&lt;|assistant|&gt;&quot;</span></span><br><span class="line"><span class="comment"># Tokenize the input prompt</span></span><br><span class="line">input_ids = tokenizer(prompt, return_tensors=<span class="string">&quot;pt&quot;</span>).input_ids.to(<span class="string">&quot;cuda&quot;</span>)</span><br><span class="line"><span class="comment"># Generate the text</span></span><br><span class="line">generation_output = model.generate(</span><br><span class="line">input_ids=input_ids,</span><br><span class="line">max_new_tokens=<span class="number">20</span></span><br><span class="line">)</span><br><span class="line"><span class="comment"># Print the output</span></span><br><span class="line"><span class="built_in">print</span>(tokenizer.decode(generation_output[<span class="number">0</span>]))</span><br></pre></td></tr></table></figure>
 <p>输出：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;s&gt; Write an email apologizing to Sarah for the tragic gardening mishap.</span><br><span class="line">Explain how it happened.&lt;|assistant|&gt; Subject: My Sincere Apologies for the</span><br><span class="line">Gardening Mishap</span><br><span class="line">Dear</span><br></pre></td></tr></table></figure>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">\&lt;s\&gt; Write an email apologizing to Sarah for the tragic gardening mishap.</span><br><span class="line">Explain how it happened.&lt;|assistant|&gt; Subject: My Sincere Apologies for the</span><br><span class="line">Gardening Mishap</span><br><span class="line">Dear</span><br></pre></td></tr></table></figure>
 <p><strong>粗体</strong>文本是模型生成的 20 个词元(Subject: My Sincere Apologies for the Gardening Mishap Dear)。</p>
 <p>查看代码，我们可以看到模型实际上<strong>并没有接收文本提示</strong>。相反，<strong>分词器</strong>处理了输入提示，并在 input_ids 变量中返回了模型所需的信息，模型将此作为其输入。</p>
 <p>让我们打印 input_ids 来看看它里面包含什么：</p>
@@ -334,10 +334,10 @@
 <p>如果我们想检查这些 ID，我们可以使用分词器的 decode 方法将 ID 翻译回我们可以阅读的文本：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> <span class="built_in">id</span> <span class="keyword">in</span> input_ids[<span class="number">0</span>]:</span><br><span class="line"><span class="built_in">print</span>(tokenizer.decode(<span class="built_in">id</span>))</span><br></pre></td></tr></table></figure>
 <p>这将打印出（每个词元在单独的一行）：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">&lt;s&gt;</span><br><span class="line">Write</span><br><span class="line">an</span><br><span class="line">email</span><br><span class="line">apolog</span><br><span class="line">izing</span><br><span class="line">to</span><br><span class="line">Sarah</span><br><span class="line">for</span><br><span class="line">the</span><br><span class="line">trag</span><br><span class="line">ic</span><br><span class="line">garden</span><br><span class="line">ing</span><br><span class="line">m</span><br><span class="line">ish</span><br><span class="line">ap</span><br><span class="line">.</span><br><span class="line">Exp</span><br><span class="line">lain</span><br><span class="line">how</span><br><span class="line">it</span><br><span class="line">happened</span><br><span class="line">.</span><br><span class="line">&lt;|assistant|&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">\&lt;s\&gt;</span><br><span class="line">Write</span><br><span class="line">an</span><br><span class="line">email</span><br><span class="line">apolog</span><br><span class="line">izing</span><br><span class="line">to</span><br><span class="line">Sarah</span><br><span class="line">for</span><br><span class="line">the</span><br><span class="line">trag</span><br><span class="line">ic</span><br><span class="line">garden</span><br><span class="line">ing</span><br><span class="line">m</span><br><span class="line">ish</span><br><span class="line">ap</span><br><span class="line">.</span><br><span class="line">Exp</span><br><span class="line">lain</span><br><span class="line">how</span><br><span class="line">it</span><br><span class="line">happened</span><br><span class="line">.</span><br><span class="line">&lt;|assistant|&gt;</span><br></pre></td></tr></table></figure>
 <p>这就是分词器<strong>分解我们输入提示</strong>的方式。请注意以下几点：</p>
 <ul>
-<li>第一个词元是 ID 1（<s>），这是一个<strong>特殊词元</strong>，表示文本的开头。</li>
+<li>第一个词元是 ID 1（&lt;s&gt;），这是一个<strong>特殊词元</strong>，表示文本的开头。</li>
 <li>一些词元是<strong>完整的词</strong>（例如，Write、an、email）。</li>
 <li>一些词元是<strong>词的一部分</strong>（例如，apolog、izing、trag、ic）。</li>
 <li><strong>标点符号</strong>是它们自己的词元。</li>
@@ -463,15 +463,15 @@
 <p><strong>词汇量大小</strong>：32,100</p>
 <p><strong>特殊词元</strong>：</p>
 <ul>
-<li><strong>unk_token <unk></strong></li>
-<li><strong>pad_token <pad></strong></li>
+<li><strong>unk_token &lt;unk&gt;</strong></li>
+<li><strong>pad_token &lt;pad&gt;</strong></li>
 </ul>
 <p><strong>分词文本</strong>：</p>
 <img src="/img3/Hands-On Large Language Models/F0.5.png" alt="F2.1" style="zoom:67%;" />
 <p><strong>Flan-T5</strong> 系列模型使用 <strong>SentencePiece</strong> 方法。我们注意到以下几点：</p>
 <ul>
 <li><strong>没有换行符或空白词元</strong>；这将使模型处理代码变得具有挑战性。</li>
-<li><strong>表情符号</strong>和<strong>中文字符</strong>都被 <strong><unk> 词元</strong>取代，使模型完全无法识别它们。</li>
+<li><strong>表情符号</strong>和<strong>中文字符</strong>都被 <strong>&lt;unk&gt; 词元</strong>取代，使模型完全无法识别它们。</li>
 </ul>
 <p><strong>$\text{GPT}-4$ (2023)</strong></p>
 <p><strong>分词方法</strong>：BPE</p>
@@ -516,8 +516,8 @@
 </li>
 <li>在表征代码时，<strong>管理上下文</strong>非常重要。一个文件可能会调用在<strong>不同文件</strong>中定义的函数。因此，模型需要一种方法来<strong>识别同一代码仓库中不同文件中的代码</strong>，同时区分不同仓库中的代码。这就是为什么 $\text{StarCoder}2$ 为<strong>仓库名称</strong>和<strong>文件名</strong>使用特殊词元：
 <ul>
-<li><strong><filename></strong></li>
-<li><strong><reponame></strong></li>
+<li><strong>&lt;filename&gt;</strong></li>
+<li><strong>&lt;reponame&gt;</strong></li>
 <li><strong>&lt;gh_stars&gt;</strong></li>
 </ul>
 </li>
@@ -535,20 +535,20 @@
 <p><strong>词汇量大小</strong>：50,000</p>
 <p><strong>特殊词元</strong>：</p>
 <ul>
-<li><strong><s></strong></li>
-<li><strong><pad></strong></li>
-<li><strong></s></strong></li>
-<li><strong><unk></strong></li>
+<li><strong>&lt;s&gt;</strong></li>
+<li><strong>&lt;pad&gt;</strong></li>
+<li><strong>&lt;/s&gt;</strong></li>
+<li><strong>&lt;unk&gt;</strong></li>
 <li><strong>参考文献</strong>（References）：引文被包裹在两个特殊词元中：
 <ul>
 <li><strong>[START_REF]</strong></li>
 <li><strong>[END_REF]</strong></li>
-<li>论文中的一个用法示例是：$\text{Recurrent neural net}\text{works, long short-term memory [START_REF]Long Short-Term Memory, Hochreiter[END_REF]}$</li>
+<li>论文中的一个用法示例是：Recurrent neural net}\text{works, long short-term memory [START_REF]Long Short-Term Memory, Hochreiter[END_REF]</li>
 </ul>
 </li>
 <li><strong>逐步推理</strong>（Step-by-step reasoning）：
 <ul>
-<li><strong><work></strong> 是一个有趣的词元，模型用它来进行<strong>思维链推理</strong>（$\text{chain-of-thought rea}\text{soning}$）。</li>
+<li><strong>&lt;work&gt;</strong> 是一个有趣的词元，模型用它来进行<strong>思维链推理</strong>（$\text{chain-of-thought rea}\text{soning}$）。</li>
 </ul>
 </li>
 </ul>
@@ -588,14 +588,14 @@
 <p><strong>特殊词元 (Special tokens)</strong><br>
 我们希望模型跟踪哪些特殊词元？我们可以根据需要添加任意数量的特殊词元，特别是如果我们要为特殊用例构建 LLM 时。常见的选择包括：</p>
 <ul>
-<li><strong>文本开始词元</strong>（例如，<s>）</li>
+<li><strong>文本开始词元</strong>（例如，&lt;s&gt;）</li>
 <li><strong>文本结束词元</strong></li>
 <li><strong>填充词元</strong></li>
 <li><strong>未知词元</strong></li>
 <li><strong>CLS 词元</strong></li>
 <li><strong>掩码词元</strong></li>
 </ul>
-<p>除了这些之外，LLM 设计者还可以添加有助于更好地<strong>建模他们试图关注的问题领域</strong>的词元，正如我们在 Galactica 的 <work> 和 [START_REF] 词元中所看到的那样。</p>
+<p>除了这些之外，LLM 设计者还可以添加有助于更好地<strong>建模他们试图关注的问题领域</strong>的词元，正如我们在 Galactica 的 &lt;work&gt; 和 [START_REF] 词元中所看到的那样。</p>
 <p><strong>大小写 (Capitalization)</strong><br>
 在像英语这样的语言中，我们希望如何处理<strong>大小写</strong>？我们应该将所有内容都转换为小写吗？（<strong>名称的首字母大写</strong>通常带有有用的信息，但我们是否想在词汇表空间上浪费用于<strong>全大写版本词语</strong>的词元？）</p>
 <p><strong>数据的领域</strong></p>
@@ -643,7 +643,7 @@
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[CLS]</span><br><span class="line">Hello</span><br><span class="line">world</span><br><span class="line">[SEP]</span><br></pre></td></tr></table></figure>
 <p>这个特定的分词器和模型是通过在字符串的开头和结尾添加 <strong>[CLS]</strong> 和 <strong>[SEP]</strong> 词元来操作的。</p>
 <p>我们的语言模型现在已经处理了文本输入。其输出结果如下：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">tensor([[</span><br><span class="line">[-3.3060, -0.0507, -0.1098, ..., -0.1704, -0.1618, 0.6932],</span><br><span class="line">[ 0.8918, 0.0740, -0.1583, ..., 0.1869, 1.4760, 0.0751],</span><br><span class="line">[ 0.0871, 0.6364, -0.3050, ..., 0.4729, -0.1829, 1.0157],</span><br><span class="line">[-3.1624, -0.1436, -0.0941, ..., -0.0290, -0.1265, 0.7954]</span><br><span class="line">]], grad_fn=&lt;NativeLayerNormBackward0&gt;)</span><br></pre></td></tr></table></figure>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">tensor([[</span><br><span class="line">[-3.3060, -0.0507, -0.1098, ..., -0.1704, -0.1618, 0.6932],</span><br><span class="line">[ 0.8918, 0.0740, -0.1583, ..., 0.1869, 1.4760, 0.0751],</span><br><span class="line">[ 0.0871, 0.6364, -0.3050, ..., 0.4729, -0.1829, 1.0157],</span><br><span class="line">[-3.1624, -0.1436, -0.0941, ..., -0.0290, -0.1265, 0.7954]</span><br><span class="line">]], grad_fn=\&lt;NativeLayerNormBackward0\&gt;)</span><br></pre></td></tr></table></figure>
 <p>这是语言模型的<strong>原始输出</strong>。大型语言模型的应用都是构建在像这样的输出之上的。</p>
 <p>我们在图 $\text{2}-9$ 中概述了语言模型的输入分词和生成的输出。从技术上讲，从词元 ID 转换为原始嵌入是语言模型<strong>内部发生的第一步</strong>。</p>
 <img src="/img3/Hands-On Large Language Models/F2.9.png" alt="F2.1" style="zoom:67%;" />
@@ -740,19 +740,19 @@
 <p>正如我们在使用<strong>精选歌曲播放列表</strong>构建的<strong>音乐推荐器</strong>中所讨论的，<strong>嵌入</strong>对于创建和改进<strong>推荐系统</strong>非常有用。</p>
 <p>在下一章中，我们将深入探讨<strong>分词之后的流程</strong>：LLM <strong>如何处理这些词元并生成文本</strong>？我们将探讨使用 Transformer 架构的 LLM 如何工作的一些<strong>主要直觉</strong>。</p>
 <p>书籍各章的机翻md文件：</p>
-<a href="/2025/04/01/Hands-On%20Large%20Language%20Models%20%E7%9B%AE%E5%BD%95%20%E5%89%8D%E8%A8%80/" title="《Hands-On Large Language Models》目录及前言">《Hands-On Large Language Models》目录及前言</a>  
-<a href="/2025/04/02/Hands-On%20Large%20Language%20Models%201/" title="《Hands-On Large Language Models》第1章 大型语言模型简介">《Hands-On Large Language Models》第1章 大型语言模型简介</a>  
-<a href="/2025/04/03/Hands-On%20Large%20Language%20Models%202/" title="《Hands-On Large Language Models》第2章 词元与嵌入">《Hands-On Large Language Models》第2章 词元与嵌入</a>  
-<a href="/2025/04/04/Hands-On%20Large%20Language%20Models%203/" title="《Hands-On Large Language Models》第3章 深入了解大型语言模型">《Hands-On Large Language Models》第3章 深入了解大型语言模型</a>  
-<a href="/2025/04/05/Hands-On%20Large%20Language%20Models%204/" title="《Hands-On Large Language Models》第4章 文本分类">《Hands-On Large Language Models》第4章 文本分类</a>  
-<a href="/2025/04/06/Hands-On%20Large%20Language%20Models%205/" title="《Hands-On Large Language Models》第5章 文本聚类和主题建模">《Hands-On Large Language Models》第5章 文本聚类和主题建模</a>  
-<a href="/2025/04/07/Hands-On%20Large%20Language%20Models%206/" title="《Hands-On Large Language Models》第6章 提示工程">《Hands-On Large Language Models》第6章 提示工程</a>  
-<a href="/2025/04/08/Hands-On%20Large%20Language%20Models%207/" title="《Hands-On Large Language Models》第7章 高级文本生成技术与工具">《Hands-On Large Language Models》第7章 高级文本生成技术与工具</a>  
-<a href="/2025/04/09/Hands-On%20Large%20Language%20Models%208/" title="《Hands-On Large Language Models》第8章 语义搜索与检索增强生成">《Hands-On Large Language Models》第8章 语义搜索与检索增强生成</a>  
-<a href="/2025/04/10/Hands-On%20Large%20Language%20Models%209/" title="《Hands-On Large Language Models》第9章 多模态大型语言模型">《Hands-On Large Language Models》第9章 多模态大型语言模型</a>  
-<a href="/2025/04/11/Hands-On%20Large%20Language%20Models%2010/" title="《Hands-On Large Language Models》第10章 创建文本嵌入模型">《Hands-On Large Language Models》第10章 创建文本嵌入模型</a>  
-<a href="/2025/04/12/Hands-On%20Large%20Language%20Models%2011/" title="《Hands-On Large Language Models》第11章 微调用于分类的表征模型">《Hands-On Large Language Models》第11章 微调用于分类的表征模型</a>  
-<a href="/2025/04/13/Hands-On%20Large%20Language%20Models%2012/" title="《Hands-On Large Language Models》第12章 生成模型的微调">《Hands-On Large Language Models》第12章 生成模型的微调</a>  
+<a href="/2025/04/01/Hands-On%20Large%20Language%20Models%20%E7%9B%AE%E5%BD%95%20%E5%89%8D%E8%A8%80/" title="《Hands-On Large Language Models》目录及前言">《Hands-On Large Language Models》目录及前言</a>   </br>
+<a href="/2025/04/02/Hands-On%20Large%20Language%20Models%201/" title="《Hands-On Large Language Models》第1章 大型语言模型简介">《Hands-On Large Language Models》第1章 大型语言模型简介</a>  </br>
+<a href="/2025/04/03/Hands-On%20Large%20Language%20Models%202/" title="《Hands-On Large Language Models》第2章 词元与嵌入">《Hands-On Large Language Models》第2章 词元与嵌入</a>  </br>
+<a href="/2025/04/04/Hands-On%20Large%20Language%20Models%203/" title="《Hands-On Large Language Models》第3章 深入了解大型语言模型">《Hands-On Large Language Models》第3章 深入了解大型语言模型</a>  </br>
+<a href="/2025/04/05/Hands-On%20Large%20Language%20Models%204/" title="《Hands-On Large Language Models》第4章 文本分类">《Hands-On Large Language Models》第4章 文本分类</a>   </br>
+<a href="/2025/04/06/Hands-On%20Large%20Language%20Models%205/" title="《Hands-On Large Language Models》第5章 文本聚类和主题建模">《Hands-On Large Language Models》第5章 文本聚类和主题建模</a>   </br>
+<a href="/2025/04/07/Hands-On%20Large%20Language%20Models%206/" title="《Hands-On Large Language Models》第6章 提示工程">《Hands-On Large Language Models》第6章 提示工程</a>  </br>
+<a href="/2025/04/08/Hands-On%20Large%20Language%20Models%207/" title="《Hands-On Large Language Models》第7章 高级文本生成技术与工具">《Hands-On Large Language Models》第7章 高级文本生成技术与工具</a>  </br> 
+<a href="/2025/04/09/Hands-On%20Large%20Language%20Models%208/" title="《Hands-On Large Language Models》第8章 语义搜索与检索增强生成">《Hands-On Large Language Models》第8章 语义搜索与检索增强生成</a>   </br>
+<a href="/2025/04/10/Hands-On%20Large%20Language%20Models%209/" title="《Hands-On Large Language Models》第9章 多模态大型语言模型">《Hands-On Large Language Models》第9章 多模态大型语言模型</a>   </br>
+<a href="/2025/04/11/Hands-On%20Large%20Language%20Models%2010/" title="《Hands-On Large Language Models》第10章 创建文本嵌入模型">《Hands-On Large Language Models》第10章 创建文本嵌入模型</a>  </br>
+<a href="/2025/04/12/Hands-On%20Large%20Language%20Models%2011/" title="《Hands-On Large Language Models》第11章 微调用于分类的表征模型">《Hands-On Large Language Models》第11章 微调用于分类的表征模型</a>  </br>
+<a href="/2025/04/13/Hands-On%20Large%20Language%20Models%2012/" title="《Hands-On Large Language Models》第12章 生成模型的微调">《Hands-On Large Language Models》第12章 生成模型的微调</a>   </br>
     </div>
 
     
