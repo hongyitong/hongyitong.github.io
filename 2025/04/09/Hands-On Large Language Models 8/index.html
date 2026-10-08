@@ -57,7 +57,7 @@
 <meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F8.25.png">
 <meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F8.26.png">
 <meta property="article:published_time" content="2025-04-08T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-10-08T04:47:30.169Z">
+<meta property="article:modified_time" content="2026-10-08T06:33:03.691Z">
 <meta property="article:author" content="Rayman.hung">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F8.1.png">
@@ -305,13 +305,13 @@
 <p>Overview of Semantic Search and RAG</p>
 <p>关于如何<strong>最好地利用语言模型进行搜索</strong>，有大量的研究。这些模型主要分为<strong>三个大类：稠密检索 (dense retrieval)、重排序 (reranking) 和 RAG</strong>。以下是对这三类模型的概览，本章的其余部分将对此进行更详细的解释：</p>
 <p><strong>稠密检索</strong></p>
-<p>稠密检索系统依赖于<strong>嵌入</strong>（embeddings）这一概念，这与我们在前几章中遇到的概念相同。它将搜索问题转化为<strong>检索搜索查询的最近邻</strong>（在查询和文档都被转换为嵌入之后）。图 $\text{8}-1$ 展示了稠密检索如何接收一个<strong>搜索查询</strong>，查阅其<strong>文本档案</strong>，并输出一组<strong>相关结果</strong>。</p>
+<p>稠密检索系统依赖于<strong>嵌入</strong>（embeddings）这一概念，这与我们在前几章中遇到的概念相同。它将搜索问题转化为<strong>检索搜索查询的最近邻</strong>（在查询和文档都被转换为嵌入之后）。图 8-1 展示了稠密检索如何接收一个<strong>搜索查询</strong>，查阅其<strong>文本档案</strong>，并输出一组<strong>相关结果</strong>。</p>
 <img src="/img3/Hands-On Large Language Models/F8.1.png" alt="F8.1" style="zoom:67%;" />
 <p><strong>重排序</strong></p>
-<p>搜索系统通常是<strong>多步骤的管线</strong>。<strong>重排序语言模型</strong>是其中一个步骤，其任务是<strong>根据查询对结果子集的相关性进行评分</strong>；然后根据这些分数<strong>改变结果的顺序</strong>。图 $\text{8}-2$ 展示了重排序器与稠密检索的不同之处在于，它们接收一个<strong>额外的输入</strong>：来自搜索管线中<strong>上一步的搜索结果集</strong>。</p>
+<p>搜索系统通常是<strong>多步骤的管线</strong>。<strong>重排序语言模型</strong>是其中一个步骤，其任务是<strong>根据查询对结果子集的相关性进行评分</strong>；然后根据这些分数<strong>改变结果的顺序</strong>。图 8-2 展示了重排序器与稠密检索的不同之处在于，它们接收一个<strong>额外的输入</strong>：来自搜索管线中<strong>上一步的搜索结果集</strong>。</p>
 <img src="/img3/Hands-On Large Language Models/F8.2.png" alt="F8.1" style="zoom:67%;" />
 <p><strong>RAG</strong></p>
-<p>文本生成模型不断增长的能力催生了一种<strong>新型的搜索系统</strong>，这种系统包含一个<strong>生成模型</strong>，它<strong>生成一个答案来回应查询</strong>。图 $\text{8}-3$ 展示了这样一个<strong>生成式搜索系统</strong>的例子。</p>
+<p>文本生成模型不断增长的能力催生了一种<strong>新型的搜索系统</strong>，这种系统包含一个<strong>生成模型</strong>，它<strong>生成一个答案来回应查询</strong>。图 8-3 展示了这样一个<strong>生成式搜索系统</strong>的例子。</p>
 <img src="/img3/Hands-On Large Language Models/F8.3.png" alt="F8.1" style="zoom:67%;" />
 <p><strong>生成式搜索</strong>是更广义系统类别的一个子集，该类别更好地被称为 <strong>RAG 系统</strong>。这些是<strong>结合了搜索能力的文本生成系统</strong>，用于<strong>减少幻觉、提高事实性</strong>和/或将生成模型<strong>建立在特定数据集的基础上</strong>。</p>
 <p>本章的其余部分将更详细地介绍这三类系统。虽然它们是主要的类别，但它们并非语言模型在搜索领域的<strong>唯一应用</strong>。</p>
@@ -320,16 +320,16 @@
 <p>现在让我们更详细地探讨可以<strong>升级我们语言模型搜索能力</strong>的主要系统类别。我们将从<strong>稠密检索</strong>开始，然后依次转向<strong>重排序和 RAG</strong>。</p>
 <h4 id="稠密检索"><strong>稠密检索</strong></h4>
 <p>Dense Retrieval</p>
-<p>回想一下，<strong>嵌入</strong>将文本转化为<strong>数值表示</strong>。正如我们在图 $\text{8}-4$ 中所见，这些数值可以被视为<strong>空间中的点</strong>。<strong>彼此靠近的点</strong>意味着它们所代表的文本是<strong>相似的</strong>。因此，在这个例子中，文本 1 和文本 2 彼此更相似（因为它们靠近），而比文本 3 相似度更高（因为它更远）。</p>
+<p>回想一下，<strong>嵌入</strong>将文本转化为<strong>数值表示</strong>。正如我们在图 8-4 中所见，这些数值可以被视为<strong>空间中的点</strong>。<strong>彼此靠近的点</strong>意味着它们所代表的文本是<strong>相似的</strong>。因此，在这个例子中，文本 1 和文本 2 彼此更相似（因为它们靠近），而比文本 3 相似度更高（因为它更远）。</p>
 <img src="/img3/Hands-On Large Language Models/F8.4.png" alt="F8.1" style="zoom:67%;" />
-<p>这就是用于<strong>构建搜索系统</strong>的特性。在这种情况下，当用户输入一个<strong>搜索查询</strong>时，我们<strong>嵌入该查询</strong>，从而将其<strong>投影到与我们的文本档案相同的空间中</strong>。然后，我们只需找到该空间中<strong>离查询最近的文档</strong>，这些文档就是<strong>搜索结果</strong>（图 $\text{8}-5$）。</p>
+<p>这就是用于<strong>构建搜索系统</strong>的特性。在这种情况下，当用户输入一个<strong>搜索查询</strong>时，我们<strong>嵌入该查询</strong>，从而将其<strong>投影到与我们的文本档案相同的空间中</strong>。然后，我们只需找到该空间中<strong>离查询最近的文档</strong>，这些文档就是<strong>搜索结果</strong>（图 8-5）。</p>
 <img src="/img3/Hands-On Large Language Models/F8.5.png" alt="F8.1" style="zoom:67%;" />
-<p>从图 $\text{8}-5$ 中的距离来判断，“<strong>文本 2</strong>”是该查询的<strong>最佳结果</strong>，其次是“<strong>文本 1</strong>”。然而，这里可能会出现两个问题：</p>
+<p>从图 8-5 中的距离来判断，“<strong>文本 2</strong>”是该查询的<strong>最佳结果</strong>，其次是“<strong>文本 1</strong>”。然而，这里可能会出现两个问题：</p>
 <ul>
 <li><strong>文本 3 是否应该作为结果返回？</strong> 这是您，即<strong>系统设计者</strong>的决定。有时，为了<strong>过滤掉不相关的结果</strong>（以防语料库中没有与查询相关的结果），设置一个<strong>最大的相似度分数阈值</strong>是可取的。</li>
 <li><strong>查询和它的最佳结果在语义上是否相似？</strong> <strong>并非总是如此</strong>。这就是为什么语言模型需要<strong>在问答对上进行训练</strong>，以提高检索能力。这个过程将在第 10 章中更详细地解释。</li>
 </ul>
-<p>图 $\text{8}-6$ 展示了我们如何<strong>对文档进行分块</strong>，然后继续对<strong>每个分块</strong>进行<strong>嵌入</strong>。这些<strong>嵌入向量</strong>随后被存储在<strong>向量数据库</strong>中，并准备好进行检索。</p>
+<p>图 8-6 展示了我们如何<strong>对文档进行分块</strong>，然后继续对<strong>每个分块</strong>进行<strong>嵌入</strong>。这些<strong>嵌入向量</strong>随后被存储在<strong>向量数据库</strong>中，并准备好进行检索。</p>
 <img src="/img3/Hands-On Large Language Models/F8.6.png" alt="F8.1" style="zoom:67%;" />
 <p><strong>稠密检索示例</strong></p>
 <p>Dense retrieval example</p>
@@ -386,7 +386,7 @@
 <p><strong>对长文本进行分块</strong></p>
 <p>Chunking long texts</p>
 <p>Transformer 语言模型的一个限制是它们的<strong>上下文大小是有限的</strong>（limited in context sizes），这意味着我们<strong>不能</strong>向它们馈送<strong>超过模型支持的单词或词元数量的非常长的文本</strong>。那么，我们如何<strong>嵌入</strong>长文本呢？</p>
-<p>有几种可能的方法，如图 $\text{8}-7$ 所示的<strong>两种可能的方法</strong>包括：<strong>对每个文档索引一个向量</strong>和<strong>对每个文档索引多个向量</strong>。</p>
+<p>有几种可能的方法，如图 8-7 所示的<strong>两种可能的方法</strong>包括：<strong>对每个文档索引一个向量</strong>和<strong>对每个文档索引多个向量</strong>。</p>
 <img src="/img3/Hands-On Large Language Models/F8.7.png" alt="F8.1" style="zoom:67%;" />
 <p><strong>每个文档一个向量</strong></p>
 <p>One vector per document.</p>
@@ -398,9 +398,9 @@
 <p>这种方法可以<strong>满足</strong>某些信息需求，但<strong>不能满足</strong>其他需求。很多时候，搜索是为了<strong>文章中包含的特定信息片段</strong>，如果该概念有自己的向量，则可以更好地捕获。</p>
 <p><strong>每个文档多个向量</strong></p>
 <p>Multiple vectors per document.</p>
-<p>在这种方法中，我们将文档<strong>分块成更小的片段</strong>，并<strong>嵌入</strong>这些块。然后，我们的搜索索引就变成了<strong>块嵌入的集合</strong>，而不是整个文档的嵌入。图 $\text{8}-8$ 显示了<strong>多种可能的文本分块方法</strong>。</p>
+<p>在这种方法中，我们将文档<strong>分块成更小的片段</strong>，并<strong>嵌入</strong>这些块。然后，我们的搜索索引就变成了<strong>块嵌入的集合</strong>，而不是整个文档的嵌入。图 8-8 显示了<strong>多种可能的文本分块方法</strong>。</p>
 <img src="/img3/Hands-On Large Language Models/F8.8.png" alt="F8.1" style="zoom:67%;" />
-<p><strong>分块方法更好</strong>，因为它<strong>完全覆盖了文本</strong>，并且因为这些<strong>向量倾向于捕获文本内部的各个概念</strong>。这会产生一个<strong>更具表现力的搜索索引</strong>。图 $\text{8}-9$ 展示了多种可能的方法。</p>
+<p><strong>分块方法更好</strong>，因为它<strong>完全覆盖了文本</strong>，并且因为这些<strong>向量倾向于捕获文本内部的各个概念</strong>。这会产生一个<strong>更具表现力的搜索索引</strong>。图 8-9 展示了多种可能的方法。</p>
 <img src="/img3/Hands-On Large Language Models/F8.9.png" alt="F8.1" style="zoom:67%;" />
 <p><strong>对长文本进行分块的最佳方法</strong>将取决于您的系统预期的<strong>文本类型和查询类型</strong>。方法包括：</p>
 <ul>
@@ -409,7 +409,7 @@
 <li><strong>有些块的意义很大程度上来源于周围的文本。</strong> 因此，我们可以通过以下方式纳入一些上下文：
 <ul>
 <li><strong>将文档的标题添加到块中。</strong></li>
-<li><strong>将它们之前和之后的一些文本添加到块中。</strong> 这样，这些块就可以<strong>重叠</strong>，从而包含一些<strong>也出现在相邻块中的周围文本</strong>。这就是我们在图 $\text{8}-10$ 中可以看到的。</li>
+<li><strong>将它们之前和之后的一些文本添加到块中。</strong> 这样，这些块就可以<strong>重叠</strong>，从而包含一些<strong>也出现在相邻块中的周围文本</strong>。这就是我们在图 8-10 中可以看到的。</li>
 </ul>
 </li>
 </ul>
@@ -417,7 +417,7 @@
 <p>随着该领域的发展，预计会出现<strong>更多分块策略</strong>——其中一些甚至可能使用 <strong>LLM 来动态地将文本分割成有意义的块</strong>。</p>
 <p><strong>最近邻搜索与向量数据库</strong></p>
 <p>Nearest neighbor search versus vector databases</p>
-<p>一旦查询被<strong>嵌入</strong>，我们需要从我们的文本档案中找到<strong>距离它最近的向量</strong>，如图 $\text{8}-11$ 所示。找到最近邻<strong>最直接</strong>的方法是计算<strong>查询和档案之间的距离</strong>。如果您的档案中有<strong>数千或数万个向量</strong>，这是一种<strong>合理</strong>的方法，可以轻松地使用 NumPy 完成。</p>
+<p>一旦查询被<strong>嵌入</strong>，我们需要从我们的文本档案中找到<strong>距离它最近的向量</strong>，如图 8-11 所示。找到最近邻<strong>最直接</strong>的方法是计算<strong>查询和档案之间的距离</strong>。如果您的档案中有<strong>数千或数万个向量</strong>，这是一种<strong>合理</strong>的方法，可以轻松地使用 NumPy 完成。</p>
 <img src="/img3/Hands-On Large Language Models/F8.11.png" alt="F8.1" style="zoom:67%;" />
 <p>当您扩展到<strong>数百万个向量</strong>以上时，一种优化的检索方法是依赖于 <strong>近似最近邻搜索</strong>（approximate nearest neighbor search）库，例如 <strong>Annoy 或 FAISS</strong>。这些库允许您在<strong>毫秒内</strong>从<strong>大规模索引</strong>中检索结果，其中一些可以通过利用 <strong>GPU</strong> 并扩展到<strong>机器集群</strong>来服务于<strong>超大型索引</strong>，从而提高其性能。</p>
 <p>另一类向量检索系统是<strong>向量数据库</strong>（vector databases），如 <strong>Weaviate 或 Pinecone</strong>。向量数据库允许您<strong>添加或删除向量</strong>而<strong>无需重建索引</strong>。它们还提供了<strong>过滤搜索</strong>或以<strong>超出单纯向量距离</strong>的方式<strong>自定义搜索</strong>的方法。</p>
@@ -433,13 +433,13 @@
 <ul>
 <li><strong>不相关查询：</strong> “Interstellar cast”</li>
 </ul>
-<p>有了这些例子，我们现在有<strong>三对</strong>——两对<strong>正例</strong>和一对<strong>负例</strong>。正如我们在图 $\text{8}-12$ 中所见，假设在微调之前，所有三个查询与结果文档的<strong>距离都相同</strong>。这并不牵强，因为它们都与**《星际穿越》**有关。</p>
+<p>有了这些例子，我们现在有<strong>三对</strong>——两对<strong>正例</strong>和一对<strong>负例</strong>。正如我们在图 8-12 中所见，假设在微调之前，所有三个查询与结果文档的<strong>距离都相同</strong>。这并不牵强，因为它们都与**《星际穿越》**有关。</p>
 <img src="/img3/Hands-On Large Language Models/F8.12.png" alt="F8.1" style="zoom:67%;" />
-<p>微调步骤的作用是使<strong>相关查询</strong>更<strong>靠近</strong>文档，同时使<strong>不相关查询</strong>更<strong>远离</strong>文档。我们可以在图 $\text{8}-13$ 中看到这种效果。</p>
+<p>微调步骤的作用是使<strong>相关查询</strong>更<strong>靠近</strong>文档，同时使<strong>不相关查询</strong>更<strong>远离</strong>文档。我们可以在图 8-13 中看到这种效果。</p>
 <img src="/img3/Hands-On Large Language Models/F8.13.png" alt="F8.1" style="zoom:67%;" />
 <h4 id="重排序"><strong>重排序</strong></h4>
 <p>Reranking</p>
-<p>许多组织已经构建了<strong>搜索系统</strong>。对于这些组织来说，将语言模型纳入其<strong>搜索管线</strong>的一种更简单方法是作为<strong>最后一步</strong>。这一步的任务是<strong>根据与搜索查询的相关性</strong>来<strong>更改搜索结果的顺序</strong>。这一个步骤就可以<strong>极大地改进</strong>搜索结果，事实上，这也是<strong>微软 Bing 添加 BERT 类模型</strong>以实现搜索结果改进的方式。图 $\text{8}-14$ 展示了<strong>重排序搜索系统</strong>作为<strong>两阶段搜索系统</strong>中<strong>第二阶段</strong>的结构。</p>
+<p>许多组织已经构建了<strong>搜索系统</strong>。对于这些组织来说，将语言模型纳入其<strong>搜索管线</strong>的一种更简单方法是作为<strong>最后一步</strong>。这一步的任务是<strong>根据与搜索查询的相关性</strong>来<strong>更改搜索结果的顺序</strong>。这一个步骤就可以<strong>极大地改进</strong>搜索结果，事实上，这也是<strong>微软 Bing 添加 BERT 类模型</strong>以实现搜索结果改进的方式。图 8-14 展示了<strong>重排序搜索系统</strong>作为<strong>两阶段搜索系统</strong>中<strong>第二阶段</strong>的结构。</p>
 <img src="/img3/Hands-On Large Language Models/F8.14.png" alt="F8.1" style="zoom:67%;" />
 <p><strong>重排序示例</strong></p>
 <p>Reranking example</p>
@@ -458,56 +458,56 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">keyword_and_reranking_search(query = <span class="string">&quot;how precise was the science&quot;</span>)</span><br></pre></td></tr></table></figure>
 <p><strong>结果：</strong></p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">Input question: how precise was the science</span><br><span class="line">Top-3 lexical search (BM25) hits</span><br><span class="line">1.789 Interstellar is a 2014 epic science fiction film co-written, directed,</span><br><span class="line">and produced by Christopher Nolan</span><br><span class="line">1.373 Caltech theoretical physicist and 2017 Nobel laureate in Physics[4] Kip</span><br><span class="line">Thorne was an executive producer, acted as a scientific consultant, and wrote</span><br><span class="line">a tie-in book, The Science of Interstellar</span><br><span class="line">0.000 Interstellar uses extensive practical and miniature effects and the com-</span><br><span class="line">pany Double Negative created additional digital effects</span><br><span class="line">Top-3 hits by rank-API (10 BM25 hits re-ranked)</span><br><span class="line">0.004 Caltech theoretical physicist and 2017 Nobel laureate in Physics[4] Kip</span><br><span class="line">Thorne was an executive producer, acted as a scientific consultant, and wrote</span><br><span class="line">a tie-in book, The Science of Interstellar</span><br><span class="line">0.004 Set in a dystopian future where humanity is struggling to survive, the</span><br><span class="line">film follows a group of astronauts who travel through a wormhole near Saturn</span><br><span class="line">in search of a new home for mankind</span><br><span class="line">0.003 Brothers Christopher and Jonathan Nolan wrote the screenplay, which had</span><br><span class="line">its origins in a script Jonathan developed in 2007</span><br></pre></td></tr></table></figure>
-<p>我们看到<strong>关键词搜索</strong>只为<strong>共享某些关键词的两个结果</strong>分配了分数。在<strong>第二组结果</strong>中，<strong>重排序器</strong>将<strong>第二个结果</strong>恰当地<strong>提升</strong>为<strong>与查询最相关的结果</strong>。这是一个<strong>玩具示例</strong>，让我们<strong>初窥其效果</strong>，但在实践中，这样的管线可以<strong>显著提高搜索质量</strong>。在像 MIRACL 这样的<strong>多语言基准测试</strong>中，重排序器可以将性能从 36.5 <strong>提升到 62.8</strong>，以 $\text{nDCG}@\text{10}$ 衡量（关于评估的更多内容将在本章后面讨论）。</p>
+<p>我们看到<strong>关键词搜索</strong>只为<strong>共享某些关键词的两个结果</strong>分配了分数。在<strong>第二组结果</strong>中，<strong>重排序器</strong>将<strong>第二个结果</strong>恰当地<strong>提升</strong>为<strong>与查询最相关的结果</strong>。这是一个<strong>玩具示例</strong>，让我们<strong>初窥其效果</strong>，但在实践中，这样的管线可以<strong>显著提高搜索质量</strong>。在像 MIRACL 这样的<strong>多语言基准测试</strong>中，重排序器可以将性能从 36.5 <strong>提升到 62.8</strong>，以 nDCG@\text{10} 衡量（关于评估的更多内容将在本章后面讨论）。</p>
 <p><strong>使用 Sentence Transformers 进行开源检索和重排序</strong></p>
 <p>Open source retrieval and reranking with sentence transformers</p>
 <p>如果您想在自己的机器上本地设置<strong>检索和重排序</strong>，那么可以使用 <strong>Sentence Transformers 库</strong>。请参阅 <a target="_blank" rel="noopener" href="https://oreil.ly/jJOhV">https://oreil.ly/jJOhV</a> 上的文档进行设置。查看**“Retrieve &amp; Re-Rank”部分**，获取有关如何在库中执行这些步骤的说明和代码示例。</p>
 <p><strong>重排序模型的工作原理</strong></p>
 <p>How reranking models work</p>
-<p>构建 LLM <strong>搜索重排序器</strong>的一种流行方法是，将<strong>查询和每个结果</strong>呈现给一个充当<strong>交叉编码器</strong>（cross-encoder）的 LLM。这意味着查询和可能的搜索结果<strong>同时</strong>呈现给模型，允许模型在分配<strong>相关性分数</strong>之前查看这两段文本，如图 $\text{8}-15$ 所示。所有文档都是<strong>批量同时处理</strong>的，但<strong>每个文档都是针对查询独立评估</strong>的。然后，这些分数决定了结果的<strong>新顺序</strong>。这种方法在题为**“Multi-stage document ranking with BERT”**的论文中有更详细的描述，有时被称为 <strong>monoBERT</strong>。</p>
+<p>构建 LLM <strong>搜索重排序器</strong>的一种流行方法是，将<strong>查询和每个结果</strong>呈现给一个充当<strong>交叉编码器</strong>（cross-encoder）的 LLM。这意味着查询和可能的搜索结果<strong>同时</strong>呈现给模型，允许模型在分配<strong>相关性分数</strong>之前查看这两段文本，如图 8-15 所示。所有文档都是<strong>批量同时处理</strong>的，但<strong>每个文档都是针对查询独立评估</strong>的。然后，这些分数决定了结果的<strong>新顺序</strong>。这种方法在题为**“Multi-stage document ranking with BERT”**的论文中有更详细的描述，有时被称为 <strong>monoBERT</strong>。</p>
 <img src="/img3/Hands-On Large Language Models/F8.15.png" alt="F8.1" style="zoom:67%;" />
 <p>这种将<strong>搜索表述为相关性评分</strong>的方法基本上归结为一个<strong>分类问题</strong>。给定这些输入，模型输出一个<strong>从 0 到 1 的分数</strong>，其中 0 表示<strong>不相关</strong>，1 表示<strong>高度相关</strong>。这应该与我们在第 4 章中关于<strong>分类的讨论</strong>相一致。</p>
 <p>要了解更多关于使用 LLM 进行搜索的发展，强烈推荐阅读**《Pretrained transformers for text tanking: BERT and beyond》**，它回顾了直到大约 2021 年这些模型的发展。</p>
 <h4 id="检索评估指标"><strong>检索评估指标</strong></h4>
 <p>Retrieval Evaluation Metrics</p>
 <p><strong>语义搜索</strong>是使用<strong>信息检索</strong>（Information Retrieval, IR）领域的<strong>指标</strong>进行评估的。让我们讨论其中一个流行的指标：<strong>平均精度均值</strong>（mean average precision, MAP）。</p>
-<p>评估搜索系统需要<strong>三个主要组成部分</strong>：一个<strong>文本档案</strong>、一组<strong>查询</strong>，以及<strong>相关性判断</strong>，指明哪些文档与每个查询相关。我们在图 $\text{8}-16$ 中可以看到这些组件。</p>
+<p>评估搜索系统需要<strong>三个主要组成部分</strong>：一个<strong>文本档案</strong>、一组<strong>查询</strong>，以及<strong>相关性判断</strong>，指明哪些文档与每个查询相关。我们在图 8-16 中可以看到这些组件。</p>
 <img src="/img3/Hands-On Large Language Models/F8.16.png" alt="F8.1" style="zoom:67%;" />
-<p>使用这个<strong>测试套件</strong>，我们可以继续探索<strong>搜索系统的评估</strong>。让我们从一个简单的例子开始。假设我们向<strong>两个不同的搜索系统</strong>传递<strong>查询 1</strong>。并得到<strong>两组结果</strong>。假设我们将结果数量限制为<strong>三个</strong>，如图 $\text{8}-17$ 所示。</p>
+<p>使用这个<strong>测试套件</strong>，我们可以继续探索<strong>搜索系统的评估</strong>。让我们从一个简单的例子开始。假设我们向<strong>两个不同的搜索系统</strong>传递<strong>查询 1</strong>。并得到<strong>两组结果</strong>。假设我们将结果数量限制为<strong>三个</strong>，如图 8-17 所示。</p>
 <img src="/img3/Hands-On Large Language Models/F8.17.png" alt="F8.1" style="zoom:67%;" />
-<p>为了判断<strong>哪个系统更好</strong>，我们求助于我们拥有的关于该查询的<strong>相关性判断</strong>。图 $\text{8}-18$ 显示了返回的结果中<strong>哪些是相关的</strong>。</p>
+<p>为了判断<strong>哪个系统更好</strong>，我们求助于我们拥有的关于该查询的<strong>相关性判断</strong>。图 8-18 显示了返回的结果中<strong>哪些是相关的</strong>。</p>
 <img src="/img3/Hands-On Large Language Models/F8.18.png" alt="F8.1" style="zoom:67%;" />
-<p>这向我们展示了一个清晰的案例，即<strong>系统 1 优于系统 2</strong>。直观上，我们可以简单地计算每个系统<strong>检索到的相关结果数量</strong>。系统 1 在 3 个结果中得到了<strong>两个正确的</strong>，而系统 2 在 3 个结果中只得到了<strong>一个正确的</strong>。但是，对于如图 $\text{8}-19$ 所示的案例呢？在这两种情况下，两个系统在 3 个结果中都只得到<strong>一个相关结果</strong>，但它们处于<strong>不同的位置</strong>。</p>
+<p>这向我们展示了一个清晰的案例，即<strong>系统 1 优于系统 2</strong>。直观上，我们可以简单地计算每个系统<strong>检索到的相关结果数量</strong>。系统 1 在 3 个结果中得到了<strong>两个正确的</strong>，而系统 2 在 3 个结果中只得到了<strong>一个正确的</strong>。但是，对于如图 8-19 所示的案例呢？在这两种情况下，两个系统在 3 个结果中都只得到<strong>一个相关结果</strong>，但它们处于<strong>不同的位置</strong>。</p>
 <img src="/img3/Hands-On Large Language Models/F8.19.png" alt="F8.1" style="zoom:67%;" />
 <p>在这种情况下，我们可以凭直觉认为<strong>系统 1 比系统 2做得更好</strong>，因为<strong>第一个位置</strong>（最重要的位置）的结果是正确的。但是，我们如何为这种<strong>更好的程度</strong>分配一个<strong>数值或分数</strong>呢？<strong>平均精度均值</strong>就是一种能够<strong>量化这种区别</strong>的度量。</p>
 <p>在这种情景中，一种常见的分配数值分数的方法是<strong>平均精度</strong>（average precision），它评估系统 1 对该查询的结果为 1，系统 2 的结果为 0.3。因此，让我们看看<strong>平均精度</strong>是如何计算来评估<strong>一组结果</strong>的，以及如何将它<strong>聚合</strong>起来以评估<strong>测试套件中所有查询的系统</strong>。</p>
 <p><strong>用平均精度对单个查询评分</strong></p>
 <p>Scoring a single query with average precision</p>
 <p>要对搜索系统在<strong>这个查询</strong>上的表现进行评分，我们可以专注于对<strong>相关文档</strong>进行评分。让我们从一个在测试套件中<strong>只有一个相关文档</strong>的查询开始看。</p>
-<p>第一个很容易：搜索系统将<strong>相关结果</strong>（该查询唯一可用的结果）<strong>放置在最前面</strong>。这使系统获得了<strong>满分 1 分</strong>。图 $\text{8}-20$ 展示了这种计算：查看<strong>第一个位置</strong>，我们有一个相关结果，导致<strong>位置 1 处的精度为 1.0</strong>（计算方法是位置 1 处的<strong>相关结果数量</strong>除以<strong>我们当前查看的位置</strong>）。</p>
+<p>第一个很容易：搜索系统将<strong>相关结果</strong>（该查询唯一可用的结果）<strong>放置在最前面</strong>。这使系统获得了<strong>满分 1 分</strong>。图 8-20 展示了这种计算：查看<strong>第一个位置</strong>，我们有一个相关结果，导致<strong>位置 1 处的精度为 1.0</strong>（计算方法是位置 1 处的<strong>相关结果数量</strong>除以<strong>我们当前查看的位置</strong>）。</p>
 <img src="/img3/Hands-On Large Language Models/F8.20.png" alt="F8.1" style="zoom:67%;" />
-<p>由于我们只对<strong>相关文档</strong>进行评分，我们可以<strong>忽略不相关文档的分数</strong>并在此处停止计算。但是，如果系统将<strong>唯一的相关结果</strong>放在<strong>第三个位置</strong>，这会如何影响分数呢？图 $\text{8}-21$ 展示了这会如何导致<strong>惩罚</strong>。</p>
+<p>由于我们只对<strong>相关文档</strong>进行评分，我们可以<strong>忽略不相关文档的分数</strong>并在此处停止计算。但是，如果系统将<strong>唯一的相关结果</strong>放在<strong>第三个位置</strong>，这会如何影响分数呢？图 8-21 展示了这会如何导致<strong>惩罚</strong>。</p>
 <img src="/img3/Hands-On Large Language Models/F8.21.png" alt="F8.1" style="zoom:67%;" />
-<p>现在让我们来看一个有<strong>多个相关文档</strong>的查询。图 $\text{8}-22$ 展示了这种计算，以及<strong>平均</strong>是如何介入的。</p>
+<p>现在让我们来看一个有<strong>多个相关文档</strong>的查询。图 8-22 展示了这种计算，以及<strong>平均</strong>是如何介入的。</p>
 <img src="/img3/Hands-On Large Language Models/F8.22.png" alt="F8.1" style="zoom:67%;" />
 <p><strong>用平均精度均值（mean average precision）对多个查询评分</strong></p>
 <p>Scoring across multiple queries with mean average precision</p>
-<p>既然我们熟悉了<strong>位置 $k$ 处的精度</strong>和<strong>平均精度</strong>，我们就可以将这个知识扩展到一个可以针对我们<strong>测试套件中所有查询</strong>对搜索系统进行评分的指标。这个指标被称为<strong>平均精度均值</strong>（mean average precision）。图 $\text{8}-23$ 展示了如何通过<strong>取每个查询的平均精度</strong>的<strong>平均值</strong>来计算这个指标。</p>
+<p>既然我们熟悉了<strong>位置 $k$ 处的精度</strong>和<strong>平均精度</strong>，我们就可以将这个知识扩展到一个可以针对我们<strong>测试套件中所有查询</strong>对搜索系统进行评分的指标。这个指标被称为<strong>平均精度均值</strong>（mean average precision）。图 8-23 展示了如何通过<strong>取每个查询的平均精度</strong>的<strong>平均值</strong>来计算这个指标。</p>
 <img src="/img3/Hands-On Large Language Models/F8.23.png" alt="F8.1" style="zoom:67%;" />
 <p>您可能想知道为什么同一个操作被称为**“均值”（mean）<strong>和</strong>“平均”（average）<strong>。这很可能是一种</strong>美学选择**，因为 MAP 听起来比“平均平均精度”更好。</p>
 <p>现在我们有了一个<strong>单一的指标</strong>，可以用来<strong>比较不同的系统</strong>。如果您想了解更多关于评估指标的信息，请参阅 Christopher D. Manning、Prabhakar Raghavan 和 Hinrich Schütze 所著的《信息检索导论》（Introduction to Information Retrieval）（剑桥大学出版社）中的**“信息检索中的评估”**一章。</p>
 <p>除了平均精度均值之外，另一个<strong>常用于搜索系统</strong>的指标是<strong>归一化折损累计增益</strong>（normalized discounted cumulative gain, nDCG），它<strong>更细致入微</strong>，因为文档的<strong>相关性不是二元的</strong>（相关与不相关），并且在测试套件和评分机制中，<strong>一个文档可以被标记为比另一个更相关</strong>。</p>
 <h3 id="检索增强生成"><strong>检索增强生成</strong></h3>
 <p>Retrieval-Augmented Generation (RAG)</p>
-<p>LLM 的大规模采用很快导致人们向它们<strong>提问</strong>并期望得到<strong>事实性的答案</strong>。虽然模型可以正确回答一些问题，但它们也<strong>自信地回答了许多不正确的问题</strong>。业界为纠正这种行为而转向的主要方法是 <strong>RAG</strong>，该方法在论文《用于知识密集型 NLP 任务的检索增强生成》（Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks）（2020）中有所描述，如图 $\text{8}-24$ 所示。</p>
+<p>LLM 的大规模采用很快导致人们向它们<strong>提问</strong>并期望得到<strong>事实性的答案</strong>。虽然模型可以正确回答一些问题，但它们也<strong>自信地回答了许多不正确的问题</strong>。业界为纠正这种行为而转向的主要方法是 <strong>RAG</strong>，该方法在论文《用于知识密集型 NLP 任务的检索增强生成》（Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks）（2020）中有所描述，如图 8-24 所示。</p>
 <img src="/img3/Hands-On Large Language Models/F8.24.png" alt="F8.1" style="zoom:67%;" />
 <p>RAG 系统在<strong>生成能力</strong>之外，还<strong>整合了搜索能力</strong>。它们可以被视为对<strong>生成系统</strong>的改进，因为它们<strong>减少了幻觉</strong>并<strong>提高了事实性</strong>。它们还支持“与我的数据聊天”<strong>的用例，个人和公司可以使用这些系统来</strong>将 LLM 建立在内部公司数据<strong>或</strong>特定的感兴趣数据源（例如，与一本书聊天）的背景上。</p>
 <p>这也扩展到了<strong>搜索系统</strong>。越来越多的搜索引擎正在<strong>整合 LLM</strong> 来<strong>总结结果</strong>或<strong>回答提交给搜索引擎的问题</strong>。例子包括 Perplexity、Microsoft Bing AI 和 Google Gemini。</p>
 <h4 id="从搜索到-RAG"><strong>从搜索到 RAG</strong></h4>
 <p>From Search to RAG</p>
-<p>现在让我们将我们的<strong>搜索系统</strong>转变为一个 <strong>RAG 系统</strong>。我们通过<strong>在搜索管线的末端添加一个 LLM</strong> 来实现这一点。我们将<strong>问题和检索到的最相关的文档</strong>呈现给 LLM，并要求它<strong>根据搜索结果提供的上下文</strong>来回答问题。我们可以在图 $\text{8}-25$ 中看到一个例子。</p>
+<p>现在让我们将我们的<strong>搜索系统</strong>转变为一个 <strong>RAG 系统</strong>。我们通过<strong>在搜索管线的末端添加一个 LLM</strong> 来实现这一点。我们将<strong>问题和检索到的最相关的文档</strong>呈现给 LLM，并要求它<strong>根据搜索结果提供的上下文</strong>来回答问题。我们可以在图 8-25 中看到一个例子。</p>
 <img src="/img3/Hands-On Large Language Models/F8.25.png" alt="F8.1" style="zoom:67%;" />
-<p>这个<strong>生成步骤</strong>被称为<strong>基于事实的生成</strong>（grounded generation），因为我们提供给 LLM 的<strong>检索到的相关信息</strong>建立了一个特定的<strong>上下文</strong>，将 LLM 建立在<strong>我们感兴趣的领域</strong>中。图 $\text{8}-26$ 展示了如果我们继续我们前面提到的<strong>嵌入搜索示例</strong>，<strong>基于事实的生成</strong>是如何在搜索之后起作用的。</p>
+<p>这个<strong>生成步骤</strong>被称为<strong>基于事实的生成</strong>（grounded generation），因为我们提供给 LLM 的<strong>检索到的相关信息</strong>建立了一个特定的<strong>上下文</strong>，将 LLM 建立在<strong>我们感兴趣的领域</strong>中。图 8-26 展示了如果我们继续我们前面提到的<strong>嵌入搜索示例</strong>，<strong>基于事实的生成</strong>是如何在搜索之后起作用的。</p>
 <img src="/img3/Hands-On Large Language Models/F8.26.png" alt="F8.1" style="zoom:67%;" />
 <h4 id="示例：使用-LLM-API-进行基于事实的生成"><strong>示例：使用 LLM API 进行基于事实的生成</strong></h4>
 <p>Example: Grounded Generation with an LLM API</p>

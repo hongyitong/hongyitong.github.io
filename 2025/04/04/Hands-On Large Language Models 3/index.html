@@ -61,7 +61,7 @@
 <meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F3.32.png">
 <meta property="og:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F3.33.png">
 <meta property="article:published_time" content="2025-04-03T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-10-08T04:46:45.139Z">
+<meta property="article:modified_time" content="2026-10-08T06:32:07.194Z">
 <meta property="article:author" content="Rayman.hung">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://hongyitong.github.io/img3/Hands-On%20Large%20Language%20Models/F3.1.png">
@@ -310,11 +310,11 @@
 <p>让我们从对模型的<strong>高层概述</strong>开始我们的探索，然后我们将看看自 2017 年推出以来，后来的工作是如何改进 <strong>Transformer 模型</strong>的。</p>
 <h4 id="一个经过训练的-Transformer-LLM-的输入和输出"><strong>一个经过训练的 Transformer LLM 的输入和输出</strong></h4>
 <p>The Inputs and Outputs of a Trained Transformer LLM</p>
-<p>理解 <strong>Transformer LLM 行为</strong>的最常见视角是将其视为一个<strong>软件系统</strong>，它<strong>接收文本</strong>并<strong>生成文本作为回应</strong>。一旦在一个足够大的<strong>高质量数据集</strong>上训练了一个<strong>足够大</strong>的<strong>文本输入-文本输出</strong>模型，它就能生成令人印象深刻且有用的输出。图 $\text{3}-1$ 展示了这样一个用于撰写电子邮件的模型。</p>
+<p>理解 <strong>Transformer LLM 行为</strong>的最常见视角是将其视为一个<strong>软件系统</strong>，它<strong>接收文本</strong>并<strong>生成文本作为回应</strong>。一旦在一个足够大的<strong>高质量数据集</strong>上训练了一个<strong>足够大</strong>的<strong>文本输入-文本输出</strong>模型，它就能生成令人印象深刻且有用的输出。图 3-1 展示了这样一个用于撰写电子邮件的模型。</p>
 <img src="/img3/Hands-On Large Language Models/F3.1.png" alt="F3.1" style="zoom:67%;" />
-<p>模型<strong>并非一次性</strong>生成所有文本；它实际上是<strong>一次生成一个词元</strong>。图 $\text{3}-2$ 展示了响应输入提示的<strong>四个词元生成步骤</strong>。<strong>每个词元生成步骤</strong>都是模型的一次<strong>正向传播</strong>（forward pass）（这是机器学习的说法，指输入进入神经网络并流经所需的计算，以在计算图的另一端产生一个输出）。</p>
+<p>模型<strong>并非一次性</strong>生成所有文本；它实际上是<strong>一次生成一个词元</strong>。图 3-2 展示了响应输入提示的<strong>四个词元生成步骤</strong>。<strong>每个词元生成步骤</strong>都是模型的一次<strong>正向传播</strong>（forward pass）（这是机器学习的说法，指输入进入神经网络并流经所需的计算，以在计算图的另一端产生一个输出）。</p>
 <img src="/img3/Hands-On Large Language Models/F3.2.png" alt="F3.1" style="zoom:67%;" />
-<p>在<strong>每次词元生成之后</strong>，我们通过将<strong>输出词元附加到输入提示的末尾</strong>来调整<strong>下一次生成步骤的输入提示</strong>。我们可以在图 $\text{3}-3$ 中看到这一点。</p>
+<p>在<strong>每次词元生成之后</strong>，我们通过将<strong>输出词元附加到输入提示的末尾</strong>来调整<strong>下一次生成步骤的输入提示</strong>。我们可以在图 3-3 中看到这一点。</p>
 <img src="/img3/Hands-On Large Language Models/F3.3.png" alt="F3.1" style="zoom:67%;" />
 <p>这给了我们一个更准确的模型图景，因为它只是根据<strong>输入提示</strong>来<strong>预测下一个词元</strong>。神经网络周围的软件基本上是<strong>在一个循环中运行它</strong>，以<strong>顺序地扩展</strong>生成的文本直到完成。</p>
 <p>在机器学习中，有一个特定的词语来描述<strong>消耗其早期预测以做出后期预测</strong>的模型（例如，模型的第一个生成的词元用于生成第二个词元）。它们被称为<strong>自回归模型</strong>（autoregressive models）。这就是为什么你会听到<strong>文本生成 LLM</strong> 被称为<strong>自回归模型</strong>。这通常用于区分文本生成模型和<strong>非自回归</strong>的<strong>文本表征模型</strong>，例如 <strong>BERT</strong>。</p>
@@ -325,12 +325,12 @@
 <p>我们可以看到模型开始撰写电子邮件，从主题开始。它突然停止了，因为它达到了我们通过设置 max_new_tokens 为 50 个词元所确定的<strong>词元限制</strong>。如果我们增加这个限制，它将继续直到完成电子邮件。</p>
 <h4 id="正向传播的组成部分"><strong>正向传播的组成部分</strong></h4>
 <p>The Components of the Forward Pass</p>
-<p>除了<strong>循环</strong>之外，两个关键的内部组件是<strong>分词器</strong>（tokenizer）和<strong>语言模型头</strong>（LM head）。图 $\text{3}-4$ 展示了这些组件在系统中的位置。我们在上一章中看到，分词器如何将文本分解为<strong>词元 ID 序列</strong>，然后这些序列成为模型的输入。</p>
+<p>除了<strong>循环</strong>之外，两个关键的内部组件是<strong>分词器</strong>（tokenizer）和<strong>语言模型头</strong>（LM head）。图 3-4 展示了这些组件在系统中的位置。我们在上一章中看到，分词器如何将文本分解为<strong>词元 ID 序列</strong>，然后这些序列成为模型的输入。</p>
 <img src="/img3/Hands-On Large Language Models/F3.4.png" alt="F3.1" style="zoom:67%;" />
 <p>分词器之后是<strong>神经网络</strong>：一个Transformer 块的堆栈，它负责所有的处理工作。该堆栈之后是 <strong>LM 头</strong>，它将堆栈的输出转换为<strong>下一个最有可能的词元</strong>的<strong>概率分数</strong>。</p>
-<p>回想一下<strong>第 2 章</strong>，分词器包含一个<strong>词元表</strong>——分词器的<strong>词汇表</strong>。模型为词汇表中的<strong>每个词元</strong>关联了一个<strong>向量表征</strong>（<strong>词元嵌入</strong>）。图 $\text{3}-5$ 展示了一个词汇量为 5 万词元的模型的<strong>词汇表</strong>和相关的<strong>词元嵌入</strong>。</p>
+<p>回想一下<strong>第 2 章</strong>，分词器包含一个<strong>词元表</strong>——分词器的<strong>词汇表</strong>。模型为词汇表中的<strong>每个词元</strong>关联了一个<strong>向量表征</strong>（<strong>词元嵌入</strong>）。图 3-5 展示了一个词汇量为 5 万词元的模型的<strong>词汇表</strong>和相关的<strong>词元嵌入</strong>。</p>
 <img src="/img3/Hands-On Large Language Models/F3.5.png" alt="F3.1" style="zoom:67%;" />
-<p>计算流程遵循<strong>从上到下</strong>的箭头方向。对于<strong>每个生成的词元</strong>，流程会依次流经堆栈中的<strong>每个 Transformer 块一次</strong>，然后到达 <strong>LM 头</strong>，LM 头最终输出<strong>下一个词元的概率分布</strong>，如图 $\text{3}-6$ 所示。</p>
+<p>计算流程遵循<strong>从上到下</strong>的箭头方向。对于<strong>每个生成的词元</strong>，流程会依次流经堆栈中的<strong>每个 Transformer 块一次</strong>，然后到达 <strong>LM 头</strong>，LM 头最终输出<strong>下一个词元的概率分布</strong>，如图 3-6 所示。</p>
 <img src="/img3/Hands-On Large Language Models/F3.6.png" alt="F3.1" style="zoom:67%;" />
 <p><strong>LM 头</strong>本身是一个简单的<strong>神经网络层</strong>。它是可以附加到 Transformer 块堆栈上以构建不同类型系统的<strong>多种可能“头”</strong> 之一。其他类型的 Transformer 头包括<strong>序列分类头</strong>和<strong>词元分类头</strong>。</p>
 <p>我们可以通过简单地打印出 model 变量来显示<strong>层级的顺序</strong>。对于这个模型，我们有：</p>
@@ -345,10 +345,10 @@
 </ul>
 <h4 id="从概率分布中选择单个词元（采样-解码）"><strong>从概率分布中选择单个词元（采样/解码）</strong></h4>
 <p>Choosing a Single Token from the Probability Distribution (Sampling/Decoding)</p>
-<p>正如我们前面在图 $\text{3}-6$ 中看到的，在处理结束时，模型的输出是<strong>词汇表中每个词元的概率分数</strong>。从<strong>概率分布</strong>中选择单个词元的方法称为<strong>解码策略</strong>（decoding strategy）。图 $\text{3}-7$ 展示了在一个示例中，这如何导致选择了词元“Dear”。</p>
+<p>正如我们前面在图 3-6 中看到的，在处理结束时，模型的输出是<strong>词汇表中每个词元的概率分数</strong>。从<strong>概率分布</strong>中选择单个词元的方法称为<strong>解码策略</strong>（decoding strategy）。图 3-7 展示了在一个示例中，这如何导致选择了词元“Dear”。</p>
 <img src="/img3/Hands-On Large Language Models/F3.7.png" alt="F3.1" style="zoom:67%;" />
 <p>最简单的解码策略是<strong>总是选择具有最高概率分数的词元</strong>。在实践中，这在大多数用例中<strong>往往不会产生最佳输出</strong>。一种更好的方法是<strong>添加一些随机性</strong>，有时选择<strong>第二高</strong>或<strong>第三高概率</strong>的词元。统计学家会说，这里的想法是根据<strong>概率分数</strong>从<strong>概率分布中进行采样</strong>。</p>
-<p>对于图 $\text{3}-7$ 中的示例，这意味着如果词元“Dear”有 40% 的概率成为下一个词元，那么它就有 40% 的机会被选中（而不是<strong>贪婪搜索</strong>，后者会因为它是最高分数而直接选择它）。因此，通过这种方法，所有其他词元都有根据其分数被选中的机会。</p>
+<p>对于图 3-7 中的示例，这意味着如果词元“Dear”有 40% 的概率成为下一个词元，那么它就有 40% 的机会被选中（而不是<strong>贪婪搜索</strong>，后者会因为它是最高分数而直接选择它）。因此，通过这种方法，所有其他词元都有根据其分数被选中的机会。</p>
 <p>每次都选择得分最高的词元被称为<strong>贪婪解码</strong>（greedy decoding）。这是当您将 LLM 中的<strong>温度 (temperature) 参数设置为零</strong>时所发生的情况。我们将在<strong>第 6 章</strong>中介绍温度的概念。</p>
 <p>让我们更仔细地看看演示这个过程的代码。在这个代码块中，我们将<strong>输入词元</strong>通过模型，然后通过 lm_head：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">prompt = <span class="string">&quot;The capital of France is&quot;</span></span><br><span class="line"><span class="comment"># Tokenize the input prompt</span></span><br><span class="line">input_ids = tokenizer(prompt, return_tensors=<span class="string">&quot;pt&quot;</span>).input_ids</span><br><span class="line"><span class="comment"># Tokenize the input prompt</span></span><br><span class="line">input_ids = input_ids.to(<span class="string">&quot;cuda&quot;</span>)</span><br><span class="line"><span class="comment"># Get the output of the model before the lm_head</span></span><br><span class="line">model_output = model.model(input_ids)</span><br><span class="line"><span class="comment"># Get the output of the lm_head</span></span><br><span class="line">lm_head_output = model.lm_head(model_output[<span class="number">0</span>])</span><br></pre></td></tr></table></figure>
@@ -358,10 +358,10 @@
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Paris</span><br></pre></td></tr></table></figure>
 <h4 id="并行词元处理和上下文大小"><strong>并行词元处理和上下文大小</strong></h4>
 <p>Parallel Token Processing and Context Size</p>
-<p>Transformer 最引人注目的特性之一是，它们比以前的语言处理神经网络架构<strong>更适合并行计算</strong>。在文本生成中，当我们观察<strong>每个词元如何被处理</strong>时，我们对此有了初步的了解。我们从上一章知道，<strong>分词器</strong>会将文本分解为<strong>词元</strong>。然后，这些<strong>每个输入词元</strong>都流经<strong>自己的计算路径</strong>（至少这是一个很好的初步直觉）。我们可以在图 $\text{3}-8$ 中看到这些<strong>独立的处理轨迹或流</strong>。</p>
+<p>Transformer 最引人注目的特性之一是，它们比以前的语言处理神经网络架构<strong>更适合并行计算</strong>。在文本生成中，当我们观察<strong>每个词元如何被处理</strong>时，我们对此有了初步的了解。我们从上一章知道，<strong>分词器</strong>会将文本分解为<strong>词元</strong>。然后，这些<strong>每个输入词元</strong>都流经<strong>自己的计算路径</strong>（至少这是一个很好的初步直觉）。我们可以在图 3-8 中看到这些<strong>独立的处理轨迹或流</strong>。</p>
 <img src="/img3/Hands-On Large Language Models/F3.8.png" alt="F3.1" style="zoom:67%;" />
 <p>当前的 <strong>Transformer 模型</strong>对于它们可以<strong>一次性处理多少个词元</strong>有一个<strong>限制</strong>。这个限制被称为模型的<strong>上下文长度</strong>（context length）。一个具有 4K 上下文长度的模型<strong>只能处理 4K 个词元</strong>，并且将只有 4K 个这样的<strong>流</strong>（streams）。</p>
-<p><strong>每个词元流</strong>都以一个<strong>输入向量</strong>开始（<strong>嵌入向量</strong>和一些<strong>位置信息</strong>；我们将在本章后面讨论<strong>位置嵌入</strong>）。如图 $\text{3}-9$ 所示，在流的末端，会产生另一个向量，作为<strong>模型处理的结果</strong>。</p>
+<p><strong>每个词元流</strong>都以一个<strong>输入向量</strong>开始（<strong>嵌入向量</strong>和一些<strong>位置信息</strong>；我们将在本章后面讨论<strong>位置嵌入</strong>）。如图 3-9 所示，在流的末端，会产生另一个向量，作为<strong>模型处理的结果</strong>。</p>
 <img src="/img3/Hands-On Large Language Models/F3.9.png" alt="F3.1" style="zoom:67%;" />
 <p>对于<strong>文本生成</strong>，<strong>只有最后一个流的输出结果</strong>用于<strong>预测下一个词元</strong>。该输出向量是 <strong>LM 头</strong>计算下一个词元概率时的<strong>唯一输入</strong>。</p>
 <p>您可能想知道，如果我们<strong>丢弃</strong>除<strong>最后一个词元</strong>之外的所有流的输出，为什么还要费力地计算<strong>所有词元流</strong>。答案是<strong>之前流的计算</strong>在计算<strong>最终流</strong>时是<strong>必需且被使用</strong>的。是的，我们没有使用它们的最终输出向量，但在 Transformer 块的<strong>注意力机制</strong>中，我们使用了<strong>较早的输出</strong>（在每个 Transformer 块中）。</p>
@@ -377,20 +377,20 @@
 <h4 id="通过缓存键和值加速生成"><strong>通过缓存键和值加速生成</strong></h4>
 <p>Speeding Up Generation by Caching Keys and Values</p>
 <p>回想一下，在生成<strong>第二个词元</strong>时，我们只需将<strong>输出词元附加到输入</strong>，然后进行<strong>另一次正向传播</strong>通过模型。如果我们让模型能够<strong>缓存先前计算的结果</strong>（特别是<strong>注意力机制</strong>中的一些特定向量），我们就不再需要<strong>重复先前流的计算</strong>。这次<strong>唯一需要</strong>的计算是<strong>最后一个流</strong>的计算。这是一项称为<strong>键和值 (kv) 缓存</strong>的<strong>优化技术</strong>，它能<strong>显著加快生成过程</strong>。<strong>键和值</strong>是注意力机制的一些核心组成部分，我们将在本章后面看到。</p>
-<p>图 $\text{3}-10$ 展示了在生成<strong>第二个词元</strong>时，由于我们<strong>缓存了先前流的结果</strong>，<strong>只有一个处理流</strong>处于活动状态。</p>
+<p>图 3-10 展示了在生成<strong>第二个词元</strong>时，由于我们<strong>缓存了先前流的结果</strong>，<strong>只有一个处理流</strong>处于活动状态。</p>
 <img src="/img3/Hands-On Large Language Models/F3.10.png" alt="F3.1" style="zoom:67%;" />
 <p>在 <strong>Hugging Face Transformers</strong> 中，<strong>缓存</strong>默认是<strong>启用</strong>的。我们可以通过设置 use_cache 为 False 来<strong>禁用</strong>它。我们可以通过要求进行<strong>长时间生成</strong>，并<strong>对启用和禁用缓存的生成进行计时</strong>来查看速度上的差异：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">prompt = <span class="string">&quot;Write a very long email apologizing to Sarah for the tragic gardening</span></span><br><span class="line"><span class="string">mishap. Explain how it happened.&quot;</span></span><br><span class="line"><span class="comment"># Tokenize the input prompt</span></span><br><span class="line">input_ids = tokenizer(prompt, return_tensors=<span class="string">&quot;pt&quot;</span>).input_ids</span><br><span class="line">input_ids = input_ids.to(<span class="string">&quot;cuda&quot;</span>)</span><br></pre></td></tr></table></figure>
 <p>然后，我们对<strong>启用缓存</strong>生成 100 个词元所需的时间进行计时。我们可以使用 Jupyter 或 Colab 中的 %%timeit  魔术命令来计时执行所需的时间（它会运行命令多次并取平均值）：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">%%timeit -n <span class="number">1</span></span><br><span class="line"><span class="comment"># Generate the text</span></span><br><span class="line">generation_output = model.generate(</span><br><span class="line">input_ids=input_ids,</span><br><span class="line">max_new_tokens=<span class="number">100</span>,</span><br><span class="line">use_cache=<span class="literal">True</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
-<p>在具有 <strong>$\text{T}4$ GPU</strong> 的 Colab 上，这大约需要 <strong>4.5 秒</strong>。但是，如果我们<strong>禁用缓存</strong>，这需要多长时间呢？</p>
+<p>在具有 <strong>T4 GPU</strong> 的 Colab 上，这大约需要 <strong>4.5 秒</strong>。但是，如果我们<strong>禁用缓存</strong>，这需要多长时间呢？</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">%%timeit -n <span class="number">1</span></span><br><span class="line"><span class="comment"># Generate the text</span></span><br><span class="line">generation_output = model.generate(</span><br><span class="line">input_ids=input_ids,</span><br><span class="line">max_new_tokens=<span class="number">100</span>,</span><br><span class="line">use_cache=<span class="literal">False</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
 <p>这大约需要 <strong>21.8 秒</strong>。这是一个<strong>巨大的差异</strong>。事实上，从用户体验的角度来看，即使是四秒的生成时间，对于一个盯着屏幕等待模型输出的用户来说，也往往是<strong>一段漫长的等待时间</strong>。这就是为什么 LLM API 会在模型生成输出词元时<strong>实时流式传输</strong>它们，而不是等待整个生成完成的原因之一。</p>
 <h4 id="Transformer-块的内部"><strong>Transformer 块的内部</strong></h4>
 <p>Inside the Transformer Block</p>
-<p>我们现在可以讨论发生<strong>绝大部分处理</strong>的地方：<strong>Transformer 块</strong>。如图 $\text{3}-11$ 所示，<strong>Transformer LLM</strong> 由一系列 <strong>Transformer 块</strong>组成（数量通常在<strong>最初 Transformer 论文中的六个</strong>，到许多大型 LLM 中的<strong>一百多个</strong>不等）。每个块处理其输入，然后将<strong>处理结果</strong>传递给<strong>下一个块</strong>。</p>
+<p>我们现在可以讨论发生<strong>绝大部分处理</strong>的地方：<strong>Transformer 块</strong>。如图 3-11 所示，<strong>Transformer LLM</strong> 由一系列 <strong>Transformer 块</strong>组成（数量通常在<strong>最初 Transformer 论文中的六个</strong>，到许多大型 LLM 中的<strong>一百多个</strong>不等）。每个块处理其输入，然后将<strong>处理结果</strong>传递给<strong>下一个块</strong>。</p>
 <img src="/img3/Hands-On Large Language Models/F3.11.png" alt="F3.1" style="zoom:67%;" />
-<p>一个 <strong>Transformer 块</strong>（图 $\text{3}-12$）由两个连续的组件构成：</p>
+<p>一个 <strong>Transformer 块</strong>（图 3-12）由两个连续的组件构成：</p>
 <img src="/img3/Hands-On Large Language Models/F3.12.png" alt="F3.1" style="zoom:67%;" />
 <ol>
 <li><strong>注意力层</strong>（attention layer）主要关注<strong>整合</strong>来自<strong>其他输入词元和位置</strong>的<strong>相关信息</strong>。</li>
@@ -399,13 +399,13 @@
 <p><strong>前馈神经网络概览</strong></p>
 <p>The feedforward neural network at a glance</p>
 <p>一个给出<strong>前馈神经网络</strong>直觉的简单例子是，如果我们向一个语言模型输入简单的“The Shawshank”，期望它能生成“Redemption”作为<strong>最可能的下一个词</strong>（指的是 1994 年的电影）。</p>
-<p><strong>前馈神经网络</strong>（<strong>集体地</strong>位于所有模型层中）是这些信息的<strong>来源</strong>，如图 $\text{3}-13$ 所示。当模型被成功训练来<strong>建模一个庞大的文本档案</strong>（其中包含许多对“The Shawshank Redemption”的提及）时，它就<strong>学习并存储了</strong>使它能成功完成这项任务的<strong>信息</strong>（和<strong>行为</strong>）。</p>
+<p><strong>前馈神经网络</strong>（<strong>集体地</strong>位于所有模型层中）是这些信息的<strong>来源</strong>，如图 3-13 所示。当模型被成功训练来<strong>建模一个庞大的文本档案</strong>（其中包含许多对“The Shawshank Redemption”的提及）时，它就<strong>学习并存储了</strong>使它能成功完成这项任务的<strong>信息</strong>（和<strong>行为</strong>）。</p>
 <img src="/img3/Hands-On Large Language Models/F3.13.png" alt="F3.1" style="zoom:67%;" />
 <p>要成功训练一个 LLM，它需要<strong>记忆大量信息</strong>。但它<strong>不仅仅</strong>是一个大型数据库。<strong>记忆</strong>只是令人印象深刻的文本生成秘诀中的一个<strong>要素</strong>。模型能够使用<strong>相同的机制</strong>在数据点和更复杂的模式之间进行<strong>插值</strong>（interpolate），从而能够<strong>泛化</strong>（generalize）——这意味着对<strong>它以前没有见过且不在其训练数据集中的输入</strong>也能表现良好。</p>
 <blockquote>
-<p>当您使用现代商业 LLM 时，您获得的输出<strong>并非</strong>前面提到的<strong>严格意义上</strong>的“语言模型”输出。将“The Shawshank”传递给像 $\text{GPT}-4$ 这样的聊天 LLM 会产生如下输出：</p>
+<p>当您使用现代商业 LLM 时，您获得的输出<strong>并非</strong>前面提到的<strong>严格意义上</strong>的“语言模型”输出。将“The Shawshank”传递给像 GPT-4 这样的聊天 LLM 会产生如下输出：</p>
 <p><strong>“The Shawshank Redemption” is a 1994 film directed by Frank Darabont and is based on the novella “Rita Hayworth and Shawshank Redemption” written by Stephen King. …etc.</strong></p>
-<p>这是因为<strong>原始语言模型</strong>（如 $\text{GPT}-3$）对人们来说<strong>难以正确利用</strong>。这就是为什么语言模型随后会经过<strong>指令微调</strong>（$\text{instruction}-\text{tuning}$）和<strong>人类偏好与反馈微调</strong>（$\text{human preference and feedback fine}-\text{tuning}$）的训练，以<strong>匹配人们对模型应该输出什么的期望</strong>。</p>
+<p>这是因为<strong>原始语言模型</strong>（如 GPT-3）对人们来说<strong>难以正确利用</strong>。这就是为什么语言模型随后会经过<strong>指令微调</strong>（instruction-\text{tuning}）和<strong>人类偏好与反馈微调</strong>（human preference and feedback fine-\text{tuning}）的训练，以<strong>匹配人们对模型应该输出什么的期望</strong>。</p>
 </blockquote>
 <p><strong>注意力层概览</strong></p>
 <p>The attention layer at a glance</p>
@@ -413,7 +413,7 @@
 <p><strong>注意力</strong>（Attention）是一种机制，它帮助模型在处理<strong>特定词元</strong>时<strong>整合上下文</strong>。思考以下提示：</p>
 <p>“The dog chased the squirrel because it”（狗追松鼠因为它）</p>
 <p>对于模型来说，要预测“it”之后的内容，它需要知道“it”指的是<strong>狗</strong>还是<strong>松鼠</strong>？</p>
-<p>在一个经过训练的 <strong>Transformer LLM</strong> 中，<strong>注意力机制</strong>负责做出这种<strong>判断</strong>。注意力将来自<strong>上下文的信息</strong>添加到“it”词元的<strong>表征</strong>中。我们可以在图 $\text{3}-14$ 中看到一个简单的版本。</p>
+<p>在一个经过训练的 <strong>Transformer LLM</strong> 中，<strong>注意力机制</strong>负责做出这种<strong>判断</strong>。注意力将来自<strong>上下文的信息</strong>添加到“it”词元的<strong>表征</strong>中。我们可以在图 3-14 中看到一个简单的版本。</p>
 <img src="/img3/Hands-On Large Language Models/F3.14.png" alt="F3.1" style="zoom:67%;" />
 <p>模型是根据从<strong>训练数据集</strong>中看到和学到的<strong>模式</strong>来做到这一点的。也许前面的句子也提供了更多线索，例如，将狗称为“she”，从而明确“it”指的是松鼠。</p>
 <p><strong>注意力就是你所需要的一切</strong></p>
@@ -423,17 +423,17 @@
 <p><a target="_blank" rel="noopener" href="https://www.lelovepan.cn/2019/03/19/%E5%8F%AF%E8%A7%86%E5%8C%96%E7%90%86%E8%A7%A3Transformer%E7%BB%93%E6%9E%84.html">Attention is all you need—可视化理解Transformer结构</a></p>
 <p>还有关于Q、K、V矩阵的说明文件《transformer中的Q、K、V .md》</p>
 </blockquote>
-<p>有必要更深入地探讨<strong>注意力机制</strong>。该机制最精简的版本如图 $\text{3}-15$ 所示。它显示了<strong>多个词元位置</strong>进入注意力层；<strong>最后一个</strong>是当前正在处理的位置（<strong>粉色箭头</strong>）。注意力机制作用于该位置的<strong>输入向量</strong>。它将<strong>上下文中的相关信息</strong>整合到它为该位置产生的<strong>输出向量</strong>中。</p>
+<p>有必要更深入地探讨<strong>注意力机制</strong>。该机制最精简的版本如图 3-15 所示。它显示了<strong>多个词元位置</strong>进入注意力层；<strong>最后一个</strong>是当前正在处理的位置（<strong>粉色箭头</strong>）。注意力机制作用于该位置的<strong>输入向量</strong>。它将<strong>上下文中的相关信息</strong>整合到它为该位置产生的<strong>输出向量</strong>中。</p>
 <img src="/img3/Hands-On Large Language Models/F3.15.png" alt="F3.1" style="zoom:67%;" />
 <p>注意力机制涉及<strong>两个主要步骤</strong>：</p>
 <ol>
 <li>一种对<strong>每个先前输入词元</strong>与当前正在处理的词元（在<strong>粉色箭头</strong>中）的<strong>相关程度进行评分</strong>的方法。</li>
 <li>使用这些分数，我们将来自<strong>不同位置的信息</strong>组合成<strong>一个单一的输出向量</strong>。</li>
 </ol>
-<p>图 $\text{3}-16$ 展示了这两个步骤。</p>
+<p>图 3-16 展示了这两个步骤。</p>
 <img src="/img3/Hands-On Large Language Models/F3.16.png" alt="F3.1" style="zoom:67%;" />
 <p>为了赋予 Transformer 更<strong>广泛的注意力能力</strong>，注意力机制被<strong>复制</strong>并<strong>并行执行多次</strong>。这些并行的注意力应用中的每一次都在一个<strong>注意力头</strong>（attention head）中进行。这增加了模型对输入序列中需要<strong>同时关注不同模式</strong>的<strong>复杂模式</strong>进行建模的能力。</p>
-<p>图 $\text{3}-17$ 展示了<strong>注意力头</strong>如何<strong>并行运行</strong>的直觉，包括<strong>前面的信息拆分步骤</strong>和<strong>后面的组合所有头部结果的步骤</strong>。</p>
+<p>图 3-17 展示了<strong>注意力头</strong>如何<strong>并行运行</strong>的直觉，包括<strong>前面的信息拆分步骤</strong>和<strong>后面的组合所有头部结果的步骤</strong>。</p>
 <img src="/img3/Hands-On Large Language Models/F3.17.png" alt="F3.1" style="zoom:67%;" />
 <p><strong>注意力如何计算</strong></p>
 <p>How attention is calculated</p>
@@ -459,26 +459,26 @@
 </ul>
 </li>
 </ul>
-<p>图 $\text{3}-18$ 展示了在注意力计算开始之前所有这些组件的<strong>起始位置</strong>。为简单起见，我们只看<strong>一个注意力头</strong>，因为其他头具有相同的计算，但使用它们各自的<strong>投影矩阵</strong>。</p>
+<p>图 3-18 展示了在注意力计算开始之前所有这些组件的<strong>起始位置</strong>。为简单起见，我们只看<strong>一个注意力头</strong>，因为其他头具有相同的计算，但使用它们各自的<strong>投影矩阵</strong>。</p>
 <img src="/img3/Hands-On Large Language Models/F3.18.png" alt="F3.1" style="zoom:67%;" />
 <p>注意力通过将<strong>输入</strong>乘以<strong>投影矩阵</strong>开始，以创建<strong>三个新矩阵</strong>。它们被称为<strong>查询 (Queries) 矩阵、键 (Keys) 矩阵和值 (Values) 矩阵</strong>。这些矩阵包含了<strong>输入词元</strong>被投影到<strong>三个不同空间</strong>的信息，有助于执行注意力的两个步骤：</p>
 <ol>
 <li><strong>相关性评分</strong></li>
 <li><strong>组合信息</strong></li>
 </ol>
-<p>图 $\text{3}-19$ 展示了这三个新矩阵，以及它们<strong>最底行</strong>如何与<strong>当前位置</strong>相关联，而其<strong>上方各行</strong>则与<strong>先前位置</strong>相关联。</p>
+<p>图 3-19 展示了这三个新矩阵，以及它们<strong>最底行</strong>如何与<strong>当前位置</strong>相关联，而其<strong>上方各行</strong>则与<strong>先前位置</strong>相关联。</p>
 <img src="/img3/Hands-On Large Language Models/F3.19.png" alt="F3.1" style="zoom:67%;" />
 <p><strong>自注意力：相关性评分</strong></p>
 <p>Self-attention: Relevance scoring</p>
 <p>在<strong>生成式 Transformer</strong> 中，我们是<strong>一次生成一个词元</strong>。这意味着我们是<strong>一次处理一个位置</strong>。因此，这里的<strong>注意力机制</strong>只关注<strong>这一个位置</strong>，以及如何<strong>引入来自其他位置的信息</strong>来为这个位置提供参考。</p>
-<p><strong>注意力</strong>的<strong>相关性评分</strong>步骤是通过将<strong>当前位置的查询 (Query) 向量</strong>与<strong>键 (Keys) 矩阵</strong>相乘来进行的。这会产生一个分数，表明<strong>每个先前词元的相关程度</strong>。通过 softmax 运算，这些分数被<strong>归一化</strong>，使其总和为 1。图 $\text{3}-20$ 展示了该计算产生的<strong>相关性分数</strong>。</p>
+<p><strong>注意力</strong>的<strong>相关性评分</strong>步骤是通过将<strong>当前位置的查询 (Query) 向量</strong>与<strong>键 (Keys) 矩阵</strong>相乘来进行的。这会产生一个分数，表明<strong>每个先前词元的相关程度</strong>。通过 softmax 运算，这些分数被<strong>归一化</strong>，使其总和为 1。图 3-20 展示了该计算产生的<strong>相关性分数</strong>。</p>
 <img src="/img3/Hands-On Large Language Models/F3.20.png" alt="F3.1" style="zoom:67%;" />
 <blockquote>
 <p>个人注：其实是 $Q_n \cdot K_i$，得出n和不同i得相关程度分数；然后归一处理。</p>
 </blockquote>
 <p><strong>自注意力：组合信息</strong></p>
 <p>Self-attention: Combining information</p>
-<p>现在我们有了<strong>相关性分数</strong>，我们将<strong>与每个词元关联的值 (Value) 向量</strong>乘以该词元的<strong>分数</strong>。<strong>将这些结果向量相加</strong>，就产生了<strong>这一注意力步骤的输出</strong>，如图 $\text{3}-21$ 所示。</p>
+<p>现在我们有了<strong>相关性分数</strong>，我们将<strong>与每个词元关联的值 (Value) 向量</strong>乘以该词元的<strong>分数</strong>。<strong>将这些结果向量相加</strong>，就产生了<strong>这一注意力步骤的输出</strong>，如图 3-21 所示。</p>
 <img src="/img3/Hands-On Large Language Models/F3.21.png" alt="F3.1" style="zoom:67%;" />
 <blockquote>
 <p>个人注：以上其实就是：最后，模型用这些分数作为<strong>权重</strong>，来<strong>加权求和</strong>所有词的 <strong>V</strong> 向量。</p>
@@ -490,51 +490,51 @@
 <p>More Efficient Attention</p>
 <p>研究界最关注的领域是 <strong>Transformer 的注意力层</strong>。这是因为<strong>注意力计算</strong>是整个过程中<strong>计算成本最高</strong>的部分。</p>
 <p><strong>局部/稀疏注意力</strong>（Local/sparse attention）<br>
-随着 Transformer 开始变得越来越大，像<strong>稀疏注意力</strong>（sparse attention，<strong>《使用稀疏 Transformer 生成长序列》</strong>）和<strong>滑动窗口注意力</strong>（sliding window attention，<strong>《Longformer：长文档 Transformer》</strong>）这样的想法为<strong>注意力计算的效率</strong>带来了改进。<strong>稀疏注意力限制了模型可以关注的先前词元的上下文</strong>，如图 $\text{3}-22$ 所示。</p>
+随着 Transformer 开始变得越来越大，像<strong>稀疏注意力</strong>（sparse attention，<strong>《使用稀疏 Transformer 生成长序列》</strong>）和<strong>滑动窗口注意力</strong>（sliding window attention，<strong>《Longformer：长文档 Transformer》</strong>）这样的想法为<strong>注意力计算的效率</strong>带来了改进。<strong>稀疏注意力限制了模型可以关注的先前词元的上下文</strong>，如图 3-22 所示。</p>
 <img src="/img3/Hands-On Large Language Models/F3.22.png" alt="F3.1" style="zoom:67%;" />
-<p>一个采用了这种机制的模型是 $\text{GPT}-3$。但它<strong>并未</strong>对<strong>所有的 Transformer 块</strong>都使用这种机制——如果模型只能看到<strong>少量先前词元</strong>，生成质量将<strong>大大下降</strong>。 $\text{GPT}-3$ 架构<strong>交织了全注意力 (full-attention) 和高效注意力 (efficient-attention) Transformer 块</strong>。因此，Transformer 块在<strong>全注意力</strong>（例如，第 1 块和第 3 块）和<strong>稀疏注意力</strong>（例如，第 2 块和第 4 块）之间<strong>交替</strong>。</p>
-<p>为了展示不同类型的注意力，请回顾图 $\text{3}-23$，它展示了<strong>不同的注意力机制</strong>如何工作。每张图都显示了在处理<strong>当前词元</strong>（深蓝色）时，可以关注<strong>哪些先前词元</strong>（浅蓝色）。</p>
+<p>一个采用了这种机制的模型是 GPT-3。但它<strong>并未</strong>对<strong>所有的 Transformer 块</strong>都使用这种机制——如果模型只能看到<strong>少量先前词元</strong>，生成质量将<strong>大大下降</strong>。 GPT-3 架构<strong>交织了全注意力 (full-attention) 和高效注意力 (efficient-attention) Transformer 块</strong>。因此，Transformer 块在<strong>全注意力</strong>（例如，第 1 块和第 3 块）和<strong>稀疏注意力</strong>（例如，第 2 块和第 4 块）之间<strong>交替</strong>。</p>
+<p>为了展示不同类型的注意力，请回顾图 3-23，它展示了<strong>不同的注意力机制</strong>如何工作。每张图都显示了在处理<strong>当前词元</strong>（深蓝色）时，可以关注<strong>哪些先前词元</strong>（浅蓝色）。</p>
 <img src="/img3/Hands-On Large Language Models/F3.23.png" alt="F3.1" style="zoom:67%;" />
-<p>每一行对应于正在处理的<strong>一个词元</strong>。颜色编码指示了模型在处理<strong>深蓝色单元格</strong>中的词元时，能够关注<strong>哪些词元</strong>。图 $\text{3}-24$ 更清晰地描述了这一点。</p>
+<p>每一行对应于正在处理的<strong>一个词元</strong>。颜色编码指示了模型在处理<strong>深蓝色单元格</strong>中的词元时，能够关注<strong>哪些词元</strong>。图 3-24 更清晰地描述了这一点。</p>
 <img src="/img3/Hands-On Large Language Models/F3.24.png" alt="F3.1" style="zoom:67%;" />
 <p>该图还展示了<strong>解码器 Transformer 块</strong>（构成大多数文本生成模型）的<strong>自回归性质</strong>；它们<strong>只能关注先前的词元</strong>。这与 BERT 形成对比，BERT 可以关注<strong>两侧</strong>的词元（因此 BERT 中的 B 代表<strong>双向</strong>）。</p>
 <p><strong>多查询和分组查询注意力</strong></p>
 <p>Multi-query and grouped-query attention</p>
-<p>对 Transformer 进行的一项更近期的<strong>高效注意力调整</strong>是<strong>分组查询注意力</strong>（grouped-query attention，<strong>《GQA：从多头检查点训练广义多查询 Transformer 模型》</strong>），被像 Llama 2 和 3 这样的模型所使用。图 $\text{3}-25$ 展示了这些不同类型的注意力，下一节将继续解释它们。</p>
+<p>对 Transformer 进行的一项更近期的<strong>高效注意力调整</strong>是<strong>分组查询注意力</strong>（grouped-query attention，<strong>《GQA：从多头检查点训练广义多查询 Transformer 模型》</strong>），被像 Llama 2 和 3 这样的模型所使用。图 3-25 展示了这些不同类型的注意力，下一节将继续解释它们。</p>
 <img src="/img3/Hands-On Large Language Models/F3.25.png" alt="F3.1" style="zoom:67%;" />
 <p><strong>分组查询注意力</strong>建立在<strong>多查询注意力</strong>（multi-query attention，<strong>《快速 Transformer 解码：一个写入头就够了》</strong>）的基础上。这些方法通过<strong>减少所涉及矩阵的大小</strong>来提高<strong>更大模型的推理可扩展性</strong>。</p>
 <p><strong>优化注意力：从多头到多查询再到分组查询</strong></p>
 <p>Optimizing attention: From multi-head to multi-query to grouped query</p>
-<p>在本章前面，我们展示了 Transformer 论文如何描述<strong>多头注意力</strong>。<strong>《图解 Transformer》</strong> （<a target="_blank" rel="noopener" href="https://jalammar.github.io/illustrated-transformer/%EF%BC%89%E8%AF%A6%E7%BB%86%E8%AE%A8%E8%AE%BA%E4%BA%86**%E6%9F%A5%E8%AF%A2">https://jalammar.github.io/illustrated-transformer/）详细讨论了**查询</a> (Queries)、键 (Keys) 和值 (Values) 矩阵<strong>是如何用于进行注意力操作的。图 $\text{3}-26$ 展示了每个“<strong>注意力头</strong>”如何为给定的输入计算</strong>自己独特的查询、键和值矩阵**。</p>
+<p>在本章前面，我们展示了 Transformer 论文如何描述<strong>多头注意力</strong>。<strong>《图解 Transformer》</strong> （<a target="_blank" rel="noopener" href="https://jalammar.github.io/illustrated-transformer/%EF%BC%89%E8%AF%A6%E7%BB%86%E8%AE%A8%E8%AE%BA%E4%BA%86**%E6%9F%A5%E8%AF%A2">https://jalammar.github.io/illustrated-transformer/）详细讨论了**查询</a> (Queries)、键 (Keys) 和值 (Values) 矩阵<strong>是如何用于进行注意力操作的。图 3-26 展示了每个“<strong>注意力头</strong>”如何为给定的输入计算</strong>自己独特的查询、键和值矩阵**。</p>
 <img src="/img3/Hands-On Large Language Models/F3.26.png" alt="F3.1" style="zoom:67%;" />
-<p><strong>多查询注意力</strong>优化这一点的方式是<strong>在所有头之间共享键和值矩阵</strong>。因此，每个头<strong>唯一</strong>的矩阵将只有<strong>查询矩阵</strong>，如图 $\text{3}-27$ 所示。</p>
+<p><strong>多查询注意力</strong>优化这一点的方式是<strong>在所有头之间共享键和值矩阵</strong>。因此，每个头<strong>唯一</strong>的矩阵将只有<strong>查询矩阵</strong>，如图 3-27 所示。</p>
 <img src="/img3/Hands-On Large Language Models/F3.27.png" alt="F3.1" style="zoom:67%;" />
-<p>然而，随着<strong>模型规模的增长</strong>，这种优化可能过于苛刻，我们可以承受使用<strong>稍多一点的内存</strong>来<strong>提高模型的质量</strong>。这就是<strong>分组查询注意力</strong>发挥作用的地方。它<strong>没有</strong>将键和值矩阵的数量减少到各一个，而是允许我们使用<strong>更多</strong>（但<strong>少于头的数量</strong>）。图 $\text{3}-28$ 展示了这些<strong>分组</strong>，以及每组注意力头如何<strong>共享键和值矩阵</strong>。</p>
+<p>然而，随着<strong>模型规模的增长</strong>，这种优化可能过于苛刻，我们可以承受使用<strong>稍多一点的内存</strong>来<strong>提高模型的质量</strong>。这就是<strong>分组查询注意力</strong>发挥作用的地方。它<strong>没有</strong>将键和值矩阵的数量减少到各一个，而是允许我们使用<strong>更多</strong>（但<strong>少于头的数量</strong>）。图 3-28 展示了这些<strong>分组</strong>，以及每组注意力头如何<strong>共享键和值矩阵</strong>。</p>
 <img src="/img3/Hands-On Large Language Models/F3.28.png" alt="F3.1" style="zoom:67%;" />
 <p><strong>Flash Attention</strong></p>
-<p><strong>Flash Attention</strong> 是一种流行的方法和实现，它为 GPU 上的 Transformer LLM 的<strong>训练和推理</strong>提供了<strong>显著的加速</strong>。它通过<strong>优化在 GPU 的共享内存 (SRAM) 和高带宽内存 (HBM) 之间加载和移动的值</strong>来加速注意力计算。它在论文**《FlashAttention：具有 IO 感知的快速且内存高效的精确注意力》** 以及随后的**《$\text{FlashAttention}-2$：通过更好的并行性和工作分区实现更快的注意力》** 中有详细描述。</p>
+<p><strong>Flash Attention</strong> 是一种流行的方法和实现，它为 GPU 上的 Transformer LLM 的<strong>训练和推理</strong>提供了<strong>显著的加速</strong>。它通过<strong>优化在 GPU 的共享内存 (SRAM) 和高带宽内存 (HBM) 之间加载和移动的值</strong>来加速注意力计算。它在论文**《FlashAttention：具有 IO 感知的快速且内存高效的精确注意力》** 以及随后的**《FlashAttention-2：通过更好的并行性和工作分区实现更快的注意力》** 中有详细描述。</p>
 <h4 id="Transformer-块"><strong>Transformer 块</strong></h4>
 <p>The Transformer Block</p>
-<p>回想一下，Transformer 块的<strong>两个主要组成部分</strong>是<strong>注意力层</strong>和<strong>前馈神经网络</strong>。如图 $\text{3}-29$ 所示，更详细地查看该块还会揭示<strong>残差连接</strong>（residual connections）和<strong>层归一化</strong>（$\text{layer}-\text{normalization}$）操作。</p>
+<p>回想一下，Transformer 块的<strong>两个主要组成部分</strong>是<strong>注意力层</strong>和<strong>前馈神经网络</strong>。如图 3-29 所示，更详细地查看该块还会揭示<strong>残差连接</strong>（residual connections）和<strong>层归一化</strong>（layer-\text{normalization}）操作。</p>
 <img src="/img3/Hands-On Large Language Models/F3.29.png" alt="F3.1" style="zoom:67%;" />
-<p>在撰写本文时，最新的 Transformer 模型<strong>仍然保留了主要的组件</strong>，但进行了一些<strong>调整</strong>，如图 $\text{3}-30$ 所示。</p>
+<p>在撰写本文时，最新的 Transformer 模型<strong>仍然保留了主要的组件</strong>，但进行了一些<strong>调整</strong>，如图 3-30 所示。</p>
 <img src="/img3/Hands-On Large Language Models/F3.30.png" alt="F3.1" style="zoom:67%;" />
 <p>我们在这个版本的 Transformer 块中看到的一个区别是，<strong>归一化</strong>发生在<strong>注意力层和前馈层之前</strong>。据报道，这可以<strong>减少所需的训练时间</strong>（阅读：<strong>《关于 Transformer 架构中的层归一化》</strong>）。这里的另一个归一化改进是使用了 <strong>RMSNorm</strong>，它比原始 Transformer 中使用的 <strong>LayerNorm</strong> 更简单、更高效（阅读：<strong>《均方根层归一化》</strong>）。最后，代替原始 Transformer 的 ReLU 激活函数，像 <strong>SwiGLU</strong> 这样的较新变体（在**《GLU 变体改进 Transformer》** 中有所描述）现在更为常见。</p>
 <h4 id="位置嵌入-RoPE"><strong>位置嵌入 (RoPE)</strong></h4>
 <p>Positional Embeddings (RoPE)</p>
 <p><strong>位置嵌入</strong>（Positional embeddings）自<strong>原始 Transformer</strong> 以来一直是其<strong>关键组成部分</strong>。它们使模型能够<strong>跟踪序列/句子中词元/词语的顺序</strong>，这是语言中<strong>不可或缺的信息来源</strong>。在过去几年提出的众多位置编码方案中，<strong>旋转位置嵌入</strong>（rotary positional embeddings，或简称 <strong>RoPE</strong>，在**《RoFormer：增强型 Transformer 与旋转位置嵌入》** 中引入）尤其重要。</p>
 <p>原始 Transformer 论文和一些早期变体使用了<strong>绝对位置嵌入</strong>，本质上是将第一个词元标记为位置 1，第二个为位置 2，依此类推。这些可以是<strong>静态方法</strong>（位置向量使用几何函数生成），也可以是<strong>学习方法</strong>（模型训练在学习过程中为其分配值）。当<strong>扩展模型</strong>时，此类方法会带来一些挑战，需要我们找到提高其效率的方法。</p>
-<p>例如，高效训练具有<strong>大上下文</strong>的模型的挑战之一是，训练集中的许多文档比该上下文<strong>短得多</strong>。将整个（例如）4K 上下文分配给一个短的 10 个词的句子将是<strong>低效</strong>的。因此，在模型训练期间，文档被<strong>打包</strong>在一起放入训练批次的<strong>每个上下文</strong>中，如图 $\text{3}-31$ 所示。</p>
+<p>例如，高效训练具有<strong>大上下文</strong>的模型的挑战之一是，训练集中的许多文档比该上下文<strong>短得多</strong>。将整个（例如）4K 上下文分配给一个短的 10 个词的句子将是<strong>低效</strong>的。因此，在模型训练期间，文档被<strong>打包</strong>在一起放入训练批次的<strong>每个上下文</strong>中，如图 3-31 所示。</p>
 <img src="/img3/Hands-On Large Language Models/F3.31.png" alt="F3.1" style="zoom:67%;" />
 <p>阅读**《高效的序列打包且无交叉污染：加速大型语言模型而不影响性能》** 以及观看**《引入 packed BERT：在自然语言处理中将训练速度提高 2 倍》** 中的精彩视觉效果，了解有关打包的更多信息。</p>
 <p>位置嵌入方法必须适应这一点以及其他实际考虑因素。例如，如果文档 50 <strong>从位置 50 开始</strong>，那么如果我们告诉模型<strong>第一个词元的编号是 50</strong>，我们就会<strong>误导</strong>模型，这将影响其性能（因为它会假设有先前的上下文，而实际上<strong>较早的词元属于模型应该忽略的、不相关的不同文档</strong>）。</p>
-<p><strong>旋转嵌入</strong>（rotary embeddings）<strong>不是</strong>在正向传播开始时添加的<strong>静态、绝对嵌入</strong>，而是一种<strong>编码位置信息</strong>的方法，它<strong>捕获了绝对和相对的词元位置信息</strong>。它基于<strong>在嵌入空间中旋转向量</strong>的思想。在<strong>正向传播</strong>中，它们被添加在<strong>注意力步骤</strong>中，如图 $\text{3}-32$ 所示。</p>
+<p><strong>旋转嵌入</strong>（rotary embeddings）<strong>不是</strong>在正向传播开始时添加的<strong>静态、绝对嵌入</strong>，而是一种<strong>编码位置信息</strong>的方法，它<strong>捕获了绝对和相对的词元位置信息</strong>。它基于<strong>在嵌入空间中旋转向量</strong>的思想。在<strong>正向传播</strong>中，它们被添加在<strong>注意力步骤</strong>中，如图 3-32 所示。</p>
 <img src="/img3/Hands-On Large Language Models/F3.32.png" alt="F3.1" style="zoom:67%;" />
-<p>在<strong>注意力</strong>（attention）过程中，<strong>位置信息</strong>会被专门<strong>混合到查询 (queries) 和键 (keys) 矩阵</strong>中，就在我们<strong>将它们相乘</strong>以进行<strong>相关性评分</strong>之前，如图 $\text{3}-33$ 所示。</p>
+<p>在<strong>注意力</strong>（attention）过程中，<strong>位置信息</strong>会被专门<strong>混合到查询 (queries) 和键 (keys) 矩阵</strong>中，就在我们<strong>将它们相乘</strong>以进行<strong>相关性评分</strong>之前，如图 3-33 所示。</p>
 <img src="/img3/Hands-On Large Language Models/F3.33.png" alt="F3.1" style="zoom:67%;" />
 <h4 id="其他架构实验和改进"><strong>其他架构实验和改进</strong></h4>
 <p>Other Architectural Experiments and Improvements</p>
-<p>许多对 Transformer 的<strong>调整</strong>被持续地提出和研究。<strong>《Transformer 综述》</strong> 强调了其中几个主要方向。Transformer 架构也一直在不断地适应<strong>超越 LLM 的领域</strong>。<strong>计算机视觉</strong>是一个正在进行大量 Transformer 架构研究的领域（参见：<strong>《Transformer 在视觉中的综述》</strong> 和 <strong>《视觉 Transformer 综述》</strong>）。其他领域包括<strong>机器人技术</strong>（参见**《开放式 X 具身：机器人学习数据集和 $\text{RT}-\text{X}$ 模型》<strong>）和</strong>时间序列**（参见**《Transformer 在时间序列中的综述》**）。</p>
+<p>许多对 Transformer 的<strong>调整</strong>被持续地提出和研究。<strong>《Transformer 综述》</strong> 强调了其中几个主要方向。Transformer 架构也一直在不断地适应<strong>超越 LLM 的领域</strong>。<strong>计算机视觉</strong>是一个正在进行大量 Transformer 架构研究的领域（参见：<strong>《Transformer 在视觉中的综述》</strong> 和 <strong>《视觉 Transformer 综述》</strong>）。其他领域包括<strong>机器人技术</strong>（参见**《开放式 X 具身：机器人学习数据集和 RT-\text{X} 模型》<strong>）和</strong>时间序列**（参见**《Transformer 在时间序列中的综述》**）。</p>
 <h3 id="总结"><strong>总结</strong></h3>
 <p>在本章中，我们讨论了 <strong>Transformer 的主要直觉</strong>以及<strong>实现最新 Transformer LLM 的最新发展</strong>。我们回顾了许多新概念，现在让我们分解一下本章讨论的<strong>关键概念</strong>：</p>
 <ul>
