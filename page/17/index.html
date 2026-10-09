@@ -863,10 +863,28 @@ class="math inline">\(\mathbb{R}^2\)</span> 的一个一维子空间中。</p>
     <div class="post-body" itemprop="articleBody">
           <h2 id="第-9-章-线性回归">第 9 章 线性回归</h2>
 <p>Linear Regression</p>
-<p>在本章中，我们将应用第 2、5、6 和 7 章中的数学概念来解决**线性回归（曲线拟合 curve fitting）**问题。在回归中，我们的目标是找到一个函数 $f$，它将输入 $x \in \mathbb{R}^D$ 映射到相应的函数值 $f(x) \in \mathbb{R}$。</p>
-<p>我们假设给定了一组训练输入 $x_n$ 及其对应的带噪观测值 $y_n = f(x_n) + \varepsilon$，其中 $\varepsilon$ 是独立同分布（i.i.d.）的随机变量，用来描述测量/观测噪声以及可能未建模的过程（本章中我们不再考虑后者）。<strong>在整个章节中，我们假设噪声是零均值高斯噪声。</strong></p>
-<img src="/img3/机器学习的数学基础Part2/F9.1.png" alt="F9.1" style="zoom:67%;" />
-<p>我们的任务是找到一个函数，该函数不仅能够拟合训练数据，还能够很好地推广到预测训练数据之外输入位置的函数值（见第 8 章）。图 9.1 展示了这样一个回归问题的例子。典型的回归场景如图 9.1(a)：对于一些输入值 $x_n$，我们观测到带噪声的函数值 $y_n = f(x_n) + \varepsilon$。任务是推断出生成这些数据的函数 $f$，并且能很好地推广到新的输入位置。图 9.1(b) 给出了一个可能的解答，其中我们同时展示了以函数值 $f(x)$ 为中心的三个分布，用来表示数据中的噪声。</p>
+<p>在本章中，我们将应用第 2、5、6 和 7
+章中的数学概念来解决<strong>线性回归（曲线拟合 curve
+fitting）</strong>问题。在回归中，我们的目标是找到一个函数 <span
+class="math inline">\(f\)</span>，它将输入 <span class="math inline">\(x
+\in \mathbb{R}^D\)</span> 映射到相应的函数值 <span
+class="math inline">\(f(x) \in \mathbb{R}\)</span>。</p>
+<p>我们假设给定了一组训练输入 <span class="math inline">\(x_n\)</span>
+及其对应的带噪观测值 <span class="math inline">\(y_n = f(x_n) +
+\varepsilon\)</span>，其中 <span
+class="math inline">\(\varepsilon\)</span>
+是独立同分布（i.i.d.）的随机变量，用来描述测量/观测噪声以及可能未建模的过程（本章中我们不再考虑后者）。<strong>在整个章节中，我们假设噪声是零均值高斯噪声。</strong></p>
+<p><img src="/img3/机器学习的数学基础Part2/F9.1.png" alt="F9.1" style="zoom:67%;" /></p>
+<p>我们的任务是找到一个函数，该函数不仅能够拟合训练数据，还能够很好地推广到预测训练数据之外输入位置的函数值（见第
+8 章）。图 9.1 展示了这样一个回归问题的例子。典型的回归场景如图
+9.1(a)：对于一些输入值 <span
+class="math inline">\(x_n\)</span>，我们观测到带噪声的函数值 <span
+class="math inline">\(y_n = f(x_n) +
+\varepsilon\)</span>。任务是推断出生成这些数据的函数 <span
+class="math inline">\(f\)</span>，并且能很好地推广到新的输入位置。图
+9.1(b) 给出了一个可能的解答，其中我们同时展示了以函数值 <span
+class="math inline">\(f(x)\)</span>
+为中心的三个分布，用来表示数据中的噪声。</p>
 <p>回归是机器学习中的一个基本问题，回归问题广泛出现在各种研究领域和应用中，包括：</p>
 <ul>
 <li>时间序列分析（如系统辨识）</li>
@@ -1051,170 +1069,11 @@ class="math inline">\(\mathbb{R}^2\)</span> 的一个一维子空间中。</p>
     
     
     <div class="post-body" itemprop="articleBody">
-          <h2 id="7、连续优化">7、连续优化</h2>
+          <h2 id="连续优化">7、连续优化</h2>
 <p>Continuous Optimization</p>
-<p>由于机器学习算法是在计算机上实现的，其中许多<strong>数学方程式都表示为数值优化方法</strong>。本章描述了训练机器学习模型的基本数值方法。训练机器学习模型通常归结为找到一组好的参数。“好”的概念是由目标函数或概率模型来决定的，我们将在本书的第二部分看到这些例子。给定一个目标函数，使用优化算法来寻找最佳值。
-    <span id="mjx-e90dc34">
-      <style>
-      #mjx-e90dc34{
-        display:contents;
-        mjx-assistive-mml {
-          user-select: text !important;
-          clip: auto !important;
-          color: rgba(0,0,0,0);
-        }
-        
-mjx-container[jax="SVG"] {
-  direction: ltr;
-}
-
-mjx-container[jax="SVG"] > svg {
-  overflow: visible;
-  min-height: 1px;
-  min-width: 1px;
-}
-
-mjx-container[jax="SVG"] > svg a {
-  fill: blue;
-  stroke: blue;
-}
-
-mjx-assistive-mml {
-  position: absolute !important;
-  top: 0px;
-  left: 0px;
-  clip: rect(1px, 1px, 1px, 1px);
-  padding: 1px 0px 0px 0px !important;
-  border: 0px !important;
-  display: block !important;
-  width: auto !important;
-  overflow: hidden !important;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
-mjx-assistive-mml[display="block"] {
-  width: 100% !important;
-}
-
-mjx-container[jax="SVG"][display="true"] {
-  display: block;
-  text-align: center;
-  margin: 1em 0;
-}
-
-mjx-container[jax="SVG"][display="true"][width="full"] {
-  display: flex;
-}
-
-mjx-container[jax="SVG"][justify="left"] {
-  text-align: left;
-}
-
-mjx-container[jax="SVG"][justify="right"] {
-  text-align: right;
-}
-
-g[data-mml-node="merror"] > g {
-  fill: red;
-  stroke: red;
-}
-
-g[data-mml-node="merror"] > rect[data-background] {
-  fill: yellow;
-  stroke: none;
-}
-
-g[data-mml-node="mtable"] > line[data-line], svg[data-table] > g > line[data-line] {
-  stroke-width: 70px;
-  fill: none;
-}
-
-g[data-mml-node="mtable"] > rect[data-frame], svg[data-table] > g > rect[data-frame] {
-  stroke-width: 70px;
-  fill: none;
-}
-
-g[data-mml-node="mtable"] > .mjx-dashed, svg[data-table] > g > .mjx-dashed {
-  stroke-dasharray: 140;
-}
-
-g[data-mml-node="mtable"] > .mjx-dotted, svg[data-table] > g > .mjx-dotted {
-  stroke-linecap: round;
-  stroke-dasharray: 0,140;
-}
-
-g[data-mml-node="mtable"] > g > svg {
-  overflow: visible;
-}
-
-[jax="SVG"] mjx-tool {
-  display: inline-block;
-  position: relative;
-  width: 0;
-  height: 0;
-}
-
-[jax="SVG"] mjx-tool > mjx-tip {
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-
-mjx-tool > mjx-tip {
-  display: inline-block;
-  padding: .2em;
-  border: 1px solid #888;
-  font-size: 70%;
-  background-color: #F8F8F8;
-  color: black;
-  box-shadow: 2px 2px 5px #AAAAAA;
-}
-
-g[data-mml-node="maction"][data-toggle] {
-  cursor: pointer;
-}
-
-mjx-status {
-  display: block;
-  position: fixed;
-  left: 1em;
-  bottom: 1em;
-  min-width: 25%;
-  padding: .2em .4em;
-  border: 1px solid #888;
-  font-size: 90%;
-  background-color: #F8F8F8;
-  color: black;
-}
-
-foreignObject[data-mjx-xml] {
-  font-family: initial;
-  line-height: normal;
-  overflow: visible;
-}
-
-mjx-container[jax="SVG"] path[data-c], mjx-container[jax="SVG"] use[data-c] {
-  stroke-width: 3;
-}
-
-g[data-mml-node="xypic"] path {
-  stroke-width: inherit;
-}
-
-.MathJax g[data-mml-node="xypic"] path {
-  stroke-width: inherit;
-}
-
-      }
-      </style>
-      <mjx-container class="MathJax" jax="SVG" style="position: relative;"><svg style="vertical-align: 0;" xmlns="http://www.w3.org/2000/svg" width="3.146ex" height="1.914ex" role="img" focusable="false" viewBox="0 -846 1390.5 846" aria-hidden="true"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="msup"><g data-mml-node="TeXAtom" data-mjx-texclass="ORD"><g data-mml-node="mi"><path data-c="211D" d="M17 665Q17 672 28 683H221Q415 681 439 677Q461 673 481 667T516 654T544 639T566 623T584 607T597 592T607 578T614 565T618 554L621 548Q626 530 626 497Q626 447 613 419Q578 348 473 326L455 321Q462 310 473 292T517 226T578 141T637 72T686 35Q705 30 705 16Q705 7 693 -1H510Q503 6 404 159L306 310H268V183Q270 67 271 59Q274 42 291 38Q295 37 319 35Q344 35 353 28Q362 17 353 3L346 -1H28Q16 5 16 16Q16 35 55 35Q96 38 101 52Q106 60 106 341T101 632Q95 645 55 648Q17 648 17 665ZM241 35Q238 42 237 45T235 78T233 163T233 337V621L237 635L244 648H133Q136 641 137 638T139 603T141 517T141 341Q141 131 140 89T134 37Q133 36 133 35H241ZM457 496Q457 540 449 570T425 615T400 634T377 643Q374 643 339 648Q300 648 281 635Q271 628 270 610T268 481V346H284Q327 346 375 352Q421 364 439 392T457 496ZM492 537T492 496T488 427T478 389T469 371T464 361Q464 360 465 360Q469 360 497 370Q593 400 593 495Q593 592 477 630L457 637L461 626Q474 611 488 561Q492 537 492 496ZM464 243Q411 317 410 317Q404 317 401 315Q384 315 370 312H346L526 35H619L606 50Q553 109 464 243Z"></path></g></g><g data-mml-node="TeXAtom" transform="translate(755,363) scale(0.707)" data-mjx-texclass="ORD"><g data-mml-node="mi"><path data-c="1D437" d="M287 628Q287 635 230 637Q207 637 200 638T193 647Q193 655 197 667T204 682Q206 683 403 683Q570 682 590 682T630 676Q702 659 752 597T803 431Q803 275 696 151T444 3L430 1L236 0H125H72Q48 0 41 2T33 11Q33 13 36 25Q40 41 44 43T67 46Q94 46 127 49Q141 52 146 61Q149 65 218 339T287 628ZM703 469Q703 507 692 537T666 584T629 613T590 629T555 636Q553 636 541 636T512 636T479 637H436Q392 637 386 627Q384 623 313 339T242 52Q242 48 253 48T330 47Q335 47 349 47T373 46Q499 46 581 128Q617 164 640 212T683 339T703 469Z"></path></g></g></g></g></g></svg><mjx-assistive-mml unselectable="on" display="inline"><math xmlns="http://www.w3.org/1998/Math/MathML"><msup><mrow data-mjx-texclass="ORD"><mi mathvariant="double-struck">R</mi></mrow><mrow data-mjx-texclass="ORD"><mi>D</mi></mrow></msup></math></mjx-assistive-mml></mjx-container>
-    </span>
-   中考虑数据和模型，所以我们面临的优化问题是连续优化问题，而不是离散变量的组合优化问题。</p>
+<p>由于机器学习算法是在计算机上实现的，其中许多<strong>数学方程式都表示为数值优化方法</strong>。本章描述了训练机器学习模型的基本数值方法。训练机器学习模型通常归结为找到一组好的参数。“好”的概念是由目标函数或概率模型来决定的，我们将在本书的第二部分看到这些例子。给定一个目标函数，使用优化算法来寻找最佳值。<span
+class="math inline">\(\mathbb{R}^{D}\)</span>
+中考虑数据和模型，所以我们面临的优化问题是连续优化问题，而不是离散变量的组合优化问题。</p>
 <p>一般情况下，机器学习中的大多数目标函数都是要被最小化的，即最优值就是最小值。直观上，梯度为目标函数每个点的上坡方向，而我们的目的是下坡（与梯度方向相反），希望找到最深的点。</p>
           <!--noindex-->
             <div class="post-button">
@@ -1300,12 +1159,15 @@ g[data-mml-node="xypic"] path {
     
     
     <div class="post-body" itemprop="articleBody">
-          <h2 id="6、概率与分布">6、概率与分布</h2>
+          <h2 id="概率与分布">6、概率与分布</h2>
 <p>Probability and Distributions</p>
 <p>概率论可以看作是布尔逻辑的推广。在机器学习的背景下，它经常以这种方式应用于自动推理系统的形式化设计。</p>
-<p>在机器学习和统计学中，有两种主要的概率解释：贝叶斯主义和频率主义(Bishop, 2006;Efron and Hastie, 2016)。贝叶斯主义使用概率来指定用户对事件的不确定性程度。它有时被称为“主观概率”或“置信程度”。频率主义则考虑感兴趣的事件与所发生事件的总数的相对频率。一个事件的概率定义为当发生事件的总数趋于无限时，该事件的相对频率。详细例子见《<a target="_blank" rel="noopener" href="http://xn--jhqtcyb0c37gp2e49a6zdh5b670bh20aufkghmrnvga0237bt20ccd3b.md">概率中贝叶斯派与经典频率主义区别例子.md</a>》</p>
+<p>在机器学习和统计学中，有两种主要的概率解释：贝叶斯主义和频率主义(Bishop,
+2006;Efron and Hastie,
+2016)。贝叶斯主义使用概率来指定用户对事件的不确定性程度。它有时被称为“主观概率”或“置信程度”。频率主义则考虑感兴趣的事件与所发生事件的总数的相对频率。一个事件的概率定义为当发生事件的总数趋于无限时，该事件的相对频率。详细例子见《概率中贝叶斯派与经典频率主义区别例子.md》</p>
 <blockquote>
-<p>贝叶斯主义和频率主义两者的核心区别在于：频率主义把参数视为固定值，而贝叶斯主义把参数视为随机变量，因此需要引入先验知识。两者的核心区别确实与“是否考虑先验知识”相关，但更根本的区别在于它们对“参数”的哲学认知不同：固定值 vs. 随机变量。</p>
+<p>贝叶斯主义和频率主义两者的核心区别在于：频率主义把参数视为固定值，而贝叶斯主义把参数视为随机变量，因此需要引入先验知识。两者的核心区别确实与“是否考虑先验知识”相关，但更根本的区别在于它们对“参数”的哲学认知不同：固定值
+vs. 随机变量。</p>
 </blockquote>
           <!--noindex-->
             <div class="post-button">
