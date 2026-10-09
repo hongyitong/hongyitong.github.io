@@ -27,10 +27,24 @@
 <meta property="og:site_name" content="墨语浮生">
 <meta property="og:description" content="第6章 RAG与智能体 Chapter 6. RAG and Agents 要解决一个任务，模型既需要知道如何执行任务的指令，也需要完成任务所必需的信息。就像人类在缺乏信息时更容易给出错误答案一样，AI 模型在缺少上下文时也更容易犯错和产生幻觉。对于特定应用而言，模型的指令对所有查询都是通用的，而上下文则是每个查询所特有的。上一章讨论了如何为模型编写良好的指令。本章将聚焦于如何为每个查询构建相关的">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/6/Table-6-1-Inverted-index.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/6/Figure-6-3-Embedding-retriever.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/6/Table-6-2-Retrieval-comparison.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/6/Figure-6-4-Query-rewriting.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/6/Figure-6-5-Contextual-retrieval.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/6/Figure-6-6-Multimodal-RAG.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/6/Table-6-3-Sales-order-table.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/6/Figure-6-7-Tabular-RAG-text2sql.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/6/Figure-6-8-SWE-agent.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/6/Figure-6-10-Tool-definitions.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/6/Figure-6-11-Control-flows.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/6/Figure-6-12-ReAct-example.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/6/Figure-6-14-Chameleon-tools.png">
 <meta property="article:published_time" content="2026-09-25T16:00:00.000Z">
 <meta property="article:modified_time" content="2026-10-02T02:15:45.460Z">
 <meta property="article:author" content="Rayman.hung">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hongyitong.github.io/img4/AI%20Engineering/6/Table-6-1-Inverted-index.png">
 
 
 <link rel="canonical" href="http://hongyitong.github.io/2026/09/26/%E7%AC%AC6%E7%AB%A0RAG%20%E4%B8%8E%E6%99%BA%E8%83%BD%E4%BD%93/">
@@ -165,7 +179,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-text">第6章 RAG与智能体</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#RAG"><span class="nav-text">RAG</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#RAG-%E6%9E%B6%E6%9E%84"><span class="nav-text">RAG 架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A3%80%E7%B4%A2%E7%AE%97%E6%B3%95"><span class="nav-text">检索算法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%A8%80%E7%96%8F%E6%A3%80%E7%B4%A2%E4%B8%8E%E7%A8%A0%E5%AF%86%E6%A3%80%E7%B4%A2"><span class="nav-text">稀疏检索与稠密检索</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E8%AF%8D%E9%A1%B9%E7%9A%84%E6%A3%80%E7%B4%A2"><span class="nav-text">基于词项的检索</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E5%B5%8C%E5%85%A5%E7%9A%84%E6%A3%80%E7%B4%A2"><span class="nav-text">基于嵌入的检索</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%AF%94%E8%BE%83%E6%A3%80%E7%B4%A2%E7%AE%97%E6%B3%95"><span class="nav-text">比较检索算法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BB%84%E5%90%88%E6%A3%80%E7%B4%A2%E7%AE%97%E6%B3%95"><span class="nav-text">组合检索算法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A3%80%E7%B4%A2%E4%BC%98%E5%8C%96"><span class="nav-text">检索优化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%86%E5%9D%97%E7%AD%96%E7%95%A5"><span class="nav-text">分块策略</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%87%8D%E6%96%B0%E6%8E%92%E5%BA%8F"><span class="nav-text">重新排序</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9F%A5%E8%AF%A2%E9%87%8D%E5%86%99"><span class="nav-text">查询重写</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%8A%E4%B8%8B%E6%96%87%E6%A3%80%E7%B4%A2"><span class="nav-text">上下文检索</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%84%E4%BC%B0%E6%A3%80%E7%B4%A2%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-text">评估检索解决方案</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B6%85%E8%B6%8A%E6%96%87%E6%9C%AC%E7%9A%84-RAG"><span class="nav-text">超越文本的 RAG</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A4%9A%E6%A8%A1%E6%80%81-RAG"><span class="nav-text">多模态 RAG</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%8E%E8%A1%A8%E6%A0%BC%E6%95%B0%E6%8D%AE%E7%9A%84-RAG"><span class="nav-text">与表格数据的 RAG</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%99%BA%E8%83%BD%E4%BD%93"><span class="nav-text">智能体</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%99%BA%E8%83%BD%E4%BD%93%E6%A6%82%E8%BF%B0"><span class="nav-text">智能体概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B7%A5%E5%85%B7"><span class="nav-text">工具</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%9F%A5%E8%AF%86%E5%A2%9E%E5%BC%BA"><span class="nav-text">知识增强</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%83%BD%E5%8A%9B%E6%89%A9%E5%B1%95"><span class="nav-text">能力扩展</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%86%99%E5%85%A5%E5%8A%A8%E4%BD%9C"><span class="nav-text">写入动作</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%84%E5%88%92"><span class="nav-text">规划</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%84%E5%88%92%E6%A6%82%E8%BF%B0"><span class="nav-text">规划概述</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E6%A8%A1%E5%9E%8B%E4%BD%9C%E4%B8%BA%E8%A7%84%E5%88%92%E5%99%A8"><span class="nav-text">基础模型作为规划器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E6%A8%A1%E5%9E%8B%EF%BC%88FM%EF%BC%89%E8%A7%84%E5%88%92%E5%99%A8%E4%B8%8E%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0%EF%BC%88RL%EF%BC%89%E8%A7%84%E5%88%92%E5%99%A8"><span class="nav-text">基础模型（FM）规划器与强化学习（RL）规划器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%A1%E5%88%92%E7%94%9F%E6%88%90"><span class="nav-text">计划生成</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%8D%E6%80%9D%E4%B8%8E%E9%94%99%E8%AF%AF%E4%BF%AE%E6%AD%A3"><span class="nav-text">反思与错误修正</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B7%A5%E5%85%B7%E9%80%89%E6%8B%A9"><span class="nav-text">工具选择</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%99%BA%E8%83%BD%E4%BD%93%E5%A4%B1%E8%B4%A5%E6%A8%A1%E5%BC%8F%E4%B8%8E%E8%AF%84%E4%BC%B0"><span class="nav-text">智能体失败模式与评估</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%84%E5%88%92%E5%A4%B1%E8%B4%A5"><span class="nav-text">规划失败</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B7%A5%E5%85%B7%E5%A4%B1%E8%B4%A5"><span class="nav-text">工具失败</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%95%88%E7%8E%87"><span class="nav-text">效率</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%B0%E5%BF%86"><span class="nav-text">记忆</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC6%E7%AB%A0-rag%E4%B8%8E%E6%99%BA%E8%83%BD%E4%BD%93"><span class="nav-text">第6章 RAG与智能体</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#rag"><span class="nav-text">RAG</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#rag-%E6%9E%B6%E6%9E%84"><span class="nav-text">RAG 架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A3%80%E7%B4%A2%E7%AE%97%E6%B3%95"><span class="nav-text">检索算法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%A8%80%E7%96%8F%E6%A3%80%E7%B4%A2%E4%B8%8E%E7%A8%A0%E5%AF%86%E6%A3%80%E7%B4%A2"><span class="nav-text">稀疏检索与稠密检索</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E8%AF%8D%E9%A1%B9%E7%9A%84%E6%A3%80%E7%B4%A2"><span class="nav-text">基于词项的检索</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E5%B5%8C%E5%85%A5%E7%9A%84%E6%A3%80%E7%B4%A2"><span class="nav-text">基于嵌入的检索</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%AF%94%E8%BE%83%E6%A3%80%E7%B4%A2%E7%AE%97%E6%B3%95"><span class="nav-text">比较检索算法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BB%84%E5%90%88%E6%A3%80%E7%B4%A2%E7%AE%97%E6%B3%95"><span class="nav-text">组合检索算法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A3%80%E7%B4%A2%E4%BC%98%E5%8C%96"><span class="nav-text">检索优化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%86%E5%9D%97%E7%AD%96%E7%95%A5"><span class="nav-text">分块策略</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%87%8D%E6%96%B0%E6%8E%92%E5%BA%8F"><span class="nav-text">重新排序</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9F%A5%E8%AF%A2%E9%87%8D%E5%86%99"><span class="nav-text">查询重写</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%8A%E4%B8%8B%E6%96%87%E6%A3%80%E7%B4%A2"><span class="nav-text">上下文检索</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%84%E4%BC%B0%E6%A3%80%E7%B4%A2%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-text">评估检索解决方案</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B6%85%E8%B6%8A%E6%96%87%E6%9C%AC%E7%9A%84-rag"><span class="nav-text">超越文本的 RAG</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A4%9A%E6%A8%A1%E6%80%81-rag"><span class="nav-text">多模态 RAG</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%8E%E8%A1%A8%E6%A0%BC%E6%95%B0%E6%8D%AE%E7%9A%84-rag"><span class="nav-text">与表格数据的 RAG</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%99%BA%E8%83%BD%E4%BD%93"><span class="nav-text">智能体</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%99%BA%E8%83%BD%E4%BD%93%E6%A6%82%E8%BF%B0"><span class="nav-text">智能体概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B7%A5%E5%85%B7"><span class="nav-text">工具</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%9F%A5%E8%AF%86%E5%A2%9E%E5%BC%BA"><span class="nav-text">知识增强</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%83%BD%E5%8A%9B%E6%89%A9%E5%B1%95"><span class="nav-text">能力扩展</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%86%99%E5%85%A5%E5%8A%A8%E4%BD%9C"><span class="nav-text">写入动作</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%84%E5%88%92"><span class="nav-text">规划</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%84%E5%88%92%E6%A6%82%E8%BF%B0"><span class="nav-text">规划概述</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E6%A8%A1%E5%9E%8B%E4%BD%9C%E4%B8%BA%E8%A7%84%E5%88%92%E5%99%A8"><span class="nav-text">基础模型作为规划器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E6%A8%A1%E5%9E%8Bfm%E8%A7%84%E5%88%92%E5%99%A8%E4%B8%8E%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0rl%E8%A7%84%E5%88%92%E5%99%A8"><span class="nav-text">基础模型（FM）规划器与强化学习（RL）规划器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%A1%E5%88%92%E7%94%9F%E6%88%90"><span class="nav-text">计划生成</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%8D%E6%80%9D%E4%B8%8E%E9%94%99%E8%AF%AF%E4%BF%AE%E6%AD%A3"><span class="nav-text">反思与错误修正</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B7%A5%E5%85%B7%E9%80%89%E6%8B%A9"><span class="nav-text">工具选择</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%99%BA%E8%83%BD%E4%BD%93%E5%A4%B1%E8%B4%A5%E6%A8%A1%E5%BC%8F%E4%B8%8E%E8%AF%84%E4%BC%B0"><span class="nav-text">智能体失败模式与评估</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%84%E5%88%92%E5%A4%B1%E8%B4%A5"><span class="nav-text">规划失败</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B7%A5%E5%85%B7%E5%A4%B1%E8%B4%A5"><span class="nav-text">工具失败</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%95%88%E7%8E%87"><span class="nav-text">效率</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%B0%E5%BF%86"><span class="nav-text">记忆</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -266,129 +280,292 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h1>第6章 RAG与智能体</h1>
+    <div class="post-body" itemprop="articleBody"><h1 id="第6章-rag与智能体">第6章 RAG与智能体</h1>
 <p>Chapter 6. RAG and Agents</p>
-<p>要解决一个任务，模型既需要知道如何执行任务的指令，也需要完成任务所必需的信息。就像人类在缺乏信息时更容易给出错误答案一样，AI 模型在缺少上下文时也更容易犯错和产生幻觉。对于特定应用而言，模型的指令对所有查询都是通用的，而上下文则是每个查询所特有的。上一章讨论了如何为模型编写良好的指令。本章将聚焦于如何为每个查询构建相关的上下文。</p>
-<p><u><em>构建上下文的两种主导模式是 RAG（检索增强生成，Retrieval-Augmented Generation）和智能体（Agent）</em></u>。RAG 模式允许模型从外部数据源检索相关信息。智能体模式则允许模型使用诸如网络搜索和新闻 API 等工具来收集信息。</p>
-<p>RAG 模式主要用于构建上下文，而智能体模式能做的远不止于此。外部工具可以帮助模型弥补自身的不足并扩展其能力。最重要的是，它们赋予了模型直接与世界交互的能力，使得模型能够自动化我们生活的许多方面。RAG 和智能体模式都令人兴奋，因为它们为本就强大的模型带来了新的能力。在短短的时间内，它们就成功捕捉了集体想象力，催生了令人惊叹的演示和产品，让许多人相信它们就是未来。本章将详细介绍这两种模式、它们的工作原理以及它们的 promising 之处。</p>
-<span id="more"></span>  
-<h2 id="RAG">RAG</h2>
+<p>要解决一个任务，模型既需要知道如何执行任务的指令，也需要完成任务所必需的信息。就像人类在缺乏信息时更容易给出错误答案一样，AI
+模型在缺少上下文时也更容易犯错和产生幻觉。对于特定应用而言，模型的指令对所有查询都是通用的，而上下文则是每个查询所特有的。上一章讨论了如何为模型编写良好的指令。本章将聚焦于如何为每个查询构建相关的上下文。</p>
+<p><u><em>构建上下文的两种主导模式是
+RAG（检索增强生成，Retrieval-Augmented
+Generation）和智能体（Agent）</em></u>。RAG
+模式允许模型从外部数据源检索相关信息。智能体模式则允许模型使用诸如网络搜索和新闻
+API 等工具来收集信息。</p>
+<p>RAG
+模式主要用于构建上下文，而智能体模式能做的远不止于此。外部工具可以帮助模型弥补自身的不足并扩展其能力。最重要的是，它们赋予了模型直接与世界交互的能力，使得模型能够自动化我们生活的许多方面。RAG
+和智能体模式都令人兴奋，因为它们为本就强大的模型带来了新的能力。在短短的时间内，它们就成功捕捉了集体想象力，催生了令人惊叹的演示和产品，让许多人相信它们就是未来。本章将详细介绍这两种模式、它们的工作原理以及它们的
+promising 之处。</p>
+<span id="more"></span>
+<h2 id="rag">RAG</h2>
 <p>RAG</p>
-<p>RAG 是一种通过从外部记忆源检索相关信息来增强模型生成能力的技术。外部记忆源可以是内部数据库、用户之前的聊天会话或互联网。</p>
-<p>该模式最初在论文《Reading Wikipedia to Answer Open-Domain Questions》（Chen 等人，2017年）中被提出¹。在这项工作中，系统首先检索与问题最相关的五个 Wikipedia 页面，然后由模型²使用（或称&quot;阅读&quot;）这些页面中的信息来生成答案，如图 6-1 所示。</p>
-<p>![图6-1](/img4/AI Engineering/6/Figure-6-1-Retrieve-then-generate.png)</p>
-<p><strong>图 6-1：检索然后生成的模式。该模型被称为文档阅读器。</strong></p>
-<p>&quot;检索增强生成&quot;这一术语由论文《Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks》（Lewis 等人，2020年）正式提出。该论文将 RAG 作为知识密集型任务的解决方案，这类任务无法将所有可用知识直接输入模型。通过 RAG，只有检索器确定为与查询最相关的信息才会被检索出来并输入模型。Lewis 等人发现，访问相关信息可以帮助模型生成更详细的响应，同时减少幻觉³。</p>
-<p>例如，给定查询&quot;Acme 公司的 fancy-printer-A300 能否打印 100pps？&quot;，如果模型获得 fancy-printer-A300 的规格说明，它将能够更好地回答⁴。</p>
-<p>你可以将 RAG 视为一种为每个查询构建特定上下文的技术，而不是对所有查询使用相同的上下文。这有助于管理用户数据，因为它允许你仅在与此用户相关的查询中包含该用户的特定数据。</p>
+<p>RAG
+是一种通过从外部记忆源检索相关信息来增强模型生成能力的技术。外部记忆源可以是内部数据库、用户之前的聊天会话或互联网。</p>
+<p>该模式最初在论文《Reading Wikipedia to Answer Open-Domain
+Questions》（Chen
+等人，2017年）中被提出¹。在这项工作中，系统首先检索与问题最相关的五个
+Wikipedia
+页面，然后由模型²使用（或称"阅读"）这些页面中的信息来生成答案，如图 6-1
+所示。</p>
+<figure>
+<img
+src="/img4/AI%20Engineering/6/Figure-6-1-Retrieve-then-generate.png"
+alt="图6-1" />
+<figcaption aria-hidden="true">图6-1</figcaption>
+</figure>
+<p><strong>图
+6-1：检索然后生成的模式。该模型被称为文档阅读器。</strong></p>
+<p>"检索增强生成"这一术语由论文《Retrieval-Augmented Generation for
+Knowledge-Intensive NLP Tasks》（Lewis 等人，2020年）正式提出。该论文将
+RAG
+作为知识密集型任务的解决方案，这类任务无法将所有可用知识直接输入模型。通过
+RAG，只有检索器确定为与查询最相关的信息才会被检索出来并输入模型。Lewis
+等人发现，访问相关信息可以帮助模型生成更详细的响应，同时减少幻觉³。</p>
+<p>例如，给定查询"Acme 公司的 fancy-printer-A300 能否打印
+100pps？"，如果模型获得 fancy-printer-A300
+的规格说明，它将能够更好地回答⁴。</p>
+<p>你可以将 RAG
+视为一种为每个查询构建特定上下文的技术，而不是对所有查询使用相同的上下文。这有助于管理用户数据，因为它允许你仅在与此用户相关的查询中包含该用户的特定数据。</p>
 <p>基础模型的上下文构建等同于经典机器学习模型的特征工程。它们服务于相同的目的：为模型提供处理输入所需的信息。</p>
-<p>在基础模型发展的早期，RAG 成为最常见的模式之一。其主要目的是克服模型的上下文限制。许多人认为，足够长的上下文将终结 RAG 的需求。我不这么认为。</p>
+<p>在基础模型发展的早期，RAG
+成为最常见的模式之一。其主要目的是克服模型的上下文限制。许多人认为，足够长的上下文将终结
+RAG 的需求。我不这么认为。</p>
 <p>首先，无论模型的上下文长度有多长，总会有应用需要的上下文比这更长。毕竟，可用数据只会随着时间增长。人们不断生成和添加新数据，却很少删除数据。上下文长度正在迅速扩展，但对于任意应用的数据需求而言，还远远不够⁵。</p>
-<p>其次，能够处理长上下文的模型并不一定能很好地利用该上下文，正如第 218 页&quot;上下文长度与上下文效率&quot;中所讨论的那样。上下文越长，模型就越有可能关注到上下文中错误的部分。每个额外的上下文 token 都会带来额外的成本和潜在的额外延迟。RAG 允许模型只使用每个查询最相关的信息，从而减少输入 token 数量，同时可能提高模型性能。</p>
+<p>其次，能够处理长上下文的模型并不一定能很好地利用该上下文，正如第 218
+页"上下文长度与上下文效率"中所讨论的那样。上下文越长，模型就越有可能关注到上下文中错误的部分。每个额外的上下文
+token 都会带来额外的成本和潜在的额外延迟。RAG
+允许模型只使用每个查询最相关的信息，从而减少输入 token
+数量，同时可能提高模型性能。</p>
 <p>扩展上下文长度的努力与使模型更有效使用上下文的努力是同时进行的。如果某个模型提供商将类似检索或类似注意力的机制整合到模型中，以帮助模型挑选出上下文中最显著的部分进行使用，我一点也不会感到惊讶。</p>
-<p>Anthropic 建议，对于 Claude 模型，如果&quot;你的知识库小于 200,000 个 token（约 500 页材料），你可以直接将整个知识库包含在给模型的提示中，不需要 RAG 或类似方法&quot;（Anthropic，2024年）。如果其他模型开发者也能为他们的模型提供类似的关于 RAG 与长上下文的指导，那将是非常棒的。</p>
-<h3 id="RAG-架构">RAG 架构</h3>
+<p>Anthropic 建议，对于 Claude 模型，如果"你的知识库小于 200,000 个
+token（约 500
+页材料），你可以直接将整个知识库包含在给模型的提示中，不需要 RAG
+或类似方法"（Anthropic，2024年）。如果其他模型开发者也能为他们的模型提供类似的关于
+RAG 与长上下文的指导，那将是非常棒的。</p>
+<h3 id="rag-架构">RAG 架构</h3>
 <p>RAG Architecture</p>
-<p>RAG 系统有两个组成部分：一个是从外部记忆源检索信息的<strong>检索器</strong>，另一个是基于检索信息生成响应的<strong>生成器</strong>。图 6-2 展示了 RAG 系统的高层架构。</p>
-<p>![图6-2](/img4/AI Engineering/6/Figure-6-2-Basic-RAG-architecture.png)</p>
+<p>RAG
+系统有两个组成部分：一个是从外部记忆源检索信息的<strong>检索器</strong>，另一个是基于检索信息生成响应的<strong>生成器</strong>。图
+6-2 展示了 RAG 系统的高层架构。</p>
+<figure>
+<img
+src="/img4/AI%20Engineering/6/Figure-6-2-Basic-RAG-architecture.png"
+alt="图6-2" />
+<figcaption aria-hidden="true">图6-2</figcaption>
+</figure>
 <p><strong>图 6-2：基本的 RAG 架构。</strong></p>
-<p>在原始的 RAG 论文中，Lewis 等人将检索器和生成模型一起训练。在如今的 RAG 系统中，这两个组件通常是分开训练的，许多团队使用现成的检索器和模型来构建 RAG 系统。然而，对整个 RAG 系统进行端到端的微调可以显著提高其性能。</p>
-<p>RAG 系统的成功取决于其检索器的质量。检索器有两个主要功能：<strong>索引</strong>和<strong>查询</strong>。索引涉及处理数据以便之后可以快速检索。发送查询以检索与之相关的数据称为查询。如何索引数据取决于你之后打算如何检索它。</p>
-<p>现在我们已经介绍了主要组件，让我们考虑一个 RAG 系统如何工作的示例。为简单起见，假设外部记忆是一个文档数据库，比如公司的备忘录、合同和会议记录。一个文档可以是 10 个 token 或 100 万个 token。天真地检索整个文档可能导致上下文任意长。为避免这种情况，你可以将每个文档分割成更易管理的块。分块策略将在本章后面讨论。现在，假设所有文档已经被分割成可工作的块。对于每个查询，我们的目标是检索与该查询最相关的数据块。通常需要少量的后处理，将检索到的数据块与用户提示连接起来，生成最终的提示。然后将这个最终的提示输入生成模型。</p>
-<p>在本章中，我使用术语&quot;文档&quot;来指代&quot;文档&quot;和&quot;块&quot;，因为从技术上讲，文档的一个块也是一个文档。我这样做是为了保持本书的术语与经典 NLP 和信息检索（IR）术语的一致性。</p>
+<p>在原始的 RAG 论文中，Lewis 等人将检索器和生成模型一起训练。在如今的
+RAG
+系统中，这两个组件通常是分开训练的，许多团队使用现成的检索器和模型来构建
+RAG 系统。然而，对整个 RAG 系统进行端到端的微调可以显著提高其性能。</p>
+<p>RAG
+系统的成功取决于其检索器的质量。检索器有两个主要功能：<strong>索引</strong>和<strong>查询</strong>。索引涉及处理数据以便之后可以快速检索。发送查询以检索与之相关的数据称为查询。如何索引数据取决于你之后打算如何检索它。</p>
+<p>现在我们已经介绍了主要组件，让我们考虑一个 RAG
+系统如何工作的示例。为简单起见，假设外部记忆是一个文档数据库，比如公司的备忘录、合同和会议记录。一个文档可以是
+10 个 token 或 100 万个
+token。天真地检索整个文档可能导致上下文任意长。为避免这种情况，你可以将每个文档分割成更易管理的块。分块策略将在本章后面讨论。现在，假设所有文档已经被分割成可工作的块。对于每个查询，我们的目标是检索与该查询最相关的数据块。通常需要少量的后处理，将检索到的数据块与用户提示连接起来，生成最终的提示。然后将这个最终的提示输入生成模型。</p>
+<p>在本章中，我使用术语"文档"来指代"文档"和"块"，因为从技术上讲，文档的一个块也是一个文档。我这样做是为了保持本书的术语与经典
+NLP 和信息检索（IR）术语的一致性。</p>
 <h3 id="检索算法">检索算法</h3>
 <p>Retrieval Algorithms</p>
-<p>检索并非 RAG 所独有。信息检索是一个有百年历史的想法⁶。它是搜索引擎、推荐系统、日志分析等的核心。为传统检索系统开发的许多检索算法也可以用于 RAG。例如，信息检索是一个活跃的研究领域，拥有庞大的支持产业，几乎无法在几页内充分涵盖。因此，本节只涵盖大致的轮廓。更多关于信息检索的深度资源请参见本书的 GitHub 仓库。</p>
+<p>检索并非 RAG
+所独有。信息检索是一个有百年历史的想法⁶。它是搜索引擎、推荐系统、日志分析等的核心。为传统检索系统开发的许多检索算法也可以用于
+RAG。例如，信息检索是一个活跃的研究领域，拥有庞大的支持产业，几乎无法在几页内充分涵盖。因此，本节只涵盖大致的轮廓。更多关于信息检索的深度资源请参见本书的
+GitHub 仓库。</p>
 <p>检索通常限于一个数据库或系统，而<strong>搜索</strong>涉及跨多个系统的检索。本章中检索和搜索可以互换使用。</p>
 <p>检索的核心是通过评估文档与给定查询的相关性来对文档进行排序。检索算法的不同在于相关性分数的计算方式。我将从两种常见的检索机制开始：基于词项的检索和基于嵌入的检索。</p>
 <h4 id="稀疏检索与稠密检索">稀疏检索与稠密检索</h4>
 <p>Sparse Versus Dense Retrieval</p>
 <p>在文献中，你可能会遇到将检索算法分为以下类别：稀疏与稠密。然而，本书选择了基于词项与基于嵌入的分类方式。</p>
-<p><strong>稀疏检索器</strong>使用稀疏向量表示数据。稀疏向量是大多数值为 0 的向量。基于词项的检索被认为是稀疏的，因为每个词项可以用一个稀疏的 one-hot 向量来表示，该向量除了一个值为 1 外其余全为 0。向量的大小是词汇表的长度。值为 1 的位置对应于该词项在词汇表中的索引。</p>
-<p>如果我们有一个简单的字典 <code>&#123;&quot;food&quot;: 0, &quot;banana&quot;: 1, &quot;slug&quot;: 2&#125;</code>，那么 “food”、“banana” 和 “slug” 的 one-hot 向量分别是 <code>[1, 0, 0]</code>、<code>[0, 1, 0]</code> 和 <code>[0, 0, 1]</code>。</p>
-<p><strong>稠密检索器</strong>使用稠密向量表示数据。稠密向量是大多数值不为 0 的向量。基于嵌入的检索通常被认为是稠密的，因为嵌入通常是稠密向量。然而，也存在稀疏嵌入。例如，SPLADE（Sparse Lexical and Expansion）是一种使用稀疏嵌入工作的检索算法（Formal 等人，2021年）。它利用 BERT 生成的嵌入，但使用正则化将大多数嵌入值推向为 0。稀疏性使嵌入操作更高效。</p>
-<p>稀疏与稠密的划分会导致 SPLADE 被归入基于词项的算法类别，尽管 SPLADE 的操作方式、优势和弱点与稠密嵌入检索更为相似，而非基于词项的检索。基于词项与基于嵌入的分类方式避免了这种错误归类。</p>
+<p><strong>稀疏检索器</strong>使用稀疏向量表示数据。稀疏向量是大多数值为
+0 的向量。基于词项的检索被认为是稀疏的，因为每个词项可以用一个稀疏的
+one-hot 向量来表示，该向量除了一个值为 1 外其余全为
+0。向量的大小是词汇表的长度。值为 1
+的位置对应于该词项在词汇表中的索引。</p>
+<p>如果我们有一个简单的字典
+<code>&#123;"food": 0, "banana": 1, "slug": 2&#125;</code>，那么 "food"、"banana"
+和 "slug" 的 one-hot 向量分别是
+<code>[1, 0, 0]</code>、<code>[0, 1, 0]</code> 和
+<code>[0, 0, 1]</code>。</p>
+<p><strong>稠密检索器</strong>使用稠密向量表示数据。稠密向量是大多数值不为
+0
+的向量。基于嵌入的检索通常被认为是稠密的，因为嵌入通常是稠密向量。然而，也存在稀疏嵌入。例如，SPLADE（Sparse
+Lexical and Expansion）是一种使用稀疏嵌入工作的检索算法（Formal
+等人，2021年）。它利用 BERT 生成的嵌入，但使用正则化将大多数嵌入值推向为
+0。稀疏性使嵌入操作更高效。</p>
+<p>稀疏与稠密的划分会导致 SPLADE 被归入基于词项的算法类别，尽管 SPLADE
+的操作方式、优势和弱点与稠密嵌入检索更为相似，而非基于词项的检索。基于词项与基于嵌入的分类方式避免了这种错误归类。</p>
 <h4 id="基于词项的检索">基于词项的检索</h4>
 <p>Term-based retrieval</p>
-<p>给定一个查询，找到相关文档最直接的方法是使用关键词。有些人称这种方法为<strong>词法检索</strong>。例如，给定查询&quot;AI 工程&quot;，模型将检索所有包含&quot;AI 工程&quot;的文档。然而，这种方法有两个问题：</p>
+<p>给定一个查询，找到相关文档最直接的方法是使用关键词。有些人称这种方法为<strong>词法检索</strong>。例如，给定查询"AI
+工程"，模型将检索所有包含"AI 工程"的文档。然而，这种方法有两个问题：</p>
 <ul>
-<li>许多文档可能包含给定的词项，而你的模型可能没有足够的上下文空间来包含所有这些文档。一种启发式方法是包含该词项出现次数最多的文档。假设是：一个词项在文档中出现得越多，该文档与该词项的相关性就越高。词项在文档中出现的次数称为<strong>词频</strong>（Term Frequency, TF）。</li>
-<li>一个提示可能很长，包含许多词项。其中一些词项比其他词项更重要。例如，提示&quot;在家烹饪的简易越南菜谱&quot;包含九个词项：简易、烹饪、的、越南、菜谱、在、家、做。你需要关注信息量更大的词项，如&quot;越南&quot;和&quot;菜谱&quot;，而不是&quot;的&quot;和&quot;在&quot;。你需要一种方法来识别重要的词项。</li>
+<li>许多文档可能包含给定的词项，而你的模型可能没有足够的上下文空间来包含所有这些文档。一种启发式方法是包含该词项出现次数最多的文档。假设是：一个词项在文档中出现得越多，该文档与该词项的相关性就越高。词项在文档中出现的次数称为<strong>词频</strong>（Term
+Frequency, TF）。</li>
+<li>一个提示可能很长，包含许多词项。其中一些词项比其他词项更重要。例如，提示"在家烹饪的简易越南菜谱"包含九个词项：简易、烹饪、的、越南、菜谱、在、家、做。你需要关注信息量更大的词项，如"越南"和"菜谱"，而不是"的"和"在"。你需要一种方法来识别重要的词项。</li>
 </ul>
-<p>一个直觉是：一个词项出现在越多的文档中，它的信息量就越小。&quot;的&quot;和&quot;在&quot;很可能出现在大多数文档中，因此它们的信息量较小。因此，一个词项的重要性与包含它的文档数量成反比。这个指标称为<strong>逆文档频率</strong>（Inverse Document Frequency, IDF）。要计算一个词项的 IDF，统计所有包含该词项的文档数量，然后用文档总数除以该数量。如果有 10 个文档，其中 5 个包含某个词项，那么该词项的 IDF 为 10 / 5 = 2。词项的 IDF 越高，它就越重要。</p>
-<p><strong>TF-IDF</strong> 是一种结合了这两个指标（词频 TF 和逆文档频率 IDF）的算法。数学上，文档 D 对于查询 Q 的 TF-IDF 分数计算如下：</p>
+<p>一个直觉是：一个词项出现在越多的文档中，它的信息量就越小。"的"和"在"很可能出现在大多数文档中，因此它们的信息量较小。因此，一个词项的重要性与包含它的文档数量成反比。这个指标称为<strong>逆文档频率</strong>（Inverse
+Document Frequency, IDF）。要计算一个词项的
+IDF，统计所有包含该词项的文档数量，然后用文档总数除以该数量。如果有 10
+个文档，其中 5 个包含某个词项，那么该词项的 IDF 为 10 / 5 = 2。词项的
+IDF 越高，它就越重要。</p>
+<p><strong>TF-IDF</strong> 是一种结合了这两个指标（词频 TF 和逆文档频率
+IDF）的算法。数学上，文档 D 对于查询 Q 的 TF-IDF 分数计算如下：</p>
 <ul>
-<li>令 $t_₁, t_₂, …, t_q$ 为查询 Q 中的词项。</li>
+<li>令 <span class="math inline">\(t_₁, t_₂, ..., t_q\)</span> 为查询 Q
+中的词项。</li>
 <li>对于给定词项 t，该词项在文档 D 中的词频为 f(t, D)。</li>
-<li>令 N 为文档总数，C(t) 为包含词项 t 的文档数量。词项 t 的 IDF 值可以写成$IDF(t) = log(N / C(t))$。</li>
-<li>简单地说，文档 D 相对于 Q 的 TF-IDF 分数定义为 $\text{Score}(D, Q) = \sum_{i=1}^{q} \text{IDF}(t_i) \times f(t_i, D)$。</li>
+<li>令 N 为文档总数，C(t) 为包含词项 t 的文档数量。词项 t 的 IDF
+值可以写成<span class="math inline">\(IDF(t) = log(N /
+C(t))\)</span>。</li>
+<li>简单地说，文档 D 相对于 Q 的 TF-IDF 分数定义为 <span
+class="math inline">\(\text{Score}(D, Q) = \sum_{i=1}^{q}
+\text{IDF}(t_i) \times f(t_i, D)\)</span>。</li>
 </ul>
-<p>两种常见的基于词项的检索解决方案是 <strong>Elasticsearch</strong> 和 <strong>BM25</strong>。Elasticsearch（Shay Banon，2010年）构建在 Lucene 之上，使用一种称为<strong>倒排索引</strong>的数据结构。这是一个从词项映射到包含它们的文档的字典。该字典允许根据词项快速检索文档。索引还可能存储额外的信息，如词频和文档计数（包含该词项的文档数量），这些信息有助于计算 TF-IDF 分数。表 6-1 展示了一个倒排索引的示例。</p>
-<p>![表6-1](/img4/AI Engineering/6/Table-6-1-Inverted-index.png)</p>
+<p>两种常见的基于词项的检索解决方案是 <strong>Elasticsearch</strong> 和
+<strong>BM25</strong>。Elasticsearch（Shay Banon，2010年）构建在 Lucene
+之上，使用一种称为<strong>倒排索引</strong>的数据结构。这是一个从词项映射到包含它们的文档的字典。该字典允许根据词项快速检索文档。索引还可能存储额外的信息，如词频和文档计数（包含该词项的文档数量），这些信息有助于计算
+TF-IDF 分数。表 6-1 展示了一个倒排索引的示例。</p>
+<figure>
+<img src="/img4/AI%20Engineering/6/Table-6-1-Inverted-index.png"
+alt="表6-1" />
+<figcaption aria-hidden="true">表6-1</figcaption>
+</figure>
 <p><strong>表 6-1：倒排索引的简化示例</strong></p>
-<p><strong>Okapi BM25</strong>，即第 25 代最佳匹配算法，由 Robertson 等人在 1980 年代开发。其评分器是 TF-IDF 的改进版本。与朴素 TF-IDF 相比，BM25 通过文档长度对词频分数进行了归一化。较长的文档更可能包含某个词项，并且词频值更高⁷。</p>
-<p>BM25 及其变体（BM25+、BM25F）仍被广泛使用，并且作为强大的基线，用于与更现代的、更复杂的检索算法（如接下来要讨论的基于嵌入的检索）进行比较⁸。</p>
-<p>我略过的一个过程是<strong>分词</strong>，即将查询拆分为单个词项的过程。最简单的方法是将查询拆分为单词，将每个单词视为一个单独的词项。然而，这可能导致多词词项被拆分为单个单词，从而失去原有的含义。例如，“hot dog&quot;会被拆分为&quot;hot&quot;和&quot;dog”。在这种情况下，两者都不再保留原始词项的含义。缓解此问题的一种方法是将最常见的 n-gram 视为词项。如果双词&quot;hot dog&quot;很常见，它将被视为一个词项。</p>
-<p>此外，你可能希望将所有字符转换为小写、去除标点符号并消除停用词（如&quot;the&quot;、“and”、&quot;is&quot;等）。基于词项的检索解决方案通常会自动处理这些。经典的 NLP 包，如 NLTK（Natural Language Toolkit）、spaCy 和 Stanford 的 CoreNLP，也提供分词功能。</p>
-<p>第 4 章讨论了基于 n-gram 重叠度来衡量两个文本之间的词汇相似度。我们能否根据文档与查询的 n-gram 重叠程度来检索文档？当然可以。这种方法在查询和文档长度相似时效果最佳。如果文档远长于查询，文档包含查询 n-gram 的可能性就会增加，导致许多文档的重叠分数同样很高。这使得难以区分真正相关的文档和不太相关的文档。</p>
+<p><strong>Okapi BM25</strong>，即第 25 代最佳匹配算法，由 Robertson
+等人在 1980 年代开发。其评分器是 TF-IDF 的改进版本。与朴素 TF-IDF
+相比，BM25
+通过文档长度对词频分数进行了归一化。较长的文档更可能包含某个词项，并且词频值更高⁷。</p>
+<p>BM25
+及其变体（BM25+、BM25F）仍被广泛使用，并且作为强大的基线，用于与更现代的、更复杂的检索算法（如接下来要讨论的基于嵌入的检索）进行比较⁸。</p>
+<p>我略过的一个过程是<strong>分词</strong>，即将查询拆分为单个词项的过程。最简单的方法是将查询拆分为单词，将每个单词视为一个单独的词项。然而，这可能导致多词词项被拆分为单个单词，从而失去原有的含义。例如，"hot
+dog"会被拆分为"hot"和"dog"。在这种情况下，两者都不再保留原始词项的含义。缓解此问题的一种方法是将最常见的
+n-gram 视为词项。如果双词"hot dog"很常见，它将被视为一个词项。</p>
+<p>此外，你可能希望将所有字符转换为小写、去除标点符号并消除停用词（如"the"、"and"、"is"等）。基于词项的检索解决方案通常会自动处理这些。经典的
+NLP 包，如 NLTK（Natural Language Toolkit）、spaCy 和 Stanford 的
+CoreNLP，也提供分词功能。</p>
+<p>第 4 章讨论了基于 n-gram
+重叠度来衡量两个文本之间的词汇相似度。我们能否根据文档与查询的 n-gram
+重叠程度来检索文档？当然可以。这种方法在查询和文档长度相似时效果最佳。如果文档远长于查询，文档包含查询
+n-gram
+的可能性就会增加，导致许多文档的重叠分数同样很高。这使得难以区分真正相关的文档和不太相关的文档。</p>
 <h4 id="基于嵌入的检索">基于嵌入的检索</h4>
 <p>Embedding-based retrieval</p>
-<p>基于词项的检索是在词法层面而非语义层面计算相关性。如第 3 章所述，文本的表象并不一定捕捉其含义。这可能导致返回与你意图无关的文档。例如，查询&quot;transformer architecture&quot;可能会返回关于电子设备或电影《变形金刚》的文档。而基于嵌入的检索器则旨在根据文档含义与查询含义的接近程度来对文档进行排序。这种方法也称为<strong>语义检索</strong>。</p>
-<p>使用基于嵌入的检索时，索引多了一个功能：将原始数据块转换为嵌入。<u><em>存储生成的嵌入的数据库称为<strong>向量数据库</strong></em></u>。查询则由两个步骤组成，如图 6-3 所示：</p>
-<p>![图6-3](/img4/AI Engineering/6/Figure-6-3-Embedding-retriever.png)</p>
-<p><strong>图 6-3：基于嵌入的（或称语义）检索器工作方式的高层视图。</strong></p>
-<ol>
+<p>基于词项的检索是在词法层面而非语义层面计算相关性。如第 3
+章所述，文本的表象并不一定捕捉其含义。这可能导致返回与你意图无关的文档。例如，查询"transformer
+architecture"可能会返回关于电子设备或电影《变形金刚》的文档。而基于嵌入的检索器则旨在根据文档含义与查询含义的接近程度来对文档进行排序。这种方法也称为<strong>语义检索</strong>。</p>
+<p>使用基于嵌入的检索时，索引多了一个功能：将原始数据块转换为嵌入。<u><em>存储生成的嵌入的数据库称为<strong>向量数据库</strong></em></u>。查询则由两个步骤组成，如图
+6-3 所示：</p>
+<figure>
+<img src="/img4/AI%20Engineering/6/Figure-6-3-Embedding-retriever.png"
+alt="图6-3" />
+<figcaption aria-hidden="true">图6-3</figcaption>
+</figure>
+<p><strong>图
+6-3：基于嵌入的（或称语义）检索器工作方式的高层视图。</strong></p>
+<ol type="1">
 <li><strong>嵌入模型</strong>：使用与索引时相同的嵌入模型将查询转换为嵌入。</li>
-<li><strong>检索器</strong>：获取 k 个其嵌入与查询嵌入最接近的数据块，由检索器确定。要获取的数据块数量 k 取决于用例、生成模型和查询。</li>
+<li><strong>检索器</strong>：获取 k
+个其嵌入与查询嵌入最接近的数据块，由检索器确定。要获取的数据块数量 k
+取决于用例、生成模型和查询。</li>
 </ol>
 <p>这里展示的基于嵌入的检索工作流已被简化。现实世界的语义检索系统可能包含其他组件，如用于对所有检索候选进行重新排序的重新排序器，以及用于减少延迟的缓存⁹。</p>
-<p>在基于嵌入的检索中，我们再次遇到嵌入，这在第 3 章已经讨论过。提醒一下，嵌入通常是一个旨在保留原始数据重要属性的向量。如果嵌入模型不好，基于嵌入的检索器就无法正常工作。</p>
+<p>在基于嵌入的检索中，我们再次遇到嵌入，这在第 3
+章已经讨论过。提醒一下，嵌入通常是一个旨在保留原始数据重要属性的向量。如果嵌入模型不好，基于嵌入的检索器就无法正常工作。</p>
 <p>基于嵌入的检索还引入了一个新组件：<strong>向量数据库</strong>。向量数据库存储向量。然而，存储是向量数据库中容易的部分。困难的部分是<strong>向量搜索</strong>。给定一个查询嵌入，向量数据库负责在数据库中查找与该查询嵌入相近的向量并将其返回。向量必须以某种方式索引和存储，使得向量搜索快速高效。</p>
-<p>与生成式 AI 应用依赖的许多其他机制一样，向量搜索并非生成式 AI 所独有。向量搜索在任何使用嵌入的应用中都很常见：搜索、推荐、数据组织、信息检索、聚类、欺诈检测等。</p>
-<p>向量搜索通常被框架为最近邻搜索问题。例如，给定一个查询，找到 k 个最近邻向量。朴素的解决方案是 k-近邻（k-NN），其工作方式如下：</p>
-<ol>
+<p>与生成式 AI 应用依赖的许多其他机制一样，向量搜索并非生成式 AI
+所独有。向量搜索在任何使用嵌入的应用中都很常见：搜索、推荐、数据组织、信息检索、聚类、欺诈检测等。</p>
+<p>向量搜索通常被框架为最近邻搜索问题。例如，给定一个查询，找到 k
+个最近邻向量。朴素的解决方案是 k-近邻（k-NN），其工作方式如下：</p>
+<ol type="1">
 <li>使用余弦相似度等度量，计算查询嵌入与数据库中所有向量的相似度分数。</li>
 <li>按相似度分数对所有向量进行排序。</li>
 <li>返回相似度分数最高的 k 个向量。</li>
 </ol>
 <p>这种朴素解决方案确保结果精确，但计算量大且速度慢。它只适用于小数据集。</p>
-<p>对于大型数据集，向量搜索通常使用<strong>近似最近邻</strong>（ANN）算法。由于向量搜索的重要性，已经开发了许多算法和库。一些流行的向量搜索库包括 FAISS（Facebook AI Similarity Search）（Johnson 等人，2017年）、Google 的 ScaNN（Scalable Nearest Neighbors）（Sun 等人，2020年）、Spotify 的 Annoy（Bernhardsson，2013年）和 Hnswlib（Hierarchical Navigable Small World）（Malkov 和 Yashunin，2016年）。</p>
+<p>对于大型数据集，向量搜索通常使用<strong>近似最近邻</strong>（ANN）算法。由于向量搜索的重要性，已经开发了许多算法和库。一些流行的向量搜索库包括
+FAISS（Facebook AI Similarity Search）（Johnson 等人，2017年）、Google
+的 ScaNN（Scalable Nearest Neighbors）（Sun 等人，2020年）、Spotify 的
+Annoy（Bernhardsson，2013年）和 Hnswlib（Hierarchical Navigable Small
+World）（Malkov 和 Yashunin，2016年）。</p>
 <p>大多数应用开发者不会自己实现向量搜索，因此我只给出不同方法的快速概览。这个概览可能在你评估解决方案时有所帮助。</p>
-<p>一般来说，向量数据库将向量组织成桶、树或图。向量搜索算法的不同在于它们所使用的启发式方法，这些方法旨在增加相似向量彼此靠近的可能性。向量也可以被量化（降低精度）或变得稀疏。其思想是量化和稀疏向量的计算密集度较低。对于那些想了解更多关于向量搜索的人，Zilliz 有一个优秀的系列文章。以下是一些重要的向量搜索算法：</p>
-<p><strong>LSH（局部敏感哈希，Locality-Sensitive Hashing）</strong>（Indyk 和 Motwani，1999年）<br>
-这是一种强大且多功能的算法，不仅适用于向量。它通过将相似向量哈希到同一个桶中来加速相似性搜索，以部分准确性换取效率。在 FAISS 和 Annoy 中有实现。</p>
-<p><strong>HNSW（分层可导航小世界，Hierarchical Navigable Small World）</strong>（Malkov 和 Yashunin，2016年）<br>
-HNSW 构建了一个多层图，其中节点代表向量，边连接相似向量，通过遍历图的边来进行最近邻搜索。作者的实现是开源的，FAISS 和 Milvus 中也有实现。</p>
-<p><strong>乘积量化（Product Quantization）</strong>（Jégou 等人，2011年）<br>
-通过将每个向量分解为多个子向量，将每个向量简化为一个更简单、更低维的表示。然后使用这些低维表示来计算距离，这种方式快得多。乘积量化是 FAISS 的关键组件，几乎所有流行的向量搜索库都支持它。</p>
-<p><strong>IVF（倒排文件索引，Inverted File Index）</strong>（Sivic 和 Zisserman，2003年）<br>
-IVF 使用 K-means 聚类将相似向量组织到同一个簇中。根据数据库中的向量数量，通常设置簇的数量，使得每个簇中平均有 100 到 10,000 个向量。在查询时，IVF 找到最接近查询嵌入的簇中心，这些簇中的向量成为候选邻居。IVF 与乘积量化一起构成了 FAISS 的核心。</p>
-<p><strong>Annoy（Approximate Nearest Neighbors Oh Yeah）</strong>（Bernhardsson，2013年）<br>
-Annoy 是一种基于树的方法。它构建多个二叉树，每棵树使用随机标准将向量分割成簇，例如随机画一条线，使用这条线将向量分成两个分支。在搜索时，它遍历这些树来收集候选邻居。Spotify 已开源其实现。</p>
-<p>还有其他算法，如 Microsoft 的 SPTAG（Space Partition Tree And Graph）和 FLANN（Fast Library for Approximate Nearest Neighbors）。</p>
-<p>尽管向量数据库在 RAG 兴起后作为一个独立的类别出现，但任何可以存储向量的数据库都可以称为向量数据库。许多传统数据库已经扩展或将扩展以支持向量存储和向量搜索。</p>
+<p>一般来说，向量数据库将向量组织成桶、树或图。向量搜索算法的不同在于它们所使用的启发式方法，这些方法旨在增加相似向量彼此靠近的可能性。向量也可以被量化（降低精度）或变得稀疏。其思想是量化和稀疏向量的计算密集度较低。对于那些想了解更多关于向量搜索的人，Zilliz
+有一个优秀的系列文章。以下是一些重要的向量搜索算法：</p>
+<p><strong>LSH（局部敏感哈希，Locality-Sensitive
+Hashing）</strong>（Indyk 和 Motwani，1999年）
+这是一种强大且多功能的算法，不仅适用于向量。它通过将相似向量哈希到同一个桶中来加速相似性搜索，以部分准确性换取效率。在
+FAISS 和 Annoy 中有实现。</p>
+<p><strong>HNSW（分层可导航小世界，Hierarchical Navigable Small
+World）</strong>（Malkov 和 Yashunin，2016年） HNSW
+构建了一个多层图，其中节点代表向量，边连接相似向量，通过遍历图的边来进行最近邻搜索。作者的实现是开源的，FAISS
+和 Milvus 中也有实现。</p>
+<p><strong>乘积量化（Product Quantization）</strong>（Jégou
+等人，2011年）
+通过将每个向量分解为多个子向量，将每个向量简化为一个更简单、更低维的表示。然后使用这些低维表示来计算距离，这种方式快得多。乘积量化是
+FAISS 的关键组件，几乎所有流行的向量搜索库都支持它。</p>
+<p><strong>IVF（倒排文件索引，Inverted File Index）</strong>（Sivic 和
+Zisserman，2003年） IVF 使用 K-means
+聚类将相似向量组织到同一个簇中。根据数据库中的向量数量，通常设置簇的数量，使得每个簇中平均有
+100 到 10,000 个向量。在查询时，IVF
+找到最接近查询嵌入的簇中心，这些簇中的向量成为候选邻居。IVF
+与乘积量化一起构成了 FAISS 的核心。</p>
+<p><strong>Annoy（Approximate Nearest Neighbors Oh
+Yeah）</strong>（Bernhardsson，2013年） Annoy
+是一种基于树的方法。它构建多个二叉树，每棵树使用随机标准将向量分割成簇，例如随机画一条线，使用这条线将向量分成两个分支。在搜索时，它遍历这些树来收集候选邻居。Spotify
+已开源其实现。</p>
+<p>还有其他算法，如 Microsoft 的 SPTAG（Space Partition Tree And
+Graph）和 FLANN（Fast Library for Approximate Nearest Neighbors）。</p>
+<p>尽管向量数据库在 RAG
+兴起后作为一个独立的类别出现，但任何可以存储向量的数据库都可以称为向量数据库。许多传统数据库已经扩展或将扩展以支持向量存储和向量搜索。</p>
 <h4 id="比较检索算法">比较检索算法</h4>
 <p>Comparing retrieval algorithms</p>
 <p>由于检索历史悠久，许多成熟的解决方案使得基于词项和基于嵌入的检索都比较容易上手。每种方法都有其优缺点。</p>
 <p>基于词项的检索在索引和查询阶段通常比基于嵌入的检索快得多。词项提取比嵌入生成更快，从词项映射到包含它的文档比最近邻搜索的计算开销更小。</p>
-<p>基于词项的检索开箱即用效果也很好。像 Elasticsearch 和 BM25 这样的解决方案已经成功支持了许多搜索和检索应用。然而，其简单性也意味着你可以调整以改进其性能的组件较少。</p>
-<p>另一方面，基于嵌入的检索可以随着时间的推移显著改进，以超越基于词项的检索。你可以微调嵌入模型和检索器，可以分开微调、一起微调，或与生成模型联合微调。然而，将数据转换为嵌入可能会模糊关键词，如特定的错误代码（例如 EADDRNOTAVAIL (99)）或产品名称，使得后来更难搜索到它们。这个限制可以通过将基于嵌入的检索与基于词项的检索结合来解决，正如本章后面所讨论的。</p>
-<p>检索器的质量可以根据其检索到的数据质量来评估。RAG 评估框架常用的两个指标是<strong>上下文精确率</strong>和<strong>上下文召回率</strong>，或简称为精确率和召回率（上下文精确率也称为上下文相关性）：</p>
+<p>基于词项的检索开箱即用效果也很好。像 Elasticsearch 和 BM25
+这样的解决方案已经成功支持了许多搜索和检索应用。然而，其简单性也意味着你可以调整以改进其性能的组件较少。</p>
+<p>另一方面，基于嵌入的检索可以随着时间的推移显著改进，以超越基于词项的检索。你可以微调嵌入模型和检索器，可以分开微调、一起微调，或与生成模型联合微调。然而，将数据转换为嵌入可能会模糊关键词，如特定的错误代码（例如
+EADDRNOTAVAIL
+(99)）或产品名称，使得后来更难搜索到它们。这个限制可以通过将基于嵌入的检索与基于词项的检索结合来解决，正如本章后面所讨论的。</p>
+<p>检索器的质量可以根据其检索到的数据质量来评估。RAG
+评估框架常用的两个指标是<strong>上下文精确率</strong>和<strong>上下文召回率</strong>，或简称为精确率和召回率（上下文精确率也称为上下文相关性）：</p>
 <ul>
 <li><strong>上下文精确率</strong>：在所有检索到的文档中，与查询相关的百分比是多少？</li>
 <li><strong>上下文召回率</strong>：在所有与查询相关的文档中，被检索到的百分比是多少？</li>
 </ul>
-<p>要计算这些指标，你需要建立一个评估集，包含一组测试查询和一组文档。对于每个测试查询，你需要标注每个测试文档是相关还是不相关。标注可以由人工或 AI 评审者完成。然后你在该评估集上计算检索器的精确率和召回率分数。</p>
-<p>在生产环境中，一些 RAG 框架只支持上下文精确率，而不支持上下文召回率。要计算给定查询的上下文召回率，你需要标注数据库中的所有文档与该查询的相关性。上下文精确率计算起来更简单。你只需要将检索到的文档与查询进行比较，这可以由 AI 评审者完成。</p>
-<p>如果你关心检索到的文档的排序，例如更相关的文档应该排在前面，你可以使用像 NDCG（归一化折损累积增益）、MAP（平均平均精确率）和 MRR（平均倒数排名）这样的指标。</p>
-<p>对于语义检索，你还需要评估嵌入的质量。如第 3 章所述，嵌入可以独立评估——如果更相似的文档具有更接近的嵌入，则认为嵌入质量好。嵌入也可以通过它们在特定任务上的表现来评估。MTEB 基准（Muennighoff 等人，2023年）评估了嵌入在广泛任务上的表现，包括检索、分类和聚类。</p>
-<p>检索器的质量还应该在整个 RAG 系统的上下文中进行评估。归根结底，一个好的检索器应当帮助系统生成高质量的答案。生成模型输出的评估在第 3 章和第 4 章中讨论。</p>
-<p>是否值得追求语义检索系统的性能承诺，取决于你对成本和延迟的重视程度，特别是在查询阶段。由于 RAG 的很大一部分延迟来自输出生成，特别是长输出，查询嵌入生成和向量搜索所增加的延迟相对于总的 RAG 延迟可能很小。即便如此，增加的延迟仍然可能影响用户体验。</p>
-<p>另一个问题是成本。生成嵌入需要花钱。如果你的数据频繁变化且需要频繁重新生成嵌入，这尤其成问题。想象一下每天要为 1 亿个文档生成嵌入！根据你使用的向量数据库不同，向量存储和向量搜索查询也可能很昂贵。公司的向量数据库支出达到模型 API 支出的五分之一甚至一半，这种情况并不罕见。</p>
+<p>要计算这些指标，你需要建立一个评估集，包含一组测试查询和一组文档。对于每个测试查询，你需要标注每个测试文档是相关还是不相关。标注可以由人工或
+AI 评审者完成。然后你在该评估集上计算检索器的精确率和召回率分数。</p>
+<p>在生产环境中，一些 RAG
+框架只支持上下文精确率，而不支持上下文召回率。要计算给定查询的上下文召回率，你需要标注数据库中的所有文档与该查询的相关性。上下文精确率计算起来更简单。你只需要将检索到的文档与查询进行比较，这可以由
+AI 评审者完成。</p>
+<p>如果你关心检索到的文档的排序，例如更相关的文档应该排在前面，你可以使用像
+NDCG（归一化折损累积增益）、MAP（平均平均精确率）和
+MRR（平均倒数排名）这样的指标。</p>
+<p>对于语义检索，你还需要评估嵌入的质量。如第 3
+章所述，嵌入可以独立评估——如果更相似的文档具有更接近的嵌入，则认为嵌入质量好。嵌入也可以通过它们在特定任务上的表现来评估。MTEB
+基准（Muennighoff
+等人，2023年）评估了嵌入在广泛任务上的表现，包括检索、分类和聚类。</p>
+<p>检索器的质量还应该在整个 RAG
+系统的上下文中进行评估。归根结底，一个好的检索器应当帮助系统生成高质量的答案。生成模型输出的评估在第
+3 章和第 4 章中讨论。</p>
+<p>是否值得追求语义检索系统的性能承诺，取决于你对成本和延迟的重视程度，特别是在查询阶段。由于
+RAG
+的很大一部分延迟来自输出生成，特别是长输出，查询嵌入生成和向量搜索所增加的延迟相对于总的
+RAG 延迟可能很小。即便如此，增加的延迟仍然可能影响用户体验。</p>
+<p>另一个问题是成本。生成嵌入需要花钱。如果你的数据频繁变化且需要频繁重新生成嵌入，这尤其成问题。想象一下每天要为
+1
+亿个文档生成嵌入！根据你使用的向量数据库不同，向量存储和向量搜索查询也可能很昂贵。公司的向量数据库支出达到模型
+API 支出的五分之一甚至一半，这种情况并不罕见。</p>
 <p>表 6-2 展示了基于词项的检索和基于嵌入的检索的并排比较。</p>
-<p>![表6-2](/img4/AI Engineering/6/Table-6-2-Retrieval-comparison.png)</p>
-<p><strong>表 6-2：基于词项的检索与语义检索在速度、性能和成本上的比较</strong></p>
+<figure>
+<img src="/img4/AI%20Engineering/6/Table-6-2-Retrieval-comparison.png"
+alt="表6-2" />
+<figcaption aria-hidden="true">表6-2</figcaption>
+</figure>
+<p><strong>表
+6-2：基于词项的检索与语义检索在速度、性能和成本上的比较</strong></p>
 <table>
+<colgroup>
+<col style="width: 18%" />
+<col style="width: 39%" />
+<col style="width: 42%" />
+</colgroup>
 <thead>
 <tr>
 <th></th>
@@ -415,17 +592,26 @@ Annoy 是一种基于树的方法。它构建多个二叉树，每棵树使用�
 </tbody>
 </table>
 <p>使用检索系统时，你可以在索引和查询之间做出某些权衡。索引越详细，检索过程就越精确，但索引过程会更慢且更消耗内存。想象构建一个潜在客户的索引。添加更多细节（如姓名、公司、邮箱、电话、兴趣）使得找到相关人员更容易，但构建时间更长且需要更多存储空间。</p>
-<p>一般来说，像 HNSW 这样的详细索引提供高精度和快速查询时间，但需要显著的时间和内存来构建。相比之下，像 LSH 这样的简单索引创建更快且内存占用更少，但会导致查询更慢且精度较低。</p>
-<p>ANN-Benchmarks 网站使用四个主要指标比较了多种数据集上的不同 ANN 算法，考虑了索引和查询之间的权衡。这些指标包括：</p>
+<p>一般来说，像 HNSW
+这样的详细索引提供高精度和快速查询时间，但需要显著的时间和内存来构建。相比之下，像
+LSH
+这样的简单索引创建更快且内存占用更少，但会导致查询更慢且精度较低。</p>
+<p>ANN-Benchmarks 网站使用四个主要指标比较了多种数据集上的不同 ANN
+算法，考虑了索引和查询之间的权衡。这些指标包括：</p>
 <ul>
 <li><strong>召回率（Recall）</strong>：算法找到的最近邻的比例。</li>
 <li><strong>每秒查询数（QPS）</strong>：算法每秒能处理的查询数量。这对高流量应用至关重要。</li>
-<li><strong>构建时间（Build time）</strong>：构建索引所需的时间。这个指标在你需要频繁更新索引时（例如因为数据变化）尤为重要。</li>
-<li><strong>索引大小（Index size）</strong>：算法创建的索引大小，对于评估其可扩展性和存储需求至关重要。</li>
+<li><strong>构建时间（Build
+time）</strong>：构建索引所需的时间。这个指标在你需要频繁更新索引时（例如因为数据变化）尤为重要。</li>
+<li><strong>索引大小（Index
+size）</strong>：算法创建的索引大小，对于评估其可扩展性和存储需求至关重要。</li>
 </ul>
-<p>此外，BEIR（Benchmarking IR）（Thakur 等人，2021年）是一个检索评估工具。它支持 14 个常见检索基准上的检索系统。</p>
-<p>总结一下，RAG 系统的质量应该既按组件评估，也进行端到端评估。为此，你应该做以下事情：</p>
-<ol>
+<p>此外，BEIR（Benchmarking IR）（Thakur
+等人，2021年）是一个检索评估工具。它支持 14
+个常见检索基准上的检索系统。</p>
+<p>总结一下，RAG
+系统的质量应该既按组件评估，也进行端到端评估。为此，你应该做以下事情：</p>
+<ol type="1">
 <li>评估检索质量。</li>
 <li>评估最终的 RAG 输出。</li>
 <li>评估嵌入（对于基于嵌入的检索）。</li>
@@ -433,18 +619,33 @@ Annoy 是一种基于树的方法。它构建多个二叉树，每棵树使用�
 <h4 id="组合检索算法">组合检索算法</h4>
 <p>Combining retrieval algorithms</p>
 <p>鉴于不同检索算法的独特优势，生产级检索系统通常结合多种方法。将基于词项的检索和基于嵌入的检索结合起来称为<strong>混合搜索</strong>。</p>
-<p>不同的算法可以按顺序使用。首先，一个廉价但不太精确的检索器（如基于词项的系统）获取候选结果。然后，一个更精确但更昂贵的机制（如 k-近邻）在这些候选结果中找到最佳结果。这第二步也称为<strong>重新排序</strong>。</p>
-<p>例如，给定词项&quot;transformer&quot;，你可以获取所有包含单词 transformer 的文档，无论它们是关于电子设备、神经架构还是电影。然后你使用向量搜索在这些文档中找到那些实际上与你的 transformer 查询相关的文档。再举一个例子，考虑查询&quot;谁对 X 的销售额贡献最大？&quot;首先，你可能使用关键词 X 获取所有与 X 相关的文档。然后，你使用向量搜索来检索与&quot;谁对销售额贡献最大？&quot;相关的上下文。</p>
+<p>不同的算法可以按顺序使用。首先，一个廉价但不太精确的检索器（如基于词项的系统）获取候选结果。然后，一个更精确但更昂贵的机制（如
+k-近邻）在这些候选结果中找到最佳结果。这第二步也称为<strong>重新排序</strong>。</p>
+<p>例如，给定词项"transformer"，你可以获取所有包含单词 transformer
+的文档，无论它们是关于电子设备、神经架构还是电影。然后你使用向量搜索在这些文档中找到那些实际上与你的
+transformer 查询相关的文档。再举一个例子，考虑查询"谁对 X
+的销售额贡献最大？"首先，你可能使用关键词 X 获取所有与 X
+相关的文档。然后，你使用向量搜索来检索与"谁对销售额贡献最大？"相关的上下文。</p>
 <p>不同的算法也可以并行使用，形成一个集成方法。记住，检索器通过根据文档与查询的相关性分数对文档进行排序来工作。你可以同时使用多个检索器获取候选结果，然后将这些不同的排名组合起来生成最终的排名。</p>
-<p>一种用于组合不同排名的算法称为<strong>倒数排名融合</strong>（Reciprocal Rank Fusion, RRF）（Cormack 等人，2009年）。它根据文档在某个检索器中的排名为该文档分配一个分数。<u><em>直观地说，如果排名第一，其分数为 1/1 = 1。如果排名第二，其分数为 ½ = 0.5。排名越高，分数越高。</em></u></p>
-<p>一个文档的最终分数是其相对于所有检索器的分数之和。如果一个文档在一个检索器中排名第一，在另一个检索器中排名第二，其分数为 1 + 0.5 = 1.5。这个例子是 RRF 的过度简化，但展示了基本原理。文档 D 的实际公式更为复杂，如下所示：</p>
-<p>$$<br>
-\text{Score}(D) = \sum_{i=1}^{n} \frac{1}{k + r_i(D)}<br>
-$$</p>
+<p>一种用于组合不同排名的算法称为<strong>倒数排名融合</strong>（Reciprocal
+Rank Fusion, RRF）（Cormack
+等人，2009年）。它根据文档在某个检索器中的排名为该文档分配一个分数。<u><em>直观地说，如果排名第一，其分数为
+1/1 = 1。如果排名第二，其分数为 ½ =
+0.5。排名越高，分数越高。</em></u></p>
+<p>一个文档的最终分数是其相对于所有检索器的分数之和。如果一个文档在一个检索器中排名第一，在另一个检索器中排名第二，其分数为
+1 + 0.5 = 1.5。这个例子是 RRF 的过度简化，但展示了基本原理。文档 D
+的实际公式更为复杂，如下所示：</p>
+<p><span class="math display">\[
+\text{Score}(D) = \sum_{i=1}^{n} \frac{1}{k + r_i(D)}
+\]</span></p>
 <ul>
-<li>$n$ 是排名列表的数量；每个排名列表由一个检索器生成。</li>
-<li>$r_i(D)$ 是文档在检索器 $i$ 下的排名。</li>
-<li>$k$ 是一个常数，用于避免除以零，并控制低排名文档的影响。$k$ 的典型值为 60。</li>
+<li><span class="math inline">\(n\)</span>
+是排名列表的数量；每个排名列表由一个检索器生成。</li>
+<li><span class="math inline">\(r_i(D)\)</span> 是文档在检索器 <span
+class="math inline">\(i\)</span> 下的排名。</li>
+<li><span class="math inline">\(k\)</span>
+是一个常数，用于避免除以零，并控制低排名文档的影响。<span
+class="math inline">\(k\)</span> 的典型值为 60。</li>
 </ul>
 <h3 id="检索优化">检索优化</h3>
 <p>Retrieval Optimization</p>
@@ -452,43 +653,81 @@ $$</p>
 <h4 id="分块策略">分块策略</h4>
 <p>Chunking strategy</p>
 <p>你的数据应该如何索引取决于你之后打算如何检索它。上一节讨论了不同的检索算法及其各自的索引策略。那里的讨论基于文档已经被分割成可管理块的假设。在本节中，我将介绍不同的分块策略。这是一个重要的考虑因素，因为你使用的分块策略会显著影响检索系统的性能。</p>
-<p>最简单的策略是基于某种单位将文档分割成等长的块。常见的单位是字符、单词、句子和段落。例如，你可以将每个文档分割成 2,048 个字符或 512 个单词的块。你也可以将每个文档分割，使得每个块包含固定数量的句子（如 20 个句子）或段落（如每个段落自成一个块）。</p>
+<p>最简单的策略是基于某种单位将文档分割成等长的块。常见的单位是字符、单词、句子和段落。例如，你可以将每个文档分割成
+2,048 个字符或 512
+个单词的块。你也可以将每个文档分割，使得每个块包含固定数量的句子（如 20
+个句子）或段落（如每个段落自成一个块）。</p>
 <p>你也可以使用越来越小的单位递归地分割文档，直到每个块适应你的最大块大小。例如，你可以从将文档分割成章节开始。如果一个章节太长，将其分割成段落。如果一个段落仍然太长，将其分割成句子。这减少了相关文本被随意截断的可能性。</p>
 <p><u><em>特定文档可能也支持创造性的分块策略</em></u>。例如，有针对不同编程语言专门开发的分割器。问答文档可以按问题或答案对来分割，每对组成一个块。中文文本可能需要与英文文本不同的分割方式。</p>
-<p>当文档被分割成没有重叠的块时，块可能会在重要上下文的中间被截断，导致关键信息的丢失。考虑文本&quot;我给我的妻子留了一张便条&quot;。如果它被分割成&quot;我给我的妻子&quot;和&quot;一张便条&quot;，这两个块都无法传达原文的关键信息。<u><em><strong>重叠</strong>确保重要的边界信息至少包含在一个块中</em></u>。如果你设置块大小为 2,048 个字符，你可以设置重叠大小为 20 个字符。</p>
+<p>当文档被分割成没有重叠的块时，块可能会在重要上下文的中间被截断，导致关键信息的丢失。考虑文本"我给我的妻子留了一张便条"。如果它被分割成"我给我的妻子"和"一张便条"，这两个块都无法传达原文的关键信息。<u><em><strong>重叠</strong>确保重要的边界信息至少包含在一个块中</em></u>。如果你设置块大小为
+2,048 个字符，你可以设置重叠大小为 20 个字符。</p>
 <p>块大小不应超过生成模型的最大上下文长度。对于基于嵌入的方法，块大小也不应超过嵌入模型的上下文限制。</p>
-<p>你也可以使用 token（由生成模型的分词器确定）作为单位来分割文档。假设你想使用 Llama 3 作为生成模型。那么你首先使用 Llama 3 的分词器对文档进行分词。然后你可以使用 token 作为边界将文档分割成块。按 token 分块使得与下游模型更容易配合。然而，这种方法的缺点是如果你切换到另一个具有不同分词器的生成模型，你需要重新索引你的数据。</p>
+<p>你也可以使用
+token（由生成模型的分词器确定）作为单位来分割文档。假设你想使用 Llama 3
+作为生成模型。那么你首先使用 Llama 3
+的分词器对文档进行分词。然后你可以使用 token 作为边界将文档分割成块。按
+token
+分块使得与下游模型更容易配合。然而，这种方法的缺点是如果你切换到另一个具有不同分词器的生成模型，你需要重新索引你的数据。</p>
 <p>无论你选择哪种策略，块大小都很重要。较小的块大小允许更多样化的信息。较小的块意味着你可以在模型的上下文中容纳更多块。如果你将块大小减半，你可以容纳两倍的块。更多块可以为模型提供更广泛的信息，这可以帮助模型产生更好的答案。</p>
-<p>然而，较小的块大小可能导致重要信息的丢失。想象一个文档，其中包含关于主题 X 的重要信息贯穿整个文档，但 X 只在前半部分被提到。如果你将这个文档分成两个块，后半部分可能不会被检索到，模型将无法使用其中的信息。</p>
+<p>然而，较小的块大小可能导致重要信息的丢失。想象一个文档，其中包含关于主题
+X 的重要信息贯穿整个文档，但 X
+只在前半部分被提到。如果你将这个文档分成两个块，后半部分可能不会被检索到，模型将无法使用其中的信息。</p>
 <p>较小的块大小也可能增加计算开销。这对于基于嵌入的检索尤其成问题。将块大小减半意味着你需要索引两倍的块，并生成和存储两倍的嵌入向量。你的向量搜索空间将是原来的两倍，这可能会降低查询速度。</p>
 <p>没有通用的最佳块大小或重叠大小。你需要通过实验来找到最适合你的方案。</p>
 <h4 id="重新排序">重新排序</h4>
 <p>Reranking</p>
-<p>由检索器生成的初始文档排序可以进一步重新排序以提高准确性。当你需要减少检索到的文档数量时，无论是为了适应模型的上下文还是为了减少输入 token 数量，重新排序尤其有用。</p>
-<p>在第 266 页的&quot;组合检索算法&quot;中讨论了一种常见的重新排序模式。一个廉价但不太精确的检索器获取候选结果，然后一个更精确但更昂贵的机制对这些候选结果进行重新排序。</p>
+<p>由检索器生成的初始文档排序可以进一步重新排序以提高准确性。当你需要减少检索到的文档数量时，无论是为了适应模型的上下文还是为了减少输入
+token 数量，重新排序尤其有用。</p>
+<p>在第 266
+页的"组合检索算法"中讨论了一种常见的重新排序模式。一个廉价但不太精确的检索器获取候选结果，然后一个更精确但更昂贵的机制对这些候选结果进行重新排序。</p>
 <p><u><em>文档也可以根据时间进行重新排序，给予较新的数据更高的权重。这对于时间敏感的应用（如新闻聚合、与你的电子邮件聊天（如可以回答关于你邮件问题的聊天机器人）或股票市场分析）非常有用。</em></u></p>
-<p>上下文重新排序与传统搜索重新排序的不同之处在于，项目的精确位置不那么关键。在搜索中，排名（如第一或第五）至关重要。在上下文重新排序中，文档的顺序仍然重要，因为它影响模型处理它们的效率。模型可能更好地理解上下文开头和末尾的文档，正如第 218 页&quot;上下文长度与上下文效率&quot;中所讨论的。然而，只要文档被包含在内，其顺序的影响比搜索排名中的影响要小。</p>
+<p>上下文重新排序与传统搜索重新排序的不同之处在于，项目的精确位置不那么关键。在搜索中，排名（如第一或第五）至关重要。在上下文重新排序中，文档的顺序仍然重要，因为它影响模型处理它们的效率。模型可能更好地理解上下文开头和末尾的文档，正如第
+218
+页"上下文长度与上下文效率"中所讨论的。然而，只要文档被包含在内，其顺序的影响比搜索排名中的影响要小。</p>
 <h4 id="查询重写">查询重写</h4>
 <p>Query rewriting</p>
 <p>查询重写也称为<strong>查询改写</strong>、<strong>查询归一化</strong>，有时也称为<strong>查询扩展</strong>。考虑以下对话：</p>
-<p><strong>用户</strong>：John Doe 上次什么时候从我们这里买东西？<br>
-<strong>AI</strong>：John 两周前，也就是 2030 年 1 月 3 日，从我们这里买了一个 Fruity Fedora 帽子。<br>
-<strong>用户</strong>：那 Emily Doe 呢？</p>
-<p>最后一个问题&quot;那 Emily Doe 呢？&quot;在没有上下文的情况下是有歧义的。如果你逐字使用这个查询来检索文档，你很可能会得到不相关的结果。<u><em>你需要重写这个查询以反映用户实际在问什么。新的查询应该能够独立表达其含义。在这种情况下，查询应该重写为&quot;Emily Doe 上次什么时候从我们这里买东西？&quot;</em></u></p>
-<p>虽然我把查询重写放在&quot;RAG&quot;部分，但查询重写并非 RAG 所独有。在传统搜索引擎中，查询重写通常通过启发式方法完成。在 AI 应用中，查询重写也可以使用其他 AI 模型来完成，使用的提示类似于&quot;给定以下对话，重写最后一个用户输入以反映用户实际在问什么&quot;。图 6-4 展示了 ChatGPT 使用这个提示重写查询的方式。</p>
-<p>![图6-4](/img4/AI Engineering/6/Figure-6-4-Query-rewriting.png)</p>
+<p><strong>用户</strong>：John Doe 上次什么时候从我们这里买东西？
+<strong>AI</strong>：John 两周前，也就是 2030 年 1 月 3
+日，从我们这里买了一个 Fruity Fedora 帽子。 <strong>用户</strong>：那
+Emily Doe 呢？</p>
+<p>最后一个问题"那 Emily Doe
+呢？"在没有上下文的情况下是有歧义的。如果你逐字使用这个查询来检索文档，你很可能会得到不相关的结果。<u><em>你需要重写这个查询以反映用户实际在问什么。新的查询应该能够独立表达其含义。在这种情况下，查询应该重写为"Emily
+Doe 上次什么时候从我们这里买东西？"</em></u></p>
+<p>虽然我把查询重写放在"RAG"部分，但查询重写并非 RAG
+所独有。在传统搜索引擎中，查询重写通常通过启发式方法完成。在 AI
+应用中，查询重写也可以使用其他 AI
+模型来完成，使用的提示类似于"给定以下对话，重写最后一个用户输入以反映用户实际在问什么"。图
+6-4 展示了 ChatGPT 使用这个提示重写查询的方式。</p>
+<figure>
+<img src="/img4/AI%20Engineering/6/Figure-6-4-Query-rewriting.png"
+alt="图6-4" />
+<figcaption aria-hidden="true">图6-4</figcaption>
+</figure>
 <p><strong>图 6-4：你可以使用其他生成模型来重写查询。</strong></p>
-<p>查询重写可能会变得复杂，特别是当你需要进行身份解析或整合其他知识时。例如，如果用户问&quot;那他的妻子呢？&quot;你首先需要查询数据库以找出他的妻子是谁。如果你没有这个信息，重写模型应该承认这个查询无法解决，而不是产生幻觉编造一个名字，导致错误的答案。</p>
+<p>查询重写可能会变得复杂，特别是当你需要进行身份解析或整合其他知识时。例如，如果用户问"那他的妻子呢？"你首先需要查询数据库以找出他的妻子是谁。如果你没有这个信息，重写模型应该承认这个查询无法解决，而不是产生幻觉编造一个名字，导致错误的答案。</p>
 <h4 id="上下文检索">上下文检索</h4>
 <p>Contextual retrieval</p>
 <p><u><em>上下文检索背后的思想是使用相关上下文来增强每个块，使得更容易检索到相关的块。一个简单的技术是用元数据（如标签和关键词）来增强块。</em></u>对于电子商务，可以通过描述和评论来增强产品。图片和视频可以通过其标题或说明文字来查询。</p>
-<p>元数据还可以包括从块中自动提取的实体。如果你的文档包含特定术语，如错误代码 EADDRNOTAVAIL (99)，将它们添加到文档的元数据中，使得系统可以通过该关键词检索到它，即使在文档被转换为嵌入之后。</p>
-<p><u><em>你也可以用每个块可以回答的问题来增强它。</em></u>对于客户支持，你可以用相关问题来增强每篇文章。例如，关于如何重置密码的文章可以用&quot;如何重置密码？&quot;、“我忘记了我的密码”、&quot;我无法登录&quot;甚至&quot;救命，我找不到我的账户&quot;等查询来增强¹⁰。</p>
-<p><u><em>如果一个文档被分割成多个块，有些块可能缺乏必要的上下文来帮助检索器理解该块是关于什么的。为了避免这种情况，你可以用原始文档的上下文来增强每个块，比如原始文档的标题和摘要</em></u>。Anthropic 使用 AI 模型生成了一个简短的上下文（通常 50-100 个 token），解释该块及其与原始文档的关系。以下是 Anthropic 用于此目的的提示（Anthropic，2024年）：</p>
+<p>元数据还可以包括从块中自动提取的实体。如果你的文档包含特定术语，如错误代码
+EADDRNOTAVAIL
+(99)，将它们添加到文档的元数据中，使得系统可以通过该关键词检索到它，即使在文档被转换为嵌入之后。</p>
+<p><u><em>你也可以用每个块可以回答的问题来增强它。</em></u>对于客户支持，你可以用相关问题来增强每篇文章。例如，关于如何重置密码的文章可以用"如何重置密码？"、"我忘记了我的密码"、"我无法登录"甚至"救命，我找不到我的账户"等查询来增强¹⁰。</p>
+<p><u><em>如果一个文档被分割成多个块，有些块可能缺乏必要的上下文来帮助检索器理解该块是关于什么的。为了避免这种情况，你可以用原始文档的上下文来增强每个块，比如原始文档的标题和摘要</em></u>。Anthropic
+使用 AI 模型生成了一个简短的上下文（通常 50-100 个
+token），解释该块及其与原始文档的关系。以下是 Anthropic
+用于此目的的提示（Anthropic，2024年）：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&lt;document&gt;</span><br><span class="line">&#123;&#123;WHOLE_DOCUMENT&#125;&#125;</span><br><span class="line">&lt;/document&gt;</span><br><span class="line">Here is the chunk we want to situate within the whole document:</span><br><span class="line">&lt;chunk&gt;</span><br><span class="line">&#123;&#123;CHUNK_CONTENT&#125;&#125;</span><br><span class="line">&lt;/chunk&gt;</span><br><span class="line">Please give a short succinct context to situate this chunk within the</span><br><span class="line">overall document for the purposes of improving search retrieval of the</span><br><span class="line">chunk. Answer only with the succinct context and nothing else.</span><br></pre></td></tr></table></figure>
-<p>为每个块生成的上下文被前置到每个块之前，然后增强后的块被检索算法索引。图 6-5 可视化了 Anthropic 遵循的过程。</p>
-<p>![图6-5](/img4/AI Engineering/6/Figure-6-5-Contextual-retrieval.png)</p>
-<p><strong>图 6-5：Anthropic 使用一个简短的上下文来增强每个块，将该块置于原始文档的上下文中，使得检索器更容易在给定查询时找到相关块。图片来自《Introducing Contextual Retrieval》（Anthropic，2024年）。</strong></p>
+<p>为每个块生成的上下文被前置到每个块之前，然后增强后的块被检索算法索引。图
+6-5 可视化了 Anthropic 遵循的过程。</p>
+<figure>
+<img src="/img4/AI%20Engineering/6/Figure-6-5-Contextual-retrieval.png"
+alt="图6-5" />
+<figcaption aria-hidden="true">图6-5</figcaption>
+</figure>
+<p><strong>图 6-5：Anthropic
+使用一个简短的上下文来增强每个块，将该块置于原始文档的上下文中，使得检索器更容易在给定查询时找到相关块。图片来自《Introducing
+Contextual Retrieval》（Anthropic，2024年）。</strong></p>
 <h4 id="评估检索解决方案">评估检索解决方案</h4>
 <p>Evaluating Retrieval Solutions</p>
 <p>以下是评估检索解决方案时需要记住的一些关键因素：</p>
@@ -501,63 +740,116 @@ $$</p>
 <li>如果是托管解决方案，其<u><em>定价结构</em></u>是怎样的？是基于文档/向量容量还是基于查询量？</li>
 </ul>
 <p>这个列表不包括通常<u><em>与企业解决方案相关的功能，如访问控制、合规性、数据平面与控制平面分离等。</em></u></p>
-<h3 id="超越文本的-RAG">超越文本的 RAG</h3>
+<h3 id="超越文本的-rag">超越文本的 RAG</h3>
 <p>RAG Beyond Texts</p>
-<p>上一节讨论了基于文本的 RAG 系统，其中外部数据源是文本文档。然而，外部数据源也可以是多模态数据和表格数据。</p>
-<h4 id="多模态-RAG">多模态 RAG</h4>
+<p>上一节讨论了基于文本的 RAG
+系统，其中外部数据源是文本文档。然而，外部数据源也可以是多模态数据和表格数据。</p>
+<h4 id="多模态-rag">多模态 RAG</h4>
 <p>Multimodal RAG</p>
-<p>如果你的生成器是多模态的，其上下文不仅可以增强文本文档，还可以增强来自外部源的图片、视频、音频等。为了简洁，我将使用图片作为示例，但你可以用任何其他模态替换图片。给定一个查询，检索器获取与之相关的文本和图片。例如，给定&quot;皮克斯电影《飞屋环游记》中房子的颜色是什么？&quot;检索器可以获取《飞屋环游记》中房子的图片来帮助模型回答，如图 6-6 所示。</p>
-<p>![图6-6](/img4/AI Engineering/6/Figure-6-6-Multimodal-RAG.png)</p>
-<p>**图 6-6：多模态 RAG 可以使用文本和图片来增强查询。<em>出于版权原因，未使用《飞屋环游记》的实际图片。</em></p>
+<p>如果你的生成器是多模态的，其上下文不仅可以增强文本文档，还可以增强来自外部源的图片、视频、音频等。为了简洁，我将使用图片作为示例，但你可以用任何其他模态替换图片。给定一个查询，检索器获取与之相关的文本和图片。例如，给定"皮克斯电影《飞屋环游记》中房子的颜色是什么？"检索器可以获取《飞屋环游记》中房子的图片来帮助模型回答，如图
+6-6 所示。</p>
+<figure>
+<img src="/img4/AI%20Engineering/6/Figure-6-6-Multimodal-RAG.png"
+alt="图6-6" />
+<figcaption aria-hidden="true">图6-6</figcaption>
+</figure>
+<p>**图 6-6：多模态 RAG
+可以使用文本和图片来增强查询。<em>出于版权原因，未使用《飞屋环游记》的实际图片。</em></p>
 <p><u><em>如果图片有元数据——如标题、标签和说明文字——它们可以通过元数据被检索到。</em></u>例如，如果图片的说明文字被认为与查询相关，该图片就会被检索到。</p>
 <blockquote>
 <p>个人注：多模态嵌入模型详细的原理见：</p>
 <p>《Hands-On Large Language Models》第9章 多模态大型语言模型。</p>
 </blockquote>
-<p>如果你想基于图片的内容来检索图片，你需要有一种方法来比较图片与查询。如果查询是文本，你需要一个能够同时为图片和文本生成嵌入的多模态嵌入模型。假设你使用 CLIP（Radford 等人，2021年）作为<u><em>多模态嵌入模型</em></u>。检索器的工作方式如下：</p>
-<ol>
-<li>为你的所有数据（文本和图片）生成 CLIP 嵌入，并将它们存储在向量数据库中。</li>
+<p>如果你想基于图片的内容来检索图片，你需要有一种方法来比较图片与查询。如果查询是文本，你需要一个能够同时为图片和文本生成嵌入的多模态嵌入模型。假设你使用
+CLIP（Radford
+等人，2021年）作为<u><em>多模态嵌入模型</em></u>。检索器的工作方式如下：</p>
+<ol type="1">
+<li>为你的所有数据（文本和图片）生成 CLIP
+嵌入，并将它们存储在向量数据库中。</li>
 <li>给定一个查询，生成其 CLIP 嵌入。</li>
 <li>在向量数据库中查询所有嵌入与查询嵌入接近的图片和文本。</li>
 </ol>
-<h4 id="与表格数据的-RAG">与表格数据的 RAG</h4>
+<h4 id="与表格数据的-rag">与表格数据的 RAG</h4>
 <p>RAG with tabular data</p>
-<p>大多数应用不仅处理非结构化数据（如文本和图片），还处理表格数据。许多查询可能需要数据表中的信息来回答。使用表格数据来增强上下文的工作流与经典的 RAG 工作流有显著不同。</p>
-<p>想象你在一家专注于猫时尚的电商网站 Kitty Vogue 工作。该商店有一个名为 Sales 的订单表，如表 6-3 所示。</p>
-<p>![表6-3](/img4/AI Engineering/6/Table-6-3-Sales-order-table.png)</p>
-<p><strong>表 6-3：虚构电商网站 Kitty Vogue 的订单表 Sales 示例</strong></p>
-<p>要生成对问题&quot;最近 7 天内 Fruity Fedora 卖出了多少件？&quot;的回答，你的系统需要查询该表以获取所有涉及 Fruity Fedora 的订单，并对所有订单的数量求和。假设该表可以使用 SQL 查询。SQL 查询可能如下所示：</p>
+<p>大多数应用不仅处理非结构化数据（如文本和图片），还处理表格数据。许多查询可能需要数据表中的信息来回答。使用表格数据来增强上下文的工作流与经典的
+RAG 工作流有显著不同。</p>
+<p>想象你在一家专注于猫时尚的电商网站 Kitty Vogue 工作。该商店有一个名为
+Sales 的订单表，如表 6-3 所示。</p>
+<figure>
+<img src="/img4/AI%20Engineering/6/Table-6-3-Sales-order-table.png"
+alt="表6-3" />
+<figcaption aria-hidden="true">表6-3</figcaption>
+</figure>
+<p><strong>表 6-3：虚构电商网站 Kitty Vogue 的订单表 Sales
+示例</strong></p>
+<p>要生成对问题"最近 7 天内 Fruity Fedora
+卖出了多少件？"的回答，你的系统需要查询该表以获取所有涉及 Fruity Fedora
+的订单，并对所有订单的数量求和。假设该表可以使用 SQL 查询。SQL
+查询可能如下所示：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="built_in">SUM</span>(units) <span class="keyword">AS</span> total_units_sold</span><br><span class="line"><span class="keyword">FROM</span> Sales</span><br><span class="line"><span class="keyword">WHERE</span> product_name <span class="operator">=</span> <span class="string">&#x27;Fruity Fedora&#x27;</span></span><br><span class="line"><span class="keyword">AND</span> <span class="type">timestamp</span> <span class="operator">&gt;=</span> DATE_SUB(CURDATE(), <span class="type">INTERVAL</span> <span class="number">7</span> <span class="keyword">DAY</span>);</span><br></pre></td></tr></table></figure>
-<p>工作流如下，如图 6-7 所示。要运行这个工作流，你的系统必须能够生成和执行 SQL 查询：</p>
-<p>![图6-7](/img4/AI Engineering/6/Figure-6-7-Tabular-RAG-text2sql.png)</p>
+<p>工作流如下，如图 6-7
+所示。要运行这个工作流，你的系统必须能够生成和执行 SQL 查询：</p>
+<figure>
+<img src="/img4/AI%20Engineering/6/Figure-6-7-Tabular-RAG-text2sql.png"
+alt="图6-7" />
+<figcaption aria-hidden="true">图6-7</figcaption>
+</figure>
 <p><strong>图 6-7：使用表格数据增强上下文的 RAG 系统。</strong></p>
-<ol>
-<li><strong>Text-to-SQL</strong>：基于用户查询和提供的表结构，确定需要什么 SQL 查询。<u><em>Text-to-SQL 是语义解析的一个例子</em></u>，如第 2 章所述。</li>
+<ol type="1">
+<li><strong>Text-to-SQL</strong>：基于用户查询和提供的表结构，确定需要什么
+SQL 查询。<u><em>Text-to-SQL 是语义解析的一个例子</em></u>，如第 2
+章所述。</li>
 <li><strong>SQL 执行</strong>：执行 SQL 查询。</li>
 <li><strong>生成</strong>：基于 SQL 结果和原始用户查询生成响应。</li>
 </ol>
-<p>对于 Text-to-SQL 步骤，如果有太多可用的表，其结构无法全部放入模型上下文，你可能需要一个中间步骤来预测每个查询要使用哪些表。Text-to-SQL 可以由生成最终响应的同一个生成器完成，也可以由专门的 Text-to-SQL 模型完成。</p>
-<p>在本节中，我们讨论了检索器和 SQL 执行器等工具如何使模型能够处理更多查询并生成更高质量的响应。让模型访问更多工具能进一步提升其能力吗？工具使用是智能体模式的核心特征，我们将在下一节中讨论。</p>
+<p>对于 Text-to-SQL
+步骤，如果有太多可用的表，其结构无法全部放入模型上下文，你可能需要一个中间步骤来预测每个查询要使用哪些表。Text-to-SQL
+可以由生成最终响应的同一个生成器完成，也可以由专门的 Text-to-SQL
+模型完成。</p>
+<p>在本节中，我们讨论了检索器和 SQL
+执行器等工具如何使模型能够处理更多查询并生成更高质量的响应。让模型访问更多工具能进一步提升其能力吗？工具使用是智能体模式的核心特征，我们将在下一节中讨论。</p>
 <h2 id="智能体">智能体</h2>
 <p>Agents</p>
-<p><u><em>智能体被许多人认为是 AI 的终极目标</em></u>。Stuart Russell 和 Peter Norvig 的经典著作《Artificial Intelligence: A Modern Approach》（Prentice Hall，1995年）将人工智能研究领域定义为&quot;对理性智能体的研究和设计&quot;。</p>
+<p><u><em>智能体被许多人认为是 AI 的终极目标</em></u>。Stuart Russell 和
+Peter Norvig 的经典著作《Artificial Intelligence: A Modern
+Approach》（Prentice
+Hall，1995年）将人工智能研究领域定义为"对理性智能体的研究和设计"。</p>
 <p>基础模型前所未有的能力为以前无法想象的智能体应用打开了大门。这些新能力使得开发自主、智能的智能体成为可能，<u><em>它们可以作为我们的助手、同事和教练。</em></u>它们可以帮助我们创建网站、收集数据、规划旅行、进行市场研究、管理客户账户、自动化数据录入、为我们准备面试、面试候选人、谈判交易等。可能性似乎是无穷的，这些智能体的潜在经济价值是巨大的。</p>
-<p>AI 驱动的智能体是一个新兴领域，还没有既定的理论框架来定义、开发和评估它们。本节是在现有文献基础上建立框架的尽力尝试，但会随着领域的发展而演变。与本书其余部分相比，这一节更具实验性。</p>
+<p>AI
+驱动的智能体是一个新兴领域，还没有既定的理论框架来定义、开发和评估它们。本节是在现有文献基础上建立框架的尽力尝试，但会随着领域的发展而演变。与本书其余部分相比，这一节更具实验性。</p>
 <p>本节将从智能体的概述开始，然后继续讨论<u><em>决定智能体能力的两个方面：工具和规划。</em></u>智能体以其新的运行模式，也带来了<u><em>新的失败模式。</em></u>本节将以如何评估智能体以捕捉这些失败的讨论作为结束。</p>
 <p>尽管智能体是新颖的，但它们建立在本书已经出现过的概念之上，包括自我批评、思维链和结构化输出。</p>
 <h3 id="智能体概述">智能体概述</h3>
 <p>Agent Overview</p>
-<p>&quot;智能体&quot;一词已在许多不同的工程语境中使用，包括但不限于软件智能体、智能智能体、用户智能体、对话智能体和强化学习智能体。那么，究竟什么是智能体？</p>
+<p>"智能体"一词已在许多不同的工程语境中使用，包括但不限于软件智能体、智能智能体、用户智能体、对话智能体和强化学习智能体。那么，究竟什么是智能体？</p>
 <p><u><em>智能体是任何能够感知其环境并对其环境采取行动的东西¹¹。这意味着智能体由其运行的环境和它可以执行的动作集来定义。</em></u></p>
-<p><u><em>智能体可以运行的环境由其用例定义。</em></u>如果智能体是为了玩游戏（如 Minecraft、围棋、Dota）而开发的，那么该游戏就是它的环境。如果你想要一个智能体从互联网上抓取文档，环境就是互联网。如果你的智能体是一个烹饪机器人，厨房就是它的环境。自动驾驶汽车智能体的环境是道路系统及其周边区域。</p>
-<p>AI 智能体可以执行的动作集通过它可以访问的工具来增强。<u><em>许多你日常交互的生成式 AI 驱动的应用都是可以访问工具的智能体，尽管是简单的工具。ChatGPT 就是一个智能体。它可以搜索网络、执行 Python 代码和生成图片。RAG 系统也是智能体，文本检索器、图片检索器和 SQL 执行器就是它们的工具。</em></u></p>
+<p><u><em>智能体可以运行的环境由其用例定义。</em></u>如果智能体是为了玩游戏（如
+Minecraft、围棋、Dota）而开发的，那么该游戏就是它的环境。如果你想要一个智能体从互联网上抓取文档，环境就是互联网。如果你的智能体是一个烹饪机器人，厨房就是它的环境。自动驾驶汽车智能体的环境是道路系统及其周边区域。</p>
+<p>AI
+智能体可以执行的动作集通过它可以访问的工具来增强。<u><em>许多你日常交互的生成式
+AI 驱动的应用都是可以访问工具的智能体，尽管是简单的工具。ChatGPT
+就是一个智能体。它可以搜索网络、执行 Python 代码和生成图片。RAG
+系统也是智能体，文本检索器、图片检索器和 SQL
+执行器就是它们的工具。</em></u></p>
 <p>智能体的环境与其工具集之间存在强依赖关系。环境决定了智能体可能使用哪些工具。例如，如果环境是国际象棋游戏，智能体唯一可能的动作就是合法的国际象棋移动。然而，智能体的工具库限制了它可以运行的环境。例如，如果一个机器人唯一的动作是游泳，它将被限于水环境。</p>
-<p>图 6-8 展示了 SWE-agent（Yang 等人，2024年）的可视化，这是一个基于 GPT-4 构建的智能体。<u>其环境是带有终端和文件系统的计算机。其动作集包括浏览仓库、搜索文件、查看文件和编辑行。</u></p>
-<p>![图6-8](/img4/AI Engineering/6/Figure-6-8-SWE-agent.png)</p>
-<p><strong>图 6-8：SWE-agent（Yang 等人，2024年）是一个编码智能体，其环境是计算机，其动作包括导航、搜索和编辑。改编自采用 CC BY 4.0 许可的原始图片。</strong></p>
-<p>AI 智能体旨在完成用户通常在输入中提供的任务。在 AI 智能体中，AI 是大脑，负责处理它接收到的信息，包括任务和来自环境的反馈，规划一系列动作来完成这个任务，并确定任务是否已完成。</p>
-<p>让我们回到 Kitty Vogue 示例中带有表格数据的 RAG 系统。这是一个简单的智能体，具有三个动作：响应生成、SQL 查询生成和 SQL 查询执行。给定查询&quot;预测未来三个月 Fruity Fedora 的销售收入&quot;，智能体可能执行以下动作序列：</p>
-<ol>
+<p>图 6-8 展示了 SWE-agent（Yang 等人，2024年）的可视化，这是一个基于
+GPT-4
+构建的智能体。<u>其环境是带有终端和文件系统的计算机。其动作集包括浏览仓库、搜索文件、查看文件和编辑行。</u></p>
+<figure>
+<img src="/img4/AI%20Engineering/6/Figure-6-8-SWE-agent.png"
+alt="图6-8" />
+<figcaption aria-hidden="true">图6-8</figcaption>
+</figure>
+<p><strong>图 6-8：SWE-agent（Yang
+等人，2024年）是一个编码智能体，其环境是计算机，其动作包括导航、搜索和编辑。改编自采用
+CC BY 4.0 许可的原始图片。</strong></p>
+<p>AI 智能体旨在完成用户通常在输入中提供的任务。在 AI 智能体中，AI
+是大脑，负责处理它接收到的信息，包括任务和来自环境的反馈，规划一系列动作来完成这个任务，并确定任务是否已完成。</p>
+<p>让我们回到 Kitty Vogue 示例中带有表格数据的 RAG
+系统。这是一个简单的智能体，具有三个动作：响应生成、SQL 查询生成和 SQL
+查询执行。给定查询"预测未来三个月 Fruity Fedora
+的销售收入"，智能体可能执行以下动作序列：</p>
+<ol type="1">
 <li>思考如何完成这个任务。它可能决定，为了预测未来的销售，它首先需要过去五年的销售数据。注意，智能体的推理表现为它的中间响应。</li>
 <li>调用 SQL 查询生成来生成获取过去五年销售数据的查询。</li>
 <li>调用 SQL 查询执行来执行这个查询。</li>
@@ -569,90 +861,156 @@ $$</p>
 </ol>
 <p>与非智能体用例相比，智能体通常需要更强大的模型，原因有二：</p>
 <ul>
-<li><u><em><strong>复合错误</strong>：智能体通常需要执行多个步骤来完成一个任务，随着步骤数量的增加，整体准确性会下降。如果模型的每一步准确率为 95%，10 步后准确率将降至 60%，100 步后准确率将仅为 0.6%。</em></u></li>
+<li><u><em><strong>复合错误</strong>：智能体通常需要执行多个步骤来完成一个任务，随着步骤数量的增加，整体准确性会下降。如果模型的每一步准确率为
+95%，10 步后准确率将降至 60%，100 步后准确率将仅为 0.6%。</em></u></li>
 <li><strong>更高的风险</strong>：由于可以访问工具，智能体能够执行更有影响力的任务，但任何失败都可能导致更严重的后果。</li>
 </ul>
 <p>需要许多步骤的任务可能需要时间和金钱来运行¹²。然而，如果智能体可以自主运行，它们可以节省大量人力时间，使得它们的成本是值得的。</p>
-<p><u><em>给定一个环境，智能体在该环境中的成功取决于它可以访问的工具库和其 AI 规划器的能力。</em></u>让我们首先看看模型可以使用的不同类型的工具。</p>
+<p><u><em>给定一个环境，智能体在该环境中的成功取决于它可以访问的工具库和其
+AI
+规划器的能力。</em></u>让我们首先看看模型可以使用的不同类型的工具。</p>
 <h3 id="工具">工具</h3>
 <p>Tools</p>
-<p>一个系统不需要访问外部工具就能成为智能体。然而，没有外部工具，智能体的能力将受到限制。模型本身通常只能执行一个动作——例如，LLM 可以生成文本，图像生成器可以生成图片。外部工具使智能体变得强大得多。</p>
+<p>一个系统不需要访问外部工具就能成为智能体。然而，没有外部工具，智能体的能力将受到限制。模型本身通常只能执行一个动作——例如，LLM
+可以生成文本，图像生成器可以生成图片。外部工具使智能体变得强大得多。</p>
 <p><u><em>工具帮助智能体感知环境和对其环境采取行动。</em></u>允许智能体感知环境的动作是<strong>只读动作</strong>，而允许智能体对其环境采取行动的动作是<strong>写入动作</strong>。</p>
-<p>本节概述了外部工具。工具如何使用将在第 281 页的&quot;规划&quot;中讨论。</p>
-<p>智能体可以访问的工具集就是它的<strong>工具库</strong>。由于智能体的工具库决定了智能体可以做什么，仔细考虑给智能体什么工具以及多少工具是很重要的。更多的工具赋予智能体更多的能力。然而，工具越多，理解和有效利用它们的挑战就越大。实验是找到正确工具集的必要条件，如第 295 页的&quot;工具选择&quot;所述。</p>
+<p>本节概述了外部工具。工具如何使用将在第 281 页的"规划"中讨论。</p>
+<p>智能体可以访问的工具集就是它的<strong>工具库</strong>。由于智能体的工具库决定了智能体可以做什么，仔细考虑给智能体什么工具以及多少工具是很重要的。更多的工具赋予智能体更多的能力。然而，工具越多，理解和有效利用它们的挑战就越大。实验是找到正确工具集的必要条件，如第
+295 页的"工具选择"所述。</p>
 <p>根据智能体的环境，有许多可能的工具。以下是你可以考虑的三种工具类别：知识增强（即上下文构建）、能力扩展，以及让智能体对其环境采取行动的工具。</p>
 <h4 id="知识增强">知识增强</h4>
 <p>Knowledge augmentation</p>
-<p>我希望本书到目前为止已经让你信服了<u><em>相关上下文对模型响应质量的重要性</em></u>。一个重要的工具类别包括那些有助于增强智能体知识的工具。其中一些已经在前面讨论过：文本检索器、图片检索器和 SQL 执行器。其他可能的工具包括内部人员搜索、返回不同产品状态的库存 API、Slack 检索、邮件阅读器等。</p>
+<p>我希望本书到目前为止已经让你信服了<u><em>相关上下文对模型响应质量的重要性</em></u>。一个重要的工具类别包括那些有助于增强智能体知识的工具。其中一些已经在前面讨论过：文本检索器、图片检索器和
+SQL 执行器。其他可能的工具包括内部人员搜索、返回不同产品状态的库存
+API、Slack 检索、邮件阅读器等。</p>
 <p>许多这样的工具用你组织的私有流程和信息来增强模型。然而，工具也可以让模型访问公共信息，特别是来自互联网的信息。</p>
-<p>网络浏览是最早也是最受期待的集成到类似 ChatGPT 的聊天机器人中的能力之一。网络浏览防止模型变得过时。模型在训练数据变得过时的时候就会过时。如果模型的训练数据在上周截止，它就无法回答需要本周信息的问题，除非这些信息在上下文中提供。没有网络浏览，模型无法告诉你天气、新闻、即将发生的事件、股票价格、航班状态等。</p>
-<p>我将网络浏览作为一个总括术语，涵盖所有访问互联网的工具，包括网络浏览器和特定的 API，如搜索 API、新闻 API、GitHub API 或社交媒体 API（如 X、LinkedIn 和 Reddit 的 API）。</p>
-<p>虽然网络浏览允许你的智能体引用最新信息以生成更好的响应并减少幻觉，但它也可能将你的智能体暴露在互联网的污水池中。请谨慎选择你的互联网 API。</p>
+<p>网络浏览是最早也是最受期待的集成到类似 ChatGPT
+的聊天机器人中的能力之一。网络浏览防止模型变得过时。模型在训练数据变得过时的时候就会过时。如果模型的训练数据在上周截止，它就无法回答需要本周信息的问题，除非这些信息在上下文中提供。没有网络浏览，模型无法告诉你天气、新闻、即将发生的事件、股票价格、航班状态等。</p>
+<p>我将网络浏览作为一个总括术语，涵盖所有访问互联网的工具，包括网络浏览器和特定的
+API，如搜索 API、新闻 API、GitHub API 或社交媒体 API（如 X、LinkedIn 和
+Reddit 的 API）。</p>
+<p>虽然网络浏览允许你的智能体引用最新信息以生成更好的响应并减少幻觉，但它也可能将你的智能体暴露在互联网的污水池中。请谨慎选择你的互联网
+API。</p>
 <h4 id="能力扩展">能力扩展</h4>
 <p>Capability extension</p>
-<p>第二类需要考虑的工具是那些解决 AI 模型固有限制的工具。它们是提升模型性能的简单方法。例如，<u><em>AI 模型以不擅长数学而臭名昭著</em></u>。如果你问一个模型 199,999 除以 292 等于多少，模型很可能会失败。然而，如果模型可以访问计算器，这个计算就变得微不足道了。与其尝试训练模型擅长算术，不如直接让模型访问一个工具，这样资源效率高得多。</p>
+<p>第二类需要考虑的工具是那些解决 AI
+模型固有限制的工具。它们是提升模型性能的简单方法。例如，<u><em>AI
+模型以不擅长数学而臭名昭著</em></u>。如果你问一个模型 199,999 除以 292
+等于多少，模型很可能会失败。然而，如果模型可以访问计算器，这个计算就变得微不足道了。与其尝试训练模型擅长算术，不如直接让模型访问一个工具，这样资源效率高得多。</p>
 <p>其他可以显著提升模型能力的简单工具包括日历、时区转换器、单位转换器（例如从磅到公斤），以及可以将模型不擅长的语言进行互译的翻译器。</p>
-<p>更复杂但强大的工具是<strong>代码解释器</strong>。与其训练模型理解代码，你可以让模型访问代码解释器，以便它可以执行一段代码、返回结果或分析代码的失败原因。这个能力让你的智能体充当编码助手、数据分析师，甚至研究助手，可以编写代码来运行实验和报告结果。然而，自动代码执行伴随着代码注入攻击的风险，正如第 235 页的&quot;防御性提示工程&quot;所讨论的。适当的安全措施对于保护你和你的用户的安全至关重要。</p>
-<p>外部工具可以使纯文本或纯图像模型变成多模态的。例如，一个只能生成文本的模型可以利用文本到图像模型作为工具，使其既能生成文本也能生成图像。给定一个文本请求，智能体的 AI 规划器决定是调用文本生成、图像生成，还是两者都调用。这就是 ChatGPT 能够同时生成文本和图像的方式——它使用 DALL-E 作为其图像生成器。智能体还可以使用代码解释器生成图表和图形、使用 LaTeX 编译器渲染数学公式，或使用浏览器从 HTML 代码渲染网页。</p>
-<p>类似地，一个只能处理文本输入的模型可以使用图像描述工具来处理图像，使用转录工具来处理音频。它可以使用 OCR（光学字符识别）工具来读取 PDF。</p>
-<p><u><em>相比于仅通过提示甚至微调，工具使用可以显著提升模型的性能。</em></u>Chameleon（Lu 等人，2023年）表明，一个由 GPT-4 驱动的智能体，配备 13 个工具，可以在多个基准测试上胜过单独的 GPT-4。该智能体使用的工具示例包括知识检索、查询生成器、图像描述器、文本检测器和 Bing 搜索。</p>
-<p>在 ScienceQA（一个科学问答基准）上，Chameleon 在最佳已发布的小样本结果上提升了 11.37%。在 TabMWP（表格数学应用题）（Lu 等人，2022年）上，一个涉及表格数学问题的基准，Chameleon 将准确率提升了 17%。</p>
+<p>更复杂但强大的工具是<strong>代码解释器</strong>。与其训练模型理解代码，你可以让模型访问代码解释器，以便它可以执行一段代码、返回结果或分析代码的失败原因。这个能力让你的智能体充当编码助手、数据分析师，甚至研究助手，可以编写代码来运行实验和报告结果。然而，自动代码执行伴随着代码注入攻击的风险，正如第
+235
+页的"防御性提示工程"所讨论的。适当的安全措施对于保护你和你的用户的安全至关重要。</p>
+<p>外部工具可以使纯文本或纯图像模型变成多模态的。例如，一个只能生成文本的模型可以利用文本到图像模型作为工具，使其既能生成文本也能生成图像。给定一个文本请求，智能体的
+AI 规划器决定是调用文本生成、图像生成，还是两者都调用。这就是 ChatGPT
+能够同时生成文本和图像的方式——它使用 DALL-E
+作为其图像生成器。智能体还可以使用代码解释器生成图表和图形、使用 LaTeX
+编译器渲染数学公式，或使用浏览器从 HTML 代码渲染网页。</p>
+<p>类似地，一个只能处理文本输入的模型可以使用图像描述工具来处理图像，使用转录工具来处理音频。它可以使用
+OCR（光学字符识别）工具来读取 PDF。</p>
+<p><u><em>相比于仅通过提示甚至微调，工具使用可以显著提升模型的性能。</em></u>Chameleon（Lu
+等人，2023年）表明，一个由 GPT-4 驱动的智能体，配备 13
+个工具，可以在多个基准测试上胜过单独的
+GPT-4。该智能体使用的工具示例包括知识检索、查询生成器、图像描述器、文本检测器和
+Bing 搜索。</p>
+<p>在 ScienceQA（一个科学问答基准）上，Chameleon
+在最佳已发布的小样本结果上提升了 11.37%。在 TabMWP（表格数学应用题）（Lu
+等人，2022年）上，一个涉及表格数学问题的基准，Chameleon 将准确率提升了
+17%。</p>
 <h4 id="写入动作">写入动作</h4>
 <p>Write actions</p>
-<p>到目前为止，我们讨论了允许模型从其数据源读取的只读动作。但工具也可以执行写入动作，对数据源进行更改。SQL 执行器可以检索数据表（读取），但也可以更改或删除表（写入）。电子邮件 API 可以读取邮件，但也可以回复邮件。银行 API 可以检索你当前的余额，但也可以发起银行转账。</p>
+<p>到目前为止，我们讨论了允许模型从其数据源读取的只读动作。但工具也可以执行写入动作，对数据源进行更改。SQL
+执行器可以检索数据表（读取），但也可以更改或删除表（写入）。电子邮件 API
+可以读取邮件，但也可以回复邮件。银行 API
+可以检索你当前的余额，但也可以发起银行转账。</p>
 <p>写入动作使系统能够做更多的事情。它们可以使你自动化整个客户外联工作流：研究潜在客户、查找他们的联系方式、起草邮件、发送第一封邮件、阅读回复、跟进、提取订单、用新订单更新数据库等。</p>
-<p>然而，给予 AI 自动改变我们生活的能力的前景令人恐惧。就像你不应该给实习生删除生产数据库的权限一样，你也不应该允许不可靠的 AI 发起银行转账。对系统能力及其安全措施的信任至关重要。你需要确保系统受到保护，防止可能试图操纵它执行有害行为的恶意行为者。</p>
-<p><em><u>当我和一群人谈论自主 AI 智能体时，经常会有人提到自动驾驶汽车。&quot;如果有人侵入汽车来绑架你怎么办？&quot;虽然自动驾驶汽车的例子因其物理性而显得生动，但 AI 系统即使没有物理世界存在也能造成伤害。它可能操纵股票市场、窃取版权、侵犯隐私、强化偏见、传播虚假信息和宣传等，正如第 235 页的&quot;防御性提示工程&quot;所讨论的。</u></em></p>
-<p>这些都是合理的担忧，任何想要利用 AI 的组织都需要认真对待安全和保障。然而，这并不意味着 AI 系统永远不应该被赋予在现实世界中行动的能力。<u><em>如果我们能让人们信任机器将我们送入太空，我希望有一天安全措施足以让我们信任自主 AI 系统。</em></u>此外，人类也可能犯错。就个人而言，我宁愿相信自动驾驶汽车而不是普通陌生人来开车送我。</p>
-<p>就像合适的工具可以帮助人类大大提高生产力一样——你能想象没有 Excel 做生意，或者没有起重机建造摩天大楼吗？——工具使模型能够完成更多的任务。许多模型提供商已经支持其模型的工具使用，这个功能通常称为<strong>函数调用</strong>。展望未来，我预计大多数模型都会普遍支持使用各种工具的函数调用。</p>
+<p>然而，给予 AI
+自动改变我们生活的能力的前景令人恐惧。就像你不应该给实习生删除生产数据库的权限一样，你也不应该允许不可靠的
+AI
+发起银行转账。对系统能力及其安全措施的信任至关重要。你需要确保系统受到保护，防止可能试图操纵它执行有害行为的恶意行为者。</p>
+<p><em><u>当我和一群人谈论自主 AI
+智能体时，经常会有人提到自动驾驶汽车。"如果有人侵入汽车来绑架你怎么办？"虽然自动驾驶汽车的例子因其物理性而显得生动，但
+AI
+系统即使没有物理世界存在也能造成伤害。它可能操纵股票市场、窃取版权、侵犯隐私、强化偏见、传播虚假信息和宣传等，正如第
+235 页的"防御性提示工程"所讨论的。</u></em></p>
+<p>这些都是合理的担忧，任何想要利用 AI
+的组织都需要认真对待安全和保障。然而，这并不意味着 AI
+系统永远不应该被赋予在现实世界中行动的能力。<u><em>如果我们能让人们信任机器将我们送入太空，我希望有一天安全措施足以让我们信任自主
+AI
+系统。</em></u>此外，人类也可能犯错。就个人而言，我宁愿相信自动驾驶汽车而不是普通陌生人来开车送我。</p>
+<p>就像合适的工具可以帮助人类大大提高生产力一样——你能想象没有 Excel
+做生意，或者没有起重机建造摩天大楼吗？——工具使模型能够完成更多的任务。许多模型提供商已经支持其模型的工具使用，这个功能通常称为<strong>函数调用</strong>。展望未来，我预计大多数模型都会普遍支持使用各种工具的函数调用。</p>
 <h3 id="规划">规划</h3>
 <p>Planning</p>
-<p><u><em>基础模型智能体的核心是负责解决任务的模型。任务由其目标和约束来定义。</em></u>例如，一个任务是用 5,000 美元的预算规划从旧金山到印度的两周旅行。目标是两周旅行。约束是预算。</p>
+<p><u><em>基础模型智能体的核心是负责解决任务的模型。任务由其目标和约束来定义。</em></u>例如，一个任务是用
+5,000
+美元的预算规划从旧金山到印度的两周旅行。目标是两周旅行。约束是预算。</p>
 <p><u><em>复杂的任务需要规划。</em></u>规划过程的输出是一个<strong>计划</strong>，它是概述完成任务所需步骤的路线图。有效的规划通常要求模型理解任务、考虑完成该任务的不同选项，并选择最有前景的一个。</p>
 <p>如果你参加过任何规划会议，你就会知道规划很难。作为一个重要的计算问题，规划已被深入研究，需要好几卷才能覆盖。我在这里只能覆盖表面。</p>
 <h4 id="规划概述">规划概述</h4>
 <p>Planning overview</p>
-<p>给定一个任务，有许多可能的分解方式，但并非所有方式都能导向成功的结果。在正确的解决方案中，有些比其他方案更高效。考虑查询&quot;有多少没有收入的公司筹集了至少 10 亿美元？&quot;有许多可能的解决方法，但作为说明，考虑两个选项：</p>
-<ol>
+<p>给定一个任务，有许多可能的分解方式，但并非所有方式都能导向成功的结果。在正确的解决方案中，有些比其他方案更高效。考虑查询"有多少没有收入的公司筹集了至少
+10 亿美元？"有许多可能的解决方法，但作为说明，考虑两个选项：</p>
+<ol type="1">
 <li>找到所有没有收入的公司，然后按筹集金额过滤。</li>
 <li>找到所有筹集了至少 10 亿美元的公司，然后按收入过滤。</li>
 </ol>
-<p>第二个选项更高效。没有收入的公司数量远多于筹集了 10 亿美元的公司。给定只有这两个选项，智能智能体应该选择选项 2。</p>
-<p>你可以将规划与执行耦合在同一个提示中。例如，你给模型一个提示，要求它逐步思考（如使用思维链提示），然后在一个提示中执行这些步骤。但如果模型想出一个 1,000 步的计划，却连目标都无法完成呢？在没有监督的情况下，智能体可能运行这些步骤数小时，在 API 调用上浪费时间和金钱，然后你才发现它根本行不通。</p>
+<p>第二个选项更高效。没有收入的公司数量远多于筹集了 10
+亿美元的公司。给定只有这两个选项，智能智能体应该选择选项 2。</p>
+<p>你可以将规划与执行耦合在同一个提示中。例如，你给模型一个提示，要求它逐步思考（如使用思维链提示），然后在一个提示中执行这些步骤。但如果模型想出一个
+1,000
+步的计划，却连目标都无法完成呢？在没有监督的情况下，智能体可能运行这些步骤数小时，在
+API 调用上浪费时间和金钱，然后你才发现它根本行不通。</p>
 <p><u><em>为了避免徒劳的执行，规划应该与执行解耦。你要求智能体先生成一个计划，然后只有在这个计划被验证后才执行它。</em></u></p>
-<p><u><em>计划可以使用启发式方法进行验证</em></u>。例如，一个简单的启发式方法是淘汰包含无效动作的计划。如果生成的计划需要 Google 搜索，而智能体没有访问 Google 搜索的权限，那么这个计划就是无效的。另一个简单的启发式方法可能是淘汰所有超过 X 步的计划。计划也可以使用 AI 评审者来验证。你可以要求模型评估计划是否合理，或者如何改进它。</p>
+<p><u><em>计划可以使用启发式方法进行验证</em></u>。例如，一个简单的启发式方法是淘汰包含无效动作的计划。如果生成的计划需要
+Google 搜索，而智能体没有访问 Google
+搜索的权限，那么这个计划就是无效的。另一个简单的启发式方法可能是淘汰所有超过
+X 步的计划。计划也可以使用 AI
+评审者来验证。你可以要求模型评估计划是否合理，或者如何改进它。</p>
 <blockquote>
 <p>个人注：</p>
-<p>在这句话中，“<strong>启发式方法</strong>”（Heuristic method）指的是一种<strong>基于经验、直觉、实用规则或快速估算来解决问题的方法</strong>，而不是依靠绝对严密、穷举所有可能性的数学证明或硬性公式。</p>
+<p>在这句话中，“<strong>启发式方法</strong>”（Heuristic
+method）指的是一种<strong>基于经验、直觉、实用规则或快速估算来解决问题的方法</strong>，而不是依靠绝对严密、穷举所有可能性的数学证明或硬性公式。</p>
 <p>“启发式”的核心特点和在句中的含义主要体现在：</p>
-<ol>
-<li><strong>不追求绝对最优，但求“高效和实用”</strong>：如果用严格、穷举的传统方法去验证一个复杂计划，可能需要耗费大量的时间或计算资源。而启发式方法会使用一些经验法则（Rule of thumb），在可以接受的成本内快速判断方案是否合理。</li>
+<ol type="1">
+<li><strong>不追求绝对最优，但求“高效和实用”</strong>：如果用严格、穷举的传统方法去验证一个复杂计划，可能需要耗费大量的时间或计算资源。而启发式方法会使用一些经验法则（Rule
+of thumb），在可以接受的成本内快速判断方案是否合理。</li>
 <li><strong>依靠经验与简化策略</strong>：它通常会利用以往处理类似问题的经验、常见模式或合理的简化假设来对方案进行筛查。</li>
 </ol>
-<p><strong>结合原句的语境</strong>：“计划可以使用启发式方法进行验证”的意思是： 在检验这个计划是否可行时，<strong>不一定非要做百分之百穷尽的严格推导，而是可以通过一些经验规则、简化模型或快速测试，来高效地判断它有没有重大漏洞、是否大致可行</strong>。</p>
+<p><strong>结合原句的语境</strong>：“计划可以使用启发式方法进行验证”的意思是：
+在检验这个计划是否可行时，<strong>不一定非要做百分之百穷尽的严格推导，而是可以通过一些经验规则、简化模型或快速测试，来高效地判断它有没有重大漏洞、是否大致可行</strong>。</p>
 </blockquote>
-<p>如果生成的计划被评估为不好，你可以要求规划器生成另一个计划。如果生成的计划很好，就执行它。如果计划涉及外部工具，将调用函数调用。执行此计划的输出将再次需要评估。注意，生成的计划不必是整个任务的端到端计划。它可以是某个子任务的小计划。整个过程看起来如图 6-9 所示。</p>
-<p>![图6-9](/img4/AI Engineering/6/Figure-6-9-Planning-execution-decoupling.png)</p>
-<p><strong>图 6-9：将规划与执行解耦，使得只有经过验证的计划才被执行。</strong></p>
+<p>如果生成的计划被评估为不好，你可以要求规划器生成另一个计划。如果生成的计划很好，就执行它。如果计划涉及外部工具，将调用函数调用。执行此计划的输出将再次需要评估。注意，生成的计划不必是整个任务的端到端计划。它可以是某个子任务的小计划。整个过程看起来如图
+6-9 所示。</p>
+<figure>
+<img
+src="/img4/AI%20Engineering/6/Figure-6-9-Planning-execution-decoupling.png"
+alt="图6-9" />
+<figcaption aria-hidden="true">图6-9</figcaption>
+</figure>
+<p><strong>图
+6-9：将规划与执行解耦，使得只有经过验证的计划才被执行。</strong></p>
 <blockquote>
 <p>个人注：</p>
 <p>这里说的“没有执行”，指的是<strong>没有在真实环境或生产环境中产生实际的、不可逆的影响</strong>。</p>
 <p>“验证”并不等同于“正式执行”，它可以通过以下几种不需要真正落地到现实的方式来完成：</p>
-<ol>
+<ol type="1">
 <li>虚拟仿真与沙盒测试（Simulation &amp; Sandbox）</li>
 </ol>
 <ul>
 <li><strong>做法</strong>：在一个隔离的、安全的“沙盒”或虚拟环境中让计划跑一次。</li>
-<li><strong>例子</strong>：在 AI 智能体（Agent）工作流中，Agent 规划了一系列操作（如删除文件或调用数据库 API）。它可以在一个模拟环境中“预演”这些操作，看返回的结果是否符合预期。如果沙盒测试通过，才算“验证通过”。</li>
+<li><strong>例子</strong>：在 AI 智能体（Agent）工作流中，Agent
+规划了一系列操作（如删除文件或调用数据库
+API）。它可以在一个模拟环境中“预演”这些操作，看返回的结果是否符合预期。如果沙盒测试通过，才算“验证通过”。</li>
 </ul>
-<ol start="2">
+<ol start="2" type="1">
 <li>静态分析与逻辑推演（Static Check &amp; Deduction）</li>
 </ol>
 <ul>
 <li><strong>做法</strong>：通过数学模型、逻辑规则或前面提到的<strong>启发式方法</strong>，对计划的结构、参数和步骤进行静态检查。</li>
 <li><strong>例子</strong>：写好一段代码或一个部署计划后，通过语法检查器、静态安全扫描工具去检查它有没有漏洞。代码还没运行（执行），但它已经通过了静态验证。</li>
 </ul>
-<ol start="3">
+<ol start="3" type="1">
 <li>思维预演（Mental Simulation）</li>
 </ol>
 <ul>
@@ -667,101 +1025,149 @@ $$</p>
 </blockquote>
 <p><u><em>你的系统现在有三个组件：一个生成计划，一个验证计划，另一个执行计划。如果你将每个组件视为一个智能体，这就是一个<strong>多智能体系统</strong>¹³。</em></u></p>
 <p>为了加快速度，你可以并行生成多个计划，而不是顺序生成，然后让评估者选择最有前景的一个。这是另一个延迟/成本权衡，因为同时生成多个计划会产生额外成本。</p>
-<p><u><em>规划需要理解任务背后的意图：用户想通过这个查询做什么？<strong>意图分类器</strong>通常用于帮助智能体规划。如第 224 页的&quot;将复杂任务分解为更简单的子任务&quot;所示，意图分类可以通过另一个提示或为此任务训练的分类模型来完成。意图分类机制可以被视为你的多智能体系统中的另一个智能体。</em></u></p>
+<p><u><em>规划需要理解任务背后的意图：用户想通过这个查询做什么？<strong>意图分类器</strong>通常用于帮助智能体规划。如第
+224
+页的"将复杂任务分解为更简单的子任务"所示，意图分类可以通过另一个提示或为此任务训练的分类模型来完成。意图分类机制可以被视为你的多智能体系统中的另一个智能体。</em></u></p>
 <p>了解意图可以帮助智能体选择正确的工具。例如，对于客户支持，如果查询是关于计费的，智能体可能需要访问一个工具来检索用户的最近付款。但如果查询是关于如何重置密码的，智能体可能需要访问文档检索。</p>
-<p>有些查询可能在智能体的范围之外。意图分类器应该能够将请求分类为&quot;不相关&quot;，以便智能体可以有礼貌地拒绝它们，而不是浪费 FLOPs 来想出不可能的解。</p>
+<p>有些查询可能在智能体的范围之外。意图分类器应该能够将请求分类为"不相关"，以便智能体可以有礼貌地拒绝它们，而不是浪费
+FLOPs 来想出不可能的解。</p>
 <p><u><em>到目前为止，我们假设智能体自动化了所有三个阶段：生成计划、验证计划和执行计划。实际上，人类可以在任何阶段参与以协助流程并减轻风险。人类专家可以提供计划、验证计划或执行计划的部分内容。例如，对于智能体难以生成整个计划的复杂任务，人类专家可以提供高层计划，智能体可以在其基础上扩展。如果计划涉及风险操作，如更新数据库或合并代码变更，系统可以在执行前请求明确的人工批准，或者让人类执行这些操作。为了实现这一点，你需要明确定义智能体对每个动作可以拥有的自动化程度。</em></u></p>
 <p>总结一下，解决一个任务通常涉及以下过程。注意，反思不是智能体必须的，但会显著提升智能体的性能：</p>
-<ol>
+<ol type="1">
 <li><strong>计划生成</strong>：提出完成此任务的计划。计划是一系列可管理的动作，因此这个过程也称为<strong>任务分解</strong>。</li>
 <li><strong>反思与错误修正</strong>：评估生成的计划。如果是糟糕的计划，生成一个新的。</li>
 <li><strong>执行</strong>：执行生成计划中列出的动作。这通常涉及调用特定的函数。</li>
 <li><strong>反思与错误修正</strong>：收到动作结果后，评估这些结果并确定目标是否已完成。识别并纠正错误。如果目标未完成，生成新的计划。</li>
 </ol>
-<p>你已经在这本书中看到了一些计划生成和反思的技术。当你要求模型&quot;逐步思考&quot;时，你就是在要求它分解任务。当你要求模型&quot;验证你的答案是否正确&quot;时，你就是在要求它反思。</p>
+<p>你已经在这本书中看到了一些计划生成和反思的技术。当你要求模型"逐步思考"时，你就是在要求它分解任务。当你要求模型"验证你的答案是否正确"时，你就是在要求它反思。</p>
 <h4 id="基础模型作为规划器">基础模型作为规划器</h4>
 <p>Foundation models as planners</p>
-<p>一个开放的问题是基础模型能在多大程度上进行规划。许多研究人员认为基础模型，至少那些建立在自回归语言模型之上的基础模型，无法做到。Meta 的首席 AI 科学家 Yann LeCun 明确表示自回归 LLM 无法规划（2023年）。在文章《Can LLMs Really Reason and Plan?》中，Kambhampati（2023年）认为 LLM 擅长提取知识，但不擅长规划。Kambhampati 指出，声称 LLM 具有规划能力的论文混淆了从 LLM 中提取的一般规划知识与可执行的计划。“从 LLM 中得出的计划可能对普通用户看起来合理，但却会导致执行时的交互和错误。”</p>
-<p>然而，尽管有很多轶事证据表明 LLM 是糟糕的规划者，但尚不清楚这是因为我们不知道如何正确使用 LLM，还是因为 LLM 从根本上就无法规划。</p>
+<p>一个开放的问题是基础模型能在多大程度上进行规划。许多研究人员认为基础模型，至少那些建立在自回归语言模型之上的基础模型，无法做到。Meta
+的首席 AI 科学家 Yann LeCun 明确表示自回归 LLM
+无法规划（2023年）。在文章《Can LLMs Really Reason and
+Plan?》中，Kambhampati（2023年）认为 LLM
+擅长提取知识，但不擅长规划。Kambhampati 指出，声称 LLM
+具有规划能力的论文混淆了从 LLM 中提取的一般规划知识与可执行的计划。"从
+LLM
+中得出的计划可能对普通用户看起来合理，但却会导致执行时的交互和错误。"</p>
+<p>然而，尽管有很多轶事证据表明 LLM
+是糟糕的规划者，但尚不清楚这是因为我们不知道如何正确使用 LLM，还是因为
+LLM 从根本上就无法规划。</p>
 <p><u><em>规划的核心是一个<strong>搜索问题</strong>。你在通往目标的不同路径之间搜索，预测每条路径的结果（奖励），并选择结果最有前景的路径。通常，你可能确定不存在可以带你到达目标的路径。</em></u></p>
-<p><u><em>搜索通常需要<strong>回溯</strong>。例如，想象你在一个步骤中有两个可能的动作：A 和 B。在执行动作 A 后，你进入了一个没有前景的状态，所以你需要回溯到之前的状态以执行动作 B。</em></u></p>
-<p>有些人认为自回归模型只能生成向前的动作。它无法回溯以生成替代动作。因此，他们得出结论，自回归模型无法规划。然而，这并不一定是真的。在执行了路径 A 之后，如果模型确定这条路径不合理，它可以改用动作 B 来修正路径，从而有效地进行回溯。模型也可以随时重新开始并选择另一条路径。</p>
-<p>LLM 是糟糕的规划者，也可能是因为它们没有被赋予规划所需的工具。要规划，不仅需要知道可用的动作，还需要知道每个动作的潜在结果。一个简单的例子，假设你要爬山。你的潜在动作是右转、左转、掉头或直走。然而，如果右转会导致你掉下悬崖，你可能不想考虑这个动作。用技术术语来说，一个动作将你从一个状态带到另一个状态，需要知道结果状态才能决定是否采取某个动作。</p>
-<p>这意味着仅仅提示模型生成一系列动作（如流行的思维链提示技术所做的）是不够的。论文《Reasoning with Language Model is Planning with World Model》（Hao 等人，2023年）认为，LLM 包含关于世界的如此多的信息，能够预测每个动作的结果。这个 LLM 可以结合这个结果预测来生成连贯的计划。</p>
-<p>即使 AI 无法规划，它仍然可以作为规划器的一部分。可能可以使用搜索工具和状态跟踪系统来增强 LLM，帮助它进行规划。</p>
-<h4 id="基础模型（FM）规划器与强化学习（RL）规划器">基础模型（FM）规划器与强化学习（RL）规划器</h4>
+<p><u><em>搜索通常需要<strong>回溯</strong>。例如，想象你在一个步骤中有两个可能的动作：A
+和 B。在执行动作 A
+后，你进入了一个没有前景的状态，所以你需要回溯到之前的状态以执行动作
+B。</em></u></p>
+<p>有些人认为自回归模型只能生成向前的动作。它无法回溯以生成替代动作。因此，他们得出结论，自回归模型无法规划。然而，这并不一定是真的。在执行了路径
+A 之后，如果模型确定这条路径不合理，它可以改用动作 B
+来修正路径，从而有效地进行回溯。模型也可以随时重新开始并选择另一条路径。</p>
+<p>LLM
+是糟糕的规划者，也可能是因为它们没有被赋予规划所需的工具。要规划，不仅需要知道可用的动作，还需要知道每个动作的潜在结果。一个简单的例子，假设你要爬山。你的潜在动作是右转、左转、掉头或直走。然而，如果右转会导致你掉下悬崖，你可能不想考虑这个动作。用技术术语来说，一个动作将你从一个状态带到另一个状态，需要知道结果状态才能决定是否采取某个动作。</p>
+<p>这意味着仅仅提示模型生成一系列动作（如流行的思维链提示技术所做的）是不够的。论文《Reasoning
+with Language Model is Planning with World Model》（Hao
+等人，2023年）认为，LLM
+包含关于世界的如此多的信息，能够预测每个动作的结果。这个 LLM
+可以结合这个结果预测来生成连贯的计划。</p>
+<p>即使 AI
+无法规划，它仍然可以作为规划器的一部分。可能可以使用搜索工具和状态跟踪系统来增强
+LLM，帮助它进行规划。</p>
+<h4
+id="基础模型fm规划器与强化学习rl规划器">基础模型（FM）规划器与强化学习（RL）规划器</h4>
 <p>Foundation Model (FM) Versus Reinforcement Learning (RL) Planners</p>
-<p><u><em>智能体是 RL 的核心概念，维基百科将其定义为一个领域&quot;关注智能体如何在动态环境中采取行动以最大化累积奖励&quot;。</em></u></p>
-<p>RL 智能体和 FM 智能体在许多方面相似。它们都由其环境和可能动作来定义。主要区别在于它们的规划器的工作方式。在 RL 智能体中，规划器由 RL 算法训练。训练这个 RL 规划器可能需要大量的时间和资源。在 FM 智能体中，模型就是规划器。这个模型可以被提示或微调以提高其规划能力，并且通常需要更少的时间和资源。</p>
+<p><u><em>智能体是 RL
+的核心概念，维基百科将其定义为一个领域"关注智能体如何在动态环境中采取行动以最大化累积奖励"。</em></u></p>
+<p>RL 智能体和 FM
+智能体在许多方面相似。它们都由其环境和可能动作来定义。主要区别在于它们的规划器的工作方式。在
+RL 智能体中，规划器由 RL 算法训练。训练这个 RL
+规划器可能需要大量的时间和资源。在 FM
+智能体中，模型就是规划器。这个模型可以被提示或微调以提高其规划能力，并且通常需要更少的时间和资源。</p>
 <blockquote>
 <p>个人注：</p>
 <p>Q： 怎么理解以上这段话，现在的LLM不都是经过RL的吗？</p>
-<p>A： 这是一个非常深刻且敏锐的问题！你提到的现象完全正确：<strong>现在的许多顶尖大模型（LLM）确实都经过了 RL（强化学习，比如 RLHF、DPO，或者像 DeepSeek-R1、OpenAI o1 那样的推理强化学习）的训练。</strong></p>
-<p>要理解这段话，关键在于区分“用 RL 来做什么”<strong>以及</strong>“规划器的本质是什么”。我们可以从以下几个维度来理清它们的区别：</p>
-<ol>
+<p>A：
+这是一个非常深刻且敏锐的问题！你提到的现象完全正确：<strong>现在的许多顶尖大模型（LLM）确实都经过了
+RL（强化学习，比如 RLHF、DPO，或者像 DeepSeek-R1、OpenAI o1
+那样的推理强化学习）的训练。</strong></p>
+<p>要理解这段话，关键在于区分“用 RL
+来做什么”<strong>以及</strong>“规划器的本质是什么”。我们可以从以下几个维度来理清它们的区别：</p>
+<ol type="1">
 <li>RL 的用途完全不同</li>
 </ol>
 <ul>
-<li>
-<p><strong>在传统 RL 智能体中（如 AlphaGo、机器人控制、Atari 游戏）：</strong></p>
-<p>RL 是从零开始训练整个决策系统的唯一核心手段。智能体必须在虚拟或真实环境中进行<strong>数百万次的“试错-获得奖励/惩罚”</strong>，自己去摸索环境的物理规律和通关策略。这个过程极其消耗计算资源和时间。</p>
-</li>
-<li>
-<p><strong>在 FM / LLM 智能体中（即使经历了 RL）：</strong></p>
-<p>LLM 经历的 RL（如 RLHF 或对齐训练）通常被称为“偏好对齐”或“后训练（Post-training）”。它的主要目的是教模型“说人话”、保持安全、听从指令、或者像最近的推理模型那样优化思维链。<strong>大模型的核心能力（广博的世界知识、语言理解、逻辑推理）是通过海量文本的“预训练（Pre-training）”获得的</strong>，而不是靠在环境中盲目试错撞出来的。</p>
-</li>
+<li><p><strong>在传统 RL 智能体中（如 AlphaGo、机器人控制、Atari
+游戏）：</strong></p>
+<p>RL
+是从零开始训练整个决策系统的唯一核心手段。智能体必须在虚拟或真实环境中进行<strong>数百万次的“试错-获得奖励/惩罚”</strong>，自己去摸索环境的物理规律和通关策略。这个过程极其消耗计算资源和时间。</p></li>
+<li><p><strong>在 FM / LLM 智能体中（即使经历了 RL）：</strong></p>
+<p>LLM 经历的 RL（如 RLHF
+或对齐训练）通常被称为“偏好对齐”或“后训练（Post-training）”。它的主要目的是教模型“说人话”、保持安全、听从指令、或者像最近的推理模型那样优化思维链。<strong>大模型的核心能力（广博的世界知识、语言理解、逻辑推理）是通过海量文本的“预训练（Pre-training）”获得的</strong>，而不是靠在环境中盲目试错撞出来的。</p></li>
 </ul>
-<ol start="2">
+<ol start="2" type="1">
 <li>“规划器”的载体与工作方式不同</li>
 </ol>
 <p>这段话对比的核心其实是<strong>规划（Planning）是怎么实现的</strong>：</p>
 <ul>
-<li>
-<p><strong>RL 智能体的规划器：</strong></p>
-<p>是一个专门的策略网络（Policy Network）或价值网络。它接收环境的状态（State），输出具体的动作（Action）。这个网络的全部权重都是为了某个特定任务通过 RL 刷出来的，离开这个任务环境它就啥也不会。</p>
-</li>
-<li>
-<p><strong>FM 智能体的规划器：</strong></p>
-<p>是<strong>整个基础模型本身</strong>。当它作为 Agent 的“大脑”时，它不需要在环境中进行物理试错来学习怎么规划，而是<strong>直接利用其预训练学到的通用常识和语言能力</strong>，通过“提示词（Prompt）”或思维链（Chain of Thought）在文本空间里进行推理和任务拆解（例如：“第一步做什么，第二步做什么”）。</p>
-</li>
+<li><p><strong>RL 智能体的规划器：</strong></p>
+<p>是一个专门的策略网络（Policy
+Network）或价值网络。它接收环境的状态（State），输出具体的动作（Action）。这个网络的全部权重都是为了某个特定任务通过
+RL 刷出来的，离开这个任务环境它就啥也不会。</p></li>
+<li><p><strong>FM 智能体的规划器：</strong></p>
+<p>是<strong>整个基础模型本身</strong>。当它作为 Agent
+的“大脑”时，它不需要在环境中进行物理试错来学习怎么规划，而是<strong>直接利用其预训练学到的通用常识和语言能力</strong>，通过“提示词（Prompt）”或思维链（Chain
+of
+Thought）在文本空间里进行推理和任务拆解（例如：“第一步做什么，第二步做什么”）。</p></li>
 </ul>
-<ol start="3">
+<ol start="3" type="1">
 <li>为什么说 FM 智能体“通常需要更少的时间和资源”？</li>
 </ol>
 <ul>
-<li><strong>传统 RL</strong> 换一个任务（比如从玩一款游戏换到另一款游戏），往往需要重新训练整个强化学习模型，成本极高。</li>
-<li><strong>FM 智能体</strong> 换一个任务，你通常只需要<strong>改改提示词（Prompt Engineering）</strong>，或者用少量的监督数据做个轻量微调（SFT），它就能立刻展现出强大的规划和工具调用能力。这种“开箱即用”的通用性，是传统 RL 智能体无法比拟的。</li>
+<li><strong>传统 RL</strong>
+换一个任务（比如从玩一款游戏换到另一款游戏），往往需要重新训练整个强化学习模型，成本极高。</li>
+<li><strong>FM 智能体</strong>
+换一个任务，你通常只需要<strong>改改提示词（Prompt
+Engineering）</strong>，或者用少量的监督数据做个轻量微调（SFT），它就能立刻展现出强大的规划和工具调用能力。这种“开箱即用”的通用性，是传统
+RL 智能体无法比拟的。</li>
 </ul>
 <p>总结</p>
-<p>现在的 LLM 虽然用了 RL（强化学习）技术，但<strong>RL 在这里只是给通用大模型进行“行为校准和对齐”的雕刻刀，而不是用来从零构建其世界观和规划能力的基石</strong>。FM 智能体依靠的是大模型本身已经具备的通用智能，因此在构建 Agent 规划能力时，远比传统的“纯 RL 从头训练”高效得多。</p>
+<p>现在的 LLM 虽然用了 RL（强化学习）技术，但<strong>RL
+在这里只是给通用大模型进行“行为校准和对齐”的雕刻刀，而不是用来从零构建其世界观和规划能力的基石</strong>。FM
+智能体依靠的是大模型本身已经具备的通用智能，因此在构建 Agent
+规划能力时，远比传统的“纯 RL 从头训练”高效得多。</p>
 </blockquote>
-<p>然而，没有理由阻止 FM 智能体结合 RL 算法来提高其性能。我怀疑从长远来看，FM 智能体和 RL 智能体会融合。</p>
+<p>然而，没有理由阻止 FM 智能体结合 RL
+算法来提高其性能。我怀疑从长远来看，FM 智能体和 RL 智能体会融合。</p>
 <h4 id="计划生成">计划生成</h4>
 <p>Plan generation</p>
-<p>将模型变成计划生成器的最简单方法是通过<strong>提示工程</strong>。想象你想创建一个帮助客户了解 Kitty Vogue 产品的智能体。你给这个智能体访问三个外部工具：按价格检索产品、检索热门产品和检索产品信息。以下是一个用于计划生成的提示示例。这个提示仅用于说明目的。生产级提示可能更复杂：</p>
+<p>将模型变成计划生成器的最简单方法是通过<strong>提示工程</strong>。想象你想创建一个帮助客户了解
+Kitty Vogue
+产品的智能体。你给这个智能体访问三个外部工具：按价格检索产品、检索热门产品和检索产品信息。以下是一个用于计划生成的提示示例。这个提示仅用于说明目的。生产级提示可能更复杂：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">SYSTEM PROMPT</span><br><span class="line">Propose a plan to solve the task. You have access to 5 actions:</span><br><span class="line">get_today_date()</span><br><span class="line">fetch_top_products(start_date, end_date, num_products)</span><br><span class="line">fetch_product_info(product_name)</span><br><span class="line">generate_query(task_history, tool_output)</span><br><span class="line">generate_response(query)</span><br><span class="line">The plan must be a sequence of valid actions.</span><br><span class="line"></span><br><span class="line">Examples</span><br><span class="line">Task: &quot;Tell me about Fruity Fedora&quot;</span><br><span class="line">Plan: [fetch_product_info, generate_query, generate_response]</span><br><span class="line">Task: &quot;What was the best selling product last week?&quot;</span><br><span class="line">Plan: [fetch_top_products, generate_query, generate_response]</span><br><span class="line"></span><br><span class="line">Task: &#123;USER INPUT&#125;</span><br><span class="line">Plan:</span><br></pre></td></tr></table></figure>
 <p>关于这个示例有两点需要注意：</p>
 <ul>
 <li>这里使用的计划格式——一个函数列表，其参数由智能体推断——只是构建智能体控制流的众多方法之一。</li>
-<li>generate_query 函数接受任务的当前历史和最新的工具输出，以生成要输入给响应生成器的查询。每一步的工具输出都被添加到任务的历史中。</li>
+<li>generate_query
+函数接受任务的当前历史和最新的工具输出，以生成要输入给响应生成器的查询。每一步的工具输出都被添加到任务的历史中。</li>
 </ul>
-<p>给定用户输入&quot;上周最畅销产品的价格是多少？&quot;，生成的计划可能如下所示：</p>
-<ol>
+<p>给定用户输入"上周最畅销产品的价格是多少？"，生成的计划可能如下所示：</p>
+<ol type="1">
 <li>get_time()</li>
 <li>fetch_top_products()</li>
 <li>fetch_product_info()</li>
 <li>generate_query()</li>
 <li>generate_response()</li>
 </ol>
-<p>你可能想知道，&quot;每个函数所需的参数呢？“确切的参数很难提前预测，因为它们通常从之前的工具输出中提取。如果第一步 get_time() 输出&quot;2030-09-13”，那么智能体可以推断下一步的参数应该按如下方式调用：</p>
+<p>你可能想知道，"每个函数所需的参数呢？"确切的参数很难提前预测，因为它们通常从之前的工具输出中提取。如果第一步
+get_time()
+输出"2030-09-13"，那么智能体可以推断下一步的参数应该按如下方式调用：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">retrieve_top_products(</span><br><span class="line">    start_date=&quot;2030-09-07&quot;,</span><br><span class="line">    end_date=&quot;2030-09-13&quot;,</span><br><span class="line">    num_products=1</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
-<p>通常，没有足够的信息来确定函数的确切参数值。例如，如果用户问&quot;最畅销产品的平均价格是多少？&quot;，以下问题的答案并不清楚：</p>
+<p>通常，没有足够的信息来确定函数的确切参数值。例如，如果用户问"最畅销产品的平均价格是多少？"，以下问题的答案并不清楚：</p>
 <ul>
 <li>用户想看多少个最畅销产品？</li>
 <li>用户想要上周、上个月还是所有时间的最畅销产品？</li>
 </ul>
 <p>这意味着模型经常不得不猜测，而猜测可能是错误的。</p>
-<p><u><em>由于动作序列和相关参数都是由 AI 模型生成的，它们可能会产生幻觉。幻觉可能导致模型调用无效函数，或调用有效函数但使用错误的参数。</em></u>提高模型整体性能的技术也可以用来提高模型的规划能力。</p>
+<p><u><em>由于动作序列和相关参数都是由 AI
+模型生成的，它们可能会产生幻觉。幻觉可能导致模型调用无效函数，或调用有效函数但使用错误的参数。</em></u>提高模型整体性能的技术也可以用来提高模型的规划能力。</p>
 <p>以下是使智能体更擅长规划的几种方法：</p>
 <ul>
 <li>编写更好的系统提示，包含更多示例。</li>
@@ -770,55 +1176,83 @@ $$</p>
 <li>使用更强的模型。一般来说，更强的模型更擅长规划。</li>
 <li>对模型进行计划生成的微调。</li>
 </ul>
-<p><strong>函数调用。</strong> 许多模型提供商为其模型提供工具使用功能，有效地将其模型转变为智能体。一个工具就是一个函数。因此，调用工具通常被称为<strong>函数调用</strong>。不同模型的 API 工作方式不同，但一般来说，函数调用的工作方式如下：</p>
-<ol>
-<li>
-<p><strong>创建工具库。</strong><br>
-声明你可能希望模型使用的所有工具。每个工具通过其执行入口点（如函数名）、其参数及其文档（如函数的功能及其所需的参数）来描述。</p>
-</li>
-<li>
-<p><strong>指定智能体可以使用哪些工具。</strong><br>
-由于不同的查询可能需要不同的工具，许多 API 允许你指定每个查询要使用的已声明工具的列表。有些还允许你通过以下设置进一步控制工具使用：</p>
+<p><strong>函数调用。</strong>
+许多模型提供商为其模型提供工具使用功能，有效地将其模型转变为智能体。一个工具就是一个函数。因此，调用工具通常被称为<strong>函数调用</strong>。不同模型的
+API 工作方式不同，但一般来说，函数调用的工作方式如下：</p>
+<ol type="1">
+<li><p><strong>创建工具库。</strong>
+声明你可能希望模型使用的所有工具。每个工具通过其执行入口点（如函数名）、其参数及其文档（如函数的功能及其所需的参数）来描述。</p></li>
+<li><p><strong>指定智能体可以使用哪些工具。</strong>
+由于不同的查询可能需要不同的工具，许多 API
+允许你指定每个查询要使用的已声明工具的列表。有些还允许你通过以下设置进一步控制工具使用：</p>
 <ul>
 <li><code>required</code>：模型必须使用至少一个工具。</li>
 <li><code>none</code>：模型不应使用任何工具。</li>
 <li><code>auto</code>：模型决定使用哪些工具。</li>
-</ul>
-</li>
+</ul></li>
 </ol>
-<p>函数调用如图 6-10 所示。这是用伪代码编写的，以使其代表多个 API。要使用特定的 API，请参考其文档。</p>
-<p>![图6-10](/img4/AI Engineering/6/Figure-6-10-Tool-definitions.png)</p>
+<p>函数调用如图 6-10 所示。这是用伪代码编写的，以使其代表多个
+API。要使用特定的 API，请参考其文档。</p>
+<figure>
+<img src="/img4/AI%20Engineering/6/Figure-6-10-Tool-definitions.png"
+alt="图6-10" />
+<figcaption aria-hidden="true">图6-10</figcaption>
+</figure>
 <p><strong>图 6-10：一个模型使用两个简单工具的示例。</strong></p>
-<p>给定一个查询，如图 6-10 定义的智能体将自动生成要使用的工具及其参数。一些函数调用 API 将确保只生成有效的函数，尽管它们无法保证参数值正确。</p>
-<p>例如，给定用户查询&quot;40 磅等于多少公斤？&quot;，智能体可能决定需要 lbs_to_kg_tool 工具，参数值为 40。智能体的响应可能如下所示：</p>
+<p>给定一个查询，如图 6-10
+定义的智能体将自动生成要使用的工具及其参数。一些函数调用 API
+将确保只生成有效的函数，尽管它们无法保证参数值正确。</p>
+<p>例如，给定用户查询"40 磅等于多少公斤？"，智能体可能决定需要
+lbs_to_kg_tool 工具，参数值为 40。智能体的响应可能如下所示：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">response = ModelResponse(</span><br><span class="line">   finish_reason=&#x27;tool_calls&#x27;,</span><br><span class="line">   message=chat.Message(</span><br><span class="line">       content=None,</span><br><span class="line">       role=&#x27;assistant&#x27;,</span><br><span class="line">       tool_calls=[</span><br><span class="line">           ToolCall(</span><br><span class="line">               function=Function(</span><br><span class="line">                   arguments=&#x27;&#123;&quot;lbs&quot;:40&#125;&#x27;,</span><br><span class="line">                   name=&#x27;lbs_to_kg&#x27;),</span><br><span class="line">               type=&#x27;function&#x27;)</span><br><span class="line">       ])</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
-<p>从这个响应中，你可以调用函数 lbs_to_kg(lbs=40) 并使用其输出来生成对用户的响应。</p>
+<p>从这个响应中，你可以调用函数 lbs_to_kg(lbs=40)
+并使用其输出来生成对用户的响应。</p>
 <p>与智能体一起工作时，始终要求系统报告每个函数调用使用的参数值。检查这些值以确保它们正确。</p>
-<p><strong>规划粒度。</strong> 计划是概述完成任务所需步骤的路线图。路线图可以有不同级别的粒度。规划一年，按季度的计划比按月度的计划更高层，而按月度的计划又比按周的计划更高层。</p>
+<p><strong>规划粒度。</strong>
+计划是概述完成任务所需步骤的路线图。路线图可以有不同级别的粒度。规划一年，按季度的计划比按月度的计划更高层，而按月度的计划又比按周的计划更高层。</p>
 <p>存在一个规划/执行权衡。详细的计划更难生成但更容易执行。更高层的计划更容易生成但更难执行。规避这种权衡的一种方法是分层规划。首先，使用规划器生成一个高层计划，比如季度计划。然后，对于每个季度，使用相同或不同的规划器生成月度计划。</p>
-<p>到目前为止，所有生成的计划示例都使用确切的函数名，这是非常粒度的。这种方法的一个问题是智能体的工具库可能会随时间变化。例如，获取当前日期的函数 get_time() 可能会被重命名为 get_current_time()。当工具改变时，你需要更新你的提示和所有示例。使用确切的函数名也使得在不同用例和不同工具 API 之间重用规划器变得更加困难。</p>
+<p>到目前为止，所有生成的计划示例都使用确切的函数名，这是非常粒度的。这种方法的一个问题是智能体的工具库可能会随时间变化。例如，获取当前日期的函数
+get_time() 可能会被重命名为
+get_current_time()。当工具改变时，你需要更新你的提示和所有示例。使用确切的函数名也使得在不同用例和不同工具
+API 之间重用规划器变得更加困难。</p>
 <p>如果你之前基于旧工具库微调了一个模型来生成计划，那么你将需要在新工具库上再次微调模型。</p>
-<p>为避免这个问题，计划也可以使用更自然的语言来生成，这比领域特定的函数名更高层。例如，给定查询&quot;上周最畅销产品的价格是多少？&quot;，智能体可以被指示输出如下所示的计划：</p>
-<ol>
+<p>为避免这个问题，计划也可以使用更自然的语言来生成，这比领域特定的函数名更高层。例如，给定查询"上周最畅销产品的价格是多少？"，智能体可以被指示输出如下所示的计划：</p>
+<ol type="1">
 <li>get current date</li>
 <li>retrieve the best-selling product last week</li>
 <li>retrieve product information</li>
 <li>generate query</li>
 <li>generate response</li>
 </ol>
-<p><u><em>使用更自然的语言有助于你的计划生成器对工具 API 的变化保持鲁棒。如果你的模型主要是在自然语言上训练的，它可能更擅长理解和生成自然语言计划，并且更不容易产生幻觉。</em></u></p>
+<p><u><em>使用更自然的语言有助于你的计划生成器对工具 API
+的变化保持鲁棒。如果你的模型主要是在自然语言上训练的，它可能更擅长理解和生成自然语言计划，并且更不容易产生幻觉。</em></u></p>
 <p>这种方法的一个缺点是你需要一个翻译器来将每个自然语言动作翻译成可执行的命令¹⁴。然而，翻译是一个比规划简单得多的任务，可以由较弱的模型完成，幻觉风险也更低。</p>
-<p><strong>复杂计划。</strong> 到目前为止的计划示例都是顺序的：计划中的下一个动作总是在前一个动作完成后执行。动作可以执行的顺序称为<strong>控制流</strong>。顺序形式只是控制流的一种类型。其他类型的控制流包括并行、if 语句和 for 循环。以下列表概述了各种控制流，包括用于比较的顺序控制流：</p>
+<p><strong>复杂计划。</strong>
+到目前为止的计划示例都是顺序的：计划中的下一个动作总是在前一个动作完成后执行。动作可以执行的顺序称为<strong>控制流</strong>。顺序形式只是控制流的一种类型。其他类型的控制流包括并行、if
+语句和 for
+循环。以下列表概述了各种控制流，包括用于比较的顺序控制流：</p>
 <ul>
-<li><strong>顺序（Sequential）</strong>：在任务 A 完成后执行任务 B，很可能是因为任务 B 依赖于任务 A。例如，SQL 查询只有在从自然语言输入翻译后才能执行。</li>
-<li><strong>并行（Parallel）</strong>：同时执行任务 A 和 B。例如，给定查询&quot;找到最畅销的 100 美元以下产品&quot;，智能体可能首先检索前 100 个最畅销产品，然后检索每个产品的价格。</li>
-<li><strong>If 语句（If statement）</strong>：根据前一步的输出执行任务 B 或任务 C。例如，智能体首先查看 NVIDIA 的收益报告。基于此报告，它可以决定卖出或买入 NVIDIA 股票。</li>
-<li><strong>For 循环（For loop）</strong>：重复执行任务 A，直到满足特定条件。例如，不断生成随机数，直到产生一个质数。</li>
+<li><strong>顺序（Sequential）</strong>：在任务 A 完成后执行任务
+B，很可能是因为任务 B 依赖于任务 A。例如，SQL
+查询只有在从自然语言输入翻译后才能执行。</li>
+<li><strong>并行（Parallel）</strong>：同时执行任务 A 和
+B。例如，给定查询"找到最畅销的 100 美元以下产品"，智能体可能首先检索前
+100 个最畅销产品，然后检索每个产品的价格。</li>
+<li><strong>If 语句（If statement）</strong>：根据前一步的输出执行任务 B
+或任务 C。例如，智能体首先查看 NVIDIA
+的收益报告。基于此报告，它可以决定卖出或买入 NVIDIA 股票。</li>
+<li><strong>For 循环（For loop）</strong>：重复执行任务
+A，直到满足特定条件。例如，不断生成随机数，直到产生一个质数。</li>
 </ul>
 <p>这些不同的控制流如图 6-11 所示。</p>
-<p>![图6-11](/img4/AI Engineering/6/Figure-6-11-Control-flows.png)</p>
+<figure>
+<img src="/img4/AI%20Engineering/6/Figure-6-11-Control-flows.png"
+alt="图6-11" />
+<figcaption aria-hidden="true">图6-11</figcaption>
+</figure>
 <p><strong>图 6-11：计划可以执行的不同顺序示例。</strong></p>
-<p>在传统软件工程中，控制流的条件是精确的。在 AI 驱动的智能体中，AI 模型决定控制流。具有非顺序控制流的计划更难以生成和翻译为可执行的命令。</p>
+<p>在传统软件工程中，控制流的条件是精确的。在 AI 驱动的智能体中，AI
+模型决定控制流。具有非顺序控制流的计划更难以生成和翻译为可执行的命令。</p>
 <p>在评估智能体框架时，检查它支持哪些控制流。例如，如果系统需要浏览十个网站，它能同时进行吗？并行执行可以显著减少用户感知的延迟。</p>
 <h4 id="反思与错误修正">反思与错误修正</h4>
 <p>Reflection and error correction</p>
@@ -832,68 +1266,130 @@ $$</p>
 </ul>
 <p>反思和错误修正是两种携手并进的机制。反思产生洞察，帮助发现需要修正的错误。</p>
 <p>反思可以由同一个智能体使用自我批评提示来完成。也可以通过单独的组件来完成，例如专门的评分器：一个为每个输出生成具体分数的模型。</p>
-<p><u><em>ReAct（Yao 等人，2022年）首次提出，交织推理和行动已成为智能体的常见模式。Yao 等人使用术语&quot;推理&quot;来涵盖规划和反思。在每个步骤中，智能体被要求解释其思考（规划）、采取行动，然后分析观察结果（反思），直到智能体认为任务完成。</em></u>智能体通常使用示例被提示以以下格式生成输出：</p>
+<p><u><em>ReAct（Yao
+等人，2022年）首次提出，交织推理和行动已成为智能体的常见模式。Yao
+等人使用术语"推理"来涵盖规划和反思。在每个步骤中，智能体被要求解释其思考（规划）、采取行动，然后分析观察结果（反思），直到智能体认为任务完成。</em></u>智能体通常使用示例被提示以以下格式生成输出：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Thought 1: …</span><br><span class="line">Act 1: …</span><br><span class="line">Observation 1: …</span><br><span class="line">… [continue until reflection determines that the task is finished] …</span><br><span class="line">Thought N: …</span><br><span class="line">Act N: Finish [Response to query]</span><br></pre></td></tr></table></figure>
-<p>图 6-12 展示了一个遵循 ReAct 框架的智能体响应 HotpotQA（Yang 等人，2018年）问题的示例，HotpotQA 是一个多跳问答基准。</p>
-<p>![图6-12](/img4/AI Engineering/6/Figure-6-12-ReAct-example.png)</p>
-<p><strong>图 6-12：工作中的 ReAct 智能体。图片来自 ReAct 论文（Yao 等人，2022年）。图片采用 CC BY 4.0 许可。</strong></p>
+<p>图 6-12 展示了一个遵循 ReAct 框架的智能体响应 HotpotQA（Yang
+等人，2018年）问题的示例，HotpotQA 是一个多跳问答基准。</p>
+<figure>
+<img src="/img4/AI%20Engineering/6/Figure-6-12-ReAct-example.png"
+alt="图6-12" />
+<figcaption aria-hidden="true">图6-12</figcaption>
+</figure>
+<p><strong>图 6-12：工作中的 ReAct 智能体。图片来自 ReAct 论文（Yao
+等人，2022年）。图片采用 CC BY 4.0 许可。</strong></p>
 <p>你可以在多智能体环境中实现反思：一个智能体规划和采取行动，另一个智能体在每一步或若干步后评估结果¹⁵。</p>
-<p>如果智能体的响应未能完成任务，你可以提示智能体反思为什么失败以及如何改进。基于这个建议，智能体生成一个新的计划。这允许智能体从错误中学习。例如，给定一个代码生成任务，评估者可能评估生成的代码在 ⅓ 的测试用例上失败。智能体随后反思失败的原因是它没有考虑所有数字都是负数的数组。然后行为者生成新的代码，考虑全负数数组。</p>
-<p>这就是 Reflexion（Shinn 等人，2023年）采取的方法。在这个框架中，反思被分离为两个模块：一个评估结果的评估器和一个分析出了什么问题的自我反思模块。图 6-13 展示了 Reflexion 智能体的工作示例。作者使用术语&quot;轨迹&quot;来指代一个计划。在每一步，经过评估和自我反思后，智能体提出一个新的轨迹。</p>
-<p>![图6-13](/img4/AI Engineering/6/Figure-6-13-Agent-evaluation-trajectory.png)</p>
-<p><strong>图 6-13：Reflexion 智能体工作方式的示例。图片来自 Reflexion GitHub 仓库。</strong></p>
-<p><u><em>与计划生成相比，反思相对容易实现，并且可以带来令人惊讶的良好性能提升。</em></u>这种方法的一个缺点是延迟和成本。思考、观察，有时还有动作，需要大量的 token 来生成，这增加了成本和用户感知的延迟，特别是对于有许多中间步骤的任务。为了促使它们的智能体遵循格式，ReAct 和 Reflexion 的作者在提示中使用了大量的示例。这增加了输入 token 的计算成本，并减少了可用于其他信息的上下文空间。</p>
+<p>如果智能体的响应未能完成任务，你可以提示智能体反思为什么失败以及如何改进。基于这个建议，智能体生成一个新的计划。这允许智能体从错误中学习。例如，给定一个代码生成任务，评估者可能评估生成的代码在
+⅓
+的测试用例上失败。智能体随后反思失败的原因是它没有考虑所有数字都是负数的数组。然后行为者生成新的代码，考虑全负数数组。</p>
+<p>这就是 Reflexion（Shinn
+等人，2023年）采取的方法。在这个框架中，反思被分离为两个模块：一个评估结果的评估器和一个分析出了什么问题的自我反思模块。图
+6-13 展示了 Reflexion
+智能体的工作示例。作者使用术语"轨迹"来指代一个计划。在每一步，经过评估和自我反思后，智能体提出一个新的轨迹。</p>
+<figure>
+<img
+src="/img4/AI%20Engineering/6/Figure-6-13-Agent-evaluation-trajectory.png"
+alt="图6-13" />
+<figcaption aria-hidden="true">图6-13</figcaption>
+</figure>
+<p><strong>图 6-13：Reflexion 智能体工作方式的示例。图片来自 Reflexion
+GitHub 仓库。</strong></p>
+<p><u><em>与计划生成相比，反思相对容易实现，并且可以带来令人惊讶的良好性能提升。</em></u>这种方法的一个缺点是延迟和成本。思考、观察，有时还有动作，需要大量的
+token
+来生成，这增加了成本和用户感知的延迟，特别是对于有许多中间步骤的任务。为了促使它们的智能体遵循格式，ReAct
+和 Reflexion 的作者在提示中使用了大量的示例。这增加了输入 token
+的计算成本，并减少了可用于其他信息的上下文空间。</p>
 <h4 id="工具选择">工具选择</h4>
 <p>Tool selection</p>
-<p>由于工具通常在任务成功中扮演关键角色，工具选择需要仔细考虑。给你的智能体的工具取决于环境和任务，但也取决于驱动智能体的 AI 模型。</p>
+<p>由于工具通常在任务成功中扮演关键角色，工具选择需要仔细考虑。给你的智能体的工具取决于环境和任务，但也取决于驱动智能体的
+AI 模型。</p>
 <blockquote>
 <p>个人注：现在都使用MCP协议调用工具了。</p>
 </blockquote>
-<p>没有万无一失的指南来选择最佳工具集。智能体文献包含了各种各样的工具库。例如，Toolformer（Schick 等人，2023年）微调了 GPT-J 来学习五个工具。Chameleon（Lu 等人，2023年）使用了 13 个工具。另一方面，Gorilla（Patil 等人，2023年）尝试提示智能体在 1,645 个 API 中选择正确的 API 调用。</p>
+<p>没有万无一失的指南来选择最佳工具集。智能体文献包含了各种各样的工具库。例如，Toolformer（Schick
+等人，2023年）微调了 GPT-J 来学习五个工具。Chameleon（Lu
+等人，2023年）使用了 13 个工具。另一方面，Gorilla（Patil
+等人，2023年）尝试提示智能体在 1,645 个 API 中选择正确的 API 调用。</p>
 <p>更多工具给智能体带来更多能力。然而，工具越多，有效使用它们就越困难。类似于人类掌握大量工具更加困难。添加工具也意味着增加工具描述，这可能无法适应模型的上下文。</p>
-<p>像构建 AI 应用时的许多其他决策一样，工具选择需要实验和分析。以下是一些可以帮助你决定的事情：</p>
+<p>像构建 AI
+应用时的许多其他决策一样，工具选择需要实验和分析。以下是一些可以帮助你决定的事情：</p>
 <ul>
 <li>比较智能体使用不同工具集时的表现。</li>
 <li>进行消融研究，看看如果从工具库中移除一个工具，智能体的性能下降多少。如果一个工具可以被移除而不影响性能，就移除它。</li>
 <li>寻找智能体经常犯错的工具。如果一个工具对智能体来说太难使用——例如，大量提示甚至微调都无法让模型学会使用它——就更换这个工具。</li>
-<li>绘制工具调用的分布图，看看哪些工具使用最多，哪些最少。图 6-14 展示了 GPT-4 和 ChatGPT 在 Chameleon（Lu 等人，2023年）中工具使用模式的差异。</li>
+<li>绘制工具调用的分布图，看看哪些工具使用最多，哪些最少。图 6-14 展示了
+GPT-4 和 ChatGPT 在 Chameleon（Lu
+等人，2023年）中工具使用模式的差异。</li>
 </ul>
-<p>![图6-14](/img4/AI Engineering/6/Figure-6-14-Chameleon-tools.png)</p>
-<p><strong>图 6-14：不同的模型和任务表现出不同的工具使用模式。图片来自 Lu 等人（2023年）。改编自采用 CC BY 4.0 许可的原始图片。</strong></p>
+<figure>
+<img src="/img4/AI%20Engineering/6/Figure-6-14-Chameleon-tools.png"
+alt="图6-14" />
+<figcaption aria-hidden="true">图6-14</figcaption>
+</figure>
+<p><strong>图 6-14：不同的模型和任务表现出不同的工具使用模式。图片来自
+Lu 等人（2023年）。改编自采用 CC BY 4.0 许可的原始图片。</strong></p>
 <p>Lu 等人（2023年）的实验还展示了两个要点：</p>
-<ol>
-<li>不同的任务需要不同的工具。ScienceQA（科学问答任务）对知识检索工具的依赖远大于 TabMWP（表格数学问题解决任务）。</li>
-<li>不同的模型有不同的工具偏好。例如，GPT-4 似乎选择了比 ChatGPT 更广泛的工具集。ChatGPT 似乎偏爱图像描述，而 GPT-4 似乎偏爱知识检索。</li>
+<ol type="1">
+<li>不同的任务需要不同的工具。ScienceQA（科学问答任务）对知识检索工具的依赖远大于
+TabMWP（表格数学问题解决任务）。</li>
+<li>不同的模型有不同的工具偏好。例如，GPT-4 似乎选择了比 ChatGPT
+更广泛的工具集。ChatGPT 似乎偏爱图像描述，而 GPT-4
+似乎偏爱知识检索。</li>
 </ol>
-<p>在评估智能体框架时，评估它支持哪些规划器和工具。不同的框架可能关注不同类别的工具。例如，AutoGPT 专注于社交媒体 API（Reddit、X 和 Wikipedia），而 Composio 专注于企业 API（Google Apps、GitHub 和 Slack）。</p>
+<p>在评估智能体框架时，评估它支持哪些规划器和工具。不同的框架可能关注不同类别的工具。例如，AutoGPT
+专注于社交媒体 API（Reddit、X 和 Wikipedia），而 Composio 专注于企业
+API（Google Apps、GitHub 和 Slack）。</p>
 <p>随着你的需求可能会随时间变化，评估扩展你的智能体以纳入新工具的容易程度。</p>
-<p>作为人类，我们提高生产力不仅通过使用给定的工具，还通过从更简单的工具逐步创建更强大的工具。AI 能否从其初始工具创建新工具？</p>
-<p>Chameleon（Lu 等人，2023年）提出了工具转移的研究：在工具 X 之后，智能体调用工具 Y 的可能性有多大？图 6-15 展示了一个工具转移的示例。如果两个工具经常一起使用，它们可以合并成一个更大的工具。如果智能体知道这个信息，智能体本身就可以组合初始工具，持续构建更复杂的工具。</p>
-<p>![图6-15](/img4/AI Engineering/6/Figure-6-15-Chameleon-program-graph.png)</p>
-<p><strong>图 6-15：Lu 等人（2023年）的工具转移树。改编自采用 CC BY 4.0 许可的原始图片。</strong></p>
-<p>Voyager（Wang 等人，2023年）提出了一个技能管理器，用于跟踪智能体获取的新技能（工具）以供后续重用。每个技能是一个编码程序。当技能管理器确定一个新创建的技能将有用时（例如因为它成功帮助智能体完成了一个任务），它将这个技能添加到技能库中（概念上类似于工具库）。这个技能可以在以后被检索出来用于其他任务。</p>
+<p>作为人类，我们提高生产力不仅通过使用给定的工具，还通过从更简单的工具逐步创建更强大的工具。AI
+能否从其初始工具创建新工具？</p>
+<p>Chameleon（Lu 等人，2023年）提出了工具转移的研究：在工具 X
+之后，智能体调用工具 Y 的可能性有多大？图 6-15
+展示了一个工具转移的示例。如果两个工具经常一起使用，它们可以合并成一个更大的工具。如果智能体知道这个信息，智能体本身就可以组合初始工具，持续构建更复杂的工具。</p>
+<figure>
+<img
+src="/img4/AI%20Engineering/6/Figure-6-15-Chameleon-program-graph.png"
+alt="图6-15" />
+<figcaption aria-hidden="true">图6-15</figcaption>
+</figure>
+<p><strong>图 6-15：Lu 等人（2023年）的工具转移树。改编自采用 CC BY 4.0
+许可的原始图片。</strong></p>
+<p>Voyager（Wang
+等人，2023年）提出了一个技能管理器，用于跟踪智能体获取的新技能（工具）以供后续重用。每个技能是一个编码程序。当技能管理器确定一个新创建的技能将有用时（例如因为它成功帮助智能体完成了一个任务），它将这个技能添加到技能库中（概念上类似于工具库）。这个技能可以在以后被检索出来用于其他任务。</p>
 <blockquote>
 <p>个人注：SKILL是现在智能体核心的要素之一。</p>
 </blockquote>
 <p>在本节前面，我们提到智能体在环境中的成功取决于其工具库和规划能力。任何一方面的失败都可能导致智能体失败。下一节将讨论智能体的不同失败模式以及如何评估它们。</p>
 <h3 id="智能体失败模式与评估">智能体失败模式与评估</h3>
 <p>Agent Failure Modes and Evaluation</p>
-<p>评估就是检测失败。智能体执行的任务越复杂，可能的失败点就越多。除了第 3 章和第 4 章讨论的所有 AI 应用共有的失败模式外，智能体还有由规划、工具执行和效率导致的独特失败。其中一些失败比其他更容易捕捉。</p>
+<p>评估就是检测失败。智能体执行的任务越复杂，可能的失败点就越多。除了第
+3 章和第 4 章讨论的所有 AI
+应用共有的失败模式外，智能体还有由规划、工具执行和效率导致的独特失败。其中一些失败比其他更容易捕捉。</p>
 <p>为了评估一个智能体，识别其失败模式并衡量每种失败模式发生的频率。</p>
-<p>我创建了一个简单的基准来说明这些不同的失败模式，你可以在本书的 GitHub 仓库中找到。还有一些智能体基准和排行榜，如 Berkeley Function Calling Leaderboard、AgentOps 评估工具和 TravelPlanner 基准。</p>
+<p>我创建了一个简单的基准来说明这些不同的失败模式，你可以在本书的 GitHub
+仓库中找到。还有一些智能体基准和排行榜，如 Berkeley Function Calling
+Leaderboard、AgentOps 评估工具和 TravelPlanner 基准。</p>
 <h4 id="规划失败">规划失败</h4>
 <p>Planning failures</p>
 <p>规划很难，可能以多种方式失败。最常见的规划失败模式是<strong>工具使用失败</strong>。智能体可能生成包含以下一个或多个错误的计划：</p>
 <ul>
-<li><strong>无效工具</strong>：例如，它生成一个包含 bing_search 的计划，但 bing_search 不在智能体的工具库中。</li>
-<li><strong>有效工具，无效参数</strong>：例如，它用两个参数调用 lbs_to_kg。lbs_to_kg 在工具库中，但只需要一个参数 lbs。</li>
-<li><strong>有效工具，错误的参数值</strong>：例如，它用一个参数 lbs 调用 lbs_to_kg，但使用了值 100，而应该是 120。</li>
+<li><strong>无效工具</strong>：例如，它生成一个包含 bing_search
+的计划，但 bing_search 不在智能体的工具库中。</li>
+<li><strong>有效工具，无效参数</strong>：例如，它用两个参数调用
+lbs_to_kg。lbs_to_kg 在工具库中，但只需要一个参数 lbs。</li>
+<li><strong>有效工具，错误的参数值</strong>：例如，它用一个参数 lbs 调用
+lbs_to_kg，但使用了值 100，而应该是 120。</li>
 </ul>
-<p>另一种规划失败模式是<strong>目标失败</strong>：智能体未能实现目标。这可能是因为计划没有解决问题，或者解决了问题但没有遵循约束。为了说明这一点，想象你要求模型用 5,000 美元的预算规划一个从旧金山到河内的两周旅行。智能体可能规划了一个从旧金山到胡志明市的旅行，或者规划了一个从旧金山到河内的两周旅行，但预算远远超标。</p>
+<p>另一种规划失败模式是<strong>目标失败</strong>：智能体未能实现目标。这可能是因为计划没有解决问题，或者解决了问题但没有遵循约束。为了说明这一点，想象你要求模型用
+5,000
+美元的预算规划一个从旧金山到河内的两周旅行。智能体可能规划了一个从旧金山到胡志明市的旅行，或者规划了一个从旧金山到河内的两周旅行，但预算远远超标。</p>
 <p>一个常被智能体评估忽视的常见约束是<strong>时间</strong>。在许多情况下，智能体花费的时间不太重要，因为你分配一个任务给智能体，只需要在它完成时检查结果。然而，在许多情况下，智能体会随着时间的推移变得不那么有用。例如，如果你要求智能体准备一份拨款提案，而智能体在拨款截止日期后才完成，那么这个智能体就没有太大帮助。</p>
-<p>一种有趣的规划失败模式是由反思中的错误引起的。智能体确信它已经完成了任务，但实际上并没有。例如，你要求智能体将 50 个人分配到 30 个酒店房间。智能体可能只分配了 40 个人，并坚称任务已完成。</p>
-<p>要评估智能体的规划失败，一种选择是创建一个规划数据集，其中每个样本是一个元组（任务，工具库）。对于每个任务，使用智能体生成 K 个计划。计算以下指标：</p>
-<ol>
+<p>一种有趣的规划失败模式是由反思中的错误引起的。智能体确信它已经完成了任务，但实际上并没有。例如，你要求智能体将
+50 个人分配到 30 个酒店房间。智能体可能只分配了 40
+个人，并坚称任务已完成。</p>
+<p>要评估智能体的规划失败，一种选择是创建一个规划数据集，其中每个样本是一个元组（任务，工具库）。对于每个任务，使用智能体生成
+K 个计划。计算以下指标：</p>
+<ol type="1">
 <li>在所有生成的计划中，有多少是有效的？</li>
 <li>对于给定的任务，智能体平均需要生成多少个计划才能得到一个有效的计划？</li>
 <li>在所有工具调用中，有多少是有效的？</li>
@@ -904,7 +1400,8 @@ $$</p>
 <p>分析智能体的输出以寻找模式。智能体在哪些类型的任务上更容易失败？你有关于原因的假设吗？模型经常在哪些工具上犯错误？有些工具可能更难让智能体使用。你可以通过更好的提示、更多的示例或微调来提高智能体使用具有挑战性的工具的能力。如果所有方法都失败，你可以考虑将这个工具替换为更容易使用的工具。</p>
 <h4 id="工具失败">工具失败</h4>
 <p>Tool failures</p>
-<p>工具失败发生在使用正确的工具但工具输出错误的情况下。一种失败模式是工具直接给出错误的输出。例如，图像描述器返回错误的描述，或 SQL 查询生成器返回错误的 SQL 查询。</p>
+<p>工具失败发生在使用正确的工具但工具输出错误的情况下。一种失败模式是工具直接给出错误的输出。例如，图像描述器返回错误的描述，或
+SQL 查询生成器返回错误的 SQL 查询。</p>
 <p>如果智能体只生成高层计划，并且涉及一个翻译模块将每个计划好的动作翻译成可执行的命令，失败可能由于翻译错误而发生。</p>
 <p>工具失败也可能因为智能体没有为任务访问正确的工具而发生。一个明显的例子是当任务涉及从互联网检索当前股票价格，而智能体没有访问互联网的能力。</p>
 <p>工具失败是工具相关的。每个工具需要独立测试。始终打印出每个工具调用及其输出，以便你可以检查和评估它们。如果你有翻译器，创建基准来评估它。</p>
@@ -917,63 +1414,115 @@ $$</p>
 <li>智能体平均花费多少成本来完成一个任务？</li>
 <li>每个动作通常需要多长时间？是否有任何动作特别耗时或昂贵？</li>
 </ul>
-<p><em>你可以将这些指标与你的基线进行比较，基线可以是另一个智能体或人类操作员。在比较 AI 智能体与人类智能体时，<u>请记住人类和 AI 具有非常不同的操作模式，因此对人类来说是高效的，对 AI 来说可能是低效的，反之亦然。例如，访问 100 个网页对人类来说可能是低效的（一次只能访问一个页面），但对 AI 智能体来说是微不足道的（可以同时访问所有网页）。</u></em></p>
+<p><em>你可以将这些指标与你的基线进行比较，基线可以是另一个智能体或人类操作员。在比较
+AI 智能体与人类智能体时，<u>请记住人类和 AI
+具有非常不同的操作模式，因此对人类来说是高效的，对 AI
+来说可能是低效的，反之亦然。例如，访问 100
+个网页对人类来说可能是低效的（一次只能访问一个页面），但对 AI
+智能体来说是微不足道的（可以同时访问所有网页）。</u></em></p>
 <blockquote>
 <p>个人注：</p>
 <p>例如在翻译本书过程当中，需要把原书的插图和表格截屏出来，开始让Agent处理，截出来的图往往包括了上边的一些文字或者页眉，而人来截图就很容易识别出图片的边界在哪里。</p>
 </blockquote>
-<p>在本章中，我们详细讨论了 RAG 和智能体系统的运作方式。这两种模式通常都处理超出模型上下文限制的信息。一个补充模型处理信息能力的记忆系统可以显著增强其能力。接下来让我们探讨记忆系统如何工作。</p>
+<p>在本章中，我们详细讨论了 RAG
+和智能体系统的运作方式。这两种模式通常都处理超出模型上下文限制的信息。一个补充模型处理信息能力的记忆系统可以显著增强其能力。接下来让我们探讨记忆系统如何工作。</p>
 <h2 id="记忆">记忆</h2>
 <p>Memory</p>
-<p>记忆是指允许模型保留和利用信息的机制。记忆系统对于知识密集型应用（如 RAG）和多步骤应用（如智能体）尤其有用。RAG 系统依赖记忆来存储增强上下文，它可以随着检索更多信息而跨多轮增长。智能体系统需要记忆来存储指令、示例、上下文、工具库、计划、工具输出、反思等。虽然 RAG 和智能体对记忆提出了更高的要求，但记忆对于任何需要保留信息的 AI 应用都是有益的。</p>
+<p>记忆是指允许模型保留和利用信息的机制。记忆系统对于知识密集型应用（如
+RAG）和多步骤应用（如智能体）尤其有用。RAG
+系统依赖记忆来存储增强上下文，它可以随着检索更多信息而跨多轮增长。智能体系统需要记忆来存储指令、示例、上下文、工具库、计划、工具输出、反思等。虽然
+RAG 和智能体对记忆提出了更高的要求，但记忆对于任何需要保留信息的 AI
+应用都是有益的。</p>
 <p>AI 模型通常有三种主要的记忆机制：</p>
-<p><strong>内部知识（Internal knowledge）</strong><br>
+<p><strong>内部知识（Internal knowledge）</strong>
 模型本身就是一个记忆机制，因为它保留了训练数据中的知识。这些知识就是其内部知识。模型的内部知识不会改变，除非模型本身被更新。模型可以在所有查询中访问这些知识。</p>
-<p><strong>短期记忆（Short-term memory）</strong><br>
+<p><strong>短期记忆（Short-term memory）</strong>
 模型的上下文是一种记忆机制。对话中的先前消息可以被添加到模型的上下文中，使模型能够利用它们来生成未来的响应。模型的上下文可以视为其短期记忆，因为它不会跨任务（查询）持久化。访问速度快，但容量有限。因此，它通常用于存储对当前任务最重要的信息。</p>
-<p><strong>长期记忆（Long-term memory）</strong><br>
-模型可以通过检索访问的外部数据源，如 RAG 系统中的数据源，是一种记忆机制。这可以视为模型的长期记忆，因为它可以跨任务持久化。与模型的内部知识不同，长期记忆中的信息可以被删除而无需更新模型。</p>
+<p><strong>长期记忆（Long-term memory）</strong>
+模型可以通过检索访问的外部数据源，如 RAG
+系统中的数据源，是一种记忆机制。这可以视为模型的长期记忆，因为它可以跨任务持久化。与模型的内部知识不同，长期记忆中的信息可以被删除而无需更新模型。</p>
 <p>人类也有类似的记忆机制。如何呼吸是你的内部知识。除非你遇到严重麻烦，否则通常不会忘记如何呼吸。你的短期记忆包含与你当前正在做的事情直接相关的信息，如你刚认识的人的名字。你的长期记忆通过书籍、电脑、笔记等来增强。</p>
-<p>对于你的数据使用哪种记忆机制取决于其使用频率。对所有任务都必不可少的信息应该通过训练或微调纳入模型的内部知识。很少需要的信息应该放在长期记忆中。短期记忆用于即时的、上下文特定的信息。这三种记忆机制如图 6-16 所示。</p>
+<p>对于你的数据使用哪种记忆机制取决于其使用频率。对所有任务都必不可少的信息应该通过训练或微调纳入模型的内部知识。很少需要的信息应该放在长期记忆中。短期记忆用于即时的、上下文特定的信息。这三种记忆机制如图
+6-16 所示。</p>
 <blockquote>
 <p>个人注：</p>
 <p>记忆还包括Agent针对个体的个性化的记忆。还有个人的任务保存下来的SKILL。</p>
 </blockquote>
-<p>![图6-16](/img4/AI Engineering/6/Figure-6-16-Agent-memory-hierarchy.png)</p>
+<figure>
+<img
+src="/img4/AI%20Engineering/6/Figure-6-16-Agent-memory-hierarchy.png"
+alt="图6-16" />
+<figcaption aria-hidden="true">图6-16</figcaption>
+</figure>
 <p><strong>图 6-16：智能体的信息层次结构。</strong></p>
-<p>记忆对于人类的操作至关重要。随着 AI 应用的发展，开发者很快意识到记忆对 AI 模型也很重要。许多用于 AI 模型的记忆管理工具已被开发出来，许多模型提供商已经整合了外部记忆。用记忆系统增强 AI 模型有许多好处。以下只是其中一些：</p>
+<p>记忆对于人类的操作至关重要。随着 AI
+应用的发展，开发者很快意识到记忆对 AI 模型也很重要。许多用于 AI
+模型的记忆管理工具已被开发出来，许多模型提供商已经整合了外部记忆。用记忆系统增强
+AI 模型有许多好处。以下只是其中一些：</p>
 <ul>
 <li><strong>管理会话内的信息溢出</strong>：在执行任务的过程中，智能体会获取大量新信息，这可能会超过智能体的最大上下文长度。多余的信息可以存储在具有长期记忆的记忆系统中。</li>
-<li><strong>在会话之间持久化信息</strong>：如果每次你想要教练的建议时都必须解释你的整个人生，AI 教练实际上是没用的。如果一个 AI 助手总是忘记你的偏好，使用起来会令人烦恼。访问你的对话历史可以让智能体为你个性化其行动。例如，当你请求书籍推荐时，如果模型记得你之前喜欢《三体》，它可以推荐类似的书籍。</li>
-<li><strong>提升模型的一致性</strong>：如果你问我两次同一个主观问题，比如给一个笑话打分（1 到 5 分），如果我记得我之前的答案，我给出一致答案的可能性会大得多。同样，如果 AI 模型可以参考其之前的答案，它就可以校准其未来的答案以保持一致性。</li>
-<li><strong>维护数据的结构完整性</strong>：由于文本本质上是非结构化的，基于文本的模型上下文中存储的数据是非结构化的。你可以在上下文中放入结构化数据。例如，你可以逐行将一个表格输入上下文，但无法保证模型会理解这是一个表格。拥有一个能够存储结构化数据的记忆系统可以帮助维护数据的结构完整性。例如，如果你要求智能体寻找潜在销售线索，这个智能体可以利用 Excel 表格来存储线索。智能体也可以利用队列来存储要执行的动作序列。</li>
+<li><strong>在会话之间持久化信息</strong>：如果每次你想要教练的建议时都必须解释你的整个人生，AI
+教练实际上是没用的。如果一个 AI
+助手总是忘记你的偏好，使用起来会令人烦恼。访问你的对话历史可以让智能体为你个性化其行动。例如，当你请求书籍推荐时，如果模型记得你之前喜欢《三体》，它可以推荐类似的书籍。</li>
+<li><strong>提升模型的一致性</strong>：如果你问我两次同一个主观问题，比如给一个笑话打分（1
+到 5
+分），如果我记得我之前的答案，我给出一致答案的可能性会大得多。同样，如果
+AI 模型可以参考其之前的答案，它就可以校准其未来的答案以保持一致性。</li>
+<li><strong>维护数据的结构完整性</strong>：由于文本本质上是非结构化的，基于文本的模型上下文中存储的数据是非结构化的。你可以在上下文中放入结构化数据。例如，你可以逐行将一个表格输入上下文，但无法保证模型会理解这是一个表格。拥有一个能够存储结构化数据的记忆系统可以帮助维护数据的结构完整性。例如，如果你要求智能体寻找潜在销售线索，这个智能体可以利用
+Excel 表格来存储线索。智能体也可以利用队列来存储要执行的动作序列。</li>
 </ul>
 <p>AI 模型的记忆系统通常包含两个功能：</p>
 <ul>
 <li><strong>记忆管理</strong>：管理哪些信息应该存储在短期和长期记忆中。</li>
 <li><strong>记忆检索</strong>：从长期记忆中检索与任务相关的信息。</li>
 </ul>
-<p>记忆检索类似于 RAG 检索，因为长期记忆是一种外部数据源。在本节中，我将重点讨论记忆管理。记忆管理通常包含两个操作：添加和删除记忆。如果记忆存储是无限的，删除可能不是必需的。这对于长期记忆可能可行，因为外部记忆存储相对便宜且易于扩展。然而，短期记忆受限于模型的最大上下文长度，因此需要一种关于添加和删除什么的策略。</p>
-<p>长期记忆可以用来存储短期记忆的溢出。这个操作取决于你分配多少空间给短期记忆。对于给定的查询，输入模型的上下文包括其短期记忆和从长期记忆中检索到的信息。因此，模型的短期容量取决于上下文中分配给从长期记忆检索的信息的比例。例如，如果 30% 的上下文保留给长期记忆检索，那么模型最多可以使用上下文限制的 70% 来存储短期记忆。当达到这个阈值时，溢出部分可以移动到长期记忆。</p>
-<p>像本章前面讨论的许多组件一样，记忆管理并非 AI 应用所独有。记忆管理一直是所有数据系统的基石，已经开发了许多策略来高效使用记忆。</p>
-<p>最简单的策略是 <strong>FIFO</strong>（先进先出）。最先添加到短期记忆的信息将最先移动到外部存储。随着对话变长，OpenAI 等 API 提供商可能开始移除对话开始的部分。像 LangChain 这样的框架可能允许保留最后 N 条消息或最后 N 个 token。在长时间对话中，这个策略假设早期的消息与当前讨论的相关性较低。然而，这个假设可能是致命的错误。在某些对话中，最早的消息可能携带最多信息，特别是当早期消息陈述了对话的目的时¹⁶。虽然 FIFO 实现简单，但它可能导致模型丢失重要信息¹⁷。</p>
+<p>记忆检索类似于 RAG
+检索，因为长期记忆是一种外部数据源。在本节中，我将重点讨论记忆管理。记忆管理通常包含两个操作：添加和删除记忆。如果记忆存储是无限的，删除可能不是必需的。这对于长期记忆可能可行，因为外部记忆存储相对便宜且易于扩展。然而，短期记忆受限于模型的最大上下文长度，因此需要一种关于添加和删除什么的策略。</p>
+<p>长期记忆可以用来存储短期记忆的溢出。这个操作取决于你分配多少空间给短期记忆。对于给定的查询，输入模型的上下文包括其短期记忆和从长期记忆中检索到的信息。因此，模型的短期容量取决于上下文中分配给从长期记忆检索的信息的比例。例如，如果
+30% 的上下文保留给长期记忆检索，那么模型最多可以使用上下文限制的 70%
+来存储短期记忆。当达到这个阈值时，溢出部分可以移动到长期记忆。</p>
+<p>像本章前面讨论的许多组件一样，记忆管理并非 AI
+应用所独有。记忆管理一直是所有数据系统的基石，已经开发了许多策略来高效使用记忆。</p>
+<p>最简单的策略是
+<strong>FIFO</strong>（先进先出）。最先添加到短期记忆的信息将最先移动到外部存储。随着对话变长，OpenAI
+等 API 提供商可能开始移除对话开始的部分。像 LangChain
+这样的框架可能允许保留最后 N 条消息或最后 N 个
+token。在长时间对话中，这个策略假设早期的消息与当前讨论的相关性较低。然而，这个假设可能是致命的错误。在某些对话中，最早的消息可能携带最多信息，特别是当早期消息陈述了对话的目的时¹⁶。虽然
+FIFO 实现简单，但它可能导致模型丢失重要信息¹⁷。</p>
 <p>更复杂的策略涉及<strong>去除冗余</strong>。人类语言包含冗余以增强清晰度和弥补潜在的误解。如果有一种方法可以自动检测冗余，记忆足迹将显著减少。</p>
-<p>去除冗余的一种方法是使用对话的<strong>摘要</strong>。这个摘要可以使用相同或另一个模型生成。摘要在追踪命名实体之后可以走得很远。Bae 等人（2022年）更进一步。在获得摘要后，作者希望通过将记忆与摘要遗漏的关键信息结合起来构建新的记忆。作者开发了一个分类器，对于记忆中的每个句子和摘要中的每个句子，确定应该只添加其中之一、两者都添加、还是都不添加到新记忆中。</p>
-<p>另一方面，Liu 等人（2023年）使用了反思方法。在每个动作之后，智能体被要求做两件事：</p>
-<ol>
+<p>去除冗余的一种方法是使用对话的<strong>摘要</strong>。这个摘要可以使用相同或另一个模型生成。摘要在追踪命名实体之后可以走得很远。Bae
+等人（2022年）更进一步。在获得摘要后，作者希望通过将记忆与摘要遗漏的关键信息结合起来构建新的记忆。作者开发了一个分类器，对于记忆中的每个句子和摘要中的每个句子，确定应该只添加其中之一、两者都添加、还是都不添加到新记忆中。</p>
+<p>另一方面，Liu
+等人（2023年）使用了反思方法。在每个动作之后，智能体被要求做两件事：</p>
+<ol type="1">
 <li>反思刚刚生成的信息。</li>
 <li>确定这些新信息是否应该插入记忆、与现有记忆合并，或替换某些其他信息，特别是如果其他信息已经过时且与新信息矛盾时。</li>
 </ol>
-<p>当遇到矛盾的信息时，有些人选择保留较新的信息。有些人要求 AI 模型判断保留哪一个。如何处理矛盾取决于用例。有矛盾可能导致智能体困惑，但也可以帮助它从不同角度进行思考。</p>
+<p>当遇到矛盾的信息时，有些人选择保留较新的信息。有些人要求 AI
+模型判断保留哪一个。如何处理矛盾取决于用例。有矛盾可能导致智能体困惑，但也可以帮助它从不同角度进行思考。</p>
 <h2 id="总结">总结</h2>
 <p>Summary</p>
 <p>鉴于 RAG 的流行和智能体的潜力，早期读者提到这是他们最期待的章节。</p>
-<p>本章从 RAG 开始，这是两者中最早出现的模式。许多任务需要大量的背景知识，这些知识往往超出模型的上下文窗口。例如，代码副驾驶可能需要访问整个代码库，研究助手可能需要分析多本书籍。RAG 最初是为了克服模型的上下文限制而开发的，它还使信息的使用更加高效，在降低成本的同时提高了响应质量。从基础模型发展的早期起，就很清楚 RAG 模式将对广泛的应用具有巨大价值，此后它在消费者和企业用例中迅速被采用。</p>
-<p>RAG 采用两步过程。它首先从外部记忆中检索相关信息，然后使用这些信息生成更准确的响应。RAG 系统的成功取决于其检索器的质量。基于词项的检索器，如 Elasticsearch 和 BM25，实现起来轻量得多，并且可以提供强大的基线。基于嵌入的检索器计算密集度更高，但有可能超越基于词项的算法。</p>
-<p>基于嵌入的检索由向量搜索驱动，向量搜索也是许多核心互联网应用（如搜索和推荐系统）的支柱。为这些应用开发的许多向量搜索算法都可以用于 RAG。</p>
-<p><u><em>RAG 模式可以被视为智能体的一个特例</em></u>，其中检索器是模型可以使用的工具。这两种模式都允许模型规避其上下文限制并保持信息更新，但智能体模式能做的远不止于此。智能体由其所处的环境和可以访问的工具来定义。在 AI 驱动的智能体中，AI 是规划器，负责分析给定任务、考虑不同的解决方案并选择最有前景的一个。复杂的任务可能需要许多步骤来解决，这需要强大的模型来规划。<em><u>模型的规划能力可以通过反思和记忆系统来增强，以帮助它跟踪进展。</u></em></p>
-<p>你给模型提供的工具越多，模型的能力就越强，使其能够解决更具挑战性的任务。然而，智能体变得越自动化，其失败可能越具灾难性。工具使用使智能体暴露于第 5 章讨论的许多安全风险中。为了让智能体在现实世界中工作，需要建立严格的防御机制。</p>
-<p>RAG 和智能体都需要处理大量信息，这些信息往往超出底层模型的最大上下文长度。这就需要一个用于管理和使用模型拥有的所有信息的记忆系统。本章以对这个组件的简短讨论作为结束。</p>
+<p>本章从 RAG
+开始，这是两者中最早出现的模式。许多任务需要大量的背景知识，这些知识往往超出模型的上下文窗口。例如，代码副驾驶可能需要访问整个代码库，研究助手可能需要分析多本书籍。RAG
+最初是为了克服模型的上下文限制而开发的，它还使信息的使用更加高效，在降低成本的同时提高了响应质量。从基础模型发展的早期起，就很清楚
+RAG
+模式将对广泛的应用具有巨大价值，此后它在消费者和企业用例中迅速被采用。</p>
+<p>RAG
+采用两步过程。它首先从外部记忆中检索相关信息，然后使用这些信息生成更准确的响应。RAG
+系统的成功取决于其检索器的质量。基于词项的检索器，如 Elasticsearch 和
+BM25，实现起来轻量得多，并且可以提供强大的基线。基于嵌入的检索器计算密集度更高，但有可能超越基于词项的算法。</p>
+<p>基于嵌入的检索由向量搜索驱动，向量搜索也是许多核心互联网应用（如搜索和推荐系统）的支柱。为这些应用开发的许多向量搜索算法都可以用于
+RAG。</p>
+<p><u><em>RAG
+模式可以被视为智能体的一个特例</em></u>，其中检索器是模型可以使用的工具。这两种模式都允许模型规避其上下文限制并保持信息更新，但智能体模式能做的远不止于此。智能体由其所处的环境和可以访问的工具来定义。在
+AI 驱动的智能体中，AI
+是规划器，负责分析给定任务、考虑不同的解决方案并选择最有前景的一个。复杂的任务可能需要许多步骤来解决，这需要强大的模型来规划。<em><u>模型的规划能力可以通过反思和记忆系统来增强，以帮助它跟踪进展。</u></em></p>
+<p>你给模型提供的工具越多，模型的能力就越强，使其能够解决更具挑战性的任务。然而，智能体变得越自动化，其失败可能越具灾难性。工具使用使智能体暴露于第
+5
+章讨论的许多安全风险中。为了让智能体在现实世界中工作，需要建立严格的防御机制。</p>
+<p>RAG
+和智能体都需要处理大量信息，这些信息往往超出底层模型的最大上下文长度。这就需要一个用于管理和使用模型拥有的所有信息的记忆系统。本章以对这个组件的简短讨论作为结束。</p>
 
     </div>
 

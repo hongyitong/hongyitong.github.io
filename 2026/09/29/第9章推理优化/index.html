@@ -27,10 +27,31 @@
 <meta property="og:site_name" content="墨语浮生">
 <meta property="og:description" content="第9章 推理优化 Chapter 9. Inference Optimization 新模型层出不穷，但有一件事始终重要：让它们变得更好、更便宜、更快。到目前为止，本书已经讨论了各种让模型变得更好的技术。本章将聚焦于让模型变得更快、更便宜。无论你的模型有多好，如果它太慢，用户可能会失去耐心，更糟糕的是，其预测结果可能会变得毫无用处——想象一个隔夜股票价格预测模型需要两天时间计算每个结果。如果模型太">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/9/Figure-9-1-Inference-service.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/9/Figure-9-2-Roofline-chart.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/9/Figure-9-3-Prefill-decode.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/9/Figure-9-4-Goodput-SLO.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/9/Table-9-1-MFU-examples.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/9/Figure-9-5-Bandwidth-utilization.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/9/Figure-9-6-Compute-primitives.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/9/Table-9-2-H100-FLOPS.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/9/Figure-9-7-Memory-hierarchy.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/9/Figure-9-9-Draft-model-decode.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/9/Figure-9-11-Medusa-heads.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/9/Figure-9-12-KV-cache.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/9/Figure-9-13-FlashAttention.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/9/Figure-9-14-PyTorch-throughput.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/9/Figure-9-15-Dynamic-batching.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/9/Figure-9-16-Continuous-batching.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/9/Figure-9-17-Prompt-cache.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/9/Table-9-3-Prompt-caching-cost.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/9/Figure-9-18-Tensor-parallelism.png">
+<meta property="og:image" content="http://hongyitong.github.io/img4/AI%20Engineering/9/Figure-9-19-Pipeline-parallelism.png">
 <meta property="article:published_time" content="2026-09-28T16:00:00.000Z">
 <meta property="article:modified_time" content="2026-10-02T02:16:05.929Z">
 <meta property="article:author" content="Rayman.hung">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hongyitong.github.io/img4/AI%20Engineering/9/Figure-9-1-Inference-service.png">
 
 
 <link rel="canonical" href="http://hongyitong.github.io/2026/09/29/%E7%AC%AC9%E7%AB%A0%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/">
@@ -165,7 +186,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-text">第9章 推理优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%90%86%E8%A7%A3%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96"><span class="nav-text">理解推理优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%A8%E7%90%86%E6%A6%82%E8%BF%B0"><span class="nav-text">推理概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%A8%E7%90%86%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87"><span class="nav-text">推理性能指标</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AI%E5%8A%A0%E9%80%9F%E5%99%A8"><span class="nav-text">AI加速器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96"><span class="nav-text">推理优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E4%BC%98%E5%8C%96"><span class="nav-text">模型优化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%A8%E7%90%86%E6%9C%8D%E5%8A%A1%E4%BC%98%E5%8C%96"><span class="nav-text">推理服务优化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC9%E7%AB%A0-%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96"><span class="nav-text">第9章 推理优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%90%86%E8%A7%A3%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96"><span class="nav-text">理解推理优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%A8%E7%90%86%E6%A6%82%E8%BF%B0"><span class="nav-text">推理概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%A8%E7%90%86%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87"><span class="nav-text">推理性能指标</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ai%E5%8A%A0%E9%80%9F%E5%99%A8"><span class="nav-text">AI加速器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96"><span class="nav-text">推理优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E4%BC%98%E5%8C%96"><span class="nav-text">模型优化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%A8%E7%90%86%E6%9C%8D%E5%8A%A1%E4%BC%98%E5%8C%96"><span class="nav-text">推理服务优化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -266,7 +287,7 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h1>第9章 推理优化</h1>
+    <div class="post-body" itemprop="articleBody"><h1 id="第9章-推理优化">第9章 推理优化</h1>
 <p>Chapter 9. Inference Optimization</p>
 <p>新模型层出不穷，但有一件事始终重要：让它们变得更好、更便宜、更快。到目前为止，本书已经讨论了各种让模型变得更好的技术。本章将聚焦于让模型变得更快、更便宜。无论你的模型有多好，如果它太慢，用户可能会失去耐心，更糟糕的是，其预测结果可能会变得毫无用处——想象一个隔夜股票价格预测模型需要两天时间计算每个结果。如果模型太贵，其投资回报率将得不偿失。</p>
 <p>推理优化可以在模型、硬件和服务三个层面进行。在模型层面，你可以减小已训练模型的尺寸，或开发更高效的架构，例如消除Transformer模型中注意力机制的计算瓶颈。在硬件层面，你可以设计更强大的硬件。</p>
@@ -274,49 +295,76 @@
 <p>正因如此，推理优化是一个跨学科领域，通常需要模型研究人员、应用开发者、系统工程师、编译器设计者、硬件架构师甚至数据中心运营者之间的协作。</p>
 <p>本章讨论AI推理的瓶颈以及克服这些瓶颈的技术。它主要关注模型和服务层面的优化，并概述AI加速器。</p>
 <blockquote>
-<ol>
+<ol type="1">
 <li>如第7章所述，推理只涉及前向传播，而训练同时涉及前向和反向传播。</li>
-<li>我的朋友Mark Saroufim向我指出了模型训练成本和推理成本之间的一个有趣关系。假设你是模型提供商。令T为总训练成本，p为每次推理的收费，N为可售出的推理调用次数。开发一个模型只有在从推理中回收的资金超过其训练成本时才划算，即T ≤ p × N。一个模型在生产中使用得越多，模型提供商就越能降低推理成本。然而，这不适用于在开源模型之上销售推理调用的第三方API提供商。</li>
+<li>我的朋友Mark
+Saroufim向我指出了模型训练成本和推理成本之间的一个有趣关系。假设你是模型提供商。令T为总训练成本，p为每次推理的收费，N为可售出的推理调用次数。开发一个模型只有在从推理中回收的资金超过其训练成本时才划算，即T
+≤ p ×
+N。一个模型在生产中使用得越多，模型提供商就越能降低推理成本。然而，这不适用于在开源模型之上销售推理调用的第三方API提供商。</li>
 </ol>
 </blockquote>
 <p>本章还涵盖了性能指标和权衡。有时，加速模型的技术也能降低成本。例如，降低模型精度使其更小、更快。但优化通常需要权衡。例如，最好的硬件可能让模型运行更快，但成本更高。</p>
 <p>随着开源模型越来越丰富，越来越多的团队在构建自己的推理服务。然而，即使你不实现这些推理优化技术，理解这些技术也能帮助你评估推理服务和框架。如果你的应用延迟和成本让你困扰，请继续往下读。本章或许能帮你诊断原因并找到潜在解决方案。</p>
-<span id="more"></span>  
+<span id="more"></span>
 <h2 id="理解推理优化">理解推理优化</h2>
 <p>Understanding Inference Optimization</p>
-<p>AI模型的生命周期有两个不同的阶段：训练和推理。训练是指构建模型的过程。推理是指使用模型根据给定输入计算输出的过程。¹ 除非你训练或微调模型，否则你主要需要关注推理。²</p>
+<p>AI模型的生命周期有两个不同的阶段：训练和推理。训练是指构建模型的过程。推理是指使用模型根据给定输入计算输出的过程。¹
+除非你训练或微调模型，否则你主要需要关注推理。²</p>
 <p>本节首先概述推理，引入共享词汇以便讨论本章其余内容。如果你已熟悉这些概念，可以跳过感兴趣的部分。</p>
 <h3 id="推理概述">推理概述</h3>
 <p>Inference Overview</p>
 <p>在生产环境中，运行模型推理的组件称为推理服务器。它托管可用的模型并访问必要的硬件。基于来自应用（例如用户提示）的请求，它分配资源以执行相应模型，并将结果返回给用户。推理服务器是更广泛的推理服务的一部分，该服务还负责在请求到达推理服务器之前接收、路由以及可能的预处理请求。一个简单推理服务的可视化如图9-1所示。</p>
-<p>![图9-1](/img4/AI Engineering/9/Figure-9-1-Inference-service.png)</p>
+<figure>
+<img src="/img4/AI%20Engineering/9/Figure-9-1-Inference-service.png"
+alt="图9-1" />
+<figcaption aria-hidden="true">图9-1</figcaption>
+</figure>
 <p>图9-1. 一个简单的推理服务。</p>
 <p>像OpenAI和Google提供的模型API就是推理服务。如果你使用这些服务之一，你将不会实现本章讨论的大部分技术。然而，如果你自己托管模型，你将负责构建、优化和维护其推理服务。</p>
 <p><strong>计算瓶颈</strong></p>
 <p>优化就是识别瓶颈并加以解决。例如，为优化交通，城市规划者可能会识别拥堵点并采取措施缓解拥堵。类似地，推理服务器应设计用于解决其服务推理工作负载的计算瓶颈。主要存在两种计算瓶颈：计算密集型和内存带宽密集型：</p>
-<p><strong>计算密集型（Compute-bound）</strong><br>
+<p><strong>计算密集型（Compute-bound）</strong>
 指任务的完成时间由任务所需的计算量决定。例如，密码解密通常是计算密集型的，因为破解加密算法需要大量的数学计算。</p>
-<p><strong>内存带宽密集型（Memory bandwidth-bound）</strong><br>
+<p><strong>内存带宽密集型（Memory bandwidth-bound）</strong>
 这些任务受限于系统内的数据传输速率，例如内存与处理器之间的数据移动速度。例如，如果你将数据存储在CPU内存中，而在GPU上训练模型，你必须将数据从CPU移动到GPU，这可能需要很长时间。这可以简称为带宽密集型。在文献中，内存带宽密集型常被称为内存密集型。</p>
 <blockquote>
 <p>个人注：Mac 就是GPU和CPU共享内存。</p>
 </blockquote>
 <p><strong>术语歧义：内存密集（Memory-Bound）与带宽密集（Bandwidth-Bound）</strong></p>
-<p>有些人使用&quot;内存密集型&quot;（memory-bound）来指代任务的完成时间受内存容量而非内存带宽限制的情况。当你的硬件没有足够的内存来处理任务时就会发生这种情况，例如你的机器没有足够的内存来存储整个互联网。这种内存问题通常表现为工程师们都认识的错误：OOM（内存不足）。³</p>
+<p>有些人使用"内存密集型"（memory-bound）来指代任务的完成时间受内存容量而非内存带宽限制的情况。当你的硬件没有足够的内存来处理任务时就会发生这种情况，例如你的机器没有足够的内存来存储整个互联网。这种内存问题通常表现为工程师们都认识的错误：OOM（内存不足）。³</p>
 <p>然而，这种情况通常可以通过将任务拆分成更小的部分来缓解。例如，如果你受限于GPU内存，无法将整个模型放入GPU，你可以将模型拆分到GPU内存和CPU内存中。这种拆分会因CPU和GPU之间数据传输的时间而减慢计算速度。然而，如果数据传输足够快，这就不成问题。<u><em>因此，内存容量限制实际上更多是关于内存带宽的。</em></u></p>
-<p>计算密集型和内存带宽密集型的概念由论文&quot;Roofline&quot;（Williams等人，2009）提出。⁴ 从数学上讲，一个操作可以根据其算术强度（每字节内存访问的算术操作次数）分类为计算密集型或内存带宽密集型。像NVIDIA Nsight这样的分析工具会显示屋顶线图（roofline chart），告诉你工作负载是计算密集型还是内存带宽密集型，如图9-2所示。这个图表被称为屋顶线图，因为它形似屋顶。屋顶线图在硬件性能分析中很常见。</p>
-<p>![图9-2](/img4/AI Engineering/9/Figure-9-2-Roofline-chart.png)</p>
-<p>图9-2. 屋顶线图可以帮助你可视化一个操作是计算密集型还是内存带宽密集型。该图采用对数刻度。</p>
+<p>计算密集型和内存带宽密集型的概念由论文"Roofline"（Williams等人，2009）提出。⁴
+从数学上讲，一个操作可以根据其算术强度（每字节内存访问的算术操作次数）分类为计算密集型或内存带宽密集型。像NVIDIA
+Nsight这样的分析工具会显示屋顶线图（roofline
+chart），告诉你工作负载是计算密集型还是内存带宽密集型，如图9-2所示。这个图表被称为屋顶线图，因为它形似屋顶。屋顶线图在硬件性能分析中很常见。</p>
+<figure>
+<img src="/img4/AI%20Engineering/9/Figure-9-2-Roofline-chart.png"
+alt="图9-2" />
+<figcaption aria-hidden="true">图9-2</figcaption>
+</figure>
+<p>图9-2.
+屋顶线图可以帮助你可视化一个操作是计算密集型还是内存带宽密集型。该图采用对数刻度。</p>
 <p>不同的优化技术旨在缓解不同的瓶颈。例如，计算密集型的工作负载可以通过分布到更多芯片上或利用计算能力更强的芯片（例如更高的FLOP/s数值）来加速。内存带宽密集型的工作负载可以通过利用更高带宽的芯片来加速。</p>
-<p><u><em>不同的模型架构和工作负载会导致不同的计算瓶颈。例如，像Stable Diffusion这样的图像生成器的推理通常是计算密集型的，而自回归语言模型的推理通常是内存带宽密集型的。</em></u></p>
+<p><u><em>不同的模型架构和工作负载会导致不同的计算瓶颈。例如，像Stable
+Diffusion这样的图像生成器的推理通常是计算密集型的，而自回归语言模型的推理通常是内存带宽密集型的。</em></u></p>
 <p>作为示例，让我们看看语言模型推理。回顾第2章，基于Transformer的语言模型推理包括两个步骤：预填充（prefilling）和解码（decoding）：</p>
 <blockquote>
-<p>个人注：具体的注意力的机制详见《Hands-On Large Language Models》第3章 深入了解大型语言模型。</p>
-<p>在大语言模型推理中，<strong>预填充（Prefilling）</strong> 指的是模型处理输入提示（prompt）的阶段。简单说，就是<strong>把用户输入的整段文本一次性喂给模型，计算出第一个输出token的过程</strong>。</p>
-<p>一、为什么叫&quot;预填充&quot;</p>
-<p>Transformer 是自回归生成的，每生成一个 token 都需要参考之前所有 token 的 Key/Value（KV）。生成第一个新 token 之前，必须先把 prompt 里所有 token 的 KV 算出来并存入缓存——这个&quot;预先填充 KV 缓存&quot;的动作，就叫 prefilling。</p>
+<p>个人注：具体的注意力的机制详见《Hands-On Large Language Models》第3章
+深入了解大型语言模型。</p>
+<p>在大语言模型推理中，<strong>预填充（Prefilling）</strong>
+指的是模型处理输入提示（prompt）的阶段。简单说，就是<strong>把用户输入的整段文本一次性喂给模型，计算出第一个输出token的过程</strong>。</p>
+<p>一、为什么叫"预填充"</p>
+<p>Transformer 是自回归生成的，每生成一个 token 都需要参考之前所有 token
+的 Key/Value（KV）。生成第一个新 token 之前，必须先把 prompt 里所有
+token 的 KV 算出来并存入缓存——这个"预先填充 KV 缓存"的动作，就叫
+prefilling。</p>
 <p>二、预填充 vs 解码 的对比</p>
 <table>
+<colgroup>
+<col style="width: 11%" />
+<col style="width: 41%" />
+<col style="width: 46%" />
+</colgroup>
 <thead>
 <tr>
 <th>维度</th>
@@ -353,55 +401,59 @@
 </tbody>
 </table>
 <p>三、具体过程</p>
-<p>假设 prompt 是 “今天天气真”：</p>
+<p>假设 prompt 是 "今天天气真"：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">【预填充阶段】</span><br><span class="line">输入: [今, 天, 天, 气, 真]  (5个token)</span><br><span class="line">  ↓ 一次性并行前向传播</span><br><span class="line">  ↓ 计算并存储这5个token的 K、V 到 KV Cache</span><br><span class="line">  ↓ 最后一个位置输出概率分布</span><br><span class="line">输出: 第一个token &quot;好&quot; + 完整的KV缓存</span><br><span class="line"></span><br><span class="line">【解码阶段】</span><br><span class="line">输入: [好]  (只处理1个新token)</span><br><span class="line">  ↓ 用KV Cache，只算&quot;好&quot;的 Q、K、V</span><br><span class="line">  ↓ 追加到缓存</span><br><span class="line">输出: 下一个token &quot;，&quot; + 更新后的KV缓存</span><br><span class="line">  ↓ 重复...</span><br><span class="line">输入: [，] → 输出 &quot;适&quot;</span><br><span class="line">...</span><br><span class="line">最终: &quot;今天天气真好，适合...&quot;</span><br></pre></td></tr></table></figure>
 <p>四、关键点</p>
-<ol>
-<li>
-<p><strong>预填充只做一次</strong>，处理整个prompt；解码做N次（N=生成长度）。</p>
-</li>
-<li>
-<p><strong>KV Cache 是核心</strong>。预填充把 prompt 的 KV 全部算好缓存，解码时就不需要重算历史token，大幅提速。</p>
-</li>
-<li>
-<p><strong>预填充是计算瓶颈，解码是显存瓶颈</strong>：</p>
+<ol type="1">
+<li><p><strong>预填充只做一次</strong>，处理整个prompt；解码做N次（N=生成长度）。</p></li>
+<li><p><strong>KV Cache 是核心</strong>。预填充把 prompt 的 KV
+全部算好缓存，解码时就不需要重算历史token，大幅提速。</p></li>
+<li><p><strong>预填充是计算瓶颈，解码是显存瓶颈</strong>：</p>
 <ul>
 <li>预填充：矩阵大、并行度高，GPU算力吃满。</li>
 <li>解码：每步只算一个token，但要读取整个KV Cache，受显存带宽限制。</li>
-</ul>
-</li>
-<li>
-<p><strong>首token延迟（TTFT, Time To First Token）</strong> 主要由预填充时间决定；<strong>每token延迟（TPOT）</strong> 由解码决定。</p>
-</li>
+</ul></li>
+<li><p><strong>首token延迟（TTFT, Time To First Token）</strong>
+主要由预填充时间决定；<strong>每token延迟（TPOT）</strong>
+由解码决定。</p></li>
 </ol>
 <p>五、实际影响</p>
 <ul>
 <li>Prompt 越长，预填充越慢（但仍是并行的，比逐token快得多）。</li>
-<li>这就是为什么&quot;长上下文&quot;模型要优化注意力机制（如 FlashAttention、稀疏注意力）——主要为了加速预填充。</li>
-<li>也是为什么连续批处理（continuous batching）等技术要区分 prefilling 和 decoding 两个阶段来调度。</li>
+<li>这就是为什么"长上下文"模型要优化注意力机制（如
+FlashAttention、稀疏注意力）——主要为了加速预填充。</li>
+<li>也是为什么连续批处理（continuous batching）等技术要区分 prefilling
+和 decoding 两个阶段来调度。</li>
 </ul>
 <p>一句话总结</p>
 <blockquote>
-<p><strong>预填充</strong> = 把整个输入prompt并行过一遍模型，算出第一个输出token并建立KV缓存；之后的<strong>解码</strong>阶段则逐个token串行生成，复用KV缓存避免重复计算。</p>
+<p><strong>预填充</strong> =
+把整个输入prompt并行过一遍模型，算出第一个输出token并建立KV缓存；之后的<strong>解码</strong>阶段则逐个token串行生成，复用KV缓存避免重复计算。</p>
 </blockquote>
 </blockquote>
-<p><strong>预填充（Prefill）</strong><br>
-模型并行处理输入token。⁵ 一次能处理多少token受限于硬件在给定时间内能执行的操作数量。因此，预填充是计算密集型的。</p>
-<p><strong>解码（Decode）</strong><br>
+<p><strong>预填充（Prefill）</strong> 模型并行处理输入token。⁵
+一次能处理多少token受限于硬件在给定时间内能执行的操作数量。因此，预填充是计算密集型的。</p>
+<p><strong>解码（Decode）</strong>
 <em><u>模型一次生成一个输出token。在高层面上，这一步骤通常涉及将大型矩阵（如模型权重）加载到GPU中，这受限于硬件将数据加载到内存的速度。因此，解码是内存带宽密集型的。</em></u></p>
 <p>图9-3可视化了预填充和解码。</p>
-<p>![图9-3](/img4/AI Engineering/9/Figure-9-3-Prefill-decode.png)</p>
-<p>图9-3. 自回归语言模型推理遵循两个步骤：预填充和解码。<eos>表示序列结束token。</p>
-<p>由于预填充和解码具有不同的计算特征，它们在生产中通常被解耦，使用独立的机器。这项技术将在&quot;推理服务优化&quot;一节中讨论。</p>
+<figure>
+<img src="/img4/AI%20Engineering/9/Figure-9-3-Prefill-decode.png"
+alt="图9-3" />
+<figcaption aria-hidden="true">图9-3</figcaption>
+</figure>
+<p>图9-3.
+自回归语言模型推理遵循两个步骤：预填充和解码。<eos>表示序列结束token。</p>
+<p>由于预填充和解码具有不同的计算特征，它们在生产中通常被解耦，使用独立的机器。这项技术将在"推理服务优化"一节中讨论。</p>
 <p>影响LLM推理服务器中预填充和解码计算量（从而影响其瓶颈）的因素包括上下文长度、输出长度和请求批处理策略。长上下文通常会导致内存带宽密集型工作负载，但巧妙的优化技术（如本章后面讨论的）可以消除这一瓶颈。</p>
 <p>截至撰写本文时，由于Transformer架构的普及和现有加速器技术的局限性，许多AI和数据工作负载仍是内存带宽密集型的。然而，未来的软件和硬件进步将使AI和数据工作负载变为计算密集型。</p>
 <p><strong>在线推理API和批量推理API</strong></p>
 <p>许多提供商提供两种类型的推理API：在线和批量：</p>
 <ul>
 <li><strong>在线API</strong>优化延迟。请求一旦到达即被处理。</li>
-<li><strong>批量API</strong>优化成本。如果您的应用没有严格的延迟要求，可以将其发送到批量API进行更高效的处理。更高的延迟允许更广泛的优化技术，包括将请求批量聚合以及使用更便宜的硬件。例如，截至撰写本文时，Google Gemini和OpenAI都提供批量API，成本降低50%，但周转时间显著增加，即数小时而不是数秒或数分钟。⁶</li>
+<li><strong>批量API</strong>优化成本。如果您的应用没有严格的延迟要求，可以将其发送到批量API进行更高效的处理。更高的延迟允许更广泛的优化技术，包括将请求批量聚合以及使用更便宜的硬件。例如，截至撰写本文时，Google
+Gemini和OpenAI都提供批量API，成本降低50%，但周转时间显著增加，即数小时而不是数秒或数分钟。⁶</li>
 </ul>
-<p>在线API仍可能将请求批量聚合，只要不会显著影响延迟，这一点将在&quot;批处理&quot;一节中讨论。唯一的真正区别在于，在线API注重更低的延迟，而批量API更注重更高的吞吐量。</p>
+<p>在线API仍可能将请求批量聚合，只要不会显著影响延迟，这一点将在"批处理"一节中讨论。唯一的真正区别在于，在线API注重更低的延迟，而批量API更注重更高的吞吐量。</p>
 <p>面向客户的使用场景，如聊天机器人和代码生成，通常需要较低的延迟，因此倾向于使用在线API。延迟要求不那么严格的使用场景（适合批量API）包括：</p>
 <ul>
 <li>合成数据生成</li>
@@ -413,11 +465,9 @@
 </ul>
 <p>API通常默认返回完整响应。然而，对于自回归解码，模型完成响应可能需要很长时间，而用户缺乏耐心。<u><em>许多在线API提供流式模式，即在生成每个token时立即返回。这减少了用户等待第一个token的时间。这种方法的缺点是你无法在向用户展示响应之前对其进行评分，增加了用户看到不良响应的风险。不过，一旦检测到风险，你仍然可以事后更新或删除响应。</em></u></p>
 <blockquote>
-<p>基础模型的批量API与传统ML的批量推理不同。在传统ML中：</p>
-<ul>
-<li>在线推理意味着在请求到达后计算预测结果。</li>
-<li>批量推理意味着在请求到达前预先计算预测结果。</li>
-</ul>
+<p>基础模型的批量API与传统ML的批量推理不同。在传统ML中： *
+在线推理意味着在请求到达后计算预测结果。 *
+批量推理意味着在请求到达前预先计算预测结果。</p>
 <p>对于输入有限且可预测的使用场景（如推荐系统，可以预先为所有用户生成推荐），预计算是可行的。当请求到达时（例如用户访问网站），直接获取这些预计算的预测结果。然而，对于基础模型的使用场景，输入是开放式的，很难预测所有用户的提示。⁷</p>
 </blockquote>
 <h3 id="推理性能指标">推理性能指标</h3>
@@ -425,52 +475,78 @@
 <p>在深入优化之前，了解要优化哪些指标非常重要。从用户角度来看，核心指标是延迟（响应质量是模型本身的属性，而非推理服务的属性）。然而，应用开发者还必须考虑吞吐量和利用率，因为它们决定了应用的成本。</p>
 <p><strong>延迟、TTFT和TPOT</strong></p>
 <p>延迟衡量从用户发送查询到收到完整响应的时间。对于自回归生成，尤其是在<u><em>流式模式</em></u>下，总体延迟可以分解为多个指标：</p>
-<p><strong>首token时间（Time to First Token, TTFT）</strong><br>
-TTFT衡量用户发送查询后生成第一个token的速度。它对应于预填充步骤的持续时间，取决于输入的长度。不同应用的用户对TTFT可能有不同的期望。例如，对于对话式聊天机器人，TTFT应该是即时的。⁸ 然而，用户可能愿意等待更长时间来总结长文档。</p>
-<p><strong>每个输出token时间（Time Per Output Token, TPOT）</strong><br>
+<p><strong>首token时间（Time to First Token, TTFT）</strong>
+TTFT衡量用户发送查询后生成第一个token的速度。它对应于预填充步骤的持续时间，取决于输入的长度。不同应用的用户对TTFT可能有不同的期望。例如，对于对话式聊天机器人，TTFT应该是即时的。⁸
+然而，用户可能愿意等待更长时间来总结长文档。</p>
+<p><strong>每个输出token时间（Time Per Output Token, TPOT）</strong>
 TPOT衡量在第一个token之后生成每个输出token的速度。如果每个token需要100毫秒，那么1000个token的响应将需要100秒。</p>
-<p>在流式模式下，用户逐字阅读生成的token，TPOT应快于人类的阅读速度，但不必快太多。一个非常快的阅读者可以阅读120毫秒/token，因此约120毫秒的TPOT（即6-8 tokens/秒）对大多数使用场景来说足够了。</p>
-<p><strong>token间隔时间（Time Between Tokens）和token间延迟（Inter-Token Latency）</strong><br>
-此指标的变体包括token间隔时间（TBT）和token间延迟（ITL）。⁹ 两者都衡量输出token之间的时间。</p>
+<p>在流式模式下，用户逐字阅读生成的token，TPOT应快于人类的阅读速度，但不必快太多。一个非常快的阅读者可以阅读120毫秒/token，因此约120毫秒的TPOT（即6-8
+tokens/秒）对大多数使用场景来说足够了。</p>
+<p><strong>token间隔时间（Time Between
+Tokens）和token间延迟（Inter-Token Latency）</strong>
+此指标的变体包括token间隔时间（TBT）和token间延迟（ITL）。⁹
+两者都衡量输出token之间的时间。</p>
 <p>总延迟等于TTFT + TPOT ×（输出token数量）。</p>
 <p>两个总延迟相同的应用，其TTFT和TPOT不同，可能带来不同的用户体验。你的用户是希望第一时间看到第一个token但后续token等待较长，还是愿意稍微多等一会儿第一个token但享受更快的后续生成？需要通过用户研究来确定最佳用户体验。通过将更多计算实例从解码转移到预填充或反之，可以在牺牲更高TPOT的情况下降低TTFT。¹⁰</p>
-<p>需要注意的是，用户观察到的TTFT和TPOT值可能与模型内部的值不同，特别是在涉及思维链（CoT）或智能体查询的场景中，模型生成的中间步骤不会展示给用户。一些团队使用&quot;发布到用户时间&quot;（time to publish）这个指标来明确表示它衡量的是用户看到的第一个token的时间。</p>
+<p>需要注意的是，用户观察到的TTFT和TPOT值可能与模型内部的值不同，特别是在涉及思维链（CoT）或智能体查询的场景中，模型生成的中间步骤不会展示给用户。一些团队使用"发布到用户时间"（time
+to
+publish）这个指标来明确表示它衡量的是用户看到的第一个token的时间。</p>
 <p>考虑以下场景：用户发送查询后，模型执行以下步骤：</p>
-<ol>
+<ol type="1">
 <li>生成一个计划，包含一系列操作。这个计划不显示给用户。</li>
 <li>执行操作并记录其输出。这些输出不显示给用户。</li>
 <li>基于这些输出，生成最终响应展示给用户。</li>
 </ol>
 <p>从模型的角度看，第一个token在第1步就生成了。这是模型内部开始其token生成过程的时间。然而，用户只看到第3步生成的最终输出的第一个token。因此，从用户角度看，TTFT要长得多。</p>
-<p>由于延迟是一个分布，平均值可能具有误导性。假设有10个请求，其TTFT值分别为100 ms、102 ms、100 ms、100 ms、99 ms、104 ms、110 ms、90 ms、3000 ms、95 ms。平均TTFT值为390 ms，这使你的推理服务看起来比实际更慢。可能是网络错误减慢了一个请求的速度，或者一个特别长的提示需要更长时间来预填充。无论哪种情况，你都应该进行调查。在大量请求的情况下，扭曲平均延迟的异常值几乎不可避免。</p>
-<p>查看延迟的百分位数更有帮助，因为它们能告诉你关于一定比例请求的信息。最常见的百分位数是第50百分位数，缩写为p50（中位数）。如果中位数是100 ms，则一半的请求生成第一个token的时间超过100 ms，一半少于100 ms。百分位数还能帮助你发现异常值，这些异常值可能是某些问题的症状。通常，你应该关注的百分位数是p90、p95和p99。将TTFT值与输入长度绘制成图表也很有帮助。</p>
+<p>由于延迟是一个分布，平均值可能具有误导性。假设有10个请求，其TTFT值分别为100
+ms、102 ms、100 ms、100 ms、99 ms、104 ms、110 ms、90 ms、3000 ms、95
+ms。平均TTFT值为390
+ms，这使你的推理服务看起来比实际更慢。可能是网络错误减慢了一个请求的速度，或者一个特别长的提示需要更长时间来预填充。无论哪种情况，你都应该进行调查。在大量请求的情况下，扭曲平均延迟的异常值几乎不可避免。</p>
+<p>查看延迟的百分位数更有帮助，因为它们能告诉你关于一定比例请求的信息。最常见的百分位数是第50百分位数，缩写为p50（中位数）。如果中位数是100
+ms，则一半的请求生成第一个token的时间超过100 ms，一半少于100
+ms。百分位数还能帮助你发现异常值，这些异常值可能是某些问题的症状。通常，你应该关注的百分位数是p90、p95和p99。将TTFT值与输入长度绘制成图表也很有帮助。</p>
 <p><strong>吞吐量和有效吞吐量（Goodput）</strong></p>
 <p>吞吐量衡量推理服务在所有用户和请求中每秒能生成的输出token数量。</p>
 <p>一些团队在计算吞吐量时同时计算输入和输出token。然而，<u><em>由于处理输入token（预填充）和生成输出token（解码）具有不同的计算瓶颈，并且在现代推理服务器中通常被解耦</em></u>，因此输入和输出吞吐量应分别计算。当吞吐量不加修饰语使用时，通常指的是输出token。</p>
 <p>吞吐量通常以tokens/s（TPS）衡量。如果你服务多个用户，tokens/s/user也用于评估系统随用户增加时的扩展能力。</p>
 <p>吞吐量也可以衡量为在给定时间内完成的请求数量。许多应用使用每秒请求数（RPS）。然而，对于基于基础模型构建的应用，一个请求可能需要数秒才能完成，因此许多人使用每分钟完成请求数（RPM）。跟踪这一指标有助于了解推理服务器如何处理并发请求。如果你同时发送太多并发请求，一些提供商可能会限制你的服务。</p>
-<p>吞吐量与计算成本直接相关。更高的吞吐量通常意味着更低的成本。如果你的系统计算成本为$2/小时，吞吐量为100 tokens/s，那么每1M输出token的成本约为$5.556。如果每个请求平均生成200个输出token，解码1K个请求的成本为$1.11。</p>
+<p>吞吐量与计算成本直接相关。更高的吞吐量通常意味着更低的成本。如果你的系统计算成本为$2/小时，吞吐量为100
+tokens/s，那么每1M输出token的成本约为$5.556。如果每个请求平均生成200个输出token，解码1K个请求的成本为$1.11。</p>
 <p>预填充成本可以类似计算。如果你的硬件成本为$2/小时，每分钟可以预填充100个请求，那么预填充1K个请求的成本为$0.33。</p>
-<p>每个请求的总成本是预填充成本和解码成本之和。在这个例子中，1K个请求的总成本为$1.11 + $0.33 = $1.44。</p>
+<p>每个请求的总成本是预填充成本和解码成本之和。在这个例子中，1K个请求的总成本为$1.11
++ $0.33 = $1.44。</p>
 <p>什么被认为是好的吞吐量取决于模型、硬件和工作负载。较小的模型和较高端的芯片通常产生更高的吞吐量。输入和输出长度一致的工作负载比长度变化的工作负载更容易优化。</p>
 <p>即使对于相似规模的模型、硬件和工作负载，直接比较吞吐量可能也只是近似值，因为token数量取决于什么构成一个token，且不同模型有不同的分词器。使用每个请求的成本等指标来比较推理服务器的效率更好。</p>
-<p>与大多数其他软件应用一样，AI应用也存在延迟/吞吐量的权衡。像批处理这样的技术可以提高吞吐量，但会降低延迟。根据LinkedIn AI团队在部署生成式AI产品一年后的反思（LinkedIn，2024年），如果你愿意牺牲TTFT和TPOT，吞吐量翻倍或三倍的情况并不少见。</p>
+<p>与大多数其他软件应用一样，AI应用也存在延迟/吞吐量的权衡。像批处理这样的技术可以提高吞吐量，但会降低延迟。根据LinkedIn
+AI团队在部署生成式AI产品一年后的反思（LinkedIn，2024年），如果你愿意牺牲TTFT和TPOT，吞吐量翻倍或三倍的情况并不少见。</p>
 <p>由于这种权衡，仅根据吞吐量和成本来评估推理服务可能导致糟糕的用户体验。因此，一些团队关注有效吞吐量（goodput），这是一个从网络领域借鉴用于LLM应用的指标。有效吞吐量衡量每秒满足SLO（服务水平目标）的请求数量。</p>
-<p>假设你的应用有以下目标：TTFT不超过200 ms，TPOT不超过100 ms。假设你的推理服务每分钟可以完成100个请求。然而，在这100个请求中，只有30个满足SLO。那么，该服务的有效吞吐量为30个请求/分钟。图9-4展示了这一情况。</p>
-<p>![图9-4](/img4/AI Engineering/9/Figure-9-4-Goodput-SLO.png)</p>
-<p>图9-4. 如果推理服务可以完成10 RPS，但只有3个满足SLO，那么其有效吞吐量为3 RPS。</p>
+<p>假设你的应用有以下目标：TTFT不超过200 ms，TPOT不超过100
+ms。假设你的推理服务每分钟可以完成100个请求。然而，在这100个请求中，只有30个满足SLO。那么，该服务的有效吞吐量为30个请求/分钟。图9-4展示了这一情况。</p>
+<figure>
+<img src="/img4/AI%20Engineering/9/Figure-9-4-Goodput-SLO.png"
+alt="图9-4" />
+<figcaption aria-hidden="true">图9-4</figcaption>
+</figure>
+<p>图9-4. 如果推理服务可以完成10
+RPS，但只有3个满足SLO，那么其有效吞吐量为3 RPS。</p>
 <p><strong>利用率、MFU和MBU</strong></p>
 <p>利用率指标衡量资源被使用的效率。它通常量化资源被积极使用的比例与其总可用容量之比。</p>
-<p>一个常见但常被误解的指标是GPU利用率，NVIDIA对此负有一定责任。官方的NVIDIA GPU使用监控工具是nvidia-smi——SMI代表系统管理接口（System Management Interface）。该工具显示的一个指标是GPU利用率，表示GPU积极处理任务的时间百分比。例如，如果你在GPU集群上运行推理10小时，其中GPU积极处理任务5小时，那么你的GPU利用率为50%。</p>
+<p>一个常见但常被误解的指标是GPU利用率，NVIDIA对此负有一定责任。官方的NVIDIA
+GPU使用监控工具是nvidia-smi——SMI代表系统管理接口（System Management
+Interface）。该工具显示的一个指标是GPU利用率，表示GPU积极处理任务的时间百分比。例如，如果你在GPU集群上运行推理10小时，其中GPU积极处理任务5小时，那么你的GPU利用率为50%。</p>
 <p>然而，积极处理任务并不意味着高效处理。为简单起见，考虑一个微小的GPU，每秒能执行100次操作。根据nvidia-smi对利用率的定义，即使该GPU每秒只做一次操作，它也可能报告100%的利用率。</p>
-<p>如果你为一台能做100次操作的机器付费，却只使用它做1次操作，你就是在浪费钱。因此，nvidia-smi的GPU优化指标并不是很有用。你可能关心的利用率指标是：在一台机器能够计算的所有操作中，它在给定时间内实际完成了多少。这个指标称为MFU（Model FLOP/s Utilization），以区别于NVIDIA的GPU利用率指标。¹¹</p>
+<p>如果你为一台能做100次操作的机器付费，却只使用它做1次操作，你就是在浪费钱。因此，nvidia-smi的GPU优化指标并不是很有用。你可能关心的利用率指标是：在一台机器能够计算的所有操作中，它在给定时间内实际完成了多少。这个指标称为MFU（Model
+FLOP/s Utilization），以区别于NVIDIA的GPU利用率指标。¹¹</p>
 <p>MFU是观察到的吞吐量（tokens/s）与系统在峰值FLOP/s下运行时的理论最大吞吐量之比。如果芯片在芯片制造商宣传的峰值FLOP/s下每秒可以生成100个token，但在你的推理服务中每秒只能生成20个token，那么你的MFU就是20%。¹²</p>
-<p>类似地，由于<u><em>内存带宽昂贵，你可能还想知道硬件的带宽利用效率如何。</em></u>MBU（Model Bandwidth Utilization）衡量可达到的内存带宽的使用百分比。如果芯片的峰值带宽为1 TB/s，而你的推理仅使用了500 GB/s，那么你的MBU为50%。</p>
+<p>类似地，由于<u><em>内存带宽昂贵，你可能还想知道硬件的带宽利用效率如何。</em></u>MBU（Model
+Bandwidth
+Utilization）衡量可达到的内存带宽的使用百分比。如果芯片的峰值带宽为1
+TB/s，而你的推理仅使用了500 GB/s，那么你的MBU为50%。</p>
 <blockquote>
 <p>个人注：</p>
-<p>Q：  究竟是内存贵还是内存带宽贵？</p>
+<p>Q： 究竟是内存贵还是内存带宽贵？</p>
 <p>A：</p>
-<p>这两个说法其实不矛盾，但**“贵”指的对象不同**，容易混淆。拆开看：</p>
+<p>这两个说法其实不矛盾，但<strong>“贵”指的对象不同</strong>，容易混淆。拆开看：</p>
 <p>一、先区分两个概念</p>
 <table>
 <thead>
@@ -493,20 +569,27 @@ TPOT衡量在第一个token之后生成每个输出token的速度。如果每个
 </tr>
 </tbody>
 </table>
-<p><strong>“内存贵”</strong> 通常指 <strong>容量</strong> 贵——买 80GB 显存的 H100 比 40GB 的贵很多。</p>
-<p><strong>“内存带宽昂贵”</strong> 指的是 <strong>带宽资源稀缺、是性能瓶颈</strong>——不是价格贵，而是“不够用、很宝贵”。</p>
+<p><strong>“内存贵”</strong> 通常指 <strong>容量</strong> 贵——买 80GB
+显存的 H100 比 40GB 的贵很多。</p>
+<p><strong>“内存带宽昂贵”</strong> 指的是
+<strong>带宽资源稀缺、是性能瓶颈</strong>——不是价格贵，而是“不够用、很宝贵”。</p>
 <p>二、为什么说“内存带宽昂贵”</p>
-<p>在 LLM 解码阶段，瓶颈往往不是算力，而是<strong>显存带宽</strong>：</p>
+<p>在 LLM
+解码阶段，瓶颈往往不是算力，而是<strong>显存带宽</strong>：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">每生成1个token，需要把整个模型权重 + KV Cache 从显存读一遍</span><br><span class="line">→ 数据搬运量巨大</span><br><span class="line">→ GPU 算得飞快，但等数据搬运</span><br><span class="line">→ 实际速度被带宽卡住</span><br></pre></td></tr></table></figure>
-<p>举个例子：</p>
-<ul>
-<li>A100 算力约 312 TFLOPS（FP16）</li>
-<li>A100 显存带宽约 2 TB/s</li>
-</ul>
-<p>做矩阵向量乘时，算力严重过剩，<strong>带宽成为天花板</strong>。这时候我们说“内存带宽是稀缺资源 / 昂贵”——指的是<strong>它是限制性能的关键瓶颈，用一点少一点</strong>，不是说它价格高。</p>
+<p>举个例子： - A100 算力约 312 TFLOPS（FP16） - A100 显存带宽约 2
+TB/s</p>
+<p>做矩阵向量乘时，算力严重过剩，<strong>带宽成为天花板</strong>。这时候我们说“内存带宽是稀缺资源
+/
+昂贵”——指的是<strong>它是限制性能的关键瓶颈，用一点少一点</strong>，不是说它价格高。</p>
 <p>三、所以到底哪个“贵”</p>
 <p>要看你说的“贵”是哪个意思：</p>
 <table>
+<colgroup>
+<col style="width: 22%" />
+<col style="width: 38%" />
+<col style="width: 38%" />
+</colgroup>
 <thead>
 <tr>
 <th>说法</th>
@@ -532,17 +615,23 @@ TPOT衡量在第一个token之后生成每个输出token的速度。如果每个
 </tr>
 </tbody>
 </table>
-<p><strong>关键</strong>：HBM（高带宽显存）之所以贵，正是因为<strong>既要大容量又要高带宽</strong>，而高带宽的物理实现（堆叠、宽总线）成本极高。所以严格说，<strong>HBM 是“容量和带宽都贵”，而带宽往往是更难提升、更卡脖子的那个</strong>。</p>
+<p><strong>关键</strong>：HBM（高带宽显存）之所以贵，正是因为<strong>既要大容量又要高带宽</strong>，而高带宽的物理实现（堆叠、宽总线）成本极高。所以严格说，<strong>HBM
+是“容量和带宽都贵”，而带宽往往是更难提升、更卡脖子的那个</strong>。</p>
 <p>四、一句话总结</p>
 <blockquote>
-<p>“内存贵”多指<strong>容量成本高</strong>；“内存带宽昂贵”指的是<strong>带宽是性能瓶颈、资源稀缺</strong>。两者不冲突——HBM 恰恰是容量和带宽都贵，而在 LLM 解码这种 memory-bound 场景里，<strong>带宽是那个真正卡住速度的稀缺资源</strong>。</p>
+<p>“内存贵”多指<strong>容量成本高</strong>；“内存带宽昂贵”指的是<strong>带宽是性能瓶颈、资源稀缺</strong>。两者不冲突——HBM
+恰恰是容量和带宽都贵，而在 LLM 解码这种 memory-bound
+场景里，<strong>带宽是那个真正卡住速度的稀缺资源</strong>。</p>
 </blockquote>
-<p>如果你看到的那段话是在讲 LLM 推理优化（比如为什么用 KV Cache 量化、GQA、FlashAttention），那它说的“昂贵”基本就是<strong>带宽瓶颈</strong>这个意思。</p>
+<p>如果你看到的那段话是在讲 LLM 推理优化（比如为什么用 KV Cache
+量化、GQA、FlashAttention），那它说的“昂贵”基本就是<strong>带宽瓶颈</strong>这个意思。</p>
 <p>Q： GPU不是直接操作显存的数据吗？为什么还要搬运？</p>
 <p>A：</p>
-<p>这是个很关键的疑问，核心在于**“GPU 操作显存数据”和“数据在显存内部搬运”是两件事**。</p>
+<p>这是个很关键的疑问，核心在于<strong>“GPU
+操作显存数据”和“数据在显存内部搬运”是两件事</strong>。</p>
 <p>一、先厘清：GPU 确实直接访问显存</p>
-<p>GPU 的运算单元（SM、CUDA Core、Tensor Core）确实<strong>直接读写显存</strong>，中间没有“从别处搬到显存”这一层。所以你说的没错。</p>
+<p>GPU 的运算单元（SM、CUDA Core、Tensor
+Core）确实<strong>直接读写显存</strong>，中间没有“从别处搬到显存”这一层。所以你说的没错。</p>
 <p>那“搬运”指的是什么？指的是——</p>
 <p>二、真正的瓶颈：数据从显存 → 计算单元 的搬运</p>
 <p>GPU 的层级结构是这样的：</p>
@@ -576,10 +665,13 @@ TPOT衡量在第一个token之后生成每个输出token的速度。如果每个
 </tr>
 </tbody>
 </table>
-<p><strong>算只要 0.45ms，搬数据要 70ms</strong>——GPU 99% 的时间在等数据搬过来，计算单元大部分时间闲置。</p>
-<p>这就是 <strong>memory-bound（显存带宽受限）</strong>：不是算不动，是<strong>喂不饱</strong>。</p>
+<p><strong>算只要 0.45ms，搬数据要 70ms</strong>——GPU 99%
+的时间在等数据搬过来，计算单元大部分时间闲置。</p>
+<p>这就是
+<strong>memory-bound（显存带宽受限）</strong>：不是算不动，是<strong>喂不饱</strong>。</p>
 <p>四、为什么不能“直接在显存里算”</p>
-<p>因为<strong>计算必须在计算单元里进行</strong>，而计算单元（寄存器）容量极小（每个 SM 几百 KB），装不下整个权重矩阵。只能：</p>
+<p>因为<strong>计算必须在计算单元里进行</strong>，而计算单元（寄存器）容量极小（每个
+SM 几百 KB），装不下整个权重矩阵。只能：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">每次搬一小块 → 算 → 再搬下一块 → 算 → ...</span><br></pre></td></tr></table></figure>
 <p>这个“一块块搬”的速度，就由<strong>显存带宽</strong>决定。</p>
 <p>五、类比</p>
@@ -597,28 +689,40 @@ TPOT衡量在第一个token之后生成每个输出token的速度。如果每个
 <ul>
 <li><strong>是的</strong>，GPU 直接访问显存，没有“外部搬运”。</li>
 <li>但<strong>数据要从显存送到计算单元</strong>（寄存器）才能运算，这个“内部搬运”走的就是<strong>显存带宽</strong>。</li>
-<li>解码阶段每生成一个 token 都要把全部权重搬一遍，<strong>搬运量巨大 → 带宽成瓶颈 → 计算单元挨饿</strong>。</li>
+<li>解码阶段每生成一个 token 都要把全部权重搬一遍，<strong>搬运量巨大 →
+带宽成瓶颈 → 计算单元挨饿</strong>。</li>
 </ul>
 <p>所以“内存带宽昂贵”说的就是：<strong>这个显存→计算单元的搬运通道，是限制推理速度的真正稀缺资源</strong>。</p>
 <p>一句话总结</p>
 <blockquote>
-<p>GPU 确实直接读写显存，但<strong>运算必须先把数据从显存搬进计算单元</strong>。这个“显存→寄存器”的搬运速度就是显存带宽——解码时每 token 都要搬全部权重，算力远快于搬运，于是<strong>带宽成了瓶颈，计算单元在等数据</strong>。这就是“内存带宽昂贵”的真正含义。</p>
+<p>GPU
+确实直接读写显存，但<strong>运算必须先把数据从显存搬进计算单元</strong>。这个“显存→寄存器”的搬运速度就是显存带宽——解码时每
+token
+都要搬全部权重，算力远快于搬运，于是<strong>带宽成了瓶颈，计算单元在等数据</strong>。这就是“内存带宽昂贵”的真正含义。</p>
 </blockquote>
 </blockquote>
 <p>计算LLM推理所使用的内存带宽很简单：</p>
-<p>​							参数数量 × 字节/参数 × tokens/s</p>
+<p>​ 参数数量 × 字节/参数 × tokens/s</p>
 <p>MBU的计算如下：</p>
-<p>​							(参数数量 × 字节/参数 × tokens/s) / (理论带宽)</p>
-<p>例如，如果你使用一个7B参数的FP16模型（每个参数2字节），达到100 tokens/s，则使用的带宽为：</p>
-<p>​							7B × 2 × 100 = 700 GB/s</p>
+<p>​ (参数数量 × 字节/参数 × tokens/s) / (理论带宽)</p>
+<p>例如，如果你使用一个7B参数的FP16模型（每个参数2字节），达到100
+tokens/s，则使用的带宽为：</p>
+<p>​ 7B × 2 × 100 = 700 GB/s</p>
 <p>这突显了量化（在第7章讨论）的重要性。每个参数的字节数越少，模型消耗的宝贵带宽就越少。</p>
-<p>如果这是在A100-80GB GPU上完成的，其理论内存带宽为2 TB/s，则MBU为：</p>
-<p>​							(700 GB/s) / (2 TB/s) = 70%</p>
+<p>如果这是在A100-80GB GPU上完成的，其理论内存带宽为2
+TB/s，则MBU为：</p>
+<p>​ (700 GB/s) / (2 TB/s) = 70%</p>
 <p>吞吐量（tokens/s）与MBU之间以及吞吐量与MFU之间是线性关系，因此有些人可能用吞吐量来指代MBU和MFU。</p>
 <p>什么被认为是好的MFU和MBU取决于模型、硬件和工作负载。计算密集型工作负载通常具有较高的MFU和较低的MBU，而带宽密集型工作负载通常显示出较低的MFU和较高的MBU。</p>
-<p>由于训练可以从更高效的优化（例如更好的批处理）中受益，且工作负载更可预测，训练的MFU通常高于推理的MFU。对于推理，由于预填充是计算密集型的而解码是内存带宽密集型的，预填充期间的MFU通常高于解码期间的MFU。对于模型训练，截至撰写本文时，MFU超过50%通常被认为是好的，但在特定硬件上可能很难实现。¹³ 表9-1展示了几种模型和加速器的MFU。</p>
-<p>![表9-1](/img4/AI Engineering/9/Table-9-1-MFU-examples.png)</p>
-<p>表9-1. 来自&quot;PaLM: Scaling Language Modeling with Pathways&quot;（Chowdhery等人，2022）的MFU示例。</p>
+<p>由于训练可以从更高效的优化（例如更好的批处理）中受益，且工作负载更可预测，训练的MFU通常高于推理的MFU。对于推理，由于预填充是计算密集型的而解码是内存带宽密集型的，预填充期间的MFU通常高于解码期间的MFU。对于模型训练，截至撰写本文时，MFU超过50%通常被认为是好的，但在特定硬件上可能很难实现。¹³
+表9-1展示了几种模型和加速器的MFU。</p>
+<figure>
+<img src="/img4/AI%20Engineering/9/Table-9-1-MFU-examples.png"
+alt="表9-1" />
+<figcaption aria-hidden="true">表9-1</figcaption>
+</figure>
+<p>表9-1. 来自"PaLM: Scaling Language Modeling with
+Pathways"（Chowdhery等人，2022）的MFU示例。</p>
 <table>
 <thead>
 <tr>
@@ -655,15 +759,24 @@ TPOT衡量在第一个token之后生成每个输出token的速度。如果每个
 </tr>
 </tbody>
 </table>
-<p>图9-5显示了在不同硬件上使用FP16的Llama 2-70B推理过程的MBU。下降的原因可能是随着用户增多，每秒计算负载增加，工作负载从带宽密集型转变为计算密集型。</p>
-<p>![图9-5](/img4/AI Engineering/9/Figure-9-5-Bandwidth-utilization.png)</p>
-<p>图9-5. 三种不同芯片上FP16格式Llama 2-70B的带宽利用率，显示MBU随着并发用户数的增加而下降。图片来自&quot;LLM Training and Inference with Intel Gaudi 2 AI Accelerators&quot;（Databricks，2024）。</p>
+<p>图9-5显示了在不同硬件上使用FP16的Llama
+2-70B推理过程的MBU。下降的原因可能是随着用户增多，每秒计算负载增加，工作负载从带宽密集型转变为计算密集型。</p>
+<figure>
+<img src="/img4/AI%20Engineering/9/Figure-9-5-Bandwidth-utilization.png"
+alt="图9-5" />
+<figcaption aria-hidden="true">图9-5</figcaption>
+</figure>
+<p>图9-5. 三种不同芯片上FP16格式Llama
+2-70B的带宽利用率，显示MBU随着并发用户数的增加而下降。图片来自"LLM
+Training and Inference with Intel Gaudi 2 AI
+Accelerators"（Databricks，2024）。</p>
 <p>利用率指标有助于跟踪系统的效率。在相同硬件上处理类似工作负载时，更高的利用率通常意味着服务变得更高效。然而，目标不是获得利用率最高的芯片。你真正关心的是如何更快、更便宜地完成工作。如果成本和延迟都增加了，更高的利用率就毫无意义。</p>
-<h3 id="AI加速器">AI加速器</h3>
+<h3 id="ai加速器">AI加速器</h3>
 <p>AI Accelerators</p>
 <p>软件运行的速度和成本取决于它运行在什么硬件上。虽然存在跨硬件通用的优化技术，但了解硬件可以实现更深层次的优化。本节从推理角度审视硬件，但其内容也适用于训练。</p>
 <p>AI模型与硬件的发展始终交织在一起。缺乏足够强大的计算机是1970年代第一次AI寒冬的促成因素之一。¹⁴</p>
-<p>2012年深度学习兴趣的复兴也与计算能力密切相关。<u><em>AlexNet（Krizhevsky等人，2012）之所以流行的一个公认原因是它是第一篇成功使用GPU（图形处理单元）训练神经网络的论文。¹⁵ 在GPU之前，如果你想要训练AlexNet规模的模型，必须使用数千个CPU，就像Google在AlexNet前几个月发布的那样。相比于数千个CPU，几个GPU对于博士生和研究人员来说更容易获得，从而引发了深度学习研究的热潮。</em></u></p>
+<p>2012年深度学习兴趣的复兴也与计算能力密切相关。<u><em>AlexNet（Krizhevsky等人，2012）之所以流行的一个公认原因是它是第一篇成功使用GPU（图形处理单元）训练神经网络的论文。¹⁵
+在GPU之前，如果你想要训练AlexNet规模的模型，必须使用数千个CPU，就像Google在AlexNet前几个月发布的那样。相比于数千个CPU，几个GPU对于博士生和研究人员来说更容易获得，从而引发了深度学习研究的热潮。</em></u></p>
 <p><strong>什么是加速器?</strong></p>
 <p><u><em>加速器是一种为加速特定类型计算工作负载而设计的芯片</em></u>。AI加速器是为AI工作负载设计的。主流的AI加速器类型是GPU，而2020年代初期AI热潮中最大的经济驱动力无疑是NVIDIA。</p>
 <p><u><em>CPU和GPU的主要区别在于，CPU是为通用用途设计的，而GPU是为并行处理设计的：</em></u></p>
@@ -672,20 +785,35 @@ TPOT衡量在第一个token之后生成每个输出token的速度。如果每个
 <li><em><u>GPU拥有数千个较小、功能较弱的核心，针对可以分解为许多更小、独立计算的任务进行了优化，如图形渲染和机器学习。构成大多数ML工作负载的操作是矩阵乘法，它具有高度可并行性。</u>¹⁶</em></li>
 </ul>
 <p>虽然追求高效并行处理提高了计算能力，但也给内存设计和功耗带来了挑战。</p>
-<p>NVIDIA GPU的成功激发了众多为加速AI工作负载而设计的加速器，包括Advanced Micro Devices (AMD)的新一代GPU、Google的TPU（张量处理单元）、Intel的Habana Gaudi、Graphcore的智能处理单元（IPU）、Groq的语言处理单元（LPU）、Cerebras的晶圆级量子处理单元（QPU）以及更多正在推出的产品。</p>
+<p>NVIDIA
+GPU的成功激发了众多为加速AI工作负载而设计的加速器，包括Advanced Micro
+Devices (AMD)的新一代GPU、Google的TPU（张量处理单元）、Intel的Habana
+Gaudi、Graphcore的智能处理单元（IPU）、Groq的语言处理单元（LPU）、Cerebras的晶圆级量子处理单元（QPU）以及更多正在推出的产品。</p>
 <p>虽然许多芯片可以同时处理训练和推理，但一个正在兴起的大趋势是专门用于推理的芯片。Desislavov等人（2023）的一项调查指出，在常用系统中，推理成本可能超过训练成本，推理在已部署的AI系统中占机器学习成本的90%。</p>
-<p>如第7章所述，训练由于反向传播需要更多的内存，并且通常在较低精度下更难执行。此外，训练通常强调吞吐量，而推理旨在最小化延迟。因此，专为推理设计的芯片通常针对更低精度和更快的内存访问进行优化，而不是大的内存容量。此类芯片的例子包括Apple Neural Engine、AWS Inferentia和MTIA（Meta训练和推理加速器）。为边缘计算设计的芯片，如Google的Edge TPU和NVIDIA Jetson Xavier，也通常面向推理。</p>
-<p>还有针对不同模型架构的专用芯片，例如专为Transformer设计的芯片。¹⁷ 许多芯片是为数据中心设计的，越来越多的芯片正在为消费设备（如手机和笔记本电脑）设计。</p>
+<p>如第7章所述，训练由于反向传播需要更多的内存，并且通常在较低精度下更难执行。此外，训练通常强调吞吐量，而推理旨在最小化延迟。因此，专为推理设计的芯片通常针对更低精度和更快的内存访问进行优化，而不是大的内存容量。此类芯片的例子包括Apple
+Neural Engine、AWS
+Inferentia和MTIA（Meta训练和推理加速器）。为边缘计算设计的芯片，如Google的Edge
+TPU和NVIDIA Jetson Xavier，也通常面向推理。</p>
+<p>还有针对不同模型架构的专用芯片，例如专为Transformer设计的芯片。¹⁷
+许多芯片是为数据中心设计的，越来越多的芯片正在为消费设备（如手机和笔记本电脑）设计。</p>
 <p>不同的硬件架构具有不同的内存布局和专用计算单元，且这些单元随时间演变。这些单元针对特定数据类型进行了优化，如标量、向量或张量，如图9-6所示。</p>
-<p>![图9-6](/img4/AI Engineering/9/Figure-9-6-Compute-primitives.png)</p>
+<figure>
+<img src="/img4/AI%20Engineering/9/Figure-9-6-Compute-primitives.png"
+alt="图9-6" />
+<figcaption aria-hidden="true">图9-6</figcaption>
+</figure>
 <p>图9-6. 不同的计算原语。图片灵感来自Chen等人（2018）。</p>
 <p>一个芯片可能混合了针对不同数据类型优化的各种计算单元。例如，GPU传统上支持向量运算，但许多现代GPU现在包括针对矩阵和张量计算优化的张量核心。而TPU则以张量运算作为其主要计算原语进行设计。<u><em>为了在硬件架构上高效运行模型，需要考虑其内存布局和计算原语。</em></u></p>
 <p>芯片的规格包含许多细节，有助于评估芯片在特定使用场景下的表现。然而，<u><em>跨使用场景最重要的特性是计算能力、内存大小和带宽、以及功耗。</em></u>我将以GPU为例来说明这些特性。</p>
 <p><strong>计算能力</strong></p>
 <p>计算能力通常以芯片在给定时间内能执行的操作数量来衡量。最常见的指标是FLOP/s（常写作FLOPS），衡量每秒的峰值浮点运算次数。然而，实际上应用极难达到这个峰值FLOP/s。实际FLOP/s与理论FLOP/s的比率就是利用率指标之一。</p>
-<p>芯片每秒能执行的操作数量取决于数值精度——精度越高，芯片能执行的操作越少。可以这么理解：将两个32位数字相加通常需要两倍于两个16位数字相加的计算量。由于不同芯片的优化不同，芯片在给定时间内能执行的32位操作数量并不恰好是16位操作的一半。有关数值精度概览，请回顾第7章&quot;数值表示&quot;部分。</p>
+<p>芯片每秒能执行的操作数量取决于数值精度——精度越高，芯片能执行的操作越少。可以这么理解：将两个32位数字相加通常需要两倍于两个16位数字相加的计算量。由于不同芯片的优化不同，芯片在给定时间内能执行的32位操作数量并不恰好是16位操作的一半。有关数值精度概览，请回顾第7章"数值表示"部分。</p>
 <p>表9-2显示了NVIDIA H100 SXM芯片不同精度格式的FLOP/s规格。</p>
-<p>![表9-2](/img4/AI Engineering/9/Table-9-2-H100-FLOPS.png)</p>
+<figure>
+<img src="/img4/AI%20Engineering/9/Table-9-2-H100-FLOPS.png"
+alt="表9-2" />
+<figcaption aria-hidden="true">表9-2</figcaption>
+</figure>
 <p>表9-2. NVIDIA H100 SXM芯片的FLOP/s规格。</p>
 <table>
 <thead>
@@ -716,23 +844,39 @@ TPOT衡量在第一个token之后生成每个输出token的速度。如果每个
 <p>ᵃ 回顾第7章，TF32是19位格式，而非32位。</p>
 <p><strong>内存大小和带宽</strong></p>
 <p>由于GPU有许多核心并行工作，数据通常需要从内存移动到这些核心，因此数据传输速度非常重要。<u><em>在处理涉及大型权重矩阵和训练数据的AI模型时，数据传输至关重要。这些大量数据需要快速移动以保持核心高效运转。因此，GPU内存需要比CPU内存更高的带宽和更低的延迟，这使得GPU内存需要更先进的内存技术。这是GPU内存比CPU内存更昂贵的原因之一。</em></u></p>
-<p>更具体地说，CPU通常使用DDR SDRAM（双倍数据率同步动态随机存取存储器），具有二维结构。GPU，尤其是高端GPU，通常使用HBM（高带宽内存），具有三维堆叠结构。¹⁸</p>
+<p>更具体地说，CPU通常使用DDR
+SDRAM（双倍数据率同步动态随机存取存储器），具有二维结构。GPU，尤其是高端GPU，通常使用HBM（高带宽内存），具有三维堆叠结构。¹⁸</p>
 <p>加速器的内存通过其大小和带宽来衡量。这些数字需要在加速器所在的系统环境中评估。加速器（如GPU）通常与三层内存交互，如图9-7所示：</p>
-<p>![图9-7](/img4/AI Engineering/9/Figure-9-7-Memory-hierarchy.png)</p>
+<figure>
+<img src="/img4/AI%20Engineering/9/Figure-9-7-Memory-hierarchy.png"
+alt="图9-7" />
+<figcaption aria-hidden="true">图9-7</figcaption>
+</figure>
 <p>图9-7. AI加速器的内存层次结构。数字仅供参考，实际数字因芯片而异。</p>
-<p><strong>CPU内存（DRAM）</strong><br>
-加速器通常与CPU一起部署，因此可以访问CPU内存（也称为系统内存、主机内存或CPU DRAM）。<br>
-<em><u>CPU内存通常是这些内存类型中带宽最低的，数据传输速度在25 GB/s到50 GB/s之间。</em></u>CPU内存大小各不相同。普通笔记本电脑可能有16-64 GB，而高端工作站可能有一TB或更多。</p>
-<p><strong>GPU高带宽内存（HBM）</strong><br>
-这是专用于GPU的内存，位于GPU附近，访问速度比CPU内存更快。<br>
-<em><u>HBM提供显著更高的带宽，数据传输速度通常在256 GB/s到1.5 TB/s以上之间</em></u>。这个速度对于高效处理大数据传输和高吞吐量任务至关重要。消费级GPU拥有约24-80 GB的HBM。</p>
-<p><strong>GPU片上SRAM</strong><br>
-集成在芯片内部，用于存储频繁访问的数据和指令，实现几乎即时的访问。它包括由SRAM制成的L1和L2缓存，在某些架构中还有L3缓存。这些缓存是更广泛的片上内存的一部分，还包括寄存器文件和共享内存等其他组件。<br>
-<em><u>RAM具有极高的数据传输速度，通常超过10 TB/s。</em></u>GPU SRAM的大小很小，通常在40 MB或以下。</p>
+<p><strong>CPU内存（DRAM）</strong>
+加速器通常与CPU一起部署，因此可以访问CPU内存（也称为系统内存、主机内存或CPU
+DRAM）。 <em><u>CPU内存通常是这些内存类型中带宽最低的，数据传输速度在25
+GB/s到50
+GB/s之间。</em></u>CPU内存大小各不相同。普通笔记本电脑可能有16-64
+GB，而高端工作站可能有一TB或更多。</p>
+<p><strong>GPU高带宽内存（HBM）</strong>
+这是专用于GPU的内存，位于GPU附近，访问速度比CPU内存更快。
+<em><u>HBM提供显著更高的带宽，数据传输速度通常在256 GB/s到1.5
+TB/s以上之间</em></u>。这个速度对于高效处理大数据传输和高吞吐量任务至关重要。消费级GPU拥有约24-80
+GB的HBM。</p>
+<p><strong>GPU片上SRAM</strong>
+集成在芯片内部，用于存储频繁访问的数据和指令，实现几乎即时的访问。它包括由SRAM制成的L1和L2缓存，在某些架构中还有L3缓存。这些缓存是更广泛的片上内存的一部分，还包括寄存器文件和共享内存等其他组件。
+<em><u>RAM具有极高的数据传输速度，通常超过10 TB/s。</em></u>GPU
+SRAM的大小很小，通常在40 MB或以下。</p>
 <p>大量的GPU优化工作都围绕着如何充分利用这个内存层次结构。<u><em>然而，截至撰写本文时，像PyTorch和TensorFlow这样的流行框架还不允许对内存访问进行细粒度控制。这导致许多AI研究人员和工程师对GPU编程语言产生了兴趣，如CUDA（最初代表统一计算设备架构）、</em></u>OpenAI的Triton和ROCm（Radeon开放计算平台）。后者是AMD对NVIDIA专有CUDA的开源替代方案。</p>
 <p><strong>功耗</strong></p>
-<p><u><em>芯片依靠晶体管进行计算。每次计算都需要晶体管开关，这需要能量。GPU拥有数十亿个晶体管——NVIDIA A100有540亿个晶体管，而NVIDIA H100有800亿个。当加速器被高效使用时，数十亿个晶体管快速切换状态，消耗大量能量并产生大量热量。这些热量需要冷却系统，这也消耗电力，增加了数据中心的总能耗。</em></u></p>
-<p><u><em>芯片的能耗可能对环境产生惊人影响，加大了公司投资绿色数据中心技术的压力。一块NVIDIA H100满负荷运行一年大约消耗7,000 kWh。作为对比，美国家庭年均用电量为10,000 kWh。这就是为什么电力是扩展计算的瓶颈。</em></u>¹⁹</p>
+<p><u><em>芯片依靠晶体管进行计算。每次计算都需要晶体管开关，这需要能量。GPU拥有数十亿个晶体管——NVIDIA
+A100有540亿个晶体管，而NVIDIA
+H100有800亿个。当加速器被高效使用时，数十亿个晶体管快速切换状态，消耗大量能量并产生大量热量。这些热量需要冷却系统，这也消耗电力，增加了数据中心的总能耗。</em></u></p>
+<p><u><em>芯片的能耗可能对环境产生惊人影响，加大了公司投资绿色数据中心技术的压力。一块NVIDIA
+H100满负荷运行一年大约消耗7,000
+kWh。作为对比，美国家庭年均用电量为10,000
+kWh。这就是为什么电力是扩展计算的瓶颈。</em></u>¹⁹</p>
 <p>加速器通常以最大功率消耗或代理指标TDP（热设计功耗）来指定功耗：</p>
 <ul>
 <li><strong>最大功率消耗</strong>表示芯片在满载时可能消耗的峰值功率。</li>
@@ -752,8 +896,14 @@ TPOT衡量在第一个token之后生成每个输出token的速度。如果每个
 <p>Inference Optimization</p>
 <p><u><em>推理优化可以在模型、硬件或服务层面进行。为说明它们的区别，考虑射箭的例子：模型级优化就像制作更好的箭矢；硬件级优化就像训练更强更好的弓箭手；服务级优化就像改进整个射击过程，包括弓和瞄准条件。</em></u></p>
 <p>理想情况下，优化模型的速度和成本不应改变模型的质量。然而，许多技术可能导致模型质量下降。图9-8显示了同一Llama模型在不同基准测试上、由不同推理服务提供商提供时的表现差异。</p>
-<p>![图9-8](/img4/AI Engineering/9/Figure-9-8-Optimization-degradation.png)</p>
-<p>图9-8. 推理服务提供商可能使用改变模型行为的优化技术，导致不同提供商之间产生轻微模型质量差异。实验由Cerebras（2024）进行。</p>
+<figure>
+<img
+src="/img4/AI%20Engineering/9/Figure-9-8-Optimization-degradation.png"
+alt="图9-8" />
+<figcaption aria-hidden="true">图9-8</figcaption>
+</figure>
+<p>图9-8.
+推理服务提供商可能使用改变模型行为的优化技术，导致不同提供商之间产生轻微模型质量差异。实验由Cerebras（2024）进行。</p>
 <p>由于硬件设计超出了本书的范围，我将讨论模型和服务层面的技术。虽然这些技术被分开讨论，但请记住，在生产环境中，优化通常涉及多个层面的技术。</p>
 <h3 id="模型优化">模型优化</h3>
 <p>Model Optimization</p>
@@ -764,24 +914,37 @@ TPOT衡量在第一个token之后生成每个输出token的速度。如果每个
 <p>剪枝在神经网络语境中有两种含义。一种是移除神经网络的整个节点，这意味着改变其架构并减少其参数数量。另一种是找到对预测最无用的参数并将其设为零。在这种情况下，剪枝不会减少总参数数量，只减少非零参数的数量。这使得模型更加稀疏，既减少了模型的存储空间，也加快了计算速度。</p>
 <p>剪枝后的模型可以原样使用，或进一步微调以调整剩余参数，恢复剪枝过程引起的任何性能退化。剪枝有助于发现有前景的模型架构（Liu等人，2018）。这些剪枝后的架构比剪枝前的架构小，也可以从头开始训练（Zhu等人，2017）。</p>
 <p>文献中有许多令人鼓舞的剪枝结果。例如，Frankle和Carbin（2019）表明，剪枝技术可以将某些训练网络的非零参数数量减少超过90%，在降低内存占用和提高速度的同时不影响准确率。然而，在实践中，截至撰写本文时，剪枝并不常见。它更难实施，因为它需要理解原始模型的架构，而且其带来的性能提升通常远不如其他方法。剪枝还会产生稀疏模型，并非所有硬件架构都设计为利用这种稀疏性。</p>
-<p>仅权重量化（weight-only quantization）是迄今为止最流行的方法，因为它易于使用，对许多模型开箱即用，且极为有效。将模型精度从32位降低到16位可将其内存占用减半。然而，我们已接近量化的极限——每个值不能低于1比特。蒸馏也很常见，因为它可以产生一个较小的模型，其行为对于你的需求来说可与更大的模型媲美。</p>
+<p>仅权重量化（weight-only
+quantization）是迄今为止最流行的方法，因为它易于使用，对许多模型开箱即用，且极为有效。将模型精度从32位降低到16位可将其内存占用减半。然而，我们已接近量化的极限——每个值不能低于1比特。蒸馏也很常见，因为它可以产生一个较小的模型，其行为对于你的需求来说可与更大的模型媲美。</p>
 <p><strong>克服自回归解码瓶颈</strong></p>
-<p>如第2章所述，自回归语言模型一个一个地生成token。如果生成一个token需要100毫秒，那么100个token的响应将需要10秒。¹⁹ 这个过程不仅慢，而且昂贵。<u><em>在模型API提供商中，一个输出token的价格大约是输入token的两到四倍。</em></u>在一项实验中，Anyscale发现单个输出token对延迟的影响可能与100个输入token相同（Kadous等人，2023）。哪怕改进自回归生成过程几个百分点，也能显著改善用户体验。</p>
+<p>如第2章所述，自回归语言模型一个一个地生成token。如果生成一个token需要100毫秒，那么100个token的响应将需要10秒。¹⁹
+这个过程不仅慢，而且昂贵。<u><em>在模型API提供商中，一个输出token的价格大约是输入token的两到四倍。</em></u>在一项实验中，Anyscale发现单个输出token对延迟的影响可能与100个输入token相同（Kadous等人，2023）。哪怕改进自回归生成过程几个百分点，也能显著改善用户体验。</p>
 <p>由于该领域发展迅速，新技术不断涌现以克服这个似乎不可逾越的瓶颈。也许有一天会出现没有这个瓶颈的架构。这里涵盖的技术旨在展示解决方案可能的样子，但这些技术仍在演进中。</p>
-<p><strong>推测性解码（Speculative decoding）。</strong> <u><em>推测性解码（也称为推测性采样）使用一个更快但能力较弱的模型生成一串token，然后由目标模型进行验证。目标模型是你想要使用的模型。这个更快的模型称为草稿模型（draft model）或提议模型（proposal model），因为它提出草稿输出。</em></u></p>
+<p><strong>推测性解码（Speculative decoding）。</strong>
+<u><em>推测性解码（也称为推测性采样）使用一个更快但能力较弱的模型生成一串token，然后由目标模型进行验证。目标模型是你想要使用的模型。这个更快的模型称为草稿模型（draft
+model）或提议模型（proposal model），因为它提出草稿输出。</em></u></p>
 <p>假设输入token为x₁, x₂, …, xₜ：</p>
-<ol>
+<ol type="1">
 <li>草稿模型生成K个token的序列：xₜ₊₁, xₜ₊₂, …, xₜ₊ₖ。</li>
 <li>目标模型并行验证这K个生成的token。</li>
 <li>目标模型从左到右接受草稿token中最长的子序列，即目标模型同意使用的部分。</li>
-<li>假设目标模型接受了j个草稿token：xₜ₊₁, xₜ₊₂, …, xₜ₊ⱼ。然后目标模型生成一个额外的token：xₜ₊ⱼ₊₁。</li>
+<li>假设目标模型接受了j个草稿token：xₜ₊₁, xₜ₊₂, …,
+xₜ₊ⱼ。然后目标模型生成一个额外的token：xₜ₊ⱼ₊₁。</li>
 </ol>
-<p>该过程返回步骤1，草稿模型基于x₁, x₂, …, xₜ, xₜ₊₁, xₜ₊₂, …, xₜ₊ⱼ生成K个token。整个过程如图9-9所示。</p>
-<p>![图9-9](/img4/AI Engineering/9/Figure-9-9-Draft-model-decode.png)</p>
+<p>该过程返回步骤1，草稿模型基于x₁, x₂, …, xₜ, xₜ₊₁, xₜ₊₂, …,
+xₜ₊ⱼ生成K个token。整个过程如图9-9所示。</p>
+<figure>
+<img src="/img4/AI%20Engineering/9/Figure-9-9-Draft-model-decode.png"
+alt="图9-9" />
+<figcaption aria-hidden="true">图9-9</figcaption>
+</figure>
 <p>如果没有草稿token被接受，这个循环只产生目标模型生成的一个token。如果所有草稿token都被接受，这个循环产生K+1个token，其中K个由草稿模型生成，1个由目标模型生成。</p>
-<p>图9-9. 草稿模型生成K个token的序列，主模型接受其同意的最长子序列。图片来自&quot;Blockwise Parallel Decoding for Deep Autoregressive Models&quot;（Stern等人，2018）。</p>
+<p>图9-9.
+草稿模型生成K个token的序列，主模型接受其同意的最长子序列。图片来自"Blockwise
+Parallel Decoding for Deep Autoregressive
+Models"（Stern等人，2018）。</p>
 <p>如果所有草稿序列都被拒绝，目标模型除了验证之外还必须生成整个响应，可能导致延迟增加。然而，由于以下三个洞察，这种情况可以避免：</p>
-<ol>
+<ol type="1">
 <li><u><em>目标模型验证一串token所需的时间少于生成它的时间，因为验证是可并行的，而生成是顺序的。推测性解码有效地将解码的计算特征转变为预填充的特征。</em></u></li>
 <li>在输出token序列中，有些token比其他token更容易预测。有可能找到一个较弱的草稿模型，能够正确预测这些较容易预测的token，从而实现草稿token的高接受率。</li>
 <li>解码是内存带宽密集型的，这意味着在解码过程中通常存在空闲的FLOPs，可以免费用于验证。²⁰</li>
@@ -789,61 +952,94 @@ TPOT衡量在第一个token之后生成每个输出token的速度。如果每个
 <p>接受率依赖于领域。对于遵循特定结构的文本，如代码，接受率通常更高。更大的K值意味着目标模型的验证调用次数更少，但草稿token的接受率较低。草稿模型可以是任何架构，但理想情况下应与目标模型共享相同的词汇表和分词器。你可以训练自定义草稿模型或使用现有的较弱模型。</p>
 <p>例如，为了加速Chinchilla-70B的解码过程，DeepMind训练了一个相同架构的4B参数草稿模型（Chen等人，2023）。草稿模型生成token的速度比目标模型快8倍（1.8毫秒/token对比14.1毫秒/token）。这使得总体响应延迟降低了超过一半，且不影响响应质量。T5-XXL也实现了类似的加速（Laviathan等人，2022）。</p>
 <p>这种方法已经获得广泛采用，因为它相对容易实现，且不会改变模型质量。例如，在PyTorch中用50行代码即可实现。它已被整合到流行的推理框架中，如vLLM、TensorRT-LLM和llama.cpp。</p>
-<p><strong>参考推理（Inference with reference）。</strong> 通常，响应需要引用输入中的token。例如，如果你向模型询问关于附件文档的问题，模型可能会逐字重复文档中的文本段落。另一个例子是，如果你要求模型修复代码中的错误，模型可能会重用大部分原始代码，仅做少量修改。与其让模型生成这些重复的token，不如从输入中复制这些token以加快生成速度？这就是参考推理的核心思想。</p>
+<p><strong>参考推理（Inference with reference）。</strong>
+通常，响应需要引用输入中的token。例如，如果你向模型询问关于附件文档的问题，模型可能会逐字重复文档中的文本段落。另一个例子是，如果你要求模型修复代码中的错误，模型可能会重用大部分原始代码，仅做少量修改。与其让模型生成这些重复的token，不如从输入中复制这些token以加快生成速度？这就是参考推理的核心思想。</p>
 <blockquote>
-<p>个人注：<br>
-Q： 以上所说的参考推理和缓存命中是不是同一概念？</p>
+<p>个人注： Q： 以上所说的参考推理和缓存命中是不是同一概念？</p>
 <p>A：</p>
 <p>不是同一个概念。它们的目标虽然都是“加速生成”，但作用机制完全不同。</p>
 <p>核心区别</p>
 <table>
+<colgroup>
+<col style="width: 9%" />
+<col style="width: 46%" />
+<col style="width: 43%" />
+</colgroup>
 <thead>
 <tr>
-<th style="text-align:left">维度</th>
-<th style="text-align:left"><strong>参考推理 (Inference with Reference)</strong></th>
-<th style="text-align:left"><strong>缓存命中 (Cache Hit)</strong></th>
+<th style="text-align: left;">维度</th>
+<th style="text-align: left;"><strong>参考推理 (Inference with
+Reference)</strong></th>
+<th style="text-align: left;"><strong>缓存命中 (Cache Hit)</strong></th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left"><strong>核心思想</strong></td>
-<td style="text-align:left"><strong>跳过生成步骤，直接“复制”</strong></td>
-<td style="text-align:left"><strong>复用计算结果，避免“重算”</strong></td>
+<td style="text-align: left;"><strong>核心思想</strong></td>
+<td
+style="text-align: left;"><strong>跳过生成步骤，直接“复制”</strong></td>
+<td
+style="text-align: left;"><strong>复用计算结果，避免“重算”</strong></td>
 </tr>
 <tr>
-<td style="text-align:left"><strong>工作对象</strong></td>
-<td style="text-align:left">输入中的<strong>文本内容 (Token)</strong></td>
-<td style="text-align:left">输入前缀的<strong>中间计算结果 (KV Cache)</strong></td>
+<td style="text-align: left;"><strong>工作对象</strong></td>
+<td style="text-align: left;">输入中的<strong>文本内容
+(Token)</strong></td>
+<td style="text-align: left;">输入前缀的<strong>中间计算结果 (KV
+Cache)</strong></td>
 </tr>
 <tr>
-<td style="text-align:left"><strong>实现方式</strong></td>
-<td style="text-align:left">从参考文档中<strong>匹配并复制</strong>后续的 Token 序列到解码器输入中</td>
-<td style="text-align:left">匹配并<strong>复用</strong>已计算好的 KV 缓存状态</td>
+<td style="text-align: left;"><strong>实现方式</strong></td>
+<td
+style="text-align: left;">从参考文档中<strong>匹配并复制</strong>后续的
+Token 序列到解码器输入中</td>
+<td style="text-align: left;">匹配并<strong>复用</strong>已计算好的 KV
+缓存状态</td>
 </tr>
 <tr>
-<td style="text-align:left"><strong>关键机制</strong></td>
-<td style="text-align:left"><strong>文本跨度匹配 (Text Span Matching)</strong> 与 <strong>并行验证</strong></td>
-<td style="text-align:left"><strong>前缀哈希匹配 (Prefix Hash Matching)</strong></td>
+<td style="text-align: left;"><strong>关键机制</strong></td>
+<td style="text-align: left;"><strong>文本跨度匹配 (Text Span
+Matching)</strong> 与 <strong>并行验证</strong></td>
+<td style="text-align: left;"><strong>前缀哈希匹配 (Prefix Hash
+Matching)</strong></td>
 </tr>
 <tr>
-<td style="text-align:left"><strong>效果</strong></td>
-<td style="text-align:left">一次解码步可能<strong>生成多个</strong> Token</td>
-<td style="text-align:left">加速的是<strong>预填充 (Prefill)</strong> 阶段，不直接改变解码步数</td>
+<td style="text-align: left;"><strong>效果</strong></td>
+<td style="text-align: left;">一次解码步可能<strong>生成多个</strong>
+Token</td>
+<td style="text-align: left;">加速的是<strong>预填充 (Prefill)</strong>
+阶段，不直接改变解码步数</td>
 </tr>
 </tbody>
 </table>
 <p>参考推理：跳过生成，直接“复制”</p>
-<p>参考推理的核心是“抄近路”。它观察到，当模型引用输入文本时（如 RAG 问答或代码修复），其输出往往与输入中的参考文档存在大量<strong>完全相同的文本片段</strong>。</p>
-<p>它的做法是：在解码过程中，如果检测到当前生成的几个 Token 与参考文档中的某个片段匹配，就<strong>直接将该片段后续的若干个 Token 作为候选，一次性复制到模型的输入中</strong>。然后，模型在一次前向计算中并行验证这些被“复制”的 Token 是否真的合理，如果是，就一次性接受它们，从而在一步内生成多个 Token。这本质上是<strong>用“复制+验证”替代了逐字的“生成”</strong>。</p>
+<p>参考推理的核心是“抄近路”。它观察到，当模型引用输入文本时（如 RAG
+问答或代码修复），其输出往往与输入中的参考文档存在大量<strong>完全相同的文本片段</strong>。</p>
+<p>它的做法是：在解码过程中，如果检测到当前生成的几个 Token
+与参考文档中的某个片段匹配，就<strong>直接将该片段后续的若干个 Token
+作为候选，一次性复制到模型的输入中</strong>。然后，模型在一次前向计算中并行验证这些被“复制”的
+Token 是否真的合理，如果是，就一次性接受它们，从而在一步内生成多个
+Token。这本质上是<strong>用“复制+验证”替代了逐字的“生成”</strong>。</p>
 <p>缓存命中：复用状态，避免“重算”</p>
-<p>缓存命中则侧重于“省力”。它针对的是模型在处理具有<strong>相同前缀</strong>的请求时（如多轮对话或共享长系统提示），无需重复计算前缀部分的 Key-Value 缓存（KV Cache）。</p>
-<p>它的做法是：系统将之前处理过的提示前缀的 KV Cache 保存起来。当新请求到来时，如果检测到其前缀与缓存中的某条记录完全一致，就直接<strong>加载这份现成的 KV Cache</strong>，跳过整个前缀的预填充计算，直接从新内容开始处理。这本质上是<strong>用“读取缓存”替代了“重复计算”</strong>。</p>
+<p>缓存命中则侧重于“省力”。它针对的是模型在处理具有<strong>相同前缀</strong>的请求时（如多轮对话或共享长系统提示），无需重复计算前缀部分的
+Key-Value 缓存（KV Cache）。</p>
+<p>它的做法是：系统将之前处理过的提示前缀的 KV Cache
+保存起来。当新请求到来时，如果检测到其前缀与缓存中的某条记录完全一致，就直接<strong>加载这份现成的
+KV
+Cache</strong>，跳过整个前缀的预填充计算，直接从新内容开始处理。这本质上是<strong>用“读取缓存”替代了“重复计算”</strong>。</p>
 <p>总结</p>
 <p><strong>参考推理</strong>是在<strong>输出内容层面</strong>做文章，通过“复制粘贴”来跳过生成步骤；而<strong>缓存命中</strong>是在<strong>计算过程层面</strong>做文章，通过“复用结果”来跳过预填充计算。两者可以同时使用，从不同角度加速推理。</p>
-<p>Q：  缓存命中 指针对同一个用户的不同请求吗？还是说不同用户的请求也会生效？</p>
-<p>A： 两者都可以，取决于缓存的设计层级。要区分<strong>两种不同的缓存命中</strong>：</p>
+<p>Q： 缓存命中
+指针对同一个用户的不同请求吗？还是说不同用户的请求也会生效？</p>
+<p>A：
+两者都可以，取决于缓存的设计层级。要区分<strong>两种不同的缓存命中</strong>：</p>
 <p>一、两种缓存命中</p>
-<table>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 36%" />
+<col style="width: 28%" />
+<col style="width: 34%" />
+</colgroup>
 <thead>
 <tr>
 <th>类型</th>
@@ -867,18 +1063,25 @@ Q： 以上所说的参考推理和缓存命中是不是同一概念？</p>
 <p>二、同一用户的不同请求</p>
 <p>这是最自然的场景。比如多轮对话：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">第1轮: [系统提示] + &quot;今天天气如何？&quot;  → 处理并缓存 KV</span><br><span class="line">第2轮: [系统提示] + &quot;今天天气如何？&quot; + &quot;那明天呢？&quot;</span><br><span class="line">       └─────── 前缀完全一致 ───────┘</span><br><span class="line">       → 直接命中缓存，跳过这段的预填充</span><br></pre></td></tr></table></figure>
-<p>第2轮的请求<strong>前缀</strong>和第1轮相同（系统提示 + 历史对话），所以能命中第1轮存下的 KV Cache。</p>
-<p><strong>关键</strong>：命中不是看“是不是同一个用户”，而是看<strong>前缀 token 序列是否完全一致</strong>。</p>
+<p>第2轮的请求<strong>前缀</strong>和第1轮相同（系统提示 +
+历史对话），所以能命中第1轮存下的 KV Cache。</p>
+<p><strong>关键</strong>：命中不是看“是不是同一个用户”，而是看<strong>前缀
+token 序列是否完全一致</strong>。</p>
 <p>三、不同用户之间也能命中</p>
 <p>只要<strong>前缀完全一样</strong>，不同用户也能共享缓存。最典型的是：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">用户A: [一段很长的系统提示] + &quot;问题A&quot;</span><br><span class="line">用户B: [同一段很长的系统提示] + &quot;问题B&quot;</span><br><span class="line">       └──── 完全相同 ────┘</span><br><span class="line">       → 用户B 直接复用用户A 触发的系统提示 KV Cache</span><br></pre></td></tr></table></figure>
-<p>很多推理框架（如 vLLM 的 Prefix Caching、SGLang 的 RadixAttention）就是这样做的——<strong>按前缀的哈希值匹配</strong>，不关心请求来自哪个用户。</p>
+<p>很多推理框架（如 vLLM 的 Prefix Caching、SGLang 的
+RadixAttention）就是这样做的——<strong>按前缀的哈希值匹配</strong>，不关心请求来自哪个用户。</p>
 <p>四、命中条件：前缀完全一致</p>
 <p>命中与否<strong>只看前缀 token 是否逐字相同</strong>：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">请求1: [A B C D] + &quot;问题1&quot;</span><br><span class="line">请求2: [A B C D] + &quot;问题2&quot;</span><br><span class="line">       └相同┘</span><br><span class="line">       → 请求2 能命中 [A B C D] 的 KV Cache</span><br><span class="line"></span><br><span class="line">请求3: [A B X D] + &quot;问题3&quot;</span><br><span class="line">              ↑ 不同</span><br><span class="line">       → 从 X 开始就无法命中，只能重算</span><br></pre></td></tr></table></figure>
 <p>只要前缀有一个 token 不同，从该位置起后面的缓存全部失效。</p>
 <p>五、实际系统怎么用</p>
 <table>
+<colgroup>
+<col style="width: 15%" />
+<col style="width: 84%" />
+</colgroup>
 <thead>
 <tr>
 <th>系统</th>
@@ -888,7 +1091,8 @@ Q： 以上所说的参考推理和缓存命中是不是同一概念？</p>
 <tbody>
 <tr>
 <td><strong>vLLM</strong></td>
-<td>Prefix Caching，按前缀哈希匹配，<strong>跨请求、跨用户</strong>共享</td>
+<td>Prefix
+Caching，按前缀哈希匹配，<strong>跨请求、跨用户</strong>共享</td>
 </tr>
 <tr>
 <td><strong>SGLang</strong></td>
@@ -896,13 +1100,14 @@ Q： 以上所说的参考推理和缓存命中是不是同一概念？</p>
 </tr>
 <tr>
 <td><strong>商业API</strong></td>
-<td>有的显式提供 “prompt caching”，通常<strong>同一账号内</strong>共享，跨账号是否共享看厂商策略</td>
+<td>有的显式提供 "prompt
+caching"，通常<strong>同一账号内</strong>共享，跨账号是否共享看厂商策略</td>
 </tr>
 </tbody>
 </table>
 <p>六、为什么通常强调“同一用户”</p>
 <p>虽然技术上可以跨用户，但实际中有两个考量：</p>
-<ol>
+<ol type="1">
 <li><strong>隐私/安全</strong>：跨用户共享缓存意味着用户B能间接受益于用户A的输入，某些场景（如私有文档）不允许。</li>
 <li><strong>前缀天然相同</strong>：同一用户的多轮对话、同一应用的固定系统提示，前缀重复概率高，命中收益大。不同用户的任意输入，前缀撞上的概率低。</li>
 </ol>
@@ -913,23 +1118,46 @@ Q： 以上所说的参考推理和缓存命中是不是同一概念？</p>
 </blockquote>
 </blockquote>
 <p><u><em>参考推理类似于推测性解码，但它不是使用模型生成草稿token，而是从输入中选择草稿token。关键挑战在于开发一种算法，在每步解码时从上下文中识别出最相关的文本片段。</em></u>最简单的选择是找到与当前token匹配的文本片段。</p>
-<p>与推测性解码不同，参考推理不需要额外的模型。然而，它只在上下文与输出之间存在显著重叠的生成场景中才有用，例如检索系统、编码或多轮对话。在&quot;推理参考：大型语言模型的无损加速&quot;（Yang等人，2023）中，该技术在这类使用场景中实现了两倍的生成加速。</p>
+<p>与推测性解码不同，参考推理不需要额外的模型。然而，它只在上下文与输出之间存在显著重叠的生成场景中才有用，例如检索系统、编码或多轮对话。在"推理参考：大型语言模型的无损加速"（Yang等人，2023）中，该技术在这类使用场景中实现了两倍的生成加速。</p>
 <p>参考推理的工作原理示例见图9-10。</p>
-<p>![图9-10](/img4/AI Engineering/9/Figure-9-10-Inference-with-reference.png)</p>
-<p>图9-10. 参考推理的两个示例。成功从输入复制的文本片段以红色和绿色显示。图片来自Yang等人（2023），基于CC BY 4.0许可。</p>
-<p><strong>并行解码（Parallel decoding）。</strong> 一些技术不是通过草稿token来加速自回归生成，而是试图打破顺序依赖性。给定现有的token序列x₁, x₂, …, xₜ，这些技术尝试同时生成xₜ₊₁, xₜ₊₂, …, xₜ₊ₖ。这意味着模型在知道其前一个token是xₜ₊₁之前就生成了xₜ₊₂。</p>
-<p>这之所以可行，是因为现有序列的知识通常足以预测后续几个token。例如，给定&quot;the cat sits&quot;，虽然不知道下一个token是&quot;on&quot;、“under&quot;还是&quot;behind”，但你可能仍然能预测再下一个词是&quot;the&quot;。</p>
-<p>并行token可以由同一个解码器生成（如Lookahead解码，Fu等人，2024），或由不同的解码头生成（如Medusa，Cai等人，2024）。在Medusa中，原始模型被扩展了多个解码头，每个头是一个小型神经网络层，经过训练来预测特定位置的未来token。如果原始模型被训练来预测下一个token xₜ₊₁，那么第k个头将预测token xₜ₊ₖ₊₁。这些头与原始模型一起训练，但原始模型被冻结。NVIDIA声称Medusa帮助在HGX H200 GPU上将Llama 3.1的token生成速度提升多达1.9倍（Eassa等人，2024）。</p>
-<p>然而，由于这些token不是顺序生成的，需要进行验证以确保它们能够组合在一起。并行解码的一个关键部分是验证和整合。Lookahead解码使用Jacobi方法²¹ 来验证生成的token，其工作方式如下：</p>
-<ol>
+<figure>
+<img
+src="/img4/AI%20Engineering/9/Figure-9-10-Inference-with-reference.png"
+alt="图9-10" />
+<figcaption aria-hidden="true">图9-10</figcaption>
+</figure>
+<p>图9-10.
+参考推理的两个示例。成功从输入复制的文本片段以红色和绿色显示。图片来自Yang等人（2023），基于CC
+BY 4.0许可。</p>
+<p><strong>并行解码（Parallel decoding）。</strong>
+一些技术不是通过草稿token来加速自回归生成，而是试图打破顺序依赖性。给定现有的token序列x₁,
+x₂, …, xₜ，这些技术尝试同时生成xₜ₊₁, xₜ₊₂, …,
+xₜ₊ₖ。这意味着模型在知道其前一个token是xₜ₊₁之前就生成了xₜ₊₂。</p>
+<p>这之所以可行，是因为现有序列的知识通常足以预测后续几个token。例如，给定"the
+cat
+sits"，虽然不知道下一个token是"on"、"under"还是"behind"，但你可能仍然能预测再下一个词是"the"。</p>
+<p>并行token可以由同一个解码器生成（如Lookahead解码，Fu等人，2024），或由不同的解码头生成（如Medusa，Cai等人，2024）。在Medusa中，原始模型被扩展了多个解码头，每个头是一个小型神经网络层，经过训练来预测特定位置的未来token。如果原始模型被训练来预测下一个token
+xₜ₊₁，那么第k个头将预测token
+xₜ₊ₖ₊₁。这些头与原始模型一起训练，但原始模型被冻结。NVIDIA声称Medusa帮助在HGX
+H200 GPU上将Llama
+3.1的token生成速度提升多达1.9倍（Eassa等人，2024）。</p>
+<p>然而，由于这些token不是顺序生成的，需要进行验证以确保它们能够组合在一起。并行解码的一个关键部分是验证和整合。Lookahead解码使用Jacobi方法²¹
+来验证生成的token，其工作方式如下：</p>
+<ol type="1">
 <li>K个未来token被并行生成。</li>
 <li>这K个token经过一致性验证，确保与上下文连贯一致。</li>
 <li>如果一个或多个token验证失败，模型不会聚合所有K个未来token，而是仅重新生成或调整这些失败的token。</li>
 </ol>
 <p>模型不断精炼生成的token，直到它们全部通过验证并整合到最终输出中。这一类并行解码算法也称为Jacobi解码。</p>
 <p>另一方面，Medusa使用基于树的注意力机制来验证和整合token。每个Medusa头为每个位置生成多个候选项。这些候选项随后被组织成树状结构，以选择最有希望的组合。该过程如图9-11所示。</p>
-<p>![图9-11](/img4/AI Engineering/9/Figure-9-11-Medusa-heads.png)</p>
-<p>图9-11. 在Medusa（Cai等人，2024）中，每个头预测一个token位置的多个候选项。从这些候选项中选择最有希望的序列。图片改编自论文，基于CC BY 4.0许可。</p>
+<figure>
+<img src="/img4/AI%20Engineering/9/Figure-9-11-Medusa-heads.png"
+alt="图9-11" />
+<figcaption aria-hidden="true">图9-11</figcaption>
+</figure>
+<p>图9-11.
+在Medusa（Cai等人，2024）中，每个头预测一个token位置的多个候选项。从这些候选项中选择最有希望的序列。图片改编自论文，基于CC
+BY 4.0许可。</p>
 <p>虽然能够绕开顺序依赖性的前景很有吸引力，但并行解码并不直观，并且某些技术（如Medusa）实施起来可能具有挑战性。</p>
 <p><strong>注意力机制优化</strong></p>
 <p>回顾第2章，生成下一个token需要所有之前token的键（key）和值（value）向量。这意味着：</p>
@@ -937,14 +1165,22 @@ Q： 以上所说的参考推理和缓存命中是不是同一概念？</p>
 <li>生成token xₜ需要token x₁, x₂, …, xₜ₋₁的键和值向量。</li>
 <li>生成token xₜ₊₁需要token x₁, x₂, …, xₜ₋₁, xₜ的键和值向量。</li>
 </ul>
-<p>当生成token xₜ₊₁时，不需要重新计算token x₁, x₂, …, xₜ₋₁的键和值向量，而是从上一步重用这些向量。这意味着只需要计算最新token xₜ的键和值向量。<u><em>存储键和值向量以供重用的缓存称为KV缓存。</em></u></p>
+<p>当生成token xₜ₊₁时，不需要重新计算token x₁, x₂, …,
+xₜ₋₁的键和值向量，而是从上一步重用这些向量。这意味着只需要计算最新token
+xₜ的键和值向量。<u><em>存储键和值向量以供重用的缓存称为KV缓存。</em></u></p>
 <p>新计算出的键和值向量随后被添加到KV缓存中，如图9-12所示。</p>
-<p>![图9-12](/img4/AI Engineering/9/Figure-9-12-KV-cache.png)</p>
-<p>图9-12. 为避免在每步解码时重新计算键和值向量，使用KV缓存来存储这些向量以供重用。</p>
+<figure>
+<img src="/img4/AI%20Engineering/9/Figure-9-12-KV-cache.png"
+alt="图9-12" />
+<figcaption aria-hidden="true">图9-12</figcaption>
+</figure>
+<p>图9-12.
+为避免在每步解码时重新计算键和值向量，使用KV缓存来存储这些向量以供重用。</p>
 <blockquote>
 <p><u><em>KV缓存仅在推理期间使用，而非训练期间。在训练中，由于序列中的所有token都是预先已知的，下一个token的生成可以一次性计算完成，而非像推理时那样顺序进行。因此，不需要KV缓存。</em></u></p>
 </blockquote>
-<p>由于生成一个token需要与所有之前token计算注意力分数，注意力计算的数量随序列长度呈指数增长。²² 而KV缓存大小随序列长度线性增长。KV缓存大小也随更大的批量大小增长。Google的一篇论文计算得出，对于500B+参数的模型（使用多头注意力、批量大小512、上下文长度2048），KV缓存总计3TB（Pope等人，2022）。这相当于该模型权重的三倍。</p>
+<p>由于生成一个token需要与所有之前token计算注意力分数，注意力计算的数量随序列长度呈指数增长。²²
+而KV缓存大小随序列长度线性增长。KV缓存大小也随更大的批量大小增长。Google的一篇论文计算得出，对于500B+参数的模型（使用多头注意力、批量大小512、上下文长度2048），KV缓存总计3TB（Pope等人，2022）。这相当于该模型权重的三倍。</p>
 <p>KV缓存大小最终受限于可用的硬件存储，这成为运行长上下文应用的瓶颈。大的缓存大小也需要时间加载到内存中，对于有严格延迟要求的应用来说可能是个问题。<u><em>注意力机制的计算和内存需求是难以支持更长上下文的原因之一。</em></u></p>
 <p>为了提升注意力机制的效率，已经开发了许多技术。总的来说，它们可以分为三类：重新设计注意力机制、优化KV缓存，以及编写注意力计算的内核。</p>
 <p><strong>计算KV缓存大小</strong></p>
@@ -957,51 +1193,77 @@ Q： 以上所说的参考推理和缓存命中是不是同一概念？</p>
 <li>H：模型维度</li>
 <li>M：缓存数值表示所需的内存（例如FP16或FP32）</li>
 </ul>
-<p>随着上下文长度增加，这个值可能变得相当大。例如，LLaMA 2 13B有40层，模型维度为5,120。在批量大小为32、序列长度为2,048、每个值2字节的情况下，未经优化的KV缓存所需内存为：2 × 32 × 2,048 × 40 × 5,120 × 2 = 54 GB。</p>
-<p><strong>重新设计注意力机制。</strong> 这些技术涉及改变注意力机制的工作方式。尽管这些技术有助于优化推理，但由于它们直接改变了模型的架构，只能在训练或微调期间应用。</p>
-<p>例如，在生成新token时，局部窗口注意力（local windowed attention）不是关注所有之前的token，而是只关注固定大小的邻近token窗口（Beltagy等人，2020）。这将有效序列长度减小到固定大小的窗口，同时减少了KV缓存和注意力计算。如果平均序列长度为10,000个token，关注1,000个token的窗口可将KV缓存大小减少10倍。</p>
+<p>随着上下文长度增加，这个值可能变得相当大。例如，LLaMA 2
+13B有40层，模型维度为5,120。在批量大小为32、序列长度为2,048、每个值2字节的情况下，未经优化的KV缓存所需内存为：2
+× 32 × 2,048 × 40 × 5,120 × 2 = 54 GB。</p>
+<p><strong>重新设计注意力机制。</strong>
+这些技术涉及改变注意力机制的工作方式。尽管这些技术有助于优化推理，但由于它们直接改变了模型的架构，只能在训练或微调期间应用。</p>
+<p>例如，在生成新token时，局部窗口注意力（local windowed
+attention）不是关注所有之前的token，而是只关注固定大小的邻近token窗口（Beltagy等人，2020）。这将有效序列长度减小到固定大小的窗口，同时减少了KV缓存和注意力计算。如果平均序列长度为10,000个token，关注1,000个token的窗口可将KV缓存大小减少10倍。</p>
 <p>局部窗口注意力可以与全局注意力交错使用：局部注意力捕捉邻近上下文，而全局注意力捕捉文档中的任务特定信息。</p>
-<p>跨层注意力（cross-layer attention，Brandon等人，2024）和多查询注意力（multi-query attention，Shazeer，2019）都通过减少键-值对数量来降低KV缓存的内存占用。跨层注意力在相邻层之间共享键和值向量。三层共享相同的键-值向量意味着KV缓存减少三倍。而多查询注意力在查询头之间共享键-值向量。</p>
-<p>分组查询注意力（grouped-query attention，Ainslie等人，2023）是多查询注意力的一种推广。它不只为所有查询头使用一组键-值对，而是将查询头分成较小的组，并且仅在相同组内的查询头之间共享键-值对。这使得查询头数量和键-值对数量之间的平衡更加灵活。</p>
+<p>跨层注意力（cross-layer
+attention，Brandon等人，2024）和多查询注意力（multi-query
+attention，Shazeer，2019）都通过减少键-值对数量来降低KV缓存的内存占用。跨层注意力在相邻层之间共享键和值向量。三层共享相同的键-值向量意味着KV缓存减少三倍。而多查询注意力在查询头之间共享键-值向量。</p>
+<p>分组查询注意力（grouped-query
+attention，Ainslie等人，2023）是多查询注意力的一种推广。它不只为所有查询头使用一组键-值对，而是将查询头分成较小的组，并且仅在相同组内的查询头之间共享键-值对。这使得查询头数量和键-值对数量之间的平衡更加灵活。</p>
 <p><u><em>AI聊天机器人应用Character.AI分享说，他们的平均对话有180条消息的对话历史（2024年）。由于序列通常很长，推理吞吐量的主要瓶颈就是KV缓存大小。三种注意力机制设计——多查询注意力、局部注意力和全局注意力的交错使用、以及跨层注意力——帮助他们将KV缓存减少了超过20倍。更重要的是，这种显著的KV缓存减少意味着对于它们来说，在服务大批量时内存不再是瓶颈</em></u>。</p>
-<p><strong>优化KV缓存大小。</strong> KV缓存的管理方式对于缓解推理过程中的内存瓶颈以及支持更大的批量大小至关重要，特别是对于长上下文应用。目前正在积极开发许多技术来减少和管理KV缓存。</p>
+<p><strong>优化KV缓存大小。</strong>
+KV缓存的管理方式对于缓解推理过程中的内存瓶颈以及支持更大的批量大小至关重要，特别是对于长上下文应用。目前正在积极开发许多技术来减少和管理KV缓存。</p>
 <p>增长最快的推理框架之一vLLM因引入PagedAttention而广受欢迎，该技术通过将KV缓存划分为非连续块来优化内存管理，减少碎片，并支持灵活的内存共享以提高LLM服务效率（Kwon等人，2023）。</p>
 <p>其他技术包括KV缓存量化（Hooper等人，2024；Kang等人，2024）、自适应KV缓存压缩（Ge等人，2023）和选择性KV缓存（Liu等人，2024）。</p>
-<p><strong>编写注意力计算的内核。</strong> 这种方法不是改变机制设计或优化存储，而是研究注意力分数如何计算，并找出使这种计算更高效的方法。当考虑到执行计算的硬件时，这种方法最为有效。</p>
+<p><strong>编写注意力计算的内核。</strong>
+这种方法不是改变机制设计或优化存储，而是研究注意力分数如何计算，并找出使这种计算更高效的方法。当考虑到执行计算的硬件时，这种方法最为有效。</p>
 <p>为特定芯片优化的代码称为内核（kernel）。内核编写将在下一节进一步讨论。</p>
 <p>最著名的针对注意力计算优化的内核之一是FlashAttention（Dao等人，2022）。这个内核融合了基于Transformer的模型中常用的许多操作，使它们运行得更快，如图9-13所示。</p>
-<p>![图9-13](/img4/AI Engineering/9/Figure-9-13-FlashAttention.png)</p>
-<p>图9-13. FlashAttention是一个融合了多个常见算子的内核。改编自基于BSD 3-Clause许可的原始图片。</p>
+<figure>
+<img src="/img4/AI%20Engineering/9/Figure-9-13-FlashAttention.png"
+alt="图9-13" />
+<figcaption aria-hidden="true">图9-13</figcaption>
+</figure>
+<p>图9-13. FlashAttention是一个融合了多个常见算子的内核。改编自基于BSD
+3-Clause许可的原始图片。</p>
 <p><strong>内核与编译器</strong></p>
 <p>内核是针对特定硬件加速器（如GPU或TPU）优化的专用代码片段。它们通常用于编写计算密集型例程，这些例程需要重复执行，通常是并行执行，以最大化这些加速器的性能。</p>
 <p>常见的AI操作，包括矩阵乘法、注意力计算和卷积操作，都有专门的内核来使它们在不同硬件上的计算更加高效。²³</p>
 <p>编写内核需要深入理解底层硬件架构。这包括了解内存层次结构如何组织（如缓存、全局内存、共享内存和寄存器），以及数据如何在不同的层级之间访问和移动。</p>
-<p><u><em>此外，内核通常使用较低级别的编程语言编写，如CUDA（用于NVIDIA GPU）、Triton（OpenAI开发的用于编写自定义内核的语言）和ROCm（用于AMD GPU）。这些语言允许对线程管理和内存访问进行细粒度控制，但也比大多数AI工程师熟悉的语言（如Python）更难学习。</em></u></p>
+<p><u><em>此外，内核通常使用较低级别的编程语言编写，如CUDA（用于NVIDIA
+GPU）、Triton（OpenAI开发的用于编写自定义内核的语言）和ROCm（用于AMD
+GPU）。这些语言允许对线程管理和内存访问进行细粒度控制，但也比大多数AI工程师熟悉的语言（如Python）更难学习。</em></u></p>
 <p>由于这种入门门槛，编写内核过去是少数人掌握的黑科技。芯片制造商如NVIDIA和AMD雇佣优化工程师编写内核，使其硬件在AI工作负载上更高效，而AI框架如PyTorch和TensorFlow则雇佣内核工程师来优化其框架在不同加速器上的性能。</p>
 <p>然而，随着推理优化需求的增长和加速器的普及，越来越多的AI工程师对编写内核产生了兴趣。网上有许多优秀的内核编写教程。这里，我将介绍四种常用于加速计算的技术：</p>
-<p><strong>向量化（Vectorization）</strong><br>
+<p><strong>向量化（Vectorization）</strong>
 对于循环或嵌套循环，不是一次处理一个数据元素，而是同时执行多个在内存中连续的数据元素。这通过减少数据I/O操作来降低延迟。</p>
-<p><strong>并行化（Parallelization）</strong><br>
+<p><strong>并行化（Parallelization）</strong>
 将输入数组（或n维数组）划分为独立的块，可以在不同的核心或线程上同时处理，从而加速计算。</p>
-<p><strong>循环分块（Loop tiling）</strong><br>
+<p><strong>循环分块（Loop tiling）</strong>
 优化循环中的数据访问顺序以适应硬件的内存布局和缓存。这种优化依赖于硬件。高效的CPU分块模式可能在GPU上效果不佳。</p>
-<p><strong>算子融合（Operator fusion）</strong><br>
+<p><strong>算子融合（Operator fusion）</strong>
 将多个算子合并为单次传递，以避免冗余的内存访问。例如，如果两个循环操作在同一个数组上，可以将它们融合为一个，减少数据读写次数。</p>
 <p>向量化、并行化和循环分块可以广泛应用于不同模型，而算子融合需要更深入地理解模型的具体算子和架构。因此，算子融合需要优化工程师更多的关注。</p>
-<p>内核是为特定的硬件架构优化的。这意味着每当引入新的硬件架构时，就需要开发新的内核。例如，FlashAttention（Dao等人，2022）最初主要是为NVIDIA A100 GPU开发的。后来，FlashAttention-3针对H100 GPU推出（Shah等人，2024）。</p>
+<p>内核是为特定的硬件架构优化的。这意味着每当引入新的硬件架构时，就需要开发新的内核。例如，FlashAttention（Dao等人，2022）最初主要是为NVIDIA
+A100 GPU开发的。后来，FlashAttention-3针对H100
+GPU推出（Shah等人，2024）。</p>
 <p><u><em>模型脚本指定执行该模型所需的一系列操作。要在硬件（如GPU）上运行这段代码，必须将其转换为与该硬件兼容的语言。这个过程称为降级（lowering）。将代码降级以在特定硬件上运行的工具称为编译器。编译器桥接了ML模型与其运行的硬件。在降级过程中，只要可能，这些操作都会被转换为专门的内核，以便在目标硬件上更快地运行。</em></u></p>
 <p><strong>来自PyTorch的推理优化案例研究</strong></p>
 <p>图9-14显示了PyTorch团队通过以下优化步骤可以为Llama-7B带来多少吞吐量提升（PyTorch，2023）：</p>
-<p>![图9-14](/img4/AI Engineering/9/Figure-9-14-PyTorch-throughput.png)</p>
-<p>图9-14. PyTorch中不同优化技术的吞吐量提升。图片来自PyTorch（2023）。</p>
-<ol>
+<figure>
+<img src="/img4/AI%20Engineering/9/Figure-9-14-PyTorch-throughput.png"
+alt="图9-14" />
+<figcaption aria-hidden="true">图9-14</figcaption>
+</figure>
+<p>图9-14.
+PyTorch中不同优化技术的吞吐量提升。图片来自PyTorch（2023）。</p>
+<ol type="1">
 <li>调用torch.compile将模型编译为更高效的内核。</li>
 <li>将模型权重量化为INT8。</li>
 <li>进一步将模型权重量化为INT4。</li>
 <li>添加推测性解码。</li>
 </ol>
-<p>该实验在具有80 GB内存的A100 GPU上运行。这些优化步骤对模型输出质量的影响尚不清楚。</p>
-<p>编译器可以是独立的工具，如Apache TVM和MLIR（多层中间表示），或集成到ML和推理框架中，如torch.compile（PyTorch的一个功能）、XLA（加速线性代数，最初由TensorFlow开发，有一个名为OpenXLA的开源版本），以及TensorRT内置的编译器（针对NVIDIA GPU优化）。AI公司可能拥有自己的编译器及专有内核，旨在加速其自身的工作负载。²⁴</p>
+<p>该实验在具有80 GB内存的A100
+GPU上运行。这些优化步骤对模型输出质量的影响尚不清楚。</p>
+<p>编译器可以是独立的工具，如Apache
+TVM和MLIR（多层中间表示），或集成到ML和推理框架中，如torch.compile（PyTorch的一个功能）、XLA（加速线性代数，最初由TensorFlow开发，有一个名为OpenXLA的开源版本），以及TensorRT内置的编译器（针对NVIDIA
+GPU优化）。AI公司可能拥有自己的编译器及专有内核，旨在加速其自身的工作负载。²⁴</p>
 <h3 id="推理服务优化">推理服务优化</h3>
 <p>Inference Service Optimization</p>
 <p>大多数服务级优化技术关注的是资源管理。给定固定数量的资源（计算和内存）和动态的工作负载（来自用户、可能涉及不同模型的推理请求），目标是将资源高效分配给这些工作负载，以优化延迟和成本。与许多模型级技术不同，服务级技术不会修改模型，也不应改变输出质量。</p>
@@ -1014,12 +1276,15 @@ Q： 以上所说的参考推理和缓存命中是不是同一概念？</p>
 <p>批处理能提高吞吐量，核心原因是：<strong>把“内存带宽受限”的逐个搬运，变成一次搬运算多个请求，摊薄了单位请求的数据搬运成本。</strong></p>
 <p>下面用前面讲过的“显存带宽瓶颈”来串起来。</p>
 <p>一、先回顾瓶颈</p>
-<p>解码阶段每生成 1 个 token，要做的运算是 <strong>矩阵 × 向量</strong>：</p>
+<p>解码阶段每生成 1 个 token，要做的运算是 <strong>矩阵 ×
+向量</strong>：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">权重矩阵 W (140GB)  ×  输入向量 x (1个token)</span><br><span class="line">→ 计算量很小，但要把整个 W 从显存读一遍</span><br><span class="line">→ 瓶颈是显存带宽，不是算力</span><br></pre></td></tr></table></figure>
-<p>关键点：<strong>读 W 的时间是固定的</strong>，不管向量 x 有多少个。</p>
+<p>关键点：<strong>读 W 的时间是固定的</strong>，不管向量 x
+有多少个。</p>
 <p>二、单个请求：搬一次，只算一个</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">读 W (140GB) → 算 1 个向量</span><br><span class="line">耗时 ≈ 140GB / 2TB/s = 70ms</span><br><span class="line">产出：1 个 token</span><br></pre></td></tr></table></figure>
-<p>GPU 70ms 都在搬 W，计算单元几乎闲着。<strong>搬一次，只用一次</strong>，非常浪费。</p>
+<p>GPU 70ms 都在搬
+W，计算单元几乎闲着。<strong>搬一次，只用一次</strong>，非常浪费。</p>
 <p>三、批处理：搬一次，算 N 个</p>
 <p>把 N 个请求的当前 token 拼成一个矩阵 X（N 个向量）：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">权重矩阵 W (140GB)  ×  矩阵 X (N个token)</span><br><span class="line">→ 还是要读一遍 W（140GB），时间还是 70ms</span><br><span class="line">→ 但一次算了 N 个向量</span><br></pre></td></tr></table></figure>
@@ -1048,17 +1313,29 @@ Q： 以上所说的参考推理和缓存命中是不是同一概念？</p>
 </tr>
 </tbody>
 </table>
-<p><strong>读 W 的时间没变，但产出的 token 数翻了 32 倍</strong>，单位成本大幅下降。</p>
+<p><strong>读 W 的时间没变，但产出的 token 数翻了 32
+倍</strong>，单位成本大幅下降。</p>
 </blockquote>
-<p>三种主要的批处理技术是：静态批处理（static batching）、动态批处理（dynamic batching）和连续批处理（continuous batching）。</p>
+<p>三种主要的批处理技术是：静态批处理（static
+batching）、动态批处理（dynamic batching）和连续批处理（continuous
+batching）。</p>
 <p>最简单的批处理技术是<strong>静态批处理</strong>。服务将固定数量的输入组成一个批次。就像一辆公交车等待每个座位都坐满才出发。静态批处理的缺点是所有请求都必须等到批次满才能执行。因此批次中的第一个请求会被延迟，直到批次的最后一个请求到达，无论最后一个请求有多晚。</p>
 <p>而<strong>动态批处理</strong>为每个批次设置一个最大时间窗口。如果批量大小为4，窗口为100毫秒，服务器在收集到4个请求或经过100毫秒时处理该批次，以先到者为准。就像一辆按固定时刻表发车或满员即发的公交车。这种方法使延迟处于可控范围，早期的请求不会被后来的请求拖累。缺点在于批次在被处理时可能并非总是满的，可能导致计算资源浪费。静态批处理和动态批处理的可视化如图9-15所示。</p>
-<p>![图9-15](/img4/AI Engineering/9/Figure-9-15-Dynamic-batching.png)</p>
+<figure>
+<img src="/img4/AI%20Engineering/9/Figure-9-15-Dynamic-batching.png"
+alt="图9-15" />
+<figcaption aria-hidden="true">图9-15</figcaption>
+</figure>
 <p>图9-15. 动态批处理保持延迟可控，但计算效率可能较低。</p>
 <p>在朴素的批处理实现中，所有批次请求必须在完成后才能返回响应。对于LLM，某些请求可能比其他请求花费更长的时间。如果批次中的一个请求只生成10个响应token，而另一个请求生成1000个响应token，短响应用户必须等待长响应完成后才能得到结果。这导致了短请求的不必要延迟。</p>
 <p><strong>连续批处理</strong>允许批次中的响应在完成后立即返回给用户。它通过选择性批处理那些不会使一个响应的生成拖累另一个响应的操作来实现，如Orca论文所述（Yu等人，2022）。批次中一个请求完成后，其响应被返回，服务可以立即将另一个请求添加到批次中填补其位置，使批处理连续进行。就像一辆公交车，送下一名乘客后，可以立即接上另一名乘客以最大化载客率。连续批处理（也称为动态批次调度）的可视化如图9-16所示。</p>
-<p>![图9-16](/img4/AI Engineering/9/Figure-9-16-Continuous-batching.png)</p>
-<p>图9-16. 使用连续批处理，完成的响应可以立即返回给用户，新请求可以填补其位置进行处理。</p>
+<figure>
+<img src="/img4/AI%20Engineering/9/Figure-9-16-Continuous-batching.png"
+alt="图9-16" />
+<figcaption aria-hidden="true">图9-16</figcaption>
+</figure>
+<p>图9-16.
+使用连续批处理，完成的响应可以立即返回给用户，新请求可以填补其位置进行处理。</p>
 <p><strong>解耦预填充和解码</strong></p>
 <p><u><em>LLM推理包括两个步骤：预填充和解码。由于预填充是计算密集型的，解码是内存带宽密集型的，使用同一台机器执行两者可能导致它们低效地竞争资源，显著拖慢TTFT和TPOT。</em></u>设想一个GPU已经在接近其峰值计算能力的状态下处理预填充和解码。它或许还能处理另一个低计算量的工作（如解码）。然而，向这个GPU添加一个新查询意味着引入一个预填充任务以及一个解码任务。这一预填充任务会消耗现有解码任务的计算资源，从而减慢这些请求的TPOT。</p>
 <blockquote>
@@ -1068,27 +1345,34 @@ Q： 以上所说的参考推理和缓存命中是不是同一概念？</p>
 <p>一、理想情况：确实互补</p>
 <p>如果两者能完美并行：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">预填充：吃算力，显存带宽用得少</span><br><span class="line">解码：  吃带宽，算力用得少</span><br><span class="line">→ 理论上可以同时跑，各取所需</span><br></pre></td></tr></table></figure>
-<p>这也正是**连续批处理（continuous batching）**里把 prefill 和 decode 混在一起跑的理论依据。所以你的直觉方向没错。</p>
+<p>这也正是<strong>连续批处理（continuous batching）</strong>里把
+prefill 和 decode 混在一起跑的理论依据。所以你的直觉方向没错。</p>
 <p>二、现实：三类资源冲突</p>
 <p>问题在于，GPU 里它们并非井水不犯河水，会在三个层面互相拖累。</p>
-<ol>
+<ol type="1">
 <li>争抢 SM（计算单元）</li>
 </ol>
-<p>预填充要<strong>占满所有 SM</strong> 做大规模矩阵乘。解码也需要 SM 来发起和接收数据搬运。当预填充把 SM 占满，解码的请求只能排队：</p>
+<p>预填充要<strong>占满所有 SM</strong> 做大规模矩阵乘。解码也需要 SM
+来发起和接收数据搬运。当预填充把 SM 占满，解码的请求只能排队：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">预填充：SM 全部占满，持续几个 ms</span><br><span class="line">解码：  想上 SM 做运算 → 排队 → TPOT 被拉长</span><br></pre></td></tr></table></figure>
-<p>反过来，解码的频繁小 kernel 也会打断预填充的大 kernel，降低其效率。</p>
-<ol start="2">
+<p>反过来，解码的频繁小 kernel 也会打断预填充的大
+kernel，降低其效率。</p>
+<ol start="2" type="1">
 <li>争抢显存带宽</li>
 </ol>
-<p>虽然预填充偏计算，但它<strong>同样大量读写显存</strong>（加载权重、写 KV Cache）。解码本就卡在带宽上，此时预填充再来分一杯羹：</p>
+<p>虽然预填充偏计算，但它<strong>同样大量读写显存</strong>（加载权重、写
+KV Cache）。解码本就卡在带宽上，此时预填充再来分一杯羹：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解码：本来就在等带宽，每 token 70ms</span><br><span class="line">预填充：抢走一部分带宽</span><br><span class="line">→ 解码等得更久，TPOT 变差</span><br></pre></td></tr></table></figure>
-<p><strong>带宽是共享资源</strong>，预填充的 KV 写入、中间激活读写都会挤占。</p>
-<ol start="3">
+<p><strong>带宽是共享资源</strong>，预填充的 KV
+写入、中间激活读写都会挤占。</p>
+<ol start="3" type="1">
 <li>争抢 L2 缓存和调度资源</li>
 </ol>
 <ul>
-<li><strong>L2 缓存</strong>：预填充的大矩阵操作会冲刷 L2，把解码需要的 KV Cache 挤出缓存，导致解码要重新从显存读 → 更慢。</li>
-<li><strong>调度/kernel 启动</strong>：GPU 同一时刻调度能力有限，两类 kernel 交替会引入额外开销。</li>
+<li><strong>L2 缓存</strong>：预填充的大矩阵操作会冲刷 L2，把解码需要的
+KV Cache 挤出缓存，导致解码要重新从显存读 → 更慢。</li>
+<li><strong>调度/kernel 启动</strong>：GPU 同一时刻调度能力有限，两类
+kernel 交替会引入额外开销。</li>
 </ul>
 <p>三、结果：互相拖慢</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">理想：TTFT 和 TPOT 都不受影响，甚至一起变快</span><br><span class="line">现实：预填充拖慢解码 → TPOT 变差</span><br><span class="line">      解码打断预填充 → TTFT 变差</span><br></pre></td></tr></table></figure>
@@ -1122,19 +1406,39 @@ Q： 以上所说的参考推理和缓存命中是不是同一概念？</p>
 </table>
 <p>把<strong>又大又长</strong>的预填充和<strong>又小又碎</strong>的解码混在一起调度，会互相破坏对方的节奏。这就像高速公路上，一辆大卡车（预填充）和一堆小轿车（解码）混跑——大卡车占道，小轿车频繁变道，整体通行效率反而下降。</p>
 </blockquote>
-<p>推理服务器的一个常见优化技术是分离预填充和解码（disaggregate prefill and decode）。“DistServe”（Zhong等人，2024）和&quot;Inference Without Interference&quot;（Hu等人，2024）表明，对于各种流行的LLM和应用，将预填充和解码操作分配给不同的实例（例如不同的GPU）可以在满足延迟要求的同时显著提高处理请求的数量。尽管解耦需要将中间状态从预填充实例传输到解码实例，但论文表明，在具有高带宽连接（如节点内的NVLink）的现代GPU集群中，通信开销并不大。</p>
+<p>推理服务器的一个常见优化技术是分离预填充和解码（disaggregate prefill
+and decode）。"DistServe"（Zhong等人，2024）和"Inference Without
+Interference"（Hu等人，2024）表明，对于各种流行的LLM和应用，将预填充和解码操作分配给不同的实例（例如不同的GPU）可以在满足延迟要求的同时显著提高处理请求的数量。尽管解耦需要将中间状态从预填充实例传输到解码实例，但论文表明，在具有高带宽连接（如节点内的NVLink）的现代GPU集群中，通信开销并不大。</p>
 <p>预填充实例与解码实例的比例取决于许多因素，例如工作负载特征（如更长的输入长度需要更多预填充计算）和延迟要求（如是否希望更低的TTFT或TPOT）。例如，如果输入序列通常较长且你希望优先考虑TTFT，这个比率可能在2:1到4:1之间。如果输入序列较短且你希望优先考虑TPOT，这个比率可能是1:2到1:1。²⁵</p>
 <p><strong>提示缓存（Prompt Caching）</strong></p>
-<p>应用中许多提示具有重叠的文本片段。提示缓存（prompt cache）存储这些重叠片段以供重用，因此你只需处理它们一次。不同提示中常见的重叠文本片段是系统提示。没有提示缓存，你的模型需要在每个查询中都处理系统提示。有了提示缓存，系统提示只需为第一个查询处理一次。</p>
+<p>应用中许多提示具有重叠的文本片段。提示缓存（prompt
+cache）存储这些重叠片段以供重用，因此你只需处理它们一次。不同提示中常见的重叠文本片段是系统提示。没有提示缓存，你的模型需要在每个查询中都处理系统提示。有了提示缓存，系统提示只需为第一个查询处理一次。</p>
 <p>提示缓存对于涉及长文档的查询非常有用。例如，如果你的许多用户查询都涉及同一份长文档（如一本书或一个代码库），这份长文档可以被缓存，在多次查询中重复使用。对于长对话也很有用，早期消息的处理结果可以被缓存，并在预测后续消息时重用。</p>
-<p>提示缓存的可视化如图9-17所示。它也被称为上下文缓存（context cache）或前缀缓存（prefix cache）。</p>
-<p>![图9-17](/img4/AI Engineering/9/Figure-9-17-Prompt-cache.png)</p>
+<p>提示缓存的可视化如图9-17所示。它也被称为上下文缓存（context
+cache）或前缀缓存（prefix cache）。</p>
+<figure>
+<img src="/img4/AI%20Engineering/9/Figure-9-17-Prompt-cache.png"
+alt="图9-17" />
+<figcaption aria-hidden="true">图9-17</figcaption>
+</figure>
 <p>图9-17. 有了提示缓存，不同提示中的重叠片段可以被缓存和重用。</p>
 <p>对于具有长系统提示的应用，提示缓存可以显著降低延迟和成本。如果你的系统提示有1,000个token，而你的应用每天生成一百万次模型API调用，提示缓存每天将为你节省处理大约十亿个重复输入token的工作！然而，这并非完全免费。与KV缓存一样，提示缓存的大小可能相当大，占用内存空间。除非你使用具有此功能的模型API，否则实现提示缓存可能需要大量的工程工作。</p>
-<p><u><em>自Gim等人于2023年11月引入以来，提示缓存已被迅速纳入模型API。截至撰写本文时，Google Gemini提供此功能，缓存输入token相比常规输入token享受75%的折扣，但你需要为缓存存储额外付费</em></u>（截至撰写本文时，每小时每百万token $1.00）。Anthropic提供提示缓存，承诺节省高达90%的成本（缓存的上下文越长，节省越多）和高达75%的延迟降低。提示缓存对不同场景成本和延迟的影响如表9-3所示。²⁶</p>
-<p>![表9-3](/img4/AI Engineering/9/Table-9-3-Prompt-caching-cost.png)</p>
+<p><u><em>自Gim等人于2023年11月引入以来，提示缓存已被迅速纳入模型API。截至撰写本文时，Google
+Gemini提供此功能，缓存输入token相比常规输入token享受75%的折扣，但你需要为缓存存储额外付费</em></u>（截至撰写本文时，每小时每百万token
+$1.00）。Anthropic提供提示缓存，承诺节省高达90%的成本（缓存的上下文越长，节省越多）和高达75%的延迟降低。提示缓存对不同场景成本和延迟的影响如表9-3所示。²⁶</p>
+<figure>
+<img src="/img4/AI%20Engineering/9/Table-9-3-Prompt-caching-cost.png"
+alt="表9-3" />
+<figcaption aria-hidden="true">表9-3</figcaption>
+</figure>
 <p>表9-3. 提示缓存降低的成本和延迟。信息来自Anthropic（2024）。</p>
 <table>
+<colgroup>
+<col style="width: 13%" />
+<col style="width: 36%" />
+<col style="width: 36%" />
+<col style="width: 12%" />
+</colgroup>
 <thead>
 <tr>
 <th>使用场景</th>
@@ -1165,24 +1469,47 @@ Q： 以上所说的参考推理和缓存命中是不是同一概念？</p>
 </tbody>
 </table>
 <p><strong>并行化（Parallelism）</strong></p>
-<p>加速器是为并行处理而设计的，并行化策略是高性能计算的支柱。许多新的并行化策略正在被开发。本节仅涵盖少数几种供参考。可以应用于所有模型的两类并行化策略是数据并行（data parallelism）和模型并行（model parallelism）。专门为LLM应用的一类策略是上下文和序列并行（context and sequence parallelism）。一个优化技术可能涉及多个并行化策略。</p>
-<p><strong>副本并行（Replica parallelism）</strong> 是最直接的策略。它简单地创建你想要服务的模型的多个副本。²⁷ 更多副本允许你同时处理更多请求，但代价是使用更多芯片。将不同大小的模型适配到不同芯片上是一个装箱问题（bin-packing problem），随着模型数量、副本数量和芯片数量的增加而变得复杂。</p>
-<p>假设你有不同大小的模型混合（例如8B、13B、34B和70B参数），并可访问不同内存容量的GPU（例如24 GB、40 GB、48 GB和80 GB）。为简单起见，假设所有模型使用相同的精度（8位）：</p>
+<p>加速器是为并行处理而设计的，并行化策略是高性能计算的支柱。许多新的并行化策略正在被开发。本节仅涵盖少数几种供参考。可以应用于所有模型的两类并行化策略是数据并行（data
+parallelism）和模型并行（model
+parallelism）。专门为LLM应用的一类策略是上下文和序列并行（context and
+sequence parallelism）。一个优化技术可能涉及多个并行化策略。</p>
+<p><strong>副本并行（Replica parallelism）</strong>
+是最直接的策略。它简单地创建你想要服务的模型的多个副本。²⁷
+更多副本允许你同时处理更多请求，但代价是使用更多芯片。将不同大小的模型适配到不同芯片上是一个装箱问题（bin-packing
+problem），随着模型数量、副本数量和芯片数量的增加而变得复杂。</p>
+<p>假设你有不同大小的模型混合（例如8B、13B、34B和70B参数），并可访问不同内存容量的GPU（例如24
+GB、40 GB、48 GB和80
+GB）。为简单起见，假设所有模型使用相同的精度（8位）：</p>
 <ul>
-<li>如果你有固定数量的芯片，需要决定为每个模型创建多少个副本以及使用什么GPU来最大化你的指标。例如，是将三个13B模型放在一个40 GB GPU上，还是将这个GPU保留给一个34B模型？</li>
+<li>如果你有固定数量的芯片，需要决定为每个模型创建多少个副本以及使用什么GPU来最大化你的指标。例如，是将三个13B模型放在一个40
+GB GPU上，还是将这个GPU保留给一个34B模型？</li>
 <li>如果你有固定数量的模型副本，需要决定获取什么芯片以最小化成本。然而，这种情况很少发生。</li>
 </ul>
-<p>通常，你的模型太大，无法放入一台机器。<strong>模型并行</strong>（Model parallelism）指的是将同一模型拆分到多台机器的实践。将模型适配到芯片上，在模型并行的情况下会变得更加复杂。</p>
-<p>拆分模型有几种方式。推理中最常见的方法是<strong>张量并行</strong>（tensor parallelism），也称为算子内并行（intra-operator parallelism）。推理涉及对多维张量的一系列算子操作，如矩阵乘法。在这种方法中，算子涉及的张量被划分到多个设备上，有效地将该算子分解为更小的部分并行执行，从而加速计算。例如，在乘以两个矩阵时，可以将其中一个矩阵按列拆分，如图9-18所示。</p>
-<p>![图9-18](/img4/AI Engineering/9/Figure-9-18-Tensor-parallelism.png)</p>
+<p>通常，你的模型太大，无法放入一台机器。<strong>模型并行</strong>（Model
+parallelism）指的是将同一模型拆分到多台机器的实践。将模型适配到芯片上，在模型并行的情况下会变得更加复杂。</p>
+<p>拆分模型有几种方式。推理中最常见的方法是<strong>张量并行</strong>（tensor
+parallelism），也称为算子内并行（intra-operator
+parallelism）。推理涉及对多维张量的一系列算子操作，如矩阵乘法。在这种方法中，算子涉及的张量被划分到多个设备上，有效地将该算子分解为更小的部分并行执行，从而加速计算。例如，在乘以两个矩阵时，可以将其中一个矩阵按列拆分，如图9-18所示。</p>
+<figure>
+<img src="/img4/AI%20Engineering/9/Figure-9-18-Tensor-parallelism.png"
+alt="图9-18" />
+<figcaption aria-hidden="true">图9-18</figcaption>
+</figure>
 <p>图9-18. 矩阵乘法的张量并行。</p>
 <p>张量并行有两个好处。首先，它使服务无法容纳在单台机器上的大型模型成为可能。其次，它减少了延迟。然而，延迟优势可能会因额外的通信开销而减少。</p>
-<p>另一种拆分模型的方式是<strong>流水线并行</strong>（pipeline parallelism），涉及将模型的计算划分为不同的阶段，并将每个阶段分配给不同的设备。数据流经模型时，每个阶段处理一个部分，而其他阶段处理后续部分，使得计算可以重叠。图9-19显示了在四台机器上的流水线并行的样子。</p>
-<p>![图9-19](/img4/AI Engineering/9/Figure-9-19-Pipeline-parallelism.png)</p>
+<p>另一种拆分模型的方式是<strong>流水线并行</strong>（pipeline
+parallelism），涉及将模型的计算划分为不同的阶段，并将每个阶段分配给不同的设备。数据流经模型时，每个阶段处理一个部分，而其他阶段处理后续部分，使得计算可以重叠。图9-19显示了在四台机器上的流水线并行的样子。</p>
+<figure>
+<img src="/img4/AI%20Engineering/9/Figure-9-19-Pipeline-parallelism.png"
+alt="图9-19" />
+<figcaption aria-hidden="true">图9-19</figcaption>
+</figure>
 <p>图9-19. 流水线并行使模型拆分可以并行执行。</p>
 <p>图9-19显示了一个批次可以拆分为更小的微批次。一个微批次在一台机器上处理完毕后，其输出被传递到下一台机器上的模型下一部分。</p>
 <p>虽然流水线并行使得在多台机器上服务大型模型成为可能，但由于流水线阶段之间额外的通信，每个请求的总延迟会增加。因此，对于延迟要求严格的应用，通常避免使用流水线并行，而倾向于副本并行。然而，流水线并行在训练中很常见，因为它有助于提高吞吐量。</p>
-<p>两种不那么常见但值得一提的技术是<strong>上下文并行</strong>（context parallelism）和<strong>序列并行</strong>（sequence parallelism），它们都是为了更高效地处理长输入序列而开发的。在上下文并行中，输入序列本身被拆分到不同的设备上单独处理。例如，输入的前半部分在机器1上处理，后半部分在机器2上处理。在序列并行中，整个输入所需的算子被拆分到多台机器上。例如，如果输入需要注意力计算和前馈计算，注意力可能在机器1上处理，而前馈在机器2上处理。</p>
+<p>两种不那么常见但值得一提的技术是<strong>上下文并行</strong>（context
+parallelism）和<strong>序列并行</strong>（sequence
+parallelism），它们都是为了更高效地处理长输入序列而开发的。在上下文并行中，输入序列本身被拆分到不同的设备上单独处理。例如，输入的前半部分在机器1上处理，后半部分在机器2上处理。在序列并行中，整个输入所需的算子被拆分到多台机器上。例如，如果输入需要注意力计算和前馈计算，注意力可能在机器1上处理，而前馈在机器2上处理。</p>
 <h2 id="总结">总结</h2>
 <p>Summary</p>
 <p>模型的可用性在很大程度上取决于其推理成本和延迟。更便宜的推理使AI驱动的决策更经济实惠，而更快的推理使AI能够集成到更多应用中。鉴于推理优化的巨大潜力，它吸引了许多优秀人才，他们不断提出创新方法。</p>

@@ -165,7 +165,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-text">文章摘录</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%95%E8%A8%80"><span class="nav-text">引言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PreTraining"><span class="nav-text">PreTraining</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PostTraining"><span class="nav-text">PostTraining</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Results-LM"><span class="nav-text">Results-LM</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Vision"><span class="nav-text">Vision</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Speech"><span class="nav-text">Speech</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RelatedWork-Conclusion"><span class="nav-text">RelatedWork-Conclusion</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%87%E7%AB%A0%E6%91%98%E5%BD%95"><span class="nav-text">文章摘录</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%95%E8%A8%80"><span class="nav-text">引言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pretraining"><span class="nav-text">PreTraining</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#posttraining"><span class="nav-text">PostTraining</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#results-lm"><span class="nav-text">Results-LM</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#vision"><span class="nav-text">Vision</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#speech"><span class="nav-text">Speech</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#relatedwork-conclusion"><span class="nav-text">RelatedWork-Conclusion</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -266,64 +266,103 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><p>在看《AI Engineering》的时候，提到这本书《The Llama 3 Herd of Models》。本书是Meta于2024年7月发布的技术论文，详细公开了开源模型Llama 3 系列（8B、70B、405B）模型的完整训练过程、数据规模及多模态扩展实验。<br>
+    <div class="post-body" itemprop="articleBody"><p>在看《AI Engineering》的时候，提到这本书《The Llama 3 Herd of
+Models》。本书是Meta于2024年7月发布的技术论文，详细公开了开源模型Llama 3
+系列（8B、70B、405B）模型的完整训练过程、数据规模及多模态扩展实验。
 本书偏技术，但是快速浏览，还是有助于了解一个大语言模型训练的过程，以及过程中涉及的一些内容及注意事项，其中第4和第5章比较值得看。</p>
-<span id="more"></span>  
-<h1>文章摘录</h1>
+<span id="more"></span>
+<h1 id="文章摘录">文章摘录</h1>
 <h2 id="引言">引言</h2>
 <ul>
-<li>在语言模型预训练阶段，模型学习语言结构，并从其&quot;阅读&quot;的文本中获取大量关于世界的知识。</li>
+<li>在语言模型预训练阶段，模型学习语言结构，并从其"阅读"的文本中获取大量关于世界的知识。</li>
 <li>在此后训练²阶段，我们还集成了新能力，如工具使用，并在编码和推理等其他领域观察到了显著的改进。</li>
 <li>适配器在图像-文本对上进行训练。这使图像表示与语言表示对齐。</li>
 </ul>
-<h2 id="PreTraining">PreTraining</h2>
+<h2 id="pretraining">PreTraining</h2>
 <ul>
-<li>我们对每个数据来源应用多种去重方法和数据清洗机制，以获得高质量的 token。我们移除包含大量个人可识别信息（PII）的域名，以及已知包含成人内容的域名。</li>
-<li>我们发现，与纯文本相比，markdown 对主要基于网络数据训练的模型性能有害，因此我们移除了所有 markdown 标记。</li>
-<li>我们最终的数据混合大约包含 50% 对应通用知识的 token、25% 的数学和推理 token、17% 的代码 token 以及 8% 的多语言 token。</li>
-<li>用于预训练 Llama 3 405B 的方案包含三个主要阶段：(1) 初始预训练，(2) 长上下文预训练，以及 (3) 退火。</li>
+<li>我们对每个数据来源应用多种去重方法和数据清洗机制，以获得高质量的
+token。我们移除包含大量个人可识别信息（PII）的域名，以及已知包含成人内容的域名。</li>
+<li>我们发现，与纯文本相比，markdown
+对主要基于网络数据训练的模型性能有害，因此我们移除了所有 markdown
+标记。</li>
+<li>我们最终的数据混合大约包含 50% 对应通用知识的 token、25%
+的数学和推理 token、17% 的代码 token 以及 8% 的多语言 token。</li>
+<li>用于预训练 Llama 3 405B 的方案包含三个主要阶段：(1) 初始预训练，(2)
+长上下文预训练，以及 (3) 退火。</li>
 <li>我们不更早地在长序列上训练，因为自注意力层中的计算量随序列长度呈二次增长。我们逐步增加支持的上下文长度，预训练直到模型成功适应增加后的上下文长度。</li>
 </ul>
-<h2 id="PostTraining">PostTraining</h2>
+<h2 id="posttraining">PostTraining</h2>
 <ul>
-<li>这是通过从主预训练运行中分支出来，并在 1T 词元的以代码数据为主（&gt;85%）的数据混合上继续预训练来实现的。在领域特定数据上继续预训练已被证明可以有效提高特定领域的性能（Gururangan et al., 2020）。</li>
+<li>这是通过从主预训练运行中分支出来，并在 1T
+词元的以代码数据为主（&gt;85%）的数据混合上继续预训练来实现的。在领域特定数据上继续预训练已被证明可以有效提高特定领域的性能（Gururangan
+et al., 2020）。</li>
 <li>总共，我们生成了超过 270 万个合成示例，用于 SFT 训练。</li>
 <li>首先，我们生成大量涵盖广泛主题的编程问题描述，包括长尾分布中的主题。为了实现这种多样性，我们从各种来源采样随机代码片段，并提示模型基于这些示例生成编程问题。</li>
-<li>从预训练运行中分支出来，在包含 90% 多语言词元的数据混合上继续预训练，训练了一个多语言专家。</li>
+<li>从预训练运行中分支出来，在包含 90%
+多语言词元的数据混合上继续预训练，训练了一个多语言专家。</li>
 <li>幻觉仍然是大型语言模型面临的主要挑战。模型往往过度自信，即使是在它们知之甚少的领域也是如此。</li>
 </ul>
-<h2 id="Results-LM">Results-LM</h2>
+<h2 id="results-lm">Results-LM</h2>
 <ul>
 <li>基准得分是对模型真实性能的估计。由于基准集是从某个潜在分布中抽取的有限样本，这些估计存在方差。</li>
-<li>表 19 报告了一部分流行编程语言的结果。注意与表 18 中的 Python 对应结果相比，性能有显著下降。</li>
+<li>表 19 报告了一部分流行编程语言的结果。注意与表 18 中的 Python
+对应结果相比，性能有显著下降。</li>
 <li>描述了安全微调的方法，重点关注如何训练模型遵循特定的安全策略，同时保持有用性。</li>
-<li>对于每个风险类别，我们收集了人工编写的对抗性或边界性提示——此类示例如表23所示。对抗性提示范围从直接诱导有害回复的简单提示，到包含复杂越狱技术的提示。这些对抗性提示的基准是我们衡量违反率（Violation Rate）的基础。</li>
-<li>除了收集对抗性提示外，我们还收集了一组相似提示，我们称之为边界性提示（Borderline Prompts）。这些提示与对抗性提示密切相关，但目标在于教会模型提供有帮助的回复，从而降低假性拒绝率（FRR）。</li>
-<li>志愿者根据其进攻性安全经验被分为&quot;专家&quot;（31 人）和&quot;新手&quot;（31 人）两组。第一阶段，要求受试者在无任何 LLM 帮助但可访问开放互联网的情况下完成挑战。第二阶段，受试者保留互联网访问权限，同时获得 Llama 3 405B 的帮助，以完成另一个难度与第一阶段相似的进攻性网络安全挑战。对受试者完成挑战各阶段情况的分析表明，使用 405B 模型的新手和专家，与仅能开放访问互联网而无 LLM 的情况相比，均未表现出显著的能力提升。</li>
+<li>对于每个风险类别，我们收集了人工编写的对抗性或边界性提示——此类示例如表23所示。对抗性提示范围从直接诱导有害回复的简单提示，到包含复杂越狱技术的提示。这些对抗性提示的基准是我们衡量违反率（Violation
+Rate）的基础。</li>
+<li>除了收集对抗性提示外，我们还收集了一组相似提示，我们称之为边界性提示（Borderline
+Prompts）。这些提示与对抗性提示密切相关，但目标在于教会模型提供有帮助的回复，从而降低假性拒绝率（FRR）。</li>
+<li>志愿者根据其进攻性安全经验被分为"专家"（31 人）和"新手"（31
+人）两组。第一阶段，要求受试者在无任何 LLM
+帮助但可访问开放互联网的情况下完成挑战。第二阶段，受试者保留互联网访问权限，同时获得
+Llama 3 405B
+的帮助，以完成另一个难度与第一阶段相似的进攻性网络安全挑战。对受试者完成挑战各阶段情况的分析表明，使用
+405B 模型的新手和专家，与仅能开放访问互联网而无 LLM
+的情况相比，均未表现出显著的能力提升。</li>
 <li>在大语言模型的各种实际应用中，模型并非孤立使用，而是集成到更广泛的系统中。在本节中，我们描述我们的系统级安全实现，它通过提供更大的灵活性和控制来补充模型级的缓解措施。</li>
 </ul>
-<h2 id="Vision">Vision</h2>
+<h2 id="vision">Vision</h2>
 <ul>
-<li>我们在一个大规模图像-文本对上，通过在预训练的图像编码器（Xu et al., 2023）和预训练的语言模型之间引入并训练一组交叉注意力层（Alayrac et al., 2022），将两者组合起来</li>
-<li>去除非英文字幕和低质量字幕。具体来说，我们移除所有低于特定 CLIP 分数的图像-文本对。</li>
+<li>我们在一个大规模图像-文本对上，通过在预训练的图像编码器（Xu et al.,
+2023）和预训练的语言模型之间引入并训练一组交叉注意力层（Alayrac et al.,
+2022），将两者组合起来</li>
+<li>去除非英文字幕和低质量字幕。具体来说，我们移除所有低于特定 CLIP
+分数的图像-文本对。</li>
 <li><strong>转录文档</strong>：为了提高模型在文档理解任务上的性能，我们将文档页面渲染为图像，并将图像与其对应的文本配对。文档文本直接从源文件或通过文档解析流水线获取。</li>
 <li>我们对训练集中的所有图像进行人脸模糊处理</li>
 <li>我们包含由早期版本模型生成的带有合成字幕的图像。与原始字幕相比，我们发现合成字幕对图像的描述比原始字幕更全面。</li>
-<li>我们还包括针对各种领域（如图表、表格、流程图、数学公式和文本数据）的合成生成图像。这些图像附有相应的结构化表示，如对应的 Markdown 或 LaTeX 符号。除了提高模型在这些领域的识别能力外</li>
-<li><strong>图像适配器</strong>：我们在图像编码器产生的视觉 token 表示与语言模型产生的 token 表示之间引入交叉注意力层（Alayrac et al., 2022）。</li>
+<li>我们还包括针对各种领域（如图表、表格、流程图、数学公式和文本数据）的合成生成图像。这些图像附有相应的结构化表示，如对应的
+Markdown 或 LaTeX 符号。除了提高模型在这些领域的识别能力外</li>
+<li><strong>图像适配器</strong>：我们在图像编码器产生的视觉 token
+表示与语言模型产生的 token 表示之间引入交叉注意力层（Alayrac et al.,
+2022）。</li>
 </ul>
-<h2 id="Speech">Speech</h2>
+<h2 id="speech">Speech</h2>
 <ul>
-<li>我们还实验了一种语音生成方法，其中我们实现了一个流式文本到语音（TTS）系统，在语言模型解码过程中实时生成语音波形。我们基于专有的 TTS 系统为 Llama 3 设计语音生成器，并且不对语言模型进行语音生成的微调。相反，我们专注于通过在推理时利用 Llama 3 嵌入来改善语音合成的延迟、准确性和自然度。语音接口如图 28 和图 29 所示。</li>
-<li>PM 训练数据包括从 50K 小时 TTS 数据集中提取的语言学和韵律特征，这些数据是专业配音演员在录音室环境中录制的配对转录文本和音频。</li>
-<li>语音模块与视觉模块有显著不同（见第 7 节），视觉模块通过交叉注意力层将多模态信息输入到语言模型中。相比之下，语音模块生成的嵌入可以无缝地与文本令牌集成，使语音接口能够利用 Llama 3 语言模型的所有能力。</li>
-<li>我们在语音生成的两个关键组件中使用 Llama 3 8B 嵌入：文本规范化和韵律建模。TN 模块通过根据上下文将书面文本转换为口语形式来确保语义正确性。PM 模块通过使用这些嵌入预测韵律特征来增强自然度和表现力。它们共同实现了准确且自然的语音生成。</li>
-<li>Llama 3 语音接口的语音理解能力：（1）自动语音识别，（2）语音翻译，以及（3）口语问答。</li>
+<li>我们还实验了一种语音生成方法，其中我们实现了一个流式文本到语音（TTS）系统，在语言模型解码过程中实时生成语音波形。我们基于专有的
+TTS 系统为 Llama 3
+设计语音生成器，并且不对语言模型进行语音生成的微调。相反，我们专注于通过在推理时利用
+Llama 3 嵌入来改善语音合成的延迟、准确性和自然度。语音接口如图 28 和图
+29 所示。</li>
+<li>PM 训练数据包括从 50K 小时 TTS
+数据集中提取的语言学和韵律特征，这些数据是专业配音演员在录音室环境中录制的配对转录文本和音频。</li>
+<li>语音模块与视觉模块有显著不同（见第 7
+节），视觉模块通过交叉注意力层将多模态信息输入到语言模型中。相比之下，语音模块生成的嵌入可以无缝地与文本令牌集成，使语音接口能够利用
+Llama 3 语言模型的所有能力。</li>
+<li>我们在语音生成的两个关键组件中使用 Llama 3 8B
+嵌入：文本规范化和韵律建模。TN
+模块通过根据上下文将书面文本转换为口语形式来确保语义正确性。PM
+模块通过使用这些嵌入预测韵律特征来增强自然度和表现力。它们共同实现了准确且自然的语音生成。</li>
+<li>Llama 3
+语音接口的语音理解能力：（1）自动语音识别，（2）语音翻译，以及（3）口语问答。</li>
 </ul>
-<h2 id="RelatedWork-Conclusion">RelatedWork-Conclusion</h2>
+<h2 id="relatedwork-conclusion">RelatedWork-Conclusion</h2>
 <ul>
-<li>例如，为确保 Llama 3 不会意外地在常用基准测试上过拟合，我们的预训练数据由一个独立团队采购和处理，该团队被强烈激励以防止预训练数据被外部基准测试污染。</li>
-<li>我们分享开发过程的细节是因为我们相信这将：(1) 帮助更广泛的研究社区理解基础模型开发的关键因素，(2) 促进公众对基础模型未来走向进行更知情的讨论。</li>
+<li>例如，为确保 Llama 3
+不会意外地在常用基准测试上过拟合，我们的预训练数据由一个独立团队采购和处理，该团队被强烈激励以防止预训练数据被外部基准测试污染。</li>
+<li>我们分享开发过程的细节是因为我们相信这将：(1)
+帮助更广泛的研究社区理解基础模型开发的关键因素，(2)
+促进公众对基础模型未来走向进行更知情的讨论。</li>
 </ul>
 
     </div>

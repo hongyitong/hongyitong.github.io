@@ -20,12 +20,12 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false,"path":"/search.json"}}</script><script src="/js/config.js" defer></script>
 
-    <meta name="description" content="第8章  波动率 Volatility 金融机构必须监控其投资组合价值所依赖的市场变量（汇率、股票价格、商品价格等）（exchange rates, equity prices, commodity prices, etc.）的波动率。本章将介绍用于实现这一目标的相关程序。 本章首先解释波动率的定义。接着考察一个常见的假设，即市场变量的百分比收益服从正态分布（normally distribute">
+    <meta name="description" content="第8章 波动率 Volatility 金融机构必须监控其投资组合价值所依赖的市场变量（汇率、股票价格、商品价格等）（exchange rates, equity prices, commodity prices, etc.）的波动率。本章将介绍用于实现这一目标的相关程序。 本章首先解释波动率的定义。接着考察一个常见的假设，即市场变量的百分比收益服从正态分布（normally distributed">
 <meta property="og:type" content="article">
 <meta property="og:title" content="《风险管理与金融机构》第8章  波动率">
 <meta property="og:url" content="http://hongyitong.github.io/2026/07/08/%E7%AC%AC8%E7%AB%A0%20%E6%B3%A2%E5%8A%A8%E7%8E%87/index.html">
 <meta property="og:site_name" content="墨语浮生">
-<meta property="og:description" content="第8章  波动率 Volatility 金融机构必须监控其投资组合价值所依赖的市场变量（汇率、股票价格、商品价格等）（exchange rates, equity prices, commodity prices, etc.）的波动率。本章将介绍用于实现这一目标的相关程序。 本章首先解释波动率的定义。接着考察一个常见的假设，即市场变量的百分比收益服从正态分布（normally distribute">
+<meta property="og:description" content="第8章 波动率 Volatility 金融机构必须监控其投资组合价值所依赖的市场变量（汇率、股票价格、商品价格等）（exchange rates, equity prices, commodity prices, etc.）的波动率。本章将介绍用于实现这一目标的相关程序。 本章首先解释波动率的定义。接着考察一个常见的假设，即市场变量的百分比收益服从正态分布（normally distributed">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://hongyitong.github.io/img4/%E3%80%8A%E9%A3%8E%E9%99%A9%E7%AE%A1%E7%90%86%E4%B8%8E%E9%87%91%E8%9E%8D%E6%9C%BA%E6%9E%84%E3%80%8B/lnx%E5%9B%BE1.png">
 <meta property="og:image" content="http://hongyitong.github.io/img4/%E3%80%8A%E9%A3%8E%E9%99%A9%E7%AE%A1%E7%90%86%E4%B8%8E%E9%87%91%E8%9E%8D%E6%9C%BA%E6%9E%84%E3%80%8B/lnx%E5%9B%BE2.png">
@@ -182,7 +182,11 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC8%E7%AB%A0-%E6%B3%A2%E5%8A%A8%E7%8E%87"><span class="nav-text">第8章  波动率</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#8-1-%E6%B3%A2%E5%8A%A8%E7%8E%87%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="nav-text">8.1 波动率的定义</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#8-1-1-%E6%96%B9%E5%B7%AE%E7%8E%87"><span class="nav-text">8.1.1 方差率</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#8-1-2-%E5%B7%A5%E4%BD%9C%E6%97%A5%E4%B8%8E%E6%97%A5%E5%8E%86%E6%97%A5"><span class="nav-text">8.1.2 工作日与日历日</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-2-%E9%9A%90%E5%90%AB%E6%B3%A2%E5%8A%A8%E7%8E%87"><span class="nav-text">8.2 隐含波动率</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#8-2-1-VIX-%E6%8C%87%E6%95%B0"><span class="nav-text">8.2.1 VIX 指数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%95%86%E4%B8%9A%E5%BF%AB%E7%85%A7-8-1"><span class="nav-text">商业快照 8.1</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-3-%E9%87%91%E8%9E%8D%E5%8F%98%E9%87%8F%E7%9A%84%E6%97%A5%E7%99%BE%E5%88%86%E6%AF%94%E5%8F%98%E5%8C%96%E6%9C%8D%E4%BB%8E%E6%AD%A3%E6%80%81%E5%88%86%E5%B8%83%E5%90%97%EF%BC%9F"><span class="nav-text">8.3 金融变量的日百分比变化服从正态分布吗？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%95%86%E4%B8%9A%E5%BF%AB%E7%85%A7-8-2-%E9%80%9A%E8%BF%87%E5%A4%96%E6%B1%87%E6%9C%9F%E6%9D%83%E8%B5%9A%E9%92%B1"><span class="nav-text">商业快照 8.2  通过外汇期权赚钱</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-4-%E5%B9%82%E5%BE%8B"><span class="nav-text">8.4 幂律</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B9%82%E5%BE%8B%EF%BC%88%E6%AF%94%E5%A6%82-P-x-x-2-5-%EF%BC%89"><span class="nav-text">幂律（比如 $P(x) &#x3D; x^{-2.5}$）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8C%87%E6%95%B0%E8%A1%B0%E5%87%8F%EF%BC%88%E6%AF%94%E5%A6%82-P-x-e-0-5x-%EF%BC%89"><span class="nav-text">指数衰减（比如 $P(x) &#x3D; e^{-0.5x}$）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-5-%E7%9B%91%E6%8E%A7%E6%97%A5%E6%B3%A2%E5%8A%A8%E7%8E%87"><span class="nav-text">8.5 监控日波动率</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#8-5-1-%E5%8A%A0%E6%9D%83%E6%96%B9%E6%A1%88"><span class="nav-text">8.5.1 加权方案</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-6-%E6%8C%87%E6%95%B0%E5%8A%A0%E6%9D%83%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%9D%87%E6%A8%A1%E5%9E%8B%EF%BC%88EWMA%EF%BC%89"><span class="nav-text">8.6 指数加权移动平均模型（EWMA）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-7-GARCH-1-1-%E6%A8%A1%E5%9E%8B"><span class="nav-text">8.7 GARCH(1,1) 模型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#8-7-1-%E6%9D%83%E9%87%8D"><span class="nav-text">8.7.1 权重</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-8-%E6%A8%A1%E5%9E%8B%E9%80%89%E6%8B%A9"><span class="nav-text">8.8 模型选择</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-9-%E6%9C%80%E5%A4%A7%E4%BC%BC%E7%84%B6%E6%B3%95"><span class="nav-text">8.9 最大似然法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#8-9-1-%E4%BC%B0%E8%AE%A1%E4%B8%80%E4%B8%AA%E5%B8%B8%E6%95%B0%E6%96%B9%E5%B7%AE"><span class="nav-text">8.9.1 估计一个常数方差</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#8-9-2-%E4%BC%B0%E8%AE%A1EWMA%E6%88%96GARCH-1-1-%E6%A8%A1%E5%9E%8B"><span class="nav-text">8.9.2 估计EWMA或GARCH(1,1)模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#8-9-3-%E6%A8%A1%E5%9E%8B%E6%95%88%E6%9E%9C%E5%A6%82%E4%BD%95%EF%BC%9F"><span class="nav-text">8.9.3 模型效果如何？</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-10-%E4%BD%BF%E7%94%A8-GARCH-1-1-%E6%A8%A1%E5%9E%8B%E9%A2%84%E6%B5%8B%E6%9C%AA%E6%9D%A5%E6%B3%A2%E5%8A%A8%E7%8E%87"><span class="nav-text">8.10 使用 GARCH(1,1) 模型预测未来波动率</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#8-10-1-%E6%B3%A2%E5%8A%A8%E7%8E%87%E6%9C%9F%E9%99%90%E7%BB%93%E6%9E%84"><span class="nav-text">8.10.1 波动率期限结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#8-10-2-%E6%B3%A2%E5%8A%A8%E7%8E%87%E5%8F%98%E5%8A%A8%E7%9A%84%E5%BD%B1%E5%93%8D"><span class="nav-text">8.10.2 波动率变动的影响</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%83%E4%B9%A0%E9%A2%98%E4%B8%8E%E9%97%AE%E9%A2%98"><span class="nav-text">练习题与问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%9B%E9%98%B6%E9%97%AE%E9%A2%98"><span class="nav-text">进阶问题</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC8%E7%AB%A0-%E6%B3%A2%E5%8A%A8%E7%8E%87"><span class="nav-text">第8章 波动率</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B3%A2%E5%8A%A8%E7%8E%87%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="nav-text">8.1 波动率的定义</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%96%B9%E5%B7%AE%E7%8E%87"><span class="nav-text">8.1.1 方差率</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B7%A5%E4%BD%9C%E6%97%A5%E4%B8%8E%E6%97%A5%E5%8E%86%E6%97%A5"><span class="nav-text">8.1.2 工作日与日历日</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9A%90%E5%90%AB%E6%B3%A2%E5%8A%A8%E7%8E%87"><span class="nav-text">8.2 隐含波动率</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#vix-%E6%8C%87%E6%95%B0"><span class="nav-text">8.2.1 VIX 指数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%95%86%E4%B8%9A%E5%BF%AB%E7%85%A7-8.1"><span class="nav-text">商业快照 8.1</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%91%E8%9E%8D%E5%8F%98%E9%87%8F%E7%9A%84%E6%97%A5%E7%99%BE%E5%88%86%E6%AF%94%E5%8F%98%E5%8C%96%E6%9C%8D%E4%BB%8E%E6%AD%A3%E6%80%81%E5%88%86%E5%B8%83%E5%90%97"><span class="nav-text">8.3
+金融变量的日百分比变化服从正态分布吗？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%95%86%E4%B8%9A%E5%BF%AB%E7%85%A7-8.2-%E9%80%9A%E8%BF%87%E5%A4%96%E6%B1%87%E6%9C%9F%E6%9D%83%E8%B5%9A%E9%92%B1"><span class="nav-text">商业快照 8.2
+通过外汇期权赚钱</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B9%82%E5%BE%8B"><span class="nav-text">8.4 幂律</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B9%82%E5%BE%8B%E6%AF%94%E5%A6%82-px-x-2.5"><span class="nav-text">幂律（比如 \(P(x) &#x3D;
+x^{-2.5}\)）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8C%87%E6%95%B0%E8%A1%B0%E5%87%8F%E6%AF%94%E5%A6%82-px-e-0.5x"><span class="nav-text">指数衰减（比如 \(P(x) &#x3D; e^{-0.5x}\)）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%91%E6%8E%A7%E6%97%A5%E6%B3%A2%E5%8A%A8%E7%8E%87"><span class="nav-text">8.5 监控日波动率</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8A%A0%E6%9D%83%E6%96%B9%E6%A1%88"><span class="nav-text">8.5.1 加权方案</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%87%E6%95%B0%E5%8A%A0%E6%9D%83%E7%A7%BB%E5%8A%A8%E5%B9%B3%E5%9D%87%E6%A8%A1%E5%9E%8Bewma"><span class="nav-text">8.6 指数加权移动平均模型（EWMA）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#garch11-%E6%A8%A1%E5%9E%8B"><span class="nav-text">8.7 GARCH(1,1) 模型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9D%83%E9%87%8D"><span class="nav-text">8.7.1 权重</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E9%80%89%E6%8B%A9"><span class="nav-text">8.8 模型选择</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%80%E5%A4%A7%E4%BC%BC%E7%84%B6%E6%B3%95"><span class="nav-text">8.9 最大似然法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BC%B0%E8%AE%A1%E4%B8%80%E4%B8%AA%E5%B8%B8%E6%95%B0%E6%96%B9%E5%B7%AE"><span class="nav-text">8.9.1 估计一个常数方差</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BC%B0%E8%AE%A1ewma%E6%88%96garch11%E6%A8%A1%E5%9E%8B"><span class="nav-text">8.9.2 估计EWMA或GARCH(1,1)模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E6%95%88%E6%9E%9C%E5%A6%82%E4%BD%95"><span class="nav-text">8.9.3 模型效果如何？</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-garch11-%E6%A8%A1%E5%9E%8B%E9%A2%84%E6%B5%8B%E6%9C%AA%E6%9D%A5%E6%B3%A2%E5%8A%A8%E7%8E%87"><span class="nav-text">8.10 使用 GARCH(1,1)
+模型预测未来波动率</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B3%A2%E5%8A%A8%E7%8E%87%E6%9C%9F%E9%99%90%E7%BB%93%E6%9E%84"><span class="nav-text">8.10.1 波动率期限结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B3%A2%E5%8A%A8%E7%8E%87%E5%8F%98%E5%8A%A8%E7%9A%84%E5%BD%B1%E5%93%8D"><span class="nav-text">8.10.2 波动率变动的影响</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%83%E4%B9%A0%E9%A2%98%E4%B8%8E%E9%97%AE%E9%A2%98"><span class="nav-text">练习题与问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%9B%E9%98%B6%E9%97%AE%E9%A2%98"><span class="nav-text">进阶问题</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -283,116 +287,156 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h2 id="第8章-波动率">第8章  波动率</h2>
+    <div class="post-body" itemprop="articleBody"><h2 id="第8章-波动率">第8章 波动率</h2>
 <p>Volatility</p>
-<p>金融机构必须监控其投资组合价值所依赖的市场变量（汇率、股票价格、商品价格等）（exchange rates, equity prices, commodity prices, etc.）的波动率。本章将介绍用于实现这一目标的相关程序。</p>
-<p>本章首先解释波动率的定义。接着考察一个常见的假设，即市场变量的百分比收益服从正态分布（normally distributed），并将幂律（power law）作为一种替代方法加以介绍。之后，章节转向探讨一些名称颇具威慑力的模型，例如指数加权移动平均（EWMA）、自回归条件异方差（ARCH）、广义自回归条件异方差（GARCH）。这些模型的显著特点是认识到波动率并不是恒定的。在某些时期，波动率相对较低；而在其他时期，波动率则相对较高。这些模型试图随着时间的推移跟踪波动率的变化。</p>
-<span id="more"></span>  
-<h3 id="8-1-波动率的定义">8.1 波动率的定义</h3>
+<p>金融机构必须监控其投资组合价值所依赖的市场变量（汇率、股票价格、商品价格等）（exchange
+rates, equity prices, commodity prices,
+etc.）的波动率。本章将介绍用于实现这一目标的相关程序。</p>
+<p>本章首先解释波动率的定义。接着考察一个常见的假设，即市场变量的百分比收益服从正态分布（normally
+distributed），并将幂律（power
+law）作为一种替代方法加以介绍。之后，章节转向探讨一些名称颇具威慑力的模型，例如指数加权移动平均（EWMA）、自回归条件异方差（ARCH）、广义自回归条件异方差（GARCH）。这些模型的显著特点是认识到波动率并不是恒定的。在某些时期，波动率相对较低；而在其他时期，波动率则相对较高。这些模型试图随着时间的推移跟踪波动率的变化。</p>
+<span id="more"></span>
+<h3 id="波动率的定义">8.1 波动率的定义</h3>
 <p>Definition of Volatility</p>
 <blockquote>
 <p>个人注：</p>
 <p>这段涉及很多的概念和定义，建议看英文原版！</p>
 </blockquote>
-<p><strong>一个变量的波动率（记作 σ）被定义为：当收益以连续复利方式表达时，该变量单位时间内收益的标准差。</strong>（关于复利频率的讨论，见附录 A。）</p>
-<p>Avariable’s volatility, σ, is defined as the standard deviation of the return provided by the variable per unit of time when the return is expressed using continuous compounding.</p>
+<p><strong>一个变量的波动率（记作
+σ）被定义为：当收益以连续复利方式表达时，该变量单位时间内收益的标准差。</strong>（关于复利频率的讨论，见附录
+A。）</p>
+<p>Avariable’s volatility, σ, is defined as the standard deviation of
+the return provided by the variable per unit of time when the return is
+expressed using continuous compounding.</p>
 <p>(See Appendix A for a discussion of compounding frequencies.)</p>
-<p>在期权定价中使用波动率时，单位时间通常是一年，因此波动率是年化连续复利收益的标准差。而在风险管理中使用波动率时，单位时间通常是一天，因此波动率是日度连续复利收益（The continuously compounded return）（<strong>对数收益率？？</strong>）的标准差。</p>
-<p>设 $ S_i $ 为变量在第 $ i $ 天结束时的数值。该变量在第 $ i $ 天的日连续复利收益为：</p>
-<p>The continuously compounded return per day for the variable on day i is:<br>
-$$<br>
-\ln\left(\frac{S_i}{S_{i-1}}\right)<br>
-$$</p>
+<p>在期权定价中使用波动率时，单位时间通常是一年，因此波动率是年化连续复利收益的标准差。而在风险管理中使用波动率时，单位时间通常是一天，因此波动率是日度连续复利收益（The
+continuously compounded
+return）（<strong>对数收益率？？</strong>）的标准差。</p>
+<p>设 $ S_i $ 为变量在第 $ i $ 天结束时的数值。该变量在第 $ i $
+天的日连续复利收益为：</p>
+<p>The continuously compounded return per day for the variable on day i
+is: <span class="math display">\[
+\ln\left(\frac{S_i}{S_{i-1}}\right)
+\]</span></p>
 <p>由于时间间隔非常短，这几乎等同于：</p>
-<p>$$<br>
-\frac{S_i - S_{i-1}}{S_{i-1}}<br>
-$$</p>
-<p><strong>因此，变量日波动率的另一种定义是：该变量每日相对变动（即比例变动（proportional change））的标准差。这是风险管理中通常采用的波动率定义。</strong></p>
+<p><span class="math display">\[
+\frac{S_i - S_{i-1}}{S_{i-1}}
+\]</span></p>
+<p><strong>因此，变量日波动率的另一种定义是：该变量每日相对变动（即比例变动（proportional
+change））的标准差。这是风险管理中通常采用的波动率定义。</strong></p>
 <blockquote>
 <p>个人注：</p>
-<p><strong>连续复利（日）收益率（log return）</strong> 是金融中广泛使用的收益度量，因为它具有许多数学上的优良性质（如时间可加性）。</p>
-<p><strong>简单收益率（simple return）</strong> （<strong>算术收益率？？</strong>）</p>
+<p><strong>连续复利（日）收益率（log return）</strong>
+是金融中广泛使用的收益度量，因为它具有许多数学上的优良性质（如时间可加性）。</p>
+<p><strong>简单收益率（simple return）</strong>
+（<strong>算术收益率？？</strong>）</p>
 <p>以上为什么几乎等同？</p>
 <p>从数学角度，<strong>对数函数的泰勒展开</strong>解释了这个近似关系：</p>
-<p>对于靠近 1 的 $x$，我们有：</p>
-<p>$$<br>
-\ln(1 + x) \approx x<br>
-$$<br>
-令：</p>
-<p>$$<br>
-x = \frac{S_i - S_{i-1}}{S_{i-1}} \Rightarrow \frac{S_i}{S_{i-1}} = 1 + x<br>
-$$<br>
-则：<br>
-$$<br>
-\ln\left(\frac{S_i}{S_{i-1}}\right) = \ln(1 + x) \approx x = \frac{S_i - S_{i-1}}{S_{i-1}}<br>
-$$<br>
-这个近似成立的条件是：</p>
+<p>对于靠近 1 的 <span class="math inline">\(x\)</span>，我们有：</p>
+<p><span class="math display">\[
+\ln(1 + x) \approx x
+\]</span> 令：</p>
+<p><span class="math display">\[
+x = \frac{S_i - S_{i-1}}{S_{i-1}} \Rightarrow \frac{S_i}{S_{i-1}} = 1 +
+x
+\]</span> 则： <span class="math display">\[
+\ln\left(\frac{S_i}{S_{i-1}}\right) = \ln(1 + x) \approx x = \frac{S_i -
+S_{i-1}}{S_{i-1}}
+\]</span> 这个近似成立的条件是：</p>
 <ul>
 <li>时间间隔很短（例如“日”）</li>
 <li>价格波动小（百分之几以内）</li>
 </ul>
-<p>所以在<strong>高频金融数据分析</strong>中，很多时候可以把 log return 和 simple return 互换使用而误差很小。</p>
+<p>所以在<strong>高频金融数据分析</strong>中，很多时候可以把 log return
+和 simple return 互换使用而误差很小。</p>
 <ul>
-<li>
-<p><strong>log return 更适用于数学建模、时间聚合（可加性）</strong></p>
-</li>
-<li>
-<p><strong>simple return 更直观，适合日常理解</strong></p>
-</li>
-<li>
-<p><strong>二者在高频、短期、变动小的场景下基本等价</strong></p>
-</li>
+<li><p><strong>log return
+更适用于数学建模、时间聚合（可加性）</strong></p></li>
+<li><p><strong>simple return 更直观，适合日常理解</strong></p></li>
+<li><p><strong>二者在高频、短期、变动小的场景下基本等价</strong></p></li>
 </ul>
-<img src="/img4/《风险管理与金融机构》/lnx图1.png" alt="lnx图1" style="zoom:36%;" />
-<p>这张图展示了函数 $\ln(1 + x)$（橙色实线）和它的线性近似 $x$（灰色虚线）在 $x$ 接近 0 附近的比较关系：</p>
+<p><img src="/img4/《风险管理与金融机构》/lnx图1.png" alt="lnx图1" style="zoom:36%;" /></p>
+<p>这张图展示了函数 <span class="math inline">\(\ln(1 +
+x)\)</span>（橙色实线）和它的线性近似 <span
+class="math inline">\(x\)</span>（灰色虚线）在 <span
+class="math inline">\(x\)</span> 接近 0 附近的比较关系：</p>
 <ul>
-<li>当 $x$ 很小时，两条曲线几乎重合，说明 $\ln(1 + x) \approx x$ 是一个非常好的近似；</li>
-<li>当 $x$ 增大时，两者开始出现偏离；</li>
-<li>在 $x &lt; -1$ 区域，$\ln(1 + x)$ 无定义（所以图像从 $x = -0.9$ 开始）。</li>
+<li>当 <span class="math inline">\(x\)</span>
+很小时，两条曲线几乎重合，说明 <span class="math inline">\(\ln(1 + x)
+\approx x\)</span> 是一个非常好的近似；</li>
+<li>当 <span class="math inline">\(x\)</span>
+增大时，两者开始出现偏离；</li>
+<li>在 <span class="math inline">\(x &lt; -1\)</span> 区域，<span
+class="math inline">\(\ln(1 + x)\)</span> 无定义（所以图像从 <span
+class="math inline">\(x = -0.9\)</span> 开始）。</li>
 </ul>
 <p>这正是连续复利收益与简单收益在短期近似相等的数学基础。</p>
-<img src="/img4/《风险管理与金融机构》/lnx图2.png" alt="lnx图2" style="zoom:36%;" />
+<p><img src="/img4/《风险管理与金融机构》/lnx图2.png" alt="lnx图2" style="zoom:36%;" /></p>
 </blockquote>
-<p><strong>例子 8.1</strong><br>
-假设某项资产的价格为 60 美元，其日波动率为 2%。这意味着，该资产价格在一天内发生一个标准差的变动为：<br>
-$$<br>
-60 \times 0.02 = 1.20 \text{ 美元}<br>
-$$</p>
-<p>如果我们假设资产价格的变动服从正态分布，那么我们有 95% 的把握认为，该资产在一天结束时的价格将在：</p>
-<p>$$<br>
-60 - 1.96 \times 1.20 = 57.65 \text{ 美元}<br>
-$$<br>
-和<br>
-$$<br>
-60 + 1.96 \times 1.20 = 62.35 \text{ 美元}<br>
-$$</p>
-<p>之间。（这就是所谓的双尾检验(two-tailed test)，即上下尾部分别具有 2.5% 的概率。）</p>
-<p><u>如果我们假设每日的连续复利收益率是相互独立且具有相同方差的，那么在 $ T $ 天内的连续复利收益率的方差就是单日收益率方差的 $ T $ 倍。这意味着，在 $ T $ 天内收益率的标准差是单日收益率标准差的 $ \sqrt{T} $ 倍。</u></p>
+<p><strong>例子 8.1</strong><br />
+假设某项资产的价格为 60 美元，其日波动率为
+2%。这意味着，该资产价格在一天内发生一个标准差的变动为： <span
+class="math display">\[
+60 \times 0.02 = 1.20 \text{ 美元}
+\]</span></p>
+<p>如果我们假设资产价格的变动服从正态分布，那么我们有 95%
+的把握认为，该资产在一天结束时的价格将在：</p>
+<p><span class="math display">\[
+60 - 1.96 \times 1.20 = 57.65 \text{ 美元}
+\]</span> 和<br />
+<span class="math display">\[
+60 + 1.96 \times 1.20 = 62.35 \text{ 美元}
+\]</span></p>
+<p>之间。（这就是所谓的双尾检验(two-tailed test)，即上下尾部分别具有
+2.5% 的概率。）</p>
+<p><u>如果我们假设每日的连续复利收益率是相互独立且具有相同方差的，那么在
+$ T $ 天内的连续复利收益率的方差就是单日收益率方差的 $ T $
+倍。这意味着，在 $ T $ 天内收益率的标准差是单日收益率标准差的 $ $
+倍。</u></p>
 <p><strong>这与那句俗语“一段时间内的不确定性随时间的平方根增加”是一致的。</strong></p>
-<p><strong>例 8.2</strong><br>
-如例 8.1 所示，假设某资产价格为 60 美元，日波动率为 2%。则五天内连续复利收益率的标准差为：<br>
-$$<br>
-\sqrt{5} \times 2% = 4.47%<br>
-$$</p>
+<p><strong>例 8.2</strong><br />
+如例 8.1 所示，假设某资产价格为 60 美元，日波动率为
+2%。则五天内连续复利收益率的标准差为： <span class="math display">\[
+\sqrt{5} \times 2\% = 4.47\%
+\]</span></p>
 <p>由于五天是一个较短的时间段，因此可以将其视为与五天内的比例变动的标准差相同。一个标准差的变动为：</p>
-<p>$$<br>
-60 \times 0.0447 = 2.68<br>
-$$</p>
-<p>如果我们假设资产价格的变动服从正态分布，那么我们可以 95% 确信五天后资产价格将在：</p>
-<p>$$<br>
-60 - 1.96 \times 2.68 = 54.74 \quad \text{和} \quad 60 + 1.96 \times 2.68 = 65.26<br>
-$$</p>
+<p><span class="math display">\[
+60 \times 0.0447 = 2.68
+\]</span></p>
+<p>如果我们假设资产价格的变动服从正态分布，那么我们可以 95%
+确信五天后资产价格将在：</p>
+<p><span class="math display">\[
+60 - 1.96 \times 2.68 = 54.74 \quad \text{和} \quad 60 + 1.96 \times
+2.68 = 65.26
+\]</span></p>
 <p>之间。</p>
-<h4 id="8-1-1-方差率">8.1.1 方差率</h4>
+<h4 id="方差率">8.1.1 方差率</h4>
 <p>Variance Rate</p>
-<p>风险管理人员通常更关注<strong>方差率</strong>（variance rate）**<u>（个人注：中文版10.1.1译作方差，而不是方差率，但在图10.6（中文版）又译为方差率）</u>**而不是波动率。<strong>日方差率</strong>是指某一天收益的方差。如前所述，随着时间$T$ 的增加，收益的标准差按 $\sqrt{T}$ 增加，而收益的方差则按 $T$ 线性增长。</p>
+<p>风险管理人员通常更关注<strong>方差率</strong>（variance
+rate）<strong><u>（个人注：中文版10.1.1译作方差，而不是方差率，但在图10.6（中文版）又译为方差率）</u></strong>而不是波动率。<strong>日方差率</strong>是指某一天收益的方差。如前所述，随着时间<span
+class="math inline">\(T\)</span> 的增加，收益的标准差按 <span
+class="math inline">\(\sqrt{T}\)</span> 增加，而收益的方差则按 <span
+class="math inline">\(T\)</span> 线性增长。</p>
 <p>如果我们想要十分严谨地表达，可以说：<strong>“方差率”是以天为单位的，而</strong>“波动率”<strong>是以“天的平方根”为单位的。</strong></p>
-<p>Risk managers often focus on the variance rate rather than the volatility. The variance rate per day is the variance of the return in one day. As already indicated, the standard deviation of the return in time T increases with the square root of T, the variance of this return increases linearly with T. If we wanted to be pedantic, we could say that it is correct to talk about the variance rate per day, but volatility is per square root of day.</p>
+<p>Risk managers often focus on the variance rate rather than the
+volatility. The variance rate per day is the variance of the return in
+one day. As already indicated, the standard deviation of the return in
+time T increases with the square root of T, the variance of this return
+increases linearly with T. If we wanted to be pedantic, we could say
+that it is correct to talk about the variance rate per day, but
+volatility is per square root of day.</p>
 <blockquote>
 <p>个人注：</p>
-<p><strong>系统对比波动率（Volatility）和方差率（Variance Rate）</strong>，并配合具体例子帮助理解。</p>
+<p><strong>系统对比波动率（Volatility）和方差率（Variance
+Rate）</strong>，并配合具体例子帮助理解。</p>
 <p>一、基本定义对比</p>
 <table>
+<colgroup>
+<col style="width: 24%" />
+<col style="width: 19%" />
+<col style="width: 28%" />
+<col style="width: 27%" />
+</colgroup>
 <thead>
 <tr>
 <th>名称</th>
@@ -403,13 +447,15 @@ $$</p>
 </thead>
 <tbody>
 <tr>
-<td><strong>波动率</strong> ($\sigma$)</td>
+<td><strong>波动率</strong> (<span
+class="math inline">\(\sigma\)</span>)</td>
 <td>收益率的<strong>标准差</strong></td>
-<td>每 $\sqrt{\text{单位时间}}$</td>
+<td>每 <span class="math inline">\(\sqrt{\text{单位时间}}\)</span></td>
 <td>描述价格变动的“平均幅度”</td>
 </tr>
 <tr>
-<td><strong>方差率</strong> ($\sigma^2$)</td>
+<td><strong>方差率</strong> (<span
+class="math inline">\(\sigma^2\)</span>)</td>
 <td>收益率的<strong>方差</strong></td>
 <td>每单位时间</td>
 <td>描述价格变动的<strong>离散程度</strong></td>
@@ -417,62 +463,79 @@ $$</p>
 </tbody>
 </table>
 <p>二、数学关系</p>
-<p>在连续复利收益下，若每日收益率服从正态分布 $N(\mu, \sigma^2)$，那么：</p>
+<p>在连续复利收益下，若每日收益率服从正态分布 <span
+class="math inline">\(N(\mu, \sigma^2)\)</span>，那么：</p>
 <ul>
-<li>时间 $T$ 的波动率为：<br>
-$$<br>
-Volatility_T=σ⋅T<br>
-$$</li>
-<li>时间 $T$ 的方差为：<br>
-$$<br>
-Variance_T=σ^2⋅T<br>
-$$<br>
-这意味着：</li>
+<li>时间 <span class="math inline">\(T\)</span> 的波动率为： <span
+class="math display">\[
+Volatility_T=σ⋅T
+\]</span></li>
+<li>时间 <span class="math inline">\(T\)</span> 的方差为： <span
+class="math display">\[
+Variance_T=σ^2⋅T
+\]</span> 这意味着：</li>
 </ul>
 <blockquote>
 <p><strong>波动率随着时间增长按“平方根”增加，而方差是线性增加的。</strong></p>
 </blockquote>
 <p>三、举例说明</p>
 <p>场景：某资产的每日收益波动</p>
-<p>假设某只股票的<strong>每日波动率</strong>为 $2%$，即：</p>
+<p>假设某只股票的<strong>每日波动率</strong>为 <span
+class="math inline">\(2%\)</span>，即：</p>
 <ul>
-<li>$\sigma_{\text{daily}} = 0.02$</li>
-<li>所以 $\sigma^2_{\text{daily}} = 0.0004$</li>
+<li><span class="math inline">\(\sigma_{\text{daily}} =
+0.02\)</span></li>
+<li>所以 <span class="math inline">\(\sigma^2_{\text{daily}} =
+0.0004\)</span></li>
 </ul>
 <p>我们来看看不同时间尺度下的变化：</p>
 <table>
+<colgroup>
+<col style="width: 14%" />
+<col style="width: 31%" />
+<col style="width: 53%" />
+</colgroup>
 <thead>
 <tr>
 <th>时间范围</th>
-<th>方差（$\sigma^2 \cdot T$）</th>
-<th>波动率（$\sigma \cdot \sqrt{T}$）</th>
+<th>方差（<span class="math inline">\(\sigma^2 \cdot T\)</span>）</th>
+<th>波动率（<span class="math inline">\(\sigma \cdot
+\sqrt{T}\)</span>）</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>1 天</td>
-<td>$0.0004$</td>
-<td>$0.02 = 2%$</td>
+<td><span class="math inline">\(0.0004\)</span></td>
+<td><span class="math inline">\(0.02 = 2%\)</span></td>
 </tr>
 <tr>
 <td>5 天（1周）</td>
-<td>$0.0004 \times 5 = 0.002$</td>
-<td>$0.02 \times \sqrt{5} \approx 0.0447 = 4.47%$</td>
+<td><span class="math inline">\(0.0004 \times 5 = 0.002\)</span></td>
+<td><span class="math inline">\(0.02 \times \sqrt{5} \approx 0.0447 =
+4.47%\)</span></td>
 </tr>
 <tr>
 <td>21 天（1月）</td>
-<td>$0.0004 \times 21 = 0.0084$</td>
-<td>$0.02 \times \sqrt{21} \approx 0.0917 = 9.17%$</td>
+<td><span class="math inline">\(0.0004 \times 21 = 0.0084\)</span></td>
+<td><span class="math inline">\(0.02 \times \sqrt{21} \approx 0.0917 =
+9.17%\)</span></td>
 </tr>
 <tr>
 <td>252 天（1年）</td>
-<td>$0.0004 \times 252 = 0.1008$</td>
-<td>$0.02 \times \sqrt{252} \approx 0.3175 = 31.75%$</td>
+<td><span class="math inline">\(0.0004 \times 252 = 0.1008\)</span></td>
+<td><span class="math inline">\(0.02 \times \sqrt{252} \approx 0.3175 =
+31.75%\)</span></td>
 </tr>
 </tbody>
 </table>
 <p>四、总结理解</p>
 <table>
+<colgroup>
+<col style="width: 18%" />
+<col style="width: 37%" />
+<col style="width: 43%" />
+</colgroup>
 <thead>
 <tr>
 <th>对比项</th>
@@ -488,8 +551,8 @@ $$<br>
 </tr>
 <tr>
 <td>单位时间行为</td>
-<td>随 $\sqrt{T}$ 增加</td>
-<td>随 $T$ 线性增加</td>
+<td>随 <span class="math inline">\(\sqrt{T}\)</span> 增加</td>
+<td>随 <span class="math inline">\(T\)</span> 线性增加</td>
 </tr>
 <tr>
 <td>应用</td>
@@ -499,7 +562,7 @@ $$<br>
 <tr>
 <td>举例</td>
 <td>每年波动率：30%</td>
-<td>每年方差率：$(0.3)^2 = 0.09$</td>
+<td>每年方差率：<span class="math inline">\((0.3)^2 = 0.09\)</span></td>
 </tr>
 </tbody>
 </table>
@@ -510,61 +573,99 @@ $$<br>
 <li><strong>VaR（风险价值）和预期损失</strong>计算中，经常基于方差率来推导。</li>
 </ul>
 </blockquote>
-<h4 id="8-1-2-工作日与日历日">8.1.2 工作日与日历日</h4>
+<h4 id="工作日与日历日">8.1.2 工作日与日历日</h4>
 <p>Business Days vs. Calendar Days</p>
-<p>一个需要考虑的问题是：时间应该以日历日还是工作日来计量。如商业快照 8.1 所示，研究发现，在工作日的波动率远高于非工作日。因此，分析师在计算和使用波动率时通常忽略周末和节假日。通常的假设是：一年有 252 个交易日。</p>
+<p>一个需要考虑的问题是：时间应该以日历日还是工作日来计量。如商业快照
+8.1
+所示，研究发现，在工作日的波动率远高于非工作日。因此，分析师在计算和使用波动率时通常忽略周末和节假日。通常的假设是：一年有
+252 个交易日。</p>
 <p>在假设连续几天的收益是相互独立且具有相同标准差的前提下，可以推导出：</p>
-<p>$$<br>
-\sigma_{\text{yr}} = \sigma_{\text{day}} \sqrt{252}<br>
-$$</p>
+<p><span class="math display">\[
+\sigma_{\text{yr}} = \sigma_{\text{day}} \sqrt{252}
+\]</span></p>
 <p>或</p>
-<p>$$<br>
-\sigma_{\text{day}} = \frac{\sigma_{\text{yr}}}{\sqrt{252}}<br>
-$$</p>
+<p><span class="math display">\[
+\sigma_{\text{day}} = \frac{\sigma_{\text{yr}}}{\sqrt{252}}
+\]</span></p>
 <p>这表明：<strong>日波动率大约是年波动率的 6%</strong>。</p>
-<h3 id="8-2-隐含波动率">8.2 隐含波动率</h3>
+<h3 id="隐含波动率">8.2 隐含波动率</h3>
 <p>Implied Volatilities</p>
-<p>虽然风险管理人员通常是通过历史数据来计算波动率，但他们也会密切关注所谓的“隐含波动率”（<em>implied volatilities</em>）。</p>
-<p>在著名的Black–Scholes–Merton 期权定价模型中，有一个参数是无法直接从市场上观测到的：即标的资产价格的波动率（详见附录 E）。</p>
-<p>期权的隐含波动率，就是将市场价格代入期权定价模型后所反推出的波动率数值。换句话说，它是使 Black–Scholes–Merton 模型输出的期权价格等于当前市场价格时所需的波动率。</p>
-<h4 id="8-2-1-VIX-指数">8.2.1 VIX 指数</h4>
+<p>虽然风险管理人员通常是通过历史数据来计算波动率，但他们也会密切关注所谓的“隐含波动率”（<em>implied
+volatilities</em>）。</p>
+<p>在著名的Black–Scholes–Merton
+期权定价模型中，有一个参数是无法直接从市场上观测到的：即标的资产价格的波动率（详见附录
+E）。</p>
+<p>期权的隐含波动率，就是将市场价格代入期权定价模型后所反推出的波动率数值。换句话说，它是使
+Black–Scholes–Merton
+模型输出的期权价格等于当前市场价格时所需的波动率。</p>
+<h4 id="vix-指数">8.2.1 VIX 指数</h4>
 <p>The VIX Index</p>
-<p>CBOE（芝加哥期权交易所）发布了一系列隐含波动率指数。其中最受欢迎的指数是 VIX 指数，它是根据一系列不同执行价格的标的为标普500指数的30天期权（包括认购期权和认沽期权）计算出的隐含波动率指数。VIX 期货交易始于2004年，VIX 期权交易则始于2006年。</p>
+<p>CBOE（芝加哥期权交易所）发布了一系列隐含波动率指数。其中最受欢迎的指数是
+VIX
+指数，它是根据一系列不同执行价格的标的为标普500指数的30天期权（包括认购期权和认沽期权）计算出的隐含波动率指数。VIX
+期货交易始于2004年，VIX 期权交易则始于2006年。</p>
 <p>一项涉及标普500指数期权的交易，既是对该指数未来水平的押注，也是对其未来波动性的押注。而VIX的期货或期权合约则是纯粹对波动性的押注。一个合约的名义本金为该指数的1,000倍。</p>
-<img src="/img4/《风险管理与金融机构》/F8.1.png" alt="F8.1" style="zoom:50%;" />
-<p>图8.1展示了2004年1月2日至2022年2月1日期间的VIX指数走势。<br>
+<p><img src="/img4/《风险管理与金融机构》/F8.1.png" alt="F8.1" style="zoom:50%;" /></p>
+<p>图8.1展示了2004年1月2日至2022年2月1日期间的VIX指数走势。<br />
 在2004年到2007年中期之间，VIX指数通常维持在10到20之间。2007年下半年VIX升至30，在雷曼兄弟倒闭后的2008年10月和11月一度飙升至80。到了2010年初，VIX指数已回归更为正常的水平。但在2020年3月，随着COVID-19疫情的爆发带来巨大不确定性并引发市场大幅下跌，VIX再次剧烈飙升。</p>
-<p><strong>有时市场参与者将 VIX 称为“恐慌指数（fear index）”</strong>。</p>
+<p><strong>有时市场参与者将 VIX 称为“恐慌指数（fear
+index）”</strong>。</p>
 <p><strong>例 8.3</strong></p>
-<p>假设一位交易员在 VIX 的 4 月期货合约价格为 $18.5 时买入该合约（对应 30 天 S&amp;P 500 波动率为 18.5%），并在期货价格上涨至 $19.3 时平仓（对应 S&amp;P 500 波动率为 19.3%）。该交易员获利 $800。</p>
-<h4 id="商业快照-8-1">商业快照 8.1</h4>
+<p>假设一位交易员在 VIX 的 4 月期货合约价格为 $18.5 时买入该合约（对应
+30 天 S&amp;P 500 波动率为 18.5%），并在期货价格上涨至 $19.3
+时平仓（对应 S&amp;P 500 波动率为 19.3%）。该交易员获利 $800。</p>
+<h4 id="商业快照-8.1">商业快照 8.1</h4>
 <p>是什么引起了波动率？</p>
 <p>我们很自然地会认为，股票或其他资产的波动率是由于有新信息进入市场所引起的。这些新信息促使人们重新评估资产的价值，从而导致资产价格发生变化，并产生波动。然而，这种对波动率成因的看法并没有得到研究的支持。</p>
 <p>当研究人员拥有某一资产多年每日的价格数据时，他们可以计算以下两类收益的方差：</p>
-<ol>
-<li>在没有非交易日干扰的情况下，某一交易日收盘至下一交易日收盘之间的资产收益率方差（即常规的一天波动方差）。</li>
+<ol type="1">
+<li>在没有非交易日干扰的情况下，某一交易日收盘至下一交易日收盘之间的资产收益率方差（即常规的一天波动方差）。<br />
+</li>
 <li>从周五收盘到下周一收盘之间的资产收益率方差（即为期三天的波动方差）。</li>
 </ol>
-<p>按照常理，我们或许会期望第二种情况的方差是第一种情况的三倍。然而，Fama（1965）、French（1980）以及 French 和 Roll（1986）发现，并非如此。他们的研究显示，对于所研究的资产，第二种情况的方差仅比第一种分别高出 22%、19% 和 10.7%。</p>
-<p>或许你会认为，这些结果可以通过“在市场开放期间有更多信息进入市场”来解释。但 Roll（1984）的研究并不支持这种解释。他研究了橙汁期货的价格变动。而对于橙汁期货来说，最重要的信息无疑是天气新闻，而这类新闻在任何时间都有可能发生，不受交易时间影响。</p>
-<p>当 Roll 比较橙汁期货的两种方差时，他发现第二种（周五至周一）的方差仅为第一种（一日）的 1.54 倍。</p>
+<p>按照常理，我们或许会期望第二种情况的方差是第一种情况的三倍。然而，Fama（1965）、French（1980）以及
+French 和
+Roll（1986）发现，并非如此。他们的研究显示，对于所研究的资产，第二种情况的方差仅比第一种分别高出
+22%、19% 和 10.7%。</p>
+<p>或许你会认为，这些结果可以通过“在市场开放期间有更多信息进入市场”来解释。但
+Roll（1984）的研究并不支持这种解释。他研究了橙汁期货的价格变动。而对于橙汁期货来说，最重要的信息无疑是天气新闻，而这类新闻在任何时间都有可能发生，不受交易时间影响。</p>
+<p>当 Roll
+比较橙汁期货的两种方差时，他发现第二种（周五至周一）的方差仅为第一种（一日）的
+1.54 倍。</p>
 <p>从以上研究可以得出的合理结论是：<strong>波动率在很大程度上是由交易本身引起的</strong>。（交易员通常对这个结论深以为然！）</p>
-<h3 id="8-3-金融变量的日百分比变化服从正态分布吗？"><strong>8.3 金融变量的日百分比变化服从正态分布吗？</strong></h3>
+<h3 id="金融变量的日百分比变化服从正态分布吗"><strong>8.3
+金融变量的日百分比变化服从正态分布吗？</strong></h3>
 <p>Are Daily Percentage Changes in Financial Variables Normal?</p>
-<p>当根据波动率计算市场变量的变动置信区间(confidence limits)时，常见的假设是该变动服从正态分布。这也是我们在示例 8.1 和 8.2 中所采用的假设。然而，在实际中，大多数金融变量发生大幅变动的可能性远高于正态分布所预期。</p>
-<img src="/img4/《风险管理与金融机构》/T8.1.png" alt="T8.1" style="zoom:67%;" />
-<p>表 8.1 显示了对 2005 年至 2015 年这十年间，10 种不同汇率的日变动进行正态性检验的结果。所选汇率为美元与以下货币之间的汇率：澳元、英镑、加元、丹麦克朗、欧元、日元、墨西哥比索、新西兰元、瑞典克朗和瑞士法郎。</p>
+<p>当根据波动率计算市场变量的变动置信区间(confidence
+limits)时，常见的假设是该变动服从正态分布。这也是我们在示例 8.1 和 8.2
+中所采用的假设。然而，在实际中，大多数金融变量发生大幅变动的可能性远高于正态分布所预期。</p>
+<p><img src="/img4/《风险管理与金融机构》/T8.1.png" alt="T8.1" style="zoom:67%;" /></p>
+<p>表 8.1 显示了对 2005 年至 2015 年这十年间，10
+种不同汇率的日变动进行正态性检验的结果。所选汇率为美元与以下货币之间的汇率：澳元、英镑、加元、丹麦克朗、欧元、日元、墨西哥比索、新西兰元、瑞典克朗和瑞士法郎。</p>
 <p>表格的第一步是计算每种汇率日百分比变化的标准差。接下来，统计实际百分比变化超出一个标准差、两个标准差等的频率，并将这些数字与正态分布下的对应频率进行比较。</p>
-<p>结果显示，日百分比变化超出三个标准差的频率为 1.30%，而正态分布预测这一情况仅应发生在 0.27% 的日子里。日变动超出四个、五个和六个标准差的频率分别为 0.49%、0.24% 和 0.13%，而正态分布预测这些情况几乎不可能发生。</p>
-<p>因此，该表提供了证据支持这样一个事实：<strong>汇率变化的概率分布比正态分布具有更“厚的尾部(<strong>heavier tails</strong>)”</strong>（即极端变动发生的概率更高）。</p>
-<p>**当收益是以连续复利计算时，多日的收益是每一天收益的总和。**如果每天的收益概率分布是相同的非正态分布，统计学中的中心极限定理将导致这样一个结论：多日的收益服从正态分布。然而，事实上，连续几天的收益并不是同分布的。（其中一个原因是波动率并不是恒定的，这将在本章后面讨论。）因此，在较长时期的收益中与单日收益中一样，都会观察到厚尾现象。</p>
+<p>结果显示，日百分比变化超出三个标准差的频率为
+1.30%，而正态分布预测这一情况仅应发生在 0.27%
+的日子里。日变动超出四个、五个和六个标准差的频率分别为 0.49%、0.24% 和
+0.13%，而正态分布预测这些情况几乎不可能发生。</p>
+<p>因此，该表提供了证据支持这样一个事实：<strong>汇率变化的概率分布比正态分布具有更“厚的尾部(</strong>heavier
+tails<strong>)”</strong>（即极端变动发生的概率更高）。</p>
+<p><strong>当收益是以连续复利计算时，多日的收益是每一天收益的总和。</strong>如果每天的收益概率分布是相同的非正态分布，统计学中的中心极限定理将导致这样一个结论：多日的收益服从正态分布。然而，事实上，连续几天的收益并不是同分布的。（其中一个原因是波动率并不是恒定的，这将在本章后面讨论。）因此，在较长时期的收益中与单日收益中一样，都会观察到厚尾现象。</p>
 <blockquote>
 <p>个人注：</p>
 <p>中心极限定理最核心的一句话：独立同分布随机变量的均值呈正态分布。</p>
-<p>独立同分布是林德伯格莱维中心极限定理(Lindeberg–Lévy Central Limit Theorem)，更一般的有李雅普诺夫中心极限定理（<strong>Lyapunov CLT</strong>），并不要求同分布。</p>
-<p>中心极限定理（<strong>Central Limit Theorem, CLT</strong>）有多个版本，适用于不同的随机变量序列。下面是最常见的几个版本的比较，包括它们的<strong>适用条件</strong>、<strong>结论形式</strong>及<strong>区别</strong>。</p>
+<p>独立同分布是林德伯格莱维中心极限定理(Lindeberg–Lévy Central Limit
+Theorem)，更一般的有李雅普诺夫中心极限定理（<strong>Lyapunov
+CLT</strong>），并不要求同分布。</p>
+<p>中心极限定理（<strong>Central Limit Theorem,
+CLT</strong>）有多个版本，适用于不同的随机变量序列。下面是最常见的几个版本的比较，包括它们的<strong>适用条件</strong>、<strong>结论形式</strong>及<strong>区别</strong>。</p>
 <p>常见版本对比一览表</p>
 <table>
+<colgroup>
+<col style="width: 12%" />
+<col style="width: 29%" />
+<col style="width: 29%" />
+<col style="width: 28%" />
+</colgroup>
 <thead>
 <tr>
 <th>版本名称</th>
@@ -576,19 +677,24 @@ $$</p>
 <tbody>
 <tr>
 <td><strong>林德伯格-莱维 CLT</strong></td>
-<td>- 独立同分布（i.i.d.）<br />- 有有限期望 $\mu$ 和方差 $\sigma^2$</td>
-<td>$\displaystyle \frac{\sum X_i - n\mu}{\sigma\sqrt{n}} \to \mathcal{N}(0,1)$</td>
+<td>- 独立同分布（i.i.d.）<br />- 有有限期望 <span
+class="math inline">\(\mu\)</span> 和方差 <span
+class="math inline">\(\sigma^2\)</span></td>
+<td><span class="math inline">\(\displaystyle \frac{\sum X_i -
+n\mu}{\sigma\sqrt{n}} \to \mathcal{N}(0,1)\)</span></td>
 <td>最基本版本，教科书中最常见，适用于简单样本均值问题</td>
 </tr>
 <tr>
 <td><strong>李雅普诺夫 CLT</strong></td>
-<td>- 相互独立，但<strong>不要求同分布</strong><br />- 存在某阶矩（通常是三阶）</td>
+<td>- 相互独立，但<strong>不要求同分布</strong><br />-
+存在某阶矩（通常是三阶）</td>
 <td>同样趋近于标准正态分布</td>
 <td>推广版本，允许变量异分布；要求更强的矩条件</td>
 </tr>
 <tr>
 <td><strong>林德伯格 CLT（广义）</strong></td>
-<td>- 相互独立<br />- 各变量有不同方差<br />- 满足<strong>林德伯格条件</strong></td>
+<td>- 相互独立<br />- 各变量有不同方差<br />-
+满足<strong>林德伯格条件</strong></td>
 <td>同样趋近于标准正态分布</td>
 <td>最一般形式之一，理论研究常用；允许更宽松分布特性</td>
 </tr>
@@ -615,28 +721,35 @@ $$</p>
 <p>示例解释（林德伯格 vs 李雅普诺夫）</p>
 <p>林德伯格-莱维版本：</p>
 <ul>
-<li>所有变量 $X_1, \dots, X_n$ 都是独立且同分布（i.i.d.）</li>
+<li>所有变量 <span class="math inline">\(X_1, \dots, X_n\)</span>
+都是独立且同分布（i.i.d.）</li>
 <li>举例：你反复从同一个分布中抽样，比如掷骰子 100 次</li>
 <li>样本平均值趋近于正态分布</li>
 </ul>
 <p>李雅普诺夫版本：</p>
 <ul>
-<li>
-<p>各 $X_i$ 可以有不同的分布（如不同期望或方差）</p>
-</li>
-<li>
-<p>要求存在某个 $r &gt; 2$，使得满足：</p>
-</li>
+<li><p>各 <span class="math inline">\(X_i\)</span>
+可以有不同的分布（如不同期望或方差）</p></li>
+<li><p>要求存在某个 <span class="math inline">\(r &gt;
+2\)</span>，使得满足：</p></li>
 </ul>
-<p>$$<br>
-\lim_{n \to \infty} \frac{1}{s_n^r} \sum_{i=1}^{n} \mathbb{E}\left[ \left| X_i - \mu_i \right|^r \right] = 0<br>
-$$</p>
-<p>其中 $s_n^2 = \sum \text{Var}(X_i)$</p>
+<p><span class="math display">\[
+\lim_{n \to \infty} \frac{1}{s_n^r} \sum_{i=1}^{n} \mathbb{E}\left[
+\left| X_i - \mu_i \right|^r \right] = 0
+\]</span></p>
+<p>其中 <span class="math inline">\(s_n^2 = \sum
+\text{Var}(X_i)\)</span></p>
 <ul>
 <li>举例：抽样来自多个分布（如不同地区的销售额），只要高阶矩不太大，仍然能近似正态分布</li>
 </ul>
 <p>图示类比（简略）</p>
 <table>
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 23%" />
+<col style="width: 24%" />
+<col style="width: 34%" />
+</colgroup>
 <thead>
 <tr>
 <th></th>
@@ -661,7 +774,7 @@ $$</p>
 <tr>
 <td>高阶矩条件</td>
 <td>不强</td>
-<td>需要存在 $r$ 阶矩</td>
+<td>需要存在 <span class="math inline">\(r\)</span> 阶矩</td>
 <td>使用林德伯格条件代替</td>
 </tr>
 <tr>
@@ -670,14 +783,9 @@ $$</p>
 <td>金融不同产品收益</td>
 <td>理论分析或非对称方差模型</td>
 </tr>
-<tr>
-<td>总结：如何选择使用哪个版本？</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
 </tbody>
 </table>
+<p>总结：如何选择使用哪个版本？</p>
 <table>
 <thead>
 <tr>
@@ -709,54 +817,80 @@ $$</p>
 </tbody>
 </table>
 </blockquote>
-<p>商业快照 8.2 展示了如果你在 1985 年进行过类似于表 8.1 的分析，你本可以如何从中获利！</p>
-<img src="/img4/《风险管理与金融机构》/F8.2.png" alt="F8.2" style="zoom:50%;" />
-<p>图 8.2 将一种典型的厚尾分布（例如汇率的分布）与具有相同均值和标准差的正态分布进行了对比。厚尾分布比正态分布更为尖峰。在图 8.2 中，我们可以将分布划分为三个部分：中间部分、尾部，以及介于中间和尾部之间的过渡部分。当我们从正态分布过渡到厚尾分布时，概率质量从分布的过渡部分转移到了尾部和中间部分。</p>
+<p>商业快照 8.2 展示了如果你在 1985 年进行过类似于表 8.1
+的分析，你本可以如何从中获利！</p>
+<p><img src="/img4/《风险管理与金融机构》/F8.2.png" alt="F8.2" style="zoom:50%;" /></p>
+<p>图 8.2
+将一种典型的厚尾分布（例如汇率的分布）与具有相同均值和标准差的正态分布进行了对比。厚尾分布比正态分布更为尖峰。在图
+8.2
+中，我们可以将分布划分为三个部分：中间部分、尾部，以及介于中间和尾部之间的过渡部分。当我们从正态分布过渡到厚尾分布时，概率质量从分布的过渡部分转移到了尾部和中间部分。</p>
 <p>如果我们在考虑市场变量的百分比变化，<strong>厚尾分布的特点是：变量出现小幅和大幅变动的可能性比在正态分布假设下要高，而中等幅度的变动则更不常见。</strong></p>
-<h4 id="商业快照-8-2-通过外汇期权赚钱"><strong>商业快照 8.2  通过外汇期权赚钱</strong></h4>
-<p>Black、Scholes 和 Merton 在他们的期权定价模型中假设，标的资产在未来某一时点的价格服从对数正态分布。这相当于假设资产价格在较短时间（如一天）内的变动服从正态分布。假设大多数市场参与者都认可 Black–Scholes–Merton 所作的这些假设。你刚刚完成了表 8.1 中的分析，并且知道正态/对数正态的假设对于汇率来说并不合适。那么你应该怎么做呢？</p>
-<p>答案是：你应该购买一系列不同货币的深度虚值看涨期权和看跌期权——然后耐心等待。这些期权相对便宜，而且实际最终成为实值期权的数量将比 Black–Scholes–Merton 模型预测的更多。你获得的收益现值平均而言将远高于期权的成本。</p>
-<p>在 1980 年代中期，有一些交易员了解外汇概率分布的厚尾特性。而当时其他人都认为 Black–Scholes–Merton 模型中的对数正态假设是合理的。那些了解真实分布的少数交易员采用了我们刚刚描述的策略——并赚了很多钱。到了 1980 年代末，大多数交易员都已经意识到了厚尾现象，这种交易机会也随之消失了。</p>
-<h3 id="8-4-幂律"><strong>8.4 幂律</strong></h3>
+<h4 id="商业快照-8.2-通过外汇期权赚钱"><strong>商业快照 8.2
+通过外汇期权赚钱</strong></h4>
+<p>Black、Scholes 和 Merton
+在他们的期权定价模型中假设，标的资产在未来某一时点的价格服从对数正态分布。这相当于假设资产价格在较短时间（如一天）内的变动服从正态分布。假设大多数市场参与者都认可
+Black–Scholes–Merton 所作的这些假设。你刚刚完成了表 8.1
+中的分析，并且知道正态/对数正态的假设对于汇率来说并不合适。那么你应该怎么做呢？</p>
+<p>答案是：你应该购买一系列不同货币的深度虚值看涨期权和看跌期权——然后耐心等待。这些期权相对便宜，而且实际最终成为实值期权的数量将比
+Black–Scholes–Merton
+模型预测的更多。你获得的收益现值平均而言将远高于期权的成本。</p>
+<p>在 1980
+年代中期，有一些交易员了解外汇概率分布的厚尾特性。而当时其他人都认为
+Black–Scholes–Merton
+模型中的对数正态假设是合理的。那些了解真实分布的少数交易员采用了我们刚刚描述的策略——并赚了很多钱。到了
+1980
+年代末，大多数交易员都已经意识到了厚尾现象，这种交易机会也随之消失了。</p>
+<h3 id="幂律"><strong>8.4 幂律</strong></h3>
 <p>power law</p>
-<p>幂律（power law）提供了一种不同于正态分布的替代假设。该法则认为，对于实际中遇到的许多变量，以下关系在 $x$ 较大时近似成立：</p>
-<p>$$<br>
-\text{Prob}(v &gt; x) = Kx^{-\alpha} \tag{8.1}<br>
-$$</p>
-<p>其中 $K$ 和 $\alpha$ 是常数。</p>
-<p>人们发现，该等式对多种变量 $v$ 都近似成立，例如个人收入、城市规模，以及某网站一天内的访问次数等。</p>
+<p>幂律（power
+law）提供了一种不同于正态分布的替代假设。该法则认为，对于实际中遇到的许多变量，以下关系在
+<span class="math inline">\(x\)</span> 较大时近似成立：</p>
+<p><span class="math display">\[
+\text{Prob}(v &gt; x) = Kx^{-\alpha} \tag{8.1}
+\]</span></p>
+<p>其中 <span class="math inline">\(K\)</span> 和 <span
+class="math inline">\(\alpha\)</span> 是常数。</p>
+<p>人们发现，该等式对多种变量 <span class="math inline">\(v\)</span>
+都近似成立，例如个人收入、城市规模，以及某网站一天内的访问次数等。</p>
 <blockquote>
 <p>个人注：</p>
-<p>“<strong>Power law（幂律分布）</strong>”是描述一种现象：<strong>少数个体拥有大量资源，而多数个体拥有很少资源</strong>(28原则)，在数学上表现为：</p>
-<p>$$<br>
-P(x) \propto x^{-\alpha}<br>
-$$</p>
-<p>其中 $P(x)$ 表示值为 $x$ 的概率或频率，$\alpha$ 是一个正的常数，通常 $\alpha &gt; 1$。</p>
+<p>“<strong>Power
+law（幂律分布）</strong>”是描述一种现象：<strong>少数个体拥有大量资源，而多数个体拥有很少资源</strong>(28原则)，在数学上表现为：</p>
+<p><span class="math display">\[
+P(x) \propto x^{-\alpha}
+\]</span></p>
+<p>其中 <span class="math inline">\(P(x)\)</span> 表示值为 <span
+class="math inline">\(x\)</span> 的概率或频率，<span
+class="math inline">\(\alpha\)</span> 是一个正的常数，通常 <span
+class="math inline">\(\alpha &gt; 1\)</span>。</p>
 <p><strong>直观意义</strong></p>
-<ol>
-<li><strong>长尾现象（Long Tail）</strong><br>
+<ol type="1">
+<li><strong>长尾现象（Long Tail）</strong>
 幂律意味着：<strong>小概率的大事件仍然很常见</strong>。虽然大事件的概率小，但由于其“尾巴”下降缓慢，它们并不罕见。
 <ul>
 <li>比如：地震、网络攻击、股市崩盘——虽然个别事件发生概率低，但它们的影响巨大，不能忽视。</li>
-</ul>
-</li>
-<li><strong>“强者恒强”：头部效应（Rich-get-richer）</strong><br>
+</ul></li>
+<li><strong>“强者恒强”：头部效应（Rich-get-richer）</strong>
 大的个体会越来越大，小的个体难以追上。
 <ul>
 <li>例如：财富分布、城市人口、企业规模、互联网点击量。</li>
 <li>少数网站（如 Google、Facebook）占据大部分流量。</li>
-</ul>
-</li>
-<li><strong>没有“典型值”</strong><br>
+</ul></li>
+<li><strong>没有“典型值”</strong>
 幂律分布没有清晰的平均值或标准差，意味着“平均”无法很好地代表总体特征。
 <ul>
 <li>平均财富并不能说明大多数人的经济状况。</li>
-<li>“一个人有十亿，九个人各一百元”的平均是 1 亿，却不能代表“普通人”。</li>
-</ul>
-</li>
+<li>“一个人有十亿，九个人各一百元”的平均是 1
+亿，却不能代表“普通人”。</li>
+</ul></li>
 </ol>
 <p>举几个直观例子</p>
 <table>
+<colgroup>
+<col style="width: 22%" />
+<col style="width: 41%" />
+<col style="width: 36%" />
+</colgroup>
 <thead>
 <tr>
 <th>现象</th>
@@ -792,9 +926,14 @@ $$</p>
 </tr>
 </tbody>
 </table>
-<hr>
+<hr />
 <p>和正态分布的区别（对比更直观）</p>
 <table>
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 24%" />
+<col style="width: 64%" />
+</colgroup>
 <thead>
 <tr>
 <th>特性</th>
@@ -830,13 +969,16 @@ $$</p>
 </tr>
 </tbody>
 </table>
-<hr>
+<hr />
 <p><strong>应用实例：网站访问量的幂律分布</strong></p>
 <p>背景</p>
-<p>在整个互联网中，网站的<strong>访问量</strong>极度不均匀。我们可以按照访问量对网站进行排名（1 表示访问量最高的网站，如 Google，2 是 YouTube，依此类推）。</p>
+<p>在整个互联网中，网站的<strong>访问量</strong>极度不均匀。我们可以按照访问量对网站进行排名（1
+表示访问量最高的网站，如 Google，2 是 YouTube，依此类推）。</p>
 <p>实际现象</p>
-<p>如果我们画出图像（横轴是网站的排名 Rank，纵轴是访问量），你会发现：</p>
-<p>$\text{访问量} \propto \frac{1}{\text{排名}^\alpha}$</p>
+<p>如果我们画出图像（横轴是网站的排名
+Rank，纵轴是访问量），你会发现：</p>
+<p><span class="math inline">\(\text{访问量} \propto
+\frac{1}{\text{排名}^\alpha}\)</span></p>
 <p>即满足幂律分布（也称 Zipf 定律的一种变形）。</p>
 <p>举例说明</p>
 <ul>
@@ -850,34 +992,38 @@ $$</p>
 <li>如果你把「网站排名」和「访问量」都取对数，在对数坐标图中，<strong>点会呈一条直线</strong>。</li>
 <li>这是幂律的典型特征：在 log-log 坐标系中是直线。</li>
 </ul>
-<hr>
+<hr />
 <p>幂律的实际应用（基于这个现象）</p>
-<ol>
+<ol type="1">
 <li><strong>内容分发优化</strong>
 <ul>
 <li>CDN（内容分发网络）会优先缓存访问量前几百个网站的数据，因为后面的网站访问量太小，不值得缓存。</li>
-</ul>
-</li>
+</ul></li>
 <li><strong>搜索引擎排序设计</strong>
 <ul>
-<li>搜索引擎需要知道哪些网站更“重要”——使用 PageRank 等算法结合幂律思想来分配权重。</li>
-</ul>
-</li>
+<li>搜索引擎需要知道哪些网站更“重要”——使用 PageRank
+等算法结合幂律思想来分配权重。</li>
+</ul></li>
 <li><strong>商业策略与广告投放</strong>
 <ul>
 <li>广告公司会优先在头部网站投放广告，因为这些地方的流量远远高于“长尾”网站。</li>
-</ul>
-</li>
+</ul></li>
 <li><strong>服务器资源分配</strong>
 <ul>
-<li>大网站需要分布式系统来承载大量流量，而小网站可能只需要一个 VPS。</li>
-</ul>
-</li>
+<li>大网站需要分布式系统来承载大量流量，而小网站可能只需要一个
+VPS。</li>
+</ul></li>
 </ol>
-<p>幂律衰减（Power-law decay）和指数衰减（Exponential decay）是完全不同的两种衰减方式，它们的差异在数学形式、衰减速度、图像特征以及现实含义上都非常显著。</p>
-<hr>
+<p>幂律衰减（Power-law decay）和指数衰减（Exponential
+decay）是完全不同的两种衰减方式，它们的差异在数学形式、衰减速度、图像特征以及现实含义上都非常显著。</p>
+<hr />
 <p>数学表达形式</p>
-<table>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 19%" />
+<col style="width: 46%" />
+<col style="width: 34%" />
+</colgroup>
 <thead>
 <tr>
 <th>分布类型</th>
@@ -888,19 +1034,25 @@ $$</p>
 <tbody>
 <tr>
 <td><strong>幂律衰减</strong></td>
-<td>$P(x) \propto x^{-\alpha}$</td>
+<td><span class="math inline">\(P(x) \propto x^{-\alpha}\)</span></td>
 <td>在 log-log 图上为直线</td>
 </tr>
 <tr>
 <td><strong>指数衰减</strong></td>
-<td>$P(x) \propto e^{-\lambda x}$</td>
+<td><span class="math inline">\(P(x) \propto e^{-\lambda
+x}\)</span></td>
 <td>在 semi-log 图上为直线</td>
 </tr>
 </tbody>
 </table>
-<hr>
+<hr />
 <p>直观区别</p>
 <table>
+<colgroup>
+<col style="width: 18%" />
+<col style="width: 40%" />
+<col style="width: 40%" />
+</colgroup>
 <thead>
 <tr>
 <th>特性</th>
@@ -931,23 +1083,27 @@ $$</p>
 </tr>
 </tbody>
 </table>
-<hr>
+<hr />
 <p>举个例子对比</p>
-<p>假设我们分析一个变量 $x$，代表某种“事件大小”或“资源量”：</p>
-<h4 id="幂律（比如-P-x-x-2-5-）">幂律（比如 $P(x) = x^{-2.5}$）</h4>
+<p>假设我们分析一个变量 <span
+class="math inline">\(x\)</span>，代表某种“事件大小”或“资源量”：</p>
+<h4 id="幂律比如-px-x-2.5">幂律（比如 <span class="math inline">\(P(x) =
+x^{-2.5}\)</span>）</h4>
 <ul>
-<li>$x = 1$ → 频率：1</li>
-<li>$x = 10$ → 频率：约 0.003</li>
-<li>$x = 100$ → 频率：约 0.000003</li>
+<li><span class="math inline">\(x = 1\)</span> → 频率：1</li>
+<li><span class="math inline">\(x = 10\)</span> → 频率：约 0.003</li>
+<li><span class="math inline">\(x = 100\)</span> → 频率：约
+0.000003</li>
 </ul>
 <blockquote>
 <p><strong>你可以看到它虽然在变小，但变得很慢，“大事件”仍然可能出现。</strong></p>
 </blockquote>
-<h4 id="指数衰减（比如-P-x-e-0-5x-）">指数衰减（比如 $P(x) = e^{-0.5x}$）</h4>
+<h4 id="指数衰减比如-px-e-0.5x">指数衰减（比如 <span
+class="math inline">\(P(x) = e^{-0.5x}\)</span>）</h4>
 <ul>
-<li>$x = 1$ → 频率：0.61</li>
-<li>$x = 10$ → 频率：0.0067</li>
-<li>$x = 100$ → 频率：接近 0</li>
+<li><span class="math inline">\(x = 1\)</span> → 频率：0.61</li>
+<li><span class="math inline">\(x = 10\)</span> → 频率：0.0067</li>
+<li><span class="math inline">\(x = 100\)</span> → 频率：接近 0</li>
 </ul>
 <blockquote>
 <p><strong>在指数衰减中，远离平均值的情况几乎不可能发生。</strong></p>
@@ -984,522 +1140,822 @@ $$</p>
 </tr>
 </tbody>
 </table>
-<hr>
+<hr />
 </blockquote>
 <p><strong>例 8.4</strong></p>
-<p>假设根据经验我们知道，对于某个特定的金融变量，$\alpha = 3$，并且观察到 $v &gt; 10$ 的概率为 0.05。根据公式 (8.1)：</p>
-<p>$$<br>
-0.05 = K \times 10^{-3}<br>
-$$</p>
+<p>假设根据经验我们知道，对于某个特定的金融变量，<span
+class="math inline">\(\alpha = 3\)</span>，并且观察到 <span
+class="math inline">\(v &gt; 10\)</span> 的概率为 0.05。根据公式
+(8.1)：</p>
+<p><span class="math display">\[
+0.05 = K \times 10^{-3}
+\]</span></p>
 <p>由此可得：</p>
-<p>$$<br>
-K = 50<br>
-$$</p>
-<p>那么，$v &gt; 20$ 的概率可以计算为：</p>
-<p>$$<br>
-50 \times 20^{-3} = 0.00625<br>
-$$</p>
-<p>而 $v &gt; 30$ 的概率为：</p>
-<p>$$<br>
-50 \times 30^{-3} = 0.0019<br>
-$$</p>
+<p><span class="math display">\[
+K = 50
+\]</span></p>
+<p>那么，<span class="math inline">\(v &gt; 20\)</span>
+的概率可以计算为：</p>
+<p><span class="math display">\[
+50 \times 20^{-3} = 0.00625
+\]</span></p>
+<p>而 <span class="math inline">\(v &gt; 30\)</span> 的概率为：</p>
+<p><span class="math display">\[
+50 \times 30^{-3} = 0.0019
+\]</span></p>
 <p>以此类推。</p>
 <p>公式 (8.1) 意味着：</p>
-<p>$$<br>
-\ln \text{[Prob}(v &gt; x)] = \ln K - \alpha \ln x<br>
-$$</p>
-<p>因此，我们可以通过绘制 $\ln\text{[Prob}(v &gt; x)]$ 对 $\ln(x)$ 的图像来快速检验该公式是否成立。</p>
-<p>为了对表 8.1 中的数据进行这种检验，我们将 $v$ 定义为汇率在一天内变动的标准差倍数。</p>
-<img src="/img4/《风险管理与金融机构》/T8.2.png" alt="T8.2" style="zoom:67%;" />
-<img src="/img4/《风险管理与金融机构》/F8.3.png" alt="F8.3" style="zoom:67%;" />
-<p>表 8.2 中计算了 $\ln(x)$ 和 $\ln\text{[Prob}(v &gt; x)]$ 的值，并将这些数据绘制在图 8.3 中。该图显示，当 $x \geq 2$ 时，汇率变动超过 $x$ 个标准差的概率的对数与 $\ln(x)$ 之间近<strong>似呈线性关系。这表明幂律在这些数据上是适用的</strong>。</p>
-<p>使用 $x = 3, 4, 5$ 和 $6$ 的数据进行回归分析，得出最优拟合关系为：</p>
-<p>$$<br>
-\ln \text{[Prob}(v &gt; x)] = -0.735 - 3.291\ln(x)<br>
-$$</p>
-<p>由此可以估计出参数 $K$ 和 $\alpha$：</p>
-<p>$$<br>
-K = e^{-0.735} = 0.479,\quad \alpha = 3.291<br>
-$$</p>
+<p><span class="math display">\[
+\ln \text{[Prob}(v &gt; x)] = \ln K - \alpha \ln x
+\]</span></p>
+<p>因此，我们可以通过绘制 <span class="math inline">\(\ln\text{[Prob}(v
+&gt; x)]\)</span> 对 <span class="math inline">\(\ln(x)\)</span>
+的图像来快速检验该公式是否成立。</p>
+<p>为了对表 8.1 中的数据进行这种检验，我们将 <span
+class="math inline">\(v\)</span>
+定义为汇率在一天内变动的标准差倍数。</p>
+<p><img src="/img4/《风险管理与金融机构》/T8.2.png" alt="T8.2" style="zoom:67%;" /></p>
+<p><img src="/img4/《风险管理与金融机构》/F8.3.png" alt="F8.3" style="zoom:67%;" /></p>
+<p>表 8.2 中计算了 <span class="math inline">\(\ln(x)\)</span> 和 <span
+class="math inline">\(\ln\text{[Prob}(v &gt; x)]\)</span>
+的值，并将这些数据绘制在图 8.3 中。该图显示，当 <span
+class="math inline">\(x \geq 2\)</span> 时，汇率变动超过 <span
+class="math inline">\(x\)</span> 个标准差的概率的对数与 <span
+class="math inline">\(\ln(x)\)</span>
+之间近<strong>似呈线性关系。这表明幂律在这些数据上是适用的</strong>。</p>
+<p>使用 <span class="math inline">\(x = 3, 4, 5\)</span> 和 <span
+class="math inline">\(6\)</span>
+的数据进行回归分析，得出最优拟合关系为：</p>
+<p><span class="math display">\[
+\ln \text{[Prob}(v &gt; x)] = -0.735 - 3.291\ln(x)
+\]</span></p>
+<p>由此可以估计出参数 <span class="math inline">\(K\)</span> 和 <span
+class="math inline">\(\alpha\)</span>：</p>
+<p><span class="math display">\[
+K = e^{-0.735} = 0.479,\quad \alpha = 3.291
+\]</span></p>
 <p>因此，变动超过 4.5 个标准差的概率估计为：</p>
-<p>$$<br>
-0.479 \times 4.5^{-3.291} = 0.00340<br>
-$$</p>
+<p><span class="math display">\[
+0.479 \times 4.5^{-3.291} = 0.00340
+\]</span></p>
 <p>变动超过 7 个标准差的概率估计为：</p>
-<p>$$<br>
-0.479 \times 7^{-3.291} = 0.000794<br>
-$$</p>
-<p>我们将在第 12 章中更正式地探讨幂律，并介绍用于估计这些参数的更优方法（即极值理论（extreme value theory））。</p>
-<h3 id="8-5-监控日波动率">8.5 监控日波动率</h3>
+<p><span class="math display">\[
+0.479 \times 7^{-3.291} = 0.000794
+\]</span></p>
+<p>我们将在第 12
+章中更正式地探讨幂律，并介绍用于估计这些参数的更优方法（即极值理论（extreme
+value theory））。</p>
+<h3 id="监控日波动率">8.5 监控日波动率</h3>
 <p>Monitoring Daily Volatility</p>
-<p>设定 $\sigma_n$ 为某一市场变量在第 $n$ 天的日波动率，其估计值在第 $n-1$ 天结束时得出。方差率（如前所述，是波动率的平方）记作 $\sigma_n^2$。假设市场变量在第 $i$ 天结束时的取值为 $S_i$，则定义第 $i$ 天（从第 $i-1$ 天结束到第 $i$ 天结束）之间的连续复利收益率（continuously compounded return）为：</p>
-<p>$$<br>
-u_i = \ln \frac{S_i}{S_{i-1}}<br>
-$$</p>
-<p>估计 $\sigma_n$ 的一种方法是将其设为 $u_i$ 的标准差。若采用最近 $m$ 个 $u_i$ 的观测值，并使用标准的标准差计算公式，则该方法给出：</p>
-<p>$$<br>
-\sigma_n^2 = \frac{1}{m - 1} \sum_{i=1}^{m} (u_{n - i} - \bar{u})^2 \tag{8.2}<br>
-$$</p>
-<p>其中，$\bar{u}$ 是这些 $u_i$ 的均值：</p>
-<p>$$<br>
-\bar{u} = \frac{1}{m} \sum_{i=1}^{m} u_{n - i}<br>
-$$</p>
-<img src="/img4/《风险管理与金融机构》/T8.3.png" alt="T8.3" style="zoom:67%;" />
+<p>设定 <span class="math inline">\(\sigma_n\)</span> 为某一市场变量在第
+<span class="math inline">\(n\)</span> 天的日波动率，其估计值在第 <span
+class="math inline">\(n-1\)</span>
+天结束时得出。方差率（如前所述，是波动率的平方）记作 <span
+class="math inline">\(\sigma_n^2\)</span>。假设市场变量在第 <span
+class="math inline">\(i\)</span> 天结束时的取值为 <span
+class="math inline">\(S_i\)</span>，则定义第 <span
+class="math inline">\(i\)</span> 天（从第 <span
+class="math inline">\(i-1\)</span> 天结束到第 <span
+class="math inline">\(i\)</span>
+天结束）之间的连续复利收益率（continuously compounded return）为：</p>
+<p><span class="math display">\[
+u_i = \ln \frac{S_i}{S_{i-1}}
+\]</span></p>
+<p>估计 <span class="math inline">\(\sigma_n\)</span>
+的一种方法是将其设为 <span class="math inline">\(u_i\)</span>
+的标准差。若采用最近 <span class="math inline">\(m\)</span> 个 <span
+class="math inline">\(u_i\)</span>
+的观测值，并使用标准的标准差计算公式，则该方法给出：</p>
+<p><span class="math display">\[
+\sigma_n^2 = \frac{1}{m - 1} \sum_{i=1}^{m} (u_{n - i} - \bar{u})^2
+\tag{8.2}
+\]</span></p>
+<p>其中，<span class="math inline">\(\bar{u}\)</span> 是这些 <span
+class="math inline">\(u_i\)</span> 的均值：</p>
+<p><span class="math display">\[
+\bar{u} = \frac{1}{m} \sum_{i=1}^{m} u_{n - i}
+\]</span></p>
+<p><img src="/img4/《风险管理与金融机构》/T8.3.png" alt="T8.3" style="zoom:67%;" /></p>
 <p><strong>例 8.5</strong></p>
-<p>表 8.3 展示了一组可能的股票价格序列。假设我们希望使用 20 个 $ u_i $ 的观测值来估计第 21 天的波动率，即 $ n = 21 $，$ m = 20 $。在这种情况下，样本均值 $ \bar{u} = 0.00074 $，使用公式 (8.2) 计算得到的日收益率的标准差估计为 <strong>1.49%</strong>。</p>
-<p>这意味着，在第 21 天开盘之前，我们估计该股票当天的日波动率为 1.49%。</p>
+<p>表 8.3 展示了一组可能的股票价格序列。假设我们希望使用 20 个 $ u_i $
+的观测值来估计第 21 天的波动率，即 $ n = 21 <span
+class="math inline">\(，\)</span> m = 20 $。在这种情况下，样本均值 $ {u}
+= 0.00074 $，使用公式 (8.2) 计算得到的日收益率的标准差估计为
+<strong>1.49%</strong>。</p>
+<p>这意味着，在第 21 天开盘之前，我们估计该股票当天的日波动率为
+1.49%。</p>
 <blockquote>
 <p>个人注：</p>
 <p>预测波动率而不是单纯预测股票的价格。</p>
 </blockquote>
 <p>出于风险管理的目的，公式（8.2）通常会做如下几种修改：</p>
-<ol>
-<li>如第 8.1 节所述，$u_i$ 被定义为市场变量在第 $i−1$ 天结束与第$i$ 天结束之间的百分比变化，因此：</li>
+<ol type="1">
+<li>如第 8.1 节所述，<span class="math inline">\(u_i\)</span>
+被定义为市场变量在第 <span class="math inline">\(i−1\)</span>
+天结束与第<span class="math inline">\(i\)</span>
+天结束之间的百分比变化，因此：</li>
 </ol>
-<p>$$<br>
-u_i = \frac{S_i - S_{i-1}}{S_{i-1}} \tag{8.3}<br>
-$$</p>
-<p>这一改动对计算出的 $u_i$ 值几乎没有影响。</p>
-<ol start="2">
-<li>
-<p>假设 $ u = 0 $。这样做的理由是，与变量变动的标准差相比，变量在一天内的预期变动非常小。[^3]</p>
-</li>
-<li>
-<p><strong>将 $m−1$ 替换为 $m$。这使我们从对波动率的无偏估计转向最大似然估计(an unbiased estimate of the volatility to</strong></p>
-<p><strong>a maximum likelihood estimate)</strong>，如第 8.9 节所解释的。</p>
-</li>
+<p><span class="math display">\[
+u_i = \frac{S_i - S_{i-1}}{S_{i-1}} \tag{8.3}
+\]</span></p>
+<p>这一改动对计算出的 <span class="math inline">\(u_i\)</span>
+值几乎没有影响。</p>
+<ol start="2" type="1">
+<li><p>假设 $ u = 0
+$。这样做的理由是，与变量变动的标准差相比，变量在一天内的预期变动非常小。[^3]</p></li>
+<li><p><strong>将 <span class="math inline">\(m−1\)</span> 替换为 <span
+class="math inline">\(m\)</span>。这使我们从对波动率的无偏估计转向最大似然估计(an
+unbiased estimate of the volatility to</strong></p>
+<p><strong>a maximum likelihood estimate)</strong>，如第 8.9
+节所解释的。</p></li>
 </ol>
 <p>以上三项改动使得方差率的公式可以简化为：</p>
-<p>$$<br>
-\sigma_n^2 = \frac{1}{m} \sum_{i=1}^{m} u_{n-i}^2 \tag{8.4}<br>
-$$</p>
-<p>其中 $u_i$ 由公式（8.3）给出。</p>
-<p><strong>例 8.6</strong><br>
-再次考虑例 8.5。当 $ n = 21 $，且 $ m = 20 $ 时，<br>
-$$<br>
-\sum_{i=1}^{m} u_{n-i}^2 = 0.00424<br>
-$$</p>
+<p><span class="math display">\[
+\sigma_n^2 = \frac{1}{m} \sum_{i=1}^{m} u_{n-i}^2 \tag{8.4}
+\]</span></p>
+<p>其中 <span class="math inline">\(u_i\)</span> 由公式（8.3）给出。</p>
+<p><strong>例 8.6</strong><br />
+再次考虑例 8.5。当 $ n = 21 $，且 $ m = 20 $ 时， <span
+class="math display">\[
+\sum_{i=1}^{m} u_{n-i}^2 = 0.00424
+\]</span></p>
 <p>因此，利用公式（8.4）可以得到：</p>
-<p>$$<br>
-\sigma_n^2 = \frac{0.00424}{20} = 0.000214<br>
-$$</p>
+<p><span class="math display">\[
+\sigma_n^2 = \frac{0.00424}{20} = 0.000214
+\]</span></p>
 <p>于是：</p>
-<p>$$<br>
-\sigma_n = \sqrt{0.000214} = 0.014618 \text{ 或 } 1.46%<br>
-$$</p>
+<p><span class="math display">\[
+\sigma_n = \sqrt{0.000214} = 0.014618 \text{ 或 } 1.46\%
+\]</span></p>
 <p>这个结果与例 8.5 中得到的结果非常接近。</p>
-<h4 id="8-5-1-加权方案">8.5.1 加权方案</h4>
+<h4 id="加权方案">8.5.1 加权方案</h4>
 <p>Weighting Schemes</p>
-<p>公式（8.4）对 $u_{n-1}^2, u_{n-2}^2, \ldots, u_{n-m}^2$ 中的每一项赋予了相等的权重。而我们的目标是估计第 $n$ 天的波动率 $\sigma_n$，因此更合理的做法是对近期的数据给予更大的权重。一个实现这一目标的模型是：</p>
-<p>$$<br>
-\sigma_n^2 = \sum_{i=1}^{m} \alpha_i u_{n-i}^2 \tag{8.5}<br>
-$$</p>
-<p>其中，$\alpha_i$ 是对 $i$ 天前观测值所赋的权重。这些 $\alpha$ 值都是正数。如果选择使得当 $i &gt; j$ 时 $\alpha_i &lt; \alpha_j$，那么越旧的观测值所占的权重就越小。所有权重之和必须为 1，即：</p>
-<p>$$<br>
-\sum_{i=1}^{m} \alpha_i = 1<br>
-$$</p>
-<p>对公式（8.5）的一种扩展是引入一个<strong>长期平均方差率（long-run average variance rate）</strong>，并赋予它一定的权重。这就得到了下列模型形式：</p>
-<p>$$<br>
-\sigma_n^2 = \gamma V_L + \sum_{i=1}^{m} \alpha_i u_{n-i}^2 \tag{8.6}<br>
-$$</p>
-<p>其中，$V_L$ 是长期方差率，$\gamma$ 是分配给 $V_L$ 的权重。由于所有权重之和必须为 1，因此有：</p>
-<p>$$<br>
-\gamma + \sum_{i=1}^{m} \alpha_i = 1<br>
-$$</p>
-<p>这被称为 ARCH(m) 模型（自回归条件异方差模型），最初由 Engle 提出。该模型基于一个长期平均方差率和最近 $m$ 个观测值进行方差估计，而且越久远的观测值权重越小。若定义 $\omega = \gamma V_L$，则公式（8.6）可以写成：</p>
-<p>$$<br>
-\sigma_n^2 = \omega + \sum_{i=1}^{m} \alpha_i u_{n-i}^2 \tag{8.7}<br>
-$$</p>
+<p>公式（8.4）对 <span class="math inline">\(u_{n-1}^2, u_{n-2}^2,
+\ldots, u_{n-m}^2\)</span>
+中的每一项赋予了相等的权重。而我们的目标是估计第 <span
+class="math inline">\(n\)</span> 天的波动率 <span
+class="math inline">\(\sigma_n\)</span>，因此更合理的做法是对近期的数据给予更大的权重。一个实现这一目标的模型是：</p>
+<p><span class="math display">\[
+\sigma_n^2 = \sum_{i=1}^{m} \alpha_i u_{n-i}^2 \tag{8.5}
+\]</span></p>
+<p>其中，<span class="math inline">\(\alpha_i\)</span> 是对 <span
+class="math inline">\(i\)</span> 天前观测值所赋的权重。这些 <span
+class="math inline">\(\alpha\)</span> 值都是正数。如果选择使得当 <span
+class="math inline">\(i &gt; j\)</span> 时 <span
+class="math inline">\(\alpha_i &lt;
+\alpha_j\)</span>，那么越旧的观测值所占的权重就越小。所有权重之和必须为
+1，即：</p>
+<p><span class="math display">\[
+\sum_{i=1}^{m} \alpha_i = 1
+\]</span></p>
+<p>对公式（8.5）的一种扩展是引入一个<strong>长期平均方差率（long-run
+average variance
+rate）</strong>，并赋予它一定的权重。这就得到了下列模型形式：</p>
+<p><span class="math display">\[
+\sigma_n^2 = \gamma V_L + \sum_{i=1}^{m} \alpha_i u_{n-i}^2 \tag{8.6}
+\]</span></p>
+<p>其中，<span class="math inline">\(V_L\)</span> 是长期方差率，<span
+class="math inline">\(\gamma\)</span> 是分配给 <span
+class="math inline">\(V_L\)</span> 的权重。由于所有权重之和必须为
+1，因此有：</p>
+<p><span class="math display">\[
+\gamma + \sum_{i=1}^{m} \alpha_i = 1
+\]</span></p>
+<p>这被称为 ARCH(m) 模型（自回归条件异方差模型），最初由 Engle
+提出。该模型基于一个长期平均方差率和最近 <span
+class="math inline">\(m\)</span>
+个观测值进行方差估计，而且越久远的观测值权重越小。若定义 <span
+class="math inline">\(\omega = \gamma
+V_L\)</span>，则公式（8.6）可以写成：</p>
+<p><span class="math display">\[
+\sigma_n^2 = \omega + \sum_{i=1}^{m} \alpha_i u_{n-i}^2 \tag{8.7}
+\]</span></p>
 <p>在接下来的两个小节中，我们将讨论两种基于公式（8.5）和（8.6）思想的重要波动率监控方法。</p>
-<h3 id="8-6-指数加权移动平均模型（EWMA）">8.6 指数加权移动平均模型（EWMA）</h3>
+<h3 id="指数加权移动平均模型ewma">8.6 指数加权移动平均模型（EWMA）</h3>
 <p>The Exponentially Weighted Moving Average Model</p>
-<p>指数加权移动平均（EWMA, <em>Exponentially Weighted Moving Average</em>）模型是公式（8.5）的一种特殊情形，其中权重 $\alpha_i$ 随着时间的推移按指数规律递减。具体而言：</p>
-<p>$$<br>
-\alpha_{i+1} = \lambda \alpha_i<br>
-$$</p>
-<p>其中 $\lambda$ 是介于 0 和 1 之间的常数。</p>
-<p>这种加权方案可以导出一个非常简洁的<strong>波动率更新公式(updating volatility estimates)</strong>：</p>
-<p>$$<br>
-\sigma_n^2 = \lambda \sigma_{n-1}^2 + (1 - \lambda) u_{n-1}^2 \tag{8.8}<br>
-$$</p>
-<p>即对第 $n$ 天的波动率估计 $\sigma_n$（在第 $n-1$ 天结束时做出）由两部分组成：</p>
+<p>指数加权移动平均（EWMA, <em>Exponentially Weighted Moving
+Average</em>）模型是公式（8.5）的一种特殊情形，其中权重 <span
+class="math inline">\(\alpha_i\)</span>
+随着时间的推移按指数规律递减。具体而言：</p>
+<p><span class="math display">\[
+\alpha_{i+1} = \lambda \alpha_i
+\]</span></p>
+<p>其中 <span class="math inline">\(\lambda\)</span> 是介于 0 和 1
+之间的常数。</p>
+<p>这种加权方案可以导出一个非常简洁的<strong>波动率更新公式(updating
+volatility estimates)</strong>：</p>
+<p><span class="math display">\[
+\sigma_n^2 = \lambda \sigma_{n-1}^2 + (1 - \lambda) u_{n-1}^2 \tag{8.8}
+\]</span></p>
+<p>即对第 <span class="math inline">\(n\)</span> 天的波动率估计 <span
+class="math inline">\(\sigma_n\)</span>（在第 <span
+class="math inline">\(n-1\)</span> 天结束时做出）由两部分组成：</p>
 <ul>
-<li>$\sigma_{n-1}^2$：对第 $n-1$ 天波动率的估计；</li>
-<li>$u_{n-1}^2$：最近一个交易日的平方收益率。</li>
+<li><span class="math inline">\(\sigma_{n-1}^2\)</span>：对第 <span
+class="math inline">\(n-1\)</span> 天波动率的估计；</li>
+<li><span
+class="math inline">\(u_{n-1}^2\)</span>：最近一个交易日的平方收益率。</li>
 </ul>
-<p>为了理解为什么公式（8.8）对应的是指数衰减的权重，可以对 $\sigma_{n-1}^2$ 代入其表达式：</p>
-<p>$$<br>
-\sigma_n^2 = \lambda[\lambda \sigma_{n-2}^2 + (1 - \lambda) u_{n-2}^2] + (1 - \lambda) u_{n-1}^2<br>
-$$</p>
+<p>为了理解为什么公式（8.8）对应的是指数衰减的权重，可以对 <span
+class="math inline">\(\sigma_{n-1}^2\)</span> 代入其表达式：</p>
+<p><span class="math display">\[
+\sigma_n^2 = \lambda[\lambda \sigma_{n-2}^2 + (1 - \lambda) u_{n-2}^2] +
+(1 - \lambda) u_{n-1}^2
+\]</span></p>
 <p>即：</p>
-<p>$$<br>
-\sigma_n^2 = (1 - \lambda)(u_{n-1}^2 + \lambda u_{n-2}^2) + \lambda^2 \sigma_{n-2}^2<br>
-$$</p>
-<p>继续代入 $\sigma_{n-2}^2$ 的表达式，得到：</p>
-<p>$$<br>
-\sigma_n^2 = (1 - \lambda)(u_{n-1}^2 + \lambda u_{n-2}^2 + \lambda^2 u_{n-3}^2) + \lambda^3 \sigma_{n-3}^2<br>
-$$</p>
+<p><span class="math display">\[
+\sigma_n^2 = (1 - \lambda)(u_{n-1}^2 + \lambda u_{n-2}^2) + \lambda^2
+\sigma_{n-2}^2
+\]</span></p>
+<p>继续代入 <span class="math inline">\(\sigma_{n-2}^2\)</span>
+的表达式，得到：</p>
+<p><span class="math display">\[
+\sigma_n^2 = (1 - \lambda)(u_{n-1}^2 + \lambda u_{n-2}^2 + \lambda^2
+u_{n-3}^2) + \lambda^3 \sigma_{n-3}^2
+\]</span></p>
 <p>以此类推，最终得到：</p>
-<p>$$<br>
-\sigma_n^2 = (1 - \lambda) \sum_{i=1}^{m} \lambda^{i - 1} u_{n - i}^2 + \lambda^m \sigma_{n - m}^2<br>
-$$</p>
-<p>对于足够大的 $m$，$\lambda^m \sigma_{n - m}^2$ 项可以忽略。因此公式（8.8）等价于公式（8.5），其中：</p>
-<p>$$<br>
-\alpha_i = (1 - \lambda) \lambda^{i - 1}<br>
-$$</p>
-<p>这说明在 EWMA 模型中，对过去的观测值赋予的权重按 $\lambda$ 的倍数递减。每个权重是前一个权重的 $\lambda$ 倍。</p>
+<p><span class="math display">\[
+\sigma_n^2 = (1 - \lambda) \sum_{i=1}^{m} \lambda^{i - 1} u_{n - i}^2 +
+\lambda^m \sigma_{n - m}^2
+\]</span></p>
+<p>对于足够大的 <span class="math inline">\(m\)</span>，<span
+class="math inline">\(\lambda^m \sigma_{n - m}^2\)</span>
+项可以忽略。因此公式（8.8）等价于公式（8.5），其中：</p>
+<p><span class="math display">\[
+\alpha_i = (1 - \lambda) \lambda^{i - 1}
+\]</span></p>
+<p>这说明在 EWMA 模型中，对过去的观测值赋予的权重按 <span
+class="math inline">\(\lambda\)</span>
+的倍数递减。每个权重是前一个权重的 <span
+class="math inline">\(\lambda\)</span> 倍。</p>
 <p><strong>例子 8.7</strong></p>
-<p>假设 λ = 0.90，某市场变量在第 $n-1$ 天的波动率估计为每日 1%。在第 $n-1$ 天，该市场变量上涨了 2%。这意味着：</p>
+<p>假设 λ = 0.90，某市场变量在第 <span
+class="math inline">\(n-1\)</span> 天的波动率估计为每日 1%。在第 <span
+class="math inline">\(n-1\)</span> 天，该市场变量上涨了
+2%。这意味着：</p>
 <ul>
-<li>$\sigma_{n-1}^2 = 0.01^2 = 0.0001$</li>
-<li>$u_{n-1}^2 = 0.02^2 = 0.0004$</li>
+<li><span class="math inline">\(\sigma_{n-1}^2 = 0.01^2 =
+0.0001\)</span></li>
+<li><span class="math inline">\(u_{n-1}^2 = 0.02^2 =
+0.0004\)</span></li>
 </ul>
 <p>根据公式（8.8）：</p>
-<p>$$<br>
-\sigma_n^2 = 0.9 \times 0.0001 + 0.1 \times 0.0004 = 0.00013<br>
-$$</p>
-<p>因此，第 $n$ 天的波动率估计值为：</p>
-<p>$$<br>
-\sigma_n = \sqrt{0.00013} \approx 1.14% \text{ 每日}<br>
-$$</p>
-<p>请注意，$u_{n-1}^2$ 的期望值是 $\sigma_{n-1}^2$，即 0.0001。<strong>在本例中，$u_{n-1}^2$ 的实际值大于其期望值，因此我们的波动率估计上升。如果 $u_{n-1}^2$ 的实际值小于其期望值，那么我们的波动率估计将下降。</strong></p>
+<p><span class="math display">\[
+\sigma_n^2 = 0.9 \times 0.0001 + 0.1 \times 0.0004 = 0.00013
+\]</span></p>
+<p>因此，第 <span class="math inline">\(n\)</span>
+天的波动率估计值为：</p>
+<p><span class="math display">\[
+\sigma_n = \sqrt{0.00013} \approx 1.14\% \text{ 每日}
+\]</span></p>
+<p>请注意，<span class="math inline">\(u_{n-1}^2\)</span> 的期望值是
+<span class="math inline">\(\sigma_{n-1}^2\)</span>，即
+0.0001。<strong>在本例中，<span class="math inline">\(u_{n-1}^2\)</span>
+的实际值大于其期望值，因此我们的波动率估计上升。如果 <span
+class="math inline">\(u_{n-1}^2\)</span>
+的实际值小于其期望值，那么我们的波动率估计将下降。</strong></p>
 <blockquote>
-<p>个人注：怎么理解这句话：为什么能做这个假设？ 见公式8.4的推导过程。</p>
+<p>个人注：怎么理解这句话：为什么能做这个假设？
+见公式8.4的推导过程。</p>
 <p><strong>收益平方的期望值等于波动率的平方</strong>，即是我们对市场平稳情况下的波动率估计。</p>
-<img src="/img4/《风险管理与金融机构》/方差性质3.png" alt="方差性质3" style="zoom:50%;" />
+<p><img src="/img4/《风险管理与金融机构》/方差性质3.png" alt="方差性质3" style="zoom:50%;" /></p>
 <p>E(x)假设为0！</p>
 </blockquote>
-<p>EWMA 方法具有一个吸引人的特点，即其对数据存储的要求较低。在任意时点，我们只需记住当前的方差率估计值和最新的市场变量观测值。当我们获得市场变量的新观测值时，可以计算出一个新的每日百分比变动，并利用公式（8.8）来更新方差率估计值。此时，旧的方差率估计值和旧的市场变量数值就可以被丢弃。</p>
-<p><strong>EWMA 方法的设计目的是追踪波动率的变化</strong>。<u>假设在第 $n-1$ 天市场变量发生了大幅变动，使得 $u_{n-1}^2$ 变得很大。根据公式（8.8），这会使我们对当前波动率的估计值上升。参数 $\lambda$ 的取值决定了日波动率估计对最新每日百分比变动的响应程度。</u></p>
-<p>如果 $\lambda$ 较小，说明在计算 $\sigma_n$ 时对 $u_{n-1}^2$ 赋予了较大的权重。在这种情况下，连续几天估算出的波动率本身就会高度波动。相反，较大的 $\lambda$ 值（即接近 1.0 的值）会使日波动率的估计对每日变动信息的响应较慢。</p>
-<p>由摩根大通（JPMorgan）在 1994 年最初创建并公开发布的 RiskMetrics 数据库使用了 EWMA 模型，并选取 $\lambda = 0.94$ 来更新每日波动率估计。该公司发现，在多种市场变量中，这一 $\lambda$ 值所生成的方差率预测最接近实际实现的方差率。RiskMetrics 现在已从摩根大通独立出来，并转向使用更复杂的模型。</p>
-<h3 id="8-7-GARCH-1-1-模型">8.7 GARCH(1,1) 模型</h3>
+<p>EWMA
+方法具有一个吸引人的特点，即其对数据存储的要求较低。在任意时点，我们只需记住当前的方差率估计值和最新的市场变量观测值。当我们获得市场变量的新观测值时，可以计算出一个新的每日百分比变动，并利用公式（8.8）来更新方差率估计值。此时，旧的方差率估计值和旧的市场变量数值就可以被丢弃。</p>
+<p><strong>EWMA 方法的设计目的是追踪波动率的变化</strong>。<u>假设在第
+<span class="math inline">\(n-1\)</span> 天市场变量发生了大幅变动，使得
+<span class="math inline">\(u_{n-1}^2\)</span>
+变得很大。根据公式（8.8），这会使我们对当前波动率的估计值上升。参数
+<span class="math inline">\(\lambda\)</span>
+的取值决定了日波动率估计对最新每日百分比变动的响应程度。</u></p>
+<p>如果 <span class="math inline">\(\lambda\)</span> 较小，说明在计算
+<span class="math inline">\(\sigma_n\)</span> 时对 <span
+class="math inline">\(u_{n-1}^2\)</span>
+赋予了较大的权重。在这种情况下，连续几天估算出的波动率本身就会高度波动。相反，较大的
+<span class="math inline">\(\lambda\)</span> 值（即接近 1.0
+的值）会使日波动率的估计对每日变动信息的响应较慢。</p>
+<p>由摩根大通（JPMorgan）在 1994 年最初创建并公开发布的 RiskMetrics
+数据库使用了 EWMA 模型，并选取 <span class="math inline">\(\lambda =
+0.94\)</span> 来更新每日波动率估计。该公司发现，在多种市场变量中，这一
+<span class="math inline">\(\lambda\)</span>
+值所生成的方差率预测最接近实际实现的方差率。RiskMetrics
+现在已从摩根大通独立出来，并转向使用更复杂的模型。</p>
+<h3 id="garch11-模型">8.7 GARCH(1,1) 模型</h3>
 <p>The GARCH(1,1) Model</p>
-<p>我们接下来讨论的是所谓的 GARCH(1,1) 模型，该模型由 Bollerslev 于 1986 年提出。GARCH(1,1) 模型与 EWMA 模型之间的差异类似于公式 (8.5) 与公式 (8.6) 之间的差异。在 GARCH(1,1) 模型中，$\sigma_n^2$ 是由长期平均方差率 $V_L$、前一日的波动率估计 $\sigma_{n-1}^2$ 和前一日的实际变动 $u_{n-1}^2$ 共同决定的。其数学表达式如下：</p>
-<p>$$<br>
-\sigma_n^2 = \gamma V_L + \alpha u_{n-1}^2 + \beta \sigma_{n-1}^2 \tag{8.9}<br>
-$$</p>
+<p>我们接下来讨论的是所谓的 GARCH(1,1) 模型，该模型由 Bollerslev 于 1986
+年提出。GARCH(1,1) 模型与 EWMA 模型之间的差异类似于公式 (8.5) 与公式
+(8.6) 之间的差异。在 GARCH(1,1) 模型中，<span
+class="math inline">\(\sigma_n^2\)</span> 是由长期平均方差率 <span
+class="math inline">\(V_L\)</span>、前一日的波动率估计 <span
+class="math inline">\(\sigma_{n-1}^2\)</span> 和前一日的实际变动 <span
+class="math inline">\(u_{n-1}^2\)</span>
+共同决定的。其数学表达式如下：</p>
+<p><span class="math display">\[
+\sigma_n^2 = \gamma V_L + \alpha u_{n-1}^2 + \beta \sigma_{n-1}^2
+\tag{8.9}
+\]</span></p>
 <p>其中：</p>
 <ul>
-<li>$\gamma$ 是分配给长期平均方差率 $V_L$ 的权重，</li>
-<li>$\alpha$ 是分配给上一日变动 $u_{n-1}^2$ 的权重，</li>
-<li>$\beta$ 是分配给上一日方差估计 $\sigma_{n-1}^2$ 的权重。</li>
+<li><span class="math inline">\(\gamma\)</span> 是分配给长期平均方差率
+<span class="math inline">\(V_L\)</span> 的权重，</li>
+<li><span class="math inline">\(\alpha\)</span> 是分配给上一日变动 <span
+class="math inline">\(u_{n-1}^2\)</span> 的权重，</li>
+<li><span class="math inline">\(\beta\)</span> 是分配给上一日方差估计
+<span class="math inline">\(\sigma_{n-1}^2\)</span> 的权重。</li>
 </ul>
-<p>由于所有权重之和必须为 1，有：<br>
-$$<br>
-\gamma + \alpha + \beta = 1<br>
-$$</p>
-<p>EWMA 模型其实是 GARCH(1,1) 的一个特殊情形，其中 $\gamma = 0$、$\alpha = 1 - \lambda$、$\beta = \lambda$。</p>
-<p>**GARCH(1,1) 中的 “(1,1)” 表示 $\sigma_n^2$ 的计算基于最近的一次 $u^2$ 观测值和最近的一次方差率估计值。**更一般的 GARCH(p, q) 模型会使用最近的 $p$ 个 $u^2$ 值和最近的 $q$ 个方差率估计值。GARCH(1,1) 是所有 GARCH 模型中最为常见和广泛使用的。</p>
-<p>若将 $\omega = \gamma V_L$，则 GARCH(1,1) 模型也可以写作：</p>
-<p>$$<br>
-\sigma_n^2 = \omega + \alpha u_{n-1}^2 + \beta \sigma_{n-1}^2 \tag{8.10}<br>
-$$</p>
-<p>这通常是估计参数时使用的形式。一旦 $\omega$、$\alpha$ 和 $\beta$ 被估算出来，就可以通过 $1 - \alpha - \beta$ 计算 $\gamma$，再由 $\omega / \gamma$ 得到长期方差率 $V_L$。</p>
-<p>为了确保 GARCH(1,1) 模型是稳定的，我们要求：<br>
-$$<br>
-\alpha + \beta &lt; 1<br>
-$$<br>
-否则，分配给长期方差率的权重 $\gamma$ 就会是负值。</p>
+<p>由于所有权重之和必须为 1，有： <span class="math display">\[
+\gamma + \alpha + \beta = 1
+\]</span></p>
+<p>EWMA 模型其实是 GARCH(1,1) 的一个特殊情形，其中 <span
+class="math inline">\(\gamma = 0\)</span>、<span
+class="math inline">\(\alpha = 1 - \lambda\)</span>、<span
+class="math inline">\(\beta = \lambda\)</span>。</p>
+<p><strong>GARCH(1,1) 中的 “(1,1)” 表示 <span
+class="math inline">\(\sigma_n^2\)</span> 的计算基于最近的一次 <span
+class="math inline">\(u^2\)</span>
+观测值和最近的一次方差率估计值。</strong>更一般的 GARCH(p, q)
+模型会使用最近的 <span class="math inline">\(p\)</span> 个 <span
+class="math inline">\(u^2\)</span> 值和最近的 <span
+class="math inline">\(q\)</span> 个方差率估计值。GARCH(1,1) 是所有 GARCH
+模型中最为常见和广泛使用的。</p>
+<p>若将 <span class="math inline">\(\omega = \gamma V_L\)</span>，则
+GARCH(1,1) 模型也可以写作：</p>
+<p><span class="math display">\[
+\sigma_n^2 = \omega + \alpha u_{n-1}^2 + \beta \sigma_{n-1}^2 \tag{8.10}
+\]</span></p>
+<p>这通常是估计参数时使用的形式。一旦 <span
+class="math inline">\(\omega\)</span>、<span
+class="math inline">\(\alpha\)</span> 和 <span
+class="math inline">\(\beta\)</span> 被估算出来，就可以通过 <span
+class="math inline">\(1 - \alpha - \beta\)</span> 计算 <span
+class="math inline">\(\gamma\)</span>，再由 <span
+class="math inline">\(\omega / \gamma\)</span> 得到长期方差率 <span
+class="math inline">\(V_L\)</span>。</p>
+<p>为了确保 GARCH(1,1) 模型是稳定的，我们要求： <span
+class="math display">\[
+\alpha + \beta &lt; 1
+\]</span> 否则，分配给长期方差率的权重 <span
+class="math inline">\(\gamma\)</span> 就会是负值。</p>
 <p><strong>例 8.8</strong></p>
 <p>假设从每日数据中估计得出一个 GARCH(1,1) 模型如下：</p>
-<p>$$<br>
-\sigma_n^2 = 0.000002 + 0.13u_{n-1}^2 + 0.86\sigma_{n-1}^2<br>
-$$</p>
+<p><span class="math display">\[
+\sigma_n^2 = 0.000002 + 0.13u_{n-1}^2 + 0.86\sigma_{n-1}^2
+\]</span></p>
 <p>这对应于参数：</p>
 <ul>
-<li>$\alpha = 0.13$</li>
-<li>$\beta = 0.86$</li>
-<li>$\omega = 0.000002$</li>
+<li><span class="math inline">\(\alpha = 0.13\)</span><br />
+</li>
+<li><span class="math inline">\(\beta = 0.86\)</span><br />
+</li>
+<li><span class="math inline">\(\omega = 0.000002\)</span></li>
 </ul>
-<p>因为 $\gamma = 1 - \alpha - \beta = 1 - 0.13 - 0.86 = 0.01$，再由于 $\omega = \gamma V_L$，所以可以求得长期平均方差率：</p>
-<p>$$<br>
-V_L = \frac{\omega}{\gamma} = \frac{0.000002}{0.01} = 0.0002<br>
-$$</p>
+<p>因为 <span class="math inline">\(\gamma = 1 - \alpha - \beta = 1 -
+0.13 - 0.86 = 0.01\)</span>，再由于 <span class="math inline">\(\omega =
+\gamma V_L\)</span>，所以可以求得长期平均方差率：</p>
+<p><span class="math display">\[
+V_L = \frac{\omega}{\gamma} = \frac{0.000002}{0.01} = 0.0002
+\]</span></p>
 <p>换句话说，该模型隐含的长期每日平均波动率为：</p>
-<p>$$<br>
-\sqrt{0.0002} = 0.014 = 1.4%<br>
-$$</p>
+<p><span class="math display">\[
+\sqrt{0.0002} = 0.014 = 1.4\%
+\]</span></p>
 <p>现在，假设：</p>
 <ul>
-<li>
-<p>第 $n-1$ 天的波动率估计值是 1.6%，即<br>
-$$<br>
-\sigma_{n-1}^2 = 0.016^2 = 0.000256<br>
-$$</p>
-</li>
-<li>
-<p>第 $n-1$ 天市场变量下跌了 1%，即<br>
-$$<br>
-u_{n-1}^2 = 0.01^2 = 0.0001<br>
-$$</p>
-</li>
+<li><p>第 <span class="math inline">\(n-1\)</span> 天的波动率估计值是
+1.6%，即<br />
+<span class="math display">\[
+\sigma_{n-1}^2 = 0.016^2 = 0.000256
+\]</span></p></li>
+<li><p>第 <span class="math inline">\(n-1\)</span> 天市场变量下跌了
+1%，即<br />
+<span class="math display">\[
+u_{n-1}^2 = 0.01^2 = 0.0001
+\]</span></p></li>
 </ul>
 <p>将这些值代入 GARCH(1,1) 模型公式，得：</p>
-<p>$$<br>
-\sigma_n^2 = 0.000002 + 0.13 \times 0.0001 + 0.86 \times 0.000256 = 0.00023516<br>
-$$</p>
-<p>因此，第 $n$ 天的波动率估计值为：</p>
-<p>$$<br>
-\sigma_n = \sqrt{0.00023516} = 0.0153 = 1.53% \text{ 每日波动率}<br>
-$$</p>
-<h4 id="8-7-1-权重">8.7.1 权重</h4>
+<p><span class="math display">\[
+\sigma_n^2 = 0.000002 + 0.13 \times 0.0001 + 0.86 \times 0.000256 =
+0.00023516
+\]</span></p>
+<p>因此，第 <span class="math inline">\(n\)</span>
+天的波动率估计值为：</p>
+<p><span class="math display">\[
+\sigma_n = \sqrt{0.00023516} = 0.0153 = 1.53\% \text{ 每日波动率}
+\]</span></p>
+<h4 id="权重">8.7.1 权重</h4>
 <p>The Weights</p>
-<p>将公式 (8.10) 中的 $\sigma^2_{n-1}$ 代入，可以得到：</p>
-<p>$$<br>
-\sigma^2_n = \omega + \alpha u^2_{n-1} + \beta(\omega + \alpha u^2_{n-2} + \beta \sigma^2_{n-2})<br>
-$$</p>
+<p>将公式 (8.10) 中的 <span
+class="math inline">\(\sigma^2_{n-1}\)</span> 代入，可以得到：</p>
+<p><span class="math display">\[
+\sigma^2_n = \omega + \alpha u^2_{n-1} + \beta(\omega + \alpha u^2_{n-2}
++ \beta \sigma^2_{n-2})
+\]</span></p>
 <p>整理得：</p>
-<p>$$<br>
-\sigma^2_n = \omega + \beta \omega + \alpha u^2_{n-1} + \alpha \beta u^2_{n-2} + \beta^2 \sigma^2_{n-2}<br>
-$$</p>
-<p>继续将 $\sigma^2_{n-2}$ 展开代入，得到：</p>
-<p>$$<br>
-\sigma^2_n = \omega + \beta \omega + \beta^2 \omega + \alpha u^2_{n-1} + \alpha \beta u^2_{n-2} + \alpha \beta^2 u^2_{n-3} + \beta^3 \sigma^2_{n-3}<br>
-$$</p>
-<p>以此类推，可以看出，对 $u^2_{n-i}$ 赋予的权重为 $\alpha \beta^{i-1}$。这些权重以指数速度随时间衰减，其衰减速率为 $\beta$。</p>
-<p><strong>参数 $\beta$ 可以被解释为“衰减率”（decay rate），其作用与 EWMA 模型中的 $\lambda$ 类似。它决定了对历史数据 $u_i$ 的关注程度</strong>：</p>
+<p><span class="math display">\[
+\sigma^2_n = \omega + \beta \omega + \alpha u^2_{n-1} + \alpha \beta
+u^2_{n-2} + \beta^2 \sigma^2_{n-2}
+\]</span></p>
+<p>继续将 <span class="math inline">\(\sigma^2_{n-2}\)</span>
+展开代入，得到：</p>
+<p><span class="math display">\[
+\sigma^2_n = \omega + \beta \omega + \beta^2 \omega + \alpha u^2_{n-1} +
+\alpha \beta u^2_{n-2} + \alpha \beta^2 u^2_{n-3} + \beta^3
+\sigma^2_{n-3}
+\]</span></p>
+<p>以此类推，可以看出，对 <span class="math inline">\(u^2_{n-i}\)</span>
+赋予的权重为 <span class="math inline">\(\alpha
+\beta^{i-1}\)</span>。这些权重以指数速度随时间衰减，其衰减速率为 <span
+class="math inline">\(\beta\)</span>。</p>
+<p><strong>参数 <span class="math inline">\(\beta\)</span>
+可以被解释为“衰减率”（decay rate），其作用与 EWMA 模型中的 <span
+class="math inline">\(\lambda\)</span> 类似。它决定了对历史数据 <span
+class="math inline">\(u_i\)</span> 的关注程度</strong>：</p>
 <ul>
-<li>若 $\beta = 0.9$，则：
+<li>若 <span class="math inline">\(\beta = 0.9\)</span>，则：
 <ul>
-<li>$u^2_{n-2}$ 的重要性是 $u^2_{n-1}$ 的 90%；</li>
-<li>$u^2_{n-3}$ 的重要性是 $u^2_{n-1}$ 的 81%（即 $0.9^2$）；</li>
+<li><span class="math inline">\(u^2_{n-2}\)</span> 的重要性是 <span
+class="math inline">\(u^2_{n-1}\)</span> 的 90%；</li>
+<li><span class="math inline">\(u^2_{n-3}\)</span> 的重要性是 <span
+class="math inline">\(u^2_{n-1}\)</span> 的 81%（即 <span
+class="math inline">\(0.9^2\)</span>）；</li>
 <li>以此类推。</li>
-</ul>
-</li>
+</ul></li>
 </ul>
 <p>因此，GARCH(1,1) 模型与 EWMA 模型非常类似，不同之处在于：</p>
 <ul>
-<li>它不仅对过去的 $u^2_i$ 赋予指数衰减的权重；</li>
-<li>还对长期平均方差率 $V_L$ 赋予一定的权重。</li>
+<li>它不仅对过去的 <span class="math inline">\(u^2_i\)</span>
+赋予指数衰减的权重；</li>
+<li>还对长期平均方差率 <span class="math inline">\(V_L\)</span>
+赋予一定的权重。</li>
 </ul>
-<h3 id="8-8-模型选择">8.8 模型选择</h3>
+<h3 id="模型选择">8.8 模型选择</h3>
 <p>Choosing between the Models</p>
-<p><strong>在实践中，方差率往往会回归到一个长期平均水平。GARCH(1,1) 模型体现了均值回归（mean reversion）的特性，而 EWMA 模型则没有。因此，尽管 GARCH(1,1) 比 EWMA 更为复杂，但在理论上，GARCH(1,1) 比 EWMA 更具吸引力。</strong></p>
-<p>在下一节中，我们将讨论如何估计 GARCH(1,1) 模型中的最优拟合参数 $\omega$、$\alpha$ 和 $\beta$。当参数 $\omega = 0$ 时，GARCH(1,1) 模型就简化为 EWMA 模型。</p>
-<p><strong>如果在参数估计过程中，最优拟合的 $\omega$ 值为负，那么 GARCH(1,1) 模型将不稳定，这种情况下，切换回 EWMA 模型是更合理的选择。</strong></p>
-<h3 id="8-9-最大似然法">8.9 最大似然法</h3>
+<p><strong>在实践中，方差率往往会回归到一个长期平均水平。GARCH(1,1)
+模型体现了均值回归（mean reversion）的特性，而 EWMA
+模型则没有。因此，尽管 GARCH(1,1) 比 EWMA
+更为复杂，但在理论上，GARCH(1,1) 比 EWMA 更具吸引力。</strong></p>
+<p>在下一节中，我们将讨论如何估计 GARCH(1,1) 模型中的最优拟合参数 <span
+class="math inline">\(\omega\)</span>、<span
+class="math inline">\(\alpha\)</span> 和 <span
+class="math inline">\(\beta\)</span>。当参数 <span
+class="math inline">\(\omega = 0\)</span> 时，GARCH(1,1) 模型就简化为
+EWMA 模型。</p>
+<p><strong>如果在参数估计过程中，最优拟合的 <span
+class="math inline">\(\omega\)</span> 值为负，那么 GARCH(1,1)
+模型将不稳定，这种情况下，切换回 EWMA 模型是更合理的选择。</strong></p>
+<h3 id="最大似然法">8.9 最大似然法</h3>
 <p>（Maximum Likelihood Methods）</p>
-<p>现在是时候讨论我们所考虑模型中的参数是如何从历史数据中估计出来的了。所使用的方法被称为<strong>最大似然法</strong>（maximum likelihood method）。它的基本思想是：<strong>选择一组参数值，使得在这些参数条件下，观察到的历史数据出现的概率最大（即似然最大）。</strong></p>
+<p>现在是时候讨论我们所考虑模型中的参数是如何从历史数据中估计出来的了。所使用的方法被称为<strong>最大似然法</strong>（maximum
+likelihood
+method）。它的基本思想是：<strong>选择一组参数值，使得在这些参数条件下，观察到的历史数据出现的概率最大（即似然最大）。</strong></p>
 <p>我们先从一个非常简单的例子开始：</p>
-<p>假设在某一天，我们随机抽取了 10 只股票，发现其中 1 只股票当天价格下跌，其余 9 只股票价格持平或上涨。那么，当天股票价格下跌的<strong>比例的最佳估计是多少</strong>？<br>
+<p>假设在某一天，我们随机抽取了 10 只股票，发现其中 1
+只股票当天价格下跌，其余 9
+只股票价格持平或上涨。那么，当天股票价格下跌的<strong>比例的最佳估计是多少</strong>？<br />
 自然的回答是：<strong>0.1</strong>。</p>
 <p>我们看看这是否是最大似然方法所给出的结果。</p>
-<p>设股票价格下跌的概率为 $ p $。<br>
+<p>设股票价格下跌的概率为 $ p $。<br />
 那么，有 1 只股票下跌、另外 9 只股票不下跌的概率为：</p>
-<p>$$<br>
-p(1 - p)^9<br>
-$$</p>
-<p>（即：这 1 只股票下跌的概率是 $ p $，另外每只不下跌的概率是 $ 1 - p $，一共 9 只。）</p>
-<p>根据最大似然法，我们要找出能使这个表达式最大的 $ p $。<br>
-对该表达式对 $ p $ 求导，并令导数等于 0，可以求得最优值：<br>
-$$<br>
-p = 0.1<br>
-$$</p>
+<p><span class="math display">\[
+p(1 - p)^9
+\]</span></p>
+<p>（即：这 1 只股票下跌的概率是 $ p $，另外每只不下跌的概率是 $ 1 - p
+$，一共 9 只。）</p>
+<p>根据最大似然法，我们要找出能使这个表达式最大的 $ p $。<br />
+对该表达式对 $ p $ 求导，并令导数等于 0，可以求得最优值： <span
+class="math display">\[
+p = 0.1
+\]</span></p>
 <p>因此，最大似然估计值为 0.1，正如我们直觉中预期的那样。</p>
-<h4 id="8-9-1-估计一个常数方差"><strong>8.9.1 估计一个常数方差</strong></h4>
+<h4 id="估计一个常数方差"><strong>8.9.1 估计一个常数方差</strong></h4>
 <p>（Estimating a Constant Variance）</p>
-<p>我们接下来的最大似然法例子是：<strong>在已知变量 X 服从正态分布的情况下，如何根据 $ m $ 个观测值来估计其方差</strong>。</p>
-<p>假设我们观测到了 $ u_1, u_2, \dots, u_m $，并假设 X 的均值为 0，方差为 $ v $，即 $ X \sim N(0, v) $。</p>
-<p>每个 $ u_i $ 被观测到的概率密度函数为：<br>
-$$<br>
-\frac{1}{\sqrt{2\pi v}} \exp\left(-\frac{u_i^2}{2v}\right)<br>
-$$</p>
-<p>因此，$ m $ 个观测值按顺序出现的联合概率（即似然函数）是：<br>
-$$<br>
-\prod_{i=1}^{m} \frac{1}{\sqrt{2\pi v}} \exp\left(-\frac{u_i^2}{2v}\right) \tag{8.11}<br>
-$$</p>
+<p>我们接下来的最大似然法例子是：<strong>在已知变量 X
+服从正态分布的情况下，如何根据 $ m $ 个观测值来估计其方差</strong>。</p>
+<p>假设我们观测到了 $ u_1, u_2, , u_m $，并假设 X 的均值为 0，方差为 $ v
+$，即 $ X N(0, v) $。</p>
+<p>每个 $ u_i $ 被观测到的概率密度函数为： <span class="math display">\[
+\frac{1}{\sqrt{2\pi v}} \exp\left(-\frac{u_i^2}{2v}\right)
+\]</span></p>
+<p>因此，$ m $ 个观测值按顺序出现的联合概率（即似然函数）是： <span
+class="math display">\[
+\prod_{i=1}^{m} \frac{1}{\sqrt{2\pi v}}
+\exp\left(-\frac{u_i^2}{2v}\right) \tag{8.11}
+\]</span></p>
 <p>使用最大似然法，我们希望找到使上式最大的 $ v $。</p>
-<p>最大化一个式子等价于最大化它的对数，因此对上式取对数，并忽略不含 $ v $ 的常数项，得到我们想最大化的表达式为：</p>
-<p>$$<br>
-\sum_{i=1}^{m} \left[ -\ln(v) - \frac{u_i^2}{v} \right]  \tag{8.12}<br>
-$$</p>
+<p>最大化一个式子等价于最大化它的对数，因此对上式取对数，并忽略不含 $ v
+$ 的常数项，得到我们想最大化的表达式为：</p>
+<p><span class="math display">\[
+\sum_{i=1}^{m} \left[ -\ln(v) - \frac{u_i^2}{v} \right]  \tag{8.12}
+\]</span></p>
 <p>或者：</p>
-<p>$$<br>
--m \ln(v) - \frac{1}{v} \sum_{i=1}^{m} u_i^2<br>
-$$<br>
-对上式关于 $ v $ 求导并令导数等于 0，可得：<br>
-$$<br>
-\frac{d}{dv}\left(-m \ln(v) - \frac{1}{v} \sum u_i^2\right) = -\frac{m}{v} + \frac{1}{v^2} \sum u_i^2 = 0<br>
-$$</p>
+<p><span class="math display">\[
+-m \ln(v) - \frac{1}{v} \sum_{i=1}^{m} u_i^2
+\]</span> 对上式关于 $ v $ 求导并令导数等于 0，可得： <span
+class="math display">\[
+\frac{d}{dv}\left(-m \ln(v) - \frac{1}{v} \sum u_i^2\right) =
+-\frac{m}{v} + \frac{1}{v^2} \sum u_i^2 = 0
+\]</span></p>
 <p>解得最大似然估计（MLE）为：</p>
-<p>$$<br>
-v = \frac{1}{m} \sum_{i=1}^{m} u_i^2<br>
-$$</p>
-<p><strong>这个最大似然估计值正是我们在公式 (8.4) 中使用的值。而对应的无偏估计量，则是将分母从 $ m $ 改为 $ m - 1 $。</strong></p>
-<h4 id="8-9-2-估计EWMA或GARCH-1-1-模型">8.9.2 估计EWMA或GARCH(1,1)模型</h4>
+<p><span class="math display">\[
+v = \frac{1}{m} \sum_{i=1}^{m} u_i^2
+\]</span></p>
+<p><strong>这个最大似然估计值正是我们在公式 (8.4)
+中使用的值。而对应的无偏估计量，则是将分母从 $ m $ 改为 $ m - 1
+$。</strong></p>
+<h4 id="估计ewma或garch11模型">8.9.2 估计EWMA或GARCH(1,1)模型</h4>
 <p>Estimating EWMA or GARCH(1,1)</p>
-<p>现在我们考虑如何使用极大似然方法估计EWMA、GARCH(1,1)或其他波动率更新过程中的参数。定义$ v_i = \sigma_i^2 $为第$ i $天估计的方差。假设条件于方差的情况下，$ u_i $服从正态分布。类似于前面的分析可知，最优的参数估计应使下面的式子达到最大：</p>
-<p>$$<br>
-\prod_{i=1}^{m}\left[\frac{1}{\sqrt{2\pi v_i}}\exp\left(-\frac{u_i^2}{2v_i}\right)\right]<br>
-$$</p>
+<p>现在我们考虑如何使用极大似然方法估计EWMA、GARCH(1,1)或其他波动率更新过程中的参数。定义$
+v_i = _i^2 <span class="math inline">\(为第\)</span> i <span
+class="math inline">\(天估计的方差。假设条件于方差的情况下，\)</span>
+u_i
+$服从正态分布。类似于前面的分析可知，最优的参数估计应使下面的式子达到最大：</p>
+<p><span class="math display">\[
+\prod_{i=1}^{m}\left[\frac{1}{\sqrt{2\pi
+v_i}}\exp\left(-\frac{u_i^2}{2v_i}\right)\right]
+\]</span></p>
 <p>取对数后，我们发现这等同于使以下表达式达到最大：</p>
-<p>$$<br>
-\sum_{i=1}^{m}\left[-\ln(v_i)-\frac{u_i^2}{v_i}\right] \tag{8.13}<br>
-$$</p>
-<p>该式与方程(8.12)的表达式相同，只不过这里的$ v $被替换成了$v_i$ (<strong>个人注：连续变离散</strong>)。因此，有必要通过**<u>迭代搜索((search iteratively)来找到使得方程(8.13)表达式达到最大的模型参数。</u>**</p>
-<img src="/img4/《风险管理与金融机构》/T8.4.png" alt="T8.4" style="zoom:50%;" />
+<p><span class="math display">\[
+\sum_{i=1}^{m}\left[-\ln(v_i)-\frac{u_i^2}{v_i}\right] \tag{8.13}
+\]</span></p>
+<p>该式与方程(8.12)的表达式相同，只不过这里的$ v <span
+class="math inline">\(被替换成了\)</span>v_i$
+(<strong>个人注：连续变离散</strong>)。因此，有必要通过<strong><u>迭代搜索((search
+iteratively)来找到使得方程(8.13)表达式达到最大的模型参数。</u></strong></p>
+<p><img src="/img4/《风险管理与金融机构》/T8.4.png" alt="T8.4" style="zoom:50%;" /></p>
 <p>表8.4的电子表格展示了如何组织GARCH(1,1)模型的计算过程。该表分析了2017年2月2日至2022年2月1日之间标普500指数的数据。</p>
-<p>表格中的数值基于三个GARCH(1,1)参数的估计值：$\omega, \alpha, \beta$。表中第一列记录日期；第二列为天数的计数；第三列显示第$ i $天结束时标普500指数的值$ S_i $；第四列显示从第$ i-1 $天结束到第$ i $天结束标普500指数的比例变化，即$ u_i = (S_i - S_{i-1}) / S_{i-1} $；第五列显示第$ i $天的方差估计值$ v_i = \sigma_i^2 $，该估计是在第$ i-1 $天结束时做出的。第三天时，我们将初始方差设定为$ u_2^2 $，随后几天使用方程(8.10)。第六列则计算了似然值，即：$-\ln(v_i)-u_i^2/v_i$。第五和第六列的值基于当前的试探性参数估计$\omega, \alpha, \beta$。我们感兴趣的是选取$\omega, \alpha, \beta$，使第六列所有值的总和达到最大。这一过程需要通过迭代搜索完成。</p>
+<p>表格中的数值基于三个GARCH(1,1)参数的估计值：<span
+class="math inline">\(\omega, \alpha,
+\beta\)</span>。表中第一列记录日期；第二列为天数的计数；第三列显示第$ i
+<span class="math inline">\(天结束时标普500指数的值\)</span> S_i <span
+class="math inline">\(；第四列显示从第\)</span> i-1 <span
+class="math inline">\(天结束到第\)</span> i <span
+class="math inline">\(天结束标普500指数的比例变化，即\)</span> u_i =
+(S_i - S_{i-1}) / S_{i-1} <span
+class="math inline">\(；第五列显示第\)</span> i <span
+class="math inline">\(天的方差估计值\)</span> v_i = _i^2 <span
+class="math inline">\(，该估计是在第\)</span> i-1 <span
+class="math inline">\(天结束时做出的。第三天时，我们将初始方差设定为\)</span>
+u_2^2 <span
+class="math inline">\(，随后几天使用方程(8.10)。第六列则计算了似然值，即：\)</span>-(v_i)-u_i^2/v_i<span
+class="math inline">\(。第五和第六列的值基于当前的试探性参数估计\)</span>,
+, <span class="math inline">\(。我们感兴趣的是选取\)</span>, ,
+$，使第六列所有值的总和达到最大。这一过程需要通过迭代搜索完成。</p>
 <p>在我们的示例中，经过优化得到的参数值为：</p>
-<p>$$<br>
-\omega = 0.000003914,\quad \alpha = 0.2111,\quad \beta = 0.7623<br>
-$$</p>
-<p>方程（8.13）表达式的最大值为10764.3624。（表8.4中显示的数值是根据寻找最优参数$\omega,\alpha,\beta$的最终迭代结果所计算出来的。）</p>
-<p>在本例中，长期方差率$V_L$为：</p>
-<p>$$<br>
-V_L = \frac{\omega}{1-\alpha-\beta} = \frac{0.000003914}{0.02662} = 0.000147<br>
-$$</p>
-<p>长期波动率即为$\sqrt{0.000147}=1.213%$每天。</p>
-<img src="/img4/《风险管理与金融机构》/F8.4.png" alt="F8.4" style="zoom:50%;" />
-<img src="/img4/《风险管理与金融机构》/F8.5.png" alt="F8.5" style="zoom:50%;" />
-<p>图8.4和图8.5分别展示了该五年期间S&amp;P 500指数的走势以及相应的GARCH(1,1)模型估计的波动率。在大部分时间里，波动率每天小于2%，但偶尔会出现剧烈的波动。其中最显著的一次波动出现在2020年3月，反映了与COVID-19疫情相关的不确定性（如图8.1所示，VIX指数在该时期也出现了剧烈波动）。</p>
-<p>GARCH(1,1) 模型中另一种更稳健的**<u>参数估计方法</u><strong>称为</strong>方差目标法（variance targeting）**。<br>
-这涉及将长期平均方差率 $V_L$ 设定为根据数据计算出的样本方差（或某个被认为是合理的其他数值）。<br>
-此时 $\omega = V_L(1 - \alpha - \beta)$，只需估计两个参数。</p>
-<p>对于表 8.4 中的数据，样本波动率为 1.2220，仅略高于 GARCH 所得长期波动率 1.213%。<br>
-将 $V_L$ 设定为样本方差（0.000149）时，最大化目标函数（即公式 8.13）所得的 $\alpha$ 和 $\beta$ 值分别为 0.2115 和 0.7622，几乎与完整 GARCH 方法下的参数一致。这表明在本例中，方差目标法效果非常好。</p>
-<p>当使用 EWMA 模型时，估计过程则相对简单。我们设定 $\omega = 0$，$\alpha = 1 - \lambda$，$\beta = \lambda$，只需估计一个参数 $\lambda$。<br>
-在表 8.4 的数据中，使公式（8.13）中的目标函数最大化的 $\lambda$ 值为 0.9086，对应的目标函数值为 10,650，低于 GARCH(1,1) 的 10,764。</p>
-<p>对于 GARCH(1,1) 和 EWMA 模型，我们都可以使用 **Excel 中的 Solver 工具 (规划求解) ** 来搜索最大化似然函数的参数值。只要我们在表格中设计得当，使被搜索的参数值在数量级上大致相同，Solver 就能很好地工作。</p>
-<p>例如，在 GARCH(1,1) 中，我们可以令单元格 A1、A2 和 A3 分别表示 $\omega \times 10^5$、$\alpha$、$\beta$。<br>
-然后设 B1 = A1 / 100,000，计算中使用 B1、A2 和 A3，但通过 Solver 寻找能最大化似然函数的 A1、A2 和 A3 的值。</p>
-<p><strong>值得注意的是，Solver 有时会陷入局部最优解，因此应尝试多个不同的初始参数组合。</strong></p>
-<h4 id="8-9-3-模型效果如何？">8.9.3 模型效果如何？</h4>
+<p><span class="math display">\[
+\omega = 0.000003914,\quad \alpha = 0.2111,\quad \beta = 0.7623
+\]</span></p>
+<p>方程（8.13）表达式的最大值为10764.3624。（表8.4中显示的数值是根据寻找最优参数<span
+class="math inline">\(\omega,\alpha,\beta\)</span>的最终迭代结果所计算出来的。）</p>
+<p>在本例中，长期方差率<span class="math inline">\(V_L\)</span>为：</p>
+<p><span class="math display">\[
+V_L = \frac{\omega}{1-\alpha-\beta} = \frac{0.000003914}{0.02662} =
+0.000147
+\]</span></p>
+<p>长期波动率即为<span
+class="math inline">\(\sqrt{0.000147}=1.213\%\)</span>每天。</p>
+<p><img src="/img4/《风险管理与金融机构》/F8.4.png" alt="F8.4" style="zoom:50%;" /></p>
+<p><img src="/img4/《风险管理与金融机构》/F8.5.png" alt="F8.5" style="zoom:50%;" /></p>
+<p>图8.4和图8.5分别展示了该五年期间S&amp;P
+500指数的走势以及相应的GARCH(1,1)模型估计的波动率。在大部分时间里，波动率每天小于2%，但偶尔会出现剧烈的波动。其中最显著的一次波动出现在2020年3月，反映了与COVID-19疫情相关的不确定性（如图8.1所示，VIX指数在该时期也出现了剧烈波动）。</p>
+<p>GARCH(1,1)
+模型中另一种更稳健的<strong><u>参数估计方法</u></strong>称为<strong>方差目标法（variance
+targeting）</strong>。<br />
+这涉及将长期平均方差率 <span class="math inline">\(V_L\)</span>
+设定为根据数据计算出的样本方差（或某个被认为是合理的其他数值）。<br />
+此时 <span class="math inline">\(\omega = V_L(1 - \alpha -
+\beta)\)</span>，只需估计两个参数。</p>
+<p>对于表 8.4 中的数据，样本波动率为 1.2220，仅略高于 GARCH
+所得长期波动率 1.213%。<br />
+将 <span class="math inline">\(V_L\)</span>
+设定为样本方差（0.000149）时，最大化目标函数（即公式 8.13）所得的 <span
+class="math inline">\(\alpha\)</span> 和 <span
+class="math inline">\(\beta\)</span> 值分别为 0.2115 和
+0.7622，几乎与完整 GARCH
+方法下的参数一致。这表明在本例中，方差目标法效果非常好。</p>
+<p>当使用 EWMA 模型时，估计过程则相对简单。我们设定 <span
+class="math inline">\(\omega = 0\)</span>，<span
+class="math inline">\(\alpha = 1 - \lambda\)</span>，<span
+class="math inline">\(\beta = \lambda\)</span>，只需估计一个参数 <span
+class="math inline">\(\lambda\)</span>。<br />
+在表 8.4 的数据中，使公式（8.13）中的目标函数最大化的 <span
+class="math inline">\(\lambda\)</span> 值为 0.9086，对应的目标函数值为
+10,650，低于 GARCH(1,1) 的 10,764。</p>
+<p>对于 GARCH(1,1) 和 EWMA 模型，我们都可以使用 <strong>Excel 中的
+Solver 工具 (规划求解) </strong>
+来搜索最大化似然函数的参数值。只要我们在表格中设计得当，使被搜索的参数值在数量级上大致相同，Solver
+就能很好地工作。</p>
+<p>例如，在 GARCH(1,1) 中，我们可以令单元格 A1、A2 和 A3 分别表示 <span
+class="math inline">\(\omega \times 10^5\)</span>、<span
+class="math inline">\(\alpha\)</span>、<span
+class="math inline">\(\beta\)</span>。<br />
+然后设 B1 = A1 / 100,000，计算中使用 B1、A2 和 A3，但通过 Solver
+寻找能最大化似然函数的 A1、A2 和 A3 的值。</p>
+<p><strong>值得注意的是，Solver
+有时会陷入局部最优解，因此应尝试多个不同的初始参数组合。</strong></p>
+<h4 id="模型效果如何">8.9.3 模型效果如何？</h4>
 <p>How Good Is the Model?</p>
-<p>GARCH 模型所依据的基本假设是：<strong>波动率会随时间变化</strong>。<br>
-在某些时期，波动率相对较高；而在另一些时期，波动率则相对较低。换句话说，当 $ u_i^2 $ 较高时，$ u_{i+1}^2, u_{i+2}^2, \dots $ 也倾向于较高；当 $ u_i^2 $ 较低时，$ u_{i+1}^2, u_{i+2}^2, \dots $ 也倾向于较低。</p>
-<p>我们可以通过考察 $ u_i^2 $ 的**自相关结构（autocorrelation structure）**来检验这种现象是否真实存在。</p>
-<p><u>假设 $ u_i^2 $ 确实表现出自相关性。如果 GARCH 模型运作良好，它应该能够消除这种自相关性。<br>
-我们可以通过分析变量 $ u_i^2 / \sigma_i^2 $ 的自相关结构来验证模型是否做到了这一点。<br>
-如果这些比值变量几乎没有自相关性，就说明我们对 $ \sigma_i $ 的建模成功解释了 $ u_i^2 $ 中的自相关性。</u></p>
-<img src="/img4/《风险管理与金融机构》/T8.5.png" alt="T8.5" style="zoom:67%;" />
+<p>GARCH
+模型所依据的基本假设是：<strong>波动率会随时间变化</strong>。<br />
+在某些时期，波动率相对较高；而在另一些时期，波动率则相对较低。换句话说，当
+$ u_i^2 $ 较高时，$ u_{i+1}^2, u_{i+2}^2, $ 也倾向于较高；当 $ u_i^2 $
+较低时，$ u_{i+1}^2, u_{i+2}^2, $ 也倾向于较低。</p>
+<p>我们可以通过考察 $ u_i^2 $ 的<strong>自相关结构（autocorrelation
+structure）</strong>来检验这种现象是否真实存在。</p>
+<p><u>假设 $ u_i^2 $ 确实表现出自相关性。如果 GARCH
+模型运作良好，它应该能够消除这种自相关性。<br />
+我们可以通过分析变量 $ u_i^2 / _i^2 $
+的自相关结构来验证模型是否做到了这一点。<br />
+如果这些比值变量几乎没有自相关性，就说明我们对 $ _i $ 的建模成功解释了 $
+u_i^2 $ 中的自相关性。</u></p>
+<p><img src="/img4/《风险管理与金融机构》/T8.5.png" alt="T8.5" style="zoom:67%;" /></p>
 <p>表 8.5 显示了针对标普 500 数据的分析结果：</p>
 <ul>
-<li>第一列是用于计算自相关的滞后阶数（the lag sconsidered when the autocorrelation is calculated）；</li>
+<li>第一列是用于计算自相关的滞后阶数（the lag sconsidered when the
+autocorrelation is calculated）；</li>
 <li>第二列是 $ u_i^2 $ 的自相关（autocorrelations）；</li>
-<li>第三列是 $ u_i^2 / \sigma_i^2 $ 的自相关。</li>
+<li>第三列是 $ u_i^2 / _i^2 $ 的自相关。</li>
 </ul>
-<p>表格显示，对于所有 1 到 15 阶的滞后，$ u_i^2 $ 的自相关性都是正的。<br>
-而对于 $ u_i^2 / \sigma_i^2 $，有些滞后期的自相关为正，有些为负，但总体上数值幅度都明显小于 $ u_i^2 $ 的自相关值。</p>
+<p>表格显示，对于所有 1 到 15 阶的滞后，$ u_i^2 $
+的自相关性都是正的。<br />
+而对于 $ u_i^2 / _i^2
+$，有些滞后期的自相关为正，有些为负，但总体上数值幅度都明显小于 $ u_i^2
+$ 的自相关值。</p>
 <p>这说明模型在捕捉并解释波动率的动态特征方面是有效的。</p>
-<p>GARCH 模型似乎很好地解释了数据。为了进行更科学的检验，我们可以使用所谓的 <strong>Ljung–Box 统计量</strong>。[^12]</p>
+<p>GARCH
+模型似乎很好地解释了数据。为了进行更科学的检验，我们可以使用所谓的
+<strong>Ljung–Box 统计量</strong>。[^12]</p>
 <p>假设某个序列有 $ m $ 个观测值，则其 Ljung–Box 统计量为：</p>
-<p>$$<br>
-m \sum_{k=1}^{K} w_k c_k^2<br>
-$$</p>
+<p><span class="math display">\[
+m \sum_{k=1}^{K} w_k c_k^2
+\]</span></p>
 <p>其中：</p>
 <ul>
 <li>$ c_k $ 是滞后 $ k $ 期的自相关系数，</li>
 <li>$ K $ 是所考虑的滞后期数，</li>
 <li>权重 $ w_k $ 定义为：</li>
 </ul>
-<p>$$<br>
-w_k = \frac{m + 2}{m - k}<br>
-$$</p>
-<p><strong>当 $ K = 15 $ 时，若 Ljung–Box 统计量大于 25，则可在 95% 的置信水平下拒绝“无自相关性”的假设。</strong></p>
+<p><span class="math display">\[
+w_k = \frac{m + 2}{m - k}
+\]</span></p>
+<p><strong>当 $ K = 15 $ 时，若 Ljung–Box 统计量大于 25，则可在 95%
+的置信水平下拒绝“无自相关性”的假设。</strong></p>
 <p>根据表 8.5：</p>
 <ul>
-<li>对于 $ u_i^2 $ 序列，其 Ljung–Box 统计量约为 <strong>2141</strong>，这强烈表明存在自相关性；</li>
-<li>而对于 $ u_i^2 / \sigma_i^2 $ 序列，其 Ljung–Box 统计量为 <strong>11.5</strong>，说明通过 GARCH 模型，自相关性已在很大程度上被消除。</li>
+<li>对于 $ u_i^2 $ 序列，其 Ljung–Box 统计量约为
+<strong>2141</strong>，这强烈表明存在自相关性；</li>
+<li>而对于 $ u_i^2 / _i^2 $ 序列，其 Ljung–Box 统计量为
+<strong>11.5</strong>，说明通过 GARCH
+模型，自相关性已在很大程度上被消除。</li>
 </ul>
-<h3 id="8-10-使用-GARCH-1-1-模型预测未来波动率">8.10 使用 GARCH(1,1) 模型预测未来波动率</h3>
+<h3 id="使用-garch11-模型预测未来波动率">8.10 使用 GARCH(1,1)
+模型预测未来波动率</h3>
 <p>Using GARCH(1,1) to Forecast Future Volatility</p>
-<p>当使用 GARCH(1,1) 模型时，在第 $ n-1 $ 天结束时对第 $ n $ 天的方差率的估计为：</p>
-<p>$$<br>
-\sigma_n^2 = (1 - \alpha - \beta)V_L + \alpha u_{n-1}^2 + \beta \sigma_{n-1}^2<br>
-$$</p>
+<p>当使用 GARCH(1,1) 模型时，在第 $ n-1 $ 天结束时对第 $ n $
+天的方差率的估计为：</p>
+<p><span class="math display">\[
+\sigma_n^2 = (1 - \alpha - \beta)V_L + \alpha u_{n-1}^2 + \beta
+\sigma_{n-1}^2
+\]</span></p>
 <p>因此有：</p>
-<p>$$<br>
-\sigma_n^2 - V_L = \alpha(u_{n-1}^2 - V_L) + \beta(\sigma_{n-1}^2 - V_L)<br>
-$$</p>
+<p><span class="math display">\[
+\sigma_n^2 - V_L = \alpha(u_{n-1}^2 - V_L) + \beta(\sigma_{n-1}^2 - V_L)
+\]</span></p>
 <p>在未来的第 $ n + t $ 天，有：</p>
-<p>$$<br>
-\sigma_{n+t}^2 - V_L = \alpha(u_{n+t-1}^2 - V_L) + \beta(\sigma_{n+t-1}^2 - V_L)<br>
-$$</p>
-<p>其中，$ u_{n+t-1}^2 $ 的期望值为 $ \sigma_{n+t-1}^2 $。因此，</p>
-<p>$$<br>
-E[\sigma_{n+t}^2 - V_L] = (\alpha + \beta)E[\sigma_{n+t-1}^2 - V_L]<br>
-$$</p>
+<p><span class="math display">\[
+\sigma_{n+t}^2 - V_L = \alpha(u_{n+t-1}^2 - V_L) +
+\beta(\sigma_{n+t-1}^2 - V_L)
+\]</span></p>
+<p>其中，$ u_{n+t-1}^2 $ 的期望值为 $ _{n+t-1}^2 $。因此，</p>
+<p><span class="math display">\[
+E[\sigma_{n+t}^2 - V_L] = (\alpha + \beta)E[\sigma_{n+t-1}^2 - V_L]
+\]</span></p>
 <p>其中 $ E $ 表示期望值。重复使用这个方程得到：</p>
-<p>$$<br>
-E[\sigma_{n+t}^2 - V_L] = (\alpha + \beta)^t (\sigma_n^2 - V_L)<br>
-$$</p>
+<p><span class="math display">\[
+E[\sigma_{n+t}^2 - V_L] = (\alpha + \beta)^t (\sigma_n^2 - V_L)
+\]</span></p>
 <p>或者写作：</p>
-<p>$$<br>
-E[\sigma_{n+t}^2] = V_L + (\alpha + \beta)^t (\sigma_n^2 - V_L) \tag{8.14}<br>
-$$</p>
-<p>这个方程使用在第 $n-1$ 天结束时可获得的信息来预测第 $n+t$ 天的波动率。在 EWMA 模型中，$\alpha + \beta = 1$，方程 (8.14) 表明预期的未来方差率等于当前的方差率。当 $\alpha + \beta &lt; 1$ 时，方程中的最后一项随着 $t$ 的增加逐渐变小。图 8.6 显示了在当前方差率不同于 $V_L$ 的情形下，方差率的预期路径。如前所述，方差率表现出均值回复的特性，回复水平为 $V_L$，回复速率为 $1 - \alpha - \beta$。我们对未来方差率的预测在时间向前推进时趋近于 $V_L$。</p>
-<img src="/img4/《风险管理与金融机构》/F8.6.png" alt="F8.6" style="zoom:67%;" />
-<p>该分析强调了对于稳定的 GARCH(1,1) 过程，必须满足 $\alpha + \beta &lt; 1$。当 $\alpha + \beta &gt; 1$ 时，赋予长期平均方差的权重为负，过程表现为“远离均值（mean fleeing）”而非“回复均值（mean reverting）”。</p>
-<p>对于之前讨论的 S&amp;P 500 数据，$\alpha + \beta = 0.9734$，而 $V_L = 0.0001470$。假设我们对当前每日方差率的估计为 0.0003（这对应于每日波动率为 1.732%），那么在 10 天后，预期的方差率为：</p>
-<p>$$<br>
-0.0001470 + 0.9734^{10} \times (0.0003 - 0.0001470) = 0.0002638<br>
-$$</p>
-<p>预期的每日波动率为 $\sqrt{0.0002638} = 1.62%$，仍然明显高于长期波动率 1.21%。然而，在 100 天后，预期的方差率为：</p>
-<p>$$<br>
-0.0001470 + 0.9734^{100} \times (0.0003 - 0.0001470) = 0.0001573<br>
-$$</p>
+<p><span class="math display">\[
+E[\sigma_{n+t}^2] = V_L + (\alpha + \beta)^t (\sigma_n^2 - V_L)
+\tag{8.14}
+\]</span></p>
+<p>这个方程使用在第 <span class="math inline">\(n-1\)</span>
+天结束时可获得的信息来预测第 <span class="math inline">\(n+t\)</span>
+天的波动率。在 EWMA 模型中，<span class="math inline">\(\alpha + \beta =
+1\)</span>，方程 (8.14) 表明预期的未来方差率等于当前的方差率。当 <span
+class="math inline">\(\alpha + \beta &lt; 1\)</span>
+时，方程中的最后一项随着 <span class="math inline">\(t\)</span>
+的增加逐渐变小。图 8.6 显示了在当前方差率不同于 <span
+class="math inline">\(V_L\)</span>
+的情形下，方差率的预期路径。如前所述，方差率表现出均值回复的特性，回复水平为
+<span class="math inline">\(V_L\)</span>，回复速率为 <span
+class="math inline">\(1 - \alpha -
+\beta\)</span>。我们对未来方差率的预测在时间向前推进时趋近于 <span
+class="math inline">\(V_L\)</span>。</p>
+<p><img src="/img4/《风险管理与金融机构》/F8.6.png" alt="F8.6" style="zoom:67%;" /></p>
+<p>该分析强调了对于稳定的 GARCH(1,1) 过程，必须满足 <span
+class="math inline">\(\alpha + \beta &lt; 1\)</span>。当 <span
+class="math inline">\(\alpha + \beta &gt; 1\)</span>
+时，赋予长期平均方差的权重为负，过程表现为“远离均值（mean
+fleeing）”而非“回复均值（mean reverting）”。</p>
+<p>对于之前讨论的 S&amp;P 500 数据，<span class="math inline">\(\alpha +
+\beta = 0.9734\)</span>，而 <span class="math inline">\(V_L =
+0.0001470\)</span>。假设我们对当前每日方差率的估计为
+0.0003（这对应于每日波动率为 1.732%），那么在 10
+天后，预期的方差率为：</p>
+<p><span class="math display">\[
+0.0001470 + 0.9734^{10} \times (0.0003 - 0.0001470) = 0.0002638
+\]</span></p>
+<p>预期的每日波动率为 <span class="math inline">\(\sqrt{0.0002638} =
+1.62\%\)</span>，仍然明显高于长期波动率 1.21%。然而，在 100
+天后，预期的方差率为：</p>
+<p><span class="math display">\[
+0.0001470 + 0.9734^{100} \times (0.0003 - 0.0001470) = 0.0001573
+\]</span></p>
 <p>对应的预期每日波动率为 1.25%，已经非常接近长期波动率 1.21%。</p>
-<h4 id="8-10-1-波动率期限结构">8.10.1 波动率期限结构</h4>
+<h4 id="波动率期限结构">8.10.1 波动率期限结构</h4>
 <p>Volatility Term Structures</p>
-<p>假设今天是第 $n$ 天。定义：</p>
-<p>$$<br>
-V(t) = E(\sigma^2_{n+t})<br>
-$$</p>
+<p>假设今天是第 <span class="math inline">\(n\)</span> 天。定义：</p>
+<p><span class="math display">\[
+V(t) = E(\sigma^2_{n+t})
+\]</span></p>
 <p>以及：</p>
-<p>$$<br>
-a = \ln \frac{1}{\alpha + \beta}<br>
-$$</p>
+<p><span class="math display">\[
+a = \ln \frac{1}{\alpha + \beta}
+\]</span></p>
 <p>那么方程 (8.14) 可写成：</p>
-<p>$$<br>
-V(t) = V_L + e^{-at}[V(0) - V_L]<br>
-$$</p>
-<p>其中 $V(t)$ 是对第 $t$ 天即时方差率（instantaneous variance rate）的估计。</p>
-<p>从今天到未来第 $T$ 天之间的日均方差率（average variance rate per day）为：</p>
-<p>$$<br>
-\frac{1}{T} \int_0^T V(t) dt = V_L + \frac{1 - e^{-aT}}{aT} [V(0) - V_L]<br>
-$$</p>
-<p>随着 $T$ 的增加，该平均值趋近于 $V_L$。</p>
-<p>定义 $\sigma(T)$ 为在 GARCH(1,1) 模型下用于定价一个到期日为 $T$ 天的期权的年化波动率。假设每年有 252 个交易日，则 $\sigma(T)^2$ 为 252 倍的日均方差率，因此：</p>
-<p>$$<br>
-\sigma(T)^2 = 252 \left{ V_L + \frac{1 - e^{-aT}}{aT} [V(0) - V_L] \right} \tag{8.15}<br>
-$$</p>
-<p>期权波动率与其到期时间之间的关系被称为<strong>波动率期限结构</strong>（volatility term structure）。<strong>波动率期限结构通常是根据隐含波动率计算出来的，但公式 (8.15) 提供了一个基于 GARCH(1,1) 模型的替代估算方法。尽管 GARCH(1,1) 模型估算出的波动率期限结构与由隐含波动率计算出的结构不完全相同，但它常被用于预测实际波动率期限结构对波动率变化的反应。</strong></p>
-<p>当当前波动率高于长期波动率时，GARCH(1,1) 模型预测出一个向下倾斜（downward-sloping）的波动率期限结构；当当前波动率低于长期波动率时，则预测出一个向上倾斜（upward-sloping）的波动率期限结构。</p>
+<p><span class="math display">\[
+V(t) = V_L + e^{-at}[V(0) - V_L]
+\]</span></p>
+<p>其中 <span class="math inline">\(V(t)\)</span> 是对第 <span
+class="math inline">\(t\)</span> 天即时方差率（instantaneous variance
+rate）的估计。</p>
+<p>从今天到未来第 <span class="math inline">\(T\)</span>
+天之间的日均方差率（average variance rate per day）为：</p>
+<p><span class="math display">\[
+\frac{1}{T} \int_0^T V(t) dt = V_L + \frac{1 - e^{-aT}}{aT} [V(0) - V_L]
+\]</span></p>
+<p>随着 <span class="math inline">\(T\)</span> 的增加，该平均值趋近于
+<span class="math inline">\(V_L\)</span>。</p>
+<p>定义 <span class="math inline">\(\sigma(T)\)</span> 为在 GARCH(1,1)
+模型下用于定价一个到期日为 <span class="math inline">\(T\)</span>
+天的期权的年化波动率。假设每年有 252 个交易日，则 <span
+class="math inline">\(\sigma(T)^2\)</span> 为 252
+倍的日均方差率，因此：</p>
+<p><span class="math display">\[
+\sigma(T)^2 = 252 \left\{ V_L + \frac{1 - e^{-aT}}{aT} [V(0) - V_L]
+\right\} \tag{8.15}
+\]</span></p>
+<p>期权波动率与其到期时间之间的关系被称为<strong>波动率期限结构</strong>（volatility
+term
+structure）。<strong>波动率期限结构通常是根据隐含波动率计算出来的，但公式
+(8.15) 提供了一个基于 GARCH(1,1) 模型的替代估算方法。尽管 GARCH(1,1)
+模型估算出的波动率期限结构与由隐含波动率计算出的结构不完全相同，但它常被用于预测实际波动率期限结构对波动率变化的反应。</strong></p>
+<p>当当前波动率高于长期波动率时，GARCH(1,1)
+模型预测出一个向下倾斜（downward-sloping）的波动率期限结构；当当前波动率低于长期波动率时，则预测出一个向上倾斜（upward-sloping）的波动率期限结构。</p>
 <p>以 S&amp;P 500 的数据为例，有：</p>
-<p>$$<br>
-a = \ln\left(\frac{1}{0.97338}\right) = 0.02698<br>
-$$</p>
-<p>$$<br>
-V_L = 0.0001470<br>
-$$</p>
-<p>假设当前的日方差率 $V(0)$ 被估计为 0.0003，则由公式 (8.15) 可得：</p>
-<p>$$<br>
-\sigma(T)^2 = 252 \left[ 0.0001470 + \frac{1 - e^{-0.02698T}}{0.02698T} (0.0003 - 0.0001470) \right]<br>
-$$</p>
-<p>其中 $T$ 以天为单位。表 8.6 展示了不同 $T$ 值对应的年化波动率。</p>
-<img src="/img4/《风险管理与金融机构》/T8.6.png" alt="T8.6" style="zoom:67%;" />
-<h4 id="8-10-2-波动率变动的影响">8.10.2 波动率变动的影响</h4>
+<p><span class="math display">\[
+a = \ln\left(\frac{1}{0.97338}\right) = 0.02698
+\]</span></p>
+<p><span class="math display">\[
+V_L = 0.0001470
+\]</span></p>
+<p>假设当前的日方差率 <span class="math inline">\(V(0)\)</span> 被估计为
+0.0003，则由公式 (8.15) 可得：</p>
+<p><span class="math display">\[
+\sigma(T)^2 = 252 \left[ 0.0001470 + \frac{1 - e^{-0.02698T}}{0.02698T}
+(0.0003 - 0.0001470) \right]
+\]</span></p>
+<p>其中 <span class="math inline">\(T\)</span> 以天为单位。表 8.6
+展示了不同 <span class="math inline">\(T\)</span>
+值对应的年化波动率。</p>
+<p><img src="/img4/《风险管理与金融机构》/T8.6.png" alt="T8.6" style="zoom:67%;" /></p>
+<h4 id="波动率变动的影响">8.10.2 波动率变动的影响</h4>
 <p>Impact of Volatility Changes</p>
 <p>公式 (8.15) 可重写为：</p>
-<p>$$<br>
-\sigma(T)^2 = 252 \left{ V_L + \frac{1 - e^{-aT}}{aT} \left( \frac{\sigma(0)^2}{252} - V_L \right) \right}<br>
-$$</p>
+<p><span class="math display">\[
+\sigma(T)^2 = 252 \left\{ V_L + \frac{1 - e^{-aT}}{aT} \left(
+\frac{\sigma(0)^2}{252} - V_L \right) \right\}
+\]</span></p>
 <p>当 σ(0) 发生变化 Δσ(0) 时，σ(T) 的变化大约为：</p>
-<p>$$<br>
-\frac{1 - e^{-aT}}{aT} \cdot \frac{\sigma(0)}{\sigma(T)} \cdot \Delta\sigma(0) \tag{8.16}<br>
-$$</p>
-<img src="/img4/《风险管理与金融机构》/T8.7.png" alt="T8.7" style="zoom:67%;" />
-<p>表 8.7 展示了在我们所用的 S&amp;P 500 数据中，波动率变化对不同期限期权的影响。如前所设，假设当前的瞬时方差率 $ V(0) = 0.0003 $，因此：<br>
-$$<br>
-\sigma(0) = \sqrt{252} \times \sqrt{0.0003} = 27.50% \text{（年化）}<br>
-$$</p>
-<p>表中考虑了瞬时波动率从 27.50% 上升到 28.50%（年化）的一次 100 个基点（100-basis-point）的变化，这意味着：</p>
-<p>$$<br>
-\Delta\sigma(0) = 0.01 \text{ 或 } 1%<br>
-$$</p>
-<p>许多金融机构在评估其投资组合对波动率变化的敏感性（Vega 暴露）时，会使用类似本节的分析方法。与其在计算 Vega 时假设所有期限的隐含波动率统一上升 1%，不如将波动率的假定变动幅度与期权的期限相对应。</p>
+<p><span class="math display">\[
+\frac{1 - e^{-aT}}{aT} \cdot \frac{\sigma(0)}{\sigma(T)} \cdot
+\Delta\sigma(0) \tag{8.16}
+\]</span></p>
+<p><img src="/img4/《风险管理与金融机构》/T8.7.png" alt="T8.7" style="zoom:67%;" /></p>
+<p>表 8.7 展示了在我们所用的 S&amp;P 500
+数据中，波动率变化对不同期限期权的影响。如前所设，假设当前的瞬时方差率 $
+V(0) = 0.0003 <span class="math inline">\(，因此：\)</span>$ (0) = =
+27.50% $$</p>
+<p>表中考虑了瞬时波动率从 27.50% 上升到 28.50%（年化）的一次 100
+个基点（100-basis-point）的变化，这意味着：</p>
+<p><span class="math display">\[
+\Delta\sigma(0) = 0.01 \text{ 或 } 1\%
+\]</span></p>
+<p>许多金融机构在评估其投资组合对波动率变化的敏感性（Vega
+暴露）时，会使用类似本节的分析方法。与其在计算 Vega
+时假设所有期限的隐含波动率统一上升
+1%，不如将波动率的假定变动幅度与期权的期限相对应。</p>
 <p>根据表 8.7，对于：</p>
 <ul>
 <li>10 天期权，考虑 0.91% 的波动率上升；</li>
@@ -1509,51 +1965,116 @@ $$</p>
 <p>依此类推。</p>
 <h3 id="总结">总结</h3>
 <p>在风险管理中，市场变量的日波动率被定义为该变量每日百分比变动的标准差。每日方差率是每日波动率的平方。波动率在交易日通常远高于非交易日。因此，在波动率计算中通常忽略非交易日。尽管很容易假设市场变量的每日变动服从正态分布，但实际上，这种假设与现实相差甚远。大多数市场变量的每日百分比变动具有比正态分布更厚的尾部。幂律被发现可以很好地描述实际中遇到的许多分布尾部的特征。</p>
-<p>In risk management, the daily volatility of a market variable is defined as the standard deviation of the percentage daily change in the  market variable. The daily variancerate is the square of the daily volatility. Volatility tends to be much higher on trading days than on nontrading days. As a result, nontrading days are ignored in volatility calculations. It is tempting to assume that daily changes in market variables are normally distributed. In fact, this is far from true. Most market variables have distributions for percentage daily changes with much heavier tails than the normal distribution. The power law has been found to be a good description of the tails of many distributions that are encountered in practice.</p>
-<p>本章讨论了用于跟踪当前波动率水平的方法。设 $ u_i $ 表示市场变量在第 $ i-1 $ 日末至第 $ i $ 日末之间的百分比变化。市场变量的方差率（即其波动率的平方）是 $ u_i^2 $ 的加权平均。本文所讨论方法的关键特征在于，它们对 $ u_i^2 $ 的观测值赋予不同的权重，观测时间越近，所赋权重越高。</p>
-<p>在 EWMA 模型和 GARCH(1,1) 模型中，观测值的权重会随时间呈指数式衰减。GARCH(1,1) 模型不同于 EWMA 模型之处在于，它还对长期平均方差率赋予了一定的权重。EWMA 和 GARCH(1,1) 模型的结构使得对未来方差率水平的预测变得相对容易。</p>
-<p>在实际操作中，通常使用最大似然法从历史数据中估计 GARCH(1,1) 及类似模型的参数。这些方法通过迭代程序来确定最可能产生历史数据的参数值。一旦模型的参数被确定，就可以通过模型在多大程度上消除了 $ u_i^2 $ 的自相关性来评价模型的优劣。</p>
-<p>GARCH(1,1) 模型还可以用于根据历史数据估计期权的波动率。这类分析常用于计算波动率冲击对不同时期权期限所对应隐含波动率的影响。</p>
+<p>In risk management, the daily volatility of a market variable is
+defined as the standard deviation of the percentage daily change in the
+market variable. The daily variancerate is the square of the daily
+volatility. Volatility tends to be much higher on trading days than on
+nontrading days. As a result, nontrading days are ignored in volatility
+calculations. It is tempting to assume that daily changes in market
+variables are normally distributed. In fact, this is far from true. Most
+market variables have distributions for percentage daily changes with
+much heavier tails than the normal distribution. The power law has been
+found to be a good description of the tails of many distributions that
+are encountered in practice.</p>
+<p>本章讨论了用于跟踪当前波动率水平的方法。设 $ u_i $ 表示市场变量在第 $
+i-1 $ 日末至第 $ i $
+日末之间的百分比变化。市场变量的方差率（即其波动率的平方）是 $ u_i^2 $
+的加权平均。本文所讨论方法的关键特征在于，它们对 $ u_i^2 $
+的观测值赋予不同的权重，观测时间越近，所赋权重越高。</p>
+<p>在 EWMA 模型和 GARCH(1,1)
+模型中，观测值的权重会随时间呈指数式衰减。GARCH(1,1) 模型不同于 EWMA
+模型之处在于，它还对长期平均方差率赋予了一定的权重。EWMA 和 GARCH(1,1)
+模型的结构使得对未来方差率水平的预测变得相对容易。</p>
+<p>在实际操作中，通常使用最大似然法从历史数据中估计 GARCH(1,1)
+及类似模型的参数。这些方法通过迭代程序来确定最可能产生历史数据的参数值。一旦模型的参数被确定，就可以通过模型在多大程度上消除了
+$ u_i^2 $ 的自相关性来评价模型的优劣。</p>
+<p>GARCH(1,1)
+模型还可以用于根据历史数据估计期权的波动率。这类分析常用于计算波动率冲击对不同时期权期限所对应隐含波动率的影响。</p>
 <h3 id="练习题与问题">练习题与问题</h3>
 <p>（答案见书末）</p>
-<p>8.1 某资产的波动率为每日 2%。该资产在三天内的百分比价格变动的标准差是多少？</p>
-<p>8.2 某资产的年化波动率为 25%。该资产在一个交易日内的百分比价格变动的标准差是多少？在均值为零且服从正态分布的假设下，估计该资产在一天内百分比价格变动的 95% 置信区间。</p>
+<p>8.1 某资产的波动率为每日
+2%。该资产在三天内的百分比价格变动的标准差是多少？</p>
+<p>8.2 某资产的年化波动率为
+25%。该资产在一个交易日内的百分比价格变动的标准差是多少？在均值为零且服从正态分布的假设下，估计该资产在一天内百分比价格变动的
+95% 置信区间。</p>
 <p>8.3 为什么交易员在使用波动率时假设一年有 252 天而不是 365 天？</p>
-<p>8.4 什么是隐含波动率？如果同一资产的不同期权具有不同的隐含波动率，这意味着什么？</p>
-<p>8.5 假设过去 11 天某汇率在每日收盘时的观察值分别为：0.7000，0.7010，0.7070，0.6999，0.6970，0.7003，0.6951，0.6953，0.6934，0.6923，以及 0.6922。请分别使用公式（8.2）和公式（8.4）估计日波动率。</p>
-<p>8.6 网站访问量遵循公式（8.1）中的幂律分布，参数 α = 2。假设有 1% 的网站每天有 500 名或更多访问者，那么每天访问者达到 (a) 1,000 和 (b) 2,000 或以上的网站分别占比多少？</p>
-<p>8.7 请解释用于从历史数据中估计波动率的指数加权移动平均（EWMA）模型。</p>
-<p>8.8 指数加权移动平均模型与 GARCH(1,1) 模型在更新波动率时有何区别？</p>
-<p>8.9 某资产最新的日波动率估计值为 1.5%，昨日收盘价格为 30.00 美元。EWMA 模型中的参数 λ 为 0.94。假设该资产今日收盘价为 30.50 美元。根据 EWMA 模型，这一变动将如何更新波动率？</p>
-<p>8.10 一家公司使用 EWMA 模型预测波动率，并决定将参数 λ 从 0.95 改为 0.85。请解释这一更改对预测结果可能产生的影响。</p>
-<p>8.11 假设某指数在昨日收盘时为 1,040，彼时该指数的日波动率估计为每日 1%。GARCH(1,1) 模型的参数为 ω = 0.000002，α = 0.06，β = 0.92。若该指数今日收盘时为 1,060，则新的波动率估计值是多少？</p>
-<p>8.12 最近对美元–英镑汇率的日波动率估计为 0.6%，昨日下午 4 点的汇率为 1.5000。EWMA 模型中的参数 λ 为 0.9。假设今日下午 4 点的汇率为 1.4950，该日波动率估计值将如何更新？</p>
-<p>8.13 一家公司使用 GARCH(1,1) 模型更新波动率。该模型包含三个参数：ω、α 和 β。在保持其他参数不变的情况下，分别对每一个参数做小幅增加会产生怎样的影响？</p>
-<p>8.14 某 GARCH(1,1) 模型的参数估计值为 ω = 0.000004，α = 0.05，β = 0.92。该模型的长期平均波动率是多少？其方差率回归长期平均值的方程是什么？如果当前年化波动率为 20%，那么在 20 天后预期波动率是多少？</p>
-<p>8.15 假设 FTSE100 股票指数（以英镑计）的日波动率为 1.8%，美元–英镑汇率的日波动率为 0.9%。进一步假设 FTSE100 指数与美元–英镑汇率之间的相关系数为 0.4。当 FTSE100 指数以美元计价时，其波动率是多少？假设美元–英镑汇率以“每英镑兑换的美元数”表示。（提示：当 Z = XY 时，Z 的每日百分比变动大约等于 X 的每日百分比变动加上 Y 的每日百分比变动。）</p>
-<p>8.16 假设 GARCH(1,1) 模型的参数估计为 ω = 0.000003，α = 0.04，β = 0.94，当前日波动率估计为 1%。请估计 30 天后的日波动率。</p>
-<p>8.17 假设 GARCH(1,1) 模型的参数估计为 ω = 0.000002，α = 0.04，β = 0.94，当前日波动率估计为 1.3%。请估计在为一个 20 天期的期权定价时应使用的年化波动率。</p>
+<p>8.4
+什么是隐含波动率？如果同一资产的不同期权具有不同的隐含波动率，这意味着什么？</p>
+<p>8.5 假设过去 11
+天某汇率在每日收盘时的观察值分别为：0.7000，0.7010，0.7070，0.6999，0.6970，0.7003，0.6951，0.6953，0.6934，0.6923，以及
+0.6922。请分别使用公式（8.2）和公式（8.4）估计日波动率。</p>
+<p>8.6 网站访问量遵循公式（8.1）中的幂律分布，参数 α = 2。假设有 1%
+的网站每天有 500 名或更多访问者，那么每天访问者达到 (a) 1,000 和 (b)
+2,000 或以上的网站分别占比多少？</p>
+<p>8.7
+请解释用于从历史数据中估计波动率的指数加权移动平均（EWMA）模型。</p>
+<p>8.8 指数加权移动平均模型与 GARCH(1,1)
+模型在更新波动率时有何区别？</p>
+<p>8.9 某资产最新的日波动率估计值为 1.5%，昨日收盘价格为 30.00
+美元。EWMA 模型中的参数 λ 为 0.94。假设该资产今日收盘价为 30.50
+美元。根据 EWMA 模型，这一变动将如何更新波动率？</p>
+<p>8.10 一家公司使用 EWMA 模型预测波动率，并决定将参数 λ 从 0.95 改为
+0.85。请解释这一更改对预测结果可能产生的影响。</p>
+<p>8.11 假设某指数在昨日收盘时为 1,040，彼时该指数的日波动率估计为每日
+1%。GARCH(1,1) 模型的参数为 ω = 0.000002，α = 0.06，β =
+0.92。若该指数今日收盘时为 1,060，则新的波动率估计值是多少？</p>
+<p>8.12 最近对美元–英镑汇率的日波动率估计为 0.6%，昨日下午 4 点的汇率为
+1.5000。EWMA 模型中的参数 λ 为 0.9。假设今日下午 4 点的汇率为
+1.4950，该日波动率估计值将如何更新？</p>
+<p>8.13 一家公司使用 GARCH(1,1) 模型更新波动率。该模型包含三个参数：ω、α
+和
+β。在保持其他参数不变的情况下，分别对每一个参数做小幅增加会产生怎样的影响？</p>
+<p>8.14 某 GARCH(1,1) 模型的参数估计值为 ω = 0.000004，α = 0.05，β =
+0.92。该模型的长期平均波动率是多少？其方差率回归长期平均值的方程是什么？如果当前年化波动率为
+20%，那么在 20 天后预期波动率是多少？</p>
+<p>8.15 假设 FTSE100 股票指数（以英镑计）的日波动率为
+1.8%，美元–英镑汇率的日波动率为 0.9%。进一步假设 FTSE100
+指数与美元–英镑汇率之间的相关系数为 0.4。当 FTSE100
+指数以美元计价时，其波动率是多少？假设美元–英镑汇率以“每英镑兑换的美元数”表示。（提示：当
+Z = XY 时，Z 的每日百分比变动大约等于 X 的每日百分比变动加上 Y
+的每日百分比变动。）</p>
+<p>8.16 假设 GARCH(1,1) 模型的参数估计为 ω = 0.000003，α = 0.04，β =
+0.94，当前日波动率估计为 1%。请估计 30 天后的日波动率。</p>
+<p>8.17 假设 GARCH(1,1) 模型的参数估计为 ω = 0.000002，α = 0.04，β =
+0.94，当前日波动率估计为 1.3%。请估计在为一个 20
+天期的期权定价时应使用的年化波动率。</p>
 <h3 id="进阶问题">进阶问题</h3>
-<p>8.18 假设某股票在连续 15 天每日收盘时的价格（以美元计）如下：<br>
-30.2，32.0，31.1，30.1，30.2，30.3，30.6，30.9，30.5，31.1，31.3，30.8，30.3，29.9，29.8<br>
+<p>8.18 假设某股票在连续 15 天每日收盘时的价格（以美元计）如下：<br />
+30.2，32.0，31.1，30.1，30.2，30.3，30.6，30.9，30.5，31.1，31.3，30.8，30.3，29.9，29.8<br />
 请分别使用公式（8.2）和公式（8.4）估计日波动率。</p>
-<p>8.19 假设某资产昨日收盘价为 300 美元，其日波动率估计为 1.3%。今日收盘价为 298 美元。请使用以下方法更新波动率估计值：<br>
-(a) 指数加权移动平均（EWMA）模型，λ = 0.94<br>
+<p>8.19 假设某资产昨日收盘价为 300 美元，其日波动率估计为
+1.3%。今日收盘价为 298 美元。请使用以下方法更新波动率估计值：<br />
+(a) 指数加权移动平均（EWMA）模型，λ = 0.94<br />
 (b) GARCH(1,1) 模型，参数为 ω = 0.000002，α = 0.04，β = 0.94</p>
-<p>8.20 作者网站（<a target="_blank" rel="noopener" href="http://www-2.rotman.utoronto.ca/~hull/data">www-2.rotman.utoronto.ca/~hull/data</a>）提供了包含 900 多天多个不同汇率和股票指数的日数据的 Excel 表格。请选择一个汇率和一个股票指数，估计使下列和最小的 EWMA 模型中 λ 的值：<br>
-∑(vi − βi)²<br>
-其中 vi 是第 i−1 天末的方差预测，βi 是根据第 i 天到第 i+25 天的数据计算的方差。使用 Excel 中的“求解器（Solver）”工具进行优化。开始 EWMA 计算时，将第一天末的方差预测设置为当日收益率的平方。</p>
-<p>8.21 假设 GARCH(1,1) 模型的参数为 α = 0.03，β = 0.95，ω = 0.000002。<br>
-(a) 该模型的长期平均波动率是多少？<br>
-(b) 如果当前日波动率为 1.5%，请估计 20 天、40 天和 60 天后的波动率。<br>
-© 在为 20 天、40 天和 60 天期权定价时应使用什么样的波动率？<br>
-(d) 假设某一事件将日波动率从 1.5% 提高到 2%，请估计该事件对 20 天、40 天和 60 天后波动率的影响。<br>
-(e) 请估计该事件对为 20 天、40 天和 60 天期权定价时所使用波动率的提升幅度。</p>
-<p>8.22 请基于 2005 年 7 月 27 日至 2010 年 7 月 27 日之间的欧元–美元汇率数据，分别估计 EWMA 模型和 GARCH(1,1) 模型的参数。数据可从作者网站获取：<br>
-<a target="_blank" rel="noopener" href="http://www-2.rotman.utoronto.ca/~hull/data">www-2.rotman.utoronto.ca/~hull/data</a></p>
-<p>8.23 某投资组合在一个月内亏损超过 1,000 万美元的概率估计为 5%。<br>
-(a) 假设该组合价值变动服从均值为零的正态分布，亏损超过的概率为 1% 时，对应的亏损金额是多少？<br>
-(b) 假设价值变动服从幂律分布，参数 α = 3，亏损超过的概率为 1% 时，对应的亏损金额是多少？</p>
+<p>8.20 作者网站（<a
+target="_blank" rel="noopener" href="http://www-2.rotman.utoronto.ca/~hull/data">www-2.rotman.utoronto.ca/~hull/data</a>）提供了包含
+900 多天多个不同汇率和股票指数的日数据的 Excel
+表格。请选择一个汇率和一个股票指数，估计使下列和最小的 EWMA 模型中 λ
+的值：<br />
+∑(vi − βi)²<br />
+其中 vi 是第 i−1 天末的方差预测，βi 是根据第 i 天到第 i+25
+天的数据计算的方差。使用 Excel 中的“求解器（Solver）”工具进行优化。开始
+EWMA 计算时，将第一天末的方差预测设置为当日收益率的平方。</p>
+<p>8.21 假设 GARCH(1,1) 模型的参数为 α = 0.03，β = 0.95，ω =
+0.000002。<br />
+(a) 该模型的长期平均波动率是多少？<br />
+(b) 如果当前日波动率为 1.5%，请估计 20 天、40 天和 60
+天后的波动率。<br />
+(c) 在为 20 天、40 天和 60 天期权定价时应使用什么样的波动率？<br />
+(d) 假设某一事件将日波动率从 1.5% 提高到 2%，请估计该事件对 20 天、40
+天和 60 天后波动率的影响。<br />
+(e) 请估计该事件对为 20 天、40 天和 60
+天期权定价时所使用波动率的提升幅度。</p>
+<p>8.22 请基于 2005 年 7 月 27 日至 2010 年 7 月 27
+日之间的欧元–美元汇率数据，分别估计 EWMA 模型和 GARCH(1,1)
+模型的参数。数据可从作者网站获取：<br />
+<a
+target="_blank" rel="noopener" href="http://www-2.rotman.utoronto.ca/~hull/data">www-2.rotman.utoronto.ca/~hull/data</a></p>
+<p>8.23 某投资组合在一个月内亏损超过 1,000 万美元的概率估计为 5%。<br />
+(a) 假设该组合价值变动服从均值为零的正态分布，亏损超过的概率为 1%
+时，对应的亏损金额是多少？<br />
+(b) 假设价值变动服从幂律分布，参数 α = 3，亏损超过的概率为 1%
+时，对应的亏损金额是多少？</p>
 
     </div>
 
