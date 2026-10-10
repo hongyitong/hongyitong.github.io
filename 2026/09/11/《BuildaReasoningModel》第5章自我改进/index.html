@@ -22,7 +22,7 @@
 
     <meta name="description" content="第 5 章 通过自我改进进行推理时间缩放 Scoring and iteratively improving model responses 本章涵盖  用简单的基于规则的评分器对 LLM 答案进行评分 计算 LLM 对其答案的置信度 编写一个自我改进循环，其中 LLM 迭代改进其答案   This chapter covers  Scoring LLM answers with a simple">
 <meta property="og:type" content="article">
-<meta property="og:title" content="《Build_a_Reasoning_Model》第5章通过自我改进进行推理时间缩放">
+<meta property="og:title" content="第5章通过自我改进进行推理时间缩放">
 <meta property="og:url" content="http://hongyitong.github.io/2026/09/11/%E3%80%8ABuildaReasoningModel%E3%80%8B%E7%AC%AC5%E7%AB%A0%E8%87%AA%E6%88%91%E6%94%B9%E8%BF%9B/index.html">
 <meta property="og:site_name" content="墨语浮生">
 <meta property="og:description" content="第 5 章 通过自我改进进行推理时间缩放 Scoring and iteratively improving model responses 本章涵盖  用简单的基于规则的评分器对 LLM 答案进行评分 计算 LLM 对其答案的置信度 编写一个自我改进循环，其中 LLM 迭代改进其答案   This chapter covers  Scoring LLM answers with a simple">
@@ -51,7 +51,7 @@
 <meta property="og:image" content="http://hongyitong.github.io/Users/hongyuanjiao/Desktop/Build_a_Reasoning_Model//img4/BuildaReasoningModel/Table_5.1.png">
 <meta property="og:image" content="http://hongyitong.github.io/img4/BuildaReasoningModel/Figure_5.22.png">
 <meta property="article:published_time" content="2026-09-10T16:00:00.000Z">
-<meta property="article:modified_time" content="2026-09-20T03:41:05.643Z">
+<meta property="article:modified_time" content="2026-10-10T04:22:08.266Z">
 <meta property="article:author" content="Rayman.hung">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://hongyitong.github.io/img4/BuildaReasoningModel/Figure_5.1.png">
@@ -60,10 +60,10 @@
 <link rel="canonical" href="http://hongyitong.github.io/2026/09/11/%E3%80%8ABuildaReasoningModel%E3%80%8B%E7%AC%AC5%E7%AB%A0%E8%87%AA%E6%88%91%E6%94%B9%E8%BF%9B/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2026/09/11/%E3%80%8ABuildaReasoningModel%E3%80%8B%E7%AC%AC5%E7%AB%A0%E8%87%AA%E6%88%91%E6%94%B9%E8%BF%9B/","path":"2026/09/11/《BuildaReasoningModel》第5章自我改进/","title":"《Build_a_Reasoning_Model》第5章通过自我改进进行推理时间缩放"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2026/09/11/%E3%80%8ABuildaReasoningModel%E3%80%8B%E7%AC%AC5%E7%AB%A0%E8%87%AA%E6%88%91%E6%94%B9%E8%BF%9B/","path":"2026/09/11/《BuildaReasoningModel》第5章自我改进/","title":"第5章通过自我改进进行推理时间缩放"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>《Build_a_Reasoning_Model》第5章通过自我改进进行推理时间缩放 | 墨语浮生</title>
+<title>第5章通过自我改进进行推理时间缩放 | 墨语浮生</title>
   
 
 
@@ -256,12 +256,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="《Build_a_Reasoning_Model》第5章通过自我改进进行推理时间缩放 | 墨语浮生">
+      <meta itemprop="name" content="第5章通过自我改进进行推理时间缩放 | 墨语浮生">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          《Build_a_Reasoning_Model》第5章通过自我改进进行推理时间缩放
+          第5章通过自我改进进行推理时间缩放
         </h1>
 
         <div class="post-meta-container">
@@ -468,9 +468,8 @@ is"，模型对"Berlin"作为下一个Token的置信度高于"Bridge"。</p>
 alt="Figure 5.11" />
 在实践中，我们通常希望比较完整的答案，而不是单个Token。这种从单个Token到序列级评分的扩展如图5.11所示，其中我们计算每个Token给定其前面Token的概率。这与图5.10中的过程相同，只是我们对序列中的每个Token都重复此操作。</p>
 <p>在普通文本生成过程中，模型一步一步地执行此操作，选择下一个Token。在此，我们以不同的方式使用相同的机制：不是采样新Token，而是对于一个已完成的候选答案，逐个在模型下对其每个Token进行评分。然后我们将这些概率相乘，得到完整序列的概率，也称为联合概率。</p>
-<blockquote>
-<p>序列的联合概率</p>
-<p>对于熟悉数学符号的读者来说，Token序列的联合概率可以简洁地写为条件概率的乘积。对于序列<span
+<p>序列的联合概率:
+对于熟悉数学符号的读者来说，Token序列的联合概率可以简洁地写为条件概率的乘积。对于序列<span
 class="math inline">\(x_1, x_2, ..., x_T\)</span>和模型权重<span
 class="math inline">\(W\)</span>，有： <span class="math display">\[
 P(x_1, x_2, ..., x_T; W) =
@@ -480,7 +479,6 @@ P(x_1; W) \cdot P(x_2 | x_1; W) \cdot P(x_3 | x_1, x_2; W) \cdot ...
 \cdot P(x_T | x_1, ..., x_{T-1}; W)
 \]</span>
 这与我们在图5.11中计算的内容完全一致。在每个位置，我们将上下文输入模型，得到下一个Token的概率，然后将这些分数在序列上相乘。</p>
-</blockquote>
 <p>理想情况下，分配给序列"The capital of Germany is
 Berlin"的概率应远高于无意义的答案"The capital of Germany is
 Bridge"。由于联合概率是通过许多小数值相乘得到的，图5.11中两个序列的结果概率都接近于零。我们将在下一节解决这个问题。</p>
@@ -589,9 +587,7 @@ alt="Figure 5.16" /> 图 5.16
 对 -29.8750）。</p>
 <p><strong>图 5.16 
 词元级别的对数概率如何累积形成序列对数概率。每一行显示在给定前面文本的条件下，下一个词元的对数概率。将这些值求和得到完整序列的联合对数概率。</strong></p>
-<blockquote>
-<p>使用对数概率</p>
-<p>当我们计算一个序列的联合概率时，我们会将许多介于 0 和 1
+<p>使用对数概率: 当我们计算一个序列的联合概率时，我们会将许多介于 0 和 1
 之间的数相乘： <span class="math display">\[
 P(\text{sequence}) = \prod_{i=1}^{n} P(\text{token}_i \mid
 \text{context}_{&lt;i})
@@ -609,9 +605,8 @@ class="math display">\[
 W) + \dots + \log P(x_T \mid x_{1:t-1}, W)
 \]</span>
 换句话说，一个序列的对数概率就是其各个词元对数概率的总和。这既在数值上更稳定，也更易于使用。这也与
-<code>torch.log_softmax</code> 返回的值一致，后者直接提供对数概率。</p>
-<p>因此，在机器学习和 AI 中，求和对数概率是标准方法。</p>
-</blockquote>
+<code>torch.log_softmax</code> 返回的值一致，后者直接提供对数概率。
+因此，在机器学习和 AI 中，求和对数概率是标准方法。</p>
 <p>实现词元对数概率函数非常直接，因为只需要对清单 5.6
 中的代码做两个小改动：将 <code>torch.softmax</code> 改为
 <code>torch.log_softmax</code>，将 <code>torch.prod</code> 改为
@@ -968,13 +963,13 @@ N 选一的选择策略。</li>
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2026/09/10/%E3%80%8ABuildaReasoningModel%E3%80%8B%E7%AC%AC4%E7%AB%A0%E6%8E%A8%E7%90%86%E6%97%B6%E7%BC%A9%E6%94%BE/" rel="prev" title="《Build_a_Reasoning_Model》第4章通过推理时缩放提升推理能力">
-                  <i class="fa fa-angle-left"></i> 《Build_a_Reasoning_Model》第4章通过推理时缩放提升推理能力
+                <a href="/2026/09/10/%E3%80%8ABuildaReasoningModel%E3%80%8B%E7%AC%AC4%E7%AB%A0%E6%8E%A8%E7%90%86%E6%97%B6%E7%BC%A9%E6%94%BE/" rel="prev" title="第4章通过推理时缩放提升推理能力">
+                  <i class="fa fa-angle-left"></i> 第4章通过推理时缩放提升推理能力
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2026/09/12/%E3%80%8ABuildaReasoningModel%E3%80%8B%E7%AC%AC6%E7%AB%A0%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0%E8%AE%AD%E7%BB%83/" rel="next" title="《Build_a_Reasoning_Model》第6章使用强化学习训练推理模型">
-                  《Build_a_Reasoning_Model》第6章使用强化学习训练推理模型 <i class="fa fa-angle-right"></i>
+                <a href="/2026/09/12/%E3%80%8ABuildaReasoningModel%E3%80%8B%E7%AC%AC6%E7%AB%A0%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0%E8%AE%AD%E7%BB%83/" rel="next" title="第6章使用强化学习训练推理模型">
+                  第6章使用强化学习训练推理模型 <i class="fa fa-angle-right"></i>
                 </a>
             </div>
           </div>
