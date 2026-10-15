@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"hongyitong.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.26.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.json","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false,"path":"/search.json"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="二次规划问题（Quadratic Programming, QP） 从直观理解到数学定义、例子、应用场景等都讲一遍。 一、什么是二次规划？ 二次规划（Quadratic Programming）是一类 目标函数是二次函数、但 约束是线性 的优化问题。 可以理解为：  “在线性约束条件下，找到一个变量组合，使一个二次函数取得最小（或最大）值”。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="二次规划问题（Quadratic Programming, QP）">
+<meta property="og:url" content="http://hongyitong.github.io/2025/07/28/%E4%BA%8C%E6%AC%A1%E8%A7%84%E5%88%92%E9%97%AE%E9%A2%98%EF%BC%88Quadratic%20Programming,%20QP%EF%BC%89/index.html">
+<meta property="og:site_name" content="墨语浮生">
+<meta property="og:description" content="二次规划问题（Quadratic Programming, QP） 从直观理解到数学定义、例子、应用场景等都讲一遍。 一、什么是二次规划？ 二次规划（Quadratic Programming）是一类 目标函数是二次函数、但 约束是线性 的优化问题。 可以理解为：  “在线性约束条件下，找到一个变量组合，使一个二次函数取得最小（或最大）值”。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-07-27T16:00:00.000Z">
+<meta property="article:modified_time" content="2025-07-29T02:20:32.263Z">
+<meta property="article:author" content="Rayman.hung">
+<meta property="article:tag" content="数学">
+<meta property="article:tag" content="二次规划">
+<meta property="article:tag" content="运筹学">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://hongyitong.github.io/2025/07/28/%E4%BA%8C%E6%AC%A1%E8%A7%84%E5%88%92%E9%97%AE%E9%A2%98%EF%BC%88Quadratic%20Programming,%20QP%EF%BC%89/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://hongyitong.github.io/2025/07/28/%E4%BA%8C%E6%AC%A1%E8%A7%84%E5%88%92%E9%97%AE%E9%A2%98%EF%BC%88Quadratic%20Programming,%20QP%EF%BC%89/","path":"2025/07/28/二次规划问题（Quadratic Programming, QP）/","title":"二次规划问题（Quadratic Programming, QP）"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>二次规划问题（Quadratic Programming, QP） | 墨语浮生</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="fc62aedd-644a-478d-b3c2-d8ba9964421c" src="https://cloud.umami.is/script.js" data-host-url="https://cloud.umami.is"></script>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js" defer></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">墨语浮生</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Rayman</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories" rel="section">分类</a></li><li class="menu-item menu-item-about"><a href="/about" rel="section">关于</a></li><li class="menu-item menu-item-archives"><a href="/archives" rel="section">归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-overview-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Rayman.hung</p>
+  <div class="site-description" itemprop="description">技术分享、读书心得、心情记录</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives">
+          <span class="site-state-item-count">1113</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories">
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">784</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hongyitong.github.io/2025/07/28/%E4%BA%8C%E6%AC%A1%E8%A7%84%E5%88%92%E9%97%AE%E9%A2%98%EF%BC%88Quadratic%20Programming,%20QP%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Rayman.hung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="墨语浮生">
+      <meta itemprop="description" content="技术分享、读书心得、心情记录">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="二次规划问题（Quadratic Programming, QP） | 墨语浮生">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          二次规划问题（Quadratic Programming, QP）
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-07-28 00:00:00" itemprop="dateCreated datePublished" datetime="2025-07-28T00:00:00+08:00">2025-07-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%95%B0%E7%90%86%E7%BB%9F%E8%AE%A1/" itemprop="url" rel="index"><span itemprop="name">数理统计</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p><strong>二次规划问题（Quadratic Programming, QP）</strong>
+从直观理解到数学定义、例子、应用场景等都讲一遍。</p>
+<p>一、<strong>什么是二次规划</strong>？</p>
+<p>二次规划（Quadratic Programming）是一类
+<strong>目标函数是二次函数</strong>、但 <strong>约束是线性</strong>
+的优化问题。</p>
+<p>可以理解为：</p>
+<blockquote>
+<p>“在线性约束条件下，找到一个变量组合，使一个二次函数取得最小（或最大）值”。</p>
+</blockquote>
+<span id="more"></span>
+<p>二、<strong>数学形式</strong></p>
+<p>标准形式如下：</p>
+<p><span class="math display">\[
+\begin{aligned} &amp;\min_{x \in \mathbb{R}^n} \quad \frac{1}{2} x^T Q x
++ c^T x \\ &amp;\text{subject to:} \\ &amp;\quad A x \le b \\ &amp;\quad
+E x = d \end{aligned}
+\]</span></p>
+<p>其中：</p>
+<ul>
+<li><span class="math inline">\(x \in
+\mathbb{R}^n\)</span>：决策变量向量</li>
+<li><span class="math inline">\(Q \in \mathbb{R}^{n \times
+n}\)</span>：<strong>对称正定或半正定矩阵</strong>（对应目标函数的“二次项”）</li>
+<li><span class="math inline">\(c \in
+\mathbb{R}^n\)</span>：线性项系数</li>
+<li><span class="math inline">\(A \in \mathbb{R}^{m \times n}, b \in
+\mathbb{R}^m\)</span>：不等式约束</li>
+<li><span class="math inline">\(E \in \mathbb{R}^{p \times n}, d \in
+\mathbb{R}^p\)</span>：等式约束</li>
+</ul>
+<p>三、<strong>图像直观</strong></p>
+<p>如果你只考虑二维的情况（<span class="math inline">\(x \in
+\mathbb{R}^2\)</span>），那么：</p>
+<ul>
+<li>目标函数 <span class="math inline">\(\frac{1}{2}x^T Qx + c^T
+x\)</span> 是一个“碗状”或“马鞍形”曲面（取决于 <span
+class="math inline">\(Q\)</span>）</li>
+<li>约束构成一个多边形区域（线性不等式的交）</li>
+<li>二次规划的目标就是：<strong>在这个线性区域中，找到曲面最低点</strong></li>
+</ul>
+<p>四、<strong>例子</strong></p>
+<p>例子：投资组合优化（Markowitz）</p>
+<blockquote>
+<p>有3个资产，期望收益为 <span
+class="math inline">\(r\)</span>，协方差矩阵为 <span
+class="math inline">\(\Sigma\)</span>，目标是在固定收益水平下最小化风险（方差）：</p>
+</blockquote>
+<p><span class="math display">\[
+\begin{aligned} &amp; \min_{w} \quad \frac{1}{2} w^T \Sigma w \\ &amp;
+\text{subject to:} \quad r^T w \ge R_0 \\ &amp; \quad \mathbf{1}^T w =
+1, \quad w \ge 0 \end{aligned}
+\]</span></p>
+<p>其中 <span class="math inline">\(w\)</span> 是投资权重，<span
+class="math inline">\(R_0\)</span> 是期望最低收益。</p>
+<p>这个就是典型的 <strong>二次规划问题</strong>。</p>
+<p>五、特殊情况：<strong>与线性规划的关系</strong></p>
+<ul>
+<li>当 <span class="math inline">\(Q = 0\)</span>
+时，目标函数退化为线性，变成<strong>线性规划（LP）</strong></li>
+<li>当 <span class="math inline">\(Q \succ
+0\)</span>（正定），问题是<strong>凸优化问题</strong>，可以找到全局最优解</li>
+</ul>
+<p>六、<strong>常用求解器</strong></p>
+<ul>
+<li>Python:
+<ul>
+<li><code>cvxpy</code>, <code>quadprog</code>,
+<code>scipy.optimize.minimize</code>（带 <code>'trust-constr'</code>
+方法）</li>
+</ul></li>
+<li>MATLAB:
+<ul>
+<li><code>quadprog</code></li>
+</ul></li>
+<li>R:
+<ul>
+<li><code>quadprog</code> 包</li>
+</ul></li>
+</ul>
+<p>七、<strong>应用场景</strong></p>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>投资组合优化</td>
+<td>在收益约束下最小化风险</td>
+</tr>
+<tr>
+<td>支持向量机</td>
+<td>最大间隔分类器中出现二次项</td>
+</tr>
+<tr>
+<td>工业控制</td>
+<td>模型预测控制（MPC）中的控制量优化</td>
+</tr>
+<tr>
+<td>资源分配</td>
+<td>有二次成本函数的工程优化问题</td>
+</tr>
+</tbody>
+</table>
+<p>八、总结一句话：</p>
+<blockquote>
+<p><strong>二次规划 = 二次目标函数 + 线性约束 +
+有限维变量空间的凸优化问题。</strong></p>
+</blockquote>
+<p>它是很多机器学习、工程、金融优化问题的核心工具之一。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E5%AD%A6/" rel="tag"># 数学</a>
+              <a href="/tags/%E4%BA%8C%E6%AC%A1%E8%A7%84%E5%88%92/" rel="tag"># 二次规划</a>
+              <a href="/tags/%E8%BF%90%E7%AD%B9%E5%AD%A6/" rel="tag"># 运筹学</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/07/28/%E4%BA%8C%E9%98%B6%E5%AF%BC%E6%95%B0%E8%BF%9E%E7%BB%AD%E7%9A%84%E6%84%8F%E4%B9%89/" rel="prev" title="二阶导数连续的意义">
+                  <i class="fa fa-angle-left"></i> 二阶导数连续的意义
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/08/01/%E3%80%8A%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E4%B9%8B%E4%B8%80/" rel="next" title="《机器学习的数学基础》（1&#x2F;7）">
+                  《机器学习的数学基础》（1/7） <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+    <div id="search-container" style="margin: 20px auto; max-width: 600px;">
+      <link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
+      <script src="/_pagefind/pagefind-ui.js"></script>
+      <div id="search"></div>
+      <script>
+        window.addEventListener('DOMContentLoaded', (event) => {
+            new PagefindUI({ 
+                element: "#search", 
+                showImages: false,
+                translations: {
+                    placeholder: "搜搜看...",
+                    clear_search: "清除",
+                    load_more: "加载更多",
+                    search_label: "搜索",
+                    filters_label: "筛选",
+                    zero_results: "未找到关于 [SEARCH_TERM] 的结果",
+                    many_results: "找到 [COUNT] 条关于 [SEARCH_TERM] 的结果",
+                    one_result: "找到 1 条关于 [SEARCH_TERM] 的结果",
+                    searching: "正在搜索..."
+                }
+            });
+        });
+      </script>
+    </div>
+  
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2026</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Rayman.hung</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>
